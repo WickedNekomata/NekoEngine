@@ -25,7 +25,7 @@ bool ModuleSceneIntro::Start()
 
 	sensor = App->physics->AddBody(s, 0.0f);
 	sensor->SetAsSensor(true);
-	sensor->collision_listeners.add(this);
+	sensor->collision_listeners.push_back(this);
 
 	return ret;
 }

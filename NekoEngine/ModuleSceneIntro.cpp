@@ -19,8 +19,6 @@ bool ModuleSceneIntro::Start()
 {
 	bool ret = true;
 
-	LOG("Loading Intro assets");
-
 	float f;
 	char* buf;
 
@@ -36,9 +34,18 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	StartMenuBar();
+	// Inputs
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspector = !showInspector; }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { showDemo = !showDemo; }
 
-	StartInspector();
+	// Gui
+	ShowMenuBar();
+
+	if (showDemo)
+		ShowDemoWindow();
+
+	if (showInspector)
+		ShowInspectorWindow();
 
 	return UPDATE_CONTINUE;
 }
@@ -47,12 +54,10 @@ bool ModuleSceneIntro::CleanUp()
 {
 	bool ret = true;
 
-	LOG("Unloading Intro scene");
-
 	return ret;
 }
 
-void ModuleSceneIntro::StartMenuBar()
+void ModuleSceneIntro::ShowMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -61,48 +66,58 @@ void ModuleSceneIntro::StartMenuBar()
 			if (ImGui::MenuItem("New")) {}
 			if (ImGui::MenuItem("Open")) {}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Close"))
+			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Inspector", "CTRL+I", showInspector)) { showInspector = !showInspector; }
-			if (ImGui::MenuItem("Console", "CTRL+L")) {}
+			if (ImGui::MenuItem("Inspector Window", "CTRL+I", showInspector)) { showInspector = !showInspector; }
+			if (ImGui::MenuItem("Demo Window", "CTRL+D", showDemo)) { showDemo = !showDemo; }
+			
 			ImGui::EndMenu();
 		}
+
 		ImGui::EndMainMenuBar();
 	}
 }
 
-void ModuleSceneIntro::StartInspector()
+void ModuleSceneIntro::ShowDemoWindow() 
 {
-	if (showInspector) 
+	ImGui::ShowDemoWindow();
+}
+
+void ModuleSceneIntro::ShowInspectorWindow()
+{
+	ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
+	ImGui::SetNextWindowSize({ 400,400 });
+	ImGuiWindowFlags inspectorFlags = 0;
+	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+	inspectorFlags |= ImGuiWindowFlags_NoResize;
+	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	ImGui::Begin("Inspector", false, inspectorFlags);
+	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("Transform"))
 	{
-		ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
-		ImGui::SetNextWindowSize({ 400,400 });
-		ImGuiWindowFlags inspectorFlags = 0;
-		inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
-		inspectorFlags |= ImGuiWindowFlags_NoResize;
-		ImGui::Begin("Inspector", false, inspectorFlags);
-		ImGui::Spacing();
-		if (ImGui::CollapsingHeader("Transform"))
-		{
-			ImGui::Text("Position");
-			ImGui::SameLine();
-			static int posX = 10;
-			static int posY = 10;
-			ImGui::PushItemWidth(100);
-			ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-			ImGui::SameLine();
-			ImGui::PushItemWidth(100);
-			ImGui::InputInt("##Line", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-		}
-		ImGui::Spacing();
-		if (ImGui::CollapsingHeader("Rigidbody"))
-		{
-			ImGui::Text("algun dia");
-		}
-		ImGui::End();
+		ImGui::Text("Position");
+		ImGui::SameLine();
+		static int posX = 10;
+		static int posY = 10;
+		static int posZ = 10;
+		ImGui::PushItemWidth(100);
+		ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::SameLine();
+		ImGui::PushItemWidth(100);
+		ImGui::InputInt("##Line", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::SameLine();
+		ImGui::PushItemWidth(100);
+		ImGui::InputInt("##Line", &posZ, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
 	}
+	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("RigidBody"))
+	{
+		ImGui::Text("Coming soon...");
+	}
+	ImGui::End();
 }

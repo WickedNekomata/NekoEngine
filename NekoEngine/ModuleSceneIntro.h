@@ -16,12 +16,14 @@ public:
 
 private:
 
-	void StartMenuBar();
-	void StartInspector();
+	void ShowMenuBar();
+	void ShowDemoWindow();
+	void ShowInspectorWindow();
 
 private:
 
 	bool showInspector = false;
+	bool showDemo = false;
 };
 
 #endif

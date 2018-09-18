@@ -25,21 +25,22 @@ bool ModuleSceneIntro::Start()
 	char* buf;
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
-	//lul
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
-	ImGui_ImplOpenGL2_Init();
-	ImGui::StyleColorsDark();
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	
 	return ret;
 }
 
-// Load assets
+update_status ModuleSceneIntro::Update(float dt)
+{
+#pragma region ImGui Creation
+	if (!StartMenuBar())
+		return UPDATE_STOP;
+	StartInspector();
+
+#pragma endregion
+
+	return UPDATE_CONTINUE;
+}
+
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
@@ -47,31 +48,59 @@ bool ModuleSceneIntro::CleanUp()
 	return true;
 }
 
-// Update
-update_status ModuleSceneIntro::Update(float dt)
+bool ModuleSceneIntro::StartMenuBar()
 {
-	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(App->window->window);
-	ImGui::NewFrame();
-
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+	if (ImGui::BeginMainMenuBar())
 	{
-		patata = !patata;
-	}
-	if (patata)
-	{
-		ImGui::ShowDemoWindow(&patata);
-		ImGui::Begin("text");
-		ImGui::Text("hola");
-		if (ImGui::Button("close"))
+		if (ImGui::BeginMenu("File"))
 		{
-			return UPDATE_STOP;
+			if (ImGui::MenuItem("New")) {}
+			if (ImGui::MenuItem("Open")) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Close"))
+				return false;
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Window"))
+		{
+			if (ImGui::MenuItem("Inspector", "CTRL+I", showInspector)) { showInspector = !showInspector; }
+			if (ImGui::MenuItem("Console", "CTRL+L")) {}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void ModuleSceneIntro::StartInspector()
+{
+	if (showInspector) {
+		ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
+		ImGui::SetNextWindowSize({ 400,400 });
+		ImGuiWindowFlags inspectorFlags = 0;
+		inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+		inspectorFlags |= ImGuiWindowFlags_NoResize;
+		inspectorFlags |= ImGuiWindowFlags_AlwaysAutoResize;
+		ImGui::Begin("Inspector", false, inspectorFlags);
+		ImGui::Spacing();
+		if (ImGui::CollapsingHeader("Transform"))
+		{
+			ImGui::Text("Position");
+			ImGui::SameLine();
+			static int posX = 10;
+			static int posY = 10;
+			ImGui::PushItemWidth(100);
+			ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::SameLine();
+			ImGui::PushItemWidth(100);
+			ImGui::InputInt("##Line", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		}
+		ImGui::Spacing();
+		if (ImGui::CollapsingHeader("Rigidbody"))
+		{
+			ImGui::Text("algun dia");
 		}
 		ImGui::End();
 	}
-	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	
-	return UPDATE_CONTINUE;
 }
+
 

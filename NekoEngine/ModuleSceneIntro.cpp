@@ -3,26 +3,27 @@
 #include "ModuleSceneIntro.h"
 
 #include "imgui/imgui.h"
-#include "imgui_impl_opengl2.h"
-#include "imgui_impl_sdl.h"
+#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_sdl.h"
 
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
-{
-}
+{}
 
 ModuleSceneIntro::~ModuleSceneIntro()
 {}
 
-// Load assets
 bool ModuleSceneIntro::Start()
 {
-	LOG("Loading Intro assets");
 	bool ret = true;
+
+	LOG("Loading Intro assets");
+
 	float f;
 	char* buf;
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 	
@@ -31,21 +32,25 @@ bool ModuleSceneIntro::Start()
 
 update_status ModuleSceneIntro::Update(float dt)
 {
-#pragma region ImGui Creation
+	Plane p(0, 1, 0, 0);
+	p.axis = true;
+	p.Render();
+
 	if (!StartMenuBar())
 		return UPDATE_STOP;
-	StartInspector();
 
-#pragma endregion
+	StartInspector();
 
 	return UPDATE_CONTINUE;
 }
 
 bool ModuleSceneIntro::CleanUp()
 {
+	bool ret = true;
+
 	LOG("Unloading Intro scene");
 
-	return true;
+	return ret;
 }
 
 bool ModuleSceneIntro::StartMenuBar()
@@ -73,7 +78,8 @@ bool ModuleSceneIntro::StartMenuBar()
 
 void ModuleSceneIntro::StartInspector()
 {
-	if (showInspector) {
+	if (showInspector) 
+	{
 		ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
 		ImGui::SetNextWindowSize({ 400,400 });
 		ImGuiWindowFlags inspectorFlags = 0;
@@ -102,5 +108,3 @@ void ModuleSceneIntro::StartInspector()
 		ImGui::End();
 	}
 }
-
-

@@ -59,7 +59,16 @@ update_status ModuleSceneIntro::Update(float dt)
 		patata = !patata;
 	}
 	if (patata)
+	{
 		ImGui::ShowDemoWindow(&patata);
+		ImGui::Begin("text");
+		ImGui::Text("hola");
+		if (ImGui::Button("close"))
+		{
+			return UPDATE_STOP;
+		}
+		ImGui::End();
+	}
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	

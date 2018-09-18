@@ -14,7 +14,11 @@ public:
 	bool CleanUp();
 
 private:
-	bool patata = false;
+	bool StartMenuBar();
+	void StartInspector();
+
+private:
+	bool showInspector = false;
 };
 
 #endif

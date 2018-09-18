@@ -16,7 +16,7 @@ public:
 
 private:
 
-	bool StartMenuBar();
+	void StartMenuBar();
 	void StartInspector();
 
 private:

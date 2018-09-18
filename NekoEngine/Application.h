@@ -25,6 +25,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void CloseApp();
+
 private:
 
 	void AddModule(Module* mod);
@@ -47,6 +49,7 @@ private:
 	Timer				ms_timer;
 	float				dt;
 	std::list<Module*>	list_modules;
+	bool closeApp = false;
 };
 
 #endif

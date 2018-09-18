@@ -90,6 +90,9 @@ update_status Application::Update()
 
 	FinishUpdate();
 
+	if (closeApp)
+		ret = UPDATE_STOP;
+
 	return ret;
 }
 
@@ -103,6 +106,11 @@ bool Application::CleanUp()
 	}
 
 	return ret;
+}
+
+void Application::CloseApp()
+{
+	closeApp = true;
 }
 
 void Application::PrepareUpdate()

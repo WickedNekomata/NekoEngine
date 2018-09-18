@@ -36,8 +36,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	if (!StartMenuBar())
-		return UPDATE_STOP;
+	StartMenuBar();
 
 	StartInspector();
 
@@ -53,7 +52,7 @@ bool ModuleSceneIntro::CleanUp()
 	return ret;
 }
 
-bool ModuleSceneIntro::StartMenuBar()
+void ModuleSceneIntro::StartMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -63,7 +62,7 @@ bool ModuleSceneIntro::StartMenuBar()
 			if (ImGui::MenuItem("Open")) {}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Close"))
-				return false;
+				App->CloseApp();
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Window"))
@@ -85,7 +84,6 @@ void ModuleSceneIntro::StartInspector()
 		ImGuiWindowFlags inspectorFlags = 0;
 		inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 		inspectorFlags |= ImGuiWindowFlags_NoResize;
-		inspectorFlags |= ImGuiWindowFlags_AlwaysAutoResize;
 		ImGui::Begin("Inspector", false, inspectorFlags);
 		ImGui::Spacing();
 		if (ImGui::CollapsingHeader("Transform"))

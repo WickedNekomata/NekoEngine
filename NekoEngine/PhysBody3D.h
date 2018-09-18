@@ -1,16 +1,16 @@
-#ifndef __PhysBody3D_H__
-#define __PhysBody3D_H__
+#pragma once
 
 #include <list>
 
 class btRigidBody;
 class Module;
 
-// =================================================
 struct PhysBody3D
 {
 	friend class ModulePhysics3D;
+
 public:
+
 	PhysBody3D(btRigidBody* body);
 	~PhysBody3D();
 
@@ -21,12 +21,12 @@ public:
 	void SetAsSensor(bool is_sensor);
 	bool IsSensor() const;
 
+public:
+
+	std::list<Module*> collision_listeners;
+
 private:
+
 	btRigidBody* body = nullptr;
 	bool is_sensor = false;
-
-public:
-	std::list<Module*> collision_listeners;
 };
-
-#endif // __PhysBody3D_H__

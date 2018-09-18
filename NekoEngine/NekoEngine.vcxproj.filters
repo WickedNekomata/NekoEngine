@@ -78,12 +78,6 @@
     <ClInclude Include="imgui\imgui.h">
       <Filter>Sources\Helpers\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_impl_opengl2.h">
-      <Filter>Sources\Helpers\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui_impl_sdl.h">
-      <Filter>Sources\Helpers\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imgui_internal.h">
       <Filter>Sources\Helpers\ImGui</Filter>
     </ClInclude>
@@ -98,6 +92,15 @@
     </ClInclude>
     <ClInclude Include="ModuleGui.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl2.h">
+      <Filter>Sources\Helpers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_sdl.h">
+      <Filter>Sources\Helpers\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysVehicle3D.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -158,17 +161,20 @@
     <ClCompile Include="imgui\imgui_draw.cpp">
       <Filter>Sources\Helpers\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_impl_opengl2.cpp">
-      <Filter>Sources\Helpers\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui_impl_sdl.cpp">
-      <Filter>Sources\Helpers\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Sources\Helpers\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="ModuleGui.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl2.cpp">
+      <Filter>Sources\Helpers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_sdl.cpp">
+      <Filter>Sources\Helpers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysVehicle3D.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

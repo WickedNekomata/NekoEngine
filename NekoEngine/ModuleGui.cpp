@@ -4,8 +4,8 @@
 #include "ModuleRenderer3D.h"
 
 #include "imgui/imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_sdl.h"
+#include "imgui/imgui_impl_opengl2.h"
 
 ModuleGui::ModuleGui(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}
@@ -22,7 +22,7 @@ bool ModuleGui::Start()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard // Enable keyboard controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
 	ImGui_ImplOpenGL2_Init();

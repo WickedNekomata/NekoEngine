@@ -1,4 +1,3 @@
-
 #pragma once
 
 struct Color
@@ -19,7 +18,7 @@ struct Color
 		this->a = a;
 	}
 
-	float* operator & ()
+	float* operator&()
 	{
 		return (float*)this;
 	}

@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include "glmath.h"
 #include "Color.h"
 
@@ -21,10 +21,11 @@ public:
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
+	PrimitiveTypes	GetType() const;
 	void			SetPos(float x, float y, float z);
 	void			SetRotation(float angle, const vec3 &u);
 	void			Scale(float x, float y, float z);
-	PrimitiveTypes	GetType() const;
+
 
 public:
 	
@@ -33,17 +34,21 @@ public:
 	bool axis,wire;
 
 protected:
+
 	PrimitiveTypes type;
 };
 
 // ============================================
 class Cube : public Primitive
 {
-public :
+public:
+
 	Cube();
 	Cube(float sizeX, float sizeY, float sizeZ);
 	void InnerRender() const;
+
 public:
+
 	vec3 size;
 };
 
@@ -51,10 +56,13 @@ public:
 class Sphere : public Primitive
 {
 public:
+
 	Sphere();
 	Sphere(float radius);
 	void InnerRender() const;
+
 public:
+
 	float radius;
 };
 
@@ -62,10 +70,13 @@ public:
 class Cylinder : public Primitive
 {
 public:
+
 	Cylinder();
 	Cylinder(float radius, float height);
 	void InnerRender() const;
+
 public:
+
 	float radius;
 	float height;
 };
@@ -74,10 +85,13 @@ public:
 class Line : public Primitive
 {
 public:
+
 	Line();
 	Line(float x, float y, float z);
 	void InnerRender() const;
+
 public:
+
 	vec3 origin;
 	vec3 destination;
 };
@@ -86,10 +100,13 @@ public:
 class Plane : public Primitive
 {
 public:
+
 	Plane();
 	Plane(float x, float y, float z, float d);
 	void InnerRender() const;
+
 public:
+
 	vec3 normal;
 	float constant;
 };

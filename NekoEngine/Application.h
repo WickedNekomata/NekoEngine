@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __APPLICATION_H_
+#define __APPLICATION_H_
 
 #include <list>
 #include "Globals.h"
@@ -16,22 +17,6 @@
 class Application
 {
 public:
-	ModuleWindow* window;
-	ModuleInput* input;
-	ModuleAudio* audio;
-	ModuleSceneIntro* scene_intro;
-	ModuleRenderer3D* renderer3D;
-	ModuleCamera3D* camera;
-	ModulePhysics3D* physics;
-	ModuleGui* gui;
-
-private:
-
-	Timer	ms_timer;
-	float	dt;
-	std::list<Module*> list_modules;
-
-public:
 
 	Application();
 	~Application();
@@ -45,4 +30,23 @@ private:
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+
+public:
+
+	ModuleWindow*		window;
+	ModuleInput*		input;
+	ModuleAudio*		audio;
+	ModuleSceneIntro*	scene_intro;
+	ModuleRenderer3D*	renderer3D;
+	ModuleCamera3D*		camera;
+	ModulePhysics3D*	physics;
+	ModuleGui*			gui;
+
+private:
+
+	Timer				ms_timer;
+	float				dt;
+	std::list<Module*>	list_modules;
 };
+
+#endif

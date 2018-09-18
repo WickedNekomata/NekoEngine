@@ -1,11 +1,12 @@
-#ifndef __ModuleGui_H__
-#define __ModuleGui_H__
+#ifndef __MODULE_GUI_H__
+#define __MODULE_GUI_H__
 
 #include "Module.h"
 
 class ModuleGui : public Module
 {
 public:
+
 	ModuleGui(Application* app, bool start_enabled = true);
 	~ModuleGui();
 

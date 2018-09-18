@@ -3,8 +3,8 @@
 #include "ModuleInput.h"
 
 #include "imgui/imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_sdl.h"
+#include "imgui/imgui_impl_opengl2.h"
 
 #define MAX_KEYS 300
 
@@ -15,13 +15,11 @@ ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, sta
 	memset(mouse_buttons, KEY_IDLE, sizeof(KEY_STATE) * MAX_MOUSE_BUTTONS);
 }
 
-// Destructor
 ModuleInput::~ModuleInput()
 {
 	delete[] keyboard;
 }
 
-// Called before render is available
 bool ModuleInput::Init()
 {
 	LOG("Init SDL input event system");
@@ -37,7 +35,6 @@ bool ModuleInput::Init()
 	return ret;
 }
 
-// Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
@@ -120,16 +117,18 @@ update_status ModuleInput::PreUpdate(float dt)
 		}
 	}
 
-	if (quit == true || keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
+	if (quit || keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
 		return UPDATE_STOP;
 
 	return UPDATE_CONTINUE;
 }
 
-// Called before quitting
 bool ModuleInput::CleanUp()
 {
+	bool ret = true;
+
 	LOG("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
-	return true;
+
+	return ret;
 }

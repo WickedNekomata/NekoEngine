@@ -43,38 +43,28 @@ bool Application::Init()
 	bool ret = true;
 
 	// Call Init() in all modules
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret == true; ++item)
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 	{
 		ret = (*item)->Init();
 	}
 
 	// After all Init calls we call Start() in all modules
 	LOG("Application Start --------------");
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret == true; ++item)
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 	{
 		ret = (*item)->Start();
 	}
 	
 	ms_timer.Start();
+
 	return ret;
-}
-
-// ---------------------------------------------
-void Application::PrepareUpdate()
-{
-	dt = (float)ms_timer.Read() / 1000.0f;
-	ms_timer.Start();
-}
-
-// ---------------------------------------------
-void Application::FinishUpdate()
-{
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
+
 	PrepareUpdate();
 	
 	std::list<Module*>::const_iterator item = list_modules.begin();
@@ -85,20 +75,21 @@ update_status Application::Update()
 	}
 
 	item = list_modules.begin();
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
+	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		ret = (*item)->Update(dt);
 		++item;
 	}
 
 	item = list_modules.begin();
-	while(item != list_modules.end() && ret == UPDATE_CONTINUE)
+	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		ret = (*item)->PostUpdate(dt);
 		++item;
 	}
 
 	FinishUpdate();
+
 	return ret;
 }
 
@@ -106,13 +97,22 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 
-	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend() && ret == true; ++item)
+	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend() && ret; ++item)
 	{
 		ret = (*item)->CleanUp();
 	}
 
 	return ret;
 }
+
+void Application::PrepareUpdate()
+{
+	dt = (float)ms_timer.Read() / 1000.0f;
+	ms_timer.Start();
+}
+
+void Application::FinishUpdate()
+{}
 
 void Application::AddModule(Module* mod)
 {

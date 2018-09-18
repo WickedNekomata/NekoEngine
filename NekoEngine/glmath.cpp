@@ -38,7 +38,7 @@ vec2 refract(const vec2 &i, const vec2 &n, float eta)
 
 	float ndoti = dot(n, i), k = 1.0f - eta * eta * (1.0f - ndoti * ndoti);
 
-	if(k >= 0.0f)
+	if (k >= 0.0f)
 	{
 		r = eta * i - n * (eta * ndoti + sqrt(k));
 	}
@@ -98,7 +98,7 @@ vec3 refract(const vec3 &i, const vec3 &n, float eta)
 
 	float ndoti = dot(n, i), k = 1.0f - eta * eta * (1.0f - ndoti * ndoti);
 
-	if(k >= 0.0f)
+	if (k >= 0.0f)
 	{
 		r = eta * i - n * (eta * ndoti + sqrt(k));
 	}
@@ -124,7 +124,7 @@ mat2x2::~mat2x2()
 
 mat2x2::mat2x2(const mat2x2 &Matrix)
 {
-	for(int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		M[i] = Matrix.M[i];
 	}
@@ -156,7 +156,7 @@ mat2x2::mat2x2(const mat4x4 &Matrix)
 
 mat2x2& mat2x2::operator = (const mat2x2 &Matrix)
 {
-	for(int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		M[i] = Matrix.M[i];
 	}
@@ -245,7 +245,7 @@ mat3x3::~mat3x3()
 
 mat3x3::mat3x3(const mat3x3 &Matrix)
 {
-	for(int i = 0; i < 9; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		M[i] = Matrix.M[i];
 	}
@@ -281,7 +281,7 @@ mat3x3::mat3x3(const mat4x4 &Matrix)
 
 mat3x3& mat3x3::operator = (const mat3x3 &Matrix)
 {
-	for(int i = 0; i < 9; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		M[i] = Matrix.M[i];
 	}
@@ -397,7 +397,7 @@ mat4x4::~mat4x4()
 
 mat4x4::mat4x4(const mat4x4 &Matrix)
 {
-	for(int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		M[i] = Matrix.M[i];
 	}
@@ -437,7 +437,7 @@ mat4x4::mat4x4(const mat3x3 &Matrix)
 
 mat4x4& mat4x4::operator = (const mat4x4 &Matrix)
 {
-	for(int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		M[i] = Matrix.M[i];
 	}

@@ -1,5 +1,5 @@
-#ifndef __ModuleWindow_H__
-#define __ModuleWindow_H__
+#ifndef __MODULE_WINDOW_H__
+#define __MODULE_WINDOW_H__
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
@@ -11,9 +11,7 @@ class ModuleWindow : public Module
 public:
 
 	ModuleWindow(Application* app, bool start_enabled = true);
-
-	// Destructor
-	virtual ~ModuleWindow();
+	~ModuleWindow();
 
 	bool Init();
 	bool CleanUp();
@@ -21,11 +19,9 @@ public:
 	void SetTitle(const char* title);
 
 public:
-	//The window we'll be rendering to
-	SDL_Window* window;
-
-	//The surface contained by the window
-	SDL_Surface* screen_surface;
+	
+	SDL_Window* window; // The window we'll be rendering to	
+	SDL_Surface* screen_surface;// The surface contained by the window
 };
 
-#endif // __ModuleWindow_H__
+#endif

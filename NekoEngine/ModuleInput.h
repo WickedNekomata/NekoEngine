@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __MODULE_INPUT_H__
+#define __MODULE_INPUT_H__
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -59,6 +61,7 @@ public:
 	}
 
 private:
+
 	KEY_STATE* keyboard;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
 	int mouse_x;
@@ -68,3 +71,5 @@ private:
 	int mouse_y_motion;
 	//int mouse_z_motion;
 };
+
+#endif

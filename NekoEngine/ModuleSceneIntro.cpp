@@ -1,13 +1,15 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleSceneIntro.h"
+#include "ModuleWindow.h"
+#include "ModuleRenderer3D.h"
+
+#include "Primitive.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_sdl.h"
 
-#include "ModuleWindow.h"
-#include "ModuleRenderer3D.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}

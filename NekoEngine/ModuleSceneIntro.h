@@ -19,11 +19,13 @@ private:
 	void ShowMenuBar();
 	void ShowDemoWindow();
 	void ShowInspectorWindow();
+	void ShowRandWindow();
 
 private:
 
 	bool showInspector = false;
 	bool showDemo = false;
+	bool showRandWindow = false;
 };
 
 #endif

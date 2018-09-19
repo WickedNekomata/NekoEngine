@@ -37,6 +37,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	// Inputs
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspector = !showInspector; }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { showDemo = !showDemo; }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) { showRandWindow = !showRandWindow; }
 
 	// Gui
 	ShowMenuBar();
@@ -46,6 +47,9 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	if (showInspector)
 		ShowInspectorWindow();
+
+	if (showRandWindow)
+		ShowRandWindow();
 
 	return UPDATE_CONTINUE;
 }
@@ -75,6 +79,7 @@ void ModuleSceneIntro::ShowMenuBar()
 		{
 			if (ImGui::MenuItem("Inspector Window", "CTRL+I", showInspector)) { showInspector = !showInspector; }
 			if (ImGui::MenuItem("Demo Window", "CTRL+D", showDemo)) { showDemo = !showDemo; }
+			if (ImGui::MenuItem("Random Generator", "CTRL+N", showRandWindow)) { showRandWindow = !showRandWindow; }
 			
 			ImGui::EndMenu();
 		}
@@ -119,5 +124,11 @@ void ModuleSceneIntro::ShowInspectorWindow()
 	{
 		ImGui::Text("Coming soon...");
 	}
+	ImGui::End();
+}
+
+void ModuleSceneIntro::ShowRandWindow()
+{
+	ImGui::Begin("Random Number Gen");
 	ImGui::End();
 }

@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -95,6 +95,7 @@
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleSceneIntro.h" />
     <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="Pcg\pcg_basic.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -118,6 +119,7 @@
     <ClCompile Include="ModuleRenderer3D.cpp" />
     <ClCompile Include="ModuleSceneIntro.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
+    <ClCompile Include="Pcg\pcg_basic.c" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

@@ -10,7 +10,6 @@
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_sdl.h"
 
-
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}
 
@@ -26,7 +25,9 @@ bool ModuleSceneIntro::Start()
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
-	
+
+	pcg32_srandom_r(&rng, 42u, 54u);
+
 	return ret;
 }
 
@@ -131,6 +132,16 @@ void ModuleSceneIntro::ShowInspectorWindow()
 
 void ModuleSceneIntro::ShowRandWindow()
 {
-	ImGui::Begin("Random Number Gen");
+	ImGui::SetNextWindowSize({ 200,55 });
+	ImGuiWindowFlags inspectorFlags = 0;
+	inspectorFlags |= ImGuiWindowFlags_NoResize;
+	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
+	ImGui::Begin("Random Number Gen", false, inspectorFlags);
+	if (ImGui::Button("Generate")) { randomNumber = std::to_string((int)pcg32_boundedrand_r(&rng, MAXINT)); }
+	ImGui::SameLine();
+	ImGui::Text("number:");
+	ImGui::SameLine();
+	ImGui::Text(randomNumber.c_str());
 	ImGui::End();
 }

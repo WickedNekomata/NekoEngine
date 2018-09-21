@@ -93,6 +93,9 @@
     <ClInclude Include="imgui\imgui_impl_sdl.h">
       <Filter>Sources\Helpers\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Pcg\pcg_basic.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_impl_sdl.cpp">
       <Filter>Sources\Helpers\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Pcg\pcg_basic.c">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

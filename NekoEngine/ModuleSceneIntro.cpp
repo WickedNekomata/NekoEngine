@@ -10,6 +10,9 @@
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_sdl.h"
 
+#include <stdio.h>
+#include <time.h>
+
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}
 
@@ -25,8 +28,6 @@ bool ModuleSceneIntro::Start()
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
-
-	pcg32_srandom_r(&rng, 42u, 54u);
 
 	return ret;
 }
@@ -138,10 +139,9 @@ void ModuleSceneIntro::ShowRandWindow()
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
 	ImGui::Begin("Random Number Gen", false, inspectorFlags);
-	if (ImGui::Button("Generate")) { randomNumber = std::to_string((int)pcg32_boundedrand_r(&rng, MAXINT)); }
+	if (ImGui::Button("Generate")) { pcg32_srandom_r(&rng, time(NULL), (intptr_t)&rng); }
 	ImGui::SameLine();
-	ImGui::Text("number:");
+	ImGui::Text("number: %d", rng);
 	ImGui::SameLine();
-	ImGui::Text(randomNumber.c_str());
 	ImGui::End();
 }

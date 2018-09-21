@@ -3,9 +3,7 @@
 
 #include "Module.h"
 
-#include "Pcg/pcg_basic.h"
-
-#include <string>
+#include "Pcg/pcg_variants.h"
 
 class ModuleSceneIntro : public Module
 {
@@ -30,7 +28,6 @@ private:
 	bool showInspector = false;
 	bool showDemo = false;
 	bool showRandWindow = false;
-	std::string randomNumber = "";
 
 	pcg32_random_t rng;
 };

@@ -29,7 +29,9 @@ private:
 	bool showDemo = false;
 	bool showRandWindow = false;
 
-	pcg32_random_t rng;
+	int rng = 0;
+	pcg_state_setseq_64 rngBound;
+
 };
 
 #endif

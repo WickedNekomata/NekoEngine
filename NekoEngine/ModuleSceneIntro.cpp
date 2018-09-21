@@ -133,15 +133,27 @@ void ModuleSceneIntro::ShowInspectorWindow()
 
 void ModuleSceneIntro::ShowRandWindow()
 {
-	ImGui::SetNextWindowSize({ 200,55 });
+	ImGui::SetNextWindowSize({ 200,155 });
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
 	ImGui::Begin("Random Number Gen", false, inspectorFlags);
-	if (ImGui::Button("Generate")) { pcg32_srandom_r(&rng, time(NULL), (intptr_t)&rng); }
-	ImGui::SameLine();
-	ImGui::Text("number: %d", rng);
-	ImGui::SameLine();
+	ImGui::Text("Min:");
+	static int minValue;
+	ImGui::InputInt("", &minValue);
+	ImGui::Text("Max:");
+	static int maxValue = 100;
+	ImGui::InputInt("", &maxValue);
+
+	if (ImGui::Button("Generate"))
+	{
+		uint32_t bound;
+		bound = maxValue - minValue + 1;
+		rng = pcg32_boundedrand_r(&rngBound, bound);
+		rng -= abs(minValue);
+	}
+
+	ImGui::Text("%d", rng);
 	ImGui::End();
 }

@@ -141,7 +141,7 @@ void ModuleSceneIntro::ShowInspectorWindow()
 
 void ModuleSceneIntro::ShowRandWindow()
 {
-	ImGui::SetNextWindowSize({ 200,355 });
+	ImGui::SetNextWindowSize({ 200,200 });
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;

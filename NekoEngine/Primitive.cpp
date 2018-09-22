@@ -3,6 +3,8 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 
+#include "MathGeoLib/include/Math/TransformOps.h"
+
 Primitive::Primitive() : transform(float4x4::identity), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
 {}
 
@@ -75,7 +77,7 @@ PrimitiveTypes Primitive::GetType() const
 
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform = float4x4::Translate(x, y, z) * transform;
+	transform = float4x4::Translate(x, y, z).ToFloat4x4() * transform;
 }
 
 void Primitive::SetRotation(float angle, const float3 &u)
@@ -85,7 +87,7 @@ void Primitive::SetRotation(float angle, const float3 &u)
 
 void Primitive::Scale(float x, float y, float z)
 {
-	transform = float4x4::Scale(x, y, z) * transform;
+	transform = float4x4::Scale(x, y, z).ToFloat4x4() * transform;
 }
 
 // CUBE ============================================

@@ -10,6 +10,8 @@
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_sdl.h"
 
+#include "MathGeoLib/include/Math/float3.h"
+
 #include <stdio.h>
 #include <time.h>
 
@@ -26,17 +28,19 @@ bool ModuleSceneIntro::Start()
 	float f;
 	char* buf;
 
-	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
-	App->camera->LookAt(vec3(0, 0, 0));
+	App->camera->Move(float3(1.0f, 1.0f, 0.0f));
+	App->camera->LookAt(float3(0, 0, 0));
 
 	return ret;
 }
 
 update_status ModuleSceneIntro::Update(float dt)
 {
+	/*
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
+	*/
 
 	// Inputs
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspector = !showInspector; }

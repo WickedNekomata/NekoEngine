@@ -88,7 +88,7 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 		}
 
-		Position = Reference + Z * length(Position);
+		Position = Reference + Z * Position.Length();
 	}
 
 	// Recalculate matrix -------------
@@ -111,9 +111,9 @@ void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool 
 	this->Position = Position;
 	this->Reference = Reference;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(float3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = math::Cross(float3(0.0f, 1.0f, 0.0f), Z).Normalized();
+	Y = math::Cross(Z, X);
 
 	if (!RotateAroundReference)
 	{
@@ -128,9 +128,9 @@ void ModuleCamera3D::LookAt( const float3 &Spot)
 {
 	Reference = Spot;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(float3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = math::Cross(float3(0.0f, 1.0f, 0.0f), Z).Normalized();
+	Y = math::Cross(Z, X);
 
 	CalculateViewMatrix();
 }
@@ -145,11 +145,11 @@ void ModuleCamera3D::Move(const float3 &Movement)
 
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return &ViewMatrix;
+	return ViewMatrix.ptr();
 }
 
 void ModuleCamera3D::CalculateViewMatrix()
 {
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-	ViewMatrixInverse = inverse(ViewMatrix);
+	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, Position), -math::Dot(Y, Position), -math::Dot(Z, Position), 1.0f);
+	ViewMatrixInverse = ViewMatrix.Inverted();
 }

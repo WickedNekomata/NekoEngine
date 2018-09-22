@@ -11,6 +11,8 @@
 #include "imgui/imgui_impl_sdl.h"
 
 #include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib/include/Geometry/Plane.h"
+#include "MathGeoLib/include/Geometry/Sphere.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -40,6 +42,10 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
+	pCube c(10, 10, 10);
+	c.SetPos(0, 0, -10);
+	c.Render();
+	
 	// Inputs
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspector = !showInspector; }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { showDemo = !showDemo; }

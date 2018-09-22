@@ -92,17 +92,17 @@ void Primitive::Scale(float x, float y, float z)
 }
 
 // CUBE ============================================
-Cube::Cube() : Primitive(), size(1.0f, 1.0f, 1.0f)
+pCube::pCube() : Primitive(), size(1.0f, 1.0f, 1.0f)
 {
 	type = PrimitiveTypes::Primitive_Cube;
 }
 
-Cube::Cube(float sizeX, float sizeY, float sizeZ) : Primitive(), size(sizeX, sizeY, sizeZ)
+pCube::pCube(float sizeX, float sizeY, float sizeZ) : Primitive(), size(sizeX, sizeY, sizeZ)
 {
 	type = PrimitiveTypes::Primitive_Cube;
 }
 
-void Cube::InnerRender() const
+void pCube::InnerRender() const
 {	
 	float sx = size.x * 0.5f;
 	float sy = size.y * 0.5f;
@@ -206,19 +206,19 @@ void pCylinder::InnerRender() const
 	{
 		float a = i * math::pi / 180; // degrees to radians
 
-		glVertex3f(height*0.5f, radius * cos(a), radius * sin(a));
+		glVertex3f(height * 0.5f, radius * cos(a), radius * sin(a));
 		glVertex3f(-height * 0.5f, radius * cos(a), radius * sin(a));
 	}
 	glEnd();
 }
 
 // LINE ==================================================
-pLine::pLine() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
+pLine::pLine() : Primitive(), origin(0.0f, 0.0f, 0.0f), destination(1.0f, 1.0f, 1.0f)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
 
-pLine::pLine(float x, float y, float z) : Primitive(), origin(0, 0, 0), destination(x, y, z)
+pLine::pLine(float x, float y, float z) : Primitive(), origin(0.0f, 0.0f, 0.0f), destination(x, y, z)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
@@ -238,7 +238,7 @@ void pLine::InnerRender() const
 }
 
 // PLANE ==================================================
-pPlane::pPlane() : Primitive(), normal(0, 1, 0), constant(1)
+pPlane::pPlane() : Primitive(), normal(0.0f, 1.0f, 0.0f), constant(1.0f)
 {
 	type = PrimitiveTypes::Primitive_Plane;
 }

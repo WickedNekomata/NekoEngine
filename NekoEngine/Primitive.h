@@ -41,12 +41,12 @@ protected:
 };
 
 // ============================================
-class Cube : public Primitive
+class pCube : public Primitive
 {
 public:
 
-	Cube();
-	Cube(float sizeX, float sizeY, float sizeZ);
+	pCube();
+	pCube(float sizeX, float sizeY, float sizeZ);
 	void InnerRender() const;
 
 public:

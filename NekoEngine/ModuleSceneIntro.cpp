@@ -36,11 +36,9 @@ bool ModuleSceneIntro::Start()
 
 update_status ModuleSceneIntro::Update(float dt)
 {
-	/*
-	Plane p(0, 1, 0, 0);
+	pPlane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
-	*/
 
 	// Inputs
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspector = !showInspector; }

@@ -1,7 +1,9 @@
 #pragma once
 
-#include "glmath.h"
 #include "Color.h"
+
+#include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib/include/Math/float4x4.h"
 
 enum PrimitiveTypes
 {
@@ -23,14 +25,14 @@ public:
 	virtual void	InnerRender() const;
 	PrimitiveTypes	GetType() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec3 &u);
+	void			SetRotation(float angle, const float3 &u);
 	void			Scale(float x, float y, float z);
 
 
 public:
 	
 	Color color;
-	mat4x4 transform;
+	float4x4 transform;
 	bool axis,wire;
 
 protected:
@@ -49,9 +51,10 @@ public:
 
 public:
 
-	vec3 size;
+	float3 size;
 };
 
+/*
 // ============================================
 class Sphere : public Primitive
 {
@@ -92,8 +95,8 @@ public:
 
 public:
 
-	vec3 origin;
-	vec3 destination;
+	float3 origin;
+	float3 destination;
 };
 
 // ============================================
@@ -107,6 +110,7 @@ public:
 
 public:
 
-	vec3 normal;
+	float3 normal;
 	float constant;
 };
+*/

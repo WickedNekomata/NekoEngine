@@ -3,13 +3,13 @@
 #include <gl/GLU.h>
 #include "Primitive.h"
 
-Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+Primitive::Primitive() : transform(float4x4::identity), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
 {}
 
 void Primitive::Render() const
 {
 	glPushMatrix();
-	glMultMatrixf(transform.M);
+	glMultMatrixf((GLfloat*)transform.ptr());
 
 	if (axis)
 	{
@@ -75,17 +75,17 @@ PrimitiveTypes Primitive::GetType() const
 
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform.translate(x, y, z);
+	transform = float4x4::Translate(x, y, z) * transform;
 }
 
-void Primitive::SetRotation(float angle, const vec3 &u)
+void Primitive::SetRotation(float angle, const float3 &u)
 {
-	transform.rotate(angle, u);
+	transform = float4x4::RotateAxisAngle(u, angle) * transform;
 }
 
 void Primitive::Scale(float x, float y, float z)
 {
-	transform.scale(x, y, z);
+	transform = float4x4::Scale(x, y, z) * transform;
 }
 
 // CUBE ============================================
@@ -146,6 +146,7 @@ void Cube::InnerRender() const
 	glEnd();
 }
 
+/*
 // SPHERE ============================================
 Sphere::Sphere() : Primitive(), radius(1.0f)
 {
@@ -263,3 +264,4 @@ void Plane::InnerRender() const
 
 	glEnd();
 }
+*/

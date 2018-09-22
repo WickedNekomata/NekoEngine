@@ -3,8 +3,10 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
 #include "Light.h"
+
+#include "MathGeoLib/include/Math/float3x3.h"
+#include "MathGeoLib/include/Math/float4x4.h"
 
 #define MAX_LIGHTS 8
 
@@ -26,8 +28,8 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	float3x3 NormalMatrix;
+	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 };
 
 #endif

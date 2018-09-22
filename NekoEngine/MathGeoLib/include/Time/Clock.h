@@ -16,6 +16,8 @@
 /** @file Clock.h
 	@brief The Clock class. Supplies timing facilities. */
 
+#define WIN32
+
 #ifdef WIN32
 #define Polygon Polygon_unused
 #include <Windows.h>

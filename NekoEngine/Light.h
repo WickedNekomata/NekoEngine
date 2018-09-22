@@ -15,7 +15,7 @@ struct Light
 
 	Color ambient;
 	Color diffuse;
-	float3 position;
+	math::float3 position;
 
 	int ref;
 	bool on;

@@ -18,9 +18,9 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const float3 &Spot);
-	void Move(const float3 &Movement);
+	void Look(const math::float3 &Position, const math::float3 &Reference, bool RotateAroundReference = false);
+	void LookAt(const math::float3 &Spot);
+	void Move(const math::float3 &Movement);
 	float* GetViewMatrix();
 
 private:
@@ -29,11 +29,11 @@ private:
 
 public:
 	
-	float3 X, Y, Z, Position, Reference;
+	math::float3 X, Y, Z, Position, Reference;
 
 private:
 
-	float4x4 ViewMatrix, ViewMatrixInverse;
+	math::float4x4 ViewMatrix, ViewMatrixInverse;
 };
 
 #endif

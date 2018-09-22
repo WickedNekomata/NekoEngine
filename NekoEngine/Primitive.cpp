@@ -6,13 +6,13 @@
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
-Primitive::Primitive() : transform(float4x4::identity), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+Primitive::Primitive() : transform(math::float4x4::identity), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
 {}
 
 void Primitive::Render() const
 {
 	glPushMatrix();
-	glMultMatrixf((GLfloat*)transform.ptr());
+	glMultMatrixf((GLfloat*)transform.Transposed().ptr());
 
 	if (axis)
 	{
@@ -78,17 +78,17 @@ PrimitiveTypes Primitive::GetType() const
 
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform = float4x4::Translate(x, y, z).ToFloat4x4() * transform;
+	transform = math::float4x4::Translate(x, y, z).ToFloat4x4() * transform;
 }
 
-void Primitive::SetRotation(float angle, const float3 &u)
+void Primitive::SetRotation(float angle, const math::float3 &u)
 {
-	transform = float4x4::RotateAxisAngle(u, angle) * transform;
+	transform = math::float4x4::RotateAxisAngle(u, angle) * transform;
 }
 
 void Primitive::Scale(float x, float y, float z)
 {
-	transform = float4x4::Scale(x, y, z).ToFloat4x4() * transform;
+	transform = math::float4x4::Scale(x, y, z).ToFloat4x4() * transform;
 }
 
 // CUBE ============================================

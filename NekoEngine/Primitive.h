@@ -25,14 +25,14 @@ public:
 	virtual void	InnerRender() const;
 	PrimitiveTypes	GetType() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const float3 &u);
+	void			SetRotation(float angle, const math::float3 &u);
 	void			Scale(float x, float y, float z);
 
 
 public:
 	
 	Color color;
-	float4x4 transform;
+	math::float4x4 transform;
 	bool axis,wire;
 
 protected:
@@ -51,7 +51,7 @@ public:
 
 public:
 
-	float3 size;
+	math::float3 size;
 };
 
 // ============================================
@@ -94,8 +94,8 @@ public:
 
 public:
 
-	float3 origin;
-	float3 destination;
+	math::float3 origin;
+	math::float3 destination;
 };
 
 // ============================================
@@ -109,6 +109,6 @@ public:
 
 public:
 
-	float3 normal;
+	math::float3 normal;
 	float constant;
 };

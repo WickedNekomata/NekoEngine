@@ -4,14 +4,14 @@
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	X = math::float3(1.0f, 0.0f, 0.0f);
+	Y = math::float3(0.0f, 1.0f, 0.0f);
+	Z = math::float3(0.0f, 0.0f, 1.0f);
+
+	Position = math::float3(0.0f, 0.0f, 5.0f);
+	Reference = math::float3(0.0f, 0.0f, 0.0f);
+
 	CalculateViewMatrix();
-
-	X = float3(1.0f, 0.0f, 0.0f);
-	Y = float3(0.0f, 1.0f, 0.0f);
-	Z = float3(0.0f, 0.0f, 1.0f);
-
-	Position = float3(0.0f, 0.0f, 5.0f);
-	Reference = float3(0.0f, 0.0f, 0.0f);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -31,7 +31,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 
-	float3 newPos(0,0,0);
+	math::float3 newPos(0.0f,0.0f,0.0f);
 
 	/*
 	float speed = 3.0f * dt;
@@ -67,7 +67,7 @@ update_status ModuleCamera3D::Update(float dt)
 		{
 			float DeltaX = (float)dx * Sensitivity;
 
-			float3x3 rotationMatrix = float3x3::RotateY(DeltaX);
+			math::float3x3 rotationMatrix = math::float3x3::RotateY(DeltaX);
 			X = rotationMatrix * X;
 			Y = rotationMatrix * Y;
 			Z = rotationMatrix * Z;
@@ -77,14 +77,14 @@ update_status ModuleCamera3D::Update(float dt)
 		{
 			float DeltaY = (float)dy * Sensitivity;
 			
-			float3x3 rotationMatrix = float3x3::RotateAxisAngle(X, DeltaY);
+			math::float3x3 rotationMatrix = math::float3x3::RotateAxisAngle(X, DeltaY);
 			Y = rotationMatrix * Y;
 			Z = rotationMatrix * Z;
 
 			if (Y.y < 0.0f)
 			{
-				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = Z.Cross(X);
+				Z = math::float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = math::Cross(Z, X);
 			}
 		}
 
@@ -106,13 +106,13 @@ bool ModuleCamera3D::CleanUp()
 	return ret;
 }
 
-void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
+void ModuleCamera3D::Look(const math::float3 &Position, const math::float3 &Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
 	this->Reference = Reference;
 
 	Z = (Position - Reference).Normalized();
-	X = math::Cross(float3(0.0f, 1.0f, 0.0f), Z).Normalized();
+	X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized();
 	Y = math::Cross(Z, X);
 
 	if (!RotateAroundReference)
@@ -124,18 +124,18 @@ void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool 
 	CalculateViewMatrix();
 }
 
-void ModuleCamera3D::LookAt( const float3 &Spot)
+void ModuleCamera3D::LookAt(const math::float3 &Spot)
 {
 	Reference = Spot;
 
 	Z = (Position - Reference).Normalized();
-	X = math::Cross(float3(0.0f, 1.0f, 0.0f), Z).Normalized();
+	X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized();
 	Y = math::Cross(Z, X);
 
 	CalculateViewMatrix();
 }
 
-void ModuleCamera3D::Move(const float3 &Movement)
+void ModuleCamera3D::Move(const math::float3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
@@ -145,11 +145,11 @@ void ModuleCamera3D::Move(const float3 &Movement)
 
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return ViewMatrix.ptr();
+	return ViewMatrix.Transposed().ptr();
 }
 
 void ModuleCamera3D::CalculateViewMatrix()
 {
-	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, Position), -math::Dot(Y, Position), -math::Dot(Z, Position), 1.0f);
+	ViewMatrix = math::float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, Position), -math::Dot(Y, Position), -math::Dot(Z, Position), 1.0f).Transposed();
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }

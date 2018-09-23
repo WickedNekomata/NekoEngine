@@ -196,15 +196,15 @@ void ModuleSceneIntro::ShowRandWindow()
 
 void ModuleSceneIntro::ShowIntersectionWindow() 
 {
-	//ImGui::SetWindowCollapsed(false, ImGuiCond_Appearing);
-	
 	ImGui::SetNextWindowSize({ 400,300 });
-	ImGuiWindowFlags flags = 0;
-	flags |= ImGuiWindowFlags_NoResize;
-	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	flags |= ImGuiWindowFlags_NoScrollbar;
+
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+	windowFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoCollapse;
 	
-	ImGui::Begin("Test Intersections", &showIntersectionWin, flags);
+	ImGui::Begin("Test Intersections", &showIntersectionWin, windowFlags);
 
 	const char* geometries[] = { "Sphere", "Capsule", "AABB", "OBB", "Plane", "Ray", "Triangle" };
 
@@ -219,11 +219,14 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 	static math::float3 endpoint2A(0.0f, 0.0f, 0.0f); // Capsule, Triangle
 	static math::float3 endpoint3A(0.0f, 0.0f, 0.0f); // Triangle
 
-	if (ImGui::TreeNode("Geometry A"))
+	ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None;
+	treeNodeFlags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen;
+
+	if (ImGui::TreeNodeEx("Geometry A", treeNodeFlags))
 	{
-		int A = currGeometryTypeA;
-		ImGui::Combo("Geometry A", &A, geometries, IM_ARRAYSIZE(geometries));
-		currGeometryTypeA = (GeometryType)A;
+		int type = currGeometryTypeA;
+		ImGui::Combo("Type", &type, geometries, IM_ARRAYSIZE(geometries));
+		currGeometryTypeA = (GeometryType)type;
 
 		switch (currGeometryTypeA)
 		{
@@ -342,11 +345,11 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 	static math::float3 endpoint2B(0.0f, 0.0f, 0.0f); // Capsule, Triangle
 	static math::float3 endpoint3B(0.0f, 0.0f, 0.0f); // Triangle
 
-	if (ImGui::TreeNode("Geometry B"))
+	if (ImGui::TreeNodeEx("Geometry B", treeNodeFlags))
 	{
-		int B = currGeometryTypeB;
-		ImGui::Combo("Geometry B", &B, geometries, IM_ARRAYSIZE(geometries));
-		currGeometryTypeB = (GeometryType)B;
+		int type = currGeometryTypeB;
+		ImGui::Combo("Type", &type, geometries, IM_ARRAYSIZE(geometries));
+		currGeometryTypeB = (GeometryType)type;
 
 		switch (currGeometryTypeB)
 		{

@@ -270,6 +270,15 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 		break;
 
 		case GeometryType::OBB:
+		{
+			// Position
+			float pos[3] = { positionA.x, positionA.y, positionA.z };
+			ImGui::InputFloat3("Position", pos);
+			positionA = { pos[0], pos[1], pos[2] };
+
+			// Radius
+			ImGui::InputFloat("Radius", &radiusA);
+		}
 			break;
 
 		case GeometryType::Plane:
@@ -551,7 +560,9 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 
 		case GeometryType::OBB:
 		{
-
+			math::OBB* obb = new math::OBB(math::AABB(math::Sphere(positionB, radiusB)));
+			currGeometryB->geometry = (Geometry*)obb;
+			currGeometryB->geometryType = GeometryType::OBB;
 		}
 		break;
 

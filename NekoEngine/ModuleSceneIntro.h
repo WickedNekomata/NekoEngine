@@ -5,6 +5,24 @@
 
 #include "Pcg/pcg_variants.h"
 
+#include "MathGeoLib/include/Geometry/GeometryAll.h"
+
+enum GeometryType { Sphere, Capsule, AABB, OBB, Plane, Ray, Triangle };
+struct Geometry;
+
+struct GeometryObject 
+{
+	~GeometryObject() 
+	{
+		if (geometry != nullptr)
+			delete geometry;
+		geometry = nullptr;
+	}
+
+	GeometryType geometryType = GeometryType::Sphere;
+	Geometry* geometry = nullptr;
+};
+
 class ModuleSceneIntro : public Module
 {
 public:
@@ -19,20 +37,39 @@ public:
 private:
 
 	void ShowMenuBar();
+
 	void ShowDemoWindow();
 	void ShowInspectorWindow();
 	void ShowRandWindow();
+	void ShowIntersectionWindow();
+
+	bool Intersect(GeometryObject* geometryA, GeometryObject* geometryB);
+	bool SphereIntersect(math::Sphere* sphereA, GeometryObject* geometryB);
+	bool CapsuleIntersect(math::Capsule* capsuleA, GeometryObject* geometryB);
+	bool AABBIntersect(math::AABB* aabbA, GeometryObject* geometryB);
+	bool OBBIntersect(math::OBB* obbA, GeometryObject* geometryB);
+	bool PlaneIntersect(math::Plane* planeA, GeometryObject* geometryB);
+	bool RayIntersect(math::Ray* rayA, GeometryObject* geometryB);
+	bool TriangleIntersect(math::Triangle* triangleA, GeometryObject* geometryB);
 
 private:
 
-	bool showInspector = false;
-	bool showDemo = false;
-	bool showRandWindow = false;
+	bool showInspectorWin = false;
+	bool showDemoWin = false;
+	bool showRandWin = false;
+	bool showIntersectionWin = false;
 
 	int rng = 0;
 	pcg_state_setseq_64 rngBound;
 	pcg32_random_t rngSeedFloat;
 
+	// Geometry A
+	GeometryType currGeometryTypeA = GeometryType::Sphere;
+	GeometryObject* currGeometryA = nullptr;
+
+	// Geometry B
+	GeometryType currGeometryTypeB = GeometryType::Sphere;
+	GeometryObject* currGeometryB = nullptr;
 };
 
 #endif

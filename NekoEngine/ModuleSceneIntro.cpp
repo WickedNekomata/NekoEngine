@@ -64,19 +64,9 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	if (showIntersectionWin)
 		ShowIntersectionWindow();
-	else
-	{
-		// Delete geometry A
-		if (currGeometryA != nullptr)
-			delete currGeometryA;
-
-		currGeometryA = nullptr;
-
-		// Delete geometry B
-		if (currGeometryB != nullptr)
-			delete currGeometryB;
-
-		currGeometryB = nullptr;
+	else {
+		RELEASE(currGeometryA);
+		RELEASE(currGeometryB);
 	}
 
 	return UPDATE_CONTINUE;
@@ -201,6 +191,8 @@ void ModuleSceneIntro::ShowRandWindow()
 
 	ImGui::End();
 }
+
+#pragma region IntersectWindow
 
 void ModuleSceneIntro::ShowIntersectionWindow() 
 {
@@ -392,6 +384,15 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 		break;
 
 		case GeometryType::OBB:
+		{
+			// Position
+			float pos[3] = { positionB.x, positionB.y, positionB.z };
+			ImGui::InputFloat3("Position", pos);
+			positionB = { pos[0], pos[1], pos[2] };
+
+			// Radius
+			ImGui::InputFloat("Radius", &radiusB);
+		}
 			break;
 
 		case GeometryType::Plane:
@@ -451,8 +452,7 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 	if (ImGui::Button("GENERATE"))
 	{
 		// Create geometry A
-		if (currGeometryA != nullptr)
-			delete currGeometryA;
+		RELEASE(currGeometryA);
 		
 		currGeometryA = new GeometryObject();
 
@@ -484,7 +484,9 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 
 		case GeometryType::OBB:
 		{
-
+			math::OBB* obb = new math::OBB(math::AABB(math::Sphere(positionA, radiusA)));
+			currGeometryA->geometry = (Geometry*)obb;
+			currGeometryA->geometryType = GeometryType::OBB;
 		}
 		break;
 
@@ -517,8 +519,7 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 		}
 
 		// Create geometry B
-		if (currGeometryB != nullptr)
-			delete currGeometryB;
+		RELEASE(currGeometryB);
 
 		currGeometryB = new GeometryObject();
 
@@ -696,7 +697,7 @@ bool ModuleSceneIntro::SphereIntersect(math::Sphere* sphereA, GeometryObject* ge
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return sphereA->Intersects(*planeB);
 	}
 	break;
@@ -759,7 +760,7 @@ bool ModuleSceneIntro::CapsuleIntersect(math::Capsule* capsuleA, GeometryObject*
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return capsuleA->Intersects(*planeB);
 	}
 	break;
@@ -822,7 +823,7 @@ bool ModuleSceneIntro::AABBIntersect(math::AABB* aabbA, GeometryObject* geometry
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return aabbA->Intersects(*planeB);
 	}
 	break;
@@ -885,7 +886,7 @@ bool ModuleSceneIntro::OBBIntersect(math::OBB* obbA, GeometryObject* geometryB)
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return obbA->Intersects(*planeB);
 	}
 	break;
@@ -948,7 +949,7 @@ bool ModuleSceneIntro::PlaneIntersect(math::Plane* planeA, GeometryObject* geome
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return planeA->Intersects(*planeB);
 	}
 	break;
@@ -1011,7 +1012,7 @@ bool ModuleSceneIntro::RayIntersect(math::Ray* rayA, GeometryObject* geometryB)
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return rayA->Intersects(*planeB);
 	}
 	break;
@@ -1074,7 +1075,7 @@ bool ModuleSceneIntro::TriangleIntersect(math::Triangle* triangleA, GeometryObje
 
 	case GeometryType::Plane:
 	{
-		math::OBB* planeB = (math::OBB*)geometryB->geometry;
+		math::Plane* planeB = (math::Plane*)geometryB->geometry;
 		return triangleA->Intersects(*planeB);
 	}
 	break;
@@ -1099,3 +1100,5 @@ bool ModuleSceneIntro::TriangleIntersect(math::Triangle* triangleA, GeometryObje
 
 	return false;
 }
+
+#pragma endregion

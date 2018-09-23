@@ -8,7 +8,7 @@
 #include "MathGeoLib/include/Geometry/GeometryAll.h"
 
 enum GeometryType { Sphere, Capsule, AABB, OBB, Plane, Ray, Triangle };
-struct Geometry;
+struct Geometry; // Empty container
 
 struct GeometryObject 
 {

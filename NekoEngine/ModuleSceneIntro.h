@@ -43,6 +43,7 @@ private:
 	void ShowRandWindow();
 	void ShowPerformanceWindow();
 	void ShowIntersectionWindow();
+	void ShowAppWindow();
 
 	bool Intersect(GeometryObject* geometryA, GeometryObject* geometryB);
 	bool SphereIntersect(math::Sphere* sphereA, GeometryObject* geometryB);
@@ -60,6 +61,7 @@ private:
 	bool showRandWin = false;
 	bool showIntersectionWin = false;
 	bool showPerformanceWin = false;
+	bool showAppWin = false;
 
 	int rng = 0;
 	pcg_state_setseq_64 rngBound;

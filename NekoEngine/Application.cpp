@@ -124,3 +124,24 @@ void Application::AddModule(Module* mod)
 {
 	list_modules.push_back(mod);
 }
+
+void Application::SetAppName(const char* name)
+{
+	appName = name;
+	window->SetTitle(name);
+}
+
+std::string Application::GetAppName() const 
+{
+	return appName;
+}
+
+void Application::SetOrganizationName(const char* name)
+{
+	organizationName = name;
+}
+
+std::string Application::GetOrganizationName() const
+{
+	return organizationName;
+}

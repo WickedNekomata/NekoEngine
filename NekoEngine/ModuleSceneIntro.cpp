@@ -9,6 +9,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_sdl.h"
+#include "ImGui/imgui_stl.h"
 
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Geometry/Plane.h"
@@ -73,6 +74,9 @@ update_status ModuleSceneIntro::Update(float dt)
 		RELEASE(currGeometryB);
 	}
 
+	if (showAppWin)
+		ShowAppWindow();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -109,6 +113,7 @@ void ModuleSceneIntro::ShowMenuBar()
 			if (ImGui::MenuItem("Random Generator", "CTRL+R", showRandWin)) { showRandWin = !showRandWin; }
 			if (ImGui::MenuItem("Test Intersections", "CTRL+T", showIntersectionWin)) { showIntersectionWin = !showIntersectionWin; }
 			if (ImGui::MenuItem("Performance", "CTRL+P", showPerformanceWin)) { showPerformanceWin = !showPerformanceWin; }
+			if (ImGui::MenuItem("Application", "CTRL+A", showAppWin)) { showAppWin = !showAppWin; }
 
 			ImGui::EndMenu();
 		}
@@ -200,8 +205,6 @@ void ModuleSceneIntro::ShowRandWindow()
 void ModuleSceneIntro::ShowPerformanceWindow()
 {
 }
-
-#pragma region IntersectWindow
 
 void ModuleSceneIntro::ShowIntersectionWindow() 
 {
@@ -620,6 +623,30 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 	ImGui::End();
 }
 
+void ModuleSceneIntro::ShowAppWindow() 
+{
+	ImGui::SetNextWindowSize({ 400,300 });
+
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoResize;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoFocusOnAppearing;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("App", &showIntersectionWin, windowFlags);
+
+	if (ImGui::CollapsingHeader("Application"))
+	{
+		//ImGui::InputText("App Name", &App->GetAppName());
+
+		//char* organizationName = (char*)App->GetOrganizationName();
+		//ImGui::InputText("Organization Name", organizationName, 64);
+	}
+
+	ImGui::End();
+}
+
+#pragma region INTERSECT_METHODS
 bool ModuleSceneIntro::Intersect(GeometryObject* geometryA, GeometryObject* geometryB)
 {
 	if (!geometryA || !geometryB)

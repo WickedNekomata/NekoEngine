@@ -26,6 +26,11 @@ public:
 
 	void CloseApp();
 
+	void SetAppName(const char* title);
+	std::string GetAppName() const;
+	void SetOrganizationName(const char* title);
+	std::string GetOrganizationName() const;
+
 private:
 
 	void AddModule(Module* mod);
@@ -47,7 +52,11 @@ private:
 	Timer				ms_timer;
 	float				dt;
 	std::list<Module*>	list_modules;
-	bool closeApp = false;
+
+	std::string			appName;
+	std::string			organizationName;
+
+	bool				closeApp = false;
 };
 
 #endif

@@ -49,6 +49,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { showDemoWin = !showDemoWin; }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { showRandWin = !showRandWin; }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) { showIntersectionWin = !showIntersectionWin; }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { showPerformanceWin = !showPerformanceWin; }
 
 	// Gui
 	ShowMenuBar();
@@ -61,6 +62,9 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	if (showRandWin)
 		ShowRandWindow();
+
+	if (showPerformanceWin)
+		ShowPerformanceWindow();
 
 	if (showIntersectionWin)
 		ShowIntersectionWindow();
@@ -104,6 +108,7 @@ void ModuleSceneIntro::ShowMenuBar()
 		{
 			if (ImGui::MenuItem("Random Generator", "CTRL+R", showRandWin)) { showRandWin = !showRandWin; }
 			if (ImGui::MenuItem("Test Intersections", "CTRL+T", showIntersectionWin)) { showIntersectionWin = !showIntersectionWin; }
+			if (ImGui::MenuItem("Performance", "CTRL+P", showPerformanceWin)) { showPerformanceWin = !showPerformanceWin; }
 
 			ImGui::EndMenu();
 		}
@@ -190,6 +195,10 @@ void ModuleSceneIntro::ShowRandWindow()
 	}
 
 	ImGui::End();
+}
+
+void ModuleSceneIntro::ShowPerformanceWindow()
+{
 }
 
 #pragma region IntersectWindow

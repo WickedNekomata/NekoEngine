@@ -41,6 +41,7 @@ private:
 	void ShowDemoWindow();
 	void ShowInspectorWindow();
 	void ShowRandWindow();
+	void ShowPerformanceWindow();
 	void ShowIntersectionWindow();
 
 	bool Intersect(GeometryObject* geometryA, GeometryObject* geometryB);
@@ -58,6 +59,7 @@ private:
 	bool showDemoWin = false;
 	bool showRandWin = false;
 	bool showIntersectionWin = false;
+	bool showPerformanceWin = false;
 
 	int rng = 0;
 	pcg_state_setseq_64 rngBound;

@@ -10,7 +10,9 @@ public:
 	virtual ~PanelPreferences();
 
 	virtual bool Draw();
+
 	void HardwareNode();
+	void ApplicationNode();
 };
 
 #endif

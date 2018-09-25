@@ -1,7 +1,8 @@
 #include "PanelPreferences.h"
+#include "Application.h"
 
 #include "ImGui/imgui.h"
-
+#include "ModuleRenderer3D.h"
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 
@@ -28,6 +29,7 @@ bool PanelPreferences::Draw()
 	ImGui::Begin(name, &enabled);
 	if (ImGui::TreeNode("Application"))
 	{
+		HardwareNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Window"))
@@ -70,7 +72,7 @@ void PanelPreferences::HardwareNode()
 		(SDL_HasSSE42()) ? "SSE42 " : "");
 
 	ImGui::Separator();
-
+	App->AddFramerateToTrack(20);
 	//Gpu
 	ImGui::Text("Gpu:"); ImGui::SameLine();
 	ImGui::TextColored({ 239,201,0,255 }, "%s", glGetString(GL_RENDERER));
@@ -95,4 +97,51 @@ void PanelPreferences::HardwareNode()
 	ImGui::Text("VRAM Reserved:");	ImGui::SameLine();
 	ImGui::TextColored({ 239,201,0,255 }, "%.2fMb", reservedMemory * 0.001);
 
+}
+
+void PanelPreferences::ApplicationNode()
+{
+	/*
+	// Application name
+	static char appName[STR_INPUT_SIZE];
+	if (App->GetAppName() != nullptr)
+		strcpy_s(appName, IM_ARRAYSIZE(appName), App->GetAppName());
+	if (ImGui::InputText("App Name", appName, IM_ARRAYSIZE(appName)))
+		App->SetAppName(appName);
+
+	// Organization name
+	static char organizationName[STR_INPUT_SIZE];
+	if (App->GetOrganizationName() != nullptr)
+		strcpy_s(organizationName, IM_ARRAYSIZE(organizationName), App->GetOrganizationName());
+	if (ImGui::InputText("Organization Name", organizationName, IM_ARRAYSIZE(organizationName)))
+		App->SetOrganizationName(organizationName);
+
+	// Cap frames
+	static bool capFrames = App->GetCapFrames();
+	if (ImGui::Checkbox("Cap Frames", &capFrames))
+		App->SetCapFrames(capFrames);
+
+	if (capFrames)
+	{
+		int maxFramerate = App->GetMaxFramerate();
+		if (ImGui::SliderInt("Max FPS", &maxFramerate, 0, 120))
+			App->SetMaxFramerate(maxFramerate);
+	}
+
+	// VSync
+	static bool vsync = App->renderer3D->GetVSync();
+	if (ImGui::Checkbox("Use VSync", &vsync))
+		App->renderer3D->SetVSync(vsync);
+
+	// Framerate
+	char title[20];
+	std::vector<float> framerateTrack = App->GetFramerateTrack();
+	sprintf_s(title, IM_ARRAYSIZE(title), "Framerate %.1f", framerateTrack.back());
+	ImGui::PlotHistogram("##framerate", &framerateTrack.front(), framerateTrack.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+
+	// Ms
+	std::vector<float> msTrack = App->GetMsTrack();
+	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
+	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
+	*/
 }

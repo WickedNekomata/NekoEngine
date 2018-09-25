@@ -45,6 +45,9 @@ update_status ModuleScene::Update(float dt)
 		RELEASE(currGeometryB);
 	}
 
+	if (showAppWin)
+		ShowAppWindow();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -54,8 +57,6 @@ bool ModuleScene::CleanUp()
 
 	return ret;
 }
-
-#pragma region IntersectWindow
 
 void ModuleScene::ShowIntersectionWindow() 
 {
@@ -474,6 +475,27 @@ void ModuleScene::ShowIntersectionWindow()
 	ImGui::End();
 }
 
+void ModuleScene::ShowAppWindow()
+{
+	ImGui::SetNextWindowSize({ 400,300 });
+
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoResize;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoFocusOnAppearing;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("App", &showIntersectionWin, windowFlags);
+
+	if (ImGui::CollapsingHeader("Application"))
+	{
+		
+	}
+
+	ImGui::End();
+}
+
+#pragma region INTERSECT_METHODS
 bool ModuleScene::Intersect(GeometryObject* geometryA, GeometryObject* geometryB)
 {
 	if (!geometryA || !geometryB)

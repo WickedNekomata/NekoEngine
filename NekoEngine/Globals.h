@@ -42,5 +42,9 @@ enum update_status
 #define WIN_RESIZABLE true
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
-#define VSYNC true
+
+
 #define TITLE "Neko Engine"
+#define STR_INPUT_SIZE 128
+#define FPS_TRACK_SIZE 60
+#define MS_TRACK_SIZE 60

@@ -24,12 +24,17 @@ public:
 
 	void OnResize(int width, int height);
 
+	bool SetVSync(bool vsync);
+	bool GetVSync() const;
+
 public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	math::float3x3 NormalMatrix;
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+
+	bool vsync = false;
 };
 
 #endif

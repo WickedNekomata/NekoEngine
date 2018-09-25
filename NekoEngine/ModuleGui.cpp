@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Globals.h"
 #include "ModuleGui.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
@@ -12,11 +13,6 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl2.h"
-
-void OpenInBrowser(char* url)
-{
-	ShellExecute(0, 0, url, 0, 0, SW_SHOW);
-}
 
 ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 {

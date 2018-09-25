@@ -1,4 +1,5 @@
 #include "PanelAbout.h"
+#include "Globals.h"
 
 #include "ImGui/imgui.h"
 
@@ -13,18 +14,21 @@ PanelAbout::~PanelAbout()
 
 bool PanelAbout::Draw()
 {
-	ImGui::SetNextWindowSize({ 250,200 });
+	ImGui::SetNextWindowSize({ 350,250 });
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin(name, &enabled, inspectorFlags);
 	ImGui::Text("Neko Engine");
 	ImGui::Spacing();
-	ImGui::Text("This is an engine developed by 2\nstudent at CITM-UPC Terrassa");
+	ImGui::Text("This is a 3D game engine being developed by\ntwo students from CITM-UPC Terrassa.");
 	ImGui::Separator();
-	ImGui::Text("Authors: \nSandra Alvarez Garcia\nGuillem Costa Miquel");
+	ImGui::Text("Authors:");
+	if (ImGui::Button("Sandra Alvarez")) { OpenInBrowser("https://github.com/Sandruski"); }
+	if (ImGui::Button("Guillem Costa")) { OpenInBrowser("https://github.com/DatBeQuiet"); }
 	ImGui::Separator();
-	ImGui::Text("Libraries: ImGuI, OpenGL 2.0,\nSDL 2.0, MathGeoLib, PCG");
+	ImGui::Text("Libraries:");
+	ImGui::Text("ImGuI, OpenGL 2.0, \nSDL 2.0, MathGeoLib, PCG");
 	ImGui::Separator();
 	ImGui::Text("MIT License");
 	ImGui::End();

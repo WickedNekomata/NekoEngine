@@ -13,6 +13,7 @@ public:
 
 	void HardwareNode();
 	void ApplicationNode();
+	void WindowNode();
 };
 
 #endif

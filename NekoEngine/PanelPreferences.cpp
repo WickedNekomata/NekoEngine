@@ -34,6 +34,7 @@ bool PanelPreferences::Draw()
 	}
 	if (ImGui::TreeNode("Window"))
 	{
+		WindowNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Hardware"))
@@ -41,6 +42,13 @@ bool PanelPreferences::Draw()
 		HardwareNode();	
 		ImGui::TreePop();
 	}
+#if _DEBUG
+	if (ImGui::TreeNode("Demo Window"))
+	{
+		ImGui::ShowDemoWindow();
+		ImGui::TreePop();
+	}
+#endif
 	ImGui::End();
 
 	return true;
@@ -143,4 +151,53 @@ void PanelPreferences::ApplicationNode()
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
+}
+
+void PanelPreferences::WindowNode() 
+{
+	// Active
+	static bool active = App->window->GetWindowActive();
+	if (ImGui::Checkbox("Active", &active))
+		App->window->SetWindowActive(active);
+
+	// Brightness
+	float brightness = App->window->GetWindowBrightness();
+	if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f))
+		App->window->SetWindowBrightness(brightness);
+
+	// Width, height
+	uint screenWidth, screenHeight;
+	App->window->GetScreenSize(screenWidth, screenHeight);
+	
+	int width = App->window->GetWindowWidth();
+	if (ImGui::SliderInt("Width", &width, SCREEN_MIN_WIDTH, screenWidth))
+		App->window->SetWindowWidth(width);
+
+	int height = App->window->GetWindowHeight();
+	if (ImGui::SliderInt("Height", &height, SCREEN_MIN_HEIGHT, screenHeight))
+		App->window->SetWindowHeight(height);
+
+	// Refresh rate
+	int refreshRate = App->window->GetRefreshRate();
+
+	ImGui::Text("Refresh rate: ");
+	ImGui::SameLine();
+	ImGui::TextColored({ 239, 201, 0, 255 }, "%i", refreshRate);
+	
+	// Fullscreen, resizable, borderless, fullscreen desktop
+	static bool fullscreen = App->window->GetFullscreenWindow();
+	if (ImGui::Checkbox("Fullscreen", &fullscreen))
+		App->window->SetFullscreenWindow(fullscreen);
+	ImGui::SameLine();
+	static bool resizable = App->window->GetResizableWindow();
+	if (ImGui::Checkbox("Resizable", &resizable))
+		App->window->SetResizableWindow(resizable);
+
+	static bool borderless = App->window->GetBorderlessWindow();
+	if (ImGui::Checkbox("Borderless", &borderless))
+		App->window->SetBorderlessWindow(borderless);
+	ImGui::SameLine();
+	static bool fullDesktop = App->window->GetFullDesktopWindow();
+	if (ImGui::Checkbox("Full Desktop", &fullDesktop))
+		App->window->SetFullDesktopWindow(fullDesktop);
 }

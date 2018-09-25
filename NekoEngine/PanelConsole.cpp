@@ -14,6 +14,5 @@ PanelConsole::~PanelConsole()
 bool PanelConsole::Draw()
 {
 	// TODO: implement a real console
-	ImGui::ShowDemoWindow();
 	return true;
 }

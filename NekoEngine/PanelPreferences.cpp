@@ -6,6 +6,8 @@
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 
+#include "mmgr/mmgr.h"
+
 #include <windows.h>
 #include <gl/GL.h>
 
@@ -151,6 +153,19 @@ void PanelPreferences::ApplicationNode()
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
+
+	// Mem
+	//ImGui::PlotHistogram("##memory", &framerateTrack.front(), framerateTrack.size(), 0, "Memory Consumption", 0.0f, 100.0f, ImVec2(310, 100));
+
+	ImGui::Text("Total Reported Mem: %i");
+	ImGui::Text("Total Actual Mem: %i");
+	ImGui::Text("Peak Reported Mem: %i");
+	ImGui::Text("Peak Actual Mem: %i");
+	ImGui::Text("Accumulated Reported Mem: %i");
+	ImGui::Text("Accumulated Actual Mem: %i");
+	ImGui::Text("Acumulated Alloc Unit Count: %i");
+	ImGui::Text("Total Alloc Unit Count: %i");
+	ImGui::Text("Peak Alloc Unit Count: %i");
 }
 
 void PanelPreferences::WindowNode()

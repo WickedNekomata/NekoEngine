@@ -146,14 +146,14 @@ void PanelPreferences::ApplicationNode()
 	std::vector<float> framerateTrack = App->GetFramerateTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Framerate %.1f", framerateTrack.back());
 	ImGui::PlotHistogram("##framerate", &framerateTrack.front(), framerateTrack.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
-
+	
 	// Ms
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
 }
 
-void PanelPreferences::WindowNode() 
+void PanelPreferences::WindowNode()
 {
 	// Active
 	static bool active = App->window->GetWindowActive();
@@ -168,7 +168,7 @@ void PanelPreferences::WindowNode()
 	// Width, height
 	uint screenWidth, screenHeight;
 	App->window->GetScreenSize(screenWidth, screenHeight);
-	
+
 	int width = App->window->GetWindowWidth();
 	if (ImGui::SliderInt("Width", &width, SCREEN_MIN_WIDTH, screenWidth))
 		App->window->SetWindowWidth(width);
@@ -183,7 +183,7 @@ void PanelPreferences::WindowNode()
 	ImGui::Text("Refresh rate: ");
 	ImGui::SameLine();
 	ImGui::TextColored({ 239, 201, 0, 255 }, "%i", refreshRate);
-	
+
 	// Fullscreen, resizable, borderless, fullscreen desktop
 	static bool fullscreen = App->window->GetFullscreenWindow();
 	if (ImGui::Checkbox("Fullscreen", &fullscreen))

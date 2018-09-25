@@ -51,7 +51,7 @@ void PanelPreferences::HardwareNode()
 	SDL_version version;
 	SDL_GetVersion(&version);
 
-	ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
+	//ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
 	ImGui::Text("SDL version: %i.%i.%i", version.major, version.minor, version.patch);
 
 	ImGui::Separator();
@@ -72,7 +72,8 @@ void PanelPreferences::HardwareNode()
 		(SDL_HasSSE42()) ? "SSE42 " : "");
 
 	ImGui::Separator();
-	App->AddFramerateToTrack(20);
+
+	//TODO: fix issue if pc has 2 or more gpus
 	//Gpu
 	ImGui::Text("Gpu:"); ImGui::SameLine();
 	ImGui::TextColored({ 239,201,0,255 }, "%s", glGetString(GL_RENDERER));

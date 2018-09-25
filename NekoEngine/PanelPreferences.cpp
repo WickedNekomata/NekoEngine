@@ -29,7 +29,7 @@ bool PanelPreferences::Draw()
 	ImGui::Begin(name, &enabled);
 	if (ImGui::TreeNode("Application"))
 	{
-		HardwareNode();
+		ApplicationNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Window"))
@@ -101,7 +101,6 @@ void PanelPreferences::HardwareNode()
 
 void PanelPreferences::ApplicationNode()
 {
-	/*
 	// Application name
 	static char appName[STR_INPUT_SIZE];
 	if (App->GetAppName() != nullptr)
@@ -143,5 +142,4 @@ void PanelPreferences::ApplicationNode()
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
-	*/
 }

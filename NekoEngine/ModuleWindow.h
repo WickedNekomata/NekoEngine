@@ -4,13 +4,11 @@
 #include "Module.h"
 #include "SDL/include/SDL.h"
 
-class Application;
-
 class ModuleWindow : public Module
 {
 public:
 
-	ModuleWindow(Application* app, bool start_enabled = true);
+	ModuleWindow(bool start_enabled = true);
 	~ModuleWindow();
 
 	bool Init();

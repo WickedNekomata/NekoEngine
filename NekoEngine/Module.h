@@ -6,13 +6,11 @@
 #ifndef __MODULE_H__
 #define __MODULE_H__
 
-class Application;
-
 class Module
 {
 public:
 
-	Module(Application* parent, bool start_enabled = true) : App(parent)
+	Module(bool start_enabled = true)
 	{}
 
 	virtual ~Module()
@@ -47,10 +45,6 @@ public:
 	{ 
 		return true; 
 	}
-
-public:
-
-	Application* App;
 
 private:
 

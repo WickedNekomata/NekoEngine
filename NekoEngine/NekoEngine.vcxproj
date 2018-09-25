@@ -161,6 +161,7 @@
     <ClInclude Include="Pcg\entropy.h" />
     <ClInclude Include="Pcg\pcg_spinlock.h" />
     <ClInclude Include="Pcg\pcg_variants.h" />
+    <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -220,6 +221,7 @@
     <ClCompile Include="PanelPreferences.cpp" />
     <ClCompile Include="PanelRandomNumber.cpp" />
     <ClCompile Include="Pcg\entropy.c" />
+    <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

@@ -2,13 +2,13 @@
 
 Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 {
-	window = new ModuleWindow(this);
-	input = new ModuleInput(this);
-	audio = new ModuleAudio(this, true);
-	scene = new ModuleScene(this);
-	renderer3D = new ModuleRenderer3D(this);
-	camera = new ModuleCamera3D(this);
-	gui = new ModuleGui(this);
+	window = new ModuleWindow();
+	input = new ModuleInput();
+	audio = new ModuleAudio(true);
+	scene = new ModuleScene();
+	renderer3D = new ModuleRenderer3D();
+	camera = new ModuleCamera3D();
+	gui = new ModuleGui();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -53,7 +53,7 @@ bool Application::Init()
 		ret = (*item)->Start();
 	}
 	
-	perfTimer.Start();
+	//perfTimer.Start();
 	capFrames = true;
 	maxFramerate = 60;
 

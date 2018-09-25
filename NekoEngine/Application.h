@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "Globals.h"
-#include "PerfTimer.h"
 #include "Module.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
@@ -14,6 +13,8 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleGui.h"
+
+#include "PerfTimer.h"
 
 class Application
 {
@@ -50,7 +51,7 @@ private:
 
 public:
 
-	ModuleWindow *		window;
+	ModuleWindow*		window;
 	ModuleInput*		input;
 	ModuleAudio*		audio;
 	ModuleScene*		scene;

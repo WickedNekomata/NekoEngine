@@ -18,7 +18,7 @@ void OpenInBrowser(char* url)
 	ShellExecute(0, 0, url, 0, 0, SW_SHOW);
 }
 
-ModuleGui::ModuleGui(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 {}
 
 ModuleGui::~ModuleGui()

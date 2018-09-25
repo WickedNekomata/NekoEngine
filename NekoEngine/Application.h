@@ -2,8 +2,10 @@
 #define __APPLICATION_H_
 
 #include <list>
+#include <vector>
+
 #include "Globals.h"
-#include "Timer.h"
+#include "PerfTimer.h"
 #include "Module.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
@@ -27,9 +29,18 @@ public:
 	void CloseApp();
 
 	void SetAppName(const char* title);
-	std::string GetAppName() const;
+	const char* GetAppName() const;
 	void SetOrganizationName(const char* title);
-	std::string GetOrganizationName() const;
+	const char* GetOrganizationName() const;
+
+	void SetCapFrames(bool capFrames);
+	bool GetCapFrames() const;
+	void SetMaxFramerate(uint maxFramerate);
+	uint GetMaxFramerate() const;
+	void AddFramerateToTrack(float fps);
+	std::vector<float> GetFramerateTrack() const;
+	void AddMsToTrack(float ms);
+	std::vector<float> GetMsTrack() const;
 
 private:
 
@@ -39,7 +50,7 @@ private:
 
 public:
 
-	ModuleWindow*		window;
+	ModuleWindow *		window;
 	ModuleInput*		input;
 	ModuleAudio*		audio;
 	ModuleSceneIntro*	scene_intro;
@@ -49,12 +60,20 @@ public:
 
 private:
 
-	Timer				ms_timer;
-	float				dt;
+	// Framerate
+	PerfTimer			perfTimer;
+	uint				maxFramerate;
+	double				lastFrameMs;
+	double				dt;
+	double				fps;
+	bool				capFrames;
+	std::vector<float>	fpsTrack;
+	std::vector<float>	msTrack;
+
 	std::list<Module*>	list_modules;
 
-	std::string			appName;
-	std::string			organizationName;
+	const char*			appName = nullptr;
+	const char*			organizationName = nullptr;
 
 	bool				closeApp = false;
 };

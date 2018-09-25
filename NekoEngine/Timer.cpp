@@ -33,5 +33,3 @@ Uint32 Timer::Read()
 		return stopped_at - started_at;
 	}
 }
-
-

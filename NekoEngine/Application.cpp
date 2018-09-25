@@ -1,6 +1,6 @@
 #include "Application.h"
 
-Application::Application()
+Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 {
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
@@ -53,7 +53,9 @@ bool Application::Init()
 		ret = (*item)->Start();
 	}
 	
-	ms_timer.Start();
+	perfTimer.Start();
+	capFrames = true;
+	maxFramerate = 60;
 
 	return ret;
 }
@@ -113,12 +115,30 @@ void Application::CloseApp()
 
 void Application::PrepareUpdate()
 {
-	dt = (float)ms_timer.Read() / 1000.0f;
-	ms_timer.Start();
+	perfTimer.Start();
 }
 
 void Application::FinishUpdate()
-{}
+{
+	lastFrameMs = perfTimer.ReadMs();
+
+	if (!renderer3D->GetVSync() && capFrames)
+	{
+		double desiredFrameMs = 1000.0 / maxFramerate;
+
+		if (lastFrameMs < desiredFrameMs)
+			SDL_Delay(desiredFrameMs - lastFrameMs);
+
+		lastFrameMs = perfTimer.ReadMs();
+	}
+
+	AddMsToTrack(lastFrameMs);
+
+	fps = 1000.0 / lastFrameMs;
+	AddFramerateToTrack(fps);
+
+	dt = 1.0 / fps;
+}
 
 void Application::AddModule(Module* mod)
 {
@@ -131,7 +151,7 @@ void Application::SetAppName(const char* name)
 	window->SetTitle(name);
 }
 
-std::string Application::GetAppName() const 
+const char* Application::GetAppName() const 
 {
 	return appName;
 }
@@ -141,7 +161,53 @@ void Application::SetOrganizationName(const char* name)
 	organizationName = name;
 }
 
-std::string Application::GetOrganizationName() const
+const char* Application::GetOrganizationName() const
 {
 	return organizationName;
+}
+
+void Application::SetCapFrames(bool capFrames)
+{
+	this->capFrames = capFrames;
+}
+
+bool Application::GetCapFrames() const
+{
+	return capFrames;
+}
+
+void Application::SetMaxFramerate(uint maxFramerate) 
+{
+	this->maxFramerate = maxFramerate;
+}
+
+uint Application::GetMaxFramerate() const 
+{
+	return this->maxFramerate;
+}
+
+void Application::AddFramerateToTrack(float fps)
+{
+	for (uint i = fpsTrack.size() - 1; i > 0; --i)
+		fpsTrack[i] = fpsTrack[i - 1];
+
+	fpsTrack[0] = fps;
+}
+
+std::vector<float> Application::GetFramerateTrack() const
+{
+	return fpsTrack;
+}
+
+void Application::AddMsToTrack(float ms) 
+{
+	for (uint i = msTrack.size() - 1; i > 0; --i)
+		msTrack[i] = msTrack[i - 1];
+
+	msTrack[0] = ms;
+}
+
+std::vector<float> Application::GetMsTrack() const 
+{
+	return msTrack;
 }

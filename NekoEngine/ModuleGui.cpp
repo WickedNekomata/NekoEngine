@@ -6,6 +6,7 @@
 #include "PanelInspector.h"
 #include "PanelRandomNumber.h"
 #include "PanelAbout.h"
+#include "PanelConsole.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -42,9 +43,12 @@ bool ModuleGui::Start()
 	pInspector = new PanelInspector("Inspector");
 	pRandomNumber = new PanelRandomNumber("Random Generator");
 	pAbout = new PanelAbout("About");
+	pConsole = new PanelConsole("Console");
+
 	panels.push_back(pInspector);
 	panels.push_back(pRandomNumber);
 	panels.push_back(pAbout);
+	panels.push_back(pConsole);
 
 	return ret;
 }
@@ -62,7 +66,7 @@ update_status ModuleGui::PreUpdate(float dt)
 update_status ModuleGui::Update(float dt)
 {
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { pInspector->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) {  }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) { pConsole->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { pRandomNumber->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {  }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {  }
@@ -83,7 +87,7 @@ update_status ModuleGui::Update(float dt)
 		if (ImGui::BeginMenu("Window"))
 		{
 			if (ImGui::MenuItem("Inspector Window", "CTRL+I")) { pInspector->OnOff(); }
-			if (ImGui::MenuItem("Demo Window", "CTRL+D")) { }
+			if (ImGui::MenuItem("Console", "CTRL+O")) { pConsole->OnOff(); }
 
 			ImGui::EndMenu();
 		}

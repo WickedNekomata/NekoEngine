@@ -158,7 +158,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
 {
     // Examples Apps (accessible from the "Examples" menu)
     static bool show_app_main_menu_bar = false;
-    static bool show_app_console = false;
+    static bool show_app_console = true;
     static bool show_app_log = false;
     static bool show_app_layout = false;
     static bool show_app_property_editor = false;
@@ -180,7 +180,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
     if (show_app_simple_overlay)      ShowExampleAppSimpleOverlay(&show_app_simple_overlay);
     if (show_app_window_titles)       ShowExampleAppWindowTitles(&show_app_window_titles);
     if (show_app_custom_rendering)    ShowExampleAppCustomRendering(&show_app_custom_rendering);
-
+	return;
     // Dear ImGui Apps (accessible from the "Help" menu)
     static bool show_app_metrics = false;
     static bool show_app_style_editor = false;

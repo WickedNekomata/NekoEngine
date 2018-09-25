@@ -154,6 +154,7 @@
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="Panel.h" />
     <ClInclude Include="PanelAbout.h" />
+    <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelRandomNumber.h" />
     <ClInclude Include="Pcg\entropy.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="PanelAbout.cpp" />
+    <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelRandomNumber.cpp" />
     <ClCompile Include="Pcg\entropy.c" />

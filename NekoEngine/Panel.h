@@ -12,8 +12,9 @@ public:
 	virtual inline void OnOff();
 	virtual inline bool IsEnabled();
 
-private:
+protected:
 	bool enabled = false;
+	char* name = nullptr;
 };
 
 #endif

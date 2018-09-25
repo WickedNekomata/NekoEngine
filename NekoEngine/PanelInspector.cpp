@@ -20,7 +20,7 @@ bool PanelInspector::Draw()
 	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	ImGui::Begin("Inspector", false, inspectorFlags);
+	ImGui::Begin(name, false, inspectorFlags);
 	ImGui::Spacing();
 	if (ImGui::CollapsingHeader("Transform"))
 	{

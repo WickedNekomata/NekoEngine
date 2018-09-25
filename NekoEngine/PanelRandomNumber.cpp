@@ -19,7 +19,7 @@ bool PanelRandomNumber::Draw()
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
-	ImGui::Begin("Random Number Gen", false, inspectorFlags);
+	ImGui::Begin(name, false, inspectorFlags);
 
 	if (ImGui::TreeNode("Random Int"))
 	{

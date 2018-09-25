@@ -1,6 +1,6 @@
 #include "Panel.h"
 
-Panel::Panel(char* title)
+Panel::Panel(char* name) : name(name)
 {
 }
 

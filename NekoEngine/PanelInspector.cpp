@@ -20,7 +20,7 @@ bool PanelInspector::Draw()
 	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	ImGui::Begin(name, false, inspectorFlags);
+	ImGui::Begin(name, &enabled, inspectorFlags);
 	ImGui::Spacing();
 	if (ImGui::CollapsingHeader("Transform"))
 	{
@@ -33,10 +33,10 @@ bool PanelInspector::Draw()
 		ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::InputInt("##Line2", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posZ, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::InputInt("##Line3", &posZ, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
 	}
 	ImGui::Spacing();
 	if (ImGui::CollapsingHeader("RigidBody"))

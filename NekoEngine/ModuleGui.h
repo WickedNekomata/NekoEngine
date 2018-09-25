@@ -8,6 +8,7 @@
 struct Panel;
 struct PanelInspector;
 struct PanelRandomNumber;
+struct PanelAbout;
 
 class ModuleGui : public Module
 {
@@ -25,6 +26,7 @@ public:
 public:
 	PanelInspector* pInspector = nullptr;
 	PanelRandomNumber* pRandomNumber = nullptr;
+	PanelAbout* pAbout = nullptr;
 
 private:
 	std::vector<Panel*> panels;

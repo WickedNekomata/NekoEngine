@@ -5,10 +5,16 @@
 #include "Panel.h"
 #include "PanelInspector.h"
 #include "PanelRandomNumber.h"
+#include "PanelAbout.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl2.h"
+
+void OpenInBrowser(char* url)
+{
+	ShellExecute(0, 0, url, 0, 0, SW_SHOW);
+}
 
 ModuleGui::ModuleGui(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}
@@ -35,8 +41,10 @@ bool ModuleGui::Start()
 
 	pInspector = new PanelInspector("Inspector");
 	pRandomNumber = new PanelRandomNumber("Random Generator");
+	pAbout = new PanelAbout("About");
 	panels.push_back(pInspector);
 	panels.push_back(pRandomNumber);
+	panels.push_back(pAbout);
 
 	return ret;
 }
@@ -88,11 +96,12 @@ update_status ModuleGui::Update(float dt)
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("About"))
+		if (ImGui::BeginMenu("Others"))
 		{
-			if (ImGui::MenuItem("GitHub", "CTRL+R")) {}
-			if (ImGui::MenuItem("Issues", "CTRL+T")) {}
-			if (ImGui::MenuItem("Performance", "CTRL+P")) {}
+			if (ImGui::MenuItem("Documentation")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine"); }
+			if (ImGui::MenuItem("Latest Release")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/releases"); }
+			if (ImGui::MenuItem("Bug report")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/issues"); }
+			if (ImGui::MenuItem("About")) { pAbout->OnOff(); }
 
 			ImGui::EndMenu();
 		}

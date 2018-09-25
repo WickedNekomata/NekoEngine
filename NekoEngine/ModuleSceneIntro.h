@@ -1,5 +1,5 @@
-#ifndef __MODULE_SCENE_INTRO_H__
-#define __MODULE_SCENE_INTRO_H__
+#ifndef __MODULE_SCENE_H__
+#define __MODULE_SCENE_H__
 
 #include "Module.h"
 
@@ -21,12 +21,12 @@ struct GeometryObject
 	Geometry* geometry = nullptr;
 };
 
-class ModuleSceneIntro : public Module
+class ModuleScene : public Module
 {
 public:
 
-	ModuleSceneIntro(Application* app, bool start_enabled = true);
-	~ModuleSceneIntro();
+	ModuleScene(Application* app, bool start_enabled = true);
+	~ModuleScene();
 
 	bool Start();
 	update_status Update(float dt);
@@ -34,8 +34,6 @@ public:
 
 private:
 
-	void ShowDemoWindow();
-	void ShowPerformanceWindow();
 	void ShowIntersectionWindow();
 
 	bool Intersect(GeometryObject* geometryA, GeometryObject* geometryB);
@@ -49,9 +47,7 @@ private:
 
 private:
 
-	bool showDemoWin = false;
 	bool showIntersectionWin = false;
-	bool showPerformanceWin = false;
 
 	// Geometry A
 	GeometryType currGeometryTypeA = GeometryType::Sphere;

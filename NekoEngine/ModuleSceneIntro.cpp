@@ -17,13 +17,13 @@
 #include <stdio.h>
 #include <time.h>
 
-ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {}
 
-ModuleSceneIntro::~ModuleSceneIntro()
+ModuleScene::~ModuleScene()
 {}
 
-bool ModuleSceneIntro::Start()
+bool ModuleScene::Start()
 {
 	bool ret = true;
 
@@ -36,15 +36,8 @@ bool ModuleSceneIntro::Start()
 	return ret;
 }
 
-update_status ModuleSceneIntro::Update(float dt)
+update_status ModuleScene::Update(float dt)
 {
-
-	if (showDemoWin)
-		ShowDemoWindow();
-
-	if (showPerformanceWin)
-		ShowPerformanceWindow();
-
 	if (showIntersectionWin)
 		ShowIntersectionWindow();
 	else {
@@ -55,25 +48,16 @@ update_status ModuleSceneIntro::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleSceneIntro::CleanUp()
+bool ModuleScene::CleanUp()
 {
 	bool ret = true;
 
 	return ret;
 }
 
-void ModuleSceneIntro::ShowDemoWindow() 
-{
-	ImGui::ShowDemoWindow();
-}
-
-void ModuleSceneIntro::ShowPerformanceWindow()
-{
-}
-
 #pragma region IntersectWindow
 
-void ModuleSceneIntro::ShowIntersectionWindow() 
+void ModuleScene::ShowIntersectionWindow() 
 {
 	ImGui::SetNextWindowSize({ 400,300 });
 
@@ -490,7 +474,7 @@ void ModuleSceneIntro::ShowIntersectionWindow()
 	ImGui::End();
 }
 
-bool ModuleSceneIntro::Intersect(GeometryObject* geometryA, GeometryObject* geometryB)
+bool ModuleScene::Intersect(GeometryObject* geometryA, GeometryObject* geometryB)
 {
 	if (!geometryA || !geometryB)
 		return false;
@@ -553,7 +537,7 @@ bool ModuleSceneIntro::Intersect(GeometryObject* geometryA, GeometryObject* geom
 	return false;
 }
 
-bool ModuleSceneIntro::SphereIntersect(math::Sphere* sphereA, GeometryObject* geometryB)
+bool ModuleScene::SphereIntersect(math::Sphere* sphereA, GeometryObject* geometryB)
 {
 	if (!sphereA || !geometryB)
 		return false;
@@ -616,7 +600,7 @@ bool ModuleSceneIntro::SphereIntersect(math::Sphere* sphereA, GeometryObject* ge
 	return false;
 }
 
-bool ModuleSceneIntro::CapsuleIntersect(math::Capsule* capsuleA, GeometryObject* geometryB)
+bool ModuleScene::CapsuleIntersect(math::Capsule* capsuleA, GeometryObject* geometryB)
 {
 	if (!capsuleA || !geometryB)
 		return false;
@@ -679,7 +663,7 @@ bool ModuleSceneIntro::CapsuleIntersect(math::Capsule* capsuleA, GeometryObject*
 	return false;
 }
 
-bool ModuleSceneIntro::AABBIntersect(math::AABB* aabbA, GeometryObject* geometryB)
+bool ModuleScene::AABBIntersect(math::AABB* aabbA, GeometryObject* geometryB)
 {
 	if (!aabbA || !geometryB)
 		return false;
@@ -742,7 +726,7 @@ bool ModuleSceneIntro::AABBIntersect(math::AABB* aabbA, GeometryObject* geometry
 	return false;
 }
 
-bool ModuleSceneIntro::OBBIntersect(math::OBB* obbA, GeometryObject* geometryB)
+bool ModuleScene::OBBIntersect(math::OBB* obbA, GeometryObject* geometryB)
 {
 	if (!obbA || !geometryB)
 		return false;
@@ -805,7 +789,7 @@ bool ModuleSceneIntro::OBBIntersect(math::OBB* obbA, GeometryObject* geometryB)
 	return false;
 }
 
-bool ModuleSceneIntro::PlaneIntersect(math::Plane* planeA, GeometryObject* geometryB)
+bool ModuleScene::PlaneIntersect(math::Plane* planeA, GeometryObject* geometryB)
 {
 	if (!planeA || !geometryB)
 		return false;
@@ -868,7 +852,7 @@ bool ModuleSceneIntro::PlaneIntersect(math::Plane* planeA, GeometryObject* geome
 	return false;
 }
 
-bool ModuleSceneIntro::RayIntersect(math::Ray* rayA, GeometryObject* geometryB)
+bool ModuleScene::RayIntersect(math::Ray* rayA, GeometryObject* geometryB)
 {
 	if (!rayA || !geometryB)
 		return false;
@@ -931,7 +915,7 @@ bool ModuleSceneIntro::RayIntersect(math::Ray* rayA, GeometryObject* geometryB)
 	return false;
 }
 
-bool ModuleSceneIntro::TriangleIntersect(math::Triangle* triangleA, GeometryObject* geometryB)
+bool ModuleScene::TriangleIntersect(math::Triangle* triangleA, GeometryObject* geometryB)
 {
 	if (!triangleA || !geometryB)
 		return false;

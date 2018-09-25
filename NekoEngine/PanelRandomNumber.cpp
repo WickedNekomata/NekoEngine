@@ -14,39 +14,66 @@ PanelRandomNumber::~PanelRandomNumber()
 
 bool PanelRandomNumber::Draw()
 {
-	ImGui::SetNextWindowSize({ 200,200 });
 	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
 	ImGui::Begin(name, &enabled, inspectorFlags);
 
-	if (ImGui::TreeNode("Random Int"))
+	if (ImGui::TreeNode("Bounded Int test"))
 	{
-		ImGui::Text("Min: -50");
-		static int minValue = -50;
-		ImGui::Text("Max: 100");
+		static int minValue = 0;
+		ImGui::InputInt("Min Value", &minValue);
 		static int maxValue = 100;
+		ImGui::InputInt("Max Value", &maxValue);
+		static int quantityInt = 100;
+		ImGui::InputInt("Quantity", &quantityInt);
 
-		if (ImGui::Button("Generate"))
+		if (ImGui::Button("Generate Histogram"))
 		{
+			randomIntNumbers.clear();
 			uint32_t bound;
 			bound = maxValue - minValue + 1;
-			rng = pcg32_boundedrand_r(&rngBound, bound);
-			rng -= abs(minValue);
+			for (int i = 0; i < quantityInt; ++i)
+			{
+				rng = pcg32_boundedrand_r(&rngBound, bound);
+				rng -= abs(minValue);
+				randomIntNumbers.push_back(rng);
+				plotBoundedHistogram = true;
+			}
 		}
-		ImGui::Text("%d", rng);
+
+		if (plotBoundedHistogram)
+		{
+			char title[20];
+			sprintf_s(title, IM_ARRAYSIZE(title), "Plot Int:");
+			ImGui::PlotHistogram("##BoundedInt", &randomIntNumbers.front(), randomIntNumbers.size(), 0, title, (float)minValue, (float)maxValue, ImVec2(310, 100));
+
+		}
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Random Float"))
+	if (ImGui::TreeNode("Float test"))
 	{
-		static float rngFloat = 0;
-		if (ImGui::Button("Generate"))
+		static float rngFloat = 0.0f;
+		static int quantityFloat = 100.0f;
+	
+		ImGui::InputInt("Quantity", &quantityFloat);
+
+		if (ImGui::Button("Generate Histogram"))
 		{
-			rngFloat = ldexp(pcg32_random_r(&rngSeedFloat), -32);
+			randomFloatNumbers.clear();
+			for (int i = 0; i < quantityFloat; ++i)
+				randomFloatNumbers.push_back(ldexp(pcg32_random_r(&rngSeedFloat), -32));
+			plotFloatHistogram = true;
+
 		}
-		ImGui::Text("%f", rngFloat);
+
+		if (plotFloatHistogram)
+		{
+			char title[20];
+			sprintf_s(title, IM_ARRAYSIZE(title), "Plot floats");
+			ImGui::PlotHistogram("##floats", &randomFloatNumbers.front(), randomFloatNumbers.size(), 0, title, 0.0f, 1.0f, ImVec2(310, 100));
+		}
 		ImGui::TreePop();
 	}
 

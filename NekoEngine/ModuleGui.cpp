@@ -44,7 +44,7 @@ bool ModuleGui::Start(JSON_Object* data)
 	ImGui::StyleColorsDark();
 
 	pInspector = new PanelInspector("Inspector");
-	pRandomNumber = new PanelRandomNumber("Random Generator");
+	pRandomNumber = new PanelRandomNumber("PCG performance test");
 	pAbout = new PanelAbout("About");
 	pConsole = new PanelConsole("Console");
 	pPreferences = new PanelPreferences("Preferences");
@@ -99,7 +99,7 @@ update_status ModuleGui::Update(float dt)
 		}
 		if (ImGui::BeginMenu("Tools"))
 		{
-			if (ImGui::MenuItem("Random Generator", "CTRL+R" )) { pRandomNumber->OnOff(); }
+			if (ImGui::MenuItem("PCG performance test", "CTRL+R" )) { pRandomNumber->OnOff(); }
 			if (ImGui::MenuItem("Test Intersections", "CTRL+T")) { }
 
 			ImGui::EndMenu();

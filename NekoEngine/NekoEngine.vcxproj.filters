@@ -49,6 +49,9 @@
     <Filter Include="Sources\Modules\Panels">
       <UniqueIdentifier>{ede7b590-05ab-4f4e-a384-8b27aa3a26d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Parson">
+      <UniqueIdentifier>{37458c2d-2446-4a39-8810-472d4db3e650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -321,6 +324,9 @@
     <ClInclude Include="PerfTimer.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="parser\parson.h">
+      <Filter>Sources\3rd Party\Parson</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -496,6 +502,9 @@
     </ClCompile>
     <ClCompile Include="PerfTimer.cpp">
       <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\parson.c">
+      <Filter>Sources\3rd Party\Parson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

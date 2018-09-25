@@ -19,12 +19,14 @@ void OpenInBrowser(char* url)
 }
 
 ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
-{}
+{
+	name = "GUI";
+}
 
 ModuleGui::~ModuleGui()
 {}
 
-bool ModuleGui::Start()
+bool ModuleGui::Start(JSON_Object* data)
 {
 	bool ret = true;
 

@@ -158,7 +158,7 @@
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelPreferences.h" />
     <ClInclude Include="PanelRandomNumber.h" />
-    <ClInclude Include="parser\parson.h" />
+    <ClInclude Include="parson\parson.h" />
     <ClInclude Include="Pcg\entropy.h" />
     <ClInclude Include="Pcg\pcg_spinlock.h" />
     <ClInclude Include="Pcg\pcg_variants.h" />
@@ -221,7 +221,7 @@
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelPreferences.cpp" />
     <ClCompile Include="PanelRandomNumber.cpp" />
-    <ClCompile Include="parser\parson.c" />
+    <ClCompile Include="parson\parson.c" />
     <ClCompile Include="Pcg\entropy.c" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />

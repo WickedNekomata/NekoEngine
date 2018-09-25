@@ -19,7 +19,7 @@ public:
 	ModuleGui(bool start_enabled = true);
 	~ModuleGui();
 
-	bool Start();
+	bool Start(JSON_Object* data);
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);

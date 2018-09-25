@@ -17,7 +17,7 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 ModuleCamera3D::~ModuleCamera3D()
 {}
 
-bool ModuleCamera3D::Start()
+bool ModuleCamera3D::Start(JSON_Object* data)
 {
 	bool ret = true;
 

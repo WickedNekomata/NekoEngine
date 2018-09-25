@@ -324,7 +324,7 @@
     <ClInclude Include="PerfTimer.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="parser\parson.h">
+    <ClInclude Include="parson\parson.h">
       <Filter>Sources\3rd Party\Parson</Filter>
     </ClInclude>
   </ItemGroup>
@@ -503,7 +503,7 @@
     <ClCompile Include="PerfTimer.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="parser\parson.c">
+    <ClCompile Include="parson\parson.c">
       <Filter>Sources\3rd Party\Parson</Filter>
     </ClCompile>
   </ItemGroup>

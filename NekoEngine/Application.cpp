@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "parson/parson.h"
 
 Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 {
@@ -46,14 +47,21 @@ bool Application::Init()
 		ret = (*item)->Init();
 	}
 
+	JSON_Value* rootValue = json_parse_file("data.json");
+	JSON_Object* data = json_object(rootValue);
+
 	// After all Init calls we call Start() in all modules
 	_LOG("Application Start --------------");
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 	{
-		ret = (*item)->Start();
+	//	json_object_set_string(data, "Name", (*item)->GetName());
+		ret = (*item)->Start(data);
+		
 	}
-	
-	//perfTimer.Start();
+
+	json_value_free(rootValue);
+
+	perfTimer.Start();
 	capFrames = true;
 	maxFramerate = 60;
 

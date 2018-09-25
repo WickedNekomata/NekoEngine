@@ -6,6 +6,8 @@
 #ifndef __MODULE_H__
 #define __MODULE_H__
 
+#include "parson/parson.h"
+
 class Module
 {
 public:
@@ -21,7 +23,7 @@ public:
 		return true; 
 	}
 
-	virtual bool Start()
+	virtual bool Start(JSON_Object* data)
 	{
 		return true;
 	}
@@ -46,9 +48,16 @@ public:
 		return true; 
 	}
 
+	inline char* GetName() { return name; }
+
+protected:
+
+	char* name = "NoName";
+
 private:
 
 	bool enabled;
+
 };
 
 #endif

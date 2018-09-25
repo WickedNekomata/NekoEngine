@@ -1,18 +1,18 @@
-#include "PanelRandomNumber.h"
+#include "PanelPCGtest.h"
 
 #include "ImGui/imgui.h"
 
 #include <math.h>
 
-PanelRandomNumber::PanelRandomNumber(char* name) : Panel(name)
+PCGtest::PCGtest(char* name) : Panel(name)
 {
 }
 
-PanelRandomNumber::~PanelRandomNumber()
+PCGtest::~PCGtest()
 {
 }
 
-bool PanelRandomNumber::Draw()
+bool PCGtest::Draw()
 {
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;

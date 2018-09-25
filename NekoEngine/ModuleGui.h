@@ -7,7 +7,7 @@
 
 struct Panel;
 struct PanelInspector;
-struct PanelRandomNumber;
+struct PCGtest;
 struct PanelAbout;
 struct PanelConsole;
 struct PanelPreferences;
@@ -27,7 +27,7 @@ public:
 
 public:
 	PanelInspector* pInspector = nullptr;
-	PanelRandomNumber* pRandomNumber = nullptr;
+	PCGtest* pRandomNumber = nullptr;
 	PanelAbout* pAbout = nullptr;
 	PanelConsole* pConsole = nullptr;
 	PanelPreferences* pPreferences = nullptr;

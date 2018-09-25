@@ -6,11 +6,11 @@
 
 #include "Pcg/pcg_variants.h"
 
-class PanelRandomNumber : public Panel
+class PCGtest : public Panel
 {
 public:
-	PanelRandomNumber(char* name);
-	virtual ~PanelRandomNumber();
+	PCGtest(char* name);
+	virtual ~PCGtest();
 
 	virtual bool Draw();
 

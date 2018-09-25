@@ -306,9 +306,6 @@
     <ClInclude Include="PanelInspector.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="PanelRandomNumber.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="PanelAbout.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
@@ -326,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="parson\parson.h">
       <Filter>Sources\3rd Party\Parson</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelPCGtest.h">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -485,9 +485,6 @@
     <ClCompile Include="PanelInspector.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="PanelRandomNumber.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="PanelAbout.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
@@ -505,6 +502,9 @@
     </ClCompile>
     <ClCompile Include="parson\parson.c">
       <Filter>Sources\3rd Party\Parson</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelPCGtest.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

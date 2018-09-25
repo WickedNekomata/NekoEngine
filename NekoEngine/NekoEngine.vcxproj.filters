@@ -46,6 +46,9 @@
     <Filter Include="Sources\3rd Party\MathGeoLib\Algorithm\Random">
       <UniqueIdentifier>{4b9d4f74-395b-4028-90d9-6e1b29e458db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Panels">
+      <UniqueIdentifier>{ede7b590-05ab-4f4e-a384-8b27aa3a26d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -297,6 +300,15 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h">
       <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
     </ClInclude>
+    <ClInclude Include="Panel.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelInspector.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelRandomNumber.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -451,6 +463,15 @@
     </ClCompile>
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp">
       <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Panel.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelInspector.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelRandomNumber.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

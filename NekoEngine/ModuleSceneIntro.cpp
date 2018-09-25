@@ -38,30 +38,9 @@ bool ModuleSceneIntro::Start()
 
 update_status ModuleSceneIntro::Update(float dt)
 {
-	/*
-	pPlane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
-	*/
-	
-	// Inputs
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { showInspectorWin = !showInspectorWin; }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { showDemoWin = !showDemoWin; }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { showRandWin = !showRandWin; }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) { showIntersectionWin = !showIntersectionWin; }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { showPerformanceWin = !showPerformanceWin; }
-
-	// Gui
-	ShowMenuBar();
 
 	if (showDemoWin)
 		ShowDemoWindow();
-
-	if (showInspectorWin)
-		ShowInspectorWindow();
-
-	if (showRandWin)
-		ShowRandWindow();
 
 	if (showPerformanceWin)
 		ShowPerformanceWindow();
@@ -83,118 +62,9 @@ bool ModuleSceneIntro::CleanUp()
 	return ret;
 }
 
-void ModuleSceneIntro::ShowMenuBar()
-{
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open")) {}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Exit"))
-				App->CloseApp();
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Window"))
-		{
-			if (ImGui::MenuItem("Inspector Window", "CTRL+I", showInspectorWin)) { showInspectorWin = !showInspectorWin; }
-			if (ImGui::MenuItem("Demo Window", "CTRL+D", showDemoWin)) { showDemoWin = !showDemoWin; }
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Tools"))
-		{
-			if (ImGui::MenuItem("Random Generator", "CTRL+R", showRandWin)) { showRandWin = !showRandWin; }
-			if (ImGui::MenuItem("Test Intersections", "CTRL+T", showIntersectionWin)) { showIntersectionWin = !showIntersectionWin; }
-			if (ImGui::MenuItem("Performance", "CTRL+P", showPerformanceWin)) { showPerformanceWin = !showPerformanceWin; }
-
-			ImGui::EndMenu();
-		}
-
-		ImGui::EndMainMenuBar();
-	}
-}
-
 void ModuleSceneIntro::ShowDemoWindow() 
 {
 	ImGui::ShowDemoWindow();
-}
-
-void ModuleSceneIntro::ShowInspectorWindow()
-{
-	ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
-	ImGui::SetNextWindowSize({ 400,400 });
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
-	inspectorFlags |= ImGuiWindowFlags_NoResize;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	ImGui::Begin("Inspector", false, inspectorFlags);
-	ImGui::Spacing();
-	if (ImGui::CollapsingHeader("Transform"))
-	{
-		ImGui::Text("Position");
-		ImGui::SameLine();
-		static int posX = 10;
-		static int posY = 10;
-		static int posZ = 10;
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-		ImGui::SameLine();
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-		ImGui::SameLine();
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posZ, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-	}
-	ImGui::Spacing();
-	if (ImGui::CollapsingHeader("RigidBody"))
-	{
-		ImGui::Text("Coming soon...");
-	}
-	ImGui::End();
-}
-
-void ModuleSceneIntro::ShowRandWindow()
-{
-	ImGui::SetNextWindowSize({ 200,200 });
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoResize;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoScrollbar;
-	ImGui::Begin("Random Number Gen", false, inspectorFlags);
-	
-	if (ImGui::TreeNode("Random Int"))
-	{
-		ImGui::Text("Min: -50");
-		static int minValue = -50;
-		ImGui::Text("Max: 100");
-		static int maxValue = 100;
-
-		if (ImGui::Button("Generate"))
-		{
-			uint32_t bound;
-			bound = maxValue - minValue + 1;
-			rng = pcg32_boundedrand_r(&rngBound, bound);
-			rng -= abs(minValue);
-		}
-		ImGui::Text("%d", rng);
-		ImGui::TreePop();
-	}
-	
-	if (ImGui::TreeNode("Random Float"))
-	{
-		static float rngFloat = 0;
-		if (ImGui::Button("Generate"))
-		{
-			rngFloat = ldexp(pcg32_random_r(&rngSeedFloat), -32);
-		}
-		ImGui::Text("%f", rngFloat);
-		ImGui::TreePop();
-	}
-
-	ImGui::End();
 }
 
 void ModuleSceneIntro::ShowPerformanceWindow()

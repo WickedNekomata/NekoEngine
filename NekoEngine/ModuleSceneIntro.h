@@ -3,8 +3,6 @@
 
 #include "Module.h"
 
-#include "Pcg/pcg_variants.h"
-
 #include "MathGeoLib/include/Geometry/GeometryAll.h"
 
 enum GeometryType { Sphere, Capsule, AABB, OBB, Plane, Ray, Triangle };
@@ -36,11 +34,7 @@ public:
 
 private:
 
-	void ShowMenuBar();
-
 	void ShowDemoWindow();
-	void ShowInspectorWindow();
-	void ShowRandWindow();
 	void ShowPerformanceWindow();
 	void ShowIntersectionWindow();
 
@@ -55,15 +49,9 @@ private:
 
 private:
 
-	bool showInspectorWin = false;
 	bool showDemoWin = false;
-	bool showRandWin = false;
 	bool showIntersectionWin = false;
 	bool showPerformanceWin = false;
-
-	int rng = 0;
-	pcg_state_setseq_64 rngBound;
-	pcg32_random_t rngSeedFloat;
 
 	// Geometry A
 	GeometryType currGeometryTypeA = GeometryType::Sphere;

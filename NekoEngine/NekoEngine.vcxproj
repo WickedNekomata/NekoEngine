@@ -156,6 +156,7 @@
     <ClInclude Include="PanelAbout.h" />
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelInspector.h" />
+    <ClInclude Include="PanelPreferences.h" />
     <ClInclude Include="PanelRandomNumber.h" />
     <ClInclude Include="Pcg\entropy.h" />
     <ClInclude Include="Pcg\pcg_spinlock.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="PanelAbout.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
+    <ClCompile Include="PanelPreferences.cpp" />
     <ClCompile Include="PanelRandomNumber.cpp" />
     <ClCompile Include="Pcg\entropy.c" />
     <ClCompile Include="Primitive.cpp" />

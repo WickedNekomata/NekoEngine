@@ -13,7 +13,7 @@
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Geometry/Plane.h"
 #include "MathGeoLib/include/Geometry/Sphere.h"
-
+#include <gl/GL.h>
 #include <stdio.h>
 #include <time.h>
 

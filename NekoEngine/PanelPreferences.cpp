@@ -2,9 +2,11 @@
 
 #include "ImGui/imgui.h"
 
-#include <gl/GL.h>
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
+
+#include <windows.h>
+#include <gl/GL.h>
 
 #define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX			0x9047
 #define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX		0x9048
@@ -22,7 +24,16 @@ PanelPreferences::~PanelPreferences()
 
 bool PanelPreferences::Draw()
 {
+	ImGui::SetNextWindowSize({ 325, 300 });
 	ImGui::Begin(name, &enabled);
+	if (ImGui::TreeNode("Application"))
+	{
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Window"))
+	{
+		ImGui::TreePop();
+	}
 	if (ImGui::TreeNode("Hardware"))
 	{
 		HardwareNode();	

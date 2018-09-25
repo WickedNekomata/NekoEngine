@@ -7,6 +7,7 @@
 #include "PanelRandomNumber.h"
 #include "PanelAbout.h"
 #include "PanelConsole.h"
+#include "PanelPreferences.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -44,11 +45,13 @@ bool ModuleGui::Start()
 	pRandomNumber = new PanelRandomNumber("Random Generator");
 	pAbout = new PanelAbout("About");
 	pConsole = new PanelConsole("Console");
+	pPreferences = new PanelPreferences("Preferences");
 
 	panels.push_back(pInspector);
 	panels.push_back(pRandomNumber);
 	panels.push_back(pAbout);
 	panels.push_back(pConsole);
+	panels.push_back(pPreferences);
 
 	return ret;
 }
@@ -69,7 +72,7 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) { pConsole->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { pRandomNumber->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {  }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {  }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { pPreferences->OnOff(); }
 
 
 	if (ImGui::BeginMainMenuBar())
@@ -88,6 +91,7 @@ update_status ModuleGui::Update(float dt)
 		{
 			if (ImGui::MenuItem("Inspector Window", "CTRL+I")) { pInspector->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+O")) { pConsole->OnOff(); }
+			if (ImGui::MenuItem("Preferences", "CTRL+P")) { pPreferences->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -95,7 +99,6 @@ update_status ModuleGui::Update(float dt)
 		{
 			if (ImGui::MenuItem("Random Generator", "CTRL+R" )) { pRandomNumber->OnOff(); }
 			if (ImGui::MenuItem("Test Intersections", "CTRL+T")) { }
-			if (ImGui::MenuItem("Performance", "CTRL+P")) { }
 
 			ImGui::EndMenu();
 		}

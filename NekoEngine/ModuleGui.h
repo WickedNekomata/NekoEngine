@@ -10,6 +10,7 @@ struct PanelInspector;
 struct PanelRandomNumber;
 struct PanelAbout;
 struct PanelConsole;
+struct PanelPreferences;
 
 class ModuleGui : public Module
 {
@@ -29,6 +30,7 @@ public:
 	PanelRandomNumber* pRandomNumber = nullptr;
 	PanelAbout* pAbout = nullptr;
 	PanelConsole* pConsole = nullptr;
+	PanelPreferences* pPreferences = nullptr;
 
 private:
 	std::vector<Panel*> panels;

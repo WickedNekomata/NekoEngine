@@ -4,6 +4,8 @@
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
+	name = "Camera3D";
+
 	X = math::float3(1.0f, 0.0f, 0.0f);
 	Y = math::float3(0.0f, 1.0f, 0.0f);
 	Z = math::float3(0.0f, 0.0f, 1.0f);
@@ -17,7 +19,12 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 ModuleCamera3D::~ModuleCamera3D()
 {}
 
-bool ModuleCamera3D::Start(JSON_Object* data)
+bool ModuleCamera3D::Init(JSON_Object * jObject)
+{
+	return true;
+}
+
+bool ModuleCamera3D::Start()
 {
 	bool ret = true;
 

@@ -1,1 +1,37 @@
-{"Name":"NoName","epaa":"lul"}
+{
+    "Scene" :
+    {
+        "stringTest" : "yes!"
+    },
+    
+    "Audio" :
+    {
+        "stringTest" : "yes!"
+    },
+
+    "Camera3D" :
+    {
+        "stringTest" : "yes!"
+    },
+
+    "GUI" :
+    {
+        "stringTest" : "yes!"
+    },
+
+    "Input" :
+    {
+        "stringTest" : "yes!"
+    },
+
+    "Renderer3D" :
+    {
+        "stringTest" : "yes!"
+    },
+    
+    "Window" :
+    {
+        "stringTest" : "yes!"
+    }
+    
+}

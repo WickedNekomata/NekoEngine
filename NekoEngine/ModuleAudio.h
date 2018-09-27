@@ -13,7 +13,7 @@ public:
 	ModuleAudio(bool start_enabled = true);
 	~ModuleAudio();
 
-	bool Init();
+	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
 	// Play a music file

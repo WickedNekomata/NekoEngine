@@ -4,6 +4,8 @@
 
 ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 {
+	name = "Window";
+
 	window = NULL;
 	screen_surface = NULL;
 }
@@ -11,7 +13,7 @@ ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 ModuleWindow::~ModuleWindow()
 {}
 
-bool ModuleWindow::Init()
+bool ModuleWindow::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 

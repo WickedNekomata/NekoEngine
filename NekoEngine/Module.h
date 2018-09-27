@@ -18,12 +18,12 @@ public:
 	virtual ~Module()
 	{}
 
-	virtual bool Init() 
+	virtual bool Init(JSON_Object* data)
 	{
 		return true; 
 	}
 
-	virtual bool Start(JSON_Object* data)
+	virtual bool Start()
 	{
 		return true;
 	}

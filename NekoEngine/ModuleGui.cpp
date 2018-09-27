@@ -22,7 +22,12 @@ ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 ModuleGui::~ModuleGui()
 {}
 
-bool ModuleGui::Start(JSON_Object* data)
+bool ModuleGui::Init(JSON_Object * jObject)
+{
+	return true;
+}
+
+bool ModuleGui::Start()
 {
 	bool ret = true;
 

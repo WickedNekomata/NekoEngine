@@ -21,7 +21,7 @@ public:
 	ModuleInput(bool start_enabled = true);
 	~ModuleInput();
 
-	bool Init();
+	bool Init(JSON_Object* jObject);
 	update_status PreUpdate(float dt);
 	bool CleanUp();
 

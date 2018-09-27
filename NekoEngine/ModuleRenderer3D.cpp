@@ -9,12 +9,14 @@
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
-{}
+{
+	name = "Renderer3D";
+}
 
 ModuleRenderer3D::~ModuleRenderer3D()
 {}
 
-bool ModuleRenderer3D::Init()
+bool ModuleRenderer3D::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 

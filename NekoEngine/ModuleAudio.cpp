@@ -5,12 +5,14 @@
 #pragma comment(lib, "SDL_mixer/libx86/SDL2_mixer.lib")
 
 ModuleAudio::ModuleAudio(bool start_enabled) : Module(start_enabled), music(NULL)
-{}
+{
+	name = "Audio";
+}
 
 ModuleAudio::~ModuleAudio()
 {}
 
-bool ModuleAudio::Init()
+bool ModuleAudio::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 

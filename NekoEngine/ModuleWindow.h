@@ -11,7 +11,7 @@ public:
 	ModuleWindow(bool start_enabled = true);
 	~ModuleWindow();
 
-	bool Init();
+	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
 	void SetTitle(const char* title);

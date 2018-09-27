@@ -18,10 +18,17 @@
 #include <time.h>
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
-{}
+{
+	name = "Scene";
+}
 
 ModuleScene::~ModuleScene()
 {}
+
+bool ModuleScene::Init(JSON_Object * jObject)
+{
+	return true;
+}
 
 bool ModuleScene::Start()
 {

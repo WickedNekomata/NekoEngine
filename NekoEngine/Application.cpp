@@ -41,25 +41,22 @@ bool Application::Init()
 {
 	bool ret = true;
 
+	JSON_Value* rootValue = json_parse_file("data.json");
+	JSON_Object* data = json_value_get_object(rootValue);
+
 	// Call Init() in all modules
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 	{
-		ret = (*item)->Init();
-	}
-
-	JSON_Value* rootValue = json_parse_file("data.json");
-	JSON_Object* data = json_object(rootValue);
-
-	// After all Init calls we call Start() in all modules
-	_LOG("Application Start --------------");
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
-	{
-	//	json_object_set_string(data, "Name", (*item)->GetName());
-		ret = (*item)->Start(data);
-		
+		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+		ret = (*item)->Init(modulejObject);
 	}
 
 	json_value_free(rootValue);
+
+	// After all Init calls we call Start() in all modules
+	_LOG("Application Start --------------");
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)	
+		ret = (*item)->Start();
 
 	perfTimer.Start();
 	capFrames = true;

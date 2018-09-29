@@ -54,8 +54,7 @@ bool ModuleGui::Start()
 	ImGui_ImplOpenGL2_Init();
 
 	// Setup style
-	ImGui::StyleColorsDark();
-
+	ImGui::StyleColorsCustom();
 	return ret;
 }
 

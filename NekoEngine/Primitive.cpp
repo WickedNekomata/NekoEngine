@@ -5,7 +5,7 @@
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
-Primitive::Primitive() : transform(math::float4x4::identity), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+Primitive::Primitive() : transform(math::float4x4::identity), color(White), axis(false), type(PrimitiveTypes::Primitive_Point)
 {}
 
 void Primitive::Render() const
@@ -46,11 +46,6 @@ void Primitive::Render() const
 	}
 
 	glColor3f(color.r, color.g, color.b);
-
-	if (wire)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	InnerRender();
 

@@ -107,6 +107,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
+
 	}
 
 	// Projection matrix for
@@ -223,11 +224,21 @@ void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable)
 		if (!enable)
 			glDisable(capability);
 	}
-	else 
+	else
 	{
 		if (enable)
-			glEnable(capability);	
+			glEnable(capability);
 	}
+}
+
+void ModuleRenderer3D::EnableWireframeMode() const
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void ModuleRenderer3D::DisableWireframeMode() const
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)

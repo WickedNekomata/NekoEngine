@@ -30,6 +30,9 @@ public:
 	bool GetCapabilityState(GLenum capability);
 	void SetCapabilityState(GLenum capability, bool enable);
 
+	void EnableWireframeMode() const;
+	void DisableWireframeMode() const;
+
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f);
 
 public:

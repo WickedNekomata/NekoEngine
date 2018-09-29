@@ -25,6 +25,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	
 	// Create context
 	context = SDL_GL_CreateContext(App->window->window);
+
 	if (context == NULL)
 	{
 		CONSOLE_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -36,12 +37,20 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		// Use vsync
 		SetVSync(vsync);
 
+		// Initialize glew
+		GLenum error = glewInit();
+		if (error != GL_NO_ERROR)
+		{
+			CONSOLE_LOG("Error initializing glew! %s\n", glewGetErrorString(error));
+			ret = false;
+		}
+
 		// Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
 		// Check for error
-		GLenum error = glGetError();
+		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
 			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
@@ -61,10 +70,13 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		}
 
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+		// Initialize clear depth
 		glClearDepth(1.0f);
 
 		// Initialize clear color
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Check for error
 		error = glGetError();
@@ -82,6 +94,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
+		lights[0].Active(true);
 
 		GLfloat MaterialAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
@@ -91,7 +104,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-		lights[0].Active(true);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
 	}
@@ -106,7 +118,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
@@ -123,6 +135,13 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
+	// 1. Level geometry
+	// 2. Debug geometry
+
+	// 3. Editor
+	App->gui->Draw();
+
+	// 4. Swap buffers
 	SDL_GL_SwapWindow(App->window->window);
 
 	return UPDATE_CONTINUE;
@@ -133,6 +152,7 @@ bool ModuleRenderer3D::CleanUp()
 	bool ret = true;
 
 	CONSOLE_LOG("Destroying 3D Renderer");
+
 	SDL_GL_DeleteContext(context);
 
 	return ret;

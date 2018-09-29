@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 
+#include "glew\include\GL\glew.h"
+
 ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 {
 	name = "Window";
@@ -40,29 +42,23 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		// Create window
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
-		// Use OpenGL 2.1
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+		// Use OpenGL 3.1
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		// SDL_GL_Attribute(SDL_GL_DEPTH_SIZE, 24);
+		// SDL_GL_Attribute(SDL_GL_STENCIL_SIZE, 8);
 
 		if (fullscreen)
-		{
 			flags |= SDL_WINDOW_FULLSCREEN;
-		}
 
 		if (resizable)
-		{
 			flags |= SDL_WINDOW_RESIZABLE;
-		}
 
 		if (borderless)
-		{
 			flags |= SDL_WINDOW_BORDERLESS;
-		}
 
 		if (fullDesktop)
-		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-		}
 
 		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
@@ -89,9 +85,7 @@ bool ModuleWindow::CleanUp()
 
 	// Destroy window
 	if (window != NULL)
-	{
 		SDL_DestroyWindow(window);
-	}
 
 	// Quit SDL subsystems
 	SDL_Quit();
@@ -155,6 +149,10 @@ uint ModuleWindow::GetWindowHeight() const
 void ModuleWindow::UpdateWindowSize() const
 {
 	SDL_SetWindowSize(window, width, height);
+
+	// Recalculate projection matrix
+	//glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, width, height);
 }
 
 uint ModuleWindow::GetRefreshRate() const

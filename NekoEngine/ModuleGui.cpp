@@ -77,7 +77,6 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {  }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { pPreferences->OnOff(); }
 
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -133,10 +132,6 @@ update_status ModuleGui::Update(float dt)
 
 update_status ModuleGui::PostUpdate(float dt) 
 {
-	// Render
-	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-
 	return UPDATE_CONTINUE;
 }
 
@@ -163,6 +158,13 @@ bool ModuleGui::CleanUp()
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleGui::Draw() const 
+{
+	// Render
+	ImGui::Render();
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
 
 void ModuleGui::SaveStatus(JSON_Object* jObject)

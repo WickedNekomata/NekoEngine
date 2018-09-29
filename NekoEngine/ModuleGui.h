@@ -26,6 +26,8 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void Draw() const;
+
 	void SaveStatus(JSON_Object*);
 	void LoadStatus(JSON_Object*);
 

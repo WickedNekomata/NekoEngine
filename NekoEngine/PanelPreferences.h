@@ -22,6 +22,7 @@ private:
 	void HardwareNode() const;
 	void ApplicationNode() const;
 	void WindowNode() const;
+	void RendererNode() const;
 };
 
 #endif

@@ -44,6 +44,11 @@ bool PanelPreferences::Draw()
 		HardwareNode();	
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("Renderer"))
+	{
+		RendererNode();
+		ImGui::TreePop();
+	}
 #if _DEBUG
 	if (ImGui::TreeNode("Demo Window"))
 	{
@@ -223,4 +228,44 @@ void PanelPreferences::WindowNode() const
 	static bool fullDesktop = App->window->GetFullDesktopWindow();
 	if (ImGui::Checkbox("Full Desktop", &fullDesktop))
 		App->window->SetFullDesktopWindow(fullDesktop);
+}
+
+void PanelPreferences::RendererNode() const 
+{
+	GLenum capability = 0;
+
+	capability = GL_DEPTH_TEST;
+	static bool depthTest = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest))
+		App->renderer3D->SetCapabilityState(capability, depthTest);
+
+	capability = GL_CULL_FACE;
+	static bool cullFace = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_CULL_FACE", &cullFace))
+		App->renderer3D->SetCapabilityState(capability, cullFace);
+
+	capability = GL_LIGHTING;
+	static bool lighting = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_LIGHTING", &lighting))
+		App->renderer3D->SetCapabilityState(capability, lighting);
+
+	capability = GL_COLOR_MATERIAL;
+	static bool colorMaterial = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial))
+		App->renderer3D->SetCapabilityState(capability, colorMaterial);
+
+	capability = GL_TEXTURE_2D;
+	static bool texture2D = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D))
+		App->renderer3D->SetCapabilityState(capability, texture2D);
+
+	capability = GL_ALPHA_TEST;
+	static bool alphaTest = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_ALPHA_TEST", &alphaTest))
+		App->renderer3D->SetCapabilityState(capability, alphaTest);
+
+	capability = GL_BLEND;
+	static bool blend = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_BLEND", &blend))
+		App->renderer3D->SetCapabilityState(capability, blend);
 }

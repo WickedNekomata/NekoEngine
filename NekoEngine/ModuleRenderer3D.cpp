@@ -102,6 +102,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 
+		// GL capabilities
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
@@ -203,6 +204,30 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 bool ModuleRenderer3D::GetVSync() const 
 {
 	return vsync;
+}
+
+bool ModuleRenderer3D::GetCapabilityState(GLenum capability)
+{
+	bool ret = false;
+
+	if (glIsEnabled(capability))
+		ret = true;
+
+	return ret;
+}
+
+void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable)
+{
+	if (GetCapabilityState(capability))
+	{
+		if (!enable)
+			glDisable(capability);
+	}
+	else 
+	{
+		if (enable)
+			glEnable(capability);	
+	}
 }
 
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)

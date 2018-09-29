@@ -1,12 +1,13 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "SDL\include\SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
 
-#pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
+#include "glew\include\GL\glew.h"
+#include "SDL\include\SDL_opengl.h"
+
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
+#pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
+#pragma comment(lib, "glew/lib/Release/Win32/glew32.lib")
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
 {

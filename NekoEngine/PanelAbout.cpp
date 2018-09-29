@@ -3,7 +3,7 @@
 #include "Globals.h"
 
 #include <windows.h>
-#include <gl/GL.h>
+#include "glew\include\GL\glew.h"
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "ImGui/imgui.h"

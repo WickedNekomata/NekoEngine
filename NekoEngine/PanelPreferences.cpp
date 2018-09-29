@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <windows.h>
-#include <gl/GL.h>
+#include "glew\include\GL\glew.h"
 
 #define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX			0x9047
 #define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX		0x9048

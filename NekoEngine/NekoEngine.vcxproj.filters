@@ -55,6 +55,9 @@
     <Filter Include="Sources\3rd Party\mmgr">
       <UniqueIdentifier>{96460a6b-227d-4af5-a9d0-7ac3d10fa049}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\glew">
+      <UniqueIdentifier>{232e3b40-7839-487f-9b39-b23a8f248872}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -335,6 +338,18 @@
     </ClInclude>
     <ClInclude Include="PanelTestPCG.h">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\eglew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\glew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\glxew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\wglew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

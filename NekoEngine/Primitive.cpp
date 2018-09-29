@@ -1,6 +1,5 @@
 #include "Globals.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
+#include "glew/include/GL/glew.h"
 #include "Primitive.h"
 
 #include "MathGeoLib/include/Math/TransformOps.h"

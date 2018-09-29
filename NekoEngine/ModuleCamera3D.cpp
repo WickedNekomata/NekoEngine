@@ -58,7 +58,6 @@ update_status ModuleCamera3D::Update(float dt)
 	Reference += newPos;
 
 	// Mouse motion ----------------
-
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		int dx = -App->input->GetMouseXMotion();
@@ -150,11 +149,11 @@ void ModuleCamera3D::Move(const math::float3 &Movement)
 
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return ViewMatrix.Transposed().ptr();
+	return ViewMatrix.ptr();
 }
 
 void ModuleCamera3D::CalculateViewMatrix()
 {
-	ViewMatrix = math::float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, Position), -math::Dot(Y, Position), -math::Dot(Z, Position), 1.0f).Transposed();
+	ViewMatrix = math::float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, Position), -math::Dot(Y, Position), -math::Dot(Z, Position), 1.0f);
 	ViewMatrixInverse = ViewMatrix.Inverted();
 }

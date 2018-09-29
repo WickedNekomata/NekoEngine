@@ -136,6 +136,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	// 1. Level geometry
+	App->scene->Draw();
+
 	// 2. Debug geometry
 
 	// 3. Editor
@@ -164,9 +166,9 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	ProjectionMatrix = math::float4x4::OpenGLPerspProjRH(0.125f, 512.0f, (float)width, (float)height);
-	glLoadMatrixf((GLfloat*)ProjectionMatrix.Transposed().ptr());
+
+	ProjectionMatrix = Perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -201,4 +203,30 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 bool ModuleRenderer3D::GetVSync() const 
 {
 	return vsync;
+}
+
+math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)
+{
+	math::float4x4 Perspective;
+
+	float coty = 1.0f / tan(fovy * (float)M_PI / 360.0f);
+
+	Perspective[0][0] = coty / aspect;
+	Perspective[0][1] = 0.0f;
+	Perspective[0][2] = 0.0f;
+	Perspective[0][3] = 0.0f;
+	Perspective[1][0] = 0.0f;
+	Perspective[1][1] = coty;
+	Perspective[1][2] = 0.0f;
+	Perspective[1][3] = 0.0f;
+	Perspective[2][0] = 0.0f;
+	Perspective[2][1] = 0.0f;
+	Perspective[2][2] = (n + f) / (n - f);
+	Perspective[2][3] = -1.0f;
+	Perspective[3][0] = 0.0f;
+	Perspective[3][1] = 0.0f;
+	Perspective[3][2] = 2.0f * n * f / (n - f);
+	Perspective[3][3] = 0.0f;
+
+	return Perspective;
 }

@@ -43,7 +43,7 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 		// Use OpenGL 3.1
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 		// SDL_GL_Attribute(SDL_GL_DEPTH_SIZE, 24);
 		// SDL_GL_Attribute(SDL_GL_STENCIL_SIZE, 8);
@@ -149,10 +149,7 @@ uint ModuleWindow::GetWindowHeight() const
 void ModuleWindow::UpdateWindowSize() const
 {
 	SDL_SetWindowSize(window, width, height);
-
-	// Recalculate projection matrix
-	//glMatrixMode(GL_PROJECTION);
-	glViewport(0, 0, width, height);
+	App->renderer3D->OnResize(width, height);
 }
 
 uint ModuleWindow::GetRefreshRate() const

@@ -11,7 +11,7 @@ Primitive::Primitive() : transform(math::float4x4::identity), color(White), wire
 void Primitive::Render() const
 {
 	glPushMatrix();
-	glMultMatrixf((GLfloat*)transform.Transposed().ptr());
+	glMultMatrixf((GLfloat*)transform.ptr());
 
 	if (axis)
 	{

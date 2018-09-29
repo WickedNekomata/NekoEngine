@@ -27,6 +27,9 @@ public:
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
+	void EnableWireframeMode() const;
+	void DisableWireframeMode() const;
+
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f);
 
 public:

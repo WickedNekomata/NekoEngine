@@ -106,6 +106,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
+
 	}
 
 	// Projection matrix for
@@ -203,6 +204,16 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 bool ModuleRenderer3D::GetVSync() const 
 {
 	return vsync;
+}
+
+void ModuleRenderer3D::EnableWireframeMode() const
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void ModuleRenderer3D::DisableWireframeMode() const
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)

@@ -33,7 +33,7 @@ public:
 	
 	Color color;
 	math::float4x4 transform;
-	bool axis,wire;
+	bool axis;
 
 protected:
 

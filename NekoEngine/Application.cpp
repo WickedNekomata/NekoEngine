@@ -1,4 +1,5 @@
 #include "Application.h"
+
 #include "parson/parson.h"
 
 Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)

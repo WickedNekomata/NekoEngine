@@ -15,10 +15,13 @@ public:
 	bool CleanUp();
 
 	void SetTitle(const char* title);
+	const char* GetTitle() const;
 
 	void SetWindowBrightness(float brightness) const;
 	float GetWindowBrightness() const;
 
+	void SetScreenSize(uint size);
+	uint GetScreenSize() const;
 	void SetWindowWidth(uint width);
 	uint GetWindowWidth() const;
 	void SetWindowHeight(uint height);
@@ -49,11 +52,14 @@ private:
 
 	uint width = 0;
 	uint height = 0;
+	uint size = 1;
 
 	bool fullscreen = false;
 	bool resizable = false;
 	bool borderless = false;
 	bool fullDesktop = false;
+
+	const char* title = nullptr;
 
 	bool active = true;
 };

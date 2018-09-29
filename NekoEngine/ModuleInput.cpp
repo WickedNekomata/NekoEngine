@@ -63,8 +63,9 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	Uint32 buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
 
-	mouse_x /= SCREEN_SIZE;
-	mouse_y /= SCREEN_SIZE;
+	uint screenSize = App->window->GetScreenSize();
+	mouse_x /= screenSize;
+	mouse_y /= screenSize;
 	mouse_z = 0;
 
 	for (int i = 0; i < 5; ++i)
@@ -100,11 +101,11 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 		case SDL_MOUSEMOTION:
-			mouse_x = event.motion.x / SCREEN_SIZE;
-			mouse_y = event.motion.y / SCREEN_SIZE;
+			mouse_x = event.motion.x / screenSize;
+			mouse_y = event.motion.y / screenSize;
 
-			mouse_x_motion = event.motion.xrel / SCREEN_SIZE;
-			mouse_y_motion = event.motion.yrel / SCREEN_SIZE;
+			mouse_x_motion = event.motion.xrel / screenSize;
+			mouse_y_motion = event.motion.yrel / screenSize;
 			break;
 
 		case SDL_QUIT:

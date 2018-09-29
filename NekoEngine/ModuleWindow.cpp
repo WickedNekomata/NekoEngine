@@ -26,36 +26,45 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 	}
 	else
 	{
+		size = SCREEN_SIZE;
+		width = SCREEN_WIDTH * size;
+		height = SCREEN_HEIGHT * size;
+
+		fullscreen = WIN_FULLSCREEN;
+		resizable = WIN_RESIZABLE;
+		borderless = WIN_BORDERLESS;
+		fullDesktop = WIN_FULLSCREEN_DESKTOP;
+
+		title = TITLE;
+
 		// Create window
-		width = SCREEN_WIDTH * SCREEN_SIZE;
-		height = SCREEN_HEIGHT * SCREEN_SIZE;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 		// Use OpenGL 2.1
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if (WIN_FULLSCREEN)
+		if (fullscreen)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if (WIN_RESIZABLE)
+		if (resizable)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if (WIN_BORDERLESS)
+		if (borderless)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if (WIN_FULLSCREEN_DESKTOP)
+		if (fullDesktop)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
-		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if (window == NULL)
 		{
@@ -92,7 +101,13 @@ bool ModuleWindow::CleanUp()
 
 void ModuleWindow::SetTitle(const char* title)
 {
+	this->title = title;
 	SDL_SetWindowTitle(window, title);
+}
+
+const char* ModuleWindow::GetTitle() const 
+{
+	return title;
 }
 
 void ModuleWindow::SetWindowBrightness(float brightness) const
@@ -103,6 +118,16 @@ void ModuleWindow::SetWindowBrightness(float brightness) const
 float ModuleWindow::GetWindowBrightness() const
 {
 	return SDL_GetWindowBrightness(window);
+}
+
+void ModuleWindow::SetScreenSize(uint size) 
+{
+	this->size = size;
+}
+
+uint ModuleWindow::GetScreenSize() const 
+{
+	return size;
 }
 
 void ModuleWindow::SetWindowWidth(uint width)

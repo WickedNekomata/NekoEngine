@@ -16,6 +16,9 @@
 
 #include "PerfTimer.h"
 
+#define FPS_TRACK_SIZE 60
+#define MS_TRACK_SIZE 60
+
 class Application
 {
 public:

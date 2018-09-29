@@ -37,18 +37,11 @@ enum update_status
 };
 
 // Configuration -----------
+#define SCREEN_SIZE 1
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 720
-#define SCREEN_MIN_WIDTH 640
-#define SCREEN_MIN_HEIGHT 480
-#define SCREEN_SIZE 1
 #define WIN_FULLSCREEN false
 #define WIN_RESIZABLE true
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
-
-
 #define TITLE "Neko Engine"
-#define STR_INPUT_SIZE 128
-#define FPS_TRACK_SIZE 60
-#define MS_TRACK_SIZE 60

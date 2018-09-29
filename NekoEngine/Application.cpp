@@ -95,6 +95,12 @@ update_status Application::Update()
 
 	FinishUpdate();
 
+	if (save)
+		SaveState();
+
+	if (load)
+		LoadState();
+
 	if (closeApp)
 		ret = UPDATE_STOP;
 
@@ -143,6 +149,36 @@ void Application::FinishUpdate()
 	AddFramerateToTrack(fps);
 
 	dt = 1.0 / fps;
+}
+
+void Application::Load() const
+{
+	JSON_Value* rootValue = json_parse_file("data.json");
+	JSON_Object* data = json_value_get_object(rootValue);
+
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+	{
+		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+		(*item)->LoadStatus(modulejObject);
+	}
+
+	json_value_free(rootValue);
+}
+
+void Application::Save() const
+{
+	// TODO: Check if the current object in json exist. if not, create it
+
+	JSON_Value* rootValue = json_parse_file("data.json");
+	JSON_Object* data = json_value_get_object(rootValue);
+
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+	{
+		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+		(*item)->SaveStatus(modulejObject);
+	}
+
+	json_value_free(rootValue);
 }
 
 void Application::AddModule(Module* mod)
@@ -215,4 +251,14 @@ void Application::AddMsToTrack(float ms)
 std::vector<float> Application::GetMsTrack() const 
 {
 	return msTrack;
+}
+
+void Application::SaveState() const
+{
+	save = true;
+}
+
+void Application::LoadState() const
+{
+	load = true;
 }

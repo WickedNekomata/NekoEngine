@@ -48,6 +48,10 @@ public:
 		return true; 
 	}
 
+	virtual void SaveStatus(JSON_Object*) {};
+
+	virtual void LoadStatus(JSON_Object*) {};
+
 	inline char* GetName() { return name; }
 
 protected:

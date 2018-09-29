@@ -43,11 +43,17 @@ public:
 	void AddMsToTrack(float ms);
 	std::vector<float> GetMsTrack() const;
 
+	void SaveState() const;
+	void LoadState() const;
+
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+
+	void Load() const;
+	void Save() const;
 
 public:
 
@@ -77,6 +83,9 @@ private:
 	const char*			organizationName = nullptr;
 
 	bool				closeApp = false;
+
+	mutable bool		save = false;
+	mutable bool		load = false;
 };
 
 extern Application* App;

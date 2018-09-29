@@ -102,11 +102,11 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 
+		// GL capabilities
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
-
 	}
 
 	// Projection matrix for
@@ -206,17 +206,52 @@ bool ModuleRenderer3D::GetVSync() const
 	return vsync;
 }
 
-void ModuleRenderer3D::EnableWireframeMode() const
+void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (GetCapabilityState(capability))
+	{
+		if (!enable)
+			glDisable(capability);
+	}
+	else
+	{
+		if (enable)
+			glEnable(capability);
+	}
 }
 
-void ModuleRenderer3D::DisableWireframeMode() const
+bool ModuleRenderer3D::GetCapabilityState(GLenum capability) const
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	bool ret = false;
+
+	if (glIsEnabled(capability))
+		ret = true;
+
+	return ret;
 }
 
-math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)
+void ModuleRenderer3D::SetWireframeMode(bool enable) const 
+{
+	if (enable)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+bool ModuleRenderer3D::IsWireframeMode() const 
+{
+	bool ret = false;
+
+	GLint polygonMode[2];
+	glGetIntegerv(GL_POLYGON_MODE, polygonMode);
+
+	if (polygonMode[0] == GL_LINE && polygonMode[1] == GL_LINE)
+		ret = true;
+
+	return ret;
+}
+
+math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
 	math::float4x4 Perspective;
 

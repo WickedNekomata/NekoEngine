@@ -85,6 +85,9 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("New")) {}
 			if (ImGui::MenuItem("Open")) {}
 			ImGui::Separator();
+			if (ImGui::MenuItem("Save")) { App->SaveState(); }
+			if (ImGui::MenuItem("Load")) { App->LoadState(); }
+			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
 
@@ -151,4 +154,16 @@ bool ModuleGui::CleanUp()
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleGui::SaveStatus(JSON_Object* jObject)
+{
+	for (int i = 0; i < panels.size(); ++i)
+		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());	
+}
+
+void ModuleGui::LoadStatus(JSON_Object* jObject)
+{
+	for (int i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
 }

@@ -10,7 +10,9 @@ public:
 	virtual bool Draw() = 0;
 
 	virtual inline void OnOff();
+	virtual inline void SetOnOff(bool set) { enabled = set; }
 	virtual inline bool IsEnabled();
+	virtual inline char* GetName() { return name; }
 
 protected:
 	bool enabled = false;

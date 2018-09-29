@@ -61,7 +61,7 @@ void PanelPreferences::HardwareNode()
 	SDL_version version;
 	SDL_GetVersion(&version);
 
-	//ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
+	ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
 	ImGui::Text("SDL version: %i.%i.%i", version.major, version.minor, version.patch);
 
 	ImGui::Separator();
@@ -156,7 +156,6 @@ void PanelPreferences::ApplicationNode()
 
 	sMStats memStats = m_getMemoryStatistics();
 	
-	//TODO: Add Histogram
 	static std::vector<float> memory(100);
 
 	for (uint i = memory.size() - 1; i > 0; --i)

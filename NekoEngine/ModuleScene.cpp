@@ -52,9 +52,6 @@ update_status ModuleScene::Update(float dt)
 		RELEASE(currGeometryB);
 	}
 
-	if (showAppWin)
-		ShowAppWindow();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -478,26 +475,6 @@ void ModuleScene::ShowIntersectionWindow()
 		ImGui::Text("Intersection");
 	else
 		ImGui::Text("No intersection");
-
-	ImGui::End();
-}
-
-void ModuleScene::ShowAppWindow()
-{
-	ImGui::SetNextWindowSize({ 400,300 });
-
-	ImGuiWindowFlags windowFlags = 0;
-	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoResize;
-	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoFocusOnAppearing;
-	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
-	windowFlags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
-
-	ImGui::Begin("App", &showIntersectionWin, windowFlags);
-
-	if (ImGui::CollapsingHeader("Application"))
-	{
-		
-	}
 
 	ImGui::End();
 }

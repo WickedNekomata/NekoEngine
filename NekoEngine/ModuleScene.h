@@ -36,7 +36,6 @@ public:
 private:
 
 	void ShowIntersectionWindow();
-	void ShowAppWindow();
 
 	bool Intersect(GeometryObject* geometryA, GeometryObject* geometryB);
 	bool SphereIntersect(math::Sphere* sphereA, GeometryObject* geometryB);
@@ -50,7 +49,6 @@ private:
 private:
 
 	bool showIntersectionWin = false;
-	bool showAppWin = false;
 
 	// Geometry A
 	GeometryType currGeometryTypeA = GeometryType::Sphere;

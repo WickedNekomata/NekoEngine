@@ -96,10 +96,10 @@ update_status Application::Update()
 	FinishUpdate();
 
 	if (save)
-		SaveState();
+		Save();
 
 	if (load)
-		LoadState();
+		Load();
 
 	if (closeApp)
 		ret = UPDATE_STOP;
@@ -163,6 +163,8 @@ void Application::Load() const
 	}
 
 	json_value_free(rootValue);
+
+	load = false;
 }
 
 void Application::Save() const
@@ -177,8 +179,10 @@ void Application::Save() const
 		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
 		(*item)->SaveStatus(modulejObject);
 	}
-
+	json_serialize_to_file_pretty(rootValue,"data.json");
 	json_value_free(rootValue);
+
+	save = false;
 }
 
 void Application::AddModule(Module* mod)

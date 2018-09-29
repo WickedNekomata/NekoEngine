@@ -26,6 +26,9 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void SaveStatus(JSON_Object*);
+	void LoadStatus(JSON_Object*);
+
 public:
 	PanelInspector* pInspector = nullptr;
 	PCGtest* pRandomNumber = nullptr;

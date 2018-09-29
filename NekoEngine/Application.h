@@ -70,10 +70,10 @@ private:
 	// Framerate
 	PerfTimer			perfTimer;
 	uint				maxFramerate;
-	double				lastFrameMs;
-	double				dt;
-	double				fps;
-	bool				capFrames;
+	double				lastFrameMs = 0;
+	double				dt = 0;
+	double				fps = 0;
+	bool				capFrames = 0;
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 

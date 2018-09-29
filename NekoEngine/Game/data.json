@@ -1,37 +1,27 @@
 {
-    "Scene" :
-    {
-        "stringTest" : "yes!"
+    "Scene": {
+        "stringTest": "yes!"
     },
-    
-    "Audio" :
-    {
-        "stringTest" : "yes!"
+    "Audio": {
+        "stringTest": "yes!"
     },
-
-    "Camera3D" :
-    {
-        "stringTest" : "yes!"
+    "Camera3D": {
+        "stringTest": "yes!"
     },
-
-    "GUI" :
-    {
-        "stringTest" : "yes!"
+    "GUI": {
+        "Inspector": false,
+        "PCG performance test": true,
+        "About": false,
+        "Console": false,
+        "Preferences": false
     },
-
-    "Input" :
-    {
-        "stringTest" : "yes!"
+    "Input": {
+        "stringTest": "yes!"
     },
-
-    "Renderer3D" :
-    {
-        "stringTest" : "yes!"
+    "Renderer3D": {
+        "stringTest": "yes!"
     },
-    
-    "Window" :
-    {
-        "stringTest" : "yes!"
+    "Window": {
+        "stringTest": "yes!"
     }
-    
 }

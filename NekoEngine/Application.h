@@ -28,6 +28,7 @@ public:
 	bool CleanUp();
 
 	void CloseApp();
+	void LogGui(const char* log) const;
 
 	void SetAppName(const char* title);
 	const char* GetAppName() const;

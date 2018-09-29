@@ -1,5 +1,5 @@
-#ifndef __PanelAbout_H__
-#define __PanelAbout_H__
+#ifndef __PANEL_ABOUT_H__
+#define __PANEL_ABOUT_H__
 
 #include "Panel.h"
 

@@ -26,7 +26,10 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void LogConsole(const char* log) const;
+
 public:
+
 	PanelInspector* pInspector = nullptr;
 	PCGtest* pRandomNumber = nullptr;
 	PanelAbout* pAbout = nullptr;
@@ -34,6 +37,7 @@ public:
 	PanelPreferences* pPreferences = nullptr;
 
 private:
+
 	std::vector<Panel*> panels;
 };
 

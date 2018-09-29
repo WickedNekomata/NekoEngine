@@ -24,13 +24,13 @@ ModuleInput::~ModuleInput()
 
 bool ModuleInput::Init(JSON_Object* jObject)
 {
-	_LOG("Init SDL input event system");
+	CONSOLE_LOG("Init SDL input event system");
 	bool ret = true;
 	SDL_Init(0);
 
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
-		_LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
+		CONSOLE_LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -129,7 +129,7 @@ bool ModuleInput::CleanUp()
 {
 	bool ret = true;
 
-	_LOG("Quitting SDL input event subsystem");
+	CONSOLE_LOG("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 
 	return ret;

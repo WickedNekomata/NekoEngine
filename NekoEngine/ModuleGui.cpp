@@ -24,26 +24,6 @@ ModuleGui::~ModuleGui()
 
 bool ModuleGui::Init(JSON_Object * jObject)
 {
-	return true;
-}
-
-bool ModuleGui::Start()
-{
-	bool ret = true;
-
-	_LOG("Starting ImGui");
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
-
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
-	ImGui_ImplOpenGL2_Init();
-
-	// Setup style
-	ImGui::StyleColorsDark();
-
 	pInspector = new PanelInspector("Inspector");
 	pRandomNumber = new PCGtest("PCG performance test");
 	pAbout = new PanelAbout("About");
@@ -55,6 +35,26 @@ bool ModuleGui::Start()
 	panels.push_back(pAbout);
 	panels.push_back(pConsole);
 	panels.push_back(pPreferences);
+
+	return true;
+}
+
+bool ModuleGui::Start()
+{
+	bool ret = true;
+
+	CONSOLE_LOG("Starting ImGui");
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
+
+	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
+	ImGui_ImplOpenGL2_Init();
+
+	// Setup style
+	ImGui::StyleColorsDark();
 
 	return ret;
 }
@@ -142,13 +142,28 @@ bool ModuleGui::CleanUp()
 	bool ret = true;
 
 	for (int i = 0; i < panels.size(); ++i)
-		delete panels[i];
+	{
+		if (panels[i] != nullptr)
+			delete panels[i];
+	}
 
-	_LOG("Cleaning up ImGui");
+	pInspector = nullptr;
+	pRandomNumber = nullptr;
+	pAbout = nullptr;
+	pConsole = nullptr;
+	pPreferences = nullptr;
+
+	CONSOLE_LOG("Cleaning up ImGui");
 
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleGui::LogConsole(const char* log) const
+{
+	if (pConsole != nullptr)
+		pConsole->AddLog(log);
 }

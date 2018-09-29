@@ -1,5 +1,5 @@
-#ifndef __PanelPreferences_H__
-#define __PanelPreferences_H__
+#ifndef __PANEL_PREFERENCES_H__
+#define __PANEL_PREFERENCES_H__
 
 #include "Panel.h"
 

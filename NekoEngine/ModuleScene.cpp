@@ -925,7 +925,7 @@ bool ModuleScene::RayIntersect(math::Ray* rayA, GeometryObject* geometryB)
 
 	case GeometryType::Ray:
 	{
-		_LOG("2 rays can't intersect each other");
+		CONSOLE_LOG("2 rays can't intersect each other");
 		return false;
 	}
 	break;

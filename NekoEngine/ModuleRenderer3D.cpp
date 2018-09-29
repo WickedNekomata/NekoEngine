@@ -20,13 +20,13 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
-	_LOG("Creating 3D Renderer context");
+	CONSOLE_LOG("Creating 3D Renderer context");
 	
 	// Create context
 	context = SDL_GL_CreateContext(App->window->window);
 	if (context == NULL)
 	{
-		_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		CONSOLE_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -43,7 +43,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -55,7 +55,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -69,7 +69,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -131,7 +131,7 @@ bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
 
-	_LOG("Destroying 3D Renderer");
+	CONSOLE_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 
 	return ret;
@@ -162,7 +162,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(1) == -1)
 		{
 			ret = false;
-			_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			CONSOLE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 	else {
@@ -170,7 +170,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(0) == -1) 
 		{
 			ret = false;
-			_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
+			CONSOLE_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 

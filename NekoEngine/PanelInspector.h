@@ -1,5 +1,5 @@
-#ifndef __PanelInspector_H__
-#define __PanelInspector_H__
+#ifndef __PANEL_INSPECTOR_H__
+#define __PANEL_INSPECTOR_H__
 
 #include "Panel.h"
 

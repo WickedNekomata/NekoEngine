@@ -1,5 +1,5 @@
-#ifndef __PanelRandomNumber_H__
-#define __PanelRandomNumber_H__
+#ifndef __PANEL_RANDOM_NUMBER_H__
+#define __PANEL_RANDOM_NUMBER_H__
 
 #include "Panel.h"
 #include <vector>

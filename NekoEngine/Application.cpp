@@ -54,7 +54,7 @@ bool Application::Init()
 	json_value_free(rootValue);
 
 	// After all Init calls we call Start() in all modules
-	_LOG("Application Start --------------");
+	CONSOLE_LOG("Application Start --------------");
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)	
 		ret = (*item)->Start();
 
@@ -116,6 +116,12 @@ bool Application::CleanUp()
 void Application::CloseApp()
 {
 	closeApp = true;
+}
+
+void Application::LogGui(const char* log) const
+{
+	if (gui != nullptr)
+		gui->LogConsole(log);
 }
 
 void Application::PrepareUpdate()

@@ -7,9 +7,9 @@
 #include <windows.h>
 #include <stdio.h>
 
-#define _LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
+#define CONSOLE_LOG(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
 
-void log(const char file[], int line, const char* format, ...);
+void Log(const char file[], int line, const char* format, ...);
 
 void OpenInBrowser(char* url);
 

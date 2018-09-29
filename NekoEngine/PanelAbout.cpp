@@ -1,4 +1,5 @@
 #include "PanelAbout.h"
+
 #include "Globals.h"
 
 #include "ImGui/imgui.h"
@@ -14,6 +15,7 @@ PanelAbout::~PanelAbout()
 
 bool PanelAbout::Draw()
 {
+	CONSOLE_LOG("Hello");
 	ImGui::SetNextWindowSize({ 350,250 });
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoResize;

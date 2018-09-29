@@ -159,7 +159,7 @@
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelPreferences.h" />
-    <ClInclude Include="PanelPCGtest.h" />
+    <ClInclude Include="PanelTestPCG.h" />
     <ClInclude Include="parson\parson.h" />
     <ClInclude Include="Pcg\entropy.h" />
     <ClInclude Include="Pcg\pcg_spinlock.h" />
@@ -223,7 +223,7 @@
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelPreferences.cpp" />
-    <ClCompile Include="PanelPCGtest.cpp" />
+    <ClCompile Include="PanelTestPCG.cpp" />
     <ClCompile Include="parson\parson.c" />
     <ClCompile Include="Pcg\entropy.c" />
     <ClCompile Include="PerfTimer.cpp" />

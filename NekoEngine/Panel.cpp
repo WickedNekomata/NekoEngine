@@ -13,7 +13,7 @@ void Panel::OnOff()
 	enabled = !enabled;
 }
 
-bool Panel::IsEnabled()
+bool Panel::IsEnabled() const
 {
 	return enabled;
 }

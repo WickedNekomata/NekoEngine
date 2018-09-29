@@ -1,18 +1,14 @@
-#include "PanelPCGtest.h"
+#include "PanelTestPCG.h"
 
 #include "ImGui/imgui.h"
 
 #include <math.h>
 
-PCGtest::PCGtest(char* name) : Panel(name)
-{
-}
+PanelTestPCG::PanelTestPCG(char* name) : Panel(name) {}
 
-PCGtest::~PCGtest()
-{
-}
+PanelTestPCG::~PanelTestPCG() {}
 
-bool PCGtest::Draw()
+bool PanelTestPCG::Draw()
 {
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;

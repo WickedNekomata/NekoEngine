@@ -1,4 +1,5 @@
 #include "PanelAbout.h"
+
 #include "Globals.h"
 
 #include <windows.h>

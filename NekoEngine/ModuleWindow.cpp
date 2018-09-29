@@ -17,11 +17,11 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
-	_LOG("Init SDL window & surface");
+	CONSOLE_LOG("Init SDL window & surface");
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		_LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
+		CONSOLE_LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	else
@@ -59,7 +59,7 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 
 		if (window == NULL)
 		{
-			_LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+			CONSOLE_LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
@@ -76,7 +76,7 @@ bool ModuleWindow::CleanUp()
 {
 	bool ret = true;
 
-	_LOG("Destroying SDL window and quitting all SDL systems");
+	CONSOLE_LOG("Destroying SDL window and quitting all SDL systems");
 
 	// Destroy window
 	if (window != NULL)
@@ -140,7 +140,7 @@ uint ModuleWindow::GetRefreshRate() const
 	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
 		refreshRate = desktopDisplay.refresh_rate;
 	else
-		_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 
 	return refreshRate;
 }
@@ -156,7 +156,7 @@ void ModuleWindow::GetScreenSize(uint& width, uint& height) const
 		height = desktopDisplay.h;
 	}
 	else
-		_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 }
 
 void ModuleWindow::SetFullscreenWindow(bool fullscreen) 

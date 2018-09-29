@@ -1,4 +1,5 @@
 #include "PanelInspector.h"
+
 #include "Globals.h"
 
 #include "ImGui/imgui.h"

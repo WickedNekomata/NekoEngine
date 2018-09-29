@@ -52,7 +52,7 @@ public:
 
 	virtual void LoadStatus(JSON_Object*) {};
 
-	inline char* GetName() { return name; }
+	inline char* GetName() const { return name; }
 
 protected:
 

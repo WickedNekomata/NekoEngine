@@ -1,11 +1,11 @@
 #include "PanelPreferences.h"
+
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "ImGui/imgui.h"
-#include "ModuleRenderer3D.h"
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
-
 #include "mmgr/mmgr.h"
 #include <vector>
 
@@ -56,7 +56,7 @@ bool PanelPreferences::Draw()
 	return true;
 }
 
-void PanelPreferences::HardwareNode()
+void PanelPreferences::HardwareNode() const
 {
 	SDL_version version;
 	SDL_GetVersion(&version);
@@ -110,7 +110,7 @@ void PanelPreferences::HardwareNode()
 
 }
 
-void PanelPreferences::ApplicationNode()
+void PanelPreferences::ApplicationNode() const
 {
 	// Application name
 	static char appName[STR_INPUT_SIZE];
@@ -176,7 +176,7 @@ void PanelPreferences::ApplicationNode()
 	ImGui::Text("Peak Alloc Unit Count: %u", memStats.peakAllocUnitCount);
 }
 
-void PanelPreferences::WindowNode()
+void PanelPreferences::WindowNode() const
 {
 	// Active
 	static bool active = App->window->GetWindowActive();

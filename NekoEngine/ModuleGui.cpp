@@ -5,7 +5,7 @@
 #include "ModuleRenderer3D.h"
 #include "Panel.h"
 #include "PanelInspector.h"
-#include "PanelPCGtest.h"
+#include "PanelTestPCG.h"
 #include "PanelAbout.h"
 #include "PanelConsole.h"
 #include "PanelPreferences.h"
@@ -24,6 +24,18 @@ ModuleGui::~ModuleGui()
 
 bool ModuleGui::Init(JSON_Object * jObject)
 {
+	pInspector = new PanelInspector("Inspector");
+	pRandomNumber = new PanelTestPCG("PCG performance test");
+	pAbout = new PanelAbout("About");
+	pConsole = new PanelConsole("Console");
+	pPreferences = new PanelPreferences("Preferences");
+
+	panels.push_back(pInspector);
+	panels.push_back(pRandomNumber);
+	panels.push_back(pAbout);
+	panels.push_back(pConsole);
+	panels.push_back(pPreferences);
+
 	return true;
 }
 
@@ -31,7 +43,7 @@ bool ModuleGui::Start()
 {
 	bool ret = true;
 
-	_LOG("Starting ImGui");
+	CONSOLE_LOG("Starting ImGui");
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -43,18 +55,6 @@ bool ModuleGui::Start()
 
 	// Setup style
 	ImGui::StyleColorsDark();
-
-	pInspector = new PanelInspector("Inspector");
-	pRandomNumber = new PCGtest("PCG performance test");
-	pAbout = new PanelAbout("About");
-	pConsole = new PanelConsole("Console");
-	pPreferences = new PanelPreferences("Preferences");
-
-	panels.push_back(pInspector);
-	panels.push_back(pRandomNumber);
-	panels.push_back(pAbout);
-	panels.push_back(pConsole);
-	panels.push_back(pPreferences);
 
 	return ret;
 }
@@ -145,9 +145,18 @@ bool ModuleGui::CleanUp()
 	bool ret = true;
 
 	for (int i = 0; i < panels.size(); ++i)
-		delete panels[i];
+	{
+		if (panels[i] != nullptr)
+			delete panels[i];
+	}
 
-	_LOG("Cleaning up ImGui");
+	pInspector = nullptr;
+	pRandomNumber = nullptr;
+	pAbout = nullptr;
+	pConsole = nullptr;
+	pPreferences = nullptr;
+
+	CONSOLE_LOG("Cleaning up ImGui");
 
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -166,4 +175,10 @@ void ModuleGui::LoadStatus(JSON_Object* jObject)
 {
 	for (int i = 0; i < panels.size(); ++i)
 		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
+}
+
+void ModuleGui::LogConsole(const char* log) const
+{
+	if (pConsole != nullptr)
+		pConsole->AddLog(log);
 }

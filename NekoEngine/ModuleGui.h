@@ -7,7 +7,7 @@
 
 struct Panel;
 struct PanelInspector;
-struct PCGtest;
+struct PanelTestPCG;
 struct PanelAbout;
 struct PanelConsole;
 struct PanelPreferences;
@@ -29,14 +29,18 @@ public:
 	void SaveStatus(JSON_Object*);
 	void LoadStatus(JSON_Object*);
 
+	void LogConsole(const char* log) const;
+
 public:
+
 	PanelInspector* pInspector = nullptr;
-	PCGtest* pRandomNumber = nullptr;
+	PanelTestPCG* pRandomNumber = nullptr;
 	PanelAbout* pAbout = nullptr;
 	PanelConsole* pConsole = nullptr;
 	PanelPreferences* pPreferences = nullptr;
 
 private:
+
 	std::vector<Panel*> panels;
 };
 

@@ -259,13 +259,17 @@ void PanelPreferences::RendererNode() const
 	if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D))
 		App->renderer3D->SetCapabilityState(capability, texture2D);
 
-	capability = GL_ALPHA_TEST;
-	static bool alphaTest = App->renderer3D->GetCapabilityState(capability);
-	if (ImGui::Checkbox("GL_ALPHA_TEST", &alphaTest))
-		App->renderer3D->SetCapabilityState(capability, alphaTest);
+	capability = GL_LINE_SMOOTH;
+	static bool lineSmooth = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_LINE_SMOOTH", &lineSmooth))
+		App->renderer3D->SetCapabilityState(capability, lineSmooth);
 
-	capability = GL_BLEND;
-	static bool blend = App->renderer3D->GetCapabilityState(capability);
-	if (ImGui::Checkbox("GL_BLEND", &blend))
-		App->renderer3D->SetCapabilityState(capability, blend);
+	capability = GL_FOG;
+	static bool fog = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_FOG", &fog))
+		App->renderer3D->SetCapabilityState(capability, fog);
+
+	static bool wireframeMode = App->renderer3D->IsWireframeMode();
+	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
+		App->renderer3D->SetWireframeMode(wireframeMode);
 }

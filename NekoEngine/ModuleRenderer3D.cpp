@@ -107,7 +107,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
-
 	}
 
 	// Projection matrix for
@@ -207,17 +206,7 @@ bool ModuleRenderer3D::GetVSync() const
 	return vsync;
 }
 
-bool ModuleRenderer3D::GetCapabilityState(GLenum capability)
-{
-	bool ret = false;
-
-	if (glIsEnabled(capability))
-		ret = true;
-
-	return ret;
-}
-
-void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable)
+void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const
 {
 	if (GetCapabilityState(capability))
 	{
@@ -231,17 +220,38 @@ void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable)
 	}
 }
 
-void ModuleRenderer3D::EnableWireframeMode() const
+bool ModuleRenderer3D::GetCapabilityState(GLenum capability) const
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	bool ret = false;
+
+	if (glIsEnabled(capability))
+		ret = true;
+
+	return ret;
 }
 
-void ModuleRenderer3D::DisableWireframeMode() const
+void ModuleRenderer3D::SetWireframeMode(bool enable) const 
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (enable)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f)
+bool ModuleRenderer3D::IsWireframeMode() const 
+{
+	bool ret = false;
+
+	GLint polygonMode[2];
+	glGetIntegerv(GL_POLYGON_MODE, polygonMode);
+
+	if (polygonMode[0] == GL_LINE && polygonMode[1] == GL_LINE)
+		ret = true;
+
+	return ret;
+}
+
+math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
 	math::float4x4 Perspective;
 

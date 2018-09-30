@@ -9,10 +9,10 @@
         "stringTest": "yes!"
     },
     "GUI": {
-        "Inspector": false,
+        "Inspector": true,
         "PCG performance test": false,
         "About": false,
-        "Console": true,
+        "Console": false,
         "Preferences": false
     },
     "Input": {

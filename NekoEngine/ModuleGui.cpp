@@ -52,9 +52,10 @@ bool ModuleGui::Start()
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
 	ImGui_ImplOpenGL2_Init();
-
+	//ImFont* font2 = io.Fonts->AddFontFromFileTTF("VCR_OSD_MONO_1.001.ttf", 12.0f);
 	// Setup style
 	ImGui::StyleColorsCustom();
+	
 	return ret;
 }
 

@@ -13,6 +13,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleGui.h"
+#include "ModuleFileSystem.h"
 
 #include "PerfTimer.h"
 
@@ -68,6 +69,7 @@ public:
 	ModuleRenderer3D*	renderer3D;
 	ModuleCamera3D*		camera;
 	ModuleGui*			gui;
+	ModuleFileSystem*	filesystem;
 
 private:
 

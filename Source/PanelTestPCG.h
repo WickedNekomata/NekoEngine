@@ -4,7 +4,7 @@
 #include "Panel.h"
 #include <vector>
 
-#include "Pcg/pcg_variants.h"
+#include "PCG/pcg_variants.h"
 
 class PanelTestPCG : public Panel
 {

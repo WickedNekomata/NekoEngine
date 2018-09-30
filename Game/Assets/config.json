@@ -23,8 +23,8 @@
     },
     "Window": {
         "stringTest": "yes!"
-    }
-    "FileSystem"{
+    },
+    "FileSystem": {
         "stringTest": "yes!"
     }
 }

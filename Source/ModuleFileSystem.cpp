@@ -14,6 +14,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	PHYSFS_init(nullptr);
 
 	AddPath(".");
+	AddPath("./Assets/", "Assets");
 }
 
 ModuleFileSystem::~ModuleFileSystem() {}
@@ -25,11 +26,9 @@ bool ModuleFileSystem::Init(JSON_Object* jObject)
 	CONSOLE_LOG("Loading File System");
 
 	// TODO: Add all paths in configuration in order
-	AddPath("./Assets/", "Assets");
 
-	// TODO: Ask SDL for a write dir
-	//if (PHYSFS_setWriteDir(write_path) == 0)
-		//CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
+	if (PHYSFS_setWriteDir("./Assets/") == 0)
+		CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
 	return ret;
 }

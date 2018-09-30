@@ -47,7 +47,11 @@ bool Application::Init()
 	SetAppName(TITLE);
 	SetOrganizationName(ORGANIZATION);
 
-	JSON_Value* rootValue = json_parse_file("data.json");
+	// Read config file
+	char* buf;
+	App->filesystem->OpenRead("Assets/config.json", &buf);
+	JSON_Value* rootValue = json_parse_string(buf);
+	delete[] buf;
 	JSON_Object* data = json_value_get_object(rootValue);
 
 	// Call Init() in all modules
@@ -165,9 +169,11 @@ void Application::FinishUpdate()
 
 void Application::Load() const
 {
+	// Read config file
 	char* buf;
-	App->filesystem->OpenRead("config.json", &buf);
+	App->filesystem->OpenRead("Assets/config.json", &buf);
 	JSON_Value* rootValue = json_parse_string(buf);
+	delete[] buf;
 	JSON_Object* data = json_value_get_object(rootValue);
 
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
@@ -183,8 +189,9 @@ void Application::Load() const
 
 void Application::Save() const
 {
-	// TODO: Check if the current object in json exist. if not, create it
-	JSON_Value* rootValue = json_parse_file("config.json");
+	// TODO 1: Check if the current object in json exists. If not, create it
+	// TODO 2: Make Save work with FileSystem OpenWrite
+	JSON_Value* rootValue = json_parse_file("Assets/config.json");
 	JSON_Object* data = json_value_get_object(rootValue);
 
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
@@ -192,7 +199,7 @@ void Application::Save() const
 		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
 		(*item)->SaveStatus(modulejObject);
 	}
-	json_serialize_to_file_pretty(rootValue,"config.json");
+	json_serialize_to_file_pretty(rootValue,"Assets/config.json");
 	json_value_free(rootValue);
 
 	save = false;

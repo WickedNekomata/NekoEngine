@@ -11,108 +11,76 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
 
-	// need to be created before Awake so other modules can use it
-	char* base_path = SDL_GetBasePath();
-	PHYSFS_init(base_path);
-	SDL_free(base_path);
+	PHYSFS_init(nullptr);
 
-	// By default we include executable's own directory
-	// without this we won't be able to find config.xml :-(
 	AddPath(".");
 }
 
-// Destructor
-ModuleFileSystem::~ModuleFileSystem()
-{
-	PHYSFS_deinit();
-}
+ModuleFileSystem::~ModuleFileSystem() {}
 
-// Called before render is available
 bool ModuleFileSystem::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
 	CONSOLE_LOG("Loading File System");
 
-	// Add all paths in configuration in order
-	/*
-	for(pugi::xml_node path = config.child("path"); path; path = path.next_sibling("path"))
-	{
-		AddPath(path.child_value());
-	}
-	*/
+	// TODO: Add all paths in configuration in order
+	AddPath("./Assets/", "Assets");
 
-	// Ask SDL for a write dir
-	char* write_path = SDL_GetPrefPath(App->GetOrganizationName(), App->GetAppName());
-
-	if (PHYSFS_setWriteDir(write_path) == 0)
-		CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
-
-	SDL_free(write_path);
+	// TODO: Ask SDL for a write dir
+	//if (PHYSFS_setWriteDir(write_path) == 0)
+		//CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
 	return ret;
 }
 
-// Called before quitting
 bool ModuleFileSystem::CleanUp()
 {
-	//LOG("Freeing File System subsystem");
+	bool ret = true;
 
-	return true;
+	CONSOLE_LOG("Freeing File System subsystem");
+	PHYSFS_deinit();
+
+	return ret;
 }
 
-// Add a new zip file or folder
-bool ModuleFileSystem::AddPath(const char* path_or_zip)
+bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 {
 	bool ret = false;
 
-	if (PHYSFS_mount(path_or_zip, NULL, 1) == 0)
-	{
-		CONSOLE_LOG("File System error while adding a path or zip(%s): %s\n", path_or_zip, PHYSFS_getLastError());
-	}
-	else
+	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
-
+	else
+		CONSOLE_LOG("File System error while adding a path or zip (%s): %s\n", newDir, PHYSFS_getLastError());
+		
 	return ret;
 }
 
-// Check if a file exists
-bool ModuleFileSystem::Exists(const char* file) const
+uint ModuleFileSystem::OpenRead(const char* file, char** buffer) const
 {
-	return PHYSFS_exists(file) != 0;
-}
+	uint ret = 0;
 
-// Check if a file is a directory
-bool ModuleFileSystem::IsDirectory(const char* file) const
-{
-	return PHYSFS_isDirectory(file) != 0;
-}
+	PHYSFS_file* fsFile = PHYSFS_openRead(file);
 
-// Read a whole file and put it in a new buffer
-unsigned int ModuleFileSystem::Load(const char* file, char** buffer) const
-{
-	unsigned int ret = 0;
-
-	PHYSFS_file* fs_file = PHYSFS_openRead(file);
-
-	if (fs_file != NULL)
+	if (fsFile != nullptr)
 	{
-		PHYSFS_sint64 size = PHYSFS_fileLength(fs_file);
+		PHYSFS_sint64 size = PHYSFS_fileLength(fsFile);
 
 		if (size > 0)
 		{
 			*buffer = new char[(uint)size];
-			PHYSFS_sint64 readed = PHYSFS_read(fs_file, *buffer, 1, (PHYSFS_sint32)size);
-			if (readed != size)
+			PHYSFS_sint64 readed = PHYSFS_readBytes(fsFile, *buffer, size);
+
+			if (readed == size)
+				ret = (uint)readed;
+			else
 			{
 				CONSOLE_LOG("File System error while reading from file %s: %s\n", file, PHYSFS_getLastError());
 				RELEASE(buffer);
 			}
-			else
-				ret = (uint)readed;
 		}
 
-		if (PHYSFS_close(fs_file) == 0)
+		if (PHYSFS_close(fsFile) == 0)
 			CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
 	}
 	else
@@ -121,49 +89,24 @@ unsigned int ModuleFileSystem::Load(const char* file, char** buffer) const
 	return ret;
 }
 
-// Read a whole file and put it in a new buffer
-SDL_RWops* ModuleFileSystem::Load(const char* file) const
+uint ModuleFileSystem::OpenWrite(const char* file, const char* buffer) const
 {
-	char* buffer;
-	int size = Load(file, &buffer);
+	uint ret = 0;
 
-	if (size > 0)
+	PHYSFS_file* fsFile = PHYSFS_openWrite(file);
+
+	if (fsFile != nullptr)
 	{
-		SDL_RWops* r = SDL_RWFromConstMem(buffer, size);
-		if (r != NULL)
-			r->close = close_sdl_rwops;
+		PHYSFS_sint64 size = PHYSFS_fileLength(fsFile);
 
-		return r;
-	}
-	else
-		return NULL;
-}
+		PHYSFS_sint64 written = PHYSFS_writeBytes(fsFile, (const void*)buffer, size);
 
-int close_sdl_rwops(SDL_RWops *rw)
-{
-	RELEASE(rw->hidden.mem.base);
-	SDL_FreeRW(rw);
-	return 0;
-}
-
-// Save a whole buffer to disk
-unsigned int ModuleFileSystem::Save(const char* file, const char* buffer, unsigned int size) const
-{
-	unsigned int ret = 0;
-
-	PHYSFS_file* fs_file = PHYSFS_openWrite(file);
-
-	if (fs_file != NULL)
-	{
-		PHYSFS_sint64 written = PHYSFS_write(fs_file, (const void*)buffer, 1, size);
-		if (written != size)
-		{ 
-			CONSOLE_LOG("File System error while writing to file %s: %s\n", file, PHYSFS_getLastError());
-		}
-		else
+		if (written == size)
 			ret = (uint)written;
+		else
+			CONSOLE_LOG("File System error while writing to file %s: %s\n", file, PHYSFS_getLastError());
 
-		if (PHYSFS_close(fs_file) == 0)
+		if (PHYSFS_close(fsFile) == 0)
 			CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
 	}
 	else

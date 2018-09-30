@@ -9,6 +9,7 @@
 #include "PanelAbout.h"
 #include "PanelConsole.h"
 #include "PanelPreferences.h"
+#include "ModuleFileSystem.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -52,7 +53,8 @@ bool ModuleGui::Start()
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
 	ImGui_ImplOpenGL2_Init();
-	//ImFont* font2 = io.Fonts->AddFontFromFileTTF("VCR_OSD_MONO_1.001.ttf", 12.0f);
+	//ImFont* font2 = io.Fonts->AddFontFromFileTTF("Assets/Deadhead_Script.ttf", 12.0f);
+
 	// Setup style
 	ImGui::StyleColorsCustom();
 	

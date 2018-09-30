@@ -45,3 +45,4 @@ enum update_status
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
 #define TITLE "Neko Engine"
+#define ORGANIZATION "Wicked Nekomata"

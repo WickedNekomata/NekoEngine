@@ -37,8 +37,6 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		borderless = WIN_BORDERLESS;
 		fullDesktop = WIN_FULLSCREEN_DESKTOP;
 
-		title = TITLE;
-
 		// Create window
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
@@ -60,7 +58,7 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		if (fullDesktop)
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		window = SDL_CreateWindow(App->GetAppName(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if (window == NULL)
 		{
@@ -95,13 +93,7 @@ bool ModuleWindow::CleanUp()
 
 void ModuleWindow::SetTitle(const char* title)
 {
-	this->title = title;
 	SDL_SetWindowTitle(window, title);
-}
-
-const char* ModuleWindow::GetTitle() const 
-{
-	return title;
 }
 
 void ModuleWindow::SetWindowBrightness(float brightness) const

@@ -59,8 +59,6 @@ private:
 	bool borderless = false;
 	bool fullDesktop = false;
 
-	const char* title = nullptr;
-
 	bool active = true;
 };
 

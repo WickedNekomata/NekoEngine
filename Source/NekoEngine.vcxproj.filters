@@ -58,6 +58,9 @@
     <Filter Include="Sources\3rd Party\glew">
       <UniqueIdentifier>{232e3b40-7839-487f-9b39-b23a8f248872}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Physfs">
+      <UniqueIdentifier>{26cd2d5d-b52b-4e15-ae3f-3f2a58b19a1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -353,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="ModuleFileSystem.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs\include\physfs.h">
+      <Filter>Sources\3rd Party\Physfs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

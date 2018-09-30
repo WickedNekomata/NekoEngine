@@ -1,0 +1,30 @@
+{
+    "Scene": {
+        "stringTest": "yes!"
+    },
+    "Audio": {
+        "stringTest": "yes!"
+    },
+    "Camera3D": {
+        "stringTest": "yes!"
+    },
+    "GUI": {
+        "Inspector": false,
+        "PCG performance test": true,
+        "About": true,
+        "Console": false,
+        "Preferences": false
+    },
+    "Input": {
+        "stringTest": "yes!"
+    },
+    "Renderer3D": {
+        "stringTest": "yes!"
+    },
+    "Window": {
+        "stringTest": "yes!"
+    }
+    "FileSystem"{
+        "stringTest": "yes!"
+    }
+}

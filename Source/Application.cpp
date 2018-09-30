@@ -44,6 +44,9 @@ bool Application::Init()
 {
 	bool ret = true;
 
+	SetAppName(TITLE);
+	SetOrganizationName(ORGANIZATION);
+
 	JSON_Value* rootValue = json_parse_file("data.json");
 	JSON_Object* data = json_value_get_object(rootValue);
 
@@ -162,7 +165,9 @@ void Application::FinishUpdate()
 
 void Application::Load() const
 {
-	JSON_Value* rootValue = json_parse_file("data.json");
+	char* buf;
+	App->filesystem->OpenRead("config.json", &buf);
+	JSON_Value* rootValue = json_parse_string(buf);
 	JSON_Object* data = json_value_get_object(rootValue);
 
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
@@ -179,8 +184,7 @@ void Application::Load() const
 void Application::Save() const
 {
 	// TODO: Check if the current object in json exist. if not, create it
-
-	JSON_Value* rootValue = json_parse_file("data.json");
+	JSON_Value* rootValue = json_parse_file("config.json");
 	JSON_Object* data = json_value_get_object(rootValue);
 
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
@@ -188,7 +192,7 @@ void Application::Save() const
 		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
 		(*item)->SaveStatus(modulejObject);
 	}
-	json_serialize_to_file_pretty(rootValue,"data.json");
+	json_serialize_to_file_pretty(rootValue,"config.json");
 	json_value_free(rootValue);
 
 	save = false;
@@ -202,7 +206,9 @@ void Application::AddModule(Module* mod)
 void Application::SetAppName(const char* name)
 {
 	appName = name;
-	window->SetTitle(name);
+
+	if (window != nullptr)
+		window->SetTitle(name);
 }
 
 const char* Application::GetAppName() const 

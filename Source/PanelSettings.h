@@ -8,6 +8,8 @@
 
 #define STR_INPUT_SIZE 128
 
+class Module;
+
 class PanelSettings : public Panel
 {
 public:
@@ -20,6 +22,9 @@ public:
 private:
 
 	void ApplicationNode() const;
+
+	bool IsActiveNode(Module* module) const;
+
 	void WindowNode() const;
 	void RendererNode() const;
 	void FileSystemNode() const;

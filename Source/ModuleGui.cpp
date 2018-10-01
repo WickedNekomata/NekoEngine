@@ -169,13 +169,13 @@ void ModuleGui::Draw() const
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ModuleGui::SaveStatus(JSON_Object* jObject)
+void ModuleGui::SaveStatus(JSON_Object* jObject) const
 {
 	for (int i = 0; i < panels.size(); ++i)
 		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());	
 }
 
-void ModuleGui::LoadStatus(JSON_Object* jObject)
+void ModuleGui::LoadStatus(const JSON_Object* jObject)
 {
 	for (int i = 0; i < panels.size(); ++i)
 		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));

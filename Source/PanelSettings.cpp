@@ -36,22 +36,26 @@ bool PanelSettings::Draw()
 	}
 	if (ImGui::TreeNode("Window"))
 	{
-		WindowNode();
+		if (IsActiveNode((Module*)App->window))
+			WindowNode();
 		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("Renderer"))
+	if (ImGui::TreeNode("Renderer 3D"))
 	{
-		RendererNode();
+		if (IsActiveNode((Module*)App->renderer3D))
+			RendererNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("File System"))
 	{
-		FileSystemNode();
+		if (IsActiveNode((Module*)App->filesystem))
+			FileSystemNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Input"))
 	{
-		InputNode();
+		if (IsActiveNode((Module*)App->input))
+			InputNode();
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Hardware"))
@@ -137,13 +141,18 @@ void PanelSettings::ApplicationNode() const
 	ImGui::Text("Peak Alloc Unit Count: %u", memStats.peakAllocUnitCount);
 }
 
-void PanelSettings::WindowNode() const
+bool PanelSettings::IsActiveNode(Module* module) const
 {
 	// Active
-	static bool active = App->window->GetWindowActive();
+	static bool active = module->IsActive();
 	if (ImGui::Checkbox("Active", &active))
-		App->window->SetWindowActive(active);
+		module->SetActive(active);
 
+	return active;
+}
+
+void PanelSettings::WindowNode() const
+{
 	// Brightness
 	float brightness = App->window->GetWindowBrightness();
 	if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f))
@@ -166,7 +175,7 @@ void PanelSettings::WindowNode() const
 
 	ImGui::Text("Refresh rate: ");
 	ImGui::SameLine();
-	ImGui::TextColored({ 239, 201, 0, 255 }, "%i", refreshRate);
+	ImGui::TextColored(TEXT_COLOR, "%i", refreshRate);
 
 	// Fullscreen, resizable, borderless, fullscreen desktop
 	static bool fullscreen = App->window->GetFullscreenWindow();
@@ -232,12 +241,28 @@ void PanelSettings::RendererNode() const
 
 void PanelSettings::FileSystemNode() const
 {
-
+	// TODO: Fulfill this
+	// Paths
+	ImGui::Text("Base Path:");
+	ImGui::TextColored(TEXT_COLOR, "BasePath");
+	ImGui::Text("Read Path:");
+	ImGui::TextColored(TEXT_COLOR, ".");
+	ImGui::Text("Write Path:");
+	ImGui::TextColored(TEXT_COLOR, ".");
 }
 
 void PanelSettings::InputNode() const
 {
+	ImGui::Text("Mouse Position:");
+	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i, %i", App->input->GetMouseX(), App->input->GetMouseY());
 
+	ImGui::Text("Mouse Motion:");
+	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i, %i", App->input->GetMouseXMotion(), App->input->GetMouseYMotion());
+
+	ImGui::Text("Mouse Wheel:");
+	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i", App->input->GetMouseZ());
+
+	// TODO: Finish this (log mouse events: up, down, repeat, etc.).
 }
 
 void PanelSettings::HardwareNode() const
@@ -252,27 +277,27 @@ void PanelSettings::HardwareNode() const
 
 	// CPU
 	ImGui::Text("CPUs:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+	ImGui::TextColored(TEXT_COLOR, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 
 	// RAM
 	ImGui::Text("System Ram:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%iMb", SDL_GetSystemRAM());
+	ImGui::TextColored(TEXT_COLOR, "%iMb", SDL_GetSystemRAM());
 
 	// Capabilites
 	ImGui::Text("Caps:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
+	ImGui::TextColored(TEXT_COLOR, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
 		(SDL_Has3DNow()) ? "3DNow " : "", (SDL_HasMMX()) ? "MMX " : "", (SDL_HasRDTSC()) ? "RDTSC " : "", (SDL_HasSSE()) ? "SEE " : "",
 		(SDL_HasSSE2()) ? "SSE2 " : "", (SDL_HasSSE3()) ? "SSE3 " : "", (SDL_HasSSE41()) ? "SSE41 " : "",
 		(SDL_HasSSE42()) ? "SSE42 " : "");
 
 	ImGui::Separator();
 
-	//TODO: fix issue if pc has 2 or more gpus
+	// TODO: Fix issue if pc has 2 or more gpus
 	//Gpu
 	ImGui::Text("Gpu:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%s", glGetString(GL_RENDERER));
+	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%s", glGetString(GL_VENDOR));
+	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_VENDOR));
 
 	GLint totalMemory;
 	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemory);
@@ -284,11 +309,11 @@ void PanelSettings::HardwareNode() const
 	memoryUsage = totalMemory - availableMemory;
 
 	ImGui::Text("VRAM Budget:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%.2fMb", totalMemory * 0.001);
+	ImGui::TextColored(TEXT_COLOR, "%.2fMb", totalMemory * 0.001);
 	ImGui::Text("VRAM Usage:"); ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%.2fMb", memoryUsage * 0.001);
+	ImGui::TextColored(TEXT_COLOR, "%.2fMb", memoryUsage * 0.001);
 	ImGui::Text("VRAM Available:");	ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%.2fMb", availableMemory * 0.001);
+	ImGui::TextColored(TEXT_COLOR, "%.2fMb", availableMemory * 0.001);
 	ImGui::Text("VRAM Reserved:");	ImGui::SameLine();
-	ImGui::TextColored({ 239,201,0,255 }, "%.2fMb", reservedMemory * 0.001);
+	ImGui::TextColored(TEXT_COLOR, "%.2fMb", reservedMemory * 0.001);
 }

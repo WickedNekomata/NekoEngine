@@ -28,8 +28,8 @@ public:
 
 	void Draw() const;
 
-	void SaveStatus(JSON_Object*);
-	void LoadStatus(JSON_Object*);
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
 
 	void LogConsole(const char* log) const;
 

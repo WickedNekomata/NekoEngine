@@ -48,11 +48,15 @@ public:
 		return true; 
 	}
 
-	virtual void SaveStatus(JSON_Object*) {};
+	virtual void SaveStatus(JSON_Object*) const {};
 
-	virtual void LoadStatus(JSON_Object*) {};
+	virtual void LoadStatus(const JSON_Object*) {};
 
 	inline char* GetName() const { return name; }
+
+	bool IsActive() const { return enabled; }
+
+	void SetActive(bool enable) { this->enabled = enable; }
 
 protected:
 

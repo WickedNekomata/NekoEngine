@@ -1,6 +1,8 @@
 #ifndef __PANEL_H__
 #define __PANEL_H__
 
+#define TEXT_COLOR { 239, 201, 0, 255 }
+
 class Panel
 {
 public:

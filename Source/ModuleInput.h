@@ -45,6 +45,7 @@ public:
 		return mouse_y;
 	}
 
+	// Mouse wheel
 	int GetMouseZ() const
 	{
 		return mouse_z;

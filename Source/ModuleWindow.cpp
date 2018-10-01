@@ -230,18 +230,3 @@ bool ModuleWindow::GetBorderlessWindow() const
 {
 	return borderless;
 }
-
-void ModuleWindow::SetWindowActive(bool active) 
-{
-	this->active = active;
-
-	if (active)
-		SDL_ShowWindow(window);
-	else
-		SDL_HideWindow(window);
-}
-
-bool ModuleWindow::GetWindowActive() const 
-{
-	return active;
-}

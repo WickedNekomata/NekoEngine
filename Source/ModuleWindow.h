@@ -40,9 +40,6 @@ public:
 	void SetBorderlessWindow(bool borderless);
 	bool GetBorderlessWindow() const;
 
-	void SetWindowActive(bool active);
-	bool GetWindowActive() const;
-
 public:
 	
 	SDL_Window* window; // The window we'll be rendering to	
@@ -58,8 +55,6 @@ private:
 	bool resizable = false;
 	bool borderless = false;
 	bool fullDesktop = false;
-
-	bool active = true;
 };
 
 #endif

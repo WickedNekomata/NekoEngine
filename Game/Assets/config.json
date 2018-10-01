@@ -1,30 +1,16 @@
 {
-    "Scene": {
-        "stringTest": "yes!"
-    },
-    "Audio": {
-        "stringTest": "yes!"
-    },
-    "Camera3D": {
-        "stringTest": "yes!"
-    },
+    "FileSystem": {},
+    "Window": {},
+    "Camera3D": {},
+    "Input": {},
+    "Audio": {},
     "GUI": {
         "Inspector": false,
         "PCG performance test": true,
-        "About": true,
+        "About": false,
         "Console": false,
         "Preferences": false
     },
-    "Input": {
-        "stringTest": "yes!"
-    },
-    "Renderer3D": {
-        "stringTest": "yes!"
-    },
-    "Window": {
-        "stringTest": "yes!"
-    },
-    "FileSystem": {
-        "stringTest": "yes!"
-    }
+    "Scene": {},
+    "Renderer3D": {}
 }

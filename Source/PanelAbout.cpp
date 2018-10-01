@@ -46,19 +46,19 @@ bool PanelAbout::Draw()
 		ImGui::Text("Libraries");
 		ImGui::Spacing();
 
-		SDL_version SDLversion;
-		SDL_GetVersion(&SDLversion);
+		SDL_version version;
+		SDL_GetVersion(&version);
 		if (ImGui::Button("SDL")) { OpenInBrowser("https://www.libsdl.org/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", SDLversion.major, SDLversion.minor, SDLversion.patch);
+		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", version.major, version.minor, version.patch);
 
 		if (ImGui::Button("OpenGL")) { OpenInBrowser("https://www.opengl.org/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%s (currently using 2.1)", glGetString(GL_VERSION));
+		ImGui::SameLine(); ImGui::TextWrapped("%s", glGetString(GL_VERSION));
 		
 		if (ImGui::Button("Glew")) { OpenInBrowser("http://glew.sourceforge.net/"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
 
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
-		ImGui::SameLine(); ImGui::TextWrapped("1.65");
+		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
 
 		if (ImGui::Button("MathGeoLib")) { OpenInBrowser("https://github.com/juj/MathGeoLib"); }
 		ImGui::SameLine(); ImGui::TextWrapped("1.5");

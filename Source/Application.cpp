@@ -49,19 +49,28 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	App->filesystem->OpenRead("Assets/config.json", &buf);
-	JSON_Value* rootValue = json_parse_string(buf);
-	delete[] buf;
-	JSON_Object* data = json_value_get_object(rootValue);
-
-	// Call Init() in all modules
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
+	if (App->filesystem->OpenRead("Assets/config.json", &buf))
 	{
-		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
-		ret = (*item)->Init(modulejObject);
-	}
+		JSON_Value* rootValue = json_parse_string(buf);
+		delete[] buf;
+		JSON_Object* data = json_value_get_object(rootValue);
 
-	json_value_free(rootValue);
+		// Call Init() in all modules
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
+		{
+			JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+			ret = (*item)->Init(modulejObject);
+		}
+
+		json_value_free(rootValue);
+	}
+	else
+	{
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
+		{
+			ret = (*item)->Init(nullptr);
+		}
+	}
 
 	// After all Init calls we call Start() in all modules
 	CONSOLE_LOG("Application Start --------------");
@@ -171,35 +180,41 @@ void Application::Load() const
 {
 	// Read config file
 	char* buf;
-	App->filesystem->OpenRead("Assets/config.json", &buf);
-	JSON_Value* rootValue = json_parse_string(buf);
-	delete[] buf;
-	JSON_Object* data = json_value_get_object(rootValue);
-
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+	if (App->filesystem->OpenRead("Assets/config.json", &buf))
 	{
-		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
-		(*item)->LoadStatus(modulejObject);
-	}
+		JSON_Value* rootValue = json_parse_string(buf);
+			delete[] buf;
+			JSON_Object* data = json_value_get_object(rootValue);
 
-	json_value_free(rootValue);
+			for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+			{
+				JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+					(*item)->LoadStatus(modulejObject);
+			}
+
+		json_value_free(rootValue);
+	}
 
 	load = false;
 }
 
 void Application::Save() const
 {
-	// TODO 1: Check if the current object in json exists. If not, create it
-	// TODO 2: Make Save work with FileSystem OpenWrite
-	JSON_Value* rootValue = json_parse_file("Assets/config.json");
-	JSON_Object* data = json_value_get_object(rootValue);
-
+	JSON_Value* rootValue = json_value_init_object();
+	JSON_Object* rootObject = json_value_get_object(rootValue);
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
 	{
-		JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
-		(*item)->SaveStatus(modulejObject);
+		
+		JSON_Value* newValue = json_value_init_object();
+		JSON_Object* objModule = json_value_get_object(newValue);
+		json_object_set_value(rootObject, (*item)->GetName(), newValue);
+		(*item)->SaveStatus(objModule);
 	}
-	json_serialize_to_file_pretty(rootValue,"Assets/config.json");
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	char* buf = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
+	filesystem->OpenWrite("config.json", buf);
+	delete[] buf;
 	json_value_free(rootValue);
 
 	save = false;

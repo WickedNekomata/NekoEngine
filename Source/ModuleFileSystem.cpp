@@ -25,9 +25,7 @@ bool ModuleFileSystem::Init(JSON_Object* jObject)
 
 	CONSOLE_LOG("Loading File System");
 
-	// TODO: Add all paths in configuration in order
-
-	if (PHYSFS_setWriteDir("./Assets/") == 0)
+	if (PHYSFS_setWriteDir("./Assets") == 0)
 		CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
 	return ret;
@@ -96,7 +94,7 @@ uint ModuleFileSystem::OpenWrite(const char* file, const char* buffer) const
 
 	if (fsFile != nullptr)
 	{
-		PHYSFS_sint64 size = PHYSFS_fileLength(fsFile);
+		PHYSFS_sint64 size = strlen(buffer);
 
 		PHYSFS_sint64 written = PHYSFS_writeBytes(fsFile, (const void*)buffer, size);
 

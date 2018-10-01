@@ -154,7 +154,10 @@ PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primiti
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-PrimitiveCube::~PrimitiveCube() {}
+PrimitiveCube::~PrimitiveCube() 
+{
+	delete[] vertices;
+}
 
 void PrimitiveCube::InnerRender() const
 {

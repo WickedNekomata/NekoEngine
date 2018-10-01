@@ -1,6 +1,6 @@
 # Neko Engine
 
-Neko Engine is a 3D game engine currently being developed by two students, Sandra Alvarez and Guillem Costa.
+Neko Engine is a 3D game engine currently being developed by two students from CITM-UPC Terrassa, Sandra Alvarez and Guillem Costa.
 
 - Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
 - Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
@@ -15,4 +15,10 @@ The code is written in C++.
 ### Tools used to develop the engine
 
 - IDE: Microsoft Visual Studio 2017
-- External libraries: SDL 2.0, OpenGL 2.1, Bullet, ImGui
+- External libraries: 
+	- SDL 2.0.8
+	- OpenGL 4.3 (currently using 2.1), Glew 2.1, ImGui 1.65
+	- MathGeoLib 1.5, PCG Random Number Generator 0.94
+	- Parson
+	- PhysFS 3.0.1
+	- MMGR

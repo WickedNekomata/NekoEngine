@@ -10,7 +10,7 @@ struct PanelInspector;
 struct PanelTestPCG;
 struct PanelAbout;
 struct PanelConsole;
-struct PanelPreferences;
+struct PanelSettings;
 
 class ModuleGui : public Module
 {
@@ -35,11 +35,11 @@ public:
 
 public:
 
-	PanelInspector* pInspector = nullptr;
-	PanelTestPCG* pRandomNumber = nullptr;
-	PanelAbout* pAbout = nullptr;
-	PanelConsole* pConsole = nullptr;
-	PanelPreferences* pPreferences = nullptr;
+	PanelInspector* panelInspector = nullptr;
+	PanelTestPCG* panelRandomNumber = nullptr;
+	PanelAbout* panelAbout = nullptr;
+	PanelConsole* panelConsole = nullptr;
+	PanelSettings* panelSettings = nullptr;
 
 private:
 

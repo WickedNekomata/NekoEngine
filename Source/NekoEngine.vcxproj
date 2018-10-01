@@ -163,7 +163,7 @@
     <ClInclude Include="PanelAbout.h" />
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelInspector.h" />
-    <ClInclude Include="PanelPreferences.h" />
+    <ClInclude Include="PanelSettings.h" />
     <ClInclude Include="PanelTestPCG.h" />
     <ClInclude Include="parson\parson.h" />
     <ClInclude Include="Pcg\entropy.h" />
@@ -229,7 +229,7 @@
     <ClCompile Include="PanelAbout.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
-    <ClCompile Include="PanelPreferences.cpp" />
+    <ClCompile Include="PanelSettings.cpp" />
     <ClCompile Include="PanelTestPCG.cpp" />
     <ClCompile Include="parson\parson.c" />
     <ClCompile Include="Pcg\entropy.c" />

@@ -1,5 +1,5 @@
-#ifndef __PANEL_PREFERENCES_H__
-#define __PANEL_PREFERENCES_H__
+#ifndef __PANEL_SETTINGS_H__
+#define __PANEL_SETTINGS_H__
 
 #include "Panel.h"
 
@@ -8,21 +8,23 @@
 
 #define STR_INPUT_SIZE 128
 
-class PanelPreferences : public Panel
+class PanelSettings : public Panel
 {
 public:
 
-	PanelPreferences(char* name);
-	virtual ~PanelPreferences();
+	PanelSettings(char* name);
+	virtual ~PanelSettings();
 
 	virtual bool Draw();
 
 private:
 
-	void HardwareNode() const;
 	void ApplicationNode() const;
 	void WindowNode() const;
 	void RendererNode() const;
+	void FileSystemNode() const;
+	void InputNode() const;
+	void HardwareNode() const;
 };
 
 #endif

@@ -8,7 +8,7 @@
 #include "PanelTestPCG.h"
 #include "PanelAbout.h"
 #include "PanelConsole.h"
-#include "PanelPreferences.h"
+#include "PanelSettings.h"
 #include "ModuleFileSystem.h"
 
 #include "imgui/imgui.h"
@@ -25,17 +25,17 @@ ModuleGui::~ModuleGui()
 
 bool ModuleGui::Init(JSON_Object * jObject)
 {
-	pInspector = new PanelInspector("Inspector");
-	pRandomNumber = new PanelTestPCG("PCG performance test");
-	pAbout = new PanelAbout("About");
-	pConsole = new PanelConsole("Console");
-	pPreferences = new PanelPreferences("Preferences");
+	panelInspector = new PanelInspector("Inspector");
+	panelRandomNumber = new PanelTestPCG("PCG performance test");
+	panelAbout = new PanelAbout("About");
+	panelConsole = new PanelConsole("Console");
+	panelSettings = new PanelSettings("Settings");
 
-	panels.push_back(pInspector);
-	panels.push_back(pRandomNumber);
-	panels.push_back(pAbout);
-	panels.push_back(pConsole);
-	panels.push_back(pPreferences);
+	panels.push_back(panelInspector);
+	panels.push_back(panelRandomNumber);
+	panels.push_back(panelAbout);
+	panels.push_back(panelConsole);
+	panels.push_back(panelSettings);
 
 	return true;
 }
@@ -73,11 +73,11 @@ update_status ModuleGui::PreUpdate(float dt)
 
 update_status ModuleGui::Update(float dt)
 {
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { pInspector->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) { pConsole->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { pRandomNumber->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {  }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { pPreferences->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) { panelConsole->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { panelRandomNumber->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) { panelAbout->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { panelSettings->OnOff(); }
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -96,15 +96,15 @@ update_status ModuleGui::Update(float dt)
 		}
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Inspector Window", "CTRL+I")) { pInspector->OnOff(); }
-			if (ImGui::MenuItem("Console", "CTRL+O")) { pConsole->OnOff(); }
-			if (ImGui::MenuItem("Preferences", "CTRL+P")) { pPreferences->OnOff(); }
+			if (ImGui::MenuItem("Inspector Window", "CTRL+I")) { panelInspector->OnOff(); }
+			if (ImGui::MenuItem("Console", "CTRL+O")) { panelConsole->OnOff(); }
+			if (ImGui::MenuItem("Settings", "CTRL+P")) { panelSettings->OnOff(); }
 
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Tools"))
 		{
-			if (ImGui::MenuItem("PCG performance test", "CTRL+R" )) { pRandomNumber->OnOff(); }
+			if (ImGui::MenuItem("PCG performance test", "CTRL+R" )) { panelRandomNumber->OnOff(); }
 			if (ImGui::MenuItem("Test Intersections", "CTRL+T")) { }
 
 			ImGui::EndMenu();
@@ -115,7 +115,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Documentation")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine"); }
 			if (ImGui::MenuItem("Latest Release")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/releases"); }
 			if (ImGui::MenuItem("Bug report")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/issues"); }
-			if (ImGui::MenuItem("About")) { pAbout->OnOff(); }
+			if (ImGui::MenuItem("About")) { panelAbout->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -147,11 +147,11 @@ bool ModuleGui::CleanUp()
 			delete panels[i];
 	}
 
-	pInspector = nullptr;
-	pRandomNumber = nullptr;
-	pAbout = nullptr;
-	pConsole = nullptr;
-	pPreferences = nullptr;
+	panelInspector = nullptr;
+	panelRandomNumber = nullptr;
+	panelAbout = nullptr;
+	panelConsole = nullptr;
+	panelSettings = nullptr;
 
 	CONSOLE_LOG("Cleaning up ImGui");
 
@@ -183,6 +183,6 @@ void ModuleGui::LoadStatus(JSON_Object* jObject)
 
 void ModuleGui::LogConsole(const char* log) const
 {
-	if (pConsole != nullptr)
-		pConsole->AddLog(log);
+	if (panelConsole != nullptr)
+		panelConsole->AddLog(log);
 }

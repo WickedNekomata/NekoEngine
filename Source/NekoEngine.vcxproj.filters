@@ -321,9 +321,6 @@
     <ClInclude Include="PanelConsole.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="PanelPreferences.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleScene.h">
       <Filter>Sources\Modules\Game</Filter>
     </ClInclude>
@@ -359,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="physfs\include\physfs.h">
       <Filter>Sources\3rd Party\Physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelSettings.h">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -521,9 +521,6 @@
     <ClCompile Include="PanelConsole.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="PanelPreferences.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleScene.cpp">
       <Filter>Sources\Modules\Game</Filter>
     </ClCompile>
@@ -544,6 +541,9 @@
     </ClCompile>
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSettings.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,8 @@ bool ModuleScene::Start()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	*/
 
+	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f), math::float3(4.0f, 1.0f, 6.0f));
+
 	return ret;
 }
 
@@ -54,10 +56,5 @@ bool ModuleScene::CleanUp()
 
 void ModuleScene::Draw() const 
 {
-	pCube cube;
-	cube.axis = true;
-	cube.Render();
-
-	pPlane plane;
-	plane.Render();
+	cube->Render();
 }

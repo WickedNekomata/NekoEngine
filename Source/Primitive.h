@@ -7,12 +7,12 @@
 
 enum PrimitiveTypes
 {
-	Primitive_Point,
-	Primitive_Line,
-	Primitive_Plane,
-	Primitive_Cube,
-	Primitive_Sphere,
-	Primitive_Cylinder
+	PrimitiveTypePoint,
+	PrimitiveTypeLine,
+
+	PrimitiveTypeCube,
+	PrimitiveTypeSphere,
+	PrimitiveTypeCylinder
 };
 
 class Primitive
@@ -20,14 +20,14 @@ class Primitive
 public:
 
 	Primitive();
+	Primitive(math::float3 position);
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	PrimitiveTypes	GetType() const;
-	void			SetPos(float x, float y, float z);
+	void			SetPosition(math::float3 position);
 	void			SetRotation(float angle, const math::float3 &u);
-	void			Scale(float x, float y, float z);
-
+	void			SetScale(math::float3 scale);
 
 public:
 	
@@ -40,56 +40,13 @@ protected:
 	PrimitiveTypes type;
 };
 
-// ============================================
-class pCube : public Primitive
+/*
+class PrimitivePoint : public Primitive
 {
 public:
 
-	pCube();
-	pCube(float sizeX, float sizeY, float sizeZ);
-	void InnerRender() const;
-
-public:
-
-	math::float3 size;
-};
-
-// ============================================
-class pSphere : public Primitive
-{
-public:
-
-	pSphere();
-	pSphere(float radius);
-	void InnerRender() const;
-
-public:
-
-	float radius;
-};
-
-// ============================================
-class pCylinder : public Primitive
-{
-public:
-
-	pCylinder();
-	pCylinder(float radius, float height);
-	void InnerRender() const;
-
-public:
-
-	float radius;
-	float height;
-};
-
-// ============================================
-class pLine : public Primitive
-{
-public:
-
-	pLine();
-	pLine(float x, float y, float z);
+	PrimitivePoint();
+	PrimitivePoint(float x, float y, float z);
 	void InnerRender() const;
 
 public:
@@ -98,7 +55,68 @@ public:
 	math::float3 destination;
 };
 
-// ============================================
+class PrimitiveLine : public Primitive
+{
+public:
+
+	PrimitiveLine();
+	PrimitiveLine(float x, float y, float z);
+	void InnerRender() const;
+
+public:
+
+	math::float3 origin;
+	math::float3 destination;
+};
+*/
+class PrimitiveCube : public Primitive
+{
+public:
+
+	PrimitiveCube(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), math::float3 size = math::float3(1.0f, 1.0f, 1.0f));
+	~PrimitiveCube();
+	void InnerRender() const;
+
+	math::float3 GetSize() const;
+
+private:
+
+	math::float3 size;
+
+	GLuint indicesID = 0;
+	GLuint verticesID = 0;
+
+	GLsizei indicesSize = 0;
+	GLfloat* vertices;
+};
+/*
+class PrimitiveSphere : public Primitive
+{
+public:
+
+	PrimitiveSphere();
+	PrimitiveSphere(float radius);
+	void InnerRender() const;
+
+public:
+
+	float radius;
+};
+
+class PrimitiveCylinder : public Primitive
+{
+public:
+
+	PrimitiveCylinder();
+	PrimitiveCylinder(float radius, float height);
+	void InnerRender() const;
+
+public:
+
+	float radius;
+	float height;
+};
+
 class pPlane : public Primitive
 {
 public:
@@ -112,3 +130,4 @@ public:
 	math::float3 normal;
 	float constant;
 };
+*/

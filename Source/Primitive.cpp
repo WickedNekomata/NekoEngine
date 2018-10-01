@@ -5,11 +5,11 @@
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
-Primitive::Primitive() : transform(math::float4x4::identity), color(White), axis(false), type(PrimitiveTypes::Primitive_Point)
-{}
+Primitive::Primitive() : transform(math::float4x4::identity), color(White), axis(false), type(PrimitiveTypes::PrimitiveTypePoint) {}
 
 void Primitive::Render() const
 {
+	/*
 	glPushMatrix();
 	glMultMatrixf((GLfloat*)transform.ptr());
 
@@ -50,6 +50,9 @@ void Primitive::Render() const
 	InnerRender();
 
 	glPopMatrix();
+	*/
+
+	InnerRender();
 }
 
 void Primitive::InnerRender() const
@@ -70,34 +73,92 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
-void Primitive::SetPos(float x, float y, float z)
+void Primitive::SetPosition(math::float3 position)
 {
-	transform = math::float4x4::Translate(x, y, z).ToFloat4x4() * transform;
+	transform.Translate(position);
 }
 
 void Primitive::SetRotation(float angle, const math::float3 &u)
 {
+	// TODO: fix
 	transform = math::float4x4::RotateAxisAngle(u, angle) * transform;
 }
 
-void Primitive::Scale(float x, float y, float z)
+void Primitive::SetScale(math::float3 scale)
 {
-	transform = math::float4x4::Scale(x, y, z).ToFloat4x4() * transform;
+	// TODO: fix
+	transform.Scale(scale);
+	//transform = math::float4x4::Scale(scale.x, scale.y, scale.z).ToFloat4x4() * transform;
 }
 
-// CUBE ============================================
-pCube::pCube() : Primitive(), size(1.0f, 1.0f, 1.0f)
+// Point
+// Line
+
+// Cube
+PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primitive(), size(size)
 {
-	type = PrimitiveTypes::Primitive_Cube;
+	type = PrimitiveTypes::PrimitiveTypeCube;
+	SetPosition(position);
+
+	math::float3 radius = size / 2.0f;
+
+	vertices = new GLfloat[24]{
+
+		-radius.x, -radius.y, radius.z, // A (0)
+		radius.x,  -radius.y, radius.z, // B (1)
+		-radius.x, radius.y,  radius.z, // C (2)
+		radius.x,  radius.y,  radius.z, // D (3)
+		-radius.x, -radius.y, -radius.z, // E (4)
+		radius.x,  -radius.y, -radius.z, // F (5)
+		-radius.x, radius.y,  -radius.z, // G (6)
+		radius.x,  radius.y,  -radius.z  // H (7)
+	};
+
+	glGenBuffers(1, &verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * 24, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLubyte indices[36] {
+
+		// Front
+		0, 1, 2, // ABC
+		1, 3, 2, // BDC
+
+		// Right
+		1, 5, 3, // BFD
+		5, 7, 3, // FHD
+
+		// Back
+		5, 4, 7, // FEH
+		4, 6, 7, // EGH
+
+		// Left
+		4, 0, 6, // EAG
+		0, 2, 6, // ACG
+
+		// Top
+		2, 3, 6, // CDG
+		3, 7, 6, // DHG
+
+		// Bottom
+		0, 4, 1, // AEB
+		1, 4, 5  // BEF
+	};
+
+	indicesSize = sizeof(indices) / sizeof(GLubyte);
+
+	glGenBuffers(1, &indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 36, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-pCube::pCube(float sizeX, float sizeY, float sizeZ) : Primitive(), size(sizeX, sizeY, sizeZ)
-{
-	type = PrimitiveTypes::Primitive_Cube;
-}
+PrimitiveCube::~PrimitiveCube() {}
 
-void pCube::InnerRender() const
-{	
+void PrimitiveCube::InnerRender() const
+{
+	/*
 	float sx = size.x * 0.5f;
 	float sy = size.y * 0.5f;
 	float sz = size.z * 0.5f;
@@ -106,43 +167,66 @@ void pCube::InnerRender() const
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(-sx, -sy, sz);
-	glVertex3f( sx, -sy, sz);
-	glVertex3f( sx,  sy, sz);
-	glVertex3f(-sx,  sy, sz);
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(-sx, sy, sz);
 
 	glNormal3f(0.0f, 0.0f, -1.0f);
-	glVertex3f( sx, -sy, -sz);
+	glVertex3f(sx, -sy, -sz);
 	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx,  sy, -sz);
-	glVertex3f( sx,  sy, -sz);
+	glVertex3f(-sx, sy, -sz);
+	glVertex3f(sx, sy, -sz);
 
 	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(sx, -sy,  sz);
+	glVertex3f(sx, -sy, sz);
 	glVertex3f(sx, -sy, -sz);
-	glVertex3f(sx,  sy, -sz);
-	glVertex3f(sx,  sy,  sz);
+	glVertex3f(sx, sy, -sz);
+	glVertex3f(sx, sy, sz);
 
 	glNormal3f(-1.0f, 0.0f, 0.0f);
 	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx, -sy,  sz);
-	glVertex3f(-sx,  sy,  sz);
-	glVertex3f(-sx,  sy, -sz);
+	glVertex3f(-sx, -sy, sz);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(-sx, sy, -sz);
 
 	glNormal3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-sx, sy,  sz);
-	glVertex3f( sx, sy,  sz);
-	glVertex3f( sx, sy, -sz);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(sx, sy, -sz);
 	glVertex3f(-sx, sy, -sz);
 
 	glNormal3f(0.0f, -1.0f, 0.0f);
 	glVertex3f(-sx, -sy, -sz);
-	glVertex3f( sx, -sy, -sz);
-	glVertex3f( sx, -sy,  sz);
-	glVertex3f(-sx, -sy,  sz);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(-sx, -sy, sz);
 
 	glEnd();
+	*/
+	
+	// Vertex Array with indices (Draw Elements)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_BYTE, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
+math::float3 PrimitiveCube::GetSize() const 
+{
+	return size;
+}
+
+// Sphere
+// Cylinder
+
+/*
 // SPHERE ============================================
 pSphere::pSphere() : Primitive(), radius(1.0f)
 {
@@ -260,3 +344,4 @@ void pPlane::InnerRender() const
 
 	glEnd();
 }
+*/

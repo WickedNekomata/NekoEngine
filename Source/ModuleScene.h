@@ -22,6 +22,7 @@ public:
 	void Draw() const;
 
 	void GlBeginCube() const;
+	void DrawSphereDirectMode() const;
 
 private:
 

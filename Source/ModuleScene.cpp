@@ -26,6 +26,7 @@ bool ModuleScene::Start()
 	App->camera->LookAt(math::float3(0, 0, 0));
 
 	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f));
+	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
 
 	 // SPHERE
 	float* vertex = new float[21];
@@ -159,6 +160,8 @@ void ModuleScene::Draw() const
 	glTranslatef(-5, 0, 0);
 	cube->Render();
 	glTranslatef(+5, 0, 0);
+
+	ray->Render();
 }
 
 void ModuleScene::GlBeginCube() const

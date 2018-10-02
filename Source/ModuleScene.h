@@ -6,6 +6,7 @@
 #include "glew\include\GL\glew.h"
 
 class PrimitiveCube;
+class PrimitiveRay;
 
 class ModuleScene : public Module
 {
@@ -27,6 +28,7 @@ private:
 
 	GLuint VBO, cubeID;
 	PrimitiveCube* cube;
+	PrimitiveRay* ray;
 };
 
 #endif

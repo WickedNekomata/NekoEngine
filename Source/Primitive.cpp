@@ -5,7 +5,7 @@
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
-Primitive::Primitive() : transform(math::float4x4::identity), color(White), axis(false), type(PrimitiveTypes::PrimitiveTypePoint) {}
+Primitive::Primitive() : type(PrimitiveTypes::PrimitiveNoType) {}
 
 void Primitive::Render() const
 {
@@ -30,32 +30,9 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
-void Primitive::SetPosition(math::float3 position)
-{
-	transform.Translate(position);
-}
-
-void Primitive::SetRotation(float angle, const math::float3 &u)
-{
-	// TODO: fix
-	transform = math::float4x4::RotateAxisAngle(u, angle) * transform;
-}
-
-void Primitive::SetScale(math::float3 scale)
-{
-	// TODO: fix
-	transform.Scale(scale);
-	//transform = math::float4x4::Scale(scale.x, scale.y, scale.z).ToFloat4x4() * transform;
-}
-
-// Point
-// Line
-
-// Cube
 PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primitive(), size(size)
 {
 	type = PrimitiveTypes::PrimitiveTypeCube;
-	SetPosition(position);
 
 	math::float3 radius = size / 2.0f;
 
@@ -137,125 +114,31 @@ math::float3 PrimitiveCube::GetSize() const
 	return size;
 }
 
-// Sphere
-// Cylinder
-
-/*
-// SPHERE ============================================
-pSphere::pSphere() : Primitive(), radius(1.0f)
+PrimitiveRay::PrimitiveRay(math::float3 startPos, math::float3 endPos)
 {
-	type = PrimitiveTypes::Primitive_Sphere;
-}
-
-pSphere::pSphere(float radius) : Primitive(), radius(radius)
-{
-	type = PrimitiveTypes::Primitive_Sphere;
-}
-
-void pSphere::InnerRender() const
-{
-	//glutSolidSphere(radius, 25, 25);
-}
-
-// CYLINDER ============================================
-pCylinder::pCylinder() : Primitive(), radius(1.0f), height(1.0f)
-{
-	type = PrimitiveTypes::Primitive_Cylinder;
-}
-
-pCylinder::pCylinder(float radius, float height) : Primitive(), radius(radius), height(height)
-{
-	type = PrimitiveTypes::Primitive_Cylinder;
-}
-
-void pCylinder::InnerRender() const
-{
-	int n = 30;
-
-	// Cylinder Bottom
-	glBegin(GL_POLYGON);
-	
-	for (int i = 360; i >= 0; i -= (360 / n))
+	vertices = new GLfloat[6]
 	{
-		float a = i * math::pi / 180; // degrees to radians
-		glVertex3f(-height * 0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
+		startPos.x, startPos.y, startPos.z,
+		endPos.x, endPos.y, endPos.z
+	};
 
-	// Cylinder Top
-	glBegin(GL_POLYGON);
-	glNormal3f(0.0f, 0.0f, 1.0f);
-	for (int i = 0; i <= 360; i += (360 / n))
-	{
-		float a = i * math::pi / 180; // degrees to radians
-		glVertex3f(height * 0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
-
-	// Cylinder "Cover"
-	glBegin(GL_QUAD_STRIP);
-	for (int i = 0; i < 480; i += (360 / n))
-	{
-		float a = i * math::pi / 180; // degrees to radians
-
-		glVertex3f(height * 0.5f, radius * cos(a), radius * sin(a));
-		glVertex3f(-height * 0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
+	glGenBuffers(1, &verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * 6, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-// LINE ==================================================
-pLine::pLine() : Primitive(), origin(0.0f, 0.0f, 0.0f), destination(1.0f, 1.0f, 1.0f)
+PrimitiveRay::~PrimitiveRay()
 {
-	type = PrimitiveTypes::Primitive_Line;
+	delete[] vertices;
 }
 
-pLine::pLine(float x, float y, float z) : Primitive(), origin(0.0f, 0.0f, 0.0f), destination(x, y, z)
+void PrimitiveRay::InnerRender() const
 {
-	type = PrimitiveTypes::Primitive_Line;
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawArrays(GL_LINES, 0, 2);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
-
-void pLine::InnerRender() const
-{
-	glLineWidth(2.0f);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(origin.x, origin.y, origin.z);
-	glVertex3f(destination.x, destination.y, destination.z);
-
-	glEnd();
-
-	glLineWidth(1.0f);
-}
-
-// PLANE ==================================================
-pPlane::pPlane() : Primitive(), normal(0.0f, 1.0f, 0.0f), constant(1.0f)
-{
-	type = PrimitiveTypes::Primitive_Plane;
-}
-
-pPlane::pPlane(float x, float y, float z, float d) : Primitive(), normal(x, y, z), constant(d)
-{
-	type = PrimitiveTypes::Primitive_Plane;
-}
-
-void pPlane::InnerRender() const
-{
-	glLineWidth(1.0f);
-
-	glBegin(GL_LINES);
-
-	float d = 200.0f;
-
-	for (float i = -d; i <= d; i += 1.0f)
-	{
-		glVertex3f(i, 0.0f, -d);
-		glVertex3f(i, 0.0f, d);
-		glVertex3f(-d, 0.0f, i);
-		glVertex3f(d, 0.0f, i);
-	}
-
-	glEnd();
-}
-*/

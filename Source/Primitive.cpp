@@ -214,3 +214,11 @@ void PrimitivePlane::InnerRender() const
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+PrimitiveFrustum::~PrimitiveFrustum()
+{
+}
+
+void PrimitiveFrustum::InnerRender() const
+{
+}

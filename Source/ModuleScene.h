@@ -11,6 +11,7 @@
 class PrimitiveCube;
 class PrimitiveRay;
 class PrimitivePlane;
+class PrimitiveCircle;
 
 class ModuleScene : public Module
 {
@@ -37,6 +38,7 @@ private:
 	PrimitiveCube* cube;
 	PrimitiveRay* ray;
 	PrimitivePlane* plane;
+	PrimitiveCircle* circle;
 };
 
 #endif

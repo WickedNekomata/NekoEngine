@@ -28,6 +28,7 @@ bool ModuleScene::Start()
 	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f));
 	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
 	plane = new PrimitivePlane(math::float3(0.0f, -5.0f, 0.0f));
+	circle = new PrimitiveCircle();
 
 	// Loading vube into vram. Vertex can be repeated
 	float cubeVertex[] =
@@ -104,6 +105,7 @@ bool ModuleScene::CleanUp()
 void ModuleScene::Draw() const 
 {
 	// Rendering cube from the vram. Vertex are not reusable
+	/*
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glTranslatef(5, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeID);
@@ -121,16 +123,15 @@ void ModuleScene::Draw() const
 	cube->Render();
 	glTranslatef(+5, 0, 0);
 
-
-	ray->Render();
+	*/
+	//ray->Render();
 
 	plane->Render();
-
+	circle->Render();
+	
 	//DrawSphereDirectMode();
 
-
-	//DrawSphereDirectMode();
-	DrawCylinderDirectMode();
+	//DrawCylinderDirectMode();
 
 }
 

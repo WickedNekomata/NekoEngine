@@ -18,14 +18,19 @@ void OpenInBrowser(char* url);
 #define DEGTORAD 0.0174532925199432957f
 #define RADTODEG 57.295779513082320876f
 
-#define RELEASE( x ) \
-    {                        \
-    if( x != NULL )        \
-	    {                      \
-      delete x;            \
-	  x = NULL;              \
-	    }                      \
-    }
+#define RELEASE(x) \
+    { \
+    if (x != nullptr) \
+      delete x; \
+	x = nullptr; \
+	} \
+
+#define RELEASE_ARRAY(x) \
+    { \
+    if (x != nullptr) \
+      delete[] x; \
+	x = nullptr; \
+	} \
 
 typedef unsigned int uint;
 

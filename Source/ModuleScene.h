@@ -5,6 +5,9 @@
 
 #include "glew\include\GL\glew.h"
 
+#include "MathGeoLib/include/Math/TransformOps.h"
+#include "MathGeoLib/include/Math/MathConstants.h"
+
 class PrimitiveCube;
 class PrimitiveRay;
 class PrimitivePlane;
@@ -24,7 +27,9 @@ public:
 	void Draw() const;
 
 	void GlBeginCube() const;
+	void DrawCircleDirectMode(math::float3 position, float radius, uint subdivision, float rotationAngle, math::float3 rotation) const;
 	void DrawSphereDirectMode() const;
+	void DrawCylinderDirectMode() const;
 
 private:
 

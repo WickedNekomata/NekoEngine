@@ -7,6 +7,7 @@
 
 class PrimitiveCube;
 class PrimitiveRay;
+class PrimitivePlane;
 
 class ModuleScene : public Module
 {
@@ -30,6 +31,7 @@ private:
 	GLuint VBO, cubeID;
 	PrimitiveCube* cube;
 	PrimitiveRay* ray;
+	PrimitivePlane* plane;
 };
 
 #endif

@@ -27,40 +27,7 @@ bool ModuleScene::Start()
 
 	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f));
 	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
-
-	 // SPHERE
-	/*
-	float* vertex = new float[21];
-	int radius = 2;
-
-	float angle = 0;
-	
-	int angleCount = 0;
-	for (int j = 0; j < 21;)
-	{
-		if (j % 9 == 0)
-		{
-			vertex[j++] = 0;
-			vertex[j++] = 0;
-			vertex[j++] = 0;
-			continue;
-		}
-		vertex[j++] = sin(angle * DEGTORAD) * radius;
-		vertex[j++] = cos(angle * DEGTORAD) * radius;
-		vertex[j++] = 0;
-
-		angleCount++;
-		if (angleCount % 2 == 0)
-			angle += 45;
-	}
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 24, vertex, GL_STATIC_DRAW);
-	delete[] vertex;
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	*/
-	//END OF SPHERE
+	plane = new PrimitivePlane(math::float3(0.0f, -5.0f, 0.0f));
 
 	// Loading vube into vram. Vertex can be repeated
 	float cubeVertex[] =
@@ -155,6 +122,8 @@ void ModuleScene::Draw() const
 	glTranslatef(+5, 0, 0);
 
 	ray->Render();
+
+	plane->Render();
 
 	//DrawSphereDirectMode();
 }

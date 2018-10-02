@@ -55,6 +55,17 @@ public:
 	PrimitiveRay(math::float3 startPos = math::float3(0.0f, 0.0f, 0.0f), math::float3 endPos = math::float3(1.0f, 1.0f, 1.0f));
 	~PrimitiveRay();
 	void InnerRender() const;
+};
+
+class PrimitivePlane : public Primitive
+{
+public:
+
+	PrimitivePlane(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), math::float3 size = math::float3(100.0f, 100.0f, 100.0f));
+	~PrimitivePlane();
+	void InnerRender() const;
 
 private:
+	GLuint indicesID = 0;
+	GLsizei indicesSize = 0;
 };

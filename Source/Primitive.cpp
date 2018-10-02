@@ -142,3 +142,54 @@ void PrimitiveRay::InnerRender() const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+PrimitivePlane::PrimitivePlane(math::float3 position, math::float3 size)
+{
+	math::float3 radius = size / 2.0f;
+
+	vertices = new GLfloat[12]
+	{
+	   	 radius.x, position.y, -radius.z, // A
+		 radius.x, position.y,  radius.z, // B
+		-radius.x, position.y, -radius.z, // C
+		-radius.x, position.y,  radius.z, // D
+	};
+
+	glGenBuffers(1, &verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * 12, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLubyte indices[6]{
+		2, 1, 0,
+		3, 1, 2
+	};
+
+	indicesSize = sizeof(indices) / sizeof(GLubyte);
+
+	glGenBuffers(1, &indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 6, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+}
+
+PrimitivePlane::~PrimitivePlane()
+{
+	delete[] vertices;
+}
+
+void PrimitivePlane::InnerRender() const
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_BYTE, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+}

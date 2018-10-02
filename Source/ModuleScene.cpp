@@ -29,6 +29,7 @@ bool ModuleScene::Start()
 	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
 
 	 // SPHERE
+	/*
 	float* vertex = new float[21];
 	int radius = 2;
 
@@ -58,7 +59,7 @@ bool ModuleScene::Start()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 24, vertex, GL_STATIC_DRAW);
 	delete[] vertex;
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	*/
 	//END OF SPHERE
 
 	// Loading vube into vram. Vertex can be repeated
@@ -135,14 +136,6 @@ bool ModuleScene::CleanUp()
 
 void ModuleScene::Draw() const 
 {
-	// sphere
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_TRIANGLES, 0, 24);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	// Rendering cube from the vram. Vertex are not reusable
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glTranslatef(5, 0, 0);
@@ -162,6 +155,8 @@ void ModuleScene::Draw() const
 	glTranslatef(+5, 0, 0);
 
 	ray->Render();
+
+	//DrawSphereDirectMode();
 }
 
 void ModuleScene::GlBeginCube() const
@@ -221,6 +216,33 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(-0.5f, -0.5f, -0.5f);
 	glVertex3f(0.5f, -0.5f, -0.5f);
 	glVertex3f(-0.5f, -0.5f, 0.5f);
+
+	glEnd();
+}
+
+void ModuleScene::DrawSphereDirectMode() const 
+{
+	glBegin(GL_TRIANGLES);
+
+	math::float3 position(0.0f, 0.0f, 0.0f);
+	float radius = 1.0f;
+	uint subdivisions = 8;
+	subdivisions *= 2; // total = 16
+
+	float deltaAngle = 360.0f / (float)subdivisions; // in degrees
+	float angle = 0.0f;
+
+	for (uint i = 0; i < subdivisions; ++i)
+	{
+		float nextAngle = angle + deltaAngle;
+		
+		// Triangle
+		glVertex3f(position.x, position.y, position.z);
+		glVertex3f(radius * cosf(DEGTORAD * nextAngle), radius * sinf(DEGTORAD * nextAngle), position.z);
+		glVertex3f(radius * cosf(DEGTORAD * angle), radius * sinf(DEGTORAD * angle), position.z);
+
+		angle = nextAngle;
+	}
 
 	glEnd();
 }

@@ -21,9 +21,11 @@ public:
 
 	void Draw() const;
 
+	void GlBeginCube() const;
+
 private:
 
-	GLuint VBO;
+	GLuint VBO, cubeID;
 	PrimitiveCube* cube;
 };
 

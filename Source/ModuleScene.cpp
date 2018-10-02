@@ -26,14 +26,17 @@ bool ModuleScene::Start()
 	App->camera->LookAt(math::float3(0, 0, 0));
 
 	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f));
-	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
+	cube->EnableAxis(true);
+	ray = new PrimitiveRay(math::float3(10.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
 	plane = new PrimitivePlane(math::float3(0.0f, -5.0f, 0.0f));
 	circle = new PrimitiveCircle();
+	sphere = new PrimitiveSphere();
 	frustum = new PrimitiveFrustum(math::float3(0.0f, 0.0f, -10.0f), 1.f, 1.f, math::float3(0.0f, 0.0f, -20.0f), 5.f, 5.f);
 	frustum->EnableAxis(true);
-	sphere = new PrimitiveSphere();
 
-	// Loading vube into vram. Vertex can be repeated
+	cylinder = new PrimitiveCylinder();
+
+	// Load Cube into vram. Vertex can be repeated
 	float cubeVertex[] =
 	{
 		-0.5f,  0.5f,  0.5f,
@@ -102,49 +105,62 @@ bool ModuleScene::CleanUp()
 {
 	bool ret = true;
 
+	RELEASE(cube);
+	RELEASE(ray);
+	RELEASE(plane);
+	RELEASE(circle);
+	RELEASE(frustum);
+	RELEASE(sphere);
+	RELEASE(cylinder);
+
 	return ret;
 }
 
 void ModuleScene::Draw() const 
 {
-	// Rendering cube from the vram. Vertex are not reusable
-	/*
+	// Cube
+	// 1. Direct Mode
+	glTranslatef(-5.0f, 0.0f, 0.0f);
+	DrawCubeDirectMode();
+	glTranslatef(5.0f, 0.0f, 0.0f);
+
+	// 2. Vertex Array
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glTranslatef(5, 0, 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, cubeID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glDrawArrays(GL_TRIANGLES, 0, 108);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	
-	// Rendering cube in direct mode
-	glTranslatef(-5, 0, 0);
-	GlBeginCube();
-
-	// Rendering Cube from the vram. Vertex are reusable
-	glTranslatef(-5, 0, 0);
+	// Element Array (Vertex Array with indices)
+	glTranslatef(5.0f, 0.0f, 0.0f);
 	cube->Render();
-	glTranslatef(+5, 0, 0);
+	glTranslatef(-5.0f, 0.0f, 0.0f);
 
-	*/
-	//ray->Render();
-
+	// Big plane as ground
 	plane->Render();
-	//circle->Render();
+
+	// Primitives
+	glTranslatef(15.0f, 0.0f, -5.0f);
+	circle->Render();
+	glTranslatef(-15.0f, 0.0f, 5.0f);
+
+	glTranslatef(15.0f, 0.0f, 5.0f);
 	sphere->Render();
-	//DrawSphereDirectMode();
+	glTranslatef(-15.0f, 0.0f, -5.0f);
 
-	//frustum->Render();
-
-	//DrawSphereDirectMode();
-	//DrawCylinderDirectMode();
+	ray->Render();
+	frustum->Render();
+	//cylinder->Render();
 }
 
-void ModuleScene::GlBeginCube() const
+void ModuleScene::DrawCubeDirectMode() const
 {
 	glBegin(GL_TRIANGLES);
 
-	//front
+	// Front
 	glVertex3f(-0.5f, 0.5f, 0.5f);
 	glVertex3f(0.5f, -0.5f, 0.5f);
 	glVertex3f(0.5f, 0.5f, 0.5f);
@@ -153,7 +169,7 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(-0.5f, -0.5f, 0.5f);
 	glVertex3f(0.5f, -0.5f, 0.5f);
 
-	//Dreta
+	// Right
 	glVertex3f(0.5f, 0.5f, 0.5f);
 	glVertex3f(0.5f, -0.5f, 0.5f);
 	glVertex3f(0.5f, 0.5f, -0.5f);
@@ -162,7 +178,7 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(0.5f, -0.5f, 0.5f);
 	glVertex3f(0.5f, -0.5f, -0.5f);
 
-	//Esquerra
+	// Left
 	glVertex3f(-0.5f, 0.5f, -0.5f);
 	glVertex3f(-0.5f, -0.5f, 0.5f);
 	glVertex3f(-0.5f, 0.5f, 0.5f);
@@ -171,7 +187,7 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(-0.5f, -0.5f, 0.5f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
 
-	//back
+	// Back
 	glVertex3f(0.5f, 0.5f, -0.5f);
 	glVertex3f(0.5f, -0.5f, -0.5f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
@@ -180,7 +196,7 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(-0.5f, -0.5f, -0.5f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
 
-	//up
+	// Up
 	glVertex3f(0.5f, 0.5f, -0.5f);
 	glVertex3f(-0.5f, 0.5f, 0.5f);
 	glVertex3f(0.5f, 0.5f, 0.5f);
@@ -189,7 +205,7 @@ void ModuleScene::GlBeginCube() const
 	glVertex3f(0.5f, 0.5f, -0.5f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
 
-	//down
+	// Down
 	glVertex3f(0.5f, -0.5f, 0.5f);
 	glVertex3f(-0.5f, -0.5f, 0.5f);
 	glVertex3f(0.5f, -0.5f, -0.5f);

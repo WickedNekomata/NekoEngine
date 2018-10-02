@@ -14,6 +14,7 @@ class PrimitivePlane;
 class PrimitiveCircle;
 class PrimitiveFrustum;
 class PrimitiveSphere;
+class PrimitiveCylinder;
 
 class ModuleScene : public Module
 {
@@ -29,7 +30,7 @@ public:
 
 	void Draw() const;
 
-	void GlBeginCube() const;
+	void DrawCubeDirectMode() const;
 
 private:
 
@@ -41,6 +42,7 @@ private:
 	PrimitiveCircle* circle = nullptr;
 	PrimitiveFrustum* frustum = nullptr;
 	PrimitiveSphere* sphere = nullptr;
+	PrimitiveCylinder* cylinder = nullptr;
 };
 
 #endif

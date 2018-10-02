@@ -27,7 +27,10 @@ void Primitive::InnerRender() const {}
 
 void Primitive::RenderAxis() const
 {	
+	math::float3 size = GetSize();
+
 	glBegin(GL_LINES);
+
 	glLineWidth(1.f);
 
 	// Y axis
@@ -268,63 +271,94 @@ void PrimitiveSphere::InnerRender() const
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 }
 
-// Frustum
-PrimitiveFrustum::PrimitiveFrustum(math::float3 startPosition, float startSizeX, float startSizeY, math::float3 endPosition, float endSizeX, float endSizeY)
+// Cylinder
+PrimitiveCylinder::PrimitiveCylinder(math::float3 position, float height, float radius, uint sides)
+	: PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypeCylinder), height(height), radius(radius), sides(sides)
 {
-	this->position = startPosition;
-	this->size = { startSizeX, startSizeY, -1.0f };
+	topCap = new PrimitiveCircle(math::float3(position.x, position.y + height / 2.0f, position.z), radius);
+	bottomCap = new PrimitiveCircle(math::float3(position.x, position.y - height / 2.0f, position.z), radius);
+
+	// TODO: Draw sides
+}
+
+PrimitiveCylinder::~PrimitiveCylinder() 
+{
+	RELEASE(topCap);
+	RELEASE(bottomCap);
+}
+
+void PrimitiveCylinder::InnerRender() const 
+{
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	topCap->Render();
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	bottomCap->Render();
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+}
+
+// Frustum
+PrimitiveFrustum::PrimitiveFrustum(math::float3 startPosition, float startSizeX, float startSizeY, math::float3 endPosition, float endSizeX, float endSizeY) 
+	: PrimitiveIndex(startPosition, PrimitiveTypes::PrimitiveTypeFrustum), startSizeX(startSizeX), startSizeY(startSizeY), endPosition(endPosition), endSizeX(endSizeX), endSizeY(endSizeY)
+{
 	float startRadiusX = startSizeX / 2;
 	float startRadiusY = startSizeY / 2;
+
 	float endRadiusX = endSizeX / 2;
 	float endRadiusY = endSizeY / 2;
 
-	vertices = new GLfloat[24]
-	{
-		startPosition.x - startRadiusX, startPosition.y - startRadiusX, startPosition.z,
-		startPosition.x + startRadiusX, startPosition.y - startRadiusX, startPosition.z,
-		startPosition.x - startRadiusX, startPosition.y + startRadiusX, startPosition.z,
-		startPosition.x + startRadiusX, startPosition.y + startRadiusX, startPosition.z,
+	// Vertices
+	uint verticesSize = 24;
+	vertices = new GLfloat[verticesSize]{
 
-		endPosition.x - endRadiusX, endPosition.y - endRadiusX, endPosition.z,
-		endPosition.x + endRadiusX, endPosition.y - endRadiusX, endPosition.z,
-		endPosition.x - endRadiusX, endPosition.y + endRadiusX, endPosition.z,
-		endPosition.x + endRadiusX, endPosition.y + endRadiusX, endPosition.z,
+		startPosition.x - startRadiusX, startPosition.y - startRadiusX, startPosition.z, // A (0)
+		startPosition.x + startRadiusX, startPosition.y - startRadiusX, startPosition.z, // B (1)
+		startPosition.x - startRadiusX, startPosition.y + startRadiusX, startPosition.z, // C (2)
+		startPosition.x + startRadiusX, startPosition.y + startRadiusX, startPosition.z, // D (3)
+
+		endPosition.x - endRadiusX, endPosition.y - endRadiusX, endPosition.z,			 // E (4)
+		endPosition.x + endRadiusX, endPosition.y - endRadiusX, endPosition.z,			 // F (5)
+		endPosition.x - endRadiusX, endPosition.y + endRadiusX, endPosition.z,			 // G (6)
+		endPosition.x + endRadiusX, endPosition.y + endRadiusX, endPosition.z,			 // H (7)
 	};
 
 	glGenBuffers(1, &verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * 24, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	GLubyte indices[36]{
+	// Indices
+	indicesSize = 36;
+	indices = new GLubyte[indicesSize]{
 
 		// Front
-		2, 1, 0,
-		2, 3, 1,
+		2, 1, 0, // ABC
+		2, 3, 1, // BDC
 
 		// Right
-		3, 5, 1,
-		3, 7, 5,
+		3, 5, 1, // BFD
+		3, 7, 5, // FHD
 
 		// Back
-		7, 4, 5,
-		7, 6, 4,
+		7, 4, 5, // FEH
+		7, 6, 4, // EGH
 
 		// Left
-		6, 0, 4,
-		6, 2, 0,
+		6, 0, 4, // EAG
+		6, 2, 0, // ACG
 
-		6, 3, 2,
-		6, 7, 3,
+		// Top
+		6, 3, 2, // CDG
+		6, 7, 3, // DHG
 
-		1, 4, 0,
-		5, 4, 1
+		// Bottom
+		1, 4, 0, // AEB
+		5, 4, 1	 // BEF
 	};
-
-	indicesSize = sizeof(indices) / sizeof(GLubyte);
 
 	glGenBuffers(1, &indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 36, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

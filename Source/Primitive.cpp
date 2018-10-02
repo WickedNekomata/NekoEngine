@@ -215,10 +215,82 @@ void PrimitivePlane::InnerRender() const
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
+PrimitiveFrustum::PrimitiveFrustum(math::float3 startPosition, float startSizeX, float startSizeY, math::float3 endPosition, float endSizeX, float endSizeY)
+{
+	this->position = startPosition;
+	this->size = { startSizeX, startSizeY, -1.0f };
+	float startRadiusX = startSizeX / 2;
+	float startRadiusY = startSizeY / 2;
+	float endRadiusX = endSizeX / 2;
+	float endRadiusY = endSizeY / 2;
+
+	vertices = new GLfloat[24]
+	{
+		startPosition.x - startRadiusX, startPosition.y - startRadiusX, startPosition.z,
+		startPosition.x + startRadiusX, startPosition.y - startRadiusX, startPosition.z,
+		startPosition.x - startRadiusX, startPosition.y + startRadiusX, startPosition.z,
+		startPosition.x + startRadiusX, startPosition.y + startRadiusX, startPosition.z,
+
+		endPosition.x - endRadiusX, endPosition.y - endRadiusX, endPosition.z,
+		endPosition.x + endRadiusX, endPosition.y - endRadiusX, endPosition.z,
+		endPosition.x - endRadiusX, endPosition.y + endRadiusX, endPosition.z,
+		endPosition.x + endRadiusX, endPosition.y + endRadiusX, endPosition.z,
+	};
+
+	glGenBuffers(1, &verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * 24, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLubyte indices[36]{
+
+		// Front
+		2, 1, 0,
+		2, 3, 1,
+
+		// Right
+		3, 5, 1,
+		3, 7, 5,
+
+		// Back
+		7, 4, 5,
+		7, 6, 4,
+
+		// Left
+		6, 0, 4,
+		6, 2, 0,
+
+		6, 3, 2,
+		6, 7, 3,
+
+		1, 4, 0,
+		5, 4, 1
+	};
+
+	indicesSize = sizeof(indices) / sizeof(GLubyte);
+
+	glGenBuffers(1, &indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 36, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 PrimitiveFrustum::~PrimitiveFrustum()
 {
 }
 
 void PrimitiveFrustum::InnerRender() const
 {
+	// Vertex Array with indices (Draw Elements)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_BYTE, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

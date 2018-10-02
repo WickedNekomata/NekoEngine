@@ -75,7 +75,8 @@ private:
 
 class PrimitiveFrustum : public Primitive
 {
-	PrimitiveFrustum(math::float3 startPosition = math::float3(0.0f, 0.0f, 0.0f), float startSizeX = 1.f, float startSizeY = 1.f, math::float3 endPosition = math::float3(0.0f, 0.0f, 0.0f), float endSizeX = 1.f, float endSizeY = 1.f);
+public:
+	PrimitiveFrustum(math::float3 startPosition = math::float3(0.0f, 0.0f, 0.0f), float startSizeX = 1.f, float startSizeY = 1.f, math::float3 endPosition = math::float3(0.0f, 0.0f, 10.0f), float endSizeX = 5.f, float endSizeY = 5.f);
 	~PrimitiveFrustum();
 	void InnerRender() const;
 

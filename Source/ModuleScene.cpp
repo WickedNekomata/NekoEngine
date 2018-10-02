@@ -28,6 +28,8 @@ bool ModuleScene::Start()
 	cube = new PrimitiveCube(math::float3(0.0f, 0.0f, 0.0f));
 	ray = new PrimitiveRay(math::float3(0.0f, 0.0f, 0.0f), math::float3(100.0f, 0.0f, 0.0f));
 	plane = new PrimitivePlane(math::float3(0.0f, -5.0f, 0.0f));
+	frustum = new PrimitiveFrustum(math::float3(0.0f, 0.0f, -10.0f), 1.f, 1.f, math::float3(0.0f, 0.0f, -20.0f), 5.f, 5.f);
+	frustum->EnableAxis(true);
 
 	// Loading vube into vram. Vertex can be repeated
 	float cubeVertex[] =
@@ -126,11 +128,13 @@ void ModuleScene::Draw() const
 
 	plane->Render();
 
+	frustum->Render();
+
 	//DrawSphereDirectMode();
 
 
 	//DrawSphereDirectMode();
-	DrawCylinderDirectMode();
+	//DrawCylinderDirectMode();
 
 }
 

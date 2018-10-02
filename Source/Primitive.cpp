@@ -10,19 +10,36 @@ Primitive::Primitive() : type(PrimitiveTypes::PrimitiveNoType) {}
 void Primitive::Render() const
 {
 	InnerRender();
+
+	if (axis)
+		RenderAxis();
 }
 
-void Primitive::InnerRender() const
-{
-	glPointSize(5.0f);
+void Primitive::InnerRender() const {}
 
-	glBegin(GL_POINTS);
+void Primitive::RenderAxis() const
+{	
+	glBegin(GL_LINES);
+	glLineWidth(1.f);
 
-	glVertex3f(0.0f, 0.0f, 0.0f);
+	// Y axis
+	glColor3f(0.f, 255.f, 0.f);
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x, position.y + size.y, position.z);
+
+	// X axis
+	glColor3f(255.f, 0.f, 0.f);
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x + size.x, position.y, position.z);
+	
+	// Z axis
+	glColor3f(0.f, 0.f, 255.f);
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x, position.y, position.z + size.z);
+
+	glColor3f(1.f, 1.f, 1.f);
 
 	glEnd();
-
-	glPointSize(1.0f);
 }
 
 PrimitiveTypes Primitive::GetType() const
@@ -30,22 +47,24 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
-PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primitive(), size(size)
+PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primitive()
 {
+	this->size = size;
+
 	type = PrimitiveTypes::PrimitiveTypeCube;
 
 	math::float3 radius = size / 2.0f;
 
 	vertices = new GLfloat[24]{
 
-		-radius.x, -radius.y, radius.z, // A (0)
-		radius.x,  -radius.y, radius.z, // B (1)
-		-radius.x, radius.y,  radius.z, // C (2)
-		radius.x,  radius.y,  radius.z, // D (3)
+		-radius.x, -radius.y,  radius.z, // A (0)
+		 radius.x, -radius.y,  radius.z, // B (1)
+		-radius.x,  radius.y,  radius.z, // C (2)
+		 radius.x,  radius.y,  radius.z, // D (3)
 		-radius.x, -radius.y, -radius.z, // E (4)
-		radius.x,  -radius.y, -radius.z, // F (5)
-		-radius.x, radius.y,  -radius.z, // G (6)
-		radius.x,  radius.y,  -radius.z  // H (7)
+	   	 radius.x, -radius.y, -radius.z, // F (5)
+		-radius.x,  radius.y, -radius.z, // G (6)
+		 radius.x,  radius.y, -radius.z  // H (7)
 	};
 
 	glGenBuffers(1, &verticesID);
@@ -116,6 +135,8 @@ math::float3 PrimitiveCube::GetSize() const
 
 PrimitiveRay::PrimitiveRay(math::float3 startPos, math::float3 endPos)
 {
+	this->position = startPos;
+
 	vertices = new GLfloat[6]
 	{
 		startPos.x, startPos.y, startPos.z,
@@ -143,16 +164,16 @@ void PrimitiveRay::InnerRender() const
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-PrimitivePlane::PrimitivePlane(math::float3 position, math::float3 size)
+PrimitivePlane::PrimitivePlane(math::float3 position, float sizeX, float sizeZ)
 {
-	math::float3 radius = size / 2.0f;
-
+	this->position = position;
+	this->size = { sizeX, 1.f, sizeZ };
 	vertices = new GLfloat[12]
 	{
-	   	 radius.x, position.y, -radius.z, // A
-		 radius.x, position.y,  radius.z, // B
-		-radius.x, position.y, -radius.z, // C
-		-radius.x, position.y,  radius.z, // D
+	   	 sizeX, position.y, -sizeZ, // A
+		 sizeX, position.y,  sizeZ, // B
+		-sizeX, position.y, -sizeZ, // C
+		-sizeX, position.y,  sizeZ, // D
 	};
 
 	glGenBuffers(1, &verticesID);

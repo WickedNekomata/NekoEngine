@@ -17,17 +17,22 @@ class Primitive
 public:
 
 	Primitive();
-	Primitive(math::float3 position);
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
+	virtual void	RenderAxis() const;
+	void			EnableAxis(bool enable) { axis = enable; };
 	PrimitiveTypes	GetType() const;
 
 protected:
 
+	math::float3 position = { 0,0,0 };
+	math::float3 size = { 0,0,0 };
 	PrimitiveTypes type;
 	GLuint verticesID = 0;
 	GLfloat* vertices = nullptr;
+
+	bool axis = false;
 };
 
 class PrimitiveCube : public Primitive
@@ -41,8 +46,6 @@ public:
 	math::float3 GetSize() const;
 
 private:
-
-	math::float3 size;
 
 	GLuint indicesID = 0;
 	GLsizei indicesSize = 0;
@@ -61,7 +64,7 @@ class PrimitivePlane : public Primitive
 {
 public:
 
-	PrimitivePlane(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), math::float3 size = math::float3(100.0f, 100.0f, 100.0f));
+	PrimitivePlane(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), float sizeX = 100.0f, float sizeZ = 100.0f);
 	~PrimitivePlane();
 	void InnerRender() const;
 

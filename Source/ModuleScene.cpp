@@ -164,7 +164,8 @@ void ModuleScene::Draw() const
 	cube->Render();
 	glTranslatef(+5, 0, 0);
 	*/
-	DrawSphereDirectMode();
+	//DrawSphereDirectMode();
+	DrawCylinderDirectMode();
 }
 
 void ModuleScene::GlBeginCube() const
@@ -228,18 +229,16 @@ void ModuleScene::GlBeginCube() const
 	glEnd();
 }
 
-void ModuleScene::DrawSphereDirectMode() const 
+void ModuleScene::DrawCircleDirectMode(math::float3 position, float radius, uint subdivisions, float rotationAngle, math::float3 rotation) const
 {
-	glBegin(GL_TRIANGLES);
-
-	math::float3 position(0.0f, 0.0f, 0.0f);
-	float radius = 1.0f;
-	uint subdivisions = 8;
-	subdivisions *= 2; // total = 16
+	// subdivisions must be an even, positive number
+	subdivisions *= 2;
 
 	float deltaAngle = 360.0f / (float)subdivisions; // in degrees
 	float angle = 0.0f;
 
+	glRotatef(rotationAngle, rotation.x, rotation.y, rotation.z);
+	glBegin(GL_TRIANGLES);
 	for (uint i = 0; i < subdivisions; ++i)
 	{
 		float nextAngle = angle + deltaAngle;
@@ -248,9 +247,61 @@ void ModuleScene::DrawSphereDirectMode() const
 		glVertex3f(position.x, position.y, position.z);
 		glVertex3f(radius * cosf(DEGTORAD * nextAngle), radius * sinf(DEGTORAD * nextAngle), position.z);
 		glVertex3f(radius * cosf(DEGTORAD * angle), radius * sinf(DEGTORAD * angle), position.z);
-
+			
 		angle = nextAngle;
 	}
-
 	glEnd();
+	glRotatef(-rotationAngle, rotation.x, rotation.y, rotation.z);
+}
+
+void ModuleScene::DrawSphereDirectMode() const 
+{
+	math::float3 position(0.0f, 0.0f, 0.0f);
+	float radius = 1.0f;
+
+	uint verticalSubdivisions = 8;
+	uint horizontalSubdivisions = 3;
+
+	// verticalSubdivisions must be an even, positive number
+	verticalSubdivisions *= 2;
+
+	// Vertical circles
+	float deltaAngle = 360.0f / verticalSubdivisions;
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		DrawCircleDirectMode(position, radius, verticalSubdivisions / 2, angle, math::float3(0.0f, 1.0f, 0.0f));
+	}
+
+	// Horizontal circles
+	DrawCircleDirectMode(position, radius, verticalSubdivisions / 2, 90.0f, math::float3(1.0f, 0.0f, 0.0f));
+
+	float deltaHeight = radius / (float)horizontalSubdivisions;
+	deltaAngle /= 2;
+	float newRadius = radius - DEGTORAD * deltaAngle * 2;
+	for (float height = deltaHeight; height < radius; height += deltaHeight)
+	{
+		DrawCircleDirectMode(math::float3(position.x, position.y, position.z + height), newRadius, verticalSubdivisions / 2, 90.0f, math::float3(1.0f, 0.0f, 0.0f));
+		DrawCircleDirectMode(math::float3(position.x, position.y, position.z - height), newRadius, verticalSubdivisions / 2, 90.0f, math::float3(1.0f, 0.0f, 0.0f));
+		newRadius -= DEGTORAD * deltaAngle;
+	}
+
+	//DrawCircleDirectMode(position, radius, verticalSubdivisions, );
+
+	// Bottom
+}
+
+void ModuleScene::DrawCylinderDirectMode() const 
+{
+	math::float3 position(0.0f, 0.0f, 0.0f);
+	float radius = 1.0f;
+	float height = 5.0f;
+	uint heightSegments = 1;
+	uint capSegments = 1;
+	uint sides = 16;
+
+	// Top cap
+	DrawCircleDirectMode(math::float3(position.x, position.y + height / 2.0f, position.z), radius, sides, 0.0f, math::float3(0.0f, 0.0f, 0.0f));
+
+	// Bottom cap
+	DrawCircleDirectMode(math::float3(position.x, position.y - height / 2.0f, position.z), radius, sides, 0.0f, math::float3(0.0f, 0.0f, 0.0f));
 }

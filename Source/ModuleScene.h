@@ -13,6 +13,7 @@ class PrimitiveRay;
 class PrimitivePlane;
 class PrimitiveCircle;
 class PrimitiveFrustum;
+class PrimitiveSphere;
 
 class ModuleScene : public Module
 {
@@ -29,18 +30,17 @@ public:
 	void Draw() const;
 
 	void GlBeginCube() const;
-	void DrawCircleDirectMode(math::float3 position, float radius, uint subdivision, float rotationAngle, math::float3 rotation) const;
-	void DrawSphereDirectMode() const;
-	void DrawCylinderDirectMode() const;
 
 private:
 
 	GLuint VBO, cubeID;
-	PrimitiveCube* cube;
-	PrimitiveRay* ray;
-	PrimitivePlane* plane;
-	PrimitiveCircle* circle;
-	PrimitiveFrustum* frustum;
+
+	PrimitiveCube* cube = nullptr;
+	PrimitiveRay* ray = nullptr;
+	PrimitivePlane* plane = nullptr;
+	PrimitiveCircle* circle = nullptr;
+	PrimitiveFrustum* frustum = nullptr;
+	PrimitiveSphere* sphere = nullptr;
 };
 
 #endif

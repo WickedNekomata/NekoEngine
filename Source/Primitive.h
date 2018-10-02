@@ -12,6 +12,7 @@ enum PrimitiveTypes
 	PrimitiveTypePlane,
 	PrimitiveTypeCircle,
 	PrimitiveTypeCube,
+	PrimitiveTypeSphere,
 	PrimitiveTypeCylinder,
 	PrimitiveTypeFrustum,
 };
@@ -71,6 +72,10 @@ public:
 
 	PrimitiveRay(math::float3 startPos = math::float3(0.0f, 0.0f, 0.0f), math::float3 endPos = math::float3(1.0f, 1.0f, 1.0f));
 	void InnerRender() const;
+
+private:
+
+	math::float3 endPos = { 0.0f,0.0f,0.0f };
 };
 
 // PrimitiveIndex --------------------------------------------------
@@ -94,6 +99,11 @@ class PrimitivePlane : public PrimitiveIndex
 public:
 
 	PrimitivePlane(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), float sizeX = 100.0f, float sizeZ = 100.0f);
+
+private:
+
+	float sizeX = 0.0f;
+	float sizeZ = 0.0f;
 };
 
 // Cube
@@ -102,6 +112,28 @@ class PrimitiveCube : public PrimitiveIndex
 public:
 
 	PrimitiveCube(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), math::float3 size = math::float3(1.0f, 1.0f, 1.0f));
+
+private:
+
+	math::float3 size = { 0.0f,0.0f,0.0f };
+};
+
+// Sphere
+class PrimitiveSphere : public PrimitiveIndex
+{
+public:
+
+	PrimitiveSphere(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), float radius = 1.0f);
+	~PrimitiveSphere();
+
+	void InnerRender() const;
+
+private:
+
+	float radius = 0.0f;
+
+	PrimitiveCircle* verticalCircle = nullptr;
+	PrimitiveCircle* horizontalCircle = nullptr;
 };
 
 /*

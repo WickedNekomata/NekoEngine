@@ -12,6 +12,7 @@ class PrimitiveCube;
 class PrimitiveRay;
 class PrimitivePlane;
 class PrimitiveCircle;
+class PrimitiveFrustum;
 
 class ModuleScene : public Module
 {
@@ -39,6 +40,7 @@ private:
 	PrimitiveRay* ray;
 	PrimitivePlane* plane;
 	PrimitiveCircle* circle;
+	PrimitiveFrustum* frustum;
 };
 
 #endif

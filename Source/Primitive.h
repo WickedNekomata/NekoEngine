@@ -109,7 +109,6 @@ class PrimitiveCylinder : public PrimitiveIndex
 {
 	PrimitiveCylinder(math::float3 position = math::float3(0.0f, 0.0f, 0.0f), float height = 1.0f, float radius = 1.0f, uint sides = 5);
 	~PrimitiveCylinder();
-	void InnerRender() const;
 };
 */
 

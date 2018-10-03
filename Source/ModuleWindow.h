@@ -15,7 +15,6 @@ public:
 	bool CleanUp();
 
 	void SetTitle(const char* title);
-	const char* GetTitle() const;
 
 	void SetWindowBrightness(float brightness) const;
 	float GetWindowBrightness() const;

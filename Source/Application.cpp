@@ -44,6 +44,7 @@ bool Application::Init()
 {
 	bool ret = true;
 
+	// FIX BUG WINDOW PANEL AND LAOD THIS FROM JSON
 	SetAppName(TITLE);
 	SetOrganizationName(ORGANIZATION);
 
@@ -176,21 +177,28 @@ void Application::FinishUpdate()
 	dt = 1.0 / fps;
 }
 
-void Application::Load() const
+void Application::Load()
 {
 	// Read config file
 	char* buf;
 	if (App->filesystem->OpenRead("Assets/config.json", &buf))
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
-			delete[] buf;
-			JSON_Object* data = json_value_get_object(rootValue);
+		delete[] buf;
+		JSON_Object* data = json_value_get_object(rootValue);
 
-			for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-			{
-				JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
-					(*item)->LoadStatus(modulejObject);
-			}
+		JSON_Object* modulejObject = json_object_get_object(data, "Application");
+		
+		SetAppName(json_object_get_string(modulejObject, "Title"));
+		window->SetTitle(GetAppName());
+		SetOrganizationName(json_object_get_string(modulejObject, "Organitzation"));
+		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
+
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+		{
+			modulejObject = json_object_get_object(data, (*item)->GetName());
+			(*item)->LoadStatus(modulejObject);
+		}
 
 		json_value_free(rootValue);
 	}
@@ -202,14 +210,25 @@ void Application::Save() const
 {
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	// Saving App data
+	JSON_Value* newValue = json_value_init_object();
+	JSON_Object* objModule = json_value_get_object(newValue);
+	json_object_set_value(rootObject, "Application", newValue);
+
+	json_object_set_string(objModule, "Title", App->GetAppName());
+	json_object_set_string(objModule, "Organitzation", App->GetOrganizationName());
+	json_object_set_boolean(objModule, "Cap Frames", capFrames);
+
+	// Saving Modules Data
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-	{
-		
-		JSON_Value* newValue = json_value_init_object();
-		JSON_Object* objModule = json_value_get_object(newValue);
+	{		
+		newValue = json_value_init_object();
+		objModule = json_value_get_object(newValue);
 		json_object_set_value(rootObject, (*item)->GetName(), newValue);
 		(*item)->SaveStatus(objModule);
 	}
+
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);

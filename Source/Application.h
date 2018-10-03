@@ -57,7 +57,7 @@ private:
 	void PrepareUpdate();
 	void FinishUpdate();
 
-	void Load() const;
+	void Load();
 	void Save() const;
 
 public:

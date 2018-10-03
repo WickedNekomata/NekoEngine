@@ -1,4 +1,9 @@
 {
+    "Application": {
+        "Title": "Neko Engine",
+        "Organitzation": "Wicked Nekomata",
+        "Cap Frames": true
+    },
     "FileSystem": {},
     "Window": {
         "width": 1024,

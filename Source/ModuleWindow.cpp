@@ -28,14 +28,14 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 	}
 	else
 	{
-		size = SCREEN_SIZE;
-		width = SCREEN_WIDTH * size;
-		height = SCREEN_HEIGHT * size;
+		size = json_object_get_number(jObject, "size");
+		width = json_object_get_number(jObject, "width") * size;
+		height = json_object_get_number(jObject, "height") * size;
 
-		fullscreen = WIN_FULLSCREEN;
-		resizable = WIN_RESIZABLE;
-		borderless = WIN_BORDERLESS;
-		fullDesktop = WIN_FULLSCREEN_DESKTOP;
+		fullscreen = json_object_get_boolean(jObject, "fullscreen");
+		resizable = json_object_get_boolean(jObject, "resizable");
+		borderless = json_object_get_boolean(jObject, "borderless");
+		fullDesktop = json_object_get_boolean(jObject, "fullDesktop");
 
 		// Create window
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
@@ -43,8 +43,6 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		// Use OpenGL 3.1
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		// SDL_GL_Attribute(SDL_GL_DEPTH_SIZE, 24);
-		// SDL_GL_Attribute(SDL_GL_STENCIL_SIZE, 8);
 
 		if (fullscreen)
 			flags |= SDL_WINDOW_FULLSCREEN;
@@ -159,8 +157,6 @@ uint ModuleWindow::GetRefreshRate() const
 
 void ModuleWindow::GetScreenSize(uint& width, uint& height) const
 {
-	uint refreshRate = 0;
-
 	SDL_DisplayMode desktopDisplay;
 	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
 	{
@@ -229,4 +225,36 @@ void ModuleWindow::SetBorderlessWindow(bool borderless)
 bool ModuleWindow::GetBorderlessWindow() const 
 {
 	return borderless;
+}
+
+void ModuleWindow::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_number(jObject, "width", width);
+	json_object_set_number(jObject, "height", height);
+	json_object_set_number(jObject, "size", size);
+
+	json_object_set_boolean(jObject, "fullscreen", fullscreen);
+	json_object_set_boolean(jObject, "resizable", resizable);
+	json_object_set_boolean(jObject, "borderless", borderless);
+	json_object_set_boolean(jObject, "fullDesktop", fullDesktop);
+}
+
+void ModuleWindow::LoadStatus(const JSON_Object* jObject)
+{
+	width = json_object_get_number(jObject, "width");
+	height = json_object_get_number(jObject, "height");
+	size = json_object_get_number(jObject, "size");
+
+	fullscreen = json_object_get_boolean(jObject, "fullscreen");
+	resizable = json_object_get_boolean(jObject, "resizable");
+	borderless = json_object_get_boolean(jObject, "borderless");
+	fullDesktop = json_object_get_boolean(jObject, "fullDesktop");
+
+	SetWindowWidth(width);
+	SetWindowHeight(height);
+
+	SetFullDesktopWindow(fullDesktop);
+	SetFullscreenWindow(fullscreen);
+	SetBorderlessWindow(borderless);
+	SetResizableWindow(resizable);	
 }

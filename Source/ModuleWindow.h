@@ -15,7 +15,6 @@ public:
 	bool CleanUp();
 
 	void SetTitle(const char* title);
-	const char* GetTitle() const;
 
 	void SetWindowBrightness(float brightness) const;
 	float GetWindowBrightness() const;
@@ -39,6 +38,9 @@ public:
 	bool GetResizableWindow() const;
 	void SetBorderlessWindow(bool borderless);
 	bool GetBorderlessWindow() const;
+
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
 
 public:
 	

@@ -35,7 +35,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	if (ret)
 	{
 		// Use vsync
-		SetVSync(vsync);
+		SetVSync(json_object_get_boolean(jObject, "vSync"));
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -110,7 +110,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	}
 
 	// Projection matrix for
-	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 
 	return ret;
 }
@@ -159,6 +159,15 @@ bool ModuleRenderer3D::CleanUp()
 	SDL_GL_DeleteContext(context);
 
 	return ret;
+}
+
+void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_boolean(jObject, "vSync", vsync);
+}
+void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
+{
+	SetVSync(json_object_get_boolean(jObject, "vSync"));
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)

@@ -30,8 +30,6 @@ public:
 
 	void Draw() const;
 
-	void DrawCubeDirectMode() const;
-
 private:
 
 	GLuint VBO, cubeID;

@@ -1,129 +1,139 @@
 #include "Globals.h"
 #include "glew/include/GL/glew.h"
 #include "Primitive.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
-// Primitive --------------------------------------------------
-Primitive::Primitive() {}
-
-Primitive::Primitive(math::float3 position, PrimitiveTypes type) : position(position), type(type) {}
+Primitive::Primitive(PrimitiveTypes type) : type(type) {}
 
 Primitive::~Primitive()
 {
 	RELEASE_ARRAY(vertices);
+	RELEASE_ARRAY(indices);
+
+	RELEASE(axis);
 }
 
 void Primitive::Render() const
 {
 	InnerRender();
 
-	if (axis)
-		RenderAxis();
+	if (showAxis && axis != nullptr)
+		axis->Render();
 }
 
-void Primitive::InnerRender() const {}
-
-void Primitive::RenderAxis() const
-{	
-	math::float3 size = GetSize();
-
-	glBegin(GL_LINES);
-
-	glLineWidth(1.f);
-
-	// Y axis
-	glColor3f(0.f, 255.f, 0.f);
-	glVertex3f(position.x, position.y, position.z);
-	glVertex3f(position.x, position.y + size.y, position.z);
-
-	// X axis
-	glColor3f(255.f, 0.f, 0.f);
-	glVertex3f(position.x, position.y, position.z);
-	glVertex3f(position.x + size.x, position.y, position.z);
-	
-	// Z axis
-	glColor3f(0.f, 0.f, 255.f);
-	glVertex3f(position.x, position.y, position.z);
-	glVertex3f(position.x, position.y, position.z + size.z);
-
-	glColor3f(1.f, 1.f, 1.f);
-
-	glEnd();
-}
-
-PrimitiveTypes Primitive::GetType() const
-{
-	return type;
-}
-
-// Primitive Index --------------------------------------------------
-PrimitiveIndex::PrimitiveIndex() {}
-
-PrimitiveIndex::PrimitiveIndex(math::float3 position, PrimitiveTypes type) : Primitive(position, type) {}
-
-PrimitiveIndex::~PrimitiveIndex() 
-{
-	RELEASE_ARRAY(indices);
-}
-
-void PrimitiveIndex::InnerRender() const
+void Primitive::InnerRender() const
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glColor3f(color.r, color.g, color.b);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_BYTE, NULL);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-// Ray
-PrimitiveRay::PrimitiveRay(math::float3 startPos, math::float3 endPos) : Primitive(startPos, PrimitiveTypes::PrimitiveTypeRay), endPos(endPos)
+void Primitive::SetPosition(math::float3 position)
 {
+	transform.position = position;
+}
+
+void Primitive::SetRotation(float angle, math::float3 u)
+{
+	transform.angle = angle;
+	transform.u = u;
+}
+
+// Ray --------------------------------------------------
+PrimitiveRay::PrimitiveRay(math::float3 direction, float length) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
+{
+	direction.Normalize();
+	math::float3 endPosition = direction * length;
+	
 	// Vertices
 	uint verticesSize = 6;
-	vertices = new GLfloat[verticesSize]{
+	vertices = new float[verticesSize]{
 
-		startPos.x, startPos.y, startPos.z,
-		endPos.x, endPos.y, endPos.z
+		0.0f, 0.0f, 0.0f,
+		endPosition.x, endPosition.y, endPosition.z
 	};
 
-	glGenBuffers(1, &verticesID);
+	indicesSize = 2; // used as verticesSize
+
+	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void PrimitiveRay::InnerRender() const
 {
+	// Draw (Vertex Array)
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glColor3f(color.r, color.g, color.b);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, 2);
+	glDrawArrays(GL_LINES, 0, indicesSize); // indicesSize equals to verticesSize
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-// Circle
-PrimitiveCircle::PrimitiveCircle(math::float3 position, float radius, uint sides) : PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypeCircle), radius(radius), sides(sides)
+// Axis --------------------------------------------------
+PrimitiveAxis::PrimitiveAxis() : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
 {
+	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f);
+	x->SetColor(Red);
+	y = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), 1.0f);
+	y->SetColor(Green);
+	z = new PrimitiveRay(math::float3(0.0f, 0.0f, 1.0f), 1.0f);
+	z->SetColor(Blue);
+}
+
+PrimitiveAxis::~PrimitiveAxis() 
+{
+	RELEASE_ARRAY(x);
+	RELEASE_ARRAY(y);
+	RELEASE_ARRAY(z);
+}
+
+void PrimitiveAxis::InnerRender() const 
+{
+	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
+	if (x != nullptr)
+		x->Render();
+	if (y != nullptr)
+		y->Render();
+	if (z != nullptr)
+		z->Render();
+	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
+}
+
+// Circle --------------------------------------------------
+PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCircle), radius(radius), sides(sides)
+{
+	axis = new PrimitiveAxis();
+
 	// Vertices
 	uint verticesSize = 3 * (1 + sides);
-	vertices = new GLfloat[verticesSize];
+	vertices = new float[verticesSize];
 
 	uint i = 0;
 	// A (0)
-	vertices[i] = position.x;
-	vertices[++i] = position.y;
-	vertices[++i] = position.z;
+	vertices[i] = 0.0f;
+	vertices[++i] = 0.0f;
+	vertices[++i] = 0.0f;
 
 	float deltaAngle = 360.0f / (float)sides;
 
@@ -132,17 +142,17 @@ PrimitiveCircle::PrimitiveCircle(math::float3 position, float radius, uint sides
 		// B (1), C (2)...
 		vertices[++i] = radius * cosf(DEGTORAD * angle);
 		vertices[++i] = radius * sinf(DEGTORAD * angle);
-		vertices[++i] = position.z;
+		vertices[++i] = 0.0f;
 	}
 
-	glGenBuffers(1, &verticesID);
+	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
 	indicesSize = 3 * sides;
-	indices = new GLubyte[indicesSize];
+	indices = new uint[indicesSize];
 
 	uint index = 1;
 	for (uint j = 0; j < indicesSize - 2; ++j)
@@ -153,52 +163,56 @@ PrimitiveCircle::PrimitiveCircle(math::float3 position, float radius, uint sides
 	}
 	indices[indicesSize - 1] = 1; // B
 
-	glGenBuffers(1, &indicesID);
+	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Plane
-PrimitivePlane::PrimitivePlane(math::float3 position, float sizeX, float sizeZ) : PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypePlane), sizeX(sizeX), sizeZ(sizeZ)
+// Plane --------------------------------------------------
+PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::PrimitiveTypePlane), size(size)
 {
+	axis = new PrimitiveAxis();
+
 	// Vertices
 	uint verticesSize = 12;
-	vertices = new GLfloat[verticesSize]{
+	vertices = new float[verticesSize]{
 
-		 sizeX, position.y, -sizeZ, // A (0)
-		 sizeX, position.y,  sizeZ, // B (1)
-		-sizeX, position.y, -sizeZ, // C (2)
-		-sizeX, position.y,  sizeZ  // D (3)
+		 size.x, 0.0f, -size.y, // A (0)
+		 size.x, 0.0f,  size.y, // B (1)
+		-size.x, 0.0f, -size.y, // C (2)
+		-size.x, 0.0f,  size.y  // D (3)
 	};
 
-	glGenBuffers(1, &verticesID);
+	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
 	indicesSize = 6;
-	indices = new GLubyte[indicesSize]{
+	indices = new uint[indicesSize]{
 
 		2, 1, 0, // CBA
 		3, 1, 2  // DBC
 	};
 
-	glGenBuffers(1, &indicesID);
+	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Cube
-PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypeCube), size(size)
+// Cube --------------------------------------------------
+PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
 {
+	axis = new PrimitiveAxis();
+
 	math::float3 radius = size / 2.0f;
 
 	// Vertices
 	uint verticesSize = 24;
-	vertices = new GLfloat[verticesSize]{
+	vertices = new float[verticesSize]{
 
 		-radius.x, -radius.y,  radius.z, // A (0)
 		 radius.x, -radius.y,  radius.z, // B (1)
@@ -210,14 +224,14 @@ PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primiti
 		 radius.x,  radius.y, -radius.z  // H (7)
 	};
 
-	glGenBuffers(1, &verticesID);
+	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
 	indicesSize = 36;
-	indices = new GLubyte[indicesSize]{
+	indices = new uint[indicesSize]{
 
 		// Front
 		0, 1, 2, // ABC
@@ -244,17 +258,19 @@ PrimitiveCube::PrimitiveCube(math::float3 position, math::float3 size) : Primiti
 		1, 4, 5  // BEF
 	};
 
-	glGenBuffers(1, &indicesID);
+	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Sphere
-PrimitiveSphere::PrimitiveSphere(math::float3 position, float radius) : PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypeSphere), radius(radius)
+// Sphere --------------------------------------------------
+PrimitiveSphere::PrimitiveSphere(float radius) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius)
 {
-	verticalCircle = new PrimitiveCircle(position, radius);
-	horizontalCircle = new PrimitiveCircle(position, radius);
+	axis = new PrimitiveAxis();
+
+	verticalCircle = new PrimitiveCircle(radius);
+	horizontalCircle = new PrimitiveCircle(radius);
 }
 
 PrimitiveSphere::~PrimitiveSphere() 
@@ -265,20 +281,27 @@ PrimitiveSphere::~PrimitiveSphere()
 
 void PrimitiveSphere::InnerRender() const 
 {
-	verticalCircle->Render();
+	if (verticalCircle != nullptr)
+		verticalCircle->Render();
+
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-	horizontalCircle->Render();
+	if (horizontalCircle != nullptr)
+		horizontalCircle->Render();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 }
 
-// Cylinder
-PrimitiveCylinder::PrimitiveCylinder(math::float3 position, float height, float radius, uint sides)
-	: PrimitiveIndex(position, PrimitiveTypes::PrimitiveTypeCylinder), height(height), radius(radius), sides(sides)
+// Cylinder --------------------------------------------------
+PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCylinder), height(height), radius(radius), sides(sides)
 {
-	topCap = new PrimitiveCircle(math::float3(position.x, position.y + height / 2.0f, position.z), radius);
-	bottomCap = new PrimitiveCircle(math::float3(position.x, position.y - height / 2.0f, position.z), radius);
+	axis = new PrimitiveAxis();
 
-	// TODO: Draw sides
+	float halfHeight = height / 2.0f;
+
+	math::float3 topCapPosition = math::float3(0.0f, halfHeight, 0.0f);
+	math::float3 bottomCapPosition = math::float3(0.0f, -halfHeight, 0.0f);
+
+	topCap = new PrimitiveCircle(radius);
+	bottomCap = new PrimitiveCircle(radius);
 }
 
 PrimitiveCylinder::~PrimitiveCylinder() 
@@ -290,47 +313,47 @@ PrimitiveCylinder::~PrimitiveCylinder()
 void PrimitiveCylinder::InnerRender() const 
 {
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-	topCap->Render();
+	if (topCap != nullptr)
+		topCap->Render();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-	bottomCap->Render();
+	if (bottomCap != nullptr)
+		bottomCap->Render();
 	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 }
 
-// Frustum
-PrimitiveFrustum::PrimitiveFrustum(math::float3 startPosition, float startSizeX, float startSizeY, math::float3 endPosition, float endSizeX, float endSizeY) 
-	: PrimitiveIndex(startPosition, PrimitiveTypes::PrimitiveTypeFrustum), startSizeX(startSizeX), startSizeY(startSizeY), endPosition(endPosition), endSizeX(endSizeX), endSizeY(endSizeY)
+// Frustum --------------------------------------------------
+PrimitiveFrustum::PrimitiveFrustum(math::float2 startSize, math::float3 endPosition, math::float2 endSize) : Primitive(PrimitiveTypes::PrimitiveTypeFrustum), startSize(startSize), endPosition(endPosition), endSize(endSize)
 {
-	float startRadiusX = startSizeX / 2;
-	float startRadiusY = startSizeY / 2;
+	axis = new PrimitiveAxis();
 
-	float endRadiusX = endSizeX / 2;
-	float endRadiusY = endSizeY / 2;
+	math::float2 startRadius = startSize / 2.0f;
+	math::float2 endRadius = endSize / 2.0f;
 
 	// Vertices
 	uint verticesSize = 24;
-	vertices = new GLfloat[verticesSize]{
+	vertices = new float[verticesSize] {
 
-		startPosition.x - startRadiusX, startPosition.y - startRadiusX, startPosition.z, // A (0)
-		startPosition.x + startRadiusX, startPosition.y - startRadiusX, startPosition.z, // B (1)
-		startPosition.x - startRadiusX, startPosition.y + startRadiusX, startPosition.z, // C (2)
-		startPosition.x + startRadiusX, startPosition.y + startRadiusX, startPosition.z, // D (3)
+		-startRadius.x, -startRadius.y, 0.0f, // A (0)
+		 startRadius.x, -startRadius.y, 0.0f, // B (1)
+		-startRadius.x, startRadius.y, 0.0f, // C (2)
+		 startRadius.x, startRadius.y, 0.0f, // D (3)
 
-		endPosition.x - endRadiusX, endPosition.y - endRadiusX, endPosition.z,			 // E (4)
-		endPosition.x + endRadiusX, endPosition.y - endRadiusX, endPosition.z,			 // F (5)
-		endPosition.x - endRadiusX, endPosition.y + endRadiusX, endPosition.z,			 // G (6)
-		endPosition.x + endRadiusX, endPosition.y + endRadiusX, endPosition.z,			 // H (7)
+		 endPosition.x - endRadius.x, endPosition.y - endRadius.y, endPosition.z, // E (4)
+		 endPosition.x + endRadius.x, endPosition.y - endRadius.y, endPosition.z, // F (5)
+		 endPosition.x - endRadius.x, endPosition.y + endRadius.y, endPosition.z, // G (6)
+		 endPosition.x + endRadius.x, endPosition.y + endRadius.y, endPosition.z, // H (7)
 	};
 
-	glGenBuffers(1, &verticesID);
+	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
 	indicesSize = 36;
-	indices = new GLubyte[indicesSize]{
+	indices = new uint[indicesSize]{
 
 		// Front
 		2, 1, 0, // ABC
@@ -357,8 +380,8 @@ PrimitiveFrustum::PrimitiveFrustum(math::float3 startPosition, float startSizeX,
 		5, 4, 1	 // BEF
 	};
 
-	glGenBuffers(1, &indicesID);
+	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

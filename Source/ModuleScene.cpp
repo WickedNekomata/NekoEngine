@@ -26,6 +26,7 @@ bool ModuleScene::Start()
 	App->camera->LookAt(math::float3(0, 0, 0));
 
 	plane = new PrimitivePlane();
+	plane->SetPosition(math::float3(0.0f, -10.0f, 0.0f));
 
 	cube = new PrimitiveCube();
 	cube->ShowAxis(true);
@@ -35,6 +36,7 @@ bool ModuleScene::Start()
 	sphere = new PrimitiveSphere();
 	frustum = new PrimitiveFrustum();
 	cylinder = new PrimitiveCylinder();
+	cylinder->ShowAxis(true);
 
 	return ret;
 }
@@ -65,10 +67,10 @@ void ModuleScene::Draw() const
 	plane->Render();
 
 	// Primitives
-	cube->Render();
+	//cube->Render();
 	//circle->Render();
 	//sphere->Render();
 	//ray->Render();
 	//frustum->Render();
-	//cylinder->Render();
+	cylinder->Render();
 }

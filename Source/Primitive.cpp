@@ -29,15 +29,27 @@ void Primitive::InnerRender() const
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
+	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+
 	glColor3f(color.r, color.g, color.b);
+	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
+	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
+
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
 
+	// Element Array Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
+
+	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
+	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
 	glColor3f(1.0f, 1.0f, 1.0f);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//_Element_Array_buffer
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -80,12 +92,22 @@ void PrimitiveRay::InnerRender() const
 	// Draw (Vertex Array)
 	glEnableClientState(GL_VERTEX_ARRAY);
 
+	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+
 	glColor3f(color.r, color.g, color.b);
+	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
+	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
+
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glDrawArrays(GL_LINES, 0, indicesSize); // indicesSize equals to verticesSize
+
+	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
+	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
 	glColor3f(1.0f, 1.0f, 1.0f);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -161,6 +183,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 		indices[++j] = index; // B ... // C
 		indices[++j] = ++index; // C ... // D
 	}
+
 	indices[indicesSize - 1] = 1; // B
 
 	glGenBuffers(1, (GLuint*)&indicesID);
@@ -271,9 +294,10 @@ PrimitiveSphere::PrimitiveSphere(float radius) : Primitive(PrimitiveTypes::Primi
 
 	verticalCircle = new PrimitiveCircle(radius);
 	horizontalCircle = new PrimitiveCircle(radius);
+	horizontalCircle->SetRotation(-90.0f, math::float3(1.0f, 0.0f, 0.0f));
 }
 
-PrimitiveSphere::~PrimitiveSphere() 
+PrimitiveSphere::~PrimitiveSphere()
 {
 	RELEASE(verticalCircle);
 	RELEASE(horizontalCircle);
@@ -283,11 +307,8 @@ void PrimitiveSphere::InnerRender() const
 {
 	if (verticalCircle != nullptr)
 		verticalCircle->Render();
-
-	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 	if (horizontalCircle != nullptr)
 		horizontalCircle->Render();
-	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
 }
 
 // Cylinder --------------------------------------------------
@@ -297,11 +318,78 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 
 	float halfHeight = height / 2.0f;
 
-	math::float3 topCapPosition = math::float3(0.0f, halfHeight, 0.0f);
-	math::float3 bottomCapPosition = math::float3(0.0f, -halfHeight, 0.0f);
+	// Caps
+	topCap = new PrimitiveCircle(radius, sides);
+	topCap->SetPosition(math::float3(0.0f, halfHeight, 0.0f));
+	topCap->SetRotation(-90.0f, math::float3(1.0f, 0.0f, 0.0f));
+	bottomCap = new PrimitiveCircle(radius, sides);
+	bottomCap->SetPosition(math::float3(0.0f, -halfHeight, 0.0f));
+	bottomCap->SetRotation(90.0f, math::float3(1.0f, 0.0f, 0.0f));
 
-	topCap = new PrimitiveCircle(radius);
-	bottomCap = new PrimitiveCircle(radius);
+	// Body
+	// Vertices
+	uint verticesSize = 2 * 3 * sides;
+	vertices = new float[verticesSize];
+
+	float deltaAngle = 360.0f / (float)sides;
+
+	// Top cap vertices
+	uint i = -1;
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		// A (0), B (1)...
+		vertices[++i] = radius * cosf(DEGTORAD * angle);
+		vertices[++i] = halfHeight;
+		vertices[++i] = radius * sinf(DEGTORAD * angle);
+	}
+
+	// Bottom cap vertices
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		// A (sides), B (sides + 1)...
+		vertices[++i] = radius * cosf(DEGTORAD * angle);
+		vertices[++i] = -halfHeight;
+		vertices[++i] = radius * sinf(DEGTORAD * angle);
+	}
+
+	glGenBuffers(1, (GLuint*)&verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Indices
+	indicesSize = 2 * 3 * sides;
+	indices = new uint[indicesSize];
+
+	uint topIndex = 0;
+	uint bottomIndex = sides;
+	for (uint j = 0; j < indicesSize - 6; ++j)
+	{
+		// Triangle
+		indices[j] = bottomIndex;
+		indices[++j] = topIndex;
+		indices[++j] = ++bottomIndex;
+
+		// Triangle
+		indices[++j] = bottomIndex;
+		indices[++j] = topIndex;
+		indices[++j] = ++topIndex;
+	}
+
+	// Triangle
+	indices[indicesSize - 6] = bottomIndex;
+	indices[indicesSize - 5] = topIndex;
+	indices[indicesSize - 4] = sides;
+
+	// Triangle
+	indices[indicesSize - 3] = sides;
+	indices[indicesSize - 2] = topIndex;
+	indices[indicesSize - 1] = 0;
+
+	glGenBuffers(1, (GLuint*)&indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 PrimitiveCylinder::~PrimitiveCylinder() 
@@ -312,15 +400,38 @@ PrimitiveCylinder::~PrimitiveCylinder()
 
 void PrimitiveCylinder::InnerRender() const 
 {
-	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	// Caps
 	if (topCap != nullptr)
 		topCap->Render();
-	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
-
-	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 	if (bottomCap != nullptr)
 		bottomCap->Render();
-	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+
+	// Body
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Array Buffer
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+
+	glColor3f(color.r, color.g, color.b);
+	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
+	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
+
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
+
+	// Element Array Buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
+
+	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
+	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//_Element_Array_buffer
+
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 // Frustum --------------------------------------------------

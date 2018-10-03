@@ -15,6 +15,8 @@ enum PrimitiveTypes
 	PrimitiveTypeCube,
 	PrimitiveTypeSphere,
 	PrimitiveTypeCylinder,
+	PrimitiveTypeCone,
+	PrimitiveTypeArrow,
 	PrimitiveTypeFrustum,
 };
 
@@ -42,13 +44,15 @@ public:
 
 	virtual void Render() const;
 
-	PrimitiveTypes GetType() const { return type; }
+	// -----
 
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u); // angle in degrees
-	void SetColor(Color color) { this->color = color; }
+	PrimitiveTypes GetType() const;
 
-	void ShowAxis(bool showAxis) { this->showAxis = showAxis; };
+	virtual void SetPosition(math::float3 position);
+	virtual void SetRotation(float angle, math::float3 u); // angle in degrees
+	virtual void SetColor(Color color);
+
+	void ShowAxis(bool showAxis);
 
 protected:
 
@@ -79,6 +83,8 @@ public:
 
 	PrimitiveRay(math::float3 direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f);
 
+private:
+	
 	void InnerRender() const;
 
 private:
@@ -94,6 +100,10 @@ public:
 
 	PrimitiveAxis();
 	~PrimitiveAxis();
+
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u);
+	void SetColor(Color color);
 
 private:
 
@@ -151,6 +161,10 @@ public:
 	PrimitiveSphere(float radius = 1.0f);
 	~PrimitiveSphere();
 
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u);
+	void SetColor(Color color);
+
 private:
 
 	void InnerRender() const;
@@ -171,6 +185,10 @@ public:
 	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 8);
 	~PrimitiveCylinder();
 
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u);
+	void SetColor(Color color);
+
 private:
 
 	void InnerRender() const;
@@ -183,6 +201,58 @@ private:
 
 	PrimitiveCircle* topCap = nullptr;
 	PrimitiveCircle* bottomCap = nullptr;
+};
+
+// Cone --------------------------------------------------
+class PrimitiveCone : public Primitive
+{
+public:
+
+	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 8);
+	~PrimitiveCone();
+
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u);
+	void SetColor(Color color);
+
+private:
+
+	void InnerRender() const;
+
+private:
+
+	float height = 0.0f;
+	float radius = 0.0f;
+	uint sides = 0;
+
+	PrimitiveCircle* cap = nullptr;
+};
+
+// Arrow --------------------------------------------------
+class PrimitiveArrow : public Primitive
+{
+public:
+
+	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 8);
+	~PrimitiveArrow();
+
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u);
+	void SetColor(Color color);
+
+private:
+
+	void InnerRender() const;
+
+private:
+
+	float lineLength = 0.0f;
+	float coneHeight = 0.0f;
+	float coneRadius = 0.0f;
+	uint coneSides = 0;
+
+	PrimitiveCone* cone = nullptr;
+	PrimitiveRay* line = nullptr;
 };
 
 // Frustum --------------------------------------------------

@@ -15,6 +15,8 @@ class PrimitiveCircle;
 class PrimitiveFrustum;
 class PrimitiveSphere;
 class PrimitiveCylinder;
+class PrimitiveCone;
+class PrimitiveArrow;
 
 class ModuleScene : public Module
 {
@@ -41,6 +43,8 @@ private:
 	PrimitiveFrustum* frustum = nullptr;
 	PrimitiveSphere* sphere = nullptr;
 	PrimitiveCylinder* cylinder = nullptr;
+	PrimitiveCone* cone = nullptr;
+	PrimitiveArrow* arrow = nullptr;
 };
 
 #endif

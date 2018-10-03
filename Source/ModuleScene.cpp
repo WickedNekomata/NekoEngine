@@ -38,6 +38,9 @@ bool ModuleScene::Start()
 	cylinder = new PrimitiveCylinder();
 	cylinder->ShowAxis(true);
 
+	cone = new PrimitiveCone();
+	arrow = new PrimitiveArrow();
+
 	return ret;
 }
 
@@ -57,6 +60,7 @@ bool ModuleScene::CleanUp()
 	RELEASE(frustum);
 	RELEASE(sphere);
 	RELEASE(cylinder);
+	RELEASE(cone);
 
 	return ret;
 }
@@ -64,7 +68,7 @@ bool ModuleScene::CleanUp()
 void ModuleScene::Draw() const 
 {
 	// Big plane as ground
-	plane->Render();
+	//plane->Render();
 
 	// Primitives
 	//cube->Render();
@@ -72,5 +76,7 @@ void ModuleScene::Draw() const
 	//sphere->Render();
 	//ray->Render();
 	//frustum->Render();
-	cylinder->Render();
+	//cylinder->Render();
+	//cone->Render();
+	arrow->Render();
 }

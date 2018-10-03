@@ -1,15 +1,23 @@
 {
     "FileSystem": {},
-    "Window": {},
+    "Window": {
+        "width": 1024,
+        "height": 720,
+        "size": 1,
+        "fullscreen": false,
+        "resizable": true,
+        "borderless": false,
+        "fullDesktop": false
+    },
     "Camera3D": {},
     "Input": {},
     "Audio": {},
     "GUI": {
         "Inspector": false,
-        "PCG performance test": true,
+        "PCG performance test": false,
         "About": false,
         "Console": false,
-        "Preferences": false
+        "Settings": false
     },
     "Scene": {},
     "Renderer3D": {}

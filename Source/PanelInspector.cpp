@@ -2,6 +2,9 @@
 
 #include "Globals.h"
 
+#include "Application.h"
+#include "ModuleWindow.h"
+
 #include "ImGui/imgui.h"
 
 PanelInspector::PanelInspector(char* name) : Panel(name)
@@ -15,7 +18,7 @@ PanelInspector::~PanelInspector()
 
 bool PanelInspector::Draw()
 {
-	ImGui::SetNextWindowPos({ SCREEN_WIDTH - 400,20 });
+	ImGui::SetNextWindowPos({ (float)App->window->GetWindowWidth() - 400,20 });
 	ImGui::SetNextWindowSize({ 400,400 });
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;

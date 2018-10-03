@@ -40,6 +40,9 @@ public:
 	void SetBorderlessWindow(bool borderless);
 	bool GetBorderlessWindow() const;
 
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
+
 public:
 	
 	SDL_Window* window; // The window we'll be rendering to	

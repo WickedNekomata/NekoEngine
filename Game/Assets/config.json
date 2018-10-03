@@ -2,7 +2,8 @@
     "Application": {
         "Title": "Neko Engine",
         "Organitzation": "Wicked Nekomata",
-        "Cap Frames": true
+        "Cap Frames": false,
+        "Max FPS": 60
     },
     "FileSystem": {},
     "Window": {
@@ -22,8 +23,10 @@
         "PCG performance test": false,
         "About": false,
         "Console": false,
-        "Settings": false
+        "Settings": true
     },
     "Scene": {},
-    "Renderer3D": {}
+    "Renderer3D": {
+        "vSync": true
+    }
 }

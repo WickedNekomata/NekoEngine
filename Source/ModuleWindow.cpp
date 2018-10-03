@@ -157,8 +157,6 @@ uint ModuleWindow::GetRefreshRate() const
 
 void ModuleWindow::GetScreenSize(uint& width, uint& height) const
 {
-	uint refreshRate = 0;
-
 	SDL_DisplayMode desktopDisplay;
 	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
 	{

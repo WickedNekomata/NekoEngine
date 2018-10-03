@@ -56,10 +56,15 @@ bool Application::Init()
 		delete[] buf;
 		JSON_Object* data = json_value_get_object(rootValue);
 
+		// Loading Application data
+		JSON_Object* modulejObject = json_object_get_object(data, "Application");
+		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
+		SetMaxFramerate(json_object_get_number(modulejObject, "Max FPS"));
+
 		// Call Init() in all modules
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 		{
-			JSON_Object* modulejObject = json_object_get_object(data, (*item)->GetName());
+			modulejObject = json_object_get_object(data, (*item)->GetName());
 			ret = (*item)->Init(modulejObject);
 		}
 
@@ -79,8 +84,6 @@ bool Application::Init()
 		ret = (*item)->Start();
 
 	perfTimer.Start();
-	capFrames = true;
-	maxFramerate = 60;
 
 	return ret;
 }
@@ -193,6 +196,7 @@ void Application::Load()
 		window->SetTitle(GetAppName());
 		SetOrganizationName(json_object_get_string(modulejObject, "Organitzation"));
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
+		SetMaxFramerate(json_object_get_boolean(modulejObject, "Max FPS"));
 
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
 		{
@@ -218,7 +222,8 @@ void Application::Save() const
 
 	json_object_set_string(objModule, "Title", App->GetAppName());
 	json_object_set_string(objModule, "Organitzation", App->GetOrganizationName());
-	json_object_set_boolean(objModule, "Cap Frames", capFrames);
+	json_object_set_boolean(objModule, "Cap Frames", GetCapFrames());
+	json_object_set_number(objModule, "Max FPS", GetMaxFramerate());
 
 	// Saving Modules Data
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)

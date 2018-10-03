@@ -22,6 +22,9 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
+
 	void OnResize(int width, int height);
 
 	bool SetVSync(bool vsync);

@@ -5,7 +5,7 @@
 #include "physfs/include/physfs.h"
 #include "SDL/include/SDL.h"
 
-#pragma comment(lib, "physfs/lib/Win32/physfs.lib")
+#pragma comment(lib, "physfs/libx86/physfs.lib")
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {

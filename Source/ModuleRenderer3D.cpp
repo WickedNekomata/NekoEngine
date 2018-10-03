@@ -7,7 +7,7 @@
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
-#pragma comment(lib, "glew/lib/Release/Win32/glew32.lib")
+#pragma comment(lib, "glew/libx86/glew32.lib")
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
 {

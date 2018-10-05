@@ -8,7 +8,28 @@
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 
+#include <list>
+
 #define MAX_LIGHTS 8
+
+struct Mesh 
+{
+	// Unique vertices
+	float* vertices = nullptr;
+	uint verticesID = 0;
+	uint verticesSize = 0;
+
+	// Indices
+	uint* indices = nullptr;
+	uint indicesID = 0;
+	uint indicesSize = 0;
+
+	// -----
+
+	~Mesh();
+
+	void GenerateBuffers() const;
+};
 
 class ModuleRenderer3D : public Module
 {
@@ -36,7 +57,16 @@ public:
 	void SetWireframeMode(bool enable) const;
 	bool IsWireframeMode() const;
 
+	void SetDebugDraw(bool debugDraw);
+
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
+
+	// Meshes
+	bool AddMesh(Mesh* mesh);
+	bool RemoveMesh(Mesh* mesh);
+	void ClearMeshes();
+
+	void DrawMesh(Mesh* mesh) const;
 
 public:
 
@@ -46,6 +76,10 @@ public:
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 	bool vsync = false;
+	bool debugDraw = false;
+
+	// Meshes
+	std::list<Mesh*> meshes;
 };
 
 #endif

@@ -139,7 +139,15 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
+	// Meshes
+	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+		DrawMesh(*it);
+
 	// 2. Debug geometry
+	if (debugDraw)
+	{
+
+	}
 
 	// 3. Editor
 	App->gui->Draw();
@@ -154,8 +162,9 @@ bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Destroying 3D Renderer");
+	ClearMeshes();
 
+	CONSOLE_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 
 	return ret;
@@ -260,6 +269,11 @@ bool ModuleRenderer3D::IsWireframeMode() const
 	return ret;
 }
 
+void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
+{
+	this->debugDraw = debugDraw;
+}
+
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
 	math::float4x4 Perspective;
@@ -284,4 +298,83 @@ math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, 
 	Perspective[3][3] = 0.0f;
 
 	return Perspective;
+}
+
+bool ModuleRenderer3D::AddMesh(Mesh* mesh) 
+{
+	bool ret = false;
+
+	if (std::find(meshes.begin(), meshes.end(), mesh) == meshes.end())
+	{
+		meshes.push_back(mesh);
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool ModuleRenderer3D::RemoveMesh(Mesh* mesh) 
+{
+	bool ret = false;
+
+	if (std::find(meshes.begin(), meshes.end(), mesh) != meshes.end())
+	{
+		meshes.remove(mesh);
+		ret = true;
+	}
+
+	return ret;
+}
+
+void ModuleRenderer3D::ClearMeshes() 
+{
+	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+		delete *it;
+
+	meshes.clear();
+}
+
+void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Array Buffer
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
+
+	// Element Array Buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
+	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//_Element_Array_buffer
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+// Mesh --------------------------------------------------
+
+void Mesh::GenerateBuffers() const
+{
+	// Generate vertices buffer
+	glGenBuffers(1, (GLuint*)&verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Generate indices buffer
+	glGenBuffers(1, (GLuint*)&indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+Mesh::~Mesh()
+{
+	// Delete vertices buffer
+	glDeleteBuffers(1, (GLuint*)&verticesID);
+
+	// Delete indices buffer
+	glDeleteBuffers(1, (GLuint*)&indicesID);
 }

@@ -22,7 +22,8 @@ bool ModuleAssetImport::Init(JSON_Object * jObject)
 {
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
-	aiAttachLogStream(&stream);
+	aiAttachLogStream(&stream);
+
 	return true;
 }
 
@@ -53,15 +54,15 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path) const
 			{
 				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
 				mesh->indices = new uint[mesh->indicesSize];
-				for (uint i = 0; i < scene->mMeshes[i]->mNumFaces; ++i)
+				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
 				{
-					if (scene->mMeshes[i]->mFaces[i].mNumIndices != 3)
+					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
 					{
 						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
 					}
 					else
 					{
-						memcpy(&mesh->indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
+						memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
 					}
 				}
 			}

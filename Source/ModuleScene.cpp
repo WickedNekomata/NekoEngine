@@ -43,7 +43,7 @@ bool ModuleScene::Start()
 	arrow = new PrimitiveArrow();
 
 	// Load model
-	App->assetsImporter->LoadFBXfromFile("Assets/Models/Cube/cube.FBX");
+	App->assetsImporter->LoadFBXfromFile("Assets/Models/BakerHouse/BakerHouse.fbx");
 
 	return ret;
 }

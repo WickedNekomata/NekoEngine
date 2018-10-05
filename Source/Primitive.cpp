@@ -157,33 +157,6 @@ void PrimitiveAxis::InnerRender() const
 	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
 }
 
-void PrimitiveAxis::SetPosition(math::float3 position)
-{
-	Primitive::SetPosition(position);
-
-	x->SetPosition(position);
-	y->SetPosition(position);
-	z->SetPosition(position);
-}
-
-void PrimitiveAxis::SetRotation(float angle, math::float3 u)
-{
-	Primitive::SetRotation(angle, u);
-
-	x->SetRotation(angle, u);
-	y->SetRotation(angle, u);
-	z->SetRotation(angle, u);
-}
-
-void PrimitiveAxis::SetColor(Color color)
-{
-	Primitive::SetColor(color);
-
-	x->SetColor(color);
-	y->SetColor(color);
-	z->SetColor(color);
-}
-
 // Circle --------------------------------------------------
 PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCircle), radius(radius), sides(sides)
 {
@@ -353,30 +326,6 @@ void PrimitiveSphere::InnerRender() const
 		horizontalCircle->Render();
 }
 
-void PrimitiveSphere::SetPosition(math::float3 position)
-{
-	Primitive::SetPosition(position);
-
-	verticalCircle->SetPosition(position);
-	horizontalCircle->SetPosition(position);
-}
-
-void PrimitiveSphere::SetRotation(float angle, math::float3 u)
-{
-	Primitive::SetRotation(angle, u);
-
-	verticalCircle->SetRotation(angle, u);
-	horizontalCircle->SetRotation(angle, u);
-}
-
-void PrimitiveSphere::SetColor(Color color)
-{
-	Primitive::SetColor(color);
-
-	verticalCircle->SetColor(color);
-	horizontalCircle->SetColor(color);
-}
-
 // Cylinder --------------------------------------------------
 PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCylinder), height(height), radius(radius), sides(sides)
 {
@@ -475,30 +424,6 @@ void PrimitiveCylinder::InnerRender() const
 	Primitive::InnerRender();
 }
 
-void PrimitiveCylinder::SetPosition(math::float3 position)
-{
-	Primitive::SetPosition(position);
-
-	topCap->SetPosition(position);
-	bottomCap->SetPosition(position);
-}
-
-void PrimitiveCylinder::SetRotation(float angle, math::float3 u)
-{
-	Primitive::SetRotation(angle, u);
-
-	topCap->SetRotation(angle, u);
-	bottomCap->SetRotation(angle, u);
-}
-
-void PrimitiveCylinder::SetColor(Color color)
-{
-	Primitive::SetColor(color);
-
-	topCap->SetColor(color);
-	bottomCap->SetColor(color);
-}
-
 // Cone 
 PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
 {
@@ -571,27 +496,6 @@ void PrimitiveCone::InnerRender() const
 	Primitive::InnerRender();
 }
 
-void PrimitiveCone::SetPosition(math::float3 position)
-{
-	Primitive::SetPosition(position);
-
-	cap->SetPosition(position);
-}
-
-void PrimitiveCone::SetRotation(float angle, math::float3 u)
-{
-	Primitive::SetRotation(angle, u);
-
-	cap->SetRotation(angle, u);
-}
-
-void PrimitiveCone::SetColor(Color color)
-{
-	Primitive::SetColor(color);
-
-	cap->SetColor(color);
-}
-
 // Arrow
 PrimitiveArrow::PrimitiveArrow(float lineLength, float coneHeight, float coneRadius, uint coneSides) : Primitive(PrimitiveTypes::PrimitiveTypeArrow), lineLength(lineLength), coneHeight(coneHeight), coneRadius(coneRadius), coneSides(coneSides)
 {
@@ -612,30 +516,6 @@ void PrimitiveArrow::InnerRender() const
 		line->Render();
 	if (cone != nullptr)
 		cone->Render();
-}
-
-void PrimitiveArrow::SetPosition(math::float3 position)
-{
-	Primitive::SetPosition(position);
-
-	line->SetPosition(position);
-	cone->SetPosition(position);
-}
-
-void PrimitiveArrow::SetRotation(float angle, math::float3 u)
-{
-	Primitive::SetRotation(angle, u);
-
-	line->SetRotation(angle, u);
-	cone->SetRotation(angle, u);
-}
-
-void PrimitiveArrow::SetColor(Color color)
-{
-	Primitive::SetColor(color);
-
-	line->SetColor(color);
-	cone->SetColor(color);
 }
 
 // Frustum --------------------------------------------------

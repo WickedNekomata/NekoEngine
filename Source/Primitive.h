@@ -48,9 +48,9 @@ public:
 
 	PrimitiveTypes GetType() const;
 
-	virtual void SetPosition(math::float3 position);
-	virtual void SetRotation(float angle, math::float3 u); // angle in degrees
-	virtual void SetColor(Color color);
+	void SetPosition(math::float3 position);
+	void SetRotation(float angle, math::float3 u); // angle in degrees
+	void SetColor(Color color);
 
 	void ShowAxis(bool showAxis);
 
@@ -100,10 +100,6 @@ public:
 
 	PrimitiveAxis();
 	~PrimitiveAxis();
-
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u);
-	void SetColor(Color color);
 
 private:
 
@@ -161,10 +157,6 @@ public:
 	PrimitiveSphere(float radius = 1.0f);
 	~PrimitiveSphere();
 
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u);
-	void SetColor(Color color);
-
 private:
 
 	void InnerRender() const;
@@ -184,10 +176,6 @@ public:
 
 	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 8);
 	~PrimitiveCylinder();
-
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u);
-	void SetColor(Color color);
 
 private:
 
@@ -211,10 +199,6 @@ public:
 	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 8);
 	~PrimitiveCone();
 
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u);
-	void SetColor(Color color);
-
 private:
 
 	void InnerRender() const;
@@ -235,10 +219,6 @@ public:
 
 	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 8);
 	~PrimitiveArrow();
-
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u);
-	void SetColor(Color color);
 
 private:
 

@@ -32,7 +32,7 @@ bool ModuleAssetImport::CleanUp()
 	return true;
 }
 
-bool ModuleAssetImport::LoadFBXfromFile(const char* path)
+bool ModuleAssetImport::LoadFBXfromFile(const char* path) const
 {
 	bool ret = true;
 
@@ -78,7 +78,7 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path)
 	return ret;
 }
 
-bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int bufferSize)
+bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int bufferSize) const
 {
 	bool ret = true;
 

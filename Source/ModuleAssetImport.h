@@ -13,8 +13,8 @@ public:
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
-	bool LoadFBXfromFile(const char* path);
-	bool LoadFBXfromMemory(const char* buffer, unsigned int bufferSize);
+	bool LoadFBXfromFile(const char* path) const;
+	bool LoadFBXfromMemory(const char* buffer, unsigned int bufferSize) const;
 
 };
 

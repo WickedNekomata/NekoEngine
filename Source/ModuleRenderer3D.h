@@ -5,14 +5,18 @@
 #include "Globals.h"
 #include "Light.h"
 
+#include <list>
+
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 
-#include <list>
+#include "glew\include\GL\glew.h"
+#include "SDL\include\SDL_opengl.h"
+#include "SDL/include/SDL_video.h"
 
 #define MAX_LIGHTS 8
 
-struct Mesh 
+struct Mesh
 {
 	// Unique vertices
 	float* vertices = nullptr;

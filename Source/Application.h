@@ -71,7 +71,7 @@ public:
 	ModuleCamera3D*		camera;
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
-	ModuleAssetImport*	AssetsImporter;
+	ModuleAssetImport*	assetsImporter;
 
 private:
 

@@ -12,14 +12,14 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	camera = new ModuleCamera3D();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	AssetsImporter = new ModuleAssetImport();
+	assetsImporter = new ModuleAssetImport();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 
 	// Main Modules
-	AddModule(AssetsImporter);
+	AddModule(assetsImporter);
 	AddModule(filesystem);
 	AddModule(window);
 	AddModule(camera);

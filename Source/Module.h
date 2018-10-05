@@ -67,7 +67,6 @@ protected:
 private:
 
 	bool enabled;
-
 };
 
 #endif

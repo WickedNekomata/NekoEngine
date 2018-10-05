@@ -4,6 +4,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "Primitive.h"
+#include "ModuleAssetImport.h"
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -41,6 +42,9 @@ bool ModuleScene::Start()
 	cone = new PrimitiveCone();
 	arrow = new PrimitiveArrow();
 
+	// Load model
+	App->assetsImporter->LoadFBXfromFile("Assets/Models/Cube/cube.FBX");
+
 	return ret;
 }
 
@@ -72,7 +76,7 @@ void ModuleScene::Draw() const
 
 	// Primitives
 	//cube->Render();
-	circle->Render();
+	//circle->Render();
 	//sphere->Render();
 	//ray->Render();
 	//frustum->Render();

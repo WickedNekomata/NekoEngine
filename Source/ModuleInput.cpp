@@ -120,16 +120,7 @@ update_status ModuleInput::PreUpdate(float dt)
 		case (SDL_DROPFILE):
 		{
 			// TODO: Manage dropped file
-			char* dropped_filedir = event.drop.file;
-			
-			SDL_ShowSimpleMessageBox(
-				SDL_MESSAGEBOX_INFORMATION,
-				"File dropped on window",
-				dropped_filedir,
-				App->window->window
-			);
-
-			SDL_free(dropped_filedir);
+		
 			break;
 		}
 		}

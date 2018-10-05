@@ -2,9 +2,6 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 
-#include "glew\include\GL\glew.h"
-#include "SDL\include\SDL_opengl.h"
-
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew/libx86/glew32.lib")
@@ -306,6 +303,7 @@ bool ModuleRenderer3D::AddMesh(Mesh* mesh)
 
 	if (std::find(meshes.begin(), meshes.end(), mesh) == meshes.end())
 	{
+		mesh->GenerateBuffers();
 		meshes.push_back(mesh);
 		ret = true;
 	}
@@ -319,6 +317,7 @@ bool ModuleRenderer3D::RemoveMesh(Mesh* mesh)
 
 	if (std::find(meshes.begin(), meshes.end(), mesh) != meshes.end())
 	{
+		delete mesh;
 		meshes.remove(mesh);
 		ret = true;
 	}

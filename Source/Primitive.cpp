@@ -115,7 +115,7 @@ void PrimitiveRay::InnerRender() const
 	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
 
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, indicesSize); // indicesSize equals to verticesSize
+	glDrawArrays(GL_LINES, 0, indicesSize);
 
 	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
 	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);

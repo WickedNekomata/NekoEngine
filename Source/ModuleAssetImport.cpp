@@ -1,6 +1,8 @@
 #include "ModuleAssetImport.h"
 #include "ModuleRenderer3D.h"
 
+#include "Application.h"
+
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/scene.h"
 #include "Assimp/include/postprocess.h"
@@ -29,14 +31,7 @@ bool ModuleAssetImport::CleanUp()
 	aiDetachAllLogStreams();
 	return true;
 }
-struct Mesh
-{
-	int num_vertices;
-	float* vertices;
 
-	uint* indices;
-	int num_indices;
-};
 bool ModuleAssetImport::LoadFBXfromFile(const char* path)
 {
 	bool ret = true;
@@ -47,17 +42,17 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path)
 	{	
 		for (int i = 0; i < scene->mNumMeshes; ++i)
 		{			
-			Mesh mesh;
+			Mesh* mesh = new Mesh();
 
-			mesh.num_vertices = scene->mMeshes[i]->mNumVertices;
-			mesh.vertices = new float[mesh.num_vertices * 3];
-			memcpy(mesh.vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh.num_vertices * 3);
+			mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
+			mesh->vertices = new float[mesh->verticesSize * 3];
+			memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
 			CONSOLE_LOG("New mesh with %d vertices");
 
 			if (scene->mMeshes[i]->HasFaces())
 			{
-				mesh.num_indices = scene->mMeshes[i]->mNumFaces * 3;
-				mesh.indices = new uint[mesh.num_indices];
+				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
+				mesh->indices = new uint[mesh->indicesSize];
 				for (uint i = 0; i < scene->mMeshes[i]->mNumFaces; ++i)
 				{
 					if (scene->mMeshes[i]->mFaces[i].mNumIndices != 3)
@@ -66,11 +61,11 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path)
 					}
 					else
 					{
-						memcpy(&mesh.indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
+						memcpy(&mesh->indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
 					}
 				}
 			}
-			// renderer->addMesh(mesh);
+			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
 	}
@@ -93,17 +88,17 @@ bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int buff
 	{
 		for (int i = 0; i < scene->mNumMeshes; ++i)
 		{
-			Mesh mesh;
+			Mesh* mesh = new Mesh();
 
-			mesh.num_vertices = scene->mMeshes[i]->mNumVertices;
-			mesh.vertices = new float[mesh.num_vertices * 3];
-			memcpy(mesh.vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh.num_vertices * 3);
+			mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
+			mesh->vertices = new float[mesh->verticesSize * 3];
+			memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
 			CONSOLE_LOG("New mesh with %d vertices");
 
 			if (scene->mMeshes[i]->HasFaces())
 			{
-				mesh.num_indices = scene->mMeshes[i]->mNumFaces * 3;
-				mesh.indices = new uint[mesh.num_indices];
+				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
+				mesh->indices = new uint[mesh->indicesSize];
 				for (uint i = 0; i < scene->mMeshes[i]->mNumFaces; ++i)
 				{
 					if (scene->mMeshes[i]->mFaces[i].mNumIndices != 3)
@@ -112,11 +107,11 @@ bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int buff
 					}
 					else
 					{
-						memcpy(&mesh.indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
+						memcpy(&mesh->indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
 					}
 				}
 			}
-			// renderer->addMesh(mesh);
+			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
 	}

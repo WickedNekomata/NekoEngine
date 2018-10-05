@@ -8,6 +8,8 @@
 
 #include "parson/parson.h"
 
+#include "Globals.h"
+
 class Module
 {
 public:

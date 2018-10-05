@@ -14,6 +14,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleGui.h"
 #include "ModuleFileSystem.h"
+#include "ModuleAssetImport.h"
 
 #include "PerfTimer.h"
 
@@ -70,6 +71,7 @@ public:
 	ModuleCamera3D*		camera;
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
+	ModuleAssetImport*	AssetsImporter;
 
 private:
 

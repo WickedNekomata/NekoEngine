@@ -22,21 +22,24 @@ struct Mesh
 {
 	// Unique vertices
 	float* vertices = nullptr;
-	uint verticesID = 0;
-	uint verticesSize = 0;
+	uint verticesID = 0u;
+	uint verticesSize = 0u;
 
 	// Indices
 	uint* indices = nullptr;
-	uint indicesID = 0;
-	uint indicesSize = 0;
+	uint indicesID = 0u;
+	uint indicesSize = 0u;
 
 	// Normals (vertices normals)
 	float* normals = nullptr;
 
-	PrimitiveRay** normalsLines = nullptr;
+	// Texture Coord
+	float* textCoord = nullptr;
 
-	// Texture coords
-	uint* textCoord = nullptr;
+	// Colors
+	float* colors = nullptr;
+
+	PrimitiveRay** normalsLines = nullptr;
 
 	// -----
 

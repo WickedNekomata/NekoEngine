@@ -37,6 +37,8 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 {
 	bool ret = true;
 
+	App->renderer3D->ClearMeshes();
+
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
 
 	if (scene != nullptr)
@@ -73,6 +75,19 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
 				CONSOLE_LOG("New mesh with %d normals");
 			}
+
+			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
+			{
+				mesh->textCoord = new float[mesh->verticesSize * 3];
+				memcpy(mesh->textCoord, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
+			}
+
+			if (scene->mMeshes[i]->GetNumColorChannels() > 0)
+			{
+				mesh->colors = new float[mesh->verticesSize * 4];
+				memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
+			}
+
 			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
@@ -89,6 +104,8 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
 {
 	bool ret = true;
+
+	App->renderer3D->ClearMeshes();
 
 	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
 
@@ -126,6 +143,19 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
 				CONSOLE_LOG("New mesh with %d normals");
 			}
+
+			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
+			{
+				mesh->textCoord = new float[mesh->verticesSize * 3];
+				memcpy(mesh->textCoord, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));		
+			}
+
+			if (scene->mMeshes[i]->GetNumColorChannels() > 0)
+			{
+				mesh->colors = new float[mesh->verticesSize * 4];
+				memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
+			}
+
 			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);

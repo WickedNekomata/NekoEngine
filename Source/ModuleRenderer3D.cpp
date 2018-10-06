@@ -406,13 +406,15 @@ Mesh::~Mesh()
 	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
 
-	RELEASE(vertices);
-	RELEASE(normals);
+	RELEASE_ARRAY(vertices);
+	RELEASE_ARRAY(normals);
+	RELEASE_ARRAY(textCoord);
+	RELEASE_ARRAY(colors);
 
 	for (uint i = 0; i < verticesSize; ++i)
 	{
 		RELEASE(normalsLines[i]);
 	}
 
-	RELEASE(normalsLines);
+	RELEASE_ARRAY(normalsLines);
 }

@@ -36,19 +36,16 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 Application::~Application()
 {
+	RELEASE_ARRAY(appName);
+	RELEASE_ARRAY(organizationName);
+
 	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend(); ++item)
-	{
 		delete *item;
-	}
 }
 
 bool Application::Init()
 {
 	bool ret = true;
-
-	// FIX BUG WINDOW PANEL AND LAOD THIS FROM JSON
-	SetAppName(TITLE);
-	SetOrganizationName(ORGANIZATION);
 
 	// Read config file
 	char* buf;
@@ -63,6 +60,8 @@ bool Application::Init()
 		JSON_Object* modulejObject = json_object_get_object(data, "Application");
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
 		SetMaxFramerate(json_object_get_number(modulejObject, "Max FPS"));
+		SetAppName(json_object_get_string(modulejObject, "Title"));
+		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
 
 		// Call Init() in all modules
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
@@ -141,9 +140,7 @@ bool Application::CleanUp()
 	bool ret = true;
 
 	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend() && ret; ++item)
-	{
 		ret = (*item)->CleanUp();
-	}
 
 	return ret;
 }
@@ -201,7 +198,7 @@ void Application::Load()
 		
 		SetAppName(json_object_get_string(modulejObject, "Title"));
 		window->SetTitle(GetAppName());
-		SetOrganizationName(json_object_get_string(modulejObject, "Organitzation"));
+		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
 		SetMaxFramerate(json_object_get_boolean(modulejObject, "Max FPS"));
 
@@ -228,7 +225,7 @@ void Application::Save() const
 	json_object_set_value(rootObject, "Application", newValue);
 
 	json_object_set_string(objModule, "Title", App->GetAppName());
-	json_object_set_string(objModule, "Organitzation", App->GetOrganizationName());
+	json_object_set_string(objModule, "Organization", App->GetOrganizationName());
 	json_object_set_boolean(objModule, "Cap Frames", GetCapFrames());
 	json_object_set_number(objModule, "Max FPS", GetMaxFramerate());
 
@@ -258,7 +255,8 @@ void Application::AddModule(Module* mod)
 
 void Application::SetAppName(const char* name)
 {
-	appName = name;
+	appName = new char[STR_INPUT_SIZE];
+	strcpy_s((char*)appName, STR_INPUT_SIZE, name);
 
 	if (window != nullptr)
 		window->SetTitle(name);
@@ -271,7 +269,8 @@ const char* Application::GetAppName() const
 
 void Application::SetOrganizationName(const char* name)
 {
-	organizationName = name;
+	organizationName = new char[STR_INPUT_SIZE];
+	strcpy_s((char*)organizationName, STR_INPUT_SIZE, name);
 }
 
 const char* Application::GetOrganizationName() const

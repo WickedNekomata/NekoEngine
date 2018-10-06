@@ -194,7 +194,7 @@ class PrimitiveCylinder : public Primitive
 {
 public:
 
-	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 5);
+	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 8);
 
 private:
 
@@ -222,7 +222,7 @@ class PrimitiveArrow : public Primitive
 {
 public:
 
-	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 5);
+	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 8);
 	~PrimitiveArrow();
 
 private:

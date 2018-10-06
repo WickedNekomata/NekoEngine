@@ -36,6 +36,8 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		// Use vsync
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
 
+		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
+
 		// Initialize glew
 		GLenum error = glewInit();
 		if (error != GL_NO_ERROR)
@@ -103,7 +105,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 		// GL capabilities
 		glEnable(GL_DEPTH_TEST);
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
 	}
@@ -346,6 +348,9 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 
 	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
+	
+	glColor4f(mesh->colors[0], mesh->colors[1], mesh->colors[2], mesh->colors[3]);
+
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//_Array_Buffer
@@ -353,6 +358,7 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	// Element Array Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	//_Element_Array_buffer
 
@@ -362,9 +368,7 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
 {
 	for (uint i = 0; i < mesh->verticesSize; ++i)
-	{
 		mesh->normalsLines[i]->Render();
-	}
 }
 
 // Mesh --------------------------------------------------
@@ -408,7 +412,7 @@ Mesh::~Mesh()
 
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);
-	RELEASE_ARRAY(textCoord);
+	RELEASE_ARRAY(textureCoords);
 	RELEASE_ARRAY(colors);
 
 	for (uint i = 0; i < verticesSize; ++i)

@@ -11,6 +11,12 @@ Primitive::Primitive(PrimitiveTypes type) : type(type) {}
 
 Primitive::~Primitive()
 {
+	// Delete vertices buffer
+	glDeleteBuffers(1, (GLuint*)&verticesID);
+
+	// Delete indices buffer
+	glDeleteBuffers(1, (GLuint*)&indicesID);
+
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(indices);
 
@@ -195,7 +201,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 
 	uint index = 1; /// B
 	i = -1;
-	while (i < (int)indicesSize)
+	while (i < (int)indicesSize - 1)
 	{
 		indices[++i] = 0; /// A
 		indices[++i] = index; /// B ... // C

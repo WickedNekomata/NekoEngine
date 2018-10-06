@@ -32,14 +32,13 @@ struct Mesh
 
 	// Normals (vertices normals)
 	float* normals = nullptr;
+	PrimitiveRay** normalsLines = nullptr;
 
-	// Texture Coord
-	float* textCoord = nullptr;
+	// Texture coords
+	float* textureCoords = nullptr;
 
 	// Colors
 	float* colors = nullptr;
-
-	PrimitiveRay** normalsLines = nullptr;
 
 	// -----
 
@@ -95,7 +94,7 @@ public:
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 	bool vsync = false;
-	bool debugDraw = true;
+	bool debugDraw = false;
 
 	// Meshes
 	std::list<Mesh*> meshes;

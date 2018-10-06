@@ -74,7 +74,6 @@ bool ModuleScene::CleanUp()
 	RELEASE(sphere);
 	RELEASE(cylinder);
 	RELEASE(cone);
-
 	RELEASE(grid);
 
 	return ret;
@@ -87,7 +86,7 @@ void ModuleScene::Draw() const
 
 	// Primitives
 	//cube->Render();
-	circle->Render();
+	//circle->Render();
 	//sphere->Render();
 	//ray->Render();
 	//frustum->Render();

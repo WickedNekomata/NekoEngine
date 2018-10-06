@@ -43,6 +43,3 @@ enum update_status
 
 #define BUF_SIZE 4096
 #define STR_INPUT_SIZE 128
-
-#define TITLE "Neko Engine"
-#define ORGANIZATION "Wicked Nekomata"

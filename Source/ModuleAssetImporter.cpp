@@ -78,8 +78,8 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 
 			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
 			{
-				mesh->textCoord = new float[mesh->verticesSize * 3];
-				memcpy(mesh->textCoord, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
+				mesh->textureCoords = new float[mesh->verticesSize * 3];
+				memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
 			}
 
 			if (scene->mMeshes[i]->GetNumColorChannels() > 0)
@@ -146,8 +146,8 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 
 			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
 			{
-				mesh->textCoord = new float[mesh->verticesSize * 3];
-				memcpy(mesh->textCoord, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));		
+				mesh->textureCoords = new float[mesh->verticesSize * 3];
+				memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
 			}
 
 			if (scene->mMeshes[i]->GetNumColorChannels() > 0)

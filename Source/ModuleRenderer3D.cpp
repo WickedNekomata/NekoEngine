@@ -348,8 +348,6 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 
 	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
-	
-	glColor4f(mesh->colors[0], mesh->colors[1], mesh->colors[2], mesh->colors[3]);
 
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

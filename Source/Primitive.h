@@ -24,6 +24,7 @@ enum PrimitiveTypes
 struct Transform 
 {
 	// Position
+	math::float3 startPosition = { 0.0f, 0.0f, 0.0f };
 	math::float3 position = { 0.0f, 0.0f, 0.0f };
 
 	// Rotation
@@ -49,9 +50,9 @@ public:
 
 	PrimitiveTypes GetType() const;
 
-	void SetPosition(math::float3 position);
-	void SetRotation(float angle, math::float3 u); // angle in degrees
-	void SetColor(Color color);
+	virtual void SetPosition(math::float3 position);
+	virtual void SetRotation(float angle, math::float3 u); // angle in degrees
+	virtual void SetColor(Color color);
 
 	void ShowAxis(bool showAxis);
 
@@ -82,7 +83,7 @@ class PrimitiveRay : public Primitive
 {
 public:
 
-	PrimitiveRay(math::float3 direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f);
+	PrimitiveRay(math::float3 direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f, math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 	
@@ -193,7 +194,7 @@ class PrimitiveCylinder : public Primitive
 {
 public:
 
-	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 8);
+	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 5);
 
 private:
 
@@ -207,7 +208,7 @@ class PrimitiveCone : public Primitive
 {
 public:
 
-	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5);
+	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5, math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 
@@ -221,14 +222,14 @@ class PrimitiveArrow : public Primitive
 {
 public:
 
-	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 8);
+	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 5);
+	~PrimitiveArrow();
 
 private:
 
-	float lineLength = 0.0f;
-	float coneHeight = 0.0f;
-	float coneRadius = 0.0f;
-	uint coneSides = 0;
+	void InnerRender() const;
+
+private:
 
 	PrimitiveCone* cone = nullptr;
 	PrimitiveRay* line = nullptr;

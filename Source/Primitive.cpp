@@ -61,7 +61,7 @@ PrimitiveTypes Primitive::GetType() const
 
 void Primitive::SetPosition(math::float3 position)
 {
-	transform.position = position;
+	transform.position = transform.startPosition + position;
 }
 
 void Primitive::SetRotation(float angle, math::float3 u)
@@ -81,16 +81,18 @@ void Primitive::ShowAxis(bool showAxis)
 }
 
 // Ray --------------------------------------------------
-PrimitiveRay::PrimitiveRay(math::float3 direction, float length) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
+PrimitiveRay::PrimitiveRay(math::float3 direction, float length, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
 {
+	transform.startPosition = position;
+
 	direction.Normalize();
-	math::float3 endPosition = direction * length;
+	math::float3 endPosition = position + (direction * length);
 	
 	// Vertices
-	uint verticesSize = 6;
+	uint verticesSize = 3 * 2;
 	vertices = new float[verticesSize]{
 
-		0.0f, 0.0f, 0.0f,
+		position.x, position.y, position.z,
 		endPosition.x, endPosition.y, endPosition.z
 	};
 
@@ -166,8 +168,8 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 	uint verticesSize = 3 * (1 + sides);
 	vertices = new float[verticesSize];
 
-	uint i = 0;
-	// A (0)
+	/// Center (0)
+	int i = 0;
 	vertices[i] = 0.0f;
 	vertices[++i] = 0.0f;
 	vertices[++i] = 0.0f;
@@ -176,7 +178,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
-		// B (1), C (2)...
+		/// B (1), C (2)... (sides)
 		vertices[++i] = radius * cosf(DEGTORAD * angle);
 		vertices[++i] = radius * sinf(DEGTORAD * angle);
 		vertices[++i] = 0.0f;
@@ -191,15 +193,16 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 	indicesSize = 3 * sides;
 	indices = new uint[indicesSize];
 
-	uint index = 1;
-	for (uint j = 0; j < indicesSize - 2; ++j)
+	uint index = 1; /// B
+	i = -1;
+	while (i < (int)indicesSize)
 	{
-		indices[j] = 0; // A
-		indices[++j] = index; // B ... // C
-		indices[++j] = ++index; // C ... // D
+		indices[++i] = 0; /// A
+		indices[++i] = index; /// B ... // C
+		indices[++i] = ++index; /// C ... // D
 	}
 
-	indices[indicesSize - 1] = 1; // C = B
+	indices[indicesSize - 1] = 1; /// C = B
 
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
@@ -213,13 +216,13 @@ PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::Pr
 	axis = new PrimitiveAxis();
 
 	// Vertices
-	uint verticesSize = 12;
+	uint verticesSize = 3 * 4;
 	vertices = new float[verticesSize]{
 
-		 size.x, 0.0f, -size.y, // A (0)
-		 size.x, 0.0f,  size.y, // B (1)
-		-size.x, 0.0f, -size.y, // C (2)
-		-size.x, 0.0f,  size.y  // D (3)
+		 size.x, 0.0f, -size.y, /// A (0)
+		 size.x, 0.0f,  size.y, /// B (1)
+		-size.x, 0.0f, -size.y, /// C (2)
+		-size.x, 0.0f,  size.y  /// D (3)
 	};
 
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -228,11 +231,11 @@ PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::Pr
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 6;
+	indicesSize = 2 * 3;
 	indices = new uint[indicesSize]{
 
-		2, 1, 0, // CBA
-		3, 1, 2  // DBC
+		2, 1, 0, /// CBA
+		3, 1, 2  /// DBC
 	};
 
 	glGenBuffers(1, (GLuint*)&indicesID);
@@ -247,7 +250,7 @@ PrimitiveGrid::PrimitiveGrid(uint quadSize, uint quadsX, uint quadsZ) : Primitiv
 	axis = new PrimitiveAxis();
 
 	// Vertices
-	uint verticesSize = 3 * 2 * ((quadsX + 1) + (quadsZ - 1));
+	uint verticesSize = 3 * (2 * ((quadsX + 1) + (quadsZ - 1)));
 	vertices = new float[verticesSize];
 
 	uint sizeX = quadsX * quadSize;
@@ -357,17 +360,17 @@ PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::Prim
 	math::float3 radius = size / 2.0f;
 
 	// Vertices
-	uint verticesSize = 24;
+	uint verticesSize = 3 * 8;
 	vertices = new float[verticesSize]{
 
-		-radius.x, -radius.y,  radius.z, // A (0)
-		 radius.x, -radius.y,  radius.z, // B (1)
-		-radius.x,  radius.y,  radius.z, // C (2)
-		 radius.x,  radius.y,  radius.z, // D (3)
-		-radius.x, -radius.y, -radius.z, // E (4)
-	   	 radius.x, -radius.y, -radius.z, // F (5)
-		-radius.x,  radius.y, -radius.z, // G (6)
-		 radius.x,  radius.y, -radius.z  // H (7)
+		-radius.x, -radius.y,  radius.z, /// A (0)
+		 radius.x, -radius.y,  radius.z, /// B (1)
+		-radius.x,  radius.y,  radius.z, /// C (2)
+		 radius.x,  radius.y,  radius.z, /// D (3)
+		-radius.x, -radius.y, -radius.z, /// E (4)
+	   	 radius.x, -radius.y, -radius.z, /// F (5)
+		-radius.x,  radius.y, -radius.z, /// G (6)
+		 radius.x,  radius.y, -radius.z  /// H (7)
 	};
 
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -376,32 +379,32 @@ PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::Prim
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 36;
+	indicesSize = 3 * (2 * 6);
 	indices = new uint[indicesSize]{
 
-		// Front
-		0, 1, 2, // ABC
-		1, 3, 2, // BDC
+		/// Front
+		0, 1, 2, /// ABC
+		1, 3, 2, /// BDC
 
-		// Right
-		1, 5, 3, // BFD
-		5, 7, 3, // FHD
+		/// Right
+		1, 5, 3, /// BFD
+		5, 7, 3, /// FHD
 
-		// Back
-		5, 4, 7, // FEH
-		4, 6, 7, // EGH
+		/// Back
+		5, 4, 7, /// FEH
+		4, 6, 7, /// EGH
 
-		// Left
-		4, 0, 6, // EAG
-		0, 2, 6, // ACG
+		/// Left
+		4, 0, 6, /// EAG
+		0, 2, 6, /// ACG
 
-		// Top
-		2, 3, 6, // CDG
-		3, 7, 6, // DHG
+		/// Top
+		2, 3, 6, /// CDG
+		3, 7, 6, /// DHG
 
-		// Bottom
-		0, 4, 1, // AEB
-		1, 4, 5  // BEF
+		/// Bottom
+		0, 4, 1, /// AEB
+		1, 4, 5  /// BEF
 	};
 
 	glGenBuffers(1, (GLuint*)&indicesID);
@@ -439,42 +442,45 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 {
 	axis = new PrimitiveAxis();
 
-	float halfHeight = height / 2.0f;
-
 	// Vertices
-	uint verticesSize = 2 * 3 * (1 + sides);
+	uint verticesSize = 3 * (2 * (sides + 1));
 	vertices = new float[verticesSize];
 
+	float halfHeight = height / 2.0f;
 	float deltaAngle = 360.0f / (float)sides;
 
-	// Top circle
-	int i = -1;
-	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
-	{
-		// (0), (1)...
-		vertices[++i] = radius * cosf(DEGTORAD * angle);
-		vertices[++i] = halfHeight;
-		vertices[++i] = radius * sinf(DEGTORAD * angle);
-	}
-
-	// Bottom circle
-	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
-	{
-		// (sides), (sides + 1)...
-		vertices[++i] = radius * cosf(DEGTORAD * angle);
-		vertices[++i] = -halfHeight;
-		vertices[++i] = radius * sinf(DEGTORAD * angle);
-	}
-
-	// Top circle center
-	vertices[++i] = 0.0f;
+	// 1. Top circle
+	// circleSize = sides + 1
+	/// Center (0)
+	int i = 0;
+	vertices[i] = 0.0f;
 	vertices[++i] = halfHeight;
 	vertices[++i] = 0.0f;
 
-	// Bottom circle center
+	/// Circle (normals up)
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		/// (1), (2)... (sides)
+		vertices[++i] = radius * sinf(DEGTORAD * angle);
+		vertices[++i] = halfHeight;
+		vertices[++i] = radius * cosf(DEGTORAD * angle);
+	}
+
+	// 2. Bottom circle
+	// circleSize = sides + 1
+	/// Center (sides + 1)
 	vertices[++i] = 0.0f;
 	vertices[++i] = -halfHeight;
 	vertices[++i] = 0.0f;
+
+	/// Circle (normals up)
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		/// (sides + 2), (sides + 3)... ((2 * sides) + 1)
+		vertices[++i] = radius * sinf(DEGTORAD * angle);
+		vertices[++i] = -halfHeight;
+		vertices[++i] = radius * cosf(DEGTORAD * angle);
+	}
 
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
@@ -482,56 +488,57 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 2 * (2 * 3 * sides);
+	indicesSize = 3 * ((2 * sides) + (2 * sides));
 	indices = new uint[indicesSize];
 
-	// Body (2 * 3 * sides)
-	uint topIndex = 0;
-	uint bottomIndex = sides;
-	i = 0;
-	for (i; i < (2 * 3 * sides) - (3 * 2); ++i)
+	// 1. Top cap (circle)
+	// circleSize = sides
+	uint topIndex = 1; /// B
+	i = -1;
+	while (topIndex < sides + 1)
 	{
-		// Triangle
-		indices[i] = bottomIndex;
-		indices[++i] = topIndex;
-		indices[++i] = ++bottomIndex;
+		indices[++i] = 0; /// A (center)
+		indices[++i] = topIndex; /// B ... // C
+		indices[++i] = ++topIndex;/// C ... // D
+	}
 
-		// Triangle
+	indices[i] = 1; /// C = B
+
+	// 2. Bottom cap (inverted circle)
+	// circleSize = sides
+	uint bottomIndex = sides + 2; /// B
+	while (bottomIndex < 2 * (sides + 1))
+	{
+		indices[++i] = sides + 1; /// A (center)
+		indices[++i] = ++bottomIndex; /// B ... // C
+		indices[++i] = bottomIndex - 1; /// C ... // D
+	}
+
+	indices[i - 1] = sides + 2; /// C = B
+
+	// 3. Body 
+	// circleSize = 2 * sides
+	topIndex = 1;
+	bottomIndex = sides + 2;
+	while (i < (int)indicesSize - (3 * 2))
+	{
+		/// Triangle
 		indices[++i] = bottomIndex;
+		indices[++i] = ++bottomIndex;
 		indices[++i] = topIndex;
+
+		/// Triangle
+		indices[++i] = bottomIndex;
 		indices[++i] = ++topIndex;
+		indices[++i] = topIndex - 1;
 	}
 
-	// Triangle
-	indices[i] = bottomIndex;
-	indices[++i] = topIndex;
-	indices[++i] = sides;
+	/// Triangle
+	indices[indicesSize - 5] = sides + 2;
 
-	// Triangle
-	indices[++i] = sides;
-	indices[++i] = topIndex;
-	indices[++i] = 0;
-
-	// Top cap (3 * sides)
-	for (topIndex = 0; topIndex < sides; ++topIndex)
-	{
-		indices[++i] = verticesSize - (3 * 2); // A
-		indices[++i] = ++topIndex; // C ... // D
-		indices[++i] = --topIndex; // B ... // C
-	}
-
-	indices[i - 1] = 0; // C = B
-
-	// Bottom cap (3 * sides)
-	bottomIndex = sides;
-	while (bottomIndex < 2 * sides)
-	{
-		indices[++i] = verticesSize - (3 * 1); // A
-		indices[++i] = bottomIndex; // B ... // C
-		indices[++i] = ++bottomIndex; // C ... // D
-	}
-
-	indices[i] = sides; // C = B
+	/// Triangle
+	indices[indicesSize - 3] = sides + 2;
+	indices[indicesSize - 2] = 1;
 
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
@@ -540,37 +547,44 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 }
 
 // Cone 
-PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
+PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
 {
+	transform.startPosition = position;
+
 	axis = new PrimitiveAxis();
+
+	// Vertices
+	uint verticesSize = 3 * ((sides + 1) + 1);
+	vertices = new float[verticesSize];
 
 	float halfHeight = height / 2.0f;
 
-	// Vertices
-	uint verticesSize = 3 * (2 + sides);
-	vertices = new float[verticesSize];
+	// 1. Circle
+	// circleSize = sides + 1
 
-	// Body A (0)
-	int i = 0;
-	vertices[i] = 0.0f;
-	vertices[++i] = halfHeight;
-	vertices[++i] = 0.0f;
-
-	// Cap A (1)
-	vertices[++i] = 0.0f;
-	vertices[++i] = -halfHeight;
-	vertices[++i] = 0.0f;
-
-	// Cap
 	float deltaAngle = 360.0f / (float)sides;
 
+	/// Center (0)
+	int i = 0;
+	vertices[i] = position.x;
+	vertices[++i] = position.y - halfHeight;
+	vertices[++i] = position.z;
+
+	/// Circle (normals down)
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
-		// B (2), C (3)...
-		vertices[++i] = radius * cosf(DEGTORAD * angle);
-		vertices[++i] = -halfHeight;
-		vertices[++i] = radius * sinf(DEGTORAD * angle);
+		/// (1), (2)... (sides)
+		vertices[++i] = position.x + radius * cosf(DEGTORAD * angle);
+		vertices[++i] = position.y - halfHeight;
+		vertices[++i] = position.z + radius * sinf(DEGTORAD * angle);
 	}
+
+	// 2. Top
+	// size = 1
+	/// Center (sides + 1)
+	vertices[++i] = position.x;
+	vertices[++i] = position.y + halfHeight;
+	vertices[++i] = position.z;
 
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
@@ -578,32 +592,34 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 2 * (3 * sides);
+	indicesSize = 3 * (2 * sides);
 	indices = new uint[indicesSize];
 
-	// Body
-	uint index = 2;
+	// 1. Cap
+	// circleSize = sides 
+	uint index = 1; /// B
 	i = -1;
 	while (i < 3 * ((int)sides - 1))
 	{
-		indices[++i] = 0; // A
-		indices[++i] = ++index; // C ... // D
-		indices[++i] = index - 1; // B ... // C
+		indices[++i] = 0; /// A
+		indices[++i] = index; /// B ... // C
+		indices[++i] = ++index; /// C ... // D
 	}
 
-	indices[i - 1] = 2; // C = B
+	indices[i] = 1; /// C = B
 
-	// Cap
-	index = 2;
-	while (i < indicesSize - 2)
+	// 2. Body (inverted circle)
+	// circleSize = sides
+	index = 1; /// B
+	while (i < (int)indicesSize - 1)
 	{
-		indices[++i] = 1; // A
-		indices[++i] = index; // B ... // C
-		indices[++i] = ++index; // C ... // D
+		indices[++i] = sides + 1; /// A
+		indices[++i] = ++index; /// C ... // D
+		indices[++i] = index - 1; /// B ... // C
 	}
 
-	indices[i] = 2; // C = B
-
+	indices[i - 1] = 1; /// C = B
+	
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
@@ -611,34 +627,31 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive
 }
 
 // Arrow
-PrimitiveArrow::PrimitiveArrow(float lineLength, float coneHeight, float coneRadius, uint coneSides) : Primitive(PrimitiveTypes::PrimitiveTypeArrow), lineLength(lineLength), coneHeight(coneHeight), coneRadius(coneRadius), coneSides(coneSides)
+PrimitiveArrow::PrimitiveArrow(float lineLength, float coneHeight, float coneRadius, uint coneSides) : Primitive(PrimitiveTypes::PrimitiveTypeArrow)
 {
-	// Line + Cone
-
-	axis = new PrimitiveAxis();
-
-	// Vertices
-	uint verticesSize = 6 + 3 * (2 + coneSides);
-	vertices = new float[verticesSize];
+	// Cone + Line
 
 	float arrowLength = lineLength + coneHeight;
-	float halfArrowLength = arrowLength / 2.0f;
+	float arrowHalfLength = arrowLength / 2.0f;
 
-	// 1. Line
-	math::float3 lineDirection = math::float3(0.0f, 1.0f, 0.0f);
-	math::float3 lineEndPosition = lineDirection * lineLength;
+	float coneHalfHeight = coneHeight / 2.0f;
 
-	int i = -1;
-	vertices[i] = 0.0f;
-	vertices[++i] = 0.0f;
-	vertices[++i] = 0.0f;
+	cone = new PrimitiveCone(coneHeight, coneRadius, coneSides, math::float3(0.0f, arrowHalfLength - coneHalfHeight, 0.0f));
+	line = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), lineLength, math::float3(0.0f, -arrowHalfLength, 0.0f));
+}
 
-	vertices[++i] = lineEndPosition.x;
-	vertices[++i] = lineEndPosition.y;
-	vertices[++i] = lineEndPosition.z;
+PrimitiveArrow::~PrimitiveArrow() 
+{
+	RELEASE(cone);
+	RELEASE(line);
+}
 
-	// 2. Cone
-	// TODO
+void PrimitiveArrow::InnerRender() const 
+{
+	if (cone != nullptr)
+		cone->Render();
+	if (line != nullptr)
+		line->Render();
 }
 
 // Frustum --------------------------------------------------
@@ -650,18 +663,18 @@ PrimitiveFrustum::PrimitiveFrustum(math::float2 startSize, math::float3 endPosit
 	math::float2 endRadius = endSize / 2.0f;
 
 	// Vertices
-	uint verticesSize = 24;
+	uint verticesSize = 3 * 8;
 	vertices = new float[verticesSize] {
 
-		-startRadius.x, -startRadius.y, 0.0f, // A (0)
-		 startRadius.x, -startRadius.y, 0.0f, // B (1)
-		-startRadius.x, startRadius.y, 0.0f, // C (2)
-		 startRadius.x, startRadius.y, 0.0f, // D (3)
+		-startRadius.x, -startRadius.y, 0.0f, /// A (0)
+		 startRadius.x, -startRadius.y, 0.0f, /// B (1)
+		-startRadius.x, startRadius.y, 0.0f, /// C (2)
+		 startRadius.x, startRadius.y, 0.0f, /// D (3)
 
-		 endPosition.x - endRadius.x, endPosition.y - endRadius.y, endPosition.z, // E (4)
-		 endPosition.x + endRadius.x, endPosition.y - endRadius.y, endPosition.z, // F (5)
-		 endPosition.x - endRadius.x, endPosition.y + endRadius.y, endPosition.z, // G (6)
-		 endPosition.x + endRadius.x, endPosition.y + endRadius.y, endPosition.z, // H (7)
+		 endPosition.x - endRadius.x, endPosition.y - endRadius.y, endPosition.z, /// E (4)
+		 endPosition.x + endRadius.x, endPosition.y - endRadius.y, endPosition.z, /// F (5)
+		 endPosition.x - endRadius.x, endPosition.y + endRadius.y, endPosition.z, /// G (6)
+		 endPosition.x + endRadius.x, endPosition.y + endRadius.y, endPosition.z, /// H (7)
 	};
 
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -670,32 +683,32 @@ PrimitiveFrustum::PrimitiveFrustum(math::float2 startSize, math::float3 endPosit
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 36;
+	indicesSize = 3 * (2 * 6);
 	indices = new uint[indicesSize]{
 
-		// Front
-		2, 1, 0, // ABC
-		2, 3, 1, // BDC
+		/// Front
+		2, 1, 0, /// ABC
+		2, 3, 1, /// BDC
 
-		// Right
-		3, 5, 1, // BFD
-		3, 7, 5, // FHD
+		/// Right
+		3, 5, 1, /// BFD
+		3, 7, 5, /// FHD
 
-		// Back
-		7, 4, 5, // FEH
-		7, 6, 4, // EGH
+		/// Back
+		7, 4, 5, /// FEH
+		7, 6, 4, /// EGH
 
-		// Left
-		6, 0, 4, // EAG
-		6, 2, 0, // ACG
+		/// Left
+		6, 0, 4, /// EAG
+		6, 2, 0, /// ACG
 
-		// Top
-		6, 3, 2, // CDG
-		6, 7, 3, // DHG
+		/// Top
+		6, 3, 2, /// CDG
+		6, 7, 3, /// DHG
 
-		// Bottom
-		1, 4, 0, // AEB
-		5, 4, 1	 // BEF
+		/// Bottom
+		1, 4, 0, /// AEB
+		5, 4, 1	 /// BEF
 	};
 
 	glGenBuffers(1, (GLuint*)&indicesID);

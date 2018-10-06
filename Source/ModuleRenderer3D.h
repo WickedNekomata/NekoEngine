@@ -16,6 +16,8 @@
 
 #define MAX_LIGHTS 8
 
+class PrimitiveRay;
+
 struct Mesh
 {
 	// Unique vertices
@@ -30,7 +32,8 @@ struct Mesh
 
 	// Normals (vertices normals)
 	float* normals = nullptr;
-	uint normalsID = 0;
+
+	PrimitiveRay** normalsLines = nullptr;
 
 	// Texture coords
 	uint* textCoord = nullptr;
@@ -39,7 +42,7 @@ struct Mesh
 
 	~Mesh();
 
-	void GenerateBuffers() const;
+	void GenerateBuffers();
 };
 
 class ModuleRenderer3D : public Module

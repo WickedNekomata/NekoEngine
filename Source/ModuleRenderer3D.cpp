@@ -361,29 +361,15 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 
 void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
 {
-	// Draw (Vertex Array)
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	// Array Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->normalsID);
-
-	Color color = Yellow;
-	glColor3f(color.r, color.g, color.b);
-
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_LINES, 0, mesh->verticesSize);
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//_Array_Buffer
-
-	glDisableClientState(GL_VERTEX_ARRAY);
+	for (uint i = 0; i < mesh->verticesSize; ++i)
+	{
+		mesh->normalsLines[i]->Render();
+	}
 }
 
 // Mesh --------------------------------------------------
 
-void Mesh::GenerateBuffers() const
+void Mesh::GenerateBuffers()
 {
 	// Generate vertices buffer
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -397,11 +383,19 @@ void Mesh::GenerateBuffers() const
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	// Generate normals buffer
-	glGenBuffers(1, (GLuint*)&normalsID);
-	glBindBuffer(GL_ARRAY_BUFFER, normalsID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, normals, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Create normals
+	normalsLines = new PrimitiveRay*[verticesSize];
+
+	uint index = 0;
+	for (uint i = 0; i < verticesSize; ++i)
+	{
+		PrimitiveRay* ray = new PrimitiveRay(math::float3(normals[index], normals[index + 1], normals[index + 2]), 0.5f);
+		ray->SetPosition(math::float3(vertices[index], vertices[index + 1], vertices[index + 2]));
+		ray->SetColor(Yellow);
+		index += 3;
+
+		normalsLines[i] = ray;
+	}
 }
 
 Mesh::~Mesh()
@@ -411,4 +405,14 @@ Mesh::~Mesh()
 
 	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
+
+	RELEASE(vertices);
+	RELEASE(normals);
+
+	for (uint i = 0; i < verticesSize; ++i)
+	{
+		RELEASE(normalsLines[i]);
+	}
+
+	RELEASE(normalsLines);
 }

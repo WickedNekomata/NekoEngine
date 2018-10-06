@@ -1,4 +1,4 @@
-#include "ModuleAssetImport.h"
+#include "ModuleAssetImporter.h"
 #include "ModuleRenderer3D.h"
 
 #include "Application.h"
@@ -10,15 +10,15 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
-ModuleAssetImport::ModuleAssetImport(bool start_enabled)
+ModuleAssetImporter::ModuleAssetImporter(bool start_enabled)
 {
 }
 
-ModuleAssetImport::~ModuleAssetImport()
+ModuleAssetImporter::~ModuleAssetImporter()
 {
 }
 
-bool ModuleAssetImport::Init(JSON_Object * jObject)
+bool ModuleAssetImporter::Init(JSON_Object * jObject)
 {
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -27,13 +27,13 @@ bool ModuleAssetImport::Init(JSON_Object * jObject)
 	return true;
 }
 
-bool ModuleAssetImport::CleanUp()
+bool ModuleAssetImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-bool ModuleAssetImport::LoadFBXfromFile(const char* path) const
+bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 {
 	bool ret = true;
 
@@ -79,7 +79,7 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
+bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
 {
 	bool ret = true;
 
@@ -125,7 +125,7 @@ bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int& buf
 	return ret;
 }
 
-bool ModuleAssetImport::LoadFBXwithPHYSFS(const char* path)
+bool ModuleAssetImporter::LoadFBXwithPHYSFS(const char* path)
 {
 	bool ret = true;
 	char* buffer;

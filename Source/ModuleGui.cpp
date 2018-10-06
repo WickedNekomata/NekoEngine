@@ -89,6 +89,8 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();
+			if (ImGui::MenuItem("Import")) {}
+			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
 
@@ -105,7 +107,6 @@ update_status ModuleGui::Update(float dt)
 		if (ImGui::BeginMenu("Tools"))
 		{
 			if (ImGui::MenuItem("PCG performance test", "CTRL+R" )) { panelRandomNumber->OnOff(); }
-			if (ImGui::MenuItem("Test Intersections", "CTRL+T")) { }
 
 			ImGui::EndMenu();
 		}

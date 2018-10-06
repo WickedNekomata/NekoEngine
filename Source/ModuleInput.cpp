@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleAssetImport.h"
+#include "ModuleAssetImporter.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"

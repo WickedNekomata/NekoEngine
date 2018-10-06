@@ -56,32 +56,36 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 uint ModuleFileSystem::OpenRead(const char* file, char** buffer, uint& size) const
 {
 	uint ret = 0;
-
-	PHYSFS_file* fsFile = PHYSFS_openRead(file);
-
-	if (fsFile != nullptr)
+	if (PHYSFS_exists(file))
 	{
-		size = PHYSFS_fileLength(fsFile);
+		PHYSFS_file* fsFile = PHYSFS_openRead(file);
 
-		if (size > 0)
+		if (fsFile != nullptr)
 		{
-			*buffer = new char[(uint)size];
-			PHYSFS_sint64 readed = PHYSFS_readBytes(fsFile, *buffer, size);
+			size = PHYSFS_fileLength(fsFile);
 
-			if (readed == size)
-				ret = (uint)readed;
-			else
+			if (size > 0)
 			{
-				CONSOLE_LOG("File System error while reading from file %s: %s\n", file, PHYSFS_getLastError());
-				RELEASE(buffer);
-			}
-		}
+				*buffer = new char[(uint)size];
+				PHYSFS_sint64 readed = PHYSFS_readBytes(fsFile, *buffer, size);
 
-		if (PHYSFS_close(fsFile) == 0)
-			CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
+				if (readed == size)
+					ret = (uint)readed;
+				else
+				{
+					CONSOLE_LOG("File System error while reading from file %s: %s\n", file, PHYSFS_getLastError());
+					RELEASE(buffer);
+				}
+			}
+
+			if (PHYSFS_close(fsFile) == 0)
+				CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
+		}
+		else
+			CONSOLE_LOG("File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
+		CONSOLE_LOG("File System could not find the file");
 
 	return ret;
 }
@@ -132,6 +136,11 @@ const char* ModuleFileSystem::GetReadPaths() const
 	}
 
 	return paths;
+}
+
+void ModuleFileSystem::GetReadPathsAsArray(const char* const paths[]) const
+{
+	// TODO: implement a method to fill the paths array with currents read paths
 }
 
 const char* ModuleFileSystem::GetWritePath() const 

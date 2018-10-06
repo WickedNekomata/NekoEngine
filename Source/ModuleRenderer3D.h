@@ -28,6 +28,12 @@ struct Mesh
 	uint indicesID = 0;
 	uint indicesSize = 0;
 
+	// Normals
+	float* normals = nullptr;
+
+	// Texture Coord
+	uint* textCoord = nullptr;
+
 	// -----
 
 	~Mesh();

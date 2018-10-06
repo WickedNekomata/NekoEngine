@@ -66,6 +66,13 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 					}
 				}
 			}
+
+			if (scene->mMeshes[i]->HasNormals())
+			{
+				mesh->normals = new float[mesh->verticesSize * 3];
+				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
+				CONSOLE_LOG("New mesh with %d normals");
+			}
 			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
@@ -112,6 +119,13 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 					}
 				}
 			}
+
+			if (scene->mMeshes[i]->HasNormals())
+			{
+				mesh->normals = new float[mesh->verticesSize * 3];
+				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
+				CONSOLE_LOG("New mesh with %d normals");
+			}
 			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
@@ -127,12 +141,14 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 
 bool ModuleAssetImporter::LoadFBXwithPHYSFS(const char* path)
 {
-	bool ret = true;
+	bool ret = false;
 	char* buffer;
 	uint size;
-	App->filesystem->OpenRead(path, &buffer, size);
-	ret = LoadFBXfromMemory(buffer, size);
-	delete[] buffer;
+	if (App->filesystem->OpenRead(path, &buffer, size))
+	{
+		ret = LoadFBXfromMemory(buffer, size);
+		delete[] buffer;
+	}
 
 	return ret;
 }

@@ -199,7 +199,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 		indices[++j] = ++index; // C ... // D
 	}
 
-	indices[indicesSize - 1] = 1; // B
+	indices[indicesSize - 1] = 1; // C = B
 
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
@@ -441,23 +441,14 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 
 	float halfHeight = height / 2.0f;
 
-	// Caps
-	topCap = new PrimitiveCircle(radius, sides);
-	topCap->SetPosition(math::float3(0.0f, halfHeight, 0.0f));
-	topCap->SetRotation(-90.0f, math::float3(1.0f, 0.0f, 0.0f));
-	bottomCap = new PrimitiveCircle(radius, sides);
-	bottomCap->SetPosition(math::float3(0.0f, -halfHeight, 0.0f));
-	bottomCap->SetRotation(90.0f, math::float3(1.0f, 0.0f, 0.0f));
-
-	// Body
 	// Vertices
-	uint verticesSize = 2 * 3 * sides;
+	uint verticesSize = 2 * 3 * (1 + sides);
 	vertices = new float[verticesSize];
 
 	float deltaAngle = 360.0f / (float)sides;
 
-	// Top cap vertices
-	uint i = -1;
+	// Top circle
+	int i = -1;
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
 		// (0), (1)...
@@ -466,7 +457,7 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 		vertices[++i] = radius * sinf(DEGTORAD * angle);
 	}
 
-	// Bottom cap vertices
+	// Bottom circle
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
 		// (sides), (sides + 1)...
@@ -475,61 +466,77 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 		vertices[++i] = radius * sinf(DEGTORAD * angle);
 	}
 
+	// Top circle center
+	vertices[++i] = 0.0f;
+	vertices[++i] = halfHeight;
+	vertices[++i] = 0.0f;
+
+	// Bottom circle center
+	vertices[++i] = 0.0f;
+	vertices[++i] = -halfHeight;
+	vertices[++i] = 0.0f;
+
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 2 * 3 * sides;
+	indicesSize = 2 * (2 * 3 * sides);
 	indices = new uint[indicesSize];
 
+	// Body (2 * 3 * sides)
 	uint topIndex = 0;
 	uint bottomIndex = sides;
-	for (uint j = 0; j < indicesSize - 6; ++j)
+	i = 0;
+	for (i; i < (2 * 3 * sides) - (3 * 2); ++i)
 	{
 		// Triangle
-		indices[j] = bottomIndex;
-		indices[++j] = topIndex;
-		indices[++j] = ++bottomIndex;
+		indices[i] = bottomIndex;
+		indices[++i] = topIndex;
+		indices[++i] = ++bottomIndex;
 
 		// Triangle
-		indices[++j] = bottomIndex;
-		indices[++j] = topIndex;
-		indices[++j] = ++topIndex;
+		indices[++i] = bottomIndex;
+		indices[++i] = topIndex;
+		indices[++i] = ++topIndex;
 	}
 
 	// Triangle
-	indices[indicesSize - 6] = bottomIndex;
-	indices[indicesSize - 5] = topIndex;
-	indices[indicesSize - 4] = sides;
+	indices[i] = bottomIndex;
+	indices[++i] = topIndex;
+	indices[++i] = sides;
 
 	// Triangle
-	indices[indicesSize - 3] = sides;
-	indices[indicesSize - 2] = topIndex;
-	indices[indicesSize - 1] = 0;
+	indices[++i] = sides;
+	indices[++i] = topIndex;
+	indices[++i] = 0;
+
+	// Top cap (3 * sides)
+	for (topIndex = 0; topIndex < sides; ++topIndex)
+	{
+		indices[++i] = verticesSize - (3 * 2); // A
+		indices[++i] = ++topIndex; // C ... // D
+		indices[++i] = --topIndex; // B ... // C
+	}
+
+	indices[i - 1] = 0; // C = B
+
+	// Bottom cap (3 * sides)
+	bottomIndex = sides;
+	while (bottomIndex < 2 * sides)
+	{
+		indices[++i] = verticesSize - (3 * 1); // A
+		indices[++i] = bottomIndex; // B ... // C
+		indices[++i] = ++bottomIndex; // C ... // D
+	}
+
+	indices[i] = sides; // C = B
 
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-PrimitiveCylinder::~PrimitiveCylinder() 
-{
-	RELEASE(topCap);
-	RELEASE(bottomCap);
-}
-
-void PrimitiveCylinder::InnerRender() const 
-{
-	// Caps
-	if (topCap != nullptr)
-		topCap->Render();
-	if (bottomCap != nullptr)
-		bottomCap->Render();
-
-	Primitive::InnerRender();
 }
 
 // Cone 
@@ -539,28 +546,27 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive
 
 	float halfHeight = height / 2.0f;
 
-	// Cap
-	cap = new PrimitiveCircle(radius, sides);
-	cap->SetPosition(math::float3(0.0f, -halfHeight, 0.0f));
-	cap->SetRotation(90.0f, math::float3(1.0f, 0.0f, 0.0f));
-
-	// Body
 	// Vertices
-	uint verticesSize = 3 * (1 + sides);
+	uint verticesSize = 3 * (2 + sides);
 	vertices = new float[verticesSize];
 
-	uint i = 0;
-	// A (0)
+	// Body A (0)
+	int i = 0;
 	vertices[i] = 0.0f;
 	vertices[++i] = halfHeight;
 	vertices[++i] = 0.0f;
 
-	// Cap vertices
+	// Cap A (1)
+	vertices[++i] = 0.0f;
+	vertices[++i] = -halfHeight;
+	vertices[++i] = 0.0f;
+
+	// Cap
 	float deltaAngle = 360.0f / (float)sides;
 
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
-		// B (1), C (2)...
+		// B (2), C (3)...
 		vertices[++i] = radius * cosf(DEGTORAD * angle);
 		vertices[++i] = -halfHeight;
 		vertices[++i] = radius * sinf(DEGTORAD * angle);
@@ -572,36 +578,36 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Indices
-	indicesSize = 3 * sides;
+	indicesSize = 2 * (3 * sides);
 	indices = new uint[indicesSize];
 
-	uint index = 1;
-	for (uint j = 0; j < indicesSize - 2; ++j)
+	// Body
+	uint index = 2;
+	i = -1;
+	while (i < 3 * ((int)sides - 1))
 	{
-		indices[j] = 0;
-		indices[++j] = ++index;
-		indices[++j] = index - 1;
+		indices[++i] = 0; // A
+		indices[++i] = ++index; // C ... // D
+		indices[++i] = index - 1; // B ... // C
 	}
 
-	indices[indicesSize - 2] = 1;
+	indices[i - 1] = 2; // C = B
+
+	// Cap
+	index = 2;
+	while (i < indicesSize - 2)
+	{
+		indices[++i] = 1; // A
+		indices[++i] = index; // B ... // C
+		indices[++i] = ++index; // C ... // D
+	}
+
+	indices[i] = 2; // C = B
 
 	glGenBuffers(1, (GLuint*)&indicesID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-PrimitiveCone::~PrimitiveCone()
-{
-	RELEASE(cap);
-}
-
-void PrimitiveCone::InnerRender() const 
-{
-	if (cap != nullptr)
-		cap->Render();
-
-	Primitive::InnerRender();
 }
 
 // Arrow

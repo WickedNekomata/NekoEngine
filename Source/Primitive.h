@@ -194,20 +194,12 @@ class PrimitiveCylinder : public Primitive
 public:
 
 	PrimitiveCylinder(float height = 5.0f, float radius = 1.0f, uint sides = 8);
-	~PrimitiveCylinder();
-
-private:
-
-	void InnerRender() const;
 
 private:
 
 	float height = 0.0f;
 	float radius = 0.0f;
 	uint sides = 0;
-
-	PrimitiveCircle* topCap = nullptr;
-	PrimitiveCircle* bottomCap = nullptr;
 };
 
 // Cone --------------------------------------------------
@@ -215,20 +207,13 @@ class PrimitiveCone : public Primitive
 {
 public:
 
-	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 8);
-	~PrimitiveCone();
-
-private:
-
-	void InnerRender() const;
+	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5);
 
 private:
 
 	float height = 0.0f;
 	float radius = 0.0f;
 	uint sides = 0;
-
-	PrimitiveCircle* cap = nullptr;
 };
 
 // Arrow --------------------------------------------------

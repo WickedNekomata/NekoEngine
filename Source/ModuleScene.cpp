@@ -92,7 +92,7 @@ void ModuleScene::Draw() const
 	//ray->Render();
 	//frustum->Render();
 	//cylinder->Render();
-	//cone->Render();
+	cone->Render();
 	//arrow->Render();
 	grid->Render();
 }

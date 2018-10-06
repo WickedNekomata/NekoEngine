@@ -66,6 +66,13 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 					}
 				}
 			}
+
+			if (scene->mMeshes[i]->HasNormals())
+			{
+				mesh->normals = new float[mesh->verticesSize * 3];
+				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
+				CONSOLE_LOG("New mesh with %d normals");
+			}
 			App->renderer3D->AddMesh(mesh);
 		}
 		aiReleaseImport(scene);
@@ -111,6 +118,13 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 						memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
 					}
 				}
+			}
+
+			if (scene->mMeshes[i]->HasNormals())
+			{
+				mesh->normals = new float[mesh->verticesSize * 3];
+				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
+				CONSOLE_LOG("New mesh with %d normals");
 			}
 			App->renderer3D->AddMesh(mesh);
 		}

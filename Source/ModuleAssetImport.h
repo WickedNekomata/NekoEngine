@@ -14,7 +14,7 @@ public:
 	bool CleanUp();
 
 	bool LoadFBXfromFile(const char* path) const;
-	bool LoadFBXfromMemory(const char* buffer, unsigned int bufferSize) const;
+	bool LoadFBXfromMemory(const char* buffer, unsigned int& bufferSize) const;
 
 };
 

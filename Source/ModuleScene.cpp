@@ -44,8 +44,10 @@ bool ModuleScene::Start()
 
 	// Load model
 	char* buffer;
-	App->filesystem->OpenRead("Assets/BakerHouse.fbx", &buffer);
-	App->assetsImporter->LoadFBXfromMemory(buffer, strlen(buffer));
+	uint size;
+	App->filesystem->OpenRead("Assets/BakerHouse.fbx", &buffer, size);
+	App->assetsImporter->LoadFBXfromMemory(buffer, size);
+	delete[] buffer;
 
 	return ret;
 }

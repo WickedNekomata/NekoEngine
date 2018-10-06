@@ -7,6 +7,7 @@
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "ImGui/imgui.h"
+#include "Assimp/include/version.h"
 
 PanelAbout::PanelAbout(char* name) : Panel(name) {}
 
@@ -55,8 +56,11 @@ bool PanelAbout::Draw()
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glGetString(GL_VERSION));
 		
 		if (ImGui::Button("Glew")) { OpenInBrowser("http://glew.sourceforge.net/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
+		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
 
+		if (ImGui::Button("Assimp")) { OpenInBrowser("http://cms.assimp.org/index.php"); }
+		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
+		
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
 

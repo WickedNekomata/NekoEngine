@@ -15,6 +15,7 @@ public:
 
 	bool LoadFBXfromFile(const char* path) const;
 	bool LoadFBXfromMemory(const char* buffer, unsigned int& bufferSize) const;
+	bool LoadFBXwithPHYSFS(const char* path);
 
 };
 

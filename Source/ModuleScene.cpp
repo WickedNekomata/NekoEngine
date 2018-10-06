@@ -43,11 +43,7 @@ bool ModuleScene::Start()
 	arrow = new PrimitiveArrow();
 
 	// Load model
-	char* buffer;
-	uint size;
-	App->filesystem->OpenRead("Assets/BakerHouse.fbx", &buffer, size);
-	App->assetsImporter->LoadFBXfromMemory(buffer, size);
-	delete[] buffer;
+	//App->assetsImporter->LoadFBXwithPHYSFS("Assets/BakerHouse.fbx");
 
 	return ret;
 }

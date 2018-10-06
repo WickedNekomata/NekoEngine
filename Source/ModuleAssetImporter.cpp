@@ -37,6 +37,8 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 {
 	bool ret = true;
 
+	App->renderer3D->ClearMeshes();
+
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
 
 	if (scene != nullptr)
@@ -102,6 +104,8 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
 {
 	bool ret = true;
+
+	App->renderer3D->ClearMeshes();
 
 	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
 

@@ -28,10 +28,11 @@ struct Mesh
 	uint indicesID = 0;
 	uint indicesSize = 0;
 
-	// Normals
+	// Normals (vertices normals)
 	float* normals = nullptr;
+	uint normalsID = 0;
 
-	// Texture Coord
+	// Texture coords
 	uint* textCoord = nullptr;
 
 	// -----
@@ -68,6 +69,7 @@ public:
 	bool IsWireframeMode() const;
 
 	void SetDebugDraw(bool debugDraw);
+	bool GetDebugDraw() const;
 
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
@@ -77,6 +79,7 @@ public:
 	void ClearMeshes();
 
 	void DrawMesh(Mesh* mesh) const;
+	void DrawMeshNormals(Mesh* mesh) const;
 
 public:
 
@@ -86,7 +89,7 @@ public:
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 	bool vsync = false;
-	bool debugDraw = false;
+	bool debugDraw = true;
 
 	// Meshes
 	std::list<Mesh*> meshes;

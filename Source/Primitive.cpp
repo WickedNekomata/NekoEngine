@@ -613,23 +613,32 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive
 // Arrow
 PrimitiveArrow::PrimitiveArrow(float lineLength, float coneHeight, float coneRadius, uint coneSides) : Primitive(PrimitiveTypes::PrimitiveTypeArrow), lineLength(lineLength), coneHeight(coneHeight), coneRadius(coneRadius), coneSides(coneSides)
 {
-	line = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), lineLength);
-	cone = new PrimitiveCone(coneHeight, coneRadius, coneSides);
-	cone->SetPosition(math::float3(0.0f, lineLength, 0.0f));
-}
+	// Line + Cone
 
-PrimitiveArrow::~PrimitiveArrow()
-{
-	RELEASE(line);
-	RELEASE(cone);
-}
+	axis = new PrimitiveAxis();
 
-void PrimitiveArrow::InnerRender() const 
-{
-	if (line != nullptr)
-		line->Render();
-	if (cone != nullptr)
-		cone->Render();
+	// Vertices
+	uint verticesSize = 6 + 3 * (2 + coneSides);
+	vertices = new float[verticesSize];
+
+	float arrowLength = lineLength + coneHeight;
+	float halfArrowLength = arrowLength / 2.0f;
+
+	// 1. Line
+	math::float3 lineDirection = math::float3(0.0f, 1.0f, 0.0f);
+	math::float3 lineEndPosition = lineDirection * lineLength;
+
+	int i = -1;
+	vertices[i] = 0.0f;
+	vertices[++i] = 0.0f;
+	vertices[++i] = 0.0f;
+
+	vertices[++i] = lineEndPosition.x;
+	vertices[++i] = lineEndPosition.y;
+	vertices[++i] = lineEndPosition.z;
+
+	// 2. Cone
+	// TODO
 }
 
 // Frustum --------------------------------------------------

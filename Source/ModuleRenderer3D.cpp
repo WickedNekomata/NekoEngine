@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "Primitive.h"
+#include "Color.h"
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -136,14 +138,14 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	// Meshes
 	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
 		DrawMesh(*it);
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-
+		for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+			DrawMeshNormals(*it);
 	}
 
 	// 3. Editor
@@ -271,6 +273,11 @@ void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
 	this->debugDraw = debugDraw;
 }
 
+bool ModuleRenderer3D::GetDebugDraw() const 
+{
+	return debugDraw;
+}
+
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
 	math::float4x4 Perspective;
@@ -352,6 +359,28 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
+void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
+{
+	// Draw (Vertex Array)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Array Buffer
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->normalsID);
+
+	Color color = Yellow;
+	glColor3f(color.r, color.g, color.b);
+
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawArrays(GL_LINES, 0, mesh->verticesSize);
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
 // Mesh --------------------------------------------------
 
 void Mesh::GenerateBuffers() const
@@ -367,6 +396,12 @@ void Mesh::GenerateBuffers() const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// Generate normals buffer
+	glGenBuffers(1, (GLuint*)&normalsID);
+	glBindBuffer(GL_ARRAY_BUFFER, normalsID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, normals, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 Mesh::~Mesh()

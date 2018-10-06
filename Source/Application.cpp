@@ -101,21 +101,24 @@ update_status Application::Update()
 	std::list<Module*>::const_iterator item = list_modules.begin();
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = (*item)->PreUpdate(dt);
+		if ((*item)->IsActive())
+			ret = (*item)->PreUpdate(dt);
 		++item;
 	}
 
 	item = list_modules.begin();
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = (*item)->Update(dt);
+		if ((*item)->IsActive())
+			ret = (*item)->Update(dt);
 		++item;
 	}
 
 	item = list_modules.begin();
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
-		ret = (*item)->PostUpdate(dt);
+		if ((*item)->IsActive())
+			ret = (*item)->PostUpdate(dt);
 		++item;
 	}
 

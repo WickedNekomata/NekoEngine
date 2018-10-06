@@ -92,9 +92,13 @@ void PanelSettings::ApplicationNode() const
 		App->SetOrganizationName(organizationName);
 
 	// Cap frames
-	static bool capFrames = App->GetCapFrames();
+	bool capFrames = App->GetCapFrames();
 	if (ImGui::Checkbox("Cap Frames", &capFrames))
+	{
 		App->SetCapFrames(capFrames);
+		if (capFrames && App->renderer3D->GetVSync())
+			App->renderer3D->SetVSync(false);
+	}
 
 	if (capFrames)
 	{
@@ -104,9 +108,13 @@ void PanelSettings::ApplicationNode() const
 	}
 
 	// VSync
-	static bool vsync = App->renderer3D->GetVSync();
+	bool vsync = App->renderer3D->GetVSync();
 	if (ImGui::Checkbox("Use VSync", &vsync))
+	{
 		App->renderer3D->SetVSync(vsync);
+		if (vsync && App->GetCapFrames())
+			App->SetCapFrames(false);
+	}
 
 	// Framerate
 	char title[20];
@@ -287,8 +295,7 @@ void PanelSettings::HardwareNode() const
 	ImGui::Separator();
 
 	// TODO: Fix issue if pc has 2 or more gpus
-	//Gpu
-	ImGui::Text("Gpu:"); ImGui::SameLine();
+	ImGui::Text("GPU:"); ImGui::SameLine();
 	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
 	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_VENDOR));

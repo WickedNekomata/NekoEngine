@@ -21,6 +21,7 @@ public:
 
 	const char* GetBasePath() const;
 	const char* GetReadPaths() const;
+	void GetReadPathsAsArray(const char* const paths[]) const;
 	const char* GetWritePath() const;
 };
 

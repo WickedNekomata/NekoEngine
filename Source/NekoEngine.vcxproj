@@ -204,6 +204,7 @@
     <ClInclude Include="Panel.h" />
     <ClInclude Include="PanelAbout.h" />
     <ClInclude Include="PanelConsole.h" />
+    <ClInclude Include="PanelImport.h" />
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelSettings.h" />
     <ClInclude Include="PanelTestPCG.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="PanelAbout.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
+    <ClCompile Include="PanelImport.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelSettings.cpp" />
     <ClCompile Include="PanelTestPCG.cpp" />

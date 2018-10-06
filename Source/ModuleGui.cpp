@@ -9,7 +9,7 @@
 #include "PanelAbout.h"
 #include "PanelConsole.h"
 #include "PanelSettings.h"
-#include "ModuleFileSystem.h"
+#include "PanelImport.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -23,19 +23,21 @@ ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 ModuleGui::~ModuleGui()
 {}
 
-bool ModuleGui::Init(JSON_Object * jObject)
+bool ModuleGui::Init(JSON_Object* jObject)
 {
 	panelInspector = new PanelInspector("Inspector");
 	panelRandomNumber = new PanelTestPCG("PCG performance test");
 	panelAbout = new PanelAbout("About");
 	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
+	panelImport = new PanelImport("Import");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelRandomNumber);
 	panels.push_back(panelAbout);
 	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
+	panels.push_back(panelImport);
 
 	return true;
 }
@@ -53,7 +55,6 @@ bool ModuleGui::Start()
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
 	ImGui_ImplOpenGL2_Init();
-	//ImFont* font2 = io.Fonts->AddFontFromFileTTF("Assets/Deadhead_Script.ttf", 12.0f);
 
 	// Setup style
 	ImGui::StyleColorsCustom();
@@ -89,7 +90,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Import")) {}
+			if (ImGui::MenuItem("Import")) { panelImport->OnOff(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();

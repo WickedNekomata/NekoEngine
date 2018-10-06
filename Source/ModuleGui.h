@@ -11,6 +11,7 @@ struct PanelTestPCG;
 struct PanelAbout;
 struct PanelConsole;
 struct PanelSettings;
+struct PanelImport;
 
 class ModuleGui : public Module
 {
@@ -40,6 +41,7 @@ public:
 	PanelAbout* panelAbout = nullptr;
 	PanelConsole* panelConsole = nullptr;
 	PanelSettings* panelSettings = nullptr;
+	PanelImport* panelImport = nullptr;
 
 private:
 

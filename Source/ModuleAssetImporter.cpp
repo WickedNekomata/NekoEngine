@@ -127,12 +127,14 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 
 bool ModuleAssetImporter::LoadFBXwithPHYSFS(const char* path)
 {
-	bool ret = true;
+	bool ret = false;
 	char* buffer;
 	uint size;
-	App->filesystem->OpenRead(path, &buffer, size);
-	ret = LoadFBXfromMemory(buffer, size);
-	delete[] buffer;
+	if (App->filesystem->OpenRead(path, &buffer, size))
+	{
+		ret = LoadFBXfromMemory(buffer, size);
+		delete[] buffer;
+	}
 
 	return ret;
 }

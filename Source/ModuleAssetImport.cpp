@@ -79,11 +79,11 @@ bool ModuleAssetImport::LoadFBXfromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int bufferSize) const
+bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
 {
 	bool ret = true;
 
-	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, "");
+	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
 
 	if (scene != nullptr)
 	{
@@ -100,15 +100,15 @@ bool ModuleAssetImport::LoadFBXfromMemory(const char * buffer, unsigned int buff
 			{
 				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
 				mesh->indices = new uint[mesh->indicesSize];
-				for (uint i = 0; i < scene->mMeshes[i]->mNumFaces; ++i)
+				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
 				{
-					if (scene->mMeshes[i]->mFaces[i].mNumIndices != 3)
+					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
 					{
 						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
 					}
 					else
 					{
-						memcpy(&mesh->indices[i * 3], scene->mMeshes[i]->mFaces[i].mIndices, 3 * sizeof(uint));
+						memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
 					}
 				}
 			}

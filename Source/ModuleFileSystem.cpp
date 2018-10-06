@@ -53,7 +53,7 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 	return ret;
 }
 
-uint ModuleFileSystem::OpenRead(const char* file, char** buffer) const
+uint ModuleFileSystem::OpenRead(const char* file, char** buffer, uint& size) const
 {
 	uint ret = 0;
 
@@ -61,7 +61,7 @@ uint ModuleFileSystem::OpenRead(const char* file, char** buffer) const
 
 	if (fsFile != nullptr)
 	{
-		PHYSFS_sint64 size = PHYSFS_fileLength(fsFile);
+		size = PHYSFS_fileLength(fsFile);
 
 		if (size > 0)
 		{

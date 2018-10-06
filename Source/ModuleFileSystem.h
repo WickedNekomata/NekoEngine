@@ -16,7 +16,7 @@ public:
 
 	bool AddPath(const char* newDir, const char* mountPoint = nullptr);
 
-	uint OpenRead(const char* file, char** buffer) const;
+	uint OpenRead(const char* file, char** buffer, uint& size) const;
 	uint OpenWrite(const char* file, const char* buffer) const;
 
 	const char* GetBasePath() const;

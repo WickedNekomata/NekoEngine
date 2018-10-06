@@ -229,11 +229,6 @@ void PanelSettings::RendererNode() const
 	if (ImGui::Checkbox("GL_LINE_SMOOTH", &lineSmooth))
 		App->renderer3D->SetCapabilityState(capability, lineSmooth);
 
-	capability = GL_FOG;
-	static bool fog = App->renderer3D->GetCapabilityState(capability);
-	if (ImGui::Checkbox("GL_FOG", &fog))
-		App->renderer3D->SetCapabilityState(capability, fog);
-
 	static bool wireframeMode = App->renderer3D->IsWireframeMode();
 	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
 		App->renderer3D->SetWireframeMode(wireframeMode);

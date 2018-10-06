@@ -5,6 +5,7 @@
         "Cap Frames": false,
         "Max FPS": 60
     },
+    "NoName": {},
     "FileSystem": {},
     "Window": {
         "width": 1024,
@@ -22,8 +23,8 @@
         "Inspector": false,
         "PCG performance test": false,
         "About": false,
-        "Console": false,
-        "Settings": true
+        "Console": true,
+        "Settings": false
     },
     "Scene": {},
     "Renderer3D": {

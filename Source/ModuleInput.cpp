@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
+#include "ModuleAssetImporter.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -116,10 +117,14 @@ update_status ModuleInput::PreUpdate(float dt)
 		{
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 				App->renderer3D->OnResize(event.window.data1, event.window.data2);
+			break;
 		}
 		case (SDL_DROPFILE):
 		{
-			// TODO: Manage dropped file
+			char* dropped_filedir = event.drop.file;
+
+			App->assetsImporter->LoadFBXfromFile(dropped_filedir);
+			SDL_free(dropped_filedir);
 		
 			break;
 		}

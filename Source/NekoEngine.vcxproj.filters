@@ -492,7 +492,7 @@
     <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
       <Filter>Sources\3rd Party\Assimp\Port</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleAssetImport.h">
+    <ClInclude Include="ModuleAssetImporter.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
@@ -680,7 +680,7 @@
     <ClCompile Include="PanelSettings.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleAssetImport.cpp">
+    <ClCompile Include="ModuleAssetImporter.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

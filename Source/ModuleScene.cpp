@@ -4,7 +4,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "Primitive.h"
-#include "ModuleAssetImport.h"
+#include "ModuleAssetImporter.h"
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -52,6 +52,7 @@ bool ModuleScene::Start()
 	App->assetsImporter->LoadFBXfromMemory(buffer, size);
 	delete[] buffer;
 	*/
+	//App->assetsImporter->LoadFBXwithPHYSFS("Assets/BakerHouse.fbx");
 
 	return ret;
 }

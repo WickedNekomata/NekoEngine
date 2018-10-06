@@ -388,7 +388,7 @@ void Mesh::GenerateBuffers() const
 	// Generate vertices buffer
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Generate indices buffer

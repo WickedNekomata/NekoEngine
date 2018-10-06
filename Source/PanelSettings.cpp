@@ -265,8 +265,8 @@ void PanelSettings::HardwareNode() const
 	SDL_version version;
 	SDL_GetVersion(&version);
 
-	ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
 	ImGui::Text("SDL version: %i.%i.%i", version.major, version.minor, version.patch);
+	ImGui::Text("OpenGL version: %s", glGetString(GL_VERSION));
 
 	ImGui::Separator();
 

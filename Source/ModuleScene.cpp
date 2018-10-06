@@ -42,12 +42,16 @@ bool ModuleScene::Start()
 	cone = new PrimitiveCone();
 	arrow = new PrimitiveArrow();
 
+	grid = new PrimitiveGrid();
+
 	// Load model
+	/*
 	char* buffer;
 	uint size;
 	App->filesystem->OpenRead("Assets/BakerHouse.fbx", &buffer, size);
 	App->assetsImporter->LoadFBXfromMemory(buffer, size);
 	delete[] buffer;
+	*/
 
 	return ret;
 }
@@ -70,6 +74,8 @@ bool ModuleScene::CleanUp()
 	RELEASE(cylinder);
 	RELEASE(cone);
 
+	RELEASE(grid);
+
 	return ret;
 }
 
@@ -87,4 +93,5 @@ void ModuleScene::Draw() const
 	//cylinder->Render();
 	//cone->Render();
 	//arrow->Render();
+	grid->Render();
 }

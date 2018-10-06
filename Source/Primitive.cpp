@@ -241,6 +241,114 @@ PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::Pr
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+// Grid --------------------------------------------------
+PrimitiveGrid::PrimitiveGrid(uint quadSize, uint quadsX, uint quadsZ) : Primitive(PrimitiveTypes::PrimitiveTypeGrid), quadSize(quadSize), quadsX(quadsX), quadsZ(quadsZ)
+{
+	axis = new PrimitiveAxis();
+
+	// Vertices
+	uint verticesSize = 3 * 2 * ((quadsX + 1) + (quadsZ - 1));
+	vertices = new float[verticesSize];
+
+	uint sizeX = quadsX * quadSize;
+	uint sizeZ = quadsZ * quadSize;
+	float halfSizeX = (float)sizeX / 2.0f;
+	float halfSizeZ = (float)sizeZ / 2.0f;
+
+	// x
+	int i = -1;
+	for (uint index = 0; index < quadsX + 1; ++index)
+	{
+		vertices[++i] = -halfSizeX + (index * quadSize);
+		vertices[++i] = 0.0f;
+		vertices[++i] = -halfSizeZ;
+	}
+	for (uint index = 0; index < quadsX + 1; ++index)
+	{
+		vertices[++i] = -halfSizeX + (index * quadSize);
+		vertices[++i] = 0.0f;
+		vertices[++i] = halfSizeZ;
+	}
+
+	// z
+	for (uint index = 1; index < quadsZ; ++index)
+	{
+		vertices[++i] = -halfSizeX;
+		vertices[++i] = 0.0f;
+		vertices[++i] = -halfSizeZ + (index * quadSize);
+	}
+	for (uint index = 1; index < quadsZ; ++index)
+	{
+		vertices[++i] = halfSizeX;
+		vertices[++i] = 0.0f;
+		vertices[++i] = -halfSizeZ + (index * quadSize);
+	}
+
+	glGenBuffers(1, (GLuint*)&verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Indices
+	indicesSize = 2 * ((quadsX + 1) + (quadsZ + 1));
+	indices = new uint[indicesSize];
+
+	// z (with x)
+	i = -1;
+	for (uint index = 0; index < quadsX + 1; ++index)
+	{
+		indices[++i] = index;
+		indices[++i] = (quadsX + 1) + index;
+	}
+
+	// x (with z)
+	indices[++i] = 0;
+	indices[++i] = quadsX;
+
+	for (uint index = 0; index < quadsZ - 1; ++index)
+	{
+		indices[++i] = 2 * (quadsX + 1) + index;
+		indices[++i] = 2 * (quadsX + 1) + ((quadsZ - 1) + index);
+	}
+
+	indices[++i] = quadsX + 1;
+	indices[++i] = (2 * quadsX) + 1;
+
+	glGenBuffers(1, (GLuint*)&indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void PrimitiveGrid::InnerRender() const
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Array Buffer
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+
+	glColor3f(color.r, color.g, color.b);
+	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
+	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
+
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//_Array_Buffer
+
+	// Element Array Buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_LINES, indicesSize, GL_UNSIGNED_INT, NULL);
+
+	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
+	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//_Element_Array_buffer
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
 // Cube --------------------------------------------------
 PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
 {

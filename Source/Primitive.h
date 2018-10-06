@@ -11,6 +11,7 @@ enum PrimitiveTypes
 	PrimitiveTypeRay,
 	PrimitiveTypeAxis,
 	PrimitiveTypePlane,
+	PrimitiveTypeGrid,
 	PrimitiveTypeCircle,
 	PrimitiveTypeCube,
 	PrimitiveTypeSphere,
@@ -135,6 +136,24 @@ public:
 private:
 
 	math::float2 size; // x and z size
+};
+
+// Grid --------------------------------------------------
+class PrimitiveGrid : public Primitive
+{
+public:
+
+	PrimitiveGrid(uint quadSize = 1, uint quadsX = 100, uint quadsZ = 100);
+
+private:
+
+	void InnerRender() const;
+
+private:
+
+	uint quadSize = 0;
+	uint quadsX = 0;
+	uint quadsZ = 0;
 };
 
 // Cube --------------------------------------------------

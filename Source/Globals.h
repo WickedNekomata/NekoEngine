@@ -41,5 +41,7 @@ enum update_status
 	UPDATE_ERROR
 };
 
+#define BUF_SIZE 4096
+
 #define TITLE "Neko Engine"
 #define ORGANIZATION "Wicked Nekomata"

@@ -111,3 +111,30 @@ uint ModuleFileSystem::OpenWrite(const char* file, const char* buffer) const
 
 	return ret;
 }
+
+const char* ModuleFileSystem::GetBasePath() const 
+{
+	return PHYSFS_getBaseDir();
+}
+
+const char* ModuleFileSystem::GetReadPaths() const
+{
+	static char paths[BUF_SIZE];
+	paths[0] = '\0'; // null-terminated byte string
+
+	static char tmp_string[BUF_SIZE];
+
+	char** path;
+	for (path = PHYSFS_getSearchPath(); *path != nullptr; ++path)
+	{
+		sprintf_s(tmp_string, BUF_SIZE, "%s\n", *path);
+		strcat_s(paths, BUF_SIZE, tmp_string);
+	}
+
+	return paths;
+}
+
+const char* ModuleFileSystem::GetWritePath() const 
+{
+	return PHYSFS_getWriteDir();
+}

@@ -18,6 +18,10 @@ public:
 
 	uint OpenRead(const char* file, char** buffer) const;
 	uint OpenWrite(const char* file, const char* buffer) const;
+
+	const char* GetBasePath() const;
+	const char* GetReadPaths() const;
+	const char* GetWritePath() const;
 };
 
 #endif

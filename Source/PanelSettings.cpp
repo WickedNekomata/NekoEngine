@@ -236,14 +236,13 @@ void PanelSettings::RendererNode() const
 
 void PanelSettings::FileSystemNode() const
 {
-	// TODO: Fulfill this
 	// Paths
 	ImGui::Text("Base Path:");
-	ImGui::TextColored(TEXT_COLOR, "BasePath");
-	ImGui::Text("Read Path:");
-	ImGui::TextColored(TEXT_COLOR, ".");
+	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetBasePath());
+	ImGui::Text("Read Paths:");
+	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetReadPaths());
 	ImGui::Text("Write Path:");
-	ImGui::TextColored(TEXT_COLOR, ".");
+	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetWritePath());
 }
 
 void PanelSettings::InputNode() const

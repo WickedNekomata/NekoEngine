@@ -17,7 +17,9 @@ The code is written in C++.
 - IDE: Microsoft Visual Studio 2017
 - External libraries: 
 	- SDL 2.0.8
-	- OpenGL 3.1, Glew 2.1, ImGui 1.65
+	- OpenGL 3.1, Glew 2.1
+	- Assimp 4.1.0
+	- ImGui 1.65
 	- MathGeoLib 1.5, PCG Random Number Generator 0.94
 	- Parson
 	- PhysFS 3.0.1

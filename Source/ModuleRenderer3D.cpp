@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "Primitive.h"
+#include "Color.h"
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -136,14 +138,14 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	// Meshes
 	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
 		DrawMesh(*it);
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-
+		for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+			DrawMeshNormals(*it);
 	}
 
 	// 3. Editor
@@ -271,6 +273,11 @@ void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
 	this->debugDraw = debugDraw;
 }
 
+bool ModuleRenderer3D::GetDebugDraw() const 
+{
+	return debugDraw;
+}
+
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
 	math::float4x4 Perspective;
@@ -352,9 +359,17 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
+void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
+{
+	for (uint i = 0; i < mesh->verticesSize; ++i)
+	{
+		mesh->normalsLines[i]->Render();
+	}
+}
+
 // Mesh --------------------------------------------------
 
-void Mesh::GenerateBuffers() const
+void Mesh::GenerateBuffers()
 {
 	// Generate vertices buffer
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -367,6 +382,20 @@ void Mesh::GenerateBuffers() const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// Create normals
+	normalsLines = new PrimitiveRay*[verticesSize];
+
+	uint index = 0;
+	for (uint i = 0; i < verticesSize; ++i)
+	{
+		PrimitiveRay* ray = new PrimitiveRay(math::float3(normals[index], normals[index + 1], normals[index + 2]), 0.5f);
+		ray->SetPosition(math::float3(vertices[index], vertices[index + 1], vertices[index + 2]));
+		ray->SetColor(Yellow);
+		index += 3;
+
+		normalsLines[i] = ray;
+	}
 }
 
 Mesh::~Mesh()
@@ -376,4 +405,14 @@ Mesh::~Mesh()
 
 	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
+
+	RELEASE(vertices);
+	RELEASE(normals);
+
+	for (uint i = 0; i < verticesSize; ++i)
+	{
+		RELEASE(normalsLines[i]);
+	}
+
+	RELEASE(normalsLines);
 }

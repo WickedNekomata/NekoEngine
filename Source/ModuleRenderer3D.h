@@ -16,6 +16,8 @@
 
 #define MAX_LIGHTS 8
 
+class PrimitiveRay;
+
 struct Mesh
 {
 	// Unique vertices
@@ -28,7 +30,7 @@ struct Mesh
 	uint indicesID = 0u;
 	uint indicesSize = 0u;
 
-	// Normals
+	// Normals (vertices normals)
 	float* normals = nullptr;
 
 	// Texture Coord
@@ -37,11 +39,13 @@ struct Mesh
 	// Colors
 	float* colors = nullptr;
 
+	PrimitiveRay** normalsLines = nullptr;
+
 	// -----
 
 	~Mesh();
 
-	void GenerateBuffers() const;
+	void GenerateBuffers();
 };
 
 class ModuleRenderer3D : public Module
@@ -71,6 +75,7 @@ public:
 	bool IsWireframeMode() const;
 
 	void SetDebugDraw(bool debugDraw);
+	bool GetDebugDraw() const;
 
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
@@ -80,6 +85,7 @@ public:
 	void ClearMeshes();
 
 	void DrawMesh(Mesh* mesh) const;
+	void DrawMeshNormals(Mesh* mesh) const;
 
 public:
 
@@ -89,7 +95,7 @@ public:
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 	bool vsync = false;
-	bool debugDraw = false;
+	bool debugDraw = true;
 
 	// Meshes
 	std::list<Mesh*> meshes;

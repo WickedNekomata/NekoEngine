@@ -222,11 +222,6 @@ class PrimitiveArrow : public Primitive
 public:
 
 	PrimitiveArrow(float lineLength = 5.0f, float coneHeight = 1.0f, float coneRadius = 1.0f, uint coneSides = 8);
-	~PrimitiveArrow();
-
-private:
-
-	void InnerRender() const;
 
 private:
 

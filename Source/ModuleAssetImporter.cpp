@@ -33,31 +33,36 @@ bool ModuleAssetImporter::CleanUp()
 	return true;
 }
 
-bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
+bool ModuleAssetImporter::LoadMeshFromFile(const char* path) const
 {
-	bool ret = true;
+	bool ret = false;
 
 	App->renderer3D->ClearMeshes();
+	
+	uint postProcessingFlags = 0;
+	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
 
-	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(path, postProcessingFlags);
 
 	if (scene != nullptr)
-	{	
-		Import(scene);
+	{
+		InitFromScene(scene);
 		aiReleaseImport(scene);
+
+		ret = true;
 	}
 	else
-	{
-		CONSOLE_LOG("Error loading scene %s");
-		ret = false;
-	}
+		CONSOLE_LOG("Error loading scene %s", path);
 
 	return ret;
 }
 
-bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& bufferSize) const
+bool ModuleAssetImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
-	bool ret = true;
+	bool ret = false;
 
 	App->renderer3D->ClearMeshes();
 
@@ -65,47 +70,54 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 
 	if (scene != nullptr)
 	{
-		Import(scene);
+		InitFromScene(scene);
 		aiReleaseImport(scene);
-	}
-	else
-	{
-		CONSOLE_LOG("Error loading scene %s");
-		ret = false;
+
+		ret = true;
 	}
 
 	return ret;
 }
 
-bool ModuleAssetImporter::LoadFBXwithPHYSFS(const char* path)
+bool ModuleAssetImporter::LoadMeshWithPHYSFS(const char* path)
 {
 	bool ret = false;
+
 	char* buffer;
 	uint size;
+
 	if (App->filesystem->OpenRead(path, &buffer, size))
 	{
-		ret = LoadFBXfromMemory(buffer, size);
+		ret = LoadMeshFromMemory(buffer, size);
+
+		if (!ret)
+			CONSOLE_LOG("Error loading scene %s", path);
+
 		delete[] buffer;
 	}
 
 	return ret;
 }
 
-void ModuleAssetImporter::Import(const aiScene* scene) const
+void ModuleAssetImporter::InitFromScene(const aiScene* scene) const
 {
-	for (int i = 0; i < scene->mNumMeshes; ++i)
+	// Init mesh
+	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
 		Mesh* mesh = new Mesh();
 
+		// Vertices
 		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
 		mesh->vertices = new float[mesh->verticesSize * 3];
 		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
-		CONSOLE_LOG("New mesh with %d vertices");
+		CONSOLE_LOG("New mesh with %d vertices", mesh->verticesSize);
 
 		if (scene->mMeshes[i]->HasFaces())
 		{
+			// Indices
 			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
 			mesh->indices = new uint[mesh->indicesSize];
+			
 			for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
 			{
 				if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
@@ -119,25 +131,29 @@ void ModuleAssetImporter::Import(const aiScene* scene) const
 			}
 		}
 
+		// Normals
 		if (scene->mMeshes[i]->HasNormals())
 		{
 			mesh->normals = new float[mesh->verticesSize * 3];
 			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("New mesh with %d normals");
+			CONSOLE_LOG("Mesh with normals");
 		}
 
-		if (scene->mMeshes[i]->GetNumUVChannels() > 0)
+		// Texture coords
+		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
-			mesh->textureCoords = new float[mesh->verticesSize * 3];
-			memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
+			mesh->textureCoords = new float[mesh->verticesSize * 2];
+			memcpy(mesh->normals, scene->mMeshes[i]->mTextureCoords[0], sizeof(float) * mesh->verticesSize * 2);
+			CONSOLE_LOG("Mesh with texture coords");
 		}
 
-		if (scene->mMeshes[i]->GetNumColorChannels() > 0)
-		{
-			mesh->colors = new float[mesh->verticesSize * 4];
-			memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
-		}
-
+		mesh->Init();
 		App->renderer3D->AddMesh(mesh);
+	}
+
+	// Init materials
+	for (uint i = 0; i < scene->mNumMaterials; ++i)
+	{
+		// TODO
 	}
 }

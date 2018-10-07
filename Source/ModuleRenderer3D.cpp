@@ -312,7 +312,6 @@ bool ModuleRenderer3D::AddMesh(Mesh* mesh)
 
 	if (std::find(meshes.begin(), meshes.end(), mesh) == meshes.end())
 	{
-		mesh->GenerateBuffers();
 		meshes.push_back(mesh);
 		ret = true;
 	}
@@ -371,7 +370,7 @@ void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
 
 // Mesh --------------------------------------------------
 
-void Mesh::GenerateBuffers()
+void Mesh::Init()
 {
 	// Generate vertices buffer
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -391,7 +390,7 @@ void Mesh::GenerateBuffers()
 	uint index = 0;
 	for (uint i = 0; i < verticesSize; ++i)
 	{
-		PrimitiveRay* ray = new PrimitiveRay(math::float3(normals[index], normals[index + 1], normals[index + 2]), 0.5f);
+		PrimitiveRay* ray = new PrimitiveRay(math::float3(normals[index], normals[index + 1], normals[index + 2]), 1.0f);
 		ray->SetPosition(math::float3(vertices[index], vertices[index + 1], vertices[index + 2]));
 		ray->SetColor(Yellow);
 		index += 3;

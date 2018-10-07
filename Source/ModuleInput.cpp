@@ -122,7 +122,7 @@ update_status ModuleInput::PreUpdate(float dt)
 		{
 			char* dropped_filedir = event.drop.file;
 
-			App->assetsImporter->LoadFBXfromFile(dropped_filedir);
+			App->assetsImporter->LoadMeshFromFile(dropped_filedir);
 			SDL_free(dropped_filedir);
 		
 			break;

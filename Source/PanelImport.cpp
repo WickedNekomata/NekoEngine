@@ -33,7 +33,7 @@ bool PanelImport::Draw()
 
 		std::string file = items[item_current];
 		file += fileNameBuf;
-		if (ImGui::Button("Import file")) { App->assetsImporter->LoadFBXwithPHYSFS(file.c_str()); }
+		if (ImGui::Button("Import file")) { App->assetsImporter->LoadMeshWithPHYSFS(file.c_str()); }
 		ImGui::End();
 	}
 	return true;

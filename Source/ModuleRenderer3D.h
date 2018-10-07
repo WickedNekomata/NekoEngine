@@ -22,13 +22,13 @@ struct Mesh
 {
 	// Unique vertices
 	float* vertices = nullptr;
-	uint verticesID = 0u;
-	uint verticesSize = 0u;
+	uint verticesID = 0;
+	uint verticesSize = 0;
 
 	// Indices
 	uint* indices = nullptr;
-	uint indicesID = 0u;
-	uint indicesSize = 0u;
+	uint indicesID = 0;
+	uint indicesSize = 0;
 
 	// Normals (vertices normals)
 	float* normals = nullptr;
@@ -36,15 +36,15 @@ struct Mesh
 
 	// Texture coords
 	float* textureCoords = nullptr;
+	uint materialIndex = 0;
 
 	// Colors
 	float* colors = nullptr;
 
 	// -----
 
+	void Init();
 	~Mesh();
-
-	void GenerateBuffers();
 };
 
 class ModuleRenderer3D : public Module

@@ -43,53 +43,7 @@ bool ModuleAssetImporter::LoadFBXfromFile(const char* path) const
 
 	if (scene != nullptr)
 	{	
-		for (int i = 0; i < scene->mNumMeshes; ++i)
-		{			
-			Mesh* mesh = new Mesh();
-
-			mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
-			mesh->vertices = new float[mesh->verticesSize * 3];
-			memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("New mesh with %d vertices");
-
-			if (scene->mMeshes[i]->HasFaces())
-			{
-				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
-				mesh->indices = new uint[mesh->indicesSize];
-				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
-				{
-					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
-					{
-						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
-					}
-					else
-					{
-						memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
-					}
-				}
-			}
-
-			if (scene->mMeshes[i]->HasNormals())
-			{
-				mesh->normals = new float[mesh->verticesSize * 3];
-				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-				CONSOLE_LOG("New mesh with %d normals");
-			}
-
-			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
-			{
-				mesh->textureCoords = new float[mesh->verticesSize * 3];
-				memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
-			}
-
-			if (scene->mMeshes[i]->GetNumColorChannels() > 0)
-			{
-				mesh->colors = new float[mesh->verticesSize * 4];
-				memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
-			}
-
-			App->renderer3D->AddMesh(mesh);
-		}
+		Import(scene);
 		aiReleaseImport(scene);
 	}
 	else
@@ -111,53 +65,7 @@ bool ModuleAssetImporter::LoadFBXfromMemory(const char * buffer, unsigned int& b
 
 	if (scene != nullptr)
 	{
-		for (int i = 0; i < scene->mNumMeshes; ++i)
-		{
-			Mesh* mesh = new Mesh();
-
-			mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
-			mesh->vertices = new float[mesh->verticesSize * 3];
-			memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("New mesh with %d vertices");
-
-			if (scene->mMeshes[i]->HasFaces())
-			{
-				mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
-				mesh->indices = new uint[mesh->indicesSize];
-				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
-				{
-					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
-					{
-						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
-					}
-					else
-					{
-						memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
-					}
-				}
-			}
-
-			if (scene->mMeshes[i]->HasNormals())
-			{
-				mesh->normals = new float[mesh->verticesSize * 3];
-				memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-				CONSOLE_LOG("New mesh with %d normals");
-			}
-
-			if (scene->mMeshes[i]->GetNumUVChannels() > 0)
-			{
-				mesh->textureCoords = new float[mesh->verticesSize * 3];
-				memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
-			}
-
-			if (scene->mMeshes[i]->GetNumColorChannels() > 0)
-			{
-				mesh->colors = new float[mesh->verticesSize * 4];
-				memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
-			}
-
-			App->renderer3D->AddMesh(mesh);
-		}
+		Import(scene);
 		aiReleaseImport(scene);
 	}
 	else
@@ -181,4 +89,55 @@ bool ModuleAssetImporter::LoadFBXwithPHYSFS(const char* path)
 	}
 
 	return ret;
+}
+
+void ModuleAssetImporter::Import(const aiScene* scene) const
+{
+	for (int i = 0; i < scene->mNumMeshes; ++i)
+	{
+		Mesh* mesh = new Mesh();
+
+		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
+		mesh->vertices = new float[mesh->verticesSize * 3];
+		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
+		CONSOLE_LOG("New mesh with %d vertices");
+
+		if (scene->mMeshes[i]->HasFaces())
+		{
+			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
+			mesh->indices = new uint[mesh->indicesSize];
+			for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
+			{
+				if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
+				{
+					CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
+				}
+				else
+				{
+					memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
+				}
+			}
+		}
+
+		if (scene->mMeshes[i]->HasNormals())
+		{
+			mesh->normals = new float[mesh->verticesSize * 3];
+			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
+			CONSOLE_LOG("New mesh with %d normals");
+		}
+
+		if (scene->mMeshes[i]->GetNumUVChannels() > 0)
+		{
+			mesh->textureCoords = new float[mesh->verticesSize * 3];
+			memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], sizeof(mesh->verticesSize * 3));
+		}
+
+		if (scene->mMeshes[i]->GetNumColorChannels() > 0)
+		{
+			mesh->colors = new float[mesh->verticesSize * 4];
+			memcpy(mesh->colors, scene->mMeshes[i]->mColors[0], sizeof(mesh->verticesSize * 4));
+		}
+
+		App->renderer3D->AddMesh(mesh);
+	}
 }

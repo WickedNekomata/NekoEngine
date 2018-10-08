@@ -369,7 +369,6 @@ void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
 }
 
 // Mesh --------------------------------------------------
-
 void Mesh::Init()
 {
 	// Generate vertices buffer

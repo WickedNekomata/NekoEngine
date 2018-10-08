@@ -87,7 +87,7 @@ void ModuleScene::Draw() const
 	// Primitives
 	//cube->Render();
 	//circle->Render();
-	//sphere->Render();
+	sphere->Render();
 	//ray->Render();
 	//frustum->Render();
 	//cylinder->Render();

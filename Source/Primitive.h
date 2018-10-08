@@ -174,19 +174,12 @@ class PrimitiveSphere : public Primitive
 {
 public:
 
-	PrimitiveSphere(float radius = 1.0f);
-	~PrimitiveSphere();
-
-private:
-
-	void InnerRender() const;
+	PrimitiveSphere(float radius = 1.0f, uint segments = 8);
 
 private:
 
 	float radius = 0.0f;
-
-	PrimitiveCircle* verticalCircle = nullptr;
-	PrimitiveCircle* horizontalCircle = nullptr;
+	uint segments = 0.0f;
 };
 
 // Cylinder --------------------------------------------------

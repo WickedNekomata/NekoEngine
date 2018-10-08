@@ -420,27 +420,125 @@ PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::Prim
 }
 
 // Sphere --------------------------------------------------
-PrimitiveSphere::PrimitiveSphere(float radius) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius)
+PrimitiveSphere::PrimitiveSphere(float radius, uint segments) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius), segments(segments)
 {
 	axis = new PrimitiveAxis();
 
-	verticalCircle = new PrimitiveCircle(radius);
-	horizontalCircle = new PrimitiveCircle(radius);
-	horizontalCircle->SetRotation(-90.0f, math::float3(1.0f, 0.0f, 0.0f));
-}
+	// Vertices
+	uint verticesSize = 3 * ((segments * segments) + 2);
+	vertices = new float[verticesSize];
 
-PrimitiveSphere::~PrimitiveSphere()
-{
-	RELEASE(verticalCircle);
-	RELEASE(horizontalCircle);
-}
+	float deltaAngle = 360.0f / (float)segments;
+	float heightAngle = 90.0f;
 
-void PrimitiveSphere::InnerRender() const 
-{
-	if (verticalCircle != nullptr)
-		verticalCircle->Render();
-	if (horizontalCircle != nullptr)
-		horizontalCircle->Render();
+	// 1. Top circle
+	// circleSize = sides + 1
+	/// Center (0)
+	int i = 0;
+	vertices[i] = 0.0f;
+	vertices[++i] = radius * sinf(DEGTORAD * heightAngle);
+	vertices[++i] = 0.0f;
+
+	heightAngle -= deltaAngle;
+
+	while (heightAngle > -90.0f)
+	{
+		/// Circle (normals up)
+		for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+		{
+			/// (1), (2)... (sides)
+			vertices[++i] = (radius * cosf(DEGTORAD * heightAngle)) * sinf(DEGTORAD * angle);
+			vertices[++i] = radius * sinf(DEGTORAD * heightAngle);
+			vertices[++i] = (radius * cosf(DEGTORAD * heightAngle)) * cosf(DEGTORAD * angle);
+		}
+
+		heightAngle -= deltaAngle;
+	}
+
+	// 2. Bottom circle
+	// circleSize = sides + 1
+	/// Center (sides + 1)
+	vertices[++i] = 0.0f;
+	vertices[++i] = radius * sinf(DEGTORAD * heightAngle);
+	vertices[++i] = 0.0f;
+
+	/*
+	/// Circle (normals up)
+	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
+	{
+		/// (sides + 2), (sides + 3)... ((2 * sides) + 1)
+		vertices[++i] = radius * sinf(DEGTORAD * angle);
+		vertices[++i] = -radius;
+		vertices[++i] = radius * cosf(DEGTORAD * angle);
+	}
+	*/
+	glGenBuffers(1, (GLuint*)&verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Indices
+	indicesSize = 3 * (2 * segments * segments);
+	indices = new uint[indicesSize];
+
+	// 1. Top cap (circle)
+	// circleSize = sides
+	uint topIndex = 1; /// B
+	i = -1;
+	while (topIndex < segments + 1)
+	{
+		indices[++i] = 0; /// A (center)
+		indices[++i] = topIndex; /// B ... // C
+		indices[++i] = ++topIndex;/// C ... // D
+	}
+
+	indices[i] = 1; /// C = B
+
+	// 3. Body 
+	// circleSize = 2 * sides
+	for (uint segment = 0; segment < (segments / 2) - 2; ++segment)
+	{
+		topIndex = 1 + (segments * segment);
+		uint bottomIndex = (segments + 1) + (segments * segment);
+
+		for (int j = -1; j < (int)(3 * 2 * segments) - (3 * 2); j += 6)
+		{
+			/// Triangle
+			indices[++i] = bottomIndex;
+			indices[++i] = ++bottomIndex;
+			indices[++i] = topIndex;
+
+			/// Triangle
+			indices[++i] = bottomIndex;
+			indices[++i] = ++topIndex;
+			indices[++i] = topIndex - 1;
+		}
+
+		/// Triangle
+		indices[(i + 1) - 5] = (segments + 1) + (segments * segment);
+
+		/// Triangle
+		indices[(i + 1) - 3] = (segments + 1) + (segments * segment);
+		indices[(i + 1) - 2] = 1 + (segments * segment);
+	}
+
+	// 2. Bottom cap (inverted circle)
+	// circleSize = sides
+	/*
+	uint bottomIndex = (segments + 1) + (segments * ()); /// B
+	while (bottomIndex < 2 * (segments + 1))
+	{
+		indices[++i] = verticesSize - 3; /// A (center)
+		indices[++i] = ++bottomIndex; /// B ... // C
+		indices[++i] = bottomIndex - 1; /// C ... // D
+	}
+
+	indices[i - 1] = segments + 2; /// C = B
+	*/
+	glGenBuffers(1, (GLuint*)&indicesID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // Cylinder --------------------------------------------------

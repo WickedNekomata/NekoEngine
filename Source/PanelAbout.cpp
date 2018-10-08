@@ -9,6 +9,10 @@
 #include "ImGui/imgui.h"
 #include "Assimp/include/version.h"
 
+#include "DevIL/include/il.h"
+#include "DevIL/include/ilu.h"
+#include "DevIL/include/ilut.h"
+
 PanelAbout::PanelAbout(char* name) : Panel(name) {}
 
 PanelAbout::~PanelAbout() {}
@@ -61,6 +65,15 @@ bool PanelAbout::Draw()
 		if (ImGui::Button("Assimp")) { OpenInBrowser("http://cms.assimp.org/index.php"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
 		
+		int devilVersion = 0;
+		if (!(ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
+			iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION ||
+			ilutGetInteger(ILUT_VERSION_NUM) < ILUT_VERSION))
+			devilVersion = IL_VERSION;
+
+		if (ImGui::Button("DevIL")) { OpenInBrowser("http://openil.sourceforge.net/"); }
+		ImGui::SameLine(); ImGui::TextWrapped("%i", devilVersion);
+
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
 

@@ -70,6 +70,9 @@
     <Filter Include="Sources\3rd Party\Assimp\Port">
       <UniqueIdentifier>{b47b20af-1058-4f3f-836e-7af3f788184c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\DevIL">
+      <UniqueIdentifier>{50eebea3-c08e-4dcf-993f-4fef30e2e0aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -500,6 +503,30 @@
     </ClInclude>
     <ClInclude Include="ModuleAssets.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\devil_internal_exports.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il_wrap.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu_region.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut_config.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

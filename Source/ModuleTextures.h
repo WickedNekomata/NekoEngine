@@ -3,6 +3,12 @@
 
 #include "Module.h"
 
+struct Texture
+{
+
+
+};
+
 class ModuleTextures : public Module
 {
 public:
@@ -12,6 +18,8 @@ public:
 
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
+
+	uint LoadImageFromFile(const char* path) const;
 };
 
 #endif

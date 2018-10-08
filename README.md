@@ -19,6 +19,7 @@ The code is written in C++.
 	- SDL 2.0.8
 	- OpenGL 3.1, Glew 2.1
 	- Assimp 4.1.0
+	- DevIL 1.8.0
 	- ImGui 1.65
 	- MathGeoLib 1.5, PCG Random Number Generator 0.94
 	- Parson

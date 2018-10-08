@@ -33,9 +33,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	
 	if (ret)
 	{
-		// Use vsync
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
-
 		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
 
 		// Initialize glew
@@ -108,6 +106,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
+		glEnable(GL_TEXTURE_2D);
 	}
 
 	// Projection matrix for

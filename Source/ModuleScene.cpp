@@ -4,7 +4,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "Primitive.h"
-#include "ModuleAssetImporter.h"
+#include "ModuleAssets.h"
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {

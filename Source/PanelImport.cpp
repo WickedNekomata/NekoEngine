@@ -4,7 +4,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
-#include "ModuleAssetImporter.h"
+#include "ModuleAssets.h"
 
 #include "Globals.h"
 
@@ -33,7 +33,7 @@ bool PanelImport::Draw()
 
 		std::string file = items[item_current];
 		file += fileNameBuf;
-		if (ImGui::Button("Import file")) { App->assetsImporter->LoadMeshWithPHYSFS(file.c_str()); }
+		if (ImGui::Button("Import file")) { App->assets->LoadMeshWithPHYSFS(file.c_str()); }
 		ImGui::End();
 	}
 	return true;

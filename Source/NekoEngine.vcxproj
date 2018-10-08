@@ -191,7 +191,7 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
-    <ClInclude Include="ModuleAssetImporter.h" />
+    <ClInclude Include="ModuleAssets.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleGui.h" />
@@ -200,6 +200,7 @@
     <ClInclude Include="ModuleAudio.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleScene.h" />
+    <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="Panel.h" />
     <ClInclude Include="PanelAbout.h" />
@@ -260,7 +261,7 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
-    <ClCompile Include="ModuleAssetImporter.cpp" />
+    <ClCompile Include="ModuleAssets.cpp" />
     <ClCompile Include="ModuleAudio.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
@@ -268,6 +269,7 @@
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleRenderer3D.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="PanelAbout.cpp" />

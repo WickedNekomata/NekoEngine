@@ -1,16 +1,16 @@
-#ifndef __MODULE_ASSET_IMPORTER_H__
-#define __MODULE_ASSET_IMPORTER_H__
+#ifndef __MODULE_ASSETS_H__
+#define __MODULE_ASSETS_H__
 
 #include "Module.h"
 
 struct aiScene;
 
-class ModuleAssetImporter : public Module
+class ModuleAssets : public Module
 {
 public:
 
-	ModuleAssetImporter(bool start_enabled = true);
-	~ModuleAssetImporter();
+	ModuleAssets(bool start_enabled = true);
+	~ModuleAssets();
 
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();

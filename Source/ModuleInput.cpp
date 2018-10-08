@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleAssetImporter.h"
+#include "ModuleAssets.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -122,7 +122,7 @@ update_status ModuleInput::PreUpdate(float dt)
 		{
 			char* dropped_filedir = event.drop.file;
 
-			App->assetsImporter->LoadMeshFromFile(dropped_filedir);
+			App->assets->LoadMeshFromFile(dropped_filedir);
 			SDL_free(dropped_filedir);
 		
 			break;

@@ -1,4 +1,4 @@
-#include "ModuleAssetImporter.h"
+#include "ModuleAssets.h"
 #include "ModuleRenderer3D.h"
 
 #include "Application.h"
@@ -10,15 +10,15 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
-ModuleAssetImporter::ModuleAssetImporter(bool start_enabled)
+ModuleAssets::ModuleAssets(bool start_enabled)
 {
 }
 
-ModuleAssetImporter::~ModuleAssetImporter()
+ModuleAssets::~ModuleAssets()
 {
 }
 
-bool ModuleAssetImporter::Init(JSON_Object * jObject)
+bool ModuleAssets::Init(JSON_Object * jObject)
 {
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -27,13 +27,13 @@ bool ModuleAssetImporter::Init(JSON_Object * jObject)
 	return true;
 }
 
-bool ModuleAssetImporter::CleanUp()
+bool ModuleAssets::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-bool ModuleAssetImporter::LoadMeshFromFile(const char* path) const
+bool ModuleAssets::LoadMeshFromFile(const char* path) const
 {
 	bool ret = false;
 
@@ -60,7 +60,7 @@ bool ModuleAssetImporter::LoadMeshFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleAssetImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
 	bool ret = false;
 
@@ -79,7 +79,7 @@ bool ModuleAssetImporter::LoadMeshFromMemory(const char* buffer, unsigned int& b
 	return ret;
 }
 
-bool ModuleAssetImporter::LoadMeshWithPHYSFS(const char* path)
+bool ModuleAssets::LoadMeshWithPHYSFS(const char* path)
 {
 	bool ret = false;
 
@@ -99,7 +99,7 @@ bool ModuleAssetImporter::LoadMeshWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleAssetImporter::InitFromScene(const aiScene* scene) const
+void ModuleAssets::InitFromScene(const aiScene* scene) const
 {
 	// Init mesh
 	for (uint i = 0; i < scene->mNumMeshes; ++i)

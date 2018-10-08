@@ -345,6 +345,10 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+
 	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
 
@@ -358,6 +362,10 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	//_Element_Array_buffer
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glDisable(GL_TEXTURE_2D);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -396,6 +404,23 @@ void Mesh::Init()
 
 		normalsLines[i] = ray;
 	}
+}
+
+void Mesh::EmbeddingTexture(GLubyte& texture, GLsizei width, GLsizei height)
+{
+	this->width = width;
+	this->height = height;
+	this->texture = texture;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, &this->texture);
 }
 
 Mesh::~Mesh()

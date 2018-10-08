@@ -36,7 +36,12 @@ struct Mesh
 
 	// Texture coords
 	float* textureCoords = nullptr;
-	uint materialIndex = 0;
+
+	// 2D Texture
+	uint textureID = 0;
+	GLubyte texture = 0;
+	GLsizei width = 0;
+	GLsizei height = 0;
 
 	// Colors
 	float* colors = nullptr;
@@ -44,6 +49,7 @@ struct Mesh
 	// -----
 
 	void Init();
+	void EmbeddingTexture(GLubyte& texture, GLsizei width, GLsizei height);
 	~Mesh();
 };
 

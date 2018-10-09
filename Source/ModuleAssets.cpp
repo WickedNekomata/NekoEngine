@@ -10,6 +10,11 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
+void myCallback(const char* msg, char* userData)
+{
+	CONSOLE_LOG("%s", msg);
+}
+
 ModuleAssets::ModuleAssets(bool start_enabled)
 {
 }
@@ -18,10 +23,10 @@ ModuleAssets::~ModuleAssets()
 {
 }
 
-bool ModuleAssets::Init(JSON_Object * jObject)
+bool ModuleAssets::Init(JSON_Object* jObject)
 {
 	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
+	stream.callback = myCallback;
 	aiAttachLogStream(&stream);
 
 	return true;
@@ -66,7 +71,13 @@ bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSi
 
 	App->renderer3D->ClearMeshes();
 
-	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+	uint postProcessingFlags = 0;
+	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+
+	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, postProcessingFlags, nullptr);
 
 	if (scene != nullptr)
 	{
@@ -106,7 +117,6 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 	{
 		Mesh* mesh = new Mesh();
 
-		// Vertices
 		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
 		mesh->vertices = new float[mesh->verticesSize * 3];
 		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
@@ -114,7 +124,6 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 
 		if (scene->mMeshes[i]->HasFaces())
 		{
-			// Indices
 			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
 			mesh->indices = new uint[mesh->indicesSize];
 			
@@ -131,20 +140,23 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 			}
 		}
 
-		// Normals
 		if (scene->mMeshes[i]->HasNormals())
 		{
 			mesh->normals = new float[mesh->verticesSize * 3];
 			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh with normals");
+			CONSOLE_LOG("Mesh vertices normals loaded");
 		}
-
-		// Texture coords
+	
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
-			mesh->textureCoords = new float[mesh->verticesSize * 3];
-			memcpy(mesh->normals, scene->mMeshes[i]->mTextureCoords[0], sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh with texture coords");
+			mesh->textureCoords = new float[scene->mMeshes[i]->mNumVertices * 2];
+
+			for (uint j = 0; j < scene->mMeshes[i]->mNumVertices; ++j)
+			{
+				memcpy(&mesh->textureCoords[j * 2], &scene->mMeshes[i]->mTextureCoords[0][j].x, sizeof(float));
+				memcpy(&mesh->textureCoords[(j * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][j].y, sizeof(float));
+			}
+			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
 		}
 
 		mesh->Init();

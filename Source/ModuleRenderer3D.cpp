@@ -114,6 +114,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	// Projection Matrix for
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 
+
 	return ret;
 }
 
@@ -367,30 +368,27 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID)
 
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
 
-	// Array Buffer
+	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
-
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	//_Array_Buffer
 	
+
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
-	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
-	// Element Array Buffer
+	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
+
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//_Element_Array_buffer
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
@@ -417,7 +415,7 @@ void Mesh::Init()
 	// Generate Texture Coords
 	glGenBuffers(1, (GLuint*)&textureCoordsID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, textureCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Create normals
@@ -442,13 +440,10 @@ void Mesh::EmbedTexture(uint textureID)
 
 Mesh::~Mesh()
 {
-	// Delete vertices buffer
 	glDeleteBuffers(1, (GLuint*)&verticesID);
-
-	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
-
 	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
+	glDeleteBuffers(1, (GLuint*)&textureID);
 
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);

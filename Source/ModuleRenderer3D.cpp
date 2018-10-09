@@ -349,6 +349,8 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID)
 
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
 {
+	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -358,20 +360,16 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 
-
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
 
-	// Draw mesh
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
 	
-	// Set buffers to non buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const

@@ -149,12 +149,16 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
 			CONSOLE_LOG("Mesh with normals");
 		}
-
-		// Texture coords
+		///Only 1 material for now
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
-			mesh->textureCoords = new float[mesh->verticesSize * 3];
-			memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], mesh->verticesSize * 3);
+			mesh->textureCoords = new float[scene->mMeshes[i]->mNumVertices * 2];
+
+			for (uint coords = 0; coords < scene->mMeshes[i]->mNumVertices; ++coords)
+			{
+				memcpy(&mesh->textureCoords[coords * 2], &scene->mMeshes[i]->mTextureCoords[0][coords].x, sizeof(float));
+				memcpy(&mesh->textureCoords[(coords * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][coords].y, sizeof(float));
+			}
 		}
 
 		mesh->Init();

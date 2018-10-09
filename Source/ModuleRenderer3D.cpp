@@ -350,17 +350,18 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID)
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	// Bind buffers which i draw
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
-
-	// set how the data is stored
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	
+
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
+
+	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
 
 	// Draw mesh
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
@@ -369,7 +370,6 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
@@ -398,7 +398,7 @@ void Mesh::Init()
 	// Generate Texture Coords
 	glGenBuffers(1, (GLuint*)&textureCoordsID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, textureCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Create normals

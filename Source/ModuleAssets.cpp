@@ -10,6 +10,11 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
+void myCallback(const char* msg, char* userData)
+{
+	CONSOLE_LOG("%s", msg);
+}
+
 ModuleAssets::ModuleAssets(bool start_enabled)
 {
 }
@@ -18,10 +23,10 @@ ModuleAssets::~ModuleAssets()
 {
 }
 
-bool ModuleAssets::Init(JSON_Object * jObject)
+bool ModuleAssets::Init(JSON_Object* jObject)
 {
 	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
+	stream.callback = myCallback;
 	aiAttachLogStream(&stream);
 
 	return true;
@@ -66,7 +71,13 @@ bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSi
 
 	App->renderer3D->ClearMeshes();
 
-	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
+	uint postProcessingFlags = 0;
+	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+
+	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, postProcessingFlags, nullptr);
 
 	if (scene != nullptr)
 	{
@@ -143,8 +154,7 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
 			mesh->textureCoords = new float[mesh->verticesSize * 3];
-			memcpy(mesh->normals, scene->mMeshes[i]->mTextureCoords[0], sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh with texture coords");
+			memcpy(mesh->textureCoords, scene->mMeshes[i]->mTextureCoords[0], mesh->verticesSize * 3);
 		}
 
 		mesh->Init();

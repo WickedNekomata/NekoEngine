@@ -67,19 +67,6 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
-			/*
-			GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
-			for (int i = 0; i < CHECKERS_HEIGHT; i++) {
-				for (int j = 0; j < CHECKERS_WIDTH; j++) {
-					int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
-					checkImage[i][j][0] = (GLubyte)c;
-					checkImage[i][j][1] = (GLubyte)c;
-					checkImage[i][j][2] = (GLubyte)c;
-					checkImage[i][j][3] = (GLubyte)255;
-				}
-			}
-			*/
-
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			// Generate the texture name

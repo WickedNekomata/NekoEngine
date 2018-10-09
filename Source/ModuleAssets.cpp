@@ -117,7 +117,6 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 	{
 		Mesh* mesh = new Mesh();
 
-		// Vertices
 		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
 		mesh->vertices = new float[mesh->verticesSize * 3];
 		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
@@ -125,7 +124,6 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 
 		if (scene->mMeshes[i]->HasFaces())
 		{
-			// Indices
 			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
 			mesh->indices = new uint[mesh->indicesSize];
 			
@@ -142,23 +140,23 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 			}
 		}
 
-		// Normals
 		if (scene->mMeshes[i]->HasNormals())
 		{
 			mesh->normals = new float[mesh->verticesSize * 3];
 			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh with normals");
+			CONSOLE_LOG("Mesh vertices normals loaded");
 		}
-		///Only 1 material for now
+	
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
 			mesh->textureCoords = new float[scene->mMeshes[i]->mNumVertices * 2];
 
-			for (uint coords = 0; coords < scene->mMeshes[i]->mNumVertices; ++coords)
+			for (uint j = 0; j < scene->mMeshes[i]->mNumVertices; ++j)
 			{
-				memcpy(&mesh->textureCoords[coords * 2], &scene->mMeshes[i]->mTextureCoords[0][coords].x, sizeof(float));
-				memcpy(&mesh->textureCoords[(coords * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][coords].y, sizeof(float));
+				memcpy(&mesh->textureCoords[j * 2], &scene->mMeshes[i]->mTextureCoords[0][j].x, sizeof(float));
+				memcpy(&mesh->textureCoords[(j * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][j].y, sizeof(float));
 			}
+			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
 		}
 
 		mesh->Init();

@@ -421,13 +421,10 @@ void Mesh::EmbedTexture(uint textureID)
 
 Mesh::~Mesh()
 {
-	// Delete vertices buffer
 	glDeleteBuffers(1, (GLuint*)&verticesID);
-
-	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
-
 	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
+	glDeleteBuffers(1, (GLuint*)&textureID);
 
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);

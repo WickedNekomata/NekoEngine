@@ -48,31 +48,35 @@ update_status ModuleCamera3D::Update(float dt)
 {
 	LookAt(position - Z, Y);
 
-	math::float3 newPosition(0.0f,0.0f,0.0f);
+	math::float3 newPosition(0.0f, 0.0f, 0.0f);
 
-	float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
-
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-		cameraSpeed *= 2.0f;
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
-		newPosition -= Z * cameraSpeed;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
-		newPosition += Z * cameraSpeed;
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
-		newPosition -= X * cameraSpeed;
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
-		newPosition += X * cameraSpeed;
-
-	position += newPosition;
-
-	// Look Around
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		// Mouse Input
+		// Move
+		float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
+
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+			cameraSpeed *= 2.0f;
+
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+			newPosition -= Z * cameraSpeed;
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+			newPosition += Z * cameraSpeed;
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+			newPosition -= X * cameraSpeed;
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+			newPosition += X * cameraSpeed;
+		if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
+			newPosition -= math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
+			newPosition += math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+
+		Move(newPosition);
+
+		// Look Around
 		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
 		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
-		
+
 		float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
 		float deltaX = (float)dx * rotateSensitivity * dt;
 		float deltaY = (float)dy * rotateSensitivity * dt;
@@ -161,7 +165,7 @@ void ModuleCamera3D::LookAround(float pitch, float yaw)
 void ModuleCamera3D::Move(const math::float3 &movement)
 {
 	position += movement;
-	reference += movement;
+	// TODO: reference += movement;
 
 	CalculateViewMatrix();
 }

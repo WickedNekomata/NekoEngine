@@ -65,6 +65,10 @@ public:
 	void LoadStatus(const JSON_Object*);
 
 	void OnResize(int width, int height);
+	void CalculateProjectionMatrix();
+
+	float GetFOV() const;
+	void SetFOV(float fov);
 
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
@@ -98,6 +102,8 @@ public:
 
 	bool vsync = false;
 	bool debugDraw = false;
+
+	float fov = 0.0f;
 
 	// Meshes
 	std::list<Mesh*> meshes;

@@ -33,8 +33,10 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	
 	if (ret)
 	{
+		// TODO: load this variables from .json (and save them when the app is closed)
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
 		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
+		SetFOV(MAX_FOV);
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -106,10 +108,10 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
-		glEnable(GL_TEXTURE_2D);
+		//glEnable(GL_TEXTURE_2D);
 	}
 
-	// Projection matrix for
+	// Projection Matrix for
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 
 	return ret;
@@ -125,7 +127,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glLoadMatrixf(App->camera->GetViewMatrix());
 
 	// Light 0 on cam pos
-	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+	lights[0].SetPos(App->camera->position.x, App->camera->position.y, App->camera->position.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -183,14 +185,31 @@ void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
+	CalculateProjectionMatrix();
+}
+
+void ModuleRenderer3D::CalculateProjectionMatrix()
+{
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	ProjectionMatrix = Perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), 0.1f, 100.0f);
 	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+float ModuleRenderer3D::GetFOV() const
+{
+	return fov;
+}
+
+void ModuleRenderer3D::SetFOV(float fov)
+{
+	this->fov = fov;
+
+	CalculateProjectionMatrix();
 }
 
 bool ModuleRenderer3D::SetVSync(bool vsync) 

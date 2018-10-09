@@ -23,8 +23,10 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	App->camera->Move(math::float3(1.0f, 1.0f, 0.0f));
-	App->camera->LookAt(math::float3(0, 0, 0));
+	//App->camera->Move(math::float3(1.0f, 1.0f, 0.0f));
+	//App->camera->LookAt(math::float3(0, 0, 0));
+	App->camera->Move(math::float3(0.0f, 1.0f, 5.0f));
+	//App->camera->LookAt(math::float3(0.0f, 0.0f, 0.0f), math::float3(0.0f, 1.0f, 0.0f));
 
 	plane = new PrimitivePlane();
 	plane->SetPosition(math::float3(0.0f, -10.0f, 0.0f));
@@ -43,7 +45,7 @@ bool ModuleScene::Start()
 	arrow = new PrimitiveArrow();
 
 	grid = new PrimitiveGrid();
-
+	grid->ShowAxis(true);
 	// Load model
 	/*
 	char* buffer;

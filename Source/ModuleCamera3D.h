@@ -19,9 +19,15 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Look(const math::float3 &Position, const math::float3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const math::float3 &Spot);
-	void Move(const math::float3 &Movement);
+	// Camera position, Target to look at, Up vector (WORLD SPACE)
+	void LookAt(const math::float3 &reference, const math::float3 &up);
+	void LookAround(float pitch, float yaw);
+
+	void Move(const math::float3 &movement);
+	void MoveTo(const math::float3 &position);
+
+	void Zoom(float zoom);
+
 	float* GetViewMatrix();
 
 private:
@@ -30,7 +36,10 @@ private:
 
 public:
 	
-	math::float3 X, Y, Z, Position, Reference;
+	// Camera
+	math::float3 X, Y, Z; // Z = direction
+	math::float3 position;
+	math::float3 reference; // target
 
 private:
 

@@ -340,11 +340,16 @@ void ModuleRenderer3D::ClearMeshes()
 	meshes.clear();
 }
 
+void ModuleRenderer3D::AddTextureToMeshes(uint textureID) 
+{
+	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+		(*it)->textureID = textureID;
+}
+
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-
-	glEnable(GL_TEXTURE_2D);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
 
@@ -352,9 +357,10 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
 
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//_Array_Buffer
-
+	
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
+	glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 	// Element Array Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
@@ -364,9 +370,8 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glDisable(GL_TEXTURE_2D);
-
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
@@ -390,6 +395,12 @@ void Mesh::Init()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	// Generate Texture Coords
+	glGenBuffers(1, (GLuint*)&textureCoordsID);
+	glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, textureCoords, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	// Create normals
 	normalsLines = new PrimitiveRay*[verticesSize];
 
@@ -405,21 +416,9 @@ void Mesh::Init()
 	}
 }
 
-void Mesh::EmbeddingTexture(GLubyte& texture, GLsizei width, GLsizei height)
+void Mesh::EmbedTexture(uint textureID)
 {
-	this->width = width;
-	this->height = height;
-	this->texture = texture;
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, &this->texture);
+	this->textureID = textureID;
 }
 
 Mesh::~Mesh()
@@ -429,6 +428,8 @@ Mesh::~Mesh()
 
 	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
+
+	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
 
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);

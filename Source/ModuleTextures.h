@@ -3,12 +3,6 @@
 
 #include "Module.h"
 
-struct Texture
-{
-
-
-};
-
 class ModuleTextures : public Module
 {
 public:

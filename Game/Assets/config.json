@@ -29,6 +29,7 @@
     },
     "Scene": {},
     "Renderer3D": {
-        "vSync": false
+        "vSync": false,
+		"debugDraw": false
     }
 }

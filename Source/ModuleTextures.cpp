@@ -102,7 +102,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
-			glGenerateMipmap(GL_TEXTURE_2D);
+			//glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));

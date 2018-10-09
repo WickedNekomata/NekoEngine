@@ -34,14 +34,10 @@ struct Mesh
 	float* normals = nullptr;
 	PrimitiveRay** normalsLines = nullptr;
 
-	// Texture coords
+	// Texture
 	float* textureCoords = nullptr;
-
-	// 2D Texture
+	uint textureCoordsID = 0;
 	uint textureID = 0;
-	GLubyte texture = 0;
-	GLsizei width = 0;
-	GLsizei height = 0;
 
 	// Colors
 	float* colors = nullptr;
@@ -49,7 +45,7 @@ struct Mesh
 	// -----
 
 	void Init();
-	void EmbeddingTexture(GLubyte& texture, GLsizei width, GLsizei height);
+	void EmbedTexture(uint textureID);
 	~Mesh();
 };
 
@@ -88,6 +84,7 @@ public:
 	bool AddMesh(Mesh* mesh);
 	bool RemoveMesh(Mesh* mesh);
 	void ClearMeshes();
+	void AddTextureToMeshes(uint textureID);
 
 	void DrawMesh(Mesh* mesh) const;
 	void DrawMeshNormals(Mesh* mesh) const;

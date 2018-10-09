@@ -142,18 +142,12 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 		// Texture coords
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
-			mesh->textureCoords = new float[mesh->verticesSize * 2];
-			memcpy(mesh->normals, scene->mMeshes[i]->mTextureCoords[0], sizeof(float) * mesh->verticesSize * 2);
+			mesh->textureCoords = new float[mesh->verticesSize * 3];
+			memcpy(mesh->normals, scene->mMeshes[i]->mTextureCoords[0], sizeof(float) * mesh->verticesSize * 3);
 			CONSOLE_LOG("Mesh with texture coords");
 		}
 
 		mesh->Init();
 		App->renderer3D->AddMesh(mesh);
-	}
-
-	// Init materials
-	for (uint i = 0; i < scene->mNumMaterials; ++i)
-	{
-		// TODO
 	}
 }

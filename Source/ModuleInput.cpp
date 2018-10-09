@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleAssets.h"
+#include "ModuleTextures.h"
+#include "ModuleRenderer3D.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -120,11 +122,20 @@ update_status ModuleInput::PreUpdate(float dt)
 		}
 		case (SDL_DROPFILE):
 		{
-			char* dropped_filedir = event.drop.file;
+			std::string droppedFileDir = event.drop.file;
 
-			App->assets->LoadMeshFromFile(dropped_filedir);
-			SDL_free(dropped_filedir);
-		
+			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
+			{
+				App->assets->LoadMeshFromFile(droppedFileDir.data());
+			}
+			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
+				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)
+			{
+				App->renderer3D->AddTextureToMeshes(App->tex->LoadImageFromFile(droppedFileDir.data()));
+			}
+
+			SDL_free((char*)droppedFileDir.data());
+
 			break;
 		}
 		}

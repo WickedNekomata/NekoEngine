@@ -16,9 +16,6 @@
 
 #define MAX_LIGHTS 8
 
-#define CHECKERS_HEIGHT 64
-#define CHECKERS_WIDTH 64
-
 class PrimitiveRay;
 
 struct Mesh
@@ -41,6 +38,8 @@ struct Mesh
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 	uint textureID = 0;
+	uint textureWidth = 0;
+	uint textureHeight = 0;
 
 	// Colors
 	float* colors = nullptr;
@@ -92,6 +91,8 @@ public:
 	bool RemoveMesh(Mesh* mesh);
 	void ClearMeshes();
 	void AddTextureToMeshes(uint textureID);
+	Mesh* GetMeshByIndex(int index) const;
+	int GetNumMeshes() const;
 
 	void DrawMesh(Mesh* mesh) const;
 	void DrawMeshNormals(Mesh* mesh) const;

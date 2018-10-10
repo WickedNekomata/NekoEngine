@@ -46,17 +46,22 @@ bool ModuleCamera3D::Start()
 
 update_status ModuleCamera3D::Update(float dt)
 {
-	LookAt(position - Z, Y);
-
 	math::float3 newPosition(0.0f, 0.0f, 0.0f);
 
+	math::float3 target = math::float3(0.0f, 0.0f, 0.0f);
+	float radius = 5.0f;
+	float orbitSpeed = 1.0f;
+
+	// TODO: if isOrbiting, cap the max zoom/W to be the target position
+
+	// Movement and rotation
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		// Move
 		float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-			cameraSpeed *= 2.0f;
+			cameraSpeed *= 2.0f; // double speed
 
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 			newPosition -= Z * cameraSpeed;
@@ -73,7 +78,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Move(newPosition);
 
-		// Look Around
+		// Look Around (Mouse Input)
 		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
 		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
 
@@ -91,15 +96,32 @@ update_status ModuleCamera3D::Update(float dt)
 		float zoomSpeed = CAMERA_ZOOM_SPEED;
 		float zoom = (float)mouseWheel * zoomSpeed * dt;
 
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+			zoom *= 0.5f; // half speed
+
 		Zoom(zoom);
 	}
 
-	// Rotate around target
-	//float radius = 10.0f;
-	//math::float3 position(sinf(dt) * radius, 0.0f, cosf(dt) * radius);
-	//math::float3 target(0.0f, 0.0f, 0.0f);
+	// Look At target
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+		LookAt(target, radius);
 
-	//Look(position, target + Z, Y);
+	// Orbit target
+	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT)
+	{
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+			isOrbiting = !isOrbiting;
+
+		if (isOrbiting)
+			// Set the radius distance here (once)
+			LookAt(reference, radius);
+	}
+
+	if (isOrbiting)
+	{
+		// Ignore the radius here, in order to let the user zoom in/out while orbiting
+		Orbit(target, dt, orbitSpeed);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -114,19 +136,21 @@ bool ModuleCamera3D::CleanUp()
 }
 
 // Creates a View Matrix that looks at a given target
-void ModuleCamera3D::LookAt(const math::float3 &reference, const math::float3 &up)
+void ModuleCamera3D::LookAt(const math::float3 &reference, float radius)
 {
 	this->reference = reference;
 
 	Z = (position - reference).Normalized(); // Direction the camera is looking at (reverse direction of what the camera is targeting)
-	X = math::Cross(up, Z).Normalized(); // X is perpendicular to vectors Y and Z
+	X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized(); // X is perpendicular to vectors Y and Z
 	Y = math::Cross(Z, X); // Y is perpendicular to vectors Z and X
 
-	//if (!rotateAroundReference)
-	//{
-		//this->reference = this->position;
-		//this->position += Z * 0.05f;
-	//}
+	if (radius != 0.0f)
+	{
+		float distanceTarget = math::Distance(position, reference) - radius;
+
+		math::float3 moveDistance = -Z * distanceTarget;
+		Move(moveDistance);
+	}
 
 	CalculateViewMatrix();
 }
@@ -162,6 +186,18 @@ void ModuleCamera3D::LookAround(float pitch, float yaw)
 	CalculateViewMatrix();
 }
 
+void ModuleCamera3D::Orbit(const math::float3 &reference, float dt, float speed, float radius)
+{
+	// 1. Update position
+	math::float3 newPosition = X * speed * dt;
+	Move(newPosition);
+
+	// 2. Update Look At
+	LookAt(reference, radius);
+
+	CalculateViewMatrix();
+}
+
 void ModuleCamera3D::Move(const math::float3 &movement)
 {
 	position += movement;
@@ -180,17 +216,8 @@ void ModuleCamera3D::MoveTo(const math::float3 &position)
 
 void ModuleCamera3D::Zoom(float zoom)
 {
-	float fov = App->renderer3D->GetFOV();
-
-	if (fov >= 1.0f && fov <= MAX_FOV * 2.0f)
-		fov -= zoom;
-
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= MAX_FOV * 2.0f)
-		fov = MAX_FOV * 2.0f;
-
-	App->renderer3D->SetFOV(fov);
+	math::float3 zoomDistance = -Z * zoom;
+	Move(zoomDistance);
 }
 
 float* ModuleCamera3D::GetViewMatrix()

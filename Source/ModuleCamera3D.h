@@ -20,8 +20,9 @@ public:
 	bool CleanUp();
 
 	// Camera position, Target to look at, Up vector (WORLD SPACE)
-	void LookAt(const math::float3 &reference, const math::float3 &up);
+	void LookAt(const math::float3 &reference, float radius = 0.0f);
 	void LookAround(float pitch, float yaw);
+	void Orbit(const math::float3 &reference, float dt, float speed = 1.0f, float radius = 0.0f);
 
 	void Move(const math::float3 &movement);
 	void MoveTo(const math::float3 &position);
@@ -44,6 +45,8 @@ public:
 private:
 
 	math::float4x4 ViewMatrix, ViewMatrixInverse;
+
+	bool isOrbiting = false;
 };
 
 #endif

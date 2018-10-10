@@ -366,6 +366,24 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID)
 		(*it)->textureID = textureID;
 }
 
+Mesh * ModuleRenderer3D::GetMeshByIndex(int index) const
+{
+	if (index < meshes.size() && index >= 0)
+	{
+		std::list<Mesh*>::const_iterator it = meshes.begin();
+		std::advance(it, index);
+		
+		return(*it);
+	}
+
+	return nullptr;
+}
+
+int ModuleRenderer3D::GetNumMeshes() const
+{
+	return meshes.size();
+}
+
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
 {
 	glBindTexture(GL_TEXTURE_2D, mesh->textureID);

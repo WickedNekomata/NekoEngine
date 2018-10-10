@@ -4,6 +4,7 @@
 
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleRenderer3D.h"
 
 #include "ImGui/imgui.h"
 
@@ -26,26 +27,37 @@ bool PanelInspector::Draw()
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin(name, &enabled, inspectorFlags);
 	ImGui::Spacing();
-	if (ImGui::CollapsingHeader("Transform"))
+	
+
+	if (ImGui::CollapsingHeader("Meshes"))
 	{
-		ImGui::Text("Position");
-		ImGui::SameLine();
-		static int posX = 10;
-		static int posY = 10;
-		static int posZ = 10;
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line", &posX, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-		ImGui::SameLine();
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line2", &posY, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-		ImGui::SameLine();
-		ImGui::PushItemWidth(100);
-		ImGui::InputInt("##Line3", &posZ, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+		int numMeshes = App->renderer3D->GetNumMeshes();
+		ImGui::Text("Meshes: %i", numMeshes);
+
+		for (int i = 0; i < numMeshes; ++i)
+		{
+			Mesh* mesh = App->renderer3D->GetMeshByIndex(i);
+			ImGui::TextColored(ImVec4(60, 255, 255, 1), "Mesh %i", i + 1);
+			ImGui::Text("Vertex: %i", mesh->verticesSize / 3);
+			ImGui::Text("Vertex ID: %i", mesh->verticesID);
+			ImGui::Text("Texture Coords: %i", mesh->textureCoordsID);
+			ImGui::Separator();
+		}
 	}
+
 	ImGui::Spacing();
-	if (ImGui::CollapsingHeader("RigidBody"))
+
+	if (ImGui::CollapsingHeader("Texture"))
 	{
-		ImGui::Text("Coming soon...");
+		Mesh* mesh = App->renderer3D->GetMeshByIndex(0);
+		if (mesh != nullptr)
+		{
+			if (mesh->textureID != 0)
+			{
+				ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128));
+				ImGui::Text("Texture ID: %i", mesh->textureID);
+			}
+		}
 	}
 	ImGui::End();
 

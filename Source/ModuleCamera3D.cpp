@@ -49,6 +49,7 @@ update_status ModuleCamera3D::Update(float dt)
 	math::float3 newPosition(0.0f, 0.0f, 0.0f);
 
 	math::float3 target = math::float3(0.0f, 0.0f, 0.0f);
+	reference = target;
 	float radius = 5.0f;
 	float orbitSpeed = 1.0f;
 
@@ -120,7 +121,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (isOrbiting)
 	{
 		// Ignore the radius here, in order to let the user zoom in/out while orbiting
-		Orbit(target, dt, orbitSpeed);
+		Orbit(reference, dt, orbitSpeed);
 	}
 
 	return UPDATE_CONTINUE;
@@ -201,7 +202,6 @@ void ModuleCamera3D::Orbit(const math::float3 &reference, float dt, float speed,
 void ModuleCamera3D::Move(const math::float3 &movement)
 {
 	position += movement;
-	// TODO: reference += movement;
 
 	CalculateViewMatrix();
 }
@@ -209,7 +209,6 @@ void ModuleCamera3D::Move(const math::float3 &movement)
 void ModuleCamera3D::MoveTo(const math::float3 &position)
 {
 	this->position = position;
-	// TODO: reference
 
 	CalculateViewMatrix();
 }

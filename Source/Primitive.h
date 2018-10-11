@@ -179,7 +179,7 @@ public:
 private:
 
 	float radius = 0.0f;
-	uint segments = 0.0f;
+	uint segments = 0;
 };
 
 // Cylinder --------------------------------------------------

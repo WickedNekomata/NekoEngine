@@ -28,48 +28,54 @@ PanelSettings::~PanelSettings()
 
 bool PanelSettings::Draw()
 {
-	ImGui::Begin(name, &enabled);
-	if (ImGui::TreeNode("Application"))
+	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags settingsFlags = 0;
+	settingsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+
+	if (ImGui::Begin(name, &enabled, settingsFlags))
 	{
-		ApplicationNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Window"))
-	{
-		if (IsActiveNode((Module*)App->window))
-			WindowNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Renderer 3D"))
-	{
-		if (IsActiveNode((Module*)App->renderer3D))
-			RendererNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("File System"))
-	{
-		if (IsActiveNode((Module*)App->filesystem))
-			FileSystemNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Input"))
-	{
-		if (IsActiveNode((Module*)App->input))
-			InputNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Hardware"))
-	{
-		HardwareNode();
-		ImGui::TreePop();
-	}
+		if (ImGui::TreeNode("Application"))
+		{
+			ApplicationNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Window"))
+		{
+			if (IsActiveNode((Module*)App->window))
+				WindowNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Renderer 3D"))
+		{
+			if (IsActiveNode((Module*)App->renderer3D))
+				RendererNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("File System"))
+		{
+			if (IsActiveNode((Module*)App->filesystem))
+				FileSystemNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Input"))
+		{
+			if (IsActiveNode((Module*)App->input))
+				InputNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Hardware"))
+		{
+			HardwareNode();
+			ImGui::TreePop();
+		}
 #if _DEBUG
-	if (ImGui::TreeNode("Demo Window"))
-	{
-		ImGui::ShowDemoWindow();
-		ImGui::TreePop();
-	}
+		if (ImGui::TreeNode("Demo Window"))
+		{
+			ImGui::ShowDemoWindow();
+			ImGui::TreePop();
+		}
 #endif
+	}
 	ImGui::End();
 
 	return true;
@@ -183,7 +189,7 @@ void PanelSettings::WindowNode() const
 
 	ImGui::Text("Refresh rate: ");
 	ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%i", refreshRate);
+	ImGui::TextColored(YELLOW, "%i", refreshRate);
 
 	// Fullscreen, resizable, borderless, fullscreen desktop
 	static bool fullscreen = App->window->GetFullscreenWindow();
@@ -250,23 +256,23 @@ void PanelSettings::FileSystemNode() const
 {
 	// Paths
 	ImGui::Text("Base Path:");
-	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetBasePath());
+	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetBasePath());
 	ImGui::Text("Read Paths:");
-	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetReadPaths());
+	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetReadPaths());
 	ImGui::Text("Write Path:");
-	ImGui::TextColored(TEXT_COLOR, "%s", App->filesystem->GetWritePath());
+	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetWritePath());
 }
 
 void PanelSettings::InputNode() const
 {
 	ImGui::Text("Mouse Position:");
-	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i, %i", App->input->GetMouseX(), App->input->GetMouseY());
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i, %i", App->input->GetMouseX(), App->input->GetMouseY());
 
 	ImGui::Text("Mouse Motion:");
-	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i, %i", App->input->GetMouseXMotion(), App->input->GetMouseYMotion());
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i, %i", App->input->GetMouseXMotion(), App->input->GetMouseYMotion());
 
 	ImGui::Text("Mouse Wheel:");
-	ImGui::SameLine(); ImGui::TextColored(TEXT_COLOR, "%i", App->input->GetMouseZ());
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->input->GetMouseZ());
 
 	// TODO: Finish this (log mouse events: up, down, repeat, etc.).
 }
@@ -283,15 +289,15 @@ void PanelSettings::HardwareNode() const
 
 	// CPU
 	ImGui::Text("CPUs:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+	ImGui::TextColored(YELLOW, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 
 	// RAM
 	ImGui::Text("System Ram:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%iMb", SDL_GetSystemRAM());
+	ImGui::TextColored(YELLOW, "%iMb", SDL_GetSystemRAM());
 
 	// Capabilites
 	ImGui::Text("Caps:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
+	ImGui::TextColored(YELLOW, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
 		(SDL_Has3DNow()) ? "3DNow " : "", (SDL_HasMMX()) ? "MMX " : "", (SDL_HasRDTSC()) ? "RDTSC " : "", (SDL_HasSSE()) ? "SEE " : "",
 		(SDL_HasSSE2()) ? "SSE2 " : "", (SDL_HasSSE3()) ? "SSE3 " : "", (SDL_HasSSE41()) ? "SSE41 " : "",
 		(SDL_HasSSE42()) ? "SSE42 " : "");
@@ -300,9 +306,9 @@ void PanelSettings::HardwareNode() const
 
 	// TODO: Fix issue if pc has 2 or more gpus
 	ImGui::Text("GPU:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_RENDERER));
+	ImGui::TextColored(YELLOW, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%s", glGetString(GL_VENDOR));
+	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
 
 	GLint totalMemory;
 	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemory);
@@ -314,11 +320,11 @@ void PanelSettings::HardwareNode() const
 	memoryUsage = totalMemory - availableMemory;
 
 	ImGui::Text("VRAM Budget:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%.2fMb", totalMemory * 0.001);
+	ImGui::TextColored(YELLOW, "%.2fMb", totalMemory * 0.001);
 	ImGui::Text("VRAM Usage:"); ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%.2fMb", memoryUsage * 0.001);
+	ImGui::TextColored(YELLOW, "%.2fMb", memoryUsage * 0.001);
 	ImGui::Text("VRAM Available:");	ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%.2fMb", availableMemory * 0.001);
+	ImGui::TextColored(YELLOW, "%.2fMb", availableMemory * 0.001);
 	ImGui::Text("VRAM Reserved:");	ImGui::SameLine();
-	ImGui::TextColored(TEXT_COLOR, "%.2fMb", reservedMemory * 0.001);
+	ImGui::TextColored(YELLOW, "%.2fMb", reservedMemory * 0.001);
 }

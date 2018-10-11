@@ -1,7 +1,8 @@
 #ifndef __PANEL_H__
 #define __PANEL_H__
 
-#define TEXT_COLOR { 239, 201, 0, 255 }
+#define YELLOW { 239, 201, 0, 255 }
+#define WHITE { 255, 255, 255, 255 }
 
 class Panel
 {

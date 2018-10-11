@@ -12,7 +12,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	camera = new ModuleCamera3D();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	assets = new ModuleAssets();
+	meshImporter = new ModuleMeshImporter();
 	tex = new ModuleTextures();
 
 	// The order of calls is very important!
@@ -21,7 +21,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	// Main Modules
 	AddModule(tex);
-	AddModule(assets);
+	AddModule(meshImporter);
 	AddModule(filesystem);
 	AddModule(window);
 	AddModule(camera);

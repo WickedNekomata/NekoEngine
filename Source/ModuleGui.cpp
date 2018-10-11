@@ -75,10 +75,8 @@ update_status ModuleGui::PreUpdate(float dt)
 update_status ModuleGui::Update(float dt)
 {
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) { panelConsole->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) { panelRandomNumber->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) { panelAbout->OnOff(); }
-	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { panelSettings->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -99,15 +97,15 @@ update_status ModuleGui::Update(float dt)
 		}
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Inspector Window", "CTRL+I")) { panelInspector->OnOff(); }
-			if (ImGui::MenuItem("Console", "CTRL+O")) { panelConsole->OnOff(); }
-			if (ImGui::MenuItem("Settings", "CTRL+P")) { panelSettings->OnOff(); }
+			if (ImGui::MenuItem("Inspector", "CTRL+I")) { panelInspector->OnOff(); }
+			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
+			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
 
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Tools"))
 		{
-			if (ImGui::MenuItem("PCG performance test", "CTRL+R" )) { panelRandomNumber->OnOff(); }
+			if (ImGui::MenuItem("PCG performance test")) { panelRandomNumber->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -116,7 +114,7 @@ update_status ModuleGui::Update(float dt)
 		{
 			if (ImGui::MenuItem("Documentation")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine"); }
 			if (ImGui::MenuItem("Latest Release")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/releases"); }
-			if (ImGui::MenuItem("Bug report")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/issues"); }
+			if (ImGui::MenuItem("Bug Report")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine/issues"); }
 			if (ImGui::MenuItem("About")) { panelAbout->OnOff(); }
 
 			ImGui::EndMenu();
@@ -166,7 +164,6 @@ bool ModuleGui::CleanUp()
 
 void ModuleGui::Draw() const 
 {
-	// Render
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }

@@ -4,7 +4,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
-#include "ModuleAssets.h"
+#include "ModuleMeshImporter.h"
 
 #include "Globals.h"
 
@@ -14,13 +14,11 @@ PanelImport::~PanelImport() {}
 
 bool PanelImport::Draw()
 {
-	ImGui::SetNextWindowSize({ 200,120 }, ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
-	inspectorFlags |= ImGuiWindowFlags_NoResize;
+	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags importFlags = 0;
+	importFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	
-	if (ImGui::Begin(name, &enabled, inspectorFlags))
+	if (ImGui::Begin(name, &enabled, importFlags))
 	{
 		// TODO: Get PHYSFS paths for combo
 		ImGui::Text("Base Path:");
@@ -33,8 +31,9 @@ bool PanelImport::Draw()
 
 		std::string file = items[item_current];
 		file += fileNameBuf;
-		if (ImGui::Button("Import file")) { App->assets->LoadMeshWithPHYSFS(file.c_str()); }
-		ImGui::End();
+		if (ImGui::Button("Import file")) { App->meshImporter->LoadMeshWithPHYSFS(file.c_str()); }
 	}
+	ImGui::End();
+
 	return true;
 }

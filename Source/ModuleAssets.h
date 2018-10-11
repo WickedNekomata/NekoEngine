@@ -18,7 +18,7 @@ public:
 	bool LoadMeshFromFile(const char* path) const;
 	bool LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const;
 	bool LoadMeshWithPHYSFS(const char* path);
-	void InitFromScene(const aiScene* scene) const;
+	void InitFromScene(const aiScene* scene, const char* path) const;
 };
 
 #endif

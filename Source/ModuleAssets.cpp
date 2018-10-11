@@ -10,6 +10,8 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
+#include <string>
+
 void myCallback(const char* msg, char* userData)
 {
 	CONSOLE_LOG("%s", msg);
@@ -54,7 +56,7 @@ bool ModuleAssets::LoadMeshFromFile(const char* path) const
 
 	if (scene != nullptr)
 	{
-		InitFromScene(scene);
+		InitFromScene(scene, path);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -81,7 +83,7 @@ bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSi
 
 	if (scene != nullptr)
 	{
-		InitFromScene(scene);
+		InitFromScene(scene, nullptr);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -110,7 +112,7 @@ bool ModuleAssets::LoadMeshWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleAssets::InitFromScene(const aiScene* scene) const
+void ModuleAssets::InitFromScene(const aiScene* scene, const char* path) const
 {
 	// Init mesh
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
@@ -161,5 +163,24 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 
 		mesh->Init();
 		App->renderer3D->AddMesh(mesh);
+
+		
+		if (scene->mMaterials[0] != nullptr && path != nullptr)
+		{
+			aiString textureName;
+			scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
+			std::string fbxPathString = path;
+			std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
+			if (!App->tex->LoadImageFromFile(texturePath.data()))
+			{
+				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
+				if (!App->tex->LoadImageFromFile(texturePath.data()))
+				{
+					std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
+					if (!App->tex->LoadImageFromFile(texturePath.data()))
+						CONSOLE_LOG("Impossible to load Texture: %s", textureName.data);
+				}
+			}
+		}
 	}
 }

@@ -46,6 +46,12 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 {
 	bool ret = false;
 
+	if (App->renderer3D->GetNumMeshes() <= 0)
+	{
+		CONSOLE_LOG("ERROR LOADING TEXTURE: No meshes in the scene");
+		return ret;
+	}
+
 	uint texName = 0;
 
 	// Generate the image name
@@ -92,6 +98,8 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+
+			CONSOLE_LOG("Succes at loading texture: %i ID, %i Width, %i Height", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 
 			ret = true;
 		}

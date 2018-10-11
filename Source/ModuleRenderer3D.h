@@ -90,7 +90,7 @@ public:
 	bool AddMesh(Mesh* mesh);
 	bool RemoveMesh(Mesh* mesh);
 	void ClearMeshes();
-	void AddTextureToMeshes(uint textureID);
+	void AddTextureToMeshes(uint textureID, uint width, uint height);
 	Mesh* GetMeshByIndex(int index) const;
 	int GetNumMeshes() const;
 

@@ -56,6 +56,7 @@ bool PanelInspector::Draw()
 			{
 				ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128));
 				ImGui::Text("Texture ID: %i", mesh->textureID);
+				ImGui::Text("Width: %i\nHeight: %i", mesh->textureWidth, mesh->textureHeight);
 			}
 		}
 	}

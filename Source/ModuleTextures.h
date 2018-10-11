@@ -13,7 +13,7 @@ public:
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
-	uint LoadImageFromFile(const char* path) const;
+	bool LoadImageFromFile(const char* path) const;
 };
 
 #endif

@@ -131,7 +131,7 @@ update_status ModuleInput::PreUpdate(float dt)
 			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
 				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)
 			{
-				App->renderer3D->AddTextureToMeshes(App->tex->LoadImageFromFile(droppedFileDir.data()));
+				App->tex->LoadImageFromFile(droppedFileDir.data());
 			}
 
 			SDL_free((char*)droppedFileDir.data());

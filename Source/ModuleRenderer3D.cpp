@@ -142,14 +142,14 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
-		DrawMesh(*it);
+	for (uint i = 0; i < meshes.size(); ++i)
+		DrawMesh(meshes[i]);
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-		for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
-			DrawMeshNormals(*it);
+		for (uint i = 0; i < meshes.size(); ++i)
+			DrawMeshNormals(meshes[i]);
 	}
 
 	// 3. Editor
@@ -342,10 +342,11 @@ bool ModuleRenderer3D::RemoveMesh(Mesh* mesh)
 {
 	bool ret = false;
 
-	if (std::find(meshes.begin(), meshes.end(), mesh) != meshes.end())
+	std::vector<Mesh*>::const_iterator it = std::find(meshes.begin(), meshes.end(), mesh);
+	if (it != meshes.end())
 	{
 		delete mesh;
-		meshes.remove(mesh);
+		meshes.erase(it);
 		ret = true;
 	}
 
@@ -354,36 +355,31 @@ bool ModuleRenderer3D::RemoveMesh(Mesh* mesh)
 
 void ModuleRenderer3D::ClearMeshes() 
 {
-	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
-		delete *it;
+	for (uint i = 0; i < meshes.size(); ++i)
+		delete meshes[i];
 
 	meshes.clear();
 }
 
 void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
 {
-	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+	for (uint i = 0; i < meshes.size(); ++i)
 	{
-		(*it)->textureID = textureID;
-		(*it)->textureHeight = height;
-		(*it)->textureWidth = width;
+		meshes[i]->textureID = textureID;
+		meshes[i]->textureHeight = height;
+		meshes[i]->textureWidth = width;
 	}
 }
 
-Mesh * ModuleRenderer3D::GetMeshByIndex(int index) const
+Mesh* ModuleRenderer3D::GetMeshByIndex(uint index) const
 {
 	if (index < meshes.size() && index >= 0)
-	{
-		std::list<Mesh*>::const_iterator it = meshes.begin();
-		std::advance(it, index);
-		
-		return(*it);
-	}
+		return meshes.at(index);
 
 	return nullptr;
 }
 
-int ModuleRenderer3D::GetNumMeshes() const
+uint ModuleRenderer3D::GetNumMeshes() const
 {
 	return meshes.size();
 }
@@ -440,7 +436,7 @@ void Mesh::Init()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// Create normals
+	// Create vertices normals
 	normalsLines = new PrimitiveRay*[verticesSize];
 
 	uint index = 0;
@@ -453,6 +449,41 @@ void Mesh::Init()
 
 		normalsLines[i] = ray;
 	}
+
+	// TODO: Create faces normals
+
+
+	// Create Bounding Box
+	math::float3 minPosition(vertices[0], vertices[1], vertices[2]);
+	math::float3 maxPosition(vertices[0], vertices[1], vertices[2]);
+
+	for (uint i = 3; i < verticesSize * 3; i += 3)
+	{
+		// Min position
+		if (vertices[i] < minPosition.x)
+			minPosition.x = vertices[i];
+		if (vertices[i + 1] < minPosition.y)
+			minPosition.y = vertices[i + 1];
+		if (vertices[i + 2] < minPosition.z)
+			minPosition.z = vertices[i + 2];
+
+		// Max position
+		if (vertices[i] > maxPosition.x)
+			maxPosition.x = vertices[i];
+		if (vertices[i + 1] > maxPosition.y)
+			maxPosition.y = vertices[i + 1];
+		if (vertices[i + 2] > maxPosition.z)
+			maxPosition.z = vertices[i + 2];
+	}
+
+	boundingBox.minPoint = minPosition;
+	boundingBox.maxPoint = maxPosition;
+
+	math::float3 a = boundingBox.CenterPoint();
+	math::float3 b = boundingBox.Size();
+
+	//App->camera->MoveTo(a + b);
+	//App->camera->LookAt(a);
 }
 
 void Mesh::EmbedTexture(uint textureID)

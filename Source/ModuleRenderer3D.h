@@ -5,11 +5,12 @@
 #include "Globals.h"
 #include "Light.h"
 
-#include <list>
+#include <vector>
 
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 #include "MathGeoLib/include/Math/Quat.h"
+#include "MathGeoLib/include/Geometry/AABB.h"
 
 #include "glew\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -24,6 +25,7 @@ struct Mesh
 	math::float3 position;
 	math::float3 scale;
 	math::Quat rotation;
+	math::AABB boundingBox;
 
 	// Unique vertices
 	float* vertices = nullptr;
@@ -94,8 +96,8 @@ public:
 	bool RemoveMesh(Mesh* mesh);
 	void ClearMeshes();
 	void AddTextureToMeshes(uint textureID, uint width, uint height);
-	Mesh* GetMeshByIndex(int index) const;
-	int GetNumMeshes() const;
+	Mesh* GetMeshByIndex(uint index) const;
+	uint GetNumMeshes() const;
 
 	void DrawMesh(Mesh* mesh) const;
 	void DrawMeshNormals(Mesh* mesh) const;
@@ -113,7 +115,7 @@ public:
 	float fov = 0.0f;
 
 	// Meshes
-	std::list<Mesh*> meshes;
+	std::vector<Mesh*> meshes;
 };
 
 #endif

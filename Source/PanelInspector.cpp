@@ -27,7 +27,6 @@ bool PanelInspector::Draw()
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin(name, &enabled, inspectorFlags);
 	ImGui::Spacing();
-	
 
 	if (ImGui::CollapsingHeader("Meshes"))
 	{
@@ -54,9 +53,10 @@ bool PanelInspector::Draw()
 		{
 			if (mesh->textureID != 0)
 			{
-				ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128));
+				ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128), ImVec2(0,1), ImVec2(1,0));
 				ImGui::Text("Texture ID: %i", mesh->textureID);
-				ImGui::Text("Width: %i\nHeight: %i", mesh->textureWidth, mesh->textureHeight);
+				ImGui::Text("Width: %i", mesh->textureWidth);
+				ImGui::Text("Height %i", mesh->textureHeight);
 			}
 		}
 	}

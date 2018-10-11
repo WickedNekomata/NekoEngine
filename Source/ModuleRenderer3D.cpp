@@ -360,10 +360,14 @@ void ModuleRenderer3D::ClearMeshes()
 	meshes.clear();
 }
 
-void ModuleRenderer3D::AddTextureToMeshes(uint textureID) 
+void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
 {
 	for (std::list<Mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+	{
 		(*it)->textureID = textureID;
+		(*it)->textureHeight = height;
+		(*it)->textureWidth = width;
+	}
 }
 
 Mesh * ModuleRenderer3D::GetMeshByIndex(int index) const

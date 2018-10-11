@@ -1,5 +1,6 @@
 #include "ModuleTextures.h"
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 #include "Globals.h"
 
 #include "DevIL/include/il.h"
@@ -9,9 +10,6 @@
 #pragma comment (lib, "DevIL/libx86/DevIL.lib")
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
-
-#define CHECKERS_HEIGHT 4
-#define CHECKERS_WIDTH 4
 
 ModuleTextures::ModuleTextures(bool start_enabled) {}
 
@@ -44,8 +42,10 @@ bool ModuleTextures::CleanUp()
 	return true;
 }
 
-uint ModuleTextures::LoadImageFromFile(const char* path) const
+bool ModuleTextures::LoadImageFromFile(const char* path) const
 {
+	bool ret = false;
+
 	uint texName = 0;
 
 	// Generate the image name
@@ -90,6 +90,10 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+
+			ret = true;
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -99,5 +103,5 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 
 	ilDeleteImages(1, &imageName);
 	
-	return texName;
+	return ret;
 }

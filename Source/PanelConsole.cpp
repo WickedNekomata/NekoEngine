@@ -11,11 +11,9 @@ PanelConsole::~PanelConsole()
 
 bool PanelConsole::Draw()
 {
-	//ImGui::SetNextWindowPos({ 100,50 }, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags consoleFlags = 0;
 	consoleFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	consoleFlags |= ImGuiWindowFlags_NoSavedSettings; // TODO: Save & Load
 
 	if (ImGui::Begin(name, &enabled, consoleFlags))
 	{

@@ -1,4 +1,4 @@
-#include "ModuleAssets.h"
+#include "ModuleMeshImporter.h"
 #include "ModuleRenderer3D.h"
 
 #include "Application.h"
@@ -15,15 +15,15 @@ void myCallback(const char* msg, char* userData)
 	CONSOLE_LOG("%s", msg);
 }
 
-ModuleAssets::ModuleAssets(bool start_enabled)
+ModuleMeshImporter::ModuleMeshImporter(bool start_enabled)
 {
 }
 
-ModuleAssets::~ModuleAssets()
+ModuleMeshImporter::~ModuleMeshImporter()
 {
 }
 
-bool ModuleAssets::Init(JSON_Object* jObject)
+bool ModuleMeshImporter::Init(JSON_Object* jObject)
 {
 	struct aiLogStream stream;
 	stream.callback = myCallback;
@@ -32,13 +32,13 @@ bool ModuleAssets::Init(JSON_Object* jObject)
 	return true;
 }
 
-bool ModuleAssets::CleanUp()
+bool ModuleMeshImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-bool ModuleAssets::LoadMeshFromFile(const char* path) const
+bool ModuleMeshImporter::LoadMeshFromFile(const char* path) const
 {
 	bool ret = false;
 
@@ -54,7 +54,7 @@ bool ModuleAssets::LoadMeshFromFile(const char* path) const
 
 	if (scene != nullptr)
 	{
-		InitFromScene(scene);
+		InitMeshFromScene(scene);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -65,7 +65,7 @@ bool ModuleAssets::LoadMeshFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool ModuleMeshImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
 	bool ret = false;
 
@@ -81,7 +81,7 @@ bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSi
 
 	if (scene != nullptr)
 	{
-		InitFromScene(scene);
+		InitMeshFromScene(scene);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -90,7 +90,7 @@ bool ModuleAssets::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSi
 	return ret;
 }
 
-bool ModuleAssets::LoadMeshWithPHYSFS(const char* path)
+bool ModuleMeshImporter::LoadMeshWithPHYSFS(const char* path)
 {
 	bool ret = false;
 
@@ -110,9 +110,8 @@ bool ModuleAssets::LoadMeshWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleAssets::InitFromScene(const aiScene* scene) const
+void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
 {
-	// Init mesh
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
 		Mesh* mesh = new Mesh();
@@ -157,6 +156,19 @@ void ModuleAssets::InitFromScene(const aiScene* scene) const
 				memcpy(&mesh->textureCoords[(j * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][j].y, sizeof(float));
 			}
 			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
+		}
+
+		// Transform
+		if (scene->mRootNode->mChildren[i] != nullptr)
+		{
+			aiVector3D position;
+			aiVector3D scale;
+			aiQuaternion rotation;
+
+			scene->mRootNode->mChildren[i]->mTransformation.Decompose(scale, rotation, position);
+			mesh->position = { position.x, position.y, position.z };
+			mesh->scale = { scale.x, scale.y, scale.z };
+			mesh->rotation = { rotation.x, rotation.y, rotation.z, rotation.w };
 		}
 
 		mesh->Init();

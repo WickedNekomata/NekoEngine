@@ -9,6 +9,7 @@
 
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
+#include "MathGeoLib/include/Math/Quat.h"
 
 #include "glew\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -20,6 +21,10 @@ class PrimitiveRay;
 
 struct Mesh
 {
+	math::float3 position;
+	math::float3 scale;
+	math::Quat rotation;
+
 	// Unique vertices
 	float* vertices = nullptr;
 	uint verticesID = 0;
@@ -37,12 +42,10 @@ struct Mesh
 	// Texture
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
+
 	uint textureID = 0;
 	uint textureWidth = 0;
 	uint textureHeight = 0;
-
-	// Colors
-	float* colors = nullptr;
 
 	// -----
 

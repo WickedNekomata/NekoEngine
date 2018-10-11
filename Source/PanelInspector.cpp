@@ -8,54 +8,48 @@
 
 #include "ImGui/imgui.h"
 
-PanelInspector::PanelInspector(char* name) : Panel(name)
-{
-}
+PanelInspector::PanelInspector(char* name) : Panel(name) {}
 
-PanelInspector::~PanelInspector()
-{
-
-}
+PanelInspector::~PanelInspector() {}
 
 bool PanelInspector::Draw()
 {
-	ImGui::SetNextWindowPos({ (float)App->window->GetWindowWidth() - 400,20 });
-	ImGui::SetNextWindowSize({ 400,400 });
+	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
-	inspectorFlags |= ImGuiWindowFlags_NoResize;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	ImGui::Begin(name, &enabled, inspectorFlags);
-	ImGui::Spacing();
-	
 
-	if (ImGui::CollapsingHeader("Meshes"))
+	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
-		int numMeshes = App->renderer3D->GetNumMeshes();
-		ImGui::Text("Meshes: %i", numMeshes);
+		ImGui::Spacing();
 
-		for (int i = 0; i < numMeshes; ++i)
+		if (ImGui::CollapsingHeader("Meshes"))
 		{
-			Mesh* mesh = App->renderer3D->GetMeshByIndex(i);
-			ImGui::TextColored(ImVec4(60, 255, 255, 1), "Mesh %i", i + 1);
-			ImGui::Text("Vertex: %i", mesh->verticesSize / 3);
-			ImGui::Text("Vertex ID: %i", mesh->verticesID);
-			ImGui::Text("Texture Coords: %i", mesh->textureCoordsID);
-			ImGui::Separator();
-		}
-	}
+			int numMeshes = App->renderer3D->GetNumMeshes();
+			ImGui::Text("Meshes: %i", numMeshes);
 
-	ImGui::Spacing();
-
-	if (ImGui::CollapsingHeader("Texture"))
-	{
-		Mesh* mesh = App->renderer3D->GetMeshByIndex(0);
-		if (mesh != nullptr)
-		{
-			if (mesh->textureID != 0)
+			for (int i = 0; i < numMeshes; ++i)
 			{
-				ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128));
-				ImGui::Text("Texture ID: %i", mesh->textureID);
+				Mesh* mesh = App->renderer3D->GetMeshByIndex(i);
+				ImGui::TextColored(ImVec4(60, 255, 255, 1), "Mesh %i", i + 1);
+				ImGui::Text("Vertex: %i", mesh->verticesSize / 3);
+				ImGui::Text("Vertex ID: %i", mesh->verticesID);
+				ImGui::Text("Texture Coords: %i", mesh->textureCoordsID);
+				ImGui::Separator();
+			}
+		}
+
+		ImGui::Spacing();
+
+		if (ImGui::CollapsingHeader("Texture"))
+		{
+			Mesh* mesh = App->renderer3D->GetMeshByIndex(0);
+			if (mesh != nullptr)
+			{
+				if (mesh->textureID != 0)
+				{
+					ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128));
+					ImGui::Text("Texture ID: %i", mesh->textureID);
+				}
 			}
 		}
 	}

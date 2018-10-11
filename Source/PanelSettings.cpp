@@ -28,48 +28,54 @@ PanelSettings::~PanelSettings()
 
 bool PanelSettings::Draw()
 {
-	ImGui::Begin(name, &enabled);
-	if (ImGui::TreeNode("Application"))
+	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags settingsFlags = 0;
+	settingsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+
+	if (ImGui::Begin(name, &enabled, settingsFlags))
 	{
-		ApplicationNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Window"))
-	{
-		if (IsActiveNode((Module*)App->window))
-			WindowNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Renderer 3D"))
-	{
-		if (IsActiveNode((Module*)App->renderer3D))
-			RendererNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("File System"))
-	{
-		if (IsActiveNode((Module*)App->filesystem))
-			FileSystemNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Input"))
-	{
-		if (IsActiveNode((Module*)App->input))
-			InputNode();
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Hardware"))
-	{
-		HardwareNode();
-		ImGui::TreePop();
-	}
+		if (ImGui::TreeNode("Application"))
+		{
+			ApplicationNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Window"))
+		{
+			if (IsActiveNode((Module*)App->window))
+				WindowNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Renderer 3D"))
+		{
+			if (IsActiveNode((Module*)App->renderer3D))
+				RendererNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("File System"))
+		{
+			if (IsActiveNode((Module*)App->filesystem))
+				FileSystemNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Input"))
+		{
+			if (IsActiveNode((Module*)App->input))
+				InputNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Hardware"))
+		{
+			HardwareNode();
+			ImGui::TreePop();
+		}
 #if _DEBUG
-	if (ImGui::TreeNode("Demo Window"))
-	{
-		ImGui::ShowDemoWindow();
-		ImGui::TreePop();
-	}
+		if (ImGui::TreeNode("Demo Window"))
+		{
+			ImGui::ShowDemoWindow();
+			ImGui::TreePop();
+		}
 #endif
+	}
 	ImGui::End();
 
 	return true;

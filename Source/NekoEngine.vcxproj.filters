@@ -501,9 +501,6 @@
     <ClInclude Include="ModuleTextures.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleAssets.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
       <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
@@ -527,6 +524,9 @@
     </ClInclude>
     <ClInclude Include="DevIL\include\ilut_config.h">
       <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleMeshImporter.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -719,7 +719,7 @@
     <ClCompile Include="ModuleTextures.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleAssets.cpp">
+    <ClCompile Include="ModuleMeshImporter.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

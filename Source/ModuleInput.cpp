@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleAssets.h"
+#include "ModuleMeshImporter.h"
 #include "ModuleTextures.h"
 #include "ModuleRenderer3D.h"
 
@@ -126,7 +126,7 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
 			{
-				App->assets->LoadMeshFromFile(droppedFileDir.data());
+				App->meshImporter->LoadMeshFromFile(droppedFileDir.data());
 			}
 			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
 				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)

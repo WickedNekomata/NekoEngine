@@ -466,7 +466,6 @@ Mesh::~Mesh()
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);
 	RELEASE_ARRAY(textureCoords);
-	RELEASE_ARRAY(colors);
 
 	for (uint i = 0; i < verticesSize; ++i)
 	{

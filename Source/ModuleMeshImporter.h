@@ -1,16 +1,16 @@
-#ifndef __MODULE_ASSETS_H__
-#define __MODULE_ASSETS_H__
+#ifndef __MODULE_MESH_IMPORTER_H__
+#define __MODULE_MESH_IMPORTER_H__
 
 #include "Module.h"
 
 struct aiScene;
 
-class ModuleAssets : public Module
+class ModuleMeshImporter : public Module
 {
 public:
 
-	ModuleAssets(bool start_enabled = true);
-	~ModuleAssets();
+	ModuleMeshImporter(bool start_enabled = true);
+	~ModuleMeshImporter();
 
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
@@ -18,7 +18,7 @@ public:
 	bool LoadMeshFromFile(const char* path) const;
 	bool LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const;
 	bool LoadMeshWithPHYSFS(const char* path);
-	void InitFromScene(const aiScene* scene) const;
+	void InitMeshFromScene(const aiScene* scene) const;
 };
 
 #endif

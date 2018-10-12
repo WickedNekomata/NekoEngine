@@ -13,6 +13,7 @@ PanelHierarchy::~PanelHierarchy()
 
 bool PanelHierarchy::Draw()
 {
+	ImGui::SetNextWindowSize({ 150,200 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
@@ -25,9 +26,8 @@ bool PanelHierarchy::Draw()
 			IterateAllChildren(root);
 			ImGui::TreePop();
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 
 	return true;
 }

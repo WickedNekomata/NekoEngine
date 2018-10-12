@@ -24,7 +24,12 @@ void Log(const char file[], int line, const char* format, ...)
 	}
 }
 
-void OpenInBrowser(char* url)
+void OpenInBrowser(const char* url)
 {
 	ShellExecute(0, 0, url, 0, 0, SW_SHOW);
+}
+
+void OpenInExplorer(const char* path)
+{
+	ShellExecute(0, 0, path, 0, 0, SW_SHOW);
 }

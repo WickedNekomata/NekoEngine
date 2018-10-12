@@ -38,7 +38,8 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		// TODO: load this variables from .json (and save them when the app is closed)
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
 		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
-		SetFOV(MAX_FOV);
+		SetFOV(json_object_get_number(jObject, "fov"));
+		SetClipPlanes(math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane")));
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -144,21 +145,27 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	for (uint i = 0; i < meshes.size(); ++i)
-		DrawMesh(meshes[i]);
+	if (geometryActive)
+	{
+		for (uint i = 0; i < meshes.size(); ++i)
+			DrawMesh(meshes[i]);
+	}
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-		for (uint i = 0; i < meshes.size(); ++i)
+		if (geometryActive)
 		{
-			//DrawMeshNormals(meshes[i]);
-			if (meshes[i]->boundingBoxDebug != nullptr)
-				meshes[i]->boundingBoxDebug->Render();
-		}
+			for (uint i = 0; i < meshes.size(); ++i)
+			{
+				//DrawMeshNormals(meshes[i]);
+				if (meshes[i]->boundingBoxDebug != nullptr)
+					meshes[i]->boundingBoxDebug->Render();
+			}
 
-		if (geometryBoundingBoxDebug != nullptr)
-			geometryBoundingBoxDebug->Render();
+			if (geometryBoundingBoxDebug != nullptr)
+				geometryBoundingBoxDebug->Render();
+		}
 	}
 
 	// 3. Editor
@@ -173,6 +180,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
+
+	RELEASE_ARRAY(geometryName);
 
 	ClearMeshes();
 
@@ -203,21 +212,23 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), 0.1f, 100.0f);
+	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), clipPlanes.x, clipPlanes.y);
 	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
 
-float ModuleRenderer3D::GetFOV() const
-{
-	return fov;
-}
-
 void ModuleRenderer3D::SetFOV(float fov)
 {
 	this->fov = fov;
+
+	CalculateProjectionMatrix();
+}
+
+void ModuleRenderer3D::SetClipPlanes(math::float2 clipPlanes)
+{
+	this->clipPlanes = clipPlanes;
 
 	CalculateProjectionMatrix();
 }
@@ -370,9 +381,7 @@ void ModuleRenderer3D::ClearMeshes()
 	meshes.clear();
 
 	// Clear geometry Bounding Box
-	if (geometryBoundingBoxDebug != nullptr)
-		RELEASE(geometryBoundingBoxDebug);
-	geometryBoundingBoxDebug = nullptr;
+	RELEASE(geometryBoundingBoxDebug);
 }
 
 void ModuleRenderer3D::ClearTextures()
@@ -497,6 +506,7 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
 	glDeleteBuffers(1, (GLuint*)&textureID);
 
+	RELEASE_ARRAY(name);
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(normals);
 	RELEASE_ARRAY(textureCoords);
@@ -509,6 +519,28 @@ Mesh::~Mesh()
 	}
 
 	RELEASE_ARRAY(normalsLines);
+}
+
+void ModuleRenderer3D::SetGeometryName(const char* geometryName)
+{
+	RELEASE_ARRAY(this->geometryName);
+
+	this->geometryName = geometryName;
+}
+
+const char* ModuleRenderer3D::GetGeometryName() const
+{
+	return geometryName;
+}
+
+void ModuleRenderer3D::SetGeometryActive(bool geometryActive)
+{
+	this->geometryActive = geometryActive;
+}
+
+bool ModuleRenderer3D::IsGeometryActive() const
+{
+	return geometryActive;
 }
 
 void ModuleRenderer3D::CreateGeometryBoundingBox()

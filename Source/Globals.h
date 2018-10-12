@@ -11,7 +11,9 @@
 
 void Log(const char file[], int line, const char* format, ...);
 
-void OpenInBrowser(char* url);
+void OpenInBrowser(const char* url);
+
+void OpenInExplorer(const char* path);
 
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)
 
@@ -43,5 +45,3 @@ enum update_status
 
 #define BUF_SIZE 4096
 #define STR_INPUT_SIZE 128
-
-#define MAX_FOV 45.0f

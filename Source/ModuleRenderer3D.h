@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "MathGeoLib/include/Math/float2.h"
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 #include "MathGeoLib/include/Math/Quat.h"
@@ -23,6 +24,8 @@ class PrimitiveCube;
 
 struct Mesh
 {
+	const char* name = nullptr;
+
 	math::float3 position;
 	math::float3 scale;
 	math::Quat rotation;
@@ -77,8 +80,8 @@ public:
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
 
-	float GetFOV() const;
 	void SetFOV(float fov);
+	void SetClipPlanes(math::float2 clipPlanes);
 
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
@@ -107,6 +110,12 @@ public:
 	void DrawMeshNormals(Mesh* mesh) const;
 
 	// Geometry
+	void SetGeometryName(const char* geometryName);
+	const char* GetGeometryName() const;
+
+	void SetGeometryActive(bool geometryActive);
+	bool IsGeometryActive() const;
+
 	void CreateGeometryBoundingBox();
 	void LookAtGeometry() const;
 
@@ -121,11 +130,15 @@ public:
 	bool debugDraw = false;
 
 	float fov = 0.0f;
+	math::float2 clipPlanes = { 0.0f, 0.0f };
 
 	// Meshes
 	std::vector<Mesh*> meshes;
 
 private:
+
+	const char* geometryName = nullptr;
+	bool geometryActive = false;
 
 	math::AABB geometryBoundingBox;
 	PrimitiveCube* geometryBoundingBoxDebug = nullptr;

@@ -114,9 +114,13 @@ bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
 
 void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* path) const
 {
+	// Meshes
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
 		Mesh* mesh = new Mesh();
+
+		mesh->name = new char[strlen(scene->mMeshes[i]->mName.C_Str()) + 1];
+		strcpy_s((char*)mesh->name, strlen(scene->mMeshes[i]->mName.C_Str()) + 1, scene->mMeshes[i]->mName.C_Str());
 
 		// Unique vertices
 		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
@@ -208,7 +212,8 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 			CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
 	}
 
-	// Look At geometry
+	App->renderer3D->SetGeometryName(App->filesystem->GetFileNameFromPath(path));
 	App->renderer3D->CreateGeometryBoundingBox();
+	App->renderer3D->SetGeometryActive(true);
 	App->renderer3D->LookAtGeometry();
 }

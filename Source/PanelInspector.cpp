@@ -69,13 +69,21 @@ bool PanelInspector::Draw()
 
 		if (ImGui::CollapsingHeader("Geometry"))
 		{
+			const char* geometryName = App->renderer3D->GetGeometryName();
+			if (geometryName != nullptr)
+			{
+				bool isGeometryActive = App->renderer3D->IsGeometryActive();
+				if (ImGui::Checkbox(geometryName, &isGeometryActive))
+					App->renderer3D->SetGeometryActive(isGeometryActive);
+			}
+
 			uint numMeshes = App->renderer3D->GetNumMeshes();
 			ImGui::Text("Meshes: %i", numMeshes);
 
 			for (int i = 0; i < numMeshes; ++i)
 			{
 				Mesh* mesh = App->renderer3D->GetMeshAt(i);
-				ImGui::TextColored(WHITE, "Mesh %i", i + 1);
+				ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
 
 				ImGui::Text("Vertices: %i", mesh->verticesSize);
 				ImGui::Text("Vertices ID: %i", mesh->verticesID);

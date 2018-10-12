@@ -35,9 +35,9 @@ public:
 	void CloseApp();
 	void LogGui(const char* log) const;
 
-	void SetAppName(const char* title);
+	void SetAppName(const char* name);
 	const char* GetAppName() const;
-	void SetOrganizationName(const char* title);
+	void SetOrganizationName(const char* name);
 	const char* GetOrganizationName() const;
 
 	void SetCapFrames(bool capFrames);

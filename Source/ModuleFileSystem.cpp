@@ -138,12 +138,19 @@ const char* ModuleFileSystem::GetReadPaths() const
 	return paths;
 }
 
-void ModuleFileSystem::GetReadPathsAsArray(const char* const paths[]) const
-{
-	// TODO: implement a method to fill the paths array with currents read paths
-}
-
 const char* ModuleFileSystem::GetWritePath() const 
 {
 	return PHYSFS_getWriteDir();
+}
+
+const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
+{
+	std::string newPath = path;
+	std::string name = newPath.substr(newPath.find_last_of("\\") + 1, newPath.size());
+	name = name.substr(0, name.find_last_of("."));
+
+	const char* result = new char[name.size() + 1];
+	strcpy_s((char*)result, name.size() + 1, name.data());
+
+	return result;
 }

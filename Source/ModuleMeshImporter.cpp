@@ -44,6 +44,7 @@ bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
 {
 	bool ret = false;
 
+	App->renderer3D->ClearTextures();
 	App->renderer3D->ClearMeshes();
 	
 	uint postProcessingFlags = 0;
@@ -71,6 +72,7 @@ bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& 
 {
 	bool ret = false;
 
+	App->renderer3D->ClearTextures();
 	App->renderer3D->ClearMeshes();
 
 	uint postProcessingFlags = 0;
@@ -192,6 +194,7 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 		scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 		std::string fbxPathString = path;
 		std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
+		
 		if (!App->tex->LoadImageFromFile(texturePath.data()))
 		{
 			std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;

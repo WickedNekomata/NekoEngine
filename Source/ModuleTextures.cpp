@@ -48,7 +48,7 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 	if (App->renderer3D->GetNumMeshes() <= 0)
 	{
-		CONSOLE_LOG("ERROR LOADING TEXTURE: No meshes in the scene");
+		CONSOLE_LOG("Error at loading texture. ERROR: No meshes in the scene");
 		return ret;
 	}
 
@@ -73,7 +73,7 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{		
-			//App->renderer3D->ClearTextures();
+			App->renderer3D->ClearTextures();
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 

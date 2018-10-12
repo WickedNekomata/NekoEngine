@@ -183,6 +183,7 @@ bool ModuleRenderer3D::CleanUp()
 
 	RELEASE_ARRAY(geometryName);
 
+	ClearTextures();
 	ClearMeshes();
 
 	CONSOLE_LOG("Destroying 3D Renderer");
@@ -389,14 +390,15 @@ void ModuleRenderer3D::ClearTextures()
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
 		if (i == 0 && meshes[i]->textureID != 0)
-			glDeleteBuffers(1, (GLuint*)&meshes[i]->textureID);
+			glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
+
 		meshes[i]->textureHeight = 0;
 		meshes[i]->textureWidth = 0;
 		meshes[i]->textureID = 0;
 	}
 }
 
-void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
+void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
 {
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
@@ -504,7 +506,6 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, (GLuint*)&verticesID);
 	glDeleteBuffers(1, (GLuint*)&indicesID);
 	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
-	glDeleteBuffers(1, (GLuint*)&textureID);
 
 	RELEASE_ARRAY(name);
 	RELEASE_ARRAY(vertices);

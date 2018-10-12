@@ -82,6 +82,8 @@ bool PanelInspector::Draw()
 
 			for (int i = 0; i < numMeshes; ++i)
 			{
+				ImGui::Separator();
+
 				Mesh* mesh = App->renderer3D->GetMeshAt(i);
 				ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
 
@@ -93,8 +95,6 @@ bool PanelInspector::Draw()
 
 				ImGui::Text("Texture Coords: %i", mesh->verticesSize);
 				ImGui::Text("Texture Coords ID: %i", mesh->textureCoordsID);
-
-				ImGui::Separator();
 			}
 		}
 

@@ -49,93 +49,8 @@ bool ModuleCamera3D::Start()
 
 update_status ModuleCamera3D::Update(float dt)
 {
-	// Free movement and rotation
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-	{
-		// Move
-		float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
-
-		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-			cameraSpeed *= 2.0f; // double speed
-
-		math::float3 newPosition(0.0f, 0.0f, 0.0f);
-
-		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-			newPosition -= Z * cameraSpeed;
-		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-			newPosition += Z * cameraSpeed;
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-			newPosition -= X * cameraSpeed;
-		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-			newPosition += X * cameraSpeed;
-		if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
-			newPosition -= math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
-		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
-			newPosition += math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
-
-		Move(newPosition);
-
-		// Look Around (camera position)
-		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
-		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
-
-		float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
-		float deltaX = (float)dx * rotateSensitivity * dt;
-		float deltaY = (float)dy * rotateSensitivity * dt;
-
-		math::float3 target = position;
-		LookAround(target, deltaY, deltaX);
-	}
-
-	// Zoom
-	int mouseWheel = App->input->GetMouseZ();
-	if (mouseWheel != 0)
-	{
-		float zoomSpeed = CAMERA_ZOOM_SPEED;
-		float zoom = (float)mouseWheel * zoomSpeed * dt;
-
-		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-			zoom *= 0.5f; // half speed
-
-		Zoom(zoom);
-	}
-
-	// Look At target
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		LookAt(reference, referenceRadius);
-
-	// Look Around target
-	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT)
-	{
-		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
-		{
-			// Look Around (target position)
-			int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
-			int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
-
-			float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
-			float deltaX = (float)dx * rotateSensitivity * dt;
-			float deltaY = (float)dy * rotateSensitivity * dt;
-
-			LookAround(reference, deltaY, deltaX);
-		}
-	}
-
-	/*
-	
-	if (isOrbiting)
-		// Set the radius distance here (once)
-		LookAt(reference, radius);
-
-	if (isOrbiting)
-	{
-		// Ignore the radius here, in order to let the user zoom in/out while orbiting
-		Orbit(reference, dt, orbitSpeed);
-	}
-	*/
-
 	// Orbit target
-	if (orbit)
+	if (play)
 	{
 		// Update position
 		float orbitSpeed = CAMERA_ORBIT_SPEED;
@@ -144,6 +59,80 @@ update_status ModuleCamera3D::Update(float dt)
 
 		// Update Look At
 		LookAt(reference, referenceRadius);
+	}
+	else
+	{
+		// Free movement and rotation
+		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+		{
+			// Move
+			float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
+
+			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+				cameraSpeed *= 2.0f; // double speed
+
+			math::float3 newPosition(0.0f, 0.0f, 0.0f);
+
+			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+				newPosition -= Z * cameraSpeed;
+			if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+				newPosition += Z * cameraSpeed;
+			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+				newPosition -= X * cameraSpeed;
+			if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+				newPosition += X * cameraSpeed;
+			if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
+				newPosition -= math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+			if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
+				newPosition += math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+
+			Move(newPosition);
+
+			// Look Around (camera position)
+			int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
+			int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
+
+			float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
+			float deltaX = (float)dx * rotateSensitivity * dt;
+			float deltaY = (float)dy * rotateSensitivity * dt;
+
+			math::float3 target = position;
+			LookAround(target, deltaY, deltaX);
+		}
+
+		// Zoom
+		int mouseWheel = App->input->GetMouseZ();
+		if (mouseWheel != 0)
+		{
+			float zoomSpeed = CAMERA_ZOOM_SPEED;
+			float zoom = (float)mouseWheel * zoomSpeed * dt;
+
+			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+				zoom *= 0.5f; // half speed
+
+			Zoom(zoom);
+		}
+
+		// Look At target
+		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+			LookAt(reference, referenceRadius);
+
+		// Look Around target
+		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT)
+		{
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+			{
+				// Look Around (target position)
+				int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
+				int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
+
+				float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
+				float deltaX = (float)dx * rotateSensitivity * dt;
+				float deltaY = (float)dy * rotateSensitivity * dt;
+
+				LookAround(reference, deltaY, deltaX);
+			}
+		}
 	}
 
 	return UPDATE_CONTINUE;
@@ -240,6 +229,33 @@ void ModuleCamera3D::Zoom(float zoom)
 {
 	math::float3 zoomDistance = -Z * zoom;
 	Move(zoomDistance);
+}
+
+void ModuleCamera3D::SetPlay(bool play)
+{
+	this->play = play;
+
+	if (play)
+	{
+		lastPosition = position;
+		lastX = X;
+		lastY = Y;
+		lastZ = Z;
+	}
+	else
+	{
+		position = lastPosition;
+		X = lastX;
+		Y = lastY;
+		Z = lastZ;
+	}
+
+	CalculateViewMatrix();
+}
+
+bool ModuleCamera3D::IsPlay() const
+{
+	return play;
 }
 
 float* ModuleCamera3D::GetViewMatrix()

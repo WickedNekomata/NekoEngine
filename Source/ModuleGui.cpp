@@ -78,8 +78,12 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
 
+	ImVec2 mainMenuBarSize(0.0f, 0.0f);
+
 	if (ImGui::BeginMainMenuBar())
 	{
+		mainMenuBarSize = ImGui::GetWindowSize();
+
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("New")) {}
@@ -103,13 +107,6 @@ update_status ModuleGui::Update(float dt)
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Tools"))
-		{
-			if (ImGui::MenuItem("PCG performance test")) { panelRandomNumber->OnOff(); }
-
-			ImGui::EndMenu();
-		}
-
 		if (ImGui::BeginMenu("Others"))
 		{
 			if (ImGui::MenuItem("Documentation")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine"); }
@@ -128,6 +125,41 @@ update_status ModuleGui::Update(float dt)
 		if (panels[i]->IsEnabled())
 			panels[i]->Draw();
 	}
+
+	ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
+	ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	flags |= ImGuiWindowFlags_NoTitleBar;
+	flags |= ImGuiWindowFlags_NoResize;
+	flags |= ImGuiWindowFlags_NoMove;
+	flags |= ImGuiWindowFlags_NoScrollbar;
+	flags |= ImGuiWindowFlags_NoScrollWithMouse;
+
+	static bool open = true;
+	if (ImGui::Begin("##subMenu", &open, flags))
+	{
+		if (App->camera->IsPlay())
+		{
+			ImGui::PushID("play");
+			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::Button("PLAY");
+
+			if (ImGui::IsItemClicked(0))
+				App->camera->SetPlay(false);
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopID();
+		}
+		else
+		{
+			if (ImGui::Button("PLAY"))
+				App->camera->SetPlay(true);
+		}
+	}
+	ImGui::End();
 
 	return UPDATE_CONTINUE;
 }

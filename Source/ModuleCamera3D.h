@@ -30,6 +30,9 @@ public:
 
 	void Zoom(float zoom);
 
+	void SetPlay(bool play);
+	bool IsPlay() const;
+
 	float* GetViewMatrix();
 
 private:
@@ -39,16 +42,19 @@ private:
 public:
 	
 	// Camera
-	math::float3 X, Y, Z; // Z = direction
+	math::float3 X, Y, Z;
 	math::float3 position;
-	math::float3 reference; // target
+	math::float3 lastX, lastY, lastZ;
+	math::float3 lastPosition;
+
+	math::float3 reference;
 	float referenceRadius = 0.0f;
 
 private:
 
 	math::float4x4 ViewMatrix, ViewMatrixInverse;
 
-	bool orbit = false;
+	bool play = false;
 };
 
 #endif

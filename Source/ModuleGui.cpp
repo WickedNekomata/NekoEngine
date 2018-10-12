@@ -137,7 +137,7 @@ update_status ModuleGui::Update(float dt)
 	flags |= ImGuiWindowFlags_NoScrollWithMouse;
 
 	static bool open = true;
-	if (ImGui::Begin("##subMenu", &open, flags))
+	if (ImGui::Begin("subMenu", &open, flags))
 	{
 		if (App->camera->IsPlay())
 		{
@@ -158,6 +158,16 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::Button("PLAY"))
 				App->camera->SetPlay(true);
 		}
+
+		ImGui::SameLine();
+
+		static bool showGrid = App->scene->GetShowGrid();
+		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
+
+		ImGui::SameLine();
+
+		static bool debugDraw = App->renderer3D->GetDebugDraw();
+		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
 	}
 	ImGui::End();
 

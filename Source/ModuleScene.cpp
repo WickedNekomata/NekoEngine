@@ -16,6 +16,8 @@ ModuleScene::~ModuleScene()
 
 bool ModuleScene::Init(JSON_Object* jObject)
 {
+	showGrid = json_object_get_boolean(jObject, "showGrid");
+
 	return true;
 }
 
@@ -26,7 +28,6 @@ bool ModuleScene::Start()
 	//App->camera->Move(math::float3(1.0f, 1.0f, 0.0f));
 	//App->camera->LookAt(math::float3(0, 0, 0));
 	App->camera->Move(math::float3(0.0f, 1.0f, 5.0f));
-	//App->camera->LookAt(math::float3(0.0f, 0.0f, 0.0f), math::float3(0.0f, 1.0f, 0.0f));
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
@@ -50,5 +51,16 @@ bool ModuleScene::CleanUp()
 
 void ModuleScene::Draw() const 
 {
-	grid->Render();
+	if (showGrid)
+		grid->Render();
+}
+
+bool ModuleScene::GetShowGrid() const
+{
+	return showGrid;
+}
+
+void ModuleScene::SetShowGrid(bool showGrid)
+{
+	this->showGrid = showGrid;
 }

@@ -11,6 +11,9 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
+#define CHECKERS_HEIGHT 4
+#define CHECKERS_WIDTH 4
+
 ModuleTextures::ModuleTextures(bool start_enabled) {}
 
 ModuleTextures::~ModuleTextures() {}
@@ -120,4 +123,19 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 	ilDeleteImages(1, &imageName);
 	
 	return ret;
+}
+
+void ModuleTextures::CheckeredTexture() const
+{
+	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
+
+	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (int j = 0; j < CHECKERS_WIDTH; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkImage[i][j][0] = (GLubyte)c;
+			checkImage[i][j][1] = (GLubyte)c;
+			checkImage[i][j][2] = (GLubyte)c;
+			checkImage[i][j][3] = (GLubyte)255;
+		}
+	}
 }

@@ -14,6 +14,7 @@ public:
 	bool CleanUp();
 
 	bool LoadImageFromFile(const char* path) const;
+	void CheckeredTexture() const;
 };
 
 #endif

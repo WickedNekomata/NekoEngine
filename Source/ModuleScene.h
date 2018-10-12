@@ -24,9 +24,13 @@ public:
 
 	void Draw() const;
 
+	bool GetShowGrid() const;
+	void SetShowGrid(bool showGrid);
+
 private:
 
 	PrimitiveGrid* grid = nullptr;
+	bool showGrid = true;
 };
 
 #endif

@@ -45,7 +45,8 @@ struct Mesh
 
 	// Normals (vertices normals)
 	float* normals = nullptr;
-	PrimitiveRay** normalsLines = nullptr;
+	PrimitiveRay** normalsVerticesDebug = nullptr;
+	PrimitiveRay** normalsFacesDebug = nullptr;
 
 	// Texture
 	float* textureCoords = nullptr;
@@ -107,7 +108,8 @@ public:
 	uint GetNumMeshes() const;
 
 	void DrawMesh(Mesh* mesh) const;
-	void DrawMeshNormals(Mesh* mesh) const;
+	void DrawMeshVerticesNormals(Mesh* mesh) const;
+	void DrawMeshFacesNormals(Mesh* mesh) const;
 
 	// Geometry
 	void SetGeometryName(const char* geometryName);

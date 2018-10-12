@@ -22,6 +22,12 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
+	// TODO: load this variables from .json (and save them when the app is closed)
+	vsync = json_object_get_boolean(jObject, "vSync");
+	debugDraw = json_object_get_boolean(jObject, "debugDraw");
+	fov = json_object_get_number(jObject, "fov");
+	clipPlanes = math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane"));
+
 	CONSOLE_LOG("Creating 3D Renderer context");
 	
 	// Create context
@@ -35,12 +41,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	
 	if (ret)
 	{
-		// TODO: load this variables from .json (and save them when the app is closed)
-		SetVSync(json_object_get_boolean(jObject, "vSync"));
-		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
-		SetFOV(json_object_get_number(jObject, "fov"));
-		SetClipPlanes(math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane")));
-
 		// Initialize glew
 		GLenum error = glewInit();
 		if (error != GL_NO_ERROR)
@@ -158,7 +158,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 		{
 			for (uint i = 0; i < meshes.size(); ++i)
 			{
-				//DrawMeshNormals(meshes[i]);
+				//DrawMeshVerticesNormals(meshes[i]);
+				DrawMeshFacesNormals(meshes[i]);
+
 				if (meshes[i]->boundingBoxDebug != nullptr)
 					meshes[i]->boundingBoxDebug->Render();
 			}
@@ -445,10 +447,16 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void ModuleRenderer3D::DrawMeshNormals(Mesh* mesh) const
+void ModuleRenderer3D::DrawMeshVerticesNormals(Mesh* mesh) const
 {
 	for (uint i = 0; i < mesh->verticesSize; ++i)
-		mesh->normalsLines[i]->Render();
+		mesh->normalsVerticesDebug[i]->Render();
+}
+
+void ModuleRenderer3D::DrawMeshFacesNormals(Mesh* mesh) const
+{
+	for (uint i = 0; i < mesh->indicesSize / 3; ++i)
+		mesh->normalsFacesDebug[i]->Render();
 }
 
 // Mesh --------------------------------------------------
@@ -473,7 +481,7 @@ void Mesh::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// Create vertices normals
-	normalsLines = new PrimitiveRay*[verticesSize];
+	normalsVerticesDebug = new PrimitiveRay*[verticesSize];
 
 	uint index = 0;
 	for (uint i = 0; i < verticesSize; ++i)
@@ -483,7 +491,33 @@ void Mesh::Init()
 		ray->SetColor(Green);
 		index += 3;
 
-		normalsLines[i] = ray;
+		normalsVerticesDebug[i] = ray;
+	}
+
+	// Create faces normals
+	normalsFacesDebug = new PrimitiveRay*[indicesSize / 3];
+
+	index = 0;
+	for (uint i = 0; i < indicesSize / 3; ++i)
+	{
+		math::float3 v1 = math::float3(vertices[indices[index] * 3], vertices[indices[index] * 3 + 1], vertices[indices[index] * 3 + 2]);
+		++index;
+		math::float3 v2 = math::float3(vertices[indices[index] * 3], vertices[indices[index] * 3 + 1], vertices[indices[index] * 3 + 2]);
+		++index;
+		math::float3 v3 = math::float3(vertices[indices[index] * 3], vertices[indices[index] * 3 + 1], vertices[indices[index] * 3 + 2]);
+		++index;
+
+		math::float3 a = v1 - v2;
+		math::float3 b = v2 - v3;
+		math::float3 vertexNormalDirection = math::Cross(a, b).Normalized();
+
+		math::float3 vertexNormalPosition = (v1 + v2 + v3) / 3.0f;
+
+		PrimitiveRay* ray = new PrimitiveRay(vertexNormalDirection, 1.0f);
+		ray->SetPosition(vertexNormalPosition);
+		ray->SetColor(Green);
+
+		normalsFacesDebug[i] = ray;
 	}
 
 	// Create Bounding Box
@@ -516,10 +550,10 @@ Mesh::~Mesh()
 
 	for (uint i = 0; i < verticesSize; ++i)
 	{
-		RELEASE(normalsLines[i]);
+		RELEASE(normalsVerticesDebug[i]);
 	}
 
-	RELEASE_ARRAY(normalsLines);
+	RELEASE_ARRAY(normalsVerticesDebug);
 }
 
 void ModuleRenderer3D::SetGeometryName(const char* geometryName)

@@ -5,7 +5,7 @@
 #define CAMERA_MOVEMENT_SPEED 5.0f
 #define CAMERA_ROTATE_SENSITIVITY 0.1f
 #define CAMERA_ZOOM_SPEED 100.0f
-#define CAMERA_ORBIT_SPEED 1.0f
+#define CAMERA_ORBIT_SPEED 0.5f
 
 // Reference: https://learnopengl.com/Getting-started/Camera
 
@@ -24,8 +24,8 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 	position = math::float3(0.0f, 0.0f, 0.0f);
 	// Target of the camera (WORLD SPACE)
 	reference = math::float3(0.0f, 0.0f, 0.0f);
-
-	referenceRadius = 1.0f;
+	// Distance between the target and the camera
+	referenceRadius = 5.0f;
 
 	CalculateViewMatrix();
 }
@@ -53,7 +53,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (play)
 	{
 		// Update position
-		float orbitSpeed = CAMERA_ORBIT_SPEED;
+		float orbitSpeed = CAMERA_ORBIT_SPEED * referenceRadius;
 		math::float3 newPosition = X * orbitSpeed * dt;
 		Move(newPosition);
 

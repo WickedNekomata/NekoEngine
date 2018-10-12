@@ -20,9 +20,19 @@ bool PanelInspector::Draw()
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
+		const char* geometryName = App->renderer3D->GetGeometryName();
+		if (geometryName != nullptr)
+		{
+			bool isGeometryActive = App->renderer3D->IsGeometryActive();
+			if (ImGui::Checkbox(geometryName, &isGeometryActive))
+				App->renderer3D->SetGeometryActive(isGeometryActive);
+		}
+
+		ImGui::Spacing();
+
 		Mesh* mesh = App->renderer3D->GetMeshAt(0);
 
-		if (ImGui::CollapsingHeader("Transform"))
+		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (mesh != nullptr)
 			{
@@ -40,7 +50,7 @@ bool PanelInspector::Draw()
 
 				ImGui::Text("Rotation");
 				math::Quat rotationQuat = mesh->rotation;
-				math::float3 rotationEuler = rotationQuat.ToEulerXYZ();
+				math::float3 rotationEuler = RADTODEG * rotationQuat.ToEulerXYZ();
 				ImGui::Text("X"); ImGui::SameLine();
 				ImGui::PushItemWidth(100);
 				ImGui::InputFloat("##rotX", &rotationEuler.x); ImGui::SameLine();
@@ -67,25 +77,17 @@ bool PanelInspector::Draw()
 
 		ImGui::Spacing();
 
-		if (ImGui::CollapsingHeader("Geometry"))
+		if (ImGui::CollapsingHeader("Geometry", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			const char* geometryName = App->renderer3D->GetGeometryName();
-			if (geometryName != nullptr)
-			{
-				bool isGeometryActive = App->renderer3D->IsGeometryActive();
-				if (ImGui::Checkbox(geometryName, &isGeometryActive))
-					App->renderer3D->SetGeometryActive(isGeometryActive);
-			}
-
 			uint numMeshes = App->renderer3D->GetNumMeshes();
 			ImGui::Text("Meshes: %i", numMeshes);
 
 			for (int i = 0; i < numMeshes; ++i)
 			{
 				ImGui::Separator();
-
 				Mesh* mesh = App->renderer3D->GetMeshAt(i);
 				ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
+				ImGui::Separator();
 
 				ImGui::Text("Vertices: %i", mesh->verticesSize);
 				ImGui::Text("Vertices ID: %i", mesh->verticesID);
@@ -100,7 +102,7 @@ bool PanelInspector::Draw()
 
 		ImGui::Spacing();
 
-		if (ImGui::CollapsingHeader("Material"))
+		if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (mesh != nullptr)
 			{

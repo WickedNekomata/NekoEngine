@@ -56,11 +56,7 @@ bool ModuleMeshImporter::LoadMeshFromFile(const char* path) const
 
 	if (scene != nullptr)
 	{
-<<<<<<< HEAD:Source/ModuleAssets.cpp
-		InitFromScene(scene, path);
-=======
-		InitMeshFromScene(scene);
->>>>>>> 039bfbe32d6542b0313c7b9ec91192dbe76d1a4d:Source/ModuleMeshImporter.cpp
+		InitMeshFromScene(scene, path);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -87,11 +83,7 @@ bool ModuleMeshImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bu
 
 	if (scene != nullptr)
 	{
-<<<<<<< HEAD:Source/ModuleAssets.cpp
-		InitFromScene(scene, nullptr);
-=======
-		InitMeshFromScene(scene);
->>>>>>> 039bfbe32d6542b0313c7b9ec91192dbe76d1a4d:Source/ModuleMeshImporter.cpp
+		InitMeshFromScene(scene, nullptr);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -120,21 +112,19 @@ bool ModuleMeshImporter::LoadMeshWithPHYSFS(const char* path)
 	return ret;
 }
 
-<<<<<<< HEAD:Source/ModuleAssets.cpp
-void ModuleAssets::InitFromScene(const aiScene* scene, const char* path) const
-=======
-void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
->>>>>>> 039bfbe32d6542b0313c7b9ec91192dbe76d1a4d:Source/ModuleMeshImporter.cpp
+void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* path) const
 {
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
 		Mesh* mesh = new Mesh();
 
+		// Unique vertices
 		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
 		mesh->vertices = new float[mesh->verticesSize * 3];
 		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
 		CONSOLE_LOG("New mesh with %d vertices", mesh->verticesSize);
 
+		// Indices
 		if (scene->mMeshes[i]->HasFaces())
 		{
 			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
@@ -153,6 +143,7 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
 			}
 		}
 
+		// Normals
 		if (scene->mMeshes[i]->HasNormals())
 		{
 			mesh->normals = new float[mesh->verticesSize * 3];
@@ -160,6 +151,7 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
 			CONSOLE_LOG("Mesh vertices normals loaded");
 		}
 	
+		// Texture coords
 		if (scene->mMeshes[i]->HasTextureCoords(0))
 		{
 			mesh->textureCoords = new float[scene->mMeshes[i]->mNumVertices * 2];
@@ -170,6 +162,33 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
 				memcpy(&mesh->textureCoords[(j * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][j].y, sizeof(float));
 			}
 			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
+		}
+		
+		// Material
+		if (scene->mMaterials[0] != nullptr && path != nullptr)
+		{
+			aiString textureName;
+			scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
+			std::string fbxPathString = path;
+			std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
+			if (!App->tex->LoadImageFromFile(texturePath.data()))
+			{
+				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
+				if (!App->tex->LoadImageFromFile(texturePath.data()))
+				{
+					std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
+					if (!App->tex->LoadImageFromFile(texturePath.data()))
+					{
+						CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
+					}
+					else
+						CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+				}
+				else
+					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+			}
+			else
+				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
 		}
 
 		// Transform
@@ -187,24 +206,8 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene) const
 
 		mesh->Init();
 		App->renderer3D->AddMesh(mesh);
-
-		
-		if (scene->mMaterials[0] != nullptr && path != nullptr)
-		{
-			aiString textureName;
-			scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
-			std::string fbxPathString = path;
-			std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
-			if (!App->tex->LoadImageFromFile(texturePath.data()))
-			{
-				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
-				if (!App->tex->LoadImageFromFile(texturePath.data()))
-				{
-					std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
-					if (!App->tex->LoadImageFromFile(texturePath.data()))
-						CONSOLE_LOG("Impossible to load Texture: %s", textureName.data);
-				}
-			}
-		}
 	}
+
+	// Look At geometry
+	//App->camera->LookAt(mesh->boundingBox.CenterPoint(), mesh->boundingBox.Size().Length());
 }

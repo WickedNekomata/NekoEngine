@@ -4,6 +4,8 @@
 #include "Primitive.h"
 #include "Color.h"
 
+#include "MathGeoLib/include/Geometry/Sphere.h"
+
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew/libx86/glew32.lib")
@@ -454,36 +456,10 @@ void Mesh::Init()
 
 
 	// Create Bounding Box
-	math::float3 minPosition(vertices[0], vertices[1], vertices[2]);
-	math::float3 maxPosition(vertices[0], vertices[1], vertices[2]);
+	boundingBox.SetNegativeInfinity();
+	boundingBox.Enclose((const math::float3*)vertices, verticesSize);
 
-	for (uint i = 3; i < verticesSize * 3; i += 3)
-	{
-		// Min position
-		if (vertices[i] < minPosition.x)
-			minPosition.x = vertices[i];
-		if (vertices[i + 1] < minPosition.y)
-			minPosition.y = vertices[i + 1];
-		if (vertices[i + 2] < minPosition.z)
-			minPosition.z = vertices[i + 2];
 
-		// Max position
-		if (vertices[i] > maxPosition.x)
-			maxPosition.x = vertices[i];
-		if (vertices[i + 1] > maxPosition.y)
-			maxPosition.y = vertices[i + 1];
-		if (vertices[i + 2] > maxPosition.z)
-			maxPosition.z = vertices[i + 2];
-	}
-
-	boundingBox.minPoint = minPosition;
-	boundingBox.maxPoint = maxPosition;
-
-	math::float3 a = boundingBox.CenterPoint();
-	math::float3 b = boundingBox.Size();
-
-	//App->camera->MoveTo(a + b);
-	//App->camera->LookAt(a);
 }
 
 void Mesh::EmbedTexture(uint textureID)

@@ -83,12 +83,27 @@ void GameObject::DeleteComponents()
 	components.clear();
 }
 
+bool GameObject::HasComponents() const
+{
+	return components.size() > 0;
+}
+
+uint GameObject::GetComponenetsLength() const
+{
+	return components.size();
+}
+
+Component* GameObject::GetComponent(uint index) const
+{
+	return components[index];
+}
+
 const char* GameObject::GetName() const
 {
 	return name;
 }
 
-inline void GameObject::SetName(char* name)
+void GameObject::SetName(char* name)
 {
 	this->name = name;
 }

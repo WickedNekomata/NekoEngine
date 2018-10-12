@@ -13,3 +13,7 @@ Component::~Component()
 void Component::Update() const
 {
 }
+
+void Component::OnEditor() const
+{
+}

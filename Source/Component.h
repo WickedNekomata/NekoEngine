@@ -16,6 +16,8 @@ public:
 
 	void Update() const;
 
+	virtual void OnEditor() const;
+
 private:
 
 	ComponentType type;

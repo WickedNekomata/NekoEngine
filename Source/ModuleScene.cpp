@@ -40,7 +40,10 @@ bool ModuleScene::Start()
 update_status ModuleScene::Update(float dt)
 {
 	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
-		child =	App->GOs->CreateGameObject("a", root);
+	{
+		child = App->GOs->CreateGameObject("a", root);
+		currentGameObject = child;
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
 	{

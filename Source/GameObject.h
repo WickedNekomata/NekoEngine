@@ -29,9 +29,12 @@ public:
 	void AddComponent(ComponentType type);
 	void DeleteComponent(uint index);
 	void DeleteComponents();
+	bool HasComponents() const;
+	uint GetComponenetsLength() const;
+	Component* GetComponent(uint index) const;
 
 	const char* GetName() const;
-	inline void SetName(char* name);
+	void SetName(char* name);
 
 private:
 
@@ -40,6 +43,9 @@ private:
 
 	GameObject* parent = nullptr;
 	std::vector<GameObject*> children;
+
+public:
+	bool enabled = true;
 };
 
 #endif

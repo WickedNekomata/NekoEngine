@@ -14,11 +14,11 @@ PanelHierarchy::~PanelHierarchy()
 bool PanelHierarchy::Draw()
 {
 	ImGui::SetNextWindowSize({ 150,200 }, ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
+	ImGuiWindowFlags hierarchyFlags = 0;
+	hierarchyFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	hierarchyFlags |= ImGuiWindowFlags_NoSavedSettings;
 
-	if (ImGui::Begin(name, &enabled, inspectorFlags))
+	if (ImGui::Begin(name, &enabled, hierarchyFlags))
 	{
 		GameObject* root = App->scene->root;
 		if (ImGui::TreeNodeEx(root->GetName()))

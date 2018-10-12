@@ -32,6 +32,7 @@ private:
 public:
 	GameObject* child = nullptr;
 	GameObject* root = nullptr;
+	GameObject* currentGameObject = nullptr;
 };
 
 #endif

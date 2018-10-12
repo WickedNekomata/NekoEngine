@@ -5,59 +5,13 @@
 #include "Globals.h"
 #include "Light.h"
 
-#include <vector>
-
-#include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
-#include "MathGeoLib/include/Math/Quat.h"
-#include "MathGeoLib/include/Geometry/AABB.h"
 
 #include "glew\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
 #include "SDL/include/SDL_video.h"
 
 #define MAX_LIGHTS 8
-
-class PrimitiveRay;
-class PrimitiveCube;
-
-struct Mesh
-{
-	math::float3 position;
-	math::float3 scale;
-	math::Quat rotation;
-
-	math::AABB boundingBox;
-	PrimitiveCube* boundingBoxDebug = nullptr;
-
-	// Unique vertices
-	float* vertices = nullptr;
-	uint verticesID = 0;
-	uint verticesSize = 0;
-
-	// Indices
-	uint* indices = nullptr;
-	uint indicesID = 0;
-	uint indicesSize = 0;
-
-	// Normals (vertices normals)
-	float* normals = nullptr;
-	PrimitiveRay** normalsLines = nullptr;
-
-	// Texture
-	float* textureCoords = nullptr;
-	uint textureCoordsID = 0;
-
-	uint textureID = 0;
-	uint textureWidth = 0;
-	uint textureHeight = 0;
-
-	// -----
-
-	void Init();
-	void EmbedTexture(uint textureID);
-	~Mesh();
-};
 
 class ModuleRenderer3D : public Module
 {
@@ -94,22 +48,6 @@ public:
 
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
-	// Meshes
-	bool AddMesh(Mesh* mesh);
-	bool RemoveMesh(Mesh* mesh);
-	void ClearMeshes();
-	void ClearTextures();
-	void AddTextureToMeshes(uint textureID, uint width, uint height);
-	Mesh* GetMeshAt(uint index) const;
-	uint GetNumMeshes() const;
-
-	void DrawMesh(Mesh* mesh) const;
-	void DrawMeshNormals(Mesh* mesh) const;
-
-	// Geometry
-	void CreateGeometryBoundingBox();
-	void LookAtGeometry() const;
-
 public:
 
 	Light lights[MAX_LIGHTS];
@@ -121,14 +59,6 @@ public:
 	bool debugDraw = false;
 
 	float fov = 0.0f;
-
-	// Meshes
-	std::vector<Mesh*> meshes;
-
-private:
-
-	math::AABB geometryBoundingBox;
-	PrimitiveCube* geometryBoundingBoxDebug = nullptr;
 };
 
 #endif

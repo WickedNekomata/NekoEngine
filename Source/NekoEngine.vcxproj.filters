@@ -73,6 +73,12 @@
     <Filter Include="Sources\3rd Party\DevIL">
       <UniqueIdentifier>{50eebea3-c08e-4dcf-993f-4fef30e2e0aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components">
+      <UniqueIdentifier>{66587a08-64a5-45a1-bc3c-c345fd61173d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components">
+      <UniqueIdentifier>{c42249c4-6e3d-4654-81b0-f0920e0e4e88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -522,8 +528,17 @@
     <ClInclude Include="DevIL\include\ilut_config.h">
       <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleMeshImporter.h">
+    <ClInclude Include="ModuleGOs.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleMeshes.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -713,8 +728,17 @@
     <ClCompile Include="ModuleTextures.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleMeshImporter.cpp">
+    <ClCompile Include="ModuleGOs.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleMeshes.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -117,6 +117,7 @@
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp" />
     <ClInclude Include="DevIL\include\devil_internal_exports.h" />
     <ClInclude Include="DevIL\include\il.h" />
@@ -125,6 +126,7 @@
     <ClInclude Include="DevIL\include\ilut_config.h" />
     <ClInclude Include="DevIL\include\ilu_region.h" />
     <ClInclude Include="DevIL\include\il_wrap.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />
     <ClInclude Include="glew\include\GL\glew.h" />
     <ClInclude Include="glew\include\GL\glxew.h" />
@@ -199,7 +201,8 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
-    <ClInclude Include="ModuleMeshImporter.h" />
+    <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="ModuleMeshes.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleGui.h" />
@@ -228,6 +231,8 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -268,7 +273,8 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
-    <ClCompile Include="ModuleMeshImporter.cpp" />
+    <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="ModuleMeshes.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleGui.cpp" />

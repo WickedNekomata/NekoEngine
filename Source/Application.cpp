@@ -11,14 +11,16 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	camera = new ModuleCamera3D();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	meshImporter = new ModuleMeshImporter();
+	meshImporter = new ModuleMeshes();
 	tex = new ModuleTextures();
+	GOs = new ModuleGOs();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 
 	// Main Modules
+	AddModule(GOs);
 	AddModule(tex);
 	AddModule(meshImporter);
 	AddModule(filesystem);

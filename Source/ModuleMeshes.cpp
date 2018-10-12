@@ -1,5 +1,4 @@
-#include "ModuleMeshImporter.h"
-#include "ModuleRenderer3D.h"
+#include "ModuleMeshes.h"
 
 #include "Application.h"
 
@@ -10,22 +9,20 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
-#include <string>
-
 void myCallback(const char* msg, char* userData)
 {
 	CONSOLE_LOG("%s", msg);
 }
 
-ModuleMeshImporter::ModuleMeshImporter(bool start_enabled)
+ModuleMeshes::ModuleMeshes(bool start_enabled)
 {
 }
 
-ModuleMeshImporter::~ModuleMeshImporter()
+ModuleMeshes::~ModuleMeshes()
 {
 }
 
-bool ModuleMeshImporter::Init(JSON_Object* jObject)
+bool ModuleMeshes::Init(JSON_Object* jObject)
 {
 	struct aiLogStream stream;
 	stream.callback = myCallback;
@@ -34,17 +31,15 @@ bool ModuleMeshImporter::Init(JSON_Object* jObject)
 	return true;
 }
 
-bool ModuleMeshImporter::CleanUp()
+bool ModuleMeshes::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
+bool ModuleMeshes::LoadMeshesFromFile(const char* path) const
 {
 	bool ret = false;
-
-	App->renderer3D->ClearMeshes();
 	
 	uint postProcessingFlags = 0;
 	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
@@ -67,11 +62,9 @@ bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool ModuleMeshes::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
 	bool ret = false;
-
-	App->renderer3D->ClearMeshes();
 
 	uint postProcessingFlags = 0;
 	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
@@ -92,7 +85,7 @@ bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& 
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
+bool ModuleMeshes::LoadMeshesWithPHYSFS(const char* path)
 {
 	bool ret = false;
 
@@ -112,7 +105,7 @@ bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* path) const
+void ModuleMeshes::InitMeshesFromScene(const aiScene* scene, const char* path) const
 {
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
@@ -142,14 +135,6 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 				}
 			}
 		}
-
-		// Normals
-		if (scene->mMeshes[i]->HasNormals())
-		{
-			mesh->normals = new float[mesh->verticesSize * 3];
-			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh vertices normals loaded");
-		}
 	
 		// Texture coords
 		if (scene->mMeshes[i]->HasTextureCoords(0))
@@ -163,52 +148,5 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 			}
 			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
 		}
-
-		// Transform
-		if (scene->mRootNode->mChildren[i] != nullptr)
-		{
-			aiVector3D position;
-			aiVector3D scale;
-			aiQuaternion rotation;
-
-			scene->mRootNode->mChildren[i]->mTransformation.Decompose(scale, rotation, position);
-			mesh->position = { position.x, position.y, position.z };
-			mesh->scale = { scale.x, scale.y, scale.z };
-			mesh->rotation = { rotation.x, rotation.y, rotation.z, rotation.w };
-		}
-
-		mesh->Init();
-		App->renderer3D->AddMesh(mesh);
 	}
-
-	// Material
-	if (scene->mMaterials[0] != nullptr && path != nullptr)
-	{
-		aiString textureName;
-		scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
-		std::string fbxPathString = path;
-		std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
-		if (!App->tex->LoadImageFromFile(texturePath.data()))
-		{
-			std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
-			if (!App->tex->LoadImageFromFile(texturePath.data()))
-			{
-				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
-				if (!App->tex->LoadImageFromFile(texturePath.data()))
-				{
-					CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
-				}
-				else
-					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-			}
-			else
-				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-		}
-		else
-			CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-	}
-
-	// Look At geometry
-	App->renderer3D->CreateGeometryBoundingBox();
-	App->renderer3D->LookAtGeometry();
 }

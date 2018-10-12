@@ -375,6 +375,18 @@ void ModuleRenderer3D::ClearMeshes()
 	geometryBoundingBoxDebug = nullptr;
 }
 
+void ModuleRenderer3D::ClearTextures()
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		if (i == 0 && meshes[i]->textureID != 0)
+			glDeleteBuffers(1, (GLuint*)&meshes[i]->textureID);
+		meshes[i]->textureHeight = 0;
+		meshes[i]->textureWidth = 0;
+		meshes[i]->textureID = 0;
+	}
+}
+
 void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
 {
 	for (uint i = 0; i < meshes.size(); ++i)
@@ -406,7 +418,6 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	
-
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
@@ -463,9 +474,6 @@ void Mesh::Init()
 
 		normalsLines[i] = ray;
 	}
-
-	// TODO: Create faces normals
-
 
 	// Create Bounding Box
 	boundingBox.SetNegativeInfinity();

@@ -72,7 +72,9 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-		{
+		{		
+			//App->renderer3D->ClearTextures();
+
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			// Generate the texture name
@@ -81,7 +83,6 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 			// Bind the texture
 			glBindTexture(GL_TEXTURE_2D, texName);
 
-			// Set texture clamping method
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -91,6 +92,13 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
+			{
+				GLfloat largest_supported_anisotropy;
+				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
+			}
 
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());

@@ -152,6 +152,7 @@ bool ModuleGui::CleanUp()
 	panelAbout = nullptr;
 	panelConsole = nullptr;
 	panelSettings = nullptr;
+	panelImport = nullptr;
 
 	CONSOLE_LOG("Cleaning up ImGui");
 

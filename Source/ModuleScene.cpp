@@ -14,7 +14,7 @@ ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 ModuleScene::~ModuleScene()
 {}
 
-bool ModuleScene::Init(JSON_Object * jObject)
+bool ModuleScene::Init(JSON_Object* jObject)
 {
 	return true;
 }
@@ -28,33 +28,8 @@ bool ModuleScene::Start()
 	App->camera->Move(math::float3(0.0f, 1.0f, 5.0f));
 	//App->camera->LookAt(math::float3(0.0f, 0.0f, 0.0f), math::float3(0.0f, 1.0f, 0.0f));
 
-	plane = new PrimitivePlane();
-	plane->SetPosition(math::float3(0.0f, -10.0f, 0.0f));
-
-	cube = new PrimitiveCube();
-	cube->ShowAxis(true);
-
-	ray = new PrimitiveRay();	
-	circle = new PrimitiveCircle();
-	sphere = new PrimitiveSphere();
-	frustum = new PrimitiveFrustum();
-	cylinder = new PrimitiveCylinder();
-	cylinder->ShowAxis(true);
-
-	cone = new PrimitiveCone();
-	arrow = new PrimitiveArrow();
-
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-	// Load model
-	/*
-	char* buffer;
-	uint size;
-	App->filesystem->OpenRead("Assets/BakerHouse.fbx", &buffer, size);
-	App->assetsImporter->LoadFBXfromMemory(buffer, size);
-	delete[] buffer;
-	*/
-	//App->assetsImporter->LoadFBXwithPHYSFS("Assets/BakerHouse.fbx");
 
 	return ret;
 }
@@ -68,14 +43,6 @@ bool ModuleScene::CleanUp()
 {
 	bool ret = true;
 
-	RELEASE(cube);
-	RELEASE(ray);
-	RELEASE(plane);
-	RELEASE(circle);
-	RELEASE(frustum);
-	RELEASE(sphere);
-	RELEASE(cylinder);
-	RELEASE(cone);
 	RELEASE(grid);
 
 	return ret;
@@ -83,17 +50,5 @@ bool ModuleScene::CleanUp()
 
 void ModuleScene::Draw() const 
 {
-	// Big plane as ground
-	//plane->Render();
-
-	// Primitives
-	//cube->Render();
-	//circle->Render();
-	//sphere->Render();
-	//ray->Render();
-	//frustum->Render();
-	//cylinder->Render();
-	//cone->Render();
-	//arrow->Render();
 	grid->Render();
 }

@@ -363,6 +363,17 @@ void ModuleRenderer3D::ClearMeshes()
 	meshes.clear();
 }
 
+void ModuleRenderer3D::ClearTextures()
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		if (i == 0 && meshes[i]->textureID != 0)
+			glDeleteBuffers(1, (GLuint*)&meshes[i]->textureID);
+		meshes[i]->textureHeight = 0;
+		meshes[i]->textureWidth = 0;
+	}
+}
+
 void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
 {
 	for (uint i = 0; i < meshes.size(); ++i)

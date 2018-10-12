@@ -72,7 +72,9 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-		{
+		{		
+			App->renderer3D->ClearTextures();
+
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			// Generate the texture name

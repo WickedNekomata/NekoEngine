@@ -163,33 +163,6 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* pat
 			}
 			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
 		}
-		
-		// Material
-		if (scene->mMaterials[0] != nullptr && path != nullptr)
-		{
-			aiString textureName;
-			scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
-			std::string fbxPathString = path;
-			std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
-			if (!App->tex->LoadImageFromFile(texturePath.data()))
-			{
-				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
-				if (!App->tex->LoadImageFromFile(texturePath.data()))
-				{
-					std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
-					if (!App->tex->LoadImageFromFile(texturePath.data()))
-					{
-						CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
-					}
-					else
-						CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-				}
-				else
-					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-			}
-			else
-				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
-		}
 
 		// Transform
 		if (scene->mRootNode->mChildren[i] != nullptr)
@@ -206,6 +179,33 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* pat
 
 		mesh->Init();
 		App->renderer3D->AddMesh(mesh);
+	}
+
+	// Material
+	if (scene->mMaterials[0] != nullptr && path != nullptr)
+	{
+		aiString textureName;
+		scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
+		std::string fbxPathString = path;
+		std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
+		if (!App->tex->LoadImageFromFile(texturePath.data()))
+		{
+			std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
+			if (!App->tex->LoadImageFromFile(texturePath.data()))
+			{
+				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
+				if (!App->tex->LoadImageFromFile(texturePath.data()))
+				{
+					CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
+				}
+				else
+					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+			}
+			else
+				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+		}
+		else
+			CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
 	}
 
 	// Look At geometry

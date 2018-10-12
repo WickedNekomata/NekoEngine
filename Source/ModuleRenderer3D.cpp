@@ -554,6 +554,13 @@ Mesh::~Mesh()
 	}
 
 	RELEASE_ARRAY(normalsVerticesDebug);
+
+	for (uint i = 0; i < indicesSize / 3; ++i)
+	{
+		RELEASE(normalsFacesDebug[i]);
+	}
+
+	RELEASE_ARRAY(normalsFacesDebug);
 }
 
 void ModuleRenderer3D::SetGeometryName(const char* geometryName)

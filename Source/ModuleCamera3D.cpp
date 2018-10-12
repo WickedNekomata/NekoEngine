@@ -5,6 +5,7 @@
 #define CAMERA_MOVEMENT_SPEED 5.0f
 #define CAMERA_ROTATE_SENSITIVITY 0.1f
 #define CAMERA_ZOOM_SPEED 100.0f
+#define CAMERA_ORBIT_SPEED 1.0f
 
 // Reference: https://learnopengl.com/Getting-started/Camera
 
@@ -23,6 +24,8 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 	position = math::float3(0.0f, 0.0f, 0.0f);
 	// Target of the camera (WORLD SPACE)
 	reference = math::float3(0.0f, 0.0f, 0.0f);
+
+	referenceRadius = 1.0f;
 
 	CalculateViewMatrix();
 }
@@ -46,16 +49,7 @@ bool ModuleCamera3D::Start()
 
 update_status ModuleCamera3D::Update(float dt)
 {
-	math::float3 newPosition(0.0f, 0.0f, 0.0f);
-
-	math::float3 target = math::float3(0.0f, 0.0f, 0.0f);
-	reference = target;
-	float radius = 5.0f;
-	float orbitSpeed = 1.0f;
-
-	// TODO: if isOrbiting, cap the max zoom/W to be the target position
-
-	// Movement and rotation
+	// Free movement and rotation
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		// Move
@@ -63,6 +57,8 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
 			cameraSpeed *= 2.0f; // double speed
+
+		math::float3 newPosition(0.0f, 0.0f, 0.0f);
 
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 			newPosition -= Z * cameraSpeed;
@@ -79,7 +75,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Move(newPosition);
 
-		// Look Around (Mouse Input)
+		// Look Around (camera position)
 		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
 		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
 
@@ -87,7 +83,8 @@ update_status ModuleCamera3D::Update(float dt)
 		float deltaX = (float)dx * rotateSensitivity * dt;
 		float deltaY = (float)dy * rotateSensitivity * dt;
 
-		LookAround(deltaY, deltaX);
+		math::float3 target = position;
+		LookAround(target, deltaY, deltaX);
 	}
 
 	// Zoom
@@ -105,23 +102,48 @@ update_status ModuleCamera3D::Update(float dt)
 
 	// Look At target
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		LookAt(target, radius);
+		LookAt(reference, referenceRadius);
 
-	// Orbit target
+	// Look Around target
 	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT)
 	{
-		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
-			isOrbiting = !isOrbiting;
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		{
+			// Look Around (target position)
+			int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
+			int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
 
-		if (isOrbiting)
-			// Set the radius distance here (once)
-			LookAt(reference, radius);
+			float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
+			float deltaX = (float)dx * rotateSensitivity * dt;
+			float deltaY = (float)dy * rotateSensitivity * dt;
+
+			LookAround(reference, deltaY, deltaX);
+		}
 	}
+
+	/*
+	
+	if (isOrbiting)
+		// Set the radius distance here (once)
+		LookAt(reference, radius);
 
 	if (isOrbiting)
 	{
 		// Ignore the radius here, in order to let the user zoom in/out while orbiting
 		Orbit(reference, dt, orbitSpeed);
+	}
+	*/
+
+	// Orbit target
+	if (orbit)
+	{
+		// Update position
+		float orbitSpeed = CAMERA_ORBIT_SPEED;
+		math::float3 newPosition = X * orbitSpeed * dt;
+		Move(newPosition);
+
+		// Update Look At
+		LookAt(reference, referenceRadius);
 	}
 
 	return UPDATE_CONTINUE;
@@ -136,11 +158,19 @@ bool ModuleCamera3D::CleanUp()
 	return ret;
 }
 
-// Creates a View Matrix that looks at a given target
+void ModuleCamera3D::SetTarget(math::float3 target)
+{
+	reference = target;
+}
+
+void ModuleCamera3D::SetTargetRadius(float targetRadius)
+{
+	referenceRadius = targetRadius;
+}
+
+// Creates a View Matrix that looks at the given target
 void ModuleCamera3D::LookAt(const math::float3 &reference, float radius)
 {
-	this->reference = reference;
-
 	Z = (position - reference).Normalized(); // Direction the camera is looking at (reverse direction of what the camera is targeting)
 	X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized(); // X is perpendicular to vectors Y and Z
 	Y = math::Cross(Z, X); // Y is perpendicular to vectors Z and X
@@ -156,8 +186,11 @@ void ModuleCamera3D::LookAt(const math::float3 &reference, float radius)
 	CalculateViewMatrix();
 }
 
-void ModuleCamera3D::LookAround(float pitch, float yaw)
+// Creates a View Matrix that looks around the given target
+void ModuleCamera3D::LookAround(const math::float3 &reference, float pitch, float yaw)
 {
+	position -= reference;
+
 	// Yaw (Y axis)
 	if (yaw != 0.0f)
 	{
@@ -184,17 +217,7 @@ void ModuleCamera3D::LookAround(float pitch, float yaw)
 		*/
 	}
 
-	CalculateViewMatrix();
-}
-
-void ModuleCamera3D::Orbit(const math::float3 &reference, float dt, float speed, float radius)
-{
-	// 1. Update position
-	math::float3 newPosition = X * speed * dt;
-	Move(newPosition);
-
-	// 2. Update Look At
-	LookAt(reference, radius);
+	position = reference + (Z * position.Length());
 
 	CalculateViewMatrix();
 }

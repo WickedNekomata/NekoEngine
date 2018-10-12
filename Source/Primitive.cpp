@@ -33,6 +33,11 @@ void Primitive::Render() const
 
 void Primitive::InnerRender() const
 {
+	bool isWireframeMode = App->renderer3D->IsWireframeMode();
+
+	if (wireframeMode && !isWireframeMode)
+		App->renderer3D->SetWireframeMode(true);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	// Array Buffer
@@ -58,6 +63,9 @@ void Primitive::InnerRender() const
 	//_Element_Array_buffer
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	if (wireframeMode && !isWireframeMode)
+		App->renderer3D->SetWireframeMode(false);
 }
 
 PrimitiveTypes Primitive::GetType() const 
@@ -79,6 +87,11 @@ void Primitive::SetRotation(float angle, math::float3 u)
 void Primitive::SetColor(Color color)
 {
 	this->color = color;
+}
+
+void Primitive::SetWireframeMode(bool wireframeMode)
+{
+	this->wireframeMode = wireframeMode;
 }
 
 void Primitive::ShowAxis(bool showAxis) 
@@ -136,13 +149,13 @@ void PrimitiveRay::InnerRender() const
 }
 
 // Axis --------------------------------------------------
-PrimitiveAxis::PrimitiveAxis() : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
+PrimitiveAxis::PrimitiveAxis(math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
 {
-	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f);
+	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f, position);
 	x->SetColor(Red);
-	y = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), 1.0f);
+	y = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), 1.0f, position);
 	y->SetColor(Green);
-	z = new PrimitiveRay(math::float3(0.0f, 0.0f, 1.0f), 1.0f);
+	z = new PrimitiveRay(math::float3(0.0f, 0.0f, 1.0f), 1.0f, position);
 	z->SetColor(Blue);
 }
 
@@ -359,8 +372,10 @@ void PrimitiveGrid::InnerRender() const
 }
 
 // Cube --------------------------------------------------
-PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
+PrimitiveCube::PrimitiveCube(math::float3 size, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
 {
+	transform.startPosition = position;
+
 	axis = new PrimitiveAxis();
 
 	math::float3 radius = size / 2.0f;
@@ -369,14 +384,14 @@ PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::Prim
 	uint verticesSize = 3 * 8;
 	vertices = new float[verticesSize]{
 
-		-radius.x, -radius.y,  radius.z, /// A (0)
-		 radius.x, -radius.y,  radius.z, /// B (1)
-		-radius.x,  radius.y,  radius.z, /// C (2)
-		 radius.x,  radius.y,  radius.z, /// D (3)
-		-radius.x, -radius.y, -radius.z, /// E (4)
-	   	 radius.x, -radius.y, -radius.z, /// F (5)
-		-radius.x,  radius.y, -radius.z, /// G (6)
-		 radius.x,  radius.y, -radius.z  /// H (7)
+		position.x - radius.x, position.y - radius.y, position.z + radius.z, /// A (0)
+		position.x + radius.x, position.y - radius.y, position.z + radius.z, /// B (1)
+		position.x - radius.x, position.y + radius.y, position.z + radius.z, /// C (2)
+		position.x + radius.x, position.y + radius.y, position.z + radius.z, /// D (3)
+		position.x - radius.x, position.y - radius.y, position.z - radius.z, /// E (4)
+	   	position.x + radius.x, position.y - radius.y, position.z - radius.z, /// F (5)
+		position.x - radius.x, position.y + radius.y, position.z - radius.z, /// G (6)
+		position.x + radius.x, position.y + radius.y, position.z - radius.z  /// H (7)
 	};
 
 	glGenBuffers(1, (GLuint*)&verticesID);

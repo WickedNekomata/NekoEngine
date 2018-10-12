@@ -54,6 +54,7 @@ public:
 	virtual void SetRotation(float angle, math::float3 u); // angle in degrees
 	virtual void SetColor(Color color);
 
+	void SetWireframeMode(bool wireframeMode);
 	void ShowAxis(bool showAxis);
 
 protected:
@@ -66,6 +67,7 @@ protected:
 	Transform transform;
 	Color color = White;
 
+	bool wireframeMode = false;
 	bool showAxis = false;
 	PrimitiveAxis* axis = nullptr;
 
@@ -100,7 +102,7 @@ class PrimitiveAxis : public Primitive
 {
 public:
 
-	PrimitiveAxis();
+	PrimitiveAxis(math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
 	~PrimitiveAxis();
 
 private:
@@ -162,7 +164,7 @@ class PrimitiveCube : public Primitive
 {
 public:
 
-	PrimitiveCube(math::float3 size = math::float3(1.0f, 1.0f, 1.0f));
+	PrimitiveCube(math::float3 size = math::float3(1.0f, 1.0f, 1.0f), math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 

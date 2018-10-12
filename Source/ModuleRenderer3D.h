@@ -19,13 +19,16 @@
 #define MAX_LIGHTS 8
 
 class PrimitiveRay;
+class PrimitiveCube;
 
 struct Mesh
 {
 	math::float3 position;
 	math::float3 scale;
 	math::Quat rotation;
+
 	math::AABB boundingBox;
+	PrimitiveCube* boundingBoxDebug = nullptr;
 
 	// Unique vertices
 	float* vertices = nullptr;
@@ -96,11 +99,15 @@ public:
 	bool RemoveMesh(Mesh* mesh);
 	void ClearMeshes();
 	void AddTextureToMeshes(uint textureID, uint width, uint height);
-	Mesh* GetMeshByIndex(uint index) const;
+	Mesh* GetMeshAt(uint index) const;
 	uint GetNumMeshes() const;
 
 	void DrawMesh(Mesh* mesh) const;
 	void DrawMeshNormals(Mesh* mesh) const;
+
+	// Geometry
+	void CreateGeometryBoundingBox();
+	void LookAtGeometry() const;
 
 public:
 
@@ -116,6 +123,11 @@ public:
 
 	// Meshes
 	std::vector<Mesh*> meshes;
+
+private:
+
+	math::AABB geometryBoundingBox;
+	PrimitiveCube* geometryBoundingBoxDebug = nullptr;
 };
 
 #endif

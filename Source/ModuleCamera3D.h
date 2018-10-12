@@ -19,10 +19,11 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	// Camera position, Target to look at, Up vector (WORLD SPACE)
-	void LookAt(const math::float3 &reference, float radius = 0.0f);
-	void LookAround(float pitch, float yaw);
-	void Orbit(const math::float3 &reference, float dt, float speed = 1.0f, float radius = 0.0f);
+	void SetTarget(math::float3 target);
+	void SetTargetRadius(float targetRadius);
+
+	void LookAt(const math::float3 &reference, float radius);
+	void LookAround(const math::float3 &reference, float pitch, float yaw);
 
 	void Move(const math::float3 &movement);
 	void MoveTo(const math::float3 &position);
@@ -41,12 +42,13 @@ public:
 	math::float3 X, Y, Z; // Z = direction
 	math::float3 position;
 	math::float3 reference; // target
+	float referenceRadius = 0.0f;
 
 private:
 
 	math::float4x4 ViewMatrix, ViewMatrixInverse;
 
-	bool isOrbiting = false;
+	bool orbit = false;
 };
 
 #endif

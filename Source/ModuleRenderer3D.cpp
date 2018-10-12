@@ -151,7 +151,14 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	if (debugDraw)
 	{
 		for (uint i = 0; i < meshes.size(); ++i)
-			DrawMeshNormals(meshes[i]);
+		{
+			//DrawMeshNormals(meshes[i]);
+			if (meshes[i]->boundingBoxDebug != nullptr)
+				meshes[i]->boundingBoxDebug->Render();
+		}
+
+		if (geometryBoundingBoxDebug != nullptr)
+			geometryBoundingBoxDebug->Render();
 	}
 
 	// 3. Editor
@@ -361,6 +368,11 @@ void ModuleRenderer3D::ClearMeshes()
 		delete meshes[i];
 
 	meshes.clear();
+
+	// Clear geometry Bounding Box
+	if (geometryBoundingBoxDebug != nullptr)
+		RELEASE(geometryBoundingBoxDebug);
+	geometryBoundingBoxDebug = nullptr;
 }
 
 void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height) 
@@ -373,7 +385,7 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint heigh
 	}
 }
 
-Mesh* ModuleRenderer3D::GetMeshByIndex(uint index) const
+Mesh* ModuleRenderer3D::GetMeshAt(uint index) const
 {
 	if (index < meshes.size() && index >= 0)
 		return meshes.at(index);
@@ -446,7 +458,7 @@ void Mesh::Init()
 	{
 		PrimitiveRay* ray = new PrimitiveRay(math::float3(normals[index], normals[index + 1], normals[index + 2]), 1.0f);
 		ray->SetPosition(math::float3(vertices[index], vertices[index + 1], vertices[index + 2]));
-		ray->SetColor(Yellow);
+		ray->SetColor(Green);
 		index += 3;
 
 		normalsLines[i] = ray;
@@ -459,7 +471,10 @@ void Mesh::Init()
 	boundingBox.SetNegativeInfinity();
 	boundingBox.Enclose((const math::float3*)vertices, verticesSize);
 
-
+	// Debug draw Bounding Box
+	boundingBoxDebug = new PrimitiveCube(boundingBox.Size(), boundingBox.CenterPoint());
+	boundingBoxDebug->SetColor(Green);
+	boundingBoxDebug->SetWireframeMode(true);
 }
 
 void Mesh::EmbedTexture(uint textureID)
@@ -478,10 +493,51 @@ Mesh::~Mesh()
 	RELEASE_ARRAY(normals);
 	RELEASE_ARRAY(textureCoords);
 
+	RELEASE(boundingBoxDebug);
+
 	for (uint i = 0; i < verticesSize; ++i)
 	{
 		RELEASE(normalsLines[i]);
 	}
 
 	RELEASE_ARRAY(normalsLines);
+}
+
+void ModuleRenderer3D::CreateGeometryBoundingBox()
+{
+	uint geometryVerticesSize = 0;
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		Mesh* mesh = GetMeshAt(i);
+		geometryVerticesSize += mesh->verticesSize;
+	}
+
+	float* geometryVertices = new float[geometryVerticesSize * 3];
+
+	int index = -1;
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		Mesh* mesh = GetMeshAt(i);
+
+		for (uint j = 0; j < mesh->verticesSize * 3; ++j)
+			geometryVertices[++index] = mesh->vertices[j];
+	}
+
+	geometryBoundingBox.SetNegativeInfinity();
+	geometryBoundingBox.Enclose((const math::float3*)geometryVertices, geometryVerticesSize);
+
+	// Debug draw
+	geometryBoundingBoxDebug = new PrimitiveCube(geometryBoundingBox.Size(), geometryBoundingBox.CenterPoint());
+	geometryBoundingBoxDebug->SetColor(Yellow);
+	geometryBoundingBoxDebug->SetWireframeMode(true);
+}
+
+void ModuleRenderer3D::LookAtGeometry() const
+{
+	math::float3 target = geometryBoundingBox.CenterPoint(); // geometry center point
+	float targetRadius = geometryBoundingBox.Size().Length(); // geometry diameter
+
+	App->camera->SetTarget(target);
+	App->camera->SetTargetRadius(targetRadius);
+	App->camera->LookAt(target, targetRadius);
 }

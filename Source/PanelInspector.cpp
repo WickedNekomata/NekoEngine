@@ -20,7 +20,7 @@ bool PanelInspector::Draw()
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
-		Mesh* mesh = App->renderer3D->GetMeshByIndex(0);
+		Mesh* mesh = App->renderer3D->GetMeshAt(0);
 
 		if (ImGui::CollapsingHeader("Transform"))
 		{
@@ -74,7 +74,7 @@ bool PanelInspector::Draw()
 
 			for (int i = 0; i < numMeshes; ++i)
 			{
-				Mesh* mesh = App->renderer3D->GetMeshByIndex(i);
+				Mesh* mesh = App->renderer3D->GetMeshAt(i);
 				ImGui::TextColored(WHITE, "Mesh %i", i + 1);
 
 				ImGui::Text("Vertices: %i", mesh->verticesSize);

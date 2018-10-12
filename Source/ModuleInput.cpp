@@ -126,7 +126,7 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
 			{
-				App->meshImporter->LoadMeshFromFile(droppedFileDir.data());
+				App->meshImporter->LoadMeshesFromFile(droppedFileDir.data());
 			}
 			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
 				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)

@@ -15,10 +15,10 @@ public:
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
-	bool LoadMeshFromFile(const char* path) const;
-	bool LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const;
-	bool LoadMeshWithPHYSFS(const char* path);
-	void InitMeshFromScene(const aiScene* scene, const char* path) const;
+	bool LoadMeshesFromFile(const char* path) const;
+	bool LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const;
+	bool LoadMeshesWithPHYSFS(const char* path);
+	void InitMeshesFromScene(const aiScene* scene, const char* path) const;
 };
 
 #endif

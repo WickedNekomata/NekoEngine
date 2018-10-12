@@ -40,7 +40,7 @@ bool ModuleMeshImporter::CleanUp()
 	return true;
 }
 
-bool ModuleMeshImporter::LoadMeshFromFile(const char* path) const
+bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
 {
 	bool ret = false;
 
@@ -56,7 +56,7 @@ bool ModuleMeshImporter::LoadMeshFromFile(const char* path) const
 
 	if (scene != nullptr)
 	{
-		InitMeshFromScene(scene, path);
+		InitMeshesFromScene(scene, path);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -67,7 +67,7 @@ bool ModuleMeshImporter::LoadMeshFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
 	bool ret = false;
 
@@ -83,7 +83,7 @@ bool ModuleMeshImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bu
 
 	if (scene != nullptr)
 	{
-		InitMeshFromScene(scene, nullptr);
+		InitMeshesFromScene(scene, nullptr);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -92,7 +92,7 @@ bool ModuleMeshImporter::LoadMeshFromMemory(const char* buffer, unsigned int& bu
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshWithPHYSFS(const char* path)
+bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
 {
 	bool ret = false;
 
@@ -101,7 +101,7 @@ bool ModuleMeshImporter::LoadMeshWithPHYSFS(const char* path)
 
 	if (App->filesystem->OpenRead(path, &buffer, size))
 	{
-		ret = LoadMeshFromMemory(buffer, size);
+		ret = LoadMeshesFromMemory(buffer, size);
 
 		if (!ret)
 			CONSOLE_LOG("Error loading scene %s", path);
@@ -112,7 +112,7 @@ bool ModuleMeshImporter::LoadMeshWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* path) const
+void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* path) const
 {
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{
@@ -171,6 +171,7 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* pat
 			scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 			std::string fbxPathString = path;
 			std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
+			
 			if (!App->tex->LoadImageFromFile(texturePath.data()))
 			{
 				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
@@ -209,5 +210,6 @@ void ModuleMeshImporter::InitMeshFromScene(const aiScene* scene, const char* pat
 	}
 
 	// Look At geometry
-	//App->camera->LookAt(mesh->boundingBox.CenterPoint(), mesh->boundingBox.Size().Length());
+	App->renderer3D->CreateGeometryBoundingBox();
+	App->renderer3D->LookAtGeometry();
 }

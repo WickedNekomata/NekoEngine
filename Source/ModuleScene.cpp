@@ -5,6 +5,7 @@
 #include "ModuleRenderer3D.h"
 #include "Primitive.h"
 #include "ModuleMeshes.h"
+#include "ModuleGOs.h"
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -31,11 +32,22 @@ bool ModuleScene::Start()
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 
+	root = App->GOs->CreateGameObject("Root", nullptr);
+
 	return ret;
 }
 
 update_status ModuleScene::Update(float dt)
 {
+	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+		child =	App->GOs->CreateGameObject("a", root);
+
+	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
+	{
+		if (child != nullptr)
+			child = App->GOs->CreateGameObject("b", child);
+	}
+
 	return UPDATE_CONTINUE;
 }
 

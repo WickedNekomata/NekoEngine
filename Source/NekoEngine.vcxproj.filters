@@ -540,6 +540,9 @@
     <ClInclude Include="Component.h">
       <Filter>Sources\Modules\GO&amp;Components</Filter>
     </ClInclude>
+    <ClInclude Include="PanelHierarchy.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -739,6 +742,9 @@
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelHierarchy.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

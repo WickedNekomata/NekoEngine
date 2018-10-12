@@ -10,6 +10,7 @@
 #include "PanelConsole.h"
 #include "PanelSettings.h"
 #include "PanelImport.h"
+#include "PanelHierarchy.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -31,6 +32,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
 	panelImport = new PanelImport("Import");
+	panelHierarchy = new PanelHierarchy("Hierarchy");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelRandomNumber);
@@ -38,6 +40,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
 	panels.push_back(panelImport);
+	panels.push_back(panelHierarchy);
 
 	return true;
 }
@@ -100,6 +103,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Inspector", "CTRL+I")) { panelInspector->OnOff(); }
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
+			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -128,6 +132,8 @@ update_status ModuleGui::Update(float dt)
 		if (panels[i]->IsEnabled())
 			panels[i]->Draw();
 	}
+
+	ImGui::ShowDemoWindow();
 
 	return UPDATE_CONTINUE;
 }

@@ -18,16 +18,19 @@ public:
 	void Update() const;
 
 	inline void SetParent(GameObject* parent);
-	void Addchildren(GameObject* children);
+	void AddChild(GameObject* children);
 	void EraseChild(uint index);
 	void DeleteChild(uint index);
 	void DeleteChildren();
+	bool HasChildren() const;
+	uint GetChildrenLength() const;
+	GameObject* GetChild(uint index) const;
 
 	void AddComponent(ComponentType type);
 	void DeleteComponent(uint index);
 	void DeleteComponents();
 
-	inline const char* GetName() const;
+	const char* GetName() const;
 	inline void SetName(char* name);
 
 private:

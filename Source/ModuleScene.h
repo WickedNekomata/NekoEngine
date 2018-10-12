@@ -9,6 +9,7 @@
 #include "MathGeoLib/include/Math/MathConstants.h"
 
 class PrimitiveGrid;
+class GameObject;
 
 class ModuleScene : public Module
 {
@@ -27,6 +28,10 @@ public:
 private:
 
 	PrimitiveGrid* grid = nullptr;
+
+public:
+	GameObject* child = nullptr;
+	GameObject* root = nullptr;
 };
 
 #endif

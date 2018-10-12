@@ -22,7 +22,7 @@ void inline GameObject::SetParent(GameObject* parent)
 	this->parent = parent;
 }
 
-void GameObject::Addchildren(GameObject* children)
+void GameObject::AddChild(GameObject* children)
 {
 	this->children.push_back(children);
 }
@@ -44,6 +44,21 @@ void GameObject::DeleteChildren()
 		delete children[i];
 
 	children.clear();
+}
+
+bool GameObject::HasChildren() const
+{
+	return children.size() > 0;
+}
+
+uint GameObject::GetChildrenLength() const
+{
+	return children.size();
+}
+
+GameObject* GameObject::GetChild(uint index) const
+{
+	return children[index];
 }
 
 void GameObject::AddComponent(ComponentType type)
@@ -68,7 +83,7 @@ void GameObject::DeleteComponents()
 	components.clear();
 }
 
-inline const char* GameObject::GetName() const
+const char* GameObject::GetName() const
 {
 	return name;
 }

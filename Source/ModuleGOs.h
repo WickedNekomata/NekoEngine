@@ -25,6 +25,9 @@ public:
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
 
+	GameObject* GetGameObject(uint index) const;
+	uint GetGameObjectsLength() const;
+
 private:
 	std::vector<GameObject*> gameObjects;
 };

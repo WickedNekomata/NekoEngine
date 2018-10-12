@@ -12,6 +12,7 @@ struct PanelAbout;
 struct PanelConsole;
 struct PanelSettings;
 struct PanelImport;
+struct PanelHierarchy;
 
 class ModuleGui : public Module
 {
@@ -42,6 +43,7 @@ public:
 	PanelConsole* panelConsole = nullptr;
 	PanelSettings* panelSettings = nullptr;
 	PanelImport* panelImport = nullptr;
+	PanelHierarchy* panelHierarchy = nullptr;
 
 private:
 

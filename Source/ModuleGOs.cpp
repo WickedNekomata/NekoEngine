@@ -46,6 +46,9 @@ GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)
 {
 	GameObject* newGameObject = new GameObject(name, parent);
 
+	if (parent != nullptr)
+		parent->AddChild(newGameObject);
+
 	gameObjects.push_back(newGameObject);
 
 	return newGameObject;
@@ -55,11 +58,11 @@ void ModuleGOs::DeleteGameObject(const char* name)
 {
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			delete gameObjects[i];
-			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), name), gameObjects.end());
-		}
+		//if (gameObjects[i]->GetName() == name)
+		//{
+			//delete gameObjects[i];
+			//gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), name), gameObjects.end());
+		//}
 	}
 }
 
@@ -70,7 +73,17 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 		if (gameObjects[i] == toDelete)
 		{
 			delete gameObjects[i];
-			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), name), gameObjects.end());
+			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), toDelete), gameObjects.end());
 		}
 	}
+}
+
+GameObject* ModuleGOs::GetGameObject(uint index) const
+{
+	return gameObjects[index];
+}
+
+uint ModuleGOs::GetGameObjectsLength() const
+{
+	return gameObjects.size();
 }

@@ -9,14 +9,7 @@
 #include "mmgr/mmgr.h"
 #include <vector>
 
-#include <windows.h>
 #include "glew\include\GL\glew.h"
-
-#define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX			0x9047
-#define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX		0x9048
-#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX    0x9049
-#define GPU_MEMORY_INFO_EVICTION_COUNT_NVX				0x904A
-#define GPU_MEMORY_INFO_EVICTED_MEMORY_NVX				0x904B
 
 PanelSettings::PanelSettings(char* name) : Panel(name)
 {
@@ -304,27 +297,8 @@ void PanelSettings::HardwareNode() const
 
 	ImGui::Separator();
 
-	// TODO: Fix issue if pc has 2 or more gpus
 	ImGui::Text("GPU:"); ImGui::SameLine();
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
-
-	GLint totalMemory;
-	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemory);
-	GLint memoryUsage = 0;
-	GLint reservedMemory = 0;
-	GLint availableMemory = 0;
-	glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableMemory);
-	glGetIntegerv(GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &reservedMemory);
-	memoryUsage = totalMemory - availableMemory;
-
-	ImGui::Text("VRAM Budget:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%.2fMb", totalMemory * 0.001);
-	ImGui::Text("VRAM Usage:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%.2fMb", memoryUsage * 0.001);
-	ImGui::Text("VRAM Available:");	ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%.2fMb", availableMemory * 0.001);
-	ImGui::Text("VRAM Reserved:");	ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%.2fMb", reservedMemory * 0.001);
 }

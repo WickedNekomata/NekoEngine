@@ -159,14 +159,16 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 		{
 			for (uint i = 0; i < meshes.size(); ++i)
 			{
-				//DrawMeshVerticesNormals(meshes[i]);
-				DrawMeshFacesNormals(meshes[i]);
+				if (debugVerticesNormals)
+					DrawMeshVerticesNormals(meshes[i]);
+				if (debugFacesNormals)
+					DrawMeshFacesNormals(meshes[i]);
 
-				if (meshes[i]->boundingBoxDebug != nullptr)
+				if (meshes[i]->boundingBoxDebug != nullptr && debugBoundingBox)
 					meshes[i]->boundingBoxDebug->Render();
 			}
 
-			if (geometryBoundingBoxDebug != nullptr)
+			if (geometryBoundingBoxDebug != nullptr && debugBoundingBox)
 				geometryBoundingBoxDebug->Render();
 		}
 	}
@@ -320,16 +322,6 @@ bool ModuleRenderer3D::IsWireframeMode() const
 		ret = true;
 
 	return ret;
-}
-
-void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
-{
-	this->debugDraw = debugDraw;
-}
-
-bool ModuleRenderer3D::GetDebugDraw() const 
-{
-	return debugDraw;
 }
 
 math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const

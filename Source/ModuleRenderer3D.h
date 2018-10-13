@@ -97,9 +97,6 @@ public:
 	void SetWireframeMode(bool enable) const;
 	bool IsWireframeMode() const;
 
-	void SetDebugDraw(bool debugDraw);
-	bool GetDebugDraw() const;
-
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
 	// Meshes
@@ -139,6 +136,9 @@ public:
 
 	bool vsync = false;
 	bool debugDraw = false;
+	bool debugVerticesNormals = true;
+	bool debugFacesNormals = true;
+	bool debugBoundingBox = true;
 
 	float fov = 0.0f;
 	math::float2 clipPlanes = { 0.0f, 0.0f };

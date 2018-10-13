@@ -201,41 +201,39 @@ void PanelSettings::RendererNode() const
 {
 	GLenum capability = 0;
 
-	static bool debugDraw = App->renderer3D->GetDebugDraw();
-	if (ImGui::Checkbox("Debug Draw", &debugDraw))
-		App->renderer3D->SetDebugDraw(debugDraw);
+	ImGui::Checkbox("Debug Draw", &App->renderer3D->debugDraw);
 
 	capability = GL_DEPTH_TEST;
-	static bool depthTest = App->renderer3D->GetCapabilityState(capability);
+	bool depthTest = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest))
 		App->renderer3D->SetCapabilityState(capability, depthTest);
 
 	capability = GL_CULL_FACE;
-	static bool cullFace = App->renderer3D->GetCapabilityState(capability);
+	bool cullFace = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_CULL_FACE", &cullFace))
 		App->renderer3D->SetCapabilityState(capability, cullFace);
 
 	capability = GL_LIGHTING;
-	static bool lighting = App->renderer3D->GetCapabilityState(capability);
+	bool lighting = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_LIGHTING", &lighting))
 		App->renderer3D->SetCapabilityState(capability, lighting);
 
 	capability = GL_COLOR_MATERIAL;
-	static bool colorMaterial = App->renderer3D->GetCapabilityState(capability);
+	bool colorMaterial = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial))
 		App->renderer3D->SetCapabilityState(capability, colorMaterial);
 
 	capability = GL_TEXTURE_2D;
-	static bool texture2D = App->renderer3D->GetCapabilityState(capability);
+	bool texture2D = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D))
 		App->renderer3D->SetCapabilityState(capability, texture2D);
 
 	capability = GL_LINE_SMOOTH;
-	static bool lineSmooth = App->renderer3D->GetCapabilityState(capability);
+	bool lineSmooth = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_LINE_SMOOTH", &lineSmooth))
 		App->renderer3D->SetCapabilityState(capability, lineSmooth);
 
-	static bool wireframeMode = App->renderer3D->IsWireframeMode();
+	bool wireframeMode = App->renderer3D->IsWireframeMode();
 	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
 		App->renderer3D->SetWireframeMode(wireframeMode);
 }

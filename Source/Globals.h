@@ -13,7 +13,7 @@ void Log(const char file[], int line, const char* format, ...);
 
 void OpenInBrowser(const char* url);
 
-void OpenInExplorer(const char* path);
+void OpenInExplorer();
 
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)
 

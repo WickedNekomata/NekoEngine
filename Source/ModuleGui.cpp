@@ -88,6 +88,7 @@ update_status ModuleGui::Update(float dt)
 
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Open in explorer")) { OpenInExplorer(); }
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();

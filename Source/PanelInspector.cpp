@@ -14,9 +14,11 @@ PanelInspector::~PanelInspector() {}
 
 bool PanelInspector::Draw()
 {
-	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({ (float)App->window->GetWindowWidth() - 300,50 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({ 300,(float)App->window->GetWindowHeight() - 50 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
 	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
@@ -37,41 +39,41 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
-				ImGui::Text("Posititreon");
+				ImGui::Text("Position");
 				math::float3 position = mesh->position;
 				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##posX", &position.x); ImGui::SameLine();
 				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##posY", &position.y); ImGui::SameLine();
 				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##posZ", &position.z);
 
 				ImGui::Text("Rotation");
 				math::Quat rotationQuat = mesh->rotation;
 				math::float3 rotationEuler = RADTODEG * rotationQuat.ToEulerXYZ();
 				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##rotX", &rotationEuler.x); ImGui::SameLine();
 				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##rotY", &rotationEuler.y); ImGui::SameLine();
 				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##rotZ", &rotationEuler.z);
 
 				ImGui::Text("Scale");
 				math::float3 scale = mesh->scale;
 				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##scaleX", &scale.x); ImGui::SameLine();
 				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##scaleY", &scale.y); ImGui::SameLine();
 				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(100);
+				ImGui::PushItemWidth(70);
 				ImGui::InputFloat("##scaleZ", &scale.z);
 			}
 		}

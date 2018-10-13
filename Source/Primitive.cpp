@@ -73,18 +73,18 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
-void Primitive::SetPosition(math::float3 position)
+void Primitive::SetPosition(const math::float3& position)
 {
 	transform.position = transform.startPosition + position;
 }
 
-void Primitive::SetRotation(float angle, math::float3 u)
+void Primitive::SetRotation(float angle, const math::float3& u)
 {
 	transform.angle = angle;
 	transform.u = u;
 }
 
-void Primitive::SetColor(Color color)
+void Primitive::SetColor(const Color& color)
 {
 	this->color = color;
 }
@@ -100,12 +100,13 @@ void Primitive::ShowAxis(bool showAxis)
 }
 
 // Ray --------------------------------------------------
-PrimitiveRay::PrimitiveRay(math::float3 direction, float length, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
+PrimitiveRay::PrimitiveRay(const math::float3& direction, float length, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
 {
 	transform.startPosition = position;
 
-	direction.Normalize();
-	math::float3 endPosition = position + (direction * length);
+	math::float3 dir = direction;
+	dir.Normalize();
+	math::float3 endPosition = position + (dir * length);
 	
 	// Vertices
 	uint verticesSize = 3 * 2;
@@ -149,7 +150,7 @@ void PrimitiveRay::InnerRender() const
 }
 
 // Axis --------------------------------------------------
-PrimitiveAxis::PrimitiveAxis(math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
+PrimitiveAxis::PrimitiveAxis(const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
 {
 	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f, position);
 	x->SetColor(Red);
@@ -230,7 +231,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 }
 
 // Plane --------------------------------------------------
-PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::PrimitiveTypePlane), size(size)
+PrimitivePlane::PrimitivePlane(const math::float2& size) : Primitive(PrimitiveTypes::PrimitiveTypePlane), size(size)
 {
 	axis = new PrimitiveAxis();
 
@@ -372,7 +373,7 @@ void PrimitiveGrid::InnerRender() const
 }
 
 // Cube --------------------------------------------------
-PrimitiveCube::PrimitiveCube(math::float3 size, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
+PrimitiveCube::PrimitiveCube(const math::float3& size, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
 {
 	transform.startPosition = position;
 
@@ -437,7 +438,7 @@ PrimitiveCube::PrimitiveCube(math::float3 size, math::float3 position) : Primiti
 // Sphere --------------------------------------------------
 PrimitiveSphere::PrimitiveSphere(float radius, uint segments) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius), segments(segments)
 {
-	// TODO
+	// TODO: Finish Sphere
 	axis = new PrimitiveAxis();
 
 	// Vertices
@@ -667,7 +668,7 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 }
 
 // Cone 
-PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, math::float3 position) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
+PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
 {
 	transform.startPosition = position;
 
@@ -775,7 +776,7 @@ void PrimitiveArrow::InnerRender() const
 }
 
 // Frustum --------------------------------------------------
-PrimitiveFrustum::PrimitiveFrustum(math::float2 startSize, math::float3 endPosition, math::float2 endSize) : Primitive(PrimitiveTypes::PrimitiveTypeFrustum), startSize(startSize), endPosition(endPosition), endSize(endSize)
+PrimitiveFrustum::PrimitiveFrustum(const math::float2& startSize, const math::float3& endPosition, const math::float2& endSize) : Primitive(PrimitiveTypes::PrimitiveTypeFrustum), startSize(startSize), endPosition(endPosition), endSize(endSize)
 {
 	axis = new PrimitiveAxis();
 

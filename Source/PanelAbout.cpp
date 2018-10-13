@@ -19,13 +19,13 @@ PanelAbout::~PanelAbout() {}
 
 bool PanelAbout::Draw()
 {
-	//ImGui::SetNextWindowPos({ 100,50 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({ 20,80 }, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings; // TODO: Save & Load
-
-	if (ImGui::Begin(name, &enabled, inspectorFlags))
+	ImGuiWindowFlags aboutFlags = 0;
+	aboutFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	aboutFlags |= ImGuiWindowFlags_NoSavedSettings;
+	
+	if (ImGui::Begin(name, &enabled, aboutFlags))
 	{
 		// Engine description
 		ImGui::Text("Neko Engine");

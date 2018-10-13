@@ -50,9 +50,9 @@ public:
 
 	PrimitiveTypes GetType() const;
 
-	virtual void SetPosition(math::float3 position);
-	virtual void SetRotation(float angle, math::float3 u); // angle in degrees
-	virtual void SetColor(Color color);
+	virtual void SetPosition(const math::float3& position);
+	virtual void SetRotation(float angle, const math::float3& u); // angle in degrees
+	virtual void SetColor(const Color& color);
 
 	void SetWireframeMode(bool wireframeMode);
 	void ShowAxis(bool showAxis);
@@ -85,7 +85,7 @@ class PrimitiveRay : public Primitive
 {
 public:
 
-	PrimitiveRay(math::float3 direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f, math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveRay(const math::float3& direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f, const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 	
@@ -102,7 +102,7 @@ class PrimitiveAxis : public Primitive
 {
 public:
 
-	PrimitiveAxis(math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveAxis(const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
 	~PrimitiveAxis();
 
 private:
@@ -134,7 +134,7 @@ class PrimitivePlane : public Primitive
 {
 public:
 
-	PrimitivePlane(math::float2 size = math::float2(100.0f, 100.0f));
+	PrimitivePlane(const math::float2& size = math::float2(100.0f, 100.0f));
 
 private:
 
@@ -164,7 +164,7 @@ class PrimitiveCube : public Primitive
 {
 public:
 
-	PrimitiveCube(math::float3 size = math::float3(1.0f, 1.0f, 1.0f), math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveCube(const math::float3& size = math::float3(1.0f, 1.0f, 1.0f), const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 
@@ -203,7 +203,7 @@ class PrimitiveCone : public Primitive
 {
 public:
 
-	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5, math::float3 position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5, const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
 
 private:
 
@@ -235,7 +235,7 @@ class PrimitiveFrustum : public Primitive
 {
 public:
 
-	PrimitiveFrustum(math::float2 startSize = math::float2(0.5f, 0.5f), math::float3 endPosition = math::float3(0.0f, 0.0f, -1.0f), math::float2 endSize = math::float2(1.0f, 1.0f));
+	PrimitiveFrustum(const math::float2& startSize = math::float2(0.5f, 0.5f), const math::float3& endPosition = math::float3(0.0f, 0.0f, -1.0f), const math::float2& endSize = math::float2(1.0f, 1.0f));
 
 private:
 
@@ -244,3 +244,5 @@ private:
 
 	math::float3 endPosition = { 0.0f, 0.0f, 0.0f };
 };
+
+// TODO: Capsule

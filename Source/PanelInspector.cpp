@@ -36,7 +36,7 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
-				ImGui::Text("Position");
+				ImGui::Text("Posititreon");
 				math::float3 position = mesh->position;
 				ImGui::Text("X"); ImGui::SameLine();
 				ImGui::PushItemWidth(100);

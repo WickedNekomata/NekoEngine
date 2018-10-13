@@ -6,6 +6,8 @@
 #define SCREEN_MIN_WIDTH 640
 #define SCREEN_MIN_HEIGHT 480
 
+#include "ImGui/imgui.h"
+
 class Module;
 
 class PanelSettings : public Panel
@@ -16,6 +18,8 @@ public:
 	virtual ~PanelSettings();
 
 	virtual bool Draw();
+
+	void AddInput(const char* input);
 
 private:
 
@@ -28,6 +32,11 @@ private:
 	void FileSystemNode() const;
 	void InputNode() const;
 	void HardwareNode() const;
+
+private:
+
+	ImGuiTextBuffer buf;
+	ImVector<int> lineOffsets;
 };
 
 #endif

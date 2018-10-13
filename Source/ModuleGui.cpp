@@ -228,3 +228,18 @@ void ModuleGui::LogConsole(const char* log) const
 	if (panelConsole != nullptr)
 		panelConsole->AddLog(log);
 }
+
+void ModuleGui::AddInput(uint key, uint state) const
+{
+	static char input[512];
+	static const char* states[] = { "IDLE", "DOWN", "REPEAT", "UP" };
+
+	if (panelSettings != nullptr)
+	{
+		if (key < 1000)
+			sprintf_s(input, 512, "Keybr: %02u - %s\n", key, states[state]);
+		else
+			sprintf_s(input, 512, "Mouse: %02u - %s\n", key - 1000, states[state]);
+		panelSettings->AddInput(input);
+	}
+}

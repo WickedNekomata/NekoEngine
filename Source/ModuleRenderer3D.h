@@ -43,15 +43,16 @@ struct Mesh
 	uint indicesID = 0;
 	uint indicesSize = 0;
 
-	// Normals (vertices normals)
+	// Normals
 	float* normals = nullptr;
-	PrimitiveRay** normalsVerticesDebug = nullptr;
-	PrimitiveRay** normalsFacesDebug = nullptr;
+	//PrimitiveRay** normalsVerticesDebug = nullptr;
+	//PrimitiveRay** normalsFacesDebug = nullptr;
 
-	// Texture
+	// Texture Coords
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 
+	// Texture
 	uint textureID = 0;
 	uint textureWidth = 0;
 	uint textureHeight = 0;

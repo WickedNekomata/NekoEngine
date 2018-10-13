@@ -168,16 +168,18 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 		{
 			for (uint i = 0; i < meshes.size(); ++i)
 			{
-				if (debugDrawVerticesNormals)
+				/*
+				if (debugDrawVerticesNormals && meshes[i]->normalsVerticesDebug != nullptr)
 					DrawMeshVerticesNormals(meshes[i]);
-				if (debugDrawFacesNormals)
+				if (debugDrawFacesNormals && meshes[i]->normalsFacesDebug != nullptr)
 					DrawMeshFacesNormals(meshes[i]);
+					*/
 
-				if (meshes[i]->boundingBoxDebug != nullptr && debugDrawBoundingBoxes)
+				if (debugDrawBoundingBoxes && meshes[i]->boundingBoxDebug != nullptr)
 					meshes[i]->boundingBoxDebug->Render();
 			}
 
-			if (geometryBoundingBoxDebug != nullptr && debugDrawBoundingBoxes)
+			if (debugDrawBoundingBoxes && geometryBoundingBoxDebug != nullptr)
 				geometryBoundingBoxDebug->Render();
 		}
 	}
@@ -493,14 +495,18 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 
 void ModuleRenderer3D::DrawMeshVerticesNormals(Mesh* mesh) const
 {
+	/*
 	for (uint i = 0; i < mesh->verticesSize; ++i)
 		mesh->normalsVerticesDebug[i]->Render();
+		*/
 }
 
 void ModuleRenderer3D::DrawMeshFacesNormals(Mesh* mesh) const
 {
+	/*
 	for (uint i = 0; i < mesh->indicesSize / 3; ++i)
 		mesh->normalsFacesDebug[i]->Render();
+		*/
 }
 
 void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
@@ -640,6 +646,7 @@ void Mesh::Init()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	/*
 	// Create vertices normals
 	normalsVerticesDebug = new PrimitiveRay*[verticesSize];
 
@@ -679,6 +686,7 @@ void Mesh::Init()
 
 		normalsFacesDebug[i] = ray;
 	}
+	*/
 
 	// Create Bounding Box
 	boundingBox.SetNegativeInfinity();
@@ -708,19 +716,27 @@ Mesh::~Mesh()
 
 	RELEASE(boundingBoxDebug);
 
-	for (uint i = 0; i < verticesSize; ++i)
+	/*
+	if (normalsVerticesDebug != nullptr)
 	{
-		RELEASE(normalsVerticesDebug[i]);
+		for (uint i = 0; i < verticesSize; ++i)
+		{
+			RELEASE(normalsVerticesDebug[i]);
+		}
 	}
 
 	RELEASE_ARRAY(normalsVerticesDebug);
 
-	for (uint i = 0; i < indicesSize / 3; ++i)
+	if (normalsFacesDebug != nullptr)
 	{
-		RELEASE(normalsFacesDebug[i]);
+		for (uint i = 0; i < indicesSize / 3; ++i)
+		{
+			RELEASE(normalsFacesDebug[i]);
+		}
 	}
 
 	RELEASE_ARRAY(normalsFacesDebug);
+	*/
 }
 
 void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const

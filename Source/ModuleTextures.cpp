@@ -32,6 +32,7 @@ bool ModuleTextures::Init(JSON_Object * jObject)
 	}
 
 	// Initialize all DevIL functionality
+	ilutRenderer(ILUT_OPENGL);
 	ilInit();
 	iluInit();
 	ilutInit();
@@ -142,6 +143,7 @@ uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uin
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, texName);
 
+	// Set texture clamping method
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 

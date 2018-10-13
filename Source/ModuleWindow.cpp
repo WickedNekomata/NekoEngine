@@ -12,8 +12,7 @@ ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 	screen_surface = NULL;
 }
 
-ModuleWindow::~ModuleWindow()
-{}
+ModuleWindow::~ModuleWindow() {}
 
 bool ModuleWindow::Init(JSON_Object* jObject)
 {
@@ -106,7 +105,7 @@ uint ModuleWindow::GetScreenScale() const
 
 void ModuleWindow::SetWindowWidth(uint width)
 {
-	this->width = width;
+	this->width = width * scale;
 	UpdateWindowSize();
 }
 
@@ -117,7 +116,7 @@ uint ModuleWindow::GetWindowWidth() const
 
 void ModuleWindow::SetWindowHeight(uint height) 
 {
-	this->height = height;
+	this->height = height * scale;
 	UpdateWindowSize();
 }
 

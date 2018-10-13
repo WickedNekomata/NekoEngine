@@ -113,8 +113,8 @@ bool PanelInspector::Draw()
 			{
 				uint numTextures = 0;
 
-				if (ImGui::Checkbox("Check Image", &mesh->checkTexture))
-					App->renderer3D->SetCheckTextureToMeshes(mesh->checkTexture);
+				bool checkTexture = App->renderer3D->IsCheckTexture();
+				if (ImGui::Checkbox("Check Texture", &checkTexture)) { App->renderer3D->SetCheckTexture(checkTexture); }			
 
 				if (mesh->textureID > 0)
 					++numTextures;

@@ -58,10 +58,6 @@ struct Mesh
 
 	uint texture2ID = 0;
 
-	/// Check texture
-	bool checkTexture = false;
-	uint lastTextureID = 0;
-
 	// -----
 
 	void Init();
@@ -118,7 +114,9 @@ public:
 	// Textures
 	void AddTextureToMeshes(uint textureID, uint width, uint height);
 	void AddTexture2ToMeshes(uint textureID);
-	void SetCheckTextureToMeshes(bool checkTexture);
+
+	void SetCheckTexture(bool checkTexture);
+	bool IsCheckTexture() const;
 
 	void ClearTextures();
 
@@ -158,6 +156,7 @@ private:
 
 	std::vector<Mesh*> meshes;
 
+	bool checkTexture = false;
 	bool multitexturing = false;
 
 	const char* geometryName = nullptr;

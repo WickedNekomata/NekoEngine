@@ -440,7 +440,12 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glClientActiveTexture(GL_TEXTURE0);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+
+	if (checkTexture)
+		glBindTexture(GL_TEXTURE_2D, App->tex->GetCheckTextureID());
+	else
+		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 
@@ -505,9 +510,6 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint heigh
 		meshes[i]->textureID = textureID;
 		meshes[i]->textureWidth = width;
 		meshes[i]->textureHeight = height;
-
-		meshes[i]->checkTexture = false;
-		meshes[i]->lastTextureID = 0;
 	}
 }
 
@@ -517,39 +519,22 @@ void ModuleRenderer3D::AddTexture2ToMeshes(uint textureID)
 		meshes[i]->texture2ID = textureID;
 }
 
-void ModuleRenderer3D::SetCheckTextureToMeshes(bool checkTexture)
+void ModuleRenderer3D::SetCheckTexture(bool checkTexture)
 {
-	uint checkTextureID = App->tex->GetCheckTextureID();
+	this->checkTexture = checkTexture;
+}
 
-	for (uint i = 0; i < meshes.size(); ++i)
-	{
-		if (checkTexture)
-		{
-			meshes[i]->lastTextureID = meshes[i]->textureID;
-			meshes[i]->textureID = checkTextureID;
-			meshes[i]->checkTexture = true;
-		}
-		else
-		{
-			meshes[i]->textureID = meshes[i]->lastTextureID;
-			meshes[i]->checkTexture = false;
-			meshes[i]->lastTextureID = 0;
-		}
-	}
+bool ModuleRenderer3D::IsCheckTexture() const
+{
+	return checkTexture;
 }
 
 void ModuleRenderer3D::ClearTextures()
 {
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
-		if (i == 0)
-		{
-			if (meshes[i]->checkTexture)
-				SetCheckTextureToMeshes(false);
-
-			if (meshes[i]->textureID != App->tex->GetCheckTextureID())
-				glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
-		}
+		if (i == 0 && meshes[i]->textureID > 0)
+			glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
 
 		meshes[i]->textureID = 0;
 		meshes[i]->textureWidth = 0;

@@ -197,10 +197,17 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 {
 	json_object_set_boolean(jObject, "vSync", vsync);
+	json_object_set_boolean(jObject, "debugDraw", debugDraw);
+	json_object_set_number(jObject, "fov", fov);
+	json_object_set_number(jObject, "nearClipPlane", clipPlanes.x);
+	json_object_set_number(jObject, "farClipPlane", clipPlanes.y);
 }
 void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 {
-	SetVSync(json_object_get_boolean(jObject, "vSync"));
+	vsync = json_object_get_boolean(jObject, "vSync");
+	debugDraw = json_object_get_boolean(jObject, "debugDraw");
+	fov = json_object_get_number(jObject, "fov");
+	clipPlanes = math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane"));
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)

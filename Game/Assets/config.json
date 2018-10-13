@@ -2,8 +2,8 @@
     "Application": {
         "Title": "Neko Engine",
         "Organization": "WickedNekomata",
-        "Cap Frames": true,
-        "Max FPS": 60
+        "Cap Frames": false,
+        "Max FPS": 4294967295
     },
     "NoName": {},
     "FileSystem": {},
@@ -18,23 +18,20 @@
     },
     "Camera3D": {},
     "Input": {},
-    "Audio": {},
     "GUI": {
-        "Inspector": false,
+        "Inspector": true,
         "PCG performance test": false,
         "About": false,
-        "Console": false,
-        "Settings": true,
+        "Console": true,
+        "Settings": false,
         "Import": false
     },
-    "Scene": {
-		"showGrid":true	
-	},
+    "Scene": {},
     "Renderer3D": {
-        "vSync": false,
-		"debugDraw": true,
-		"fov": 45,
-		"nearClipPlane": 0.125,
-		"farClipPlane": 512
+        "vSync": true,
+        "debugDraw": true,
+        "fov": 45,
+        "nearClipPlane": 0.125,
+        "farClipPlane": 512
     }
 }

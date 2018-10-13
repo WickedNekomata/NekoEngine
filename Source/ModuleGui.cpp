@@ -39,6 +39,8 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelSettings);
 	panels.push_back(panelImport);
 
+	this->LoadStatus(jObject);
+
 	return true;
 }
 

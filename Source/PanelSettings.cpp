@@ -33,26 +33,22 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("Window"))
 		{
-			if (IsActiveNode((Module*)App->window))
-				WindowNode();
+			WindowNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Renderer 3D"))
 		{
-			if (IsActiveNode((Module*)App->renderer3D))
-				RendererNode();
+			RendererNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("File System"))
 		{
-			if (IsActiveNode((Module*)App->filesystem))
-				FileSystemNode();
+			FileSystemNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Input"))
 		{
-			if (IsActiveNode((Module*)App->input))
-				InputNode();
+			InputNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Hardware"))

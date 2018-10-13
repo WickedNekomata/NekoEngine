@@ -56,7 +56,7 @@ struct Mesh
 	uint textureWidth = 0;
 	uint textureHeight = 0;
 
-	uint textureID2 = 0;
+	uint texture2ID = 0;
 
 	/// Check texture
 	bool checkTexture = false;
@@ -114,10 +114,14 @@ public:
 	void DrawMeshFacesNormals(Mesh* mesh) const;
 
 	// Textures
-	void AddTextureToMeshes(uint textureNum, uint textureID, uint width, uint height);
+	void AddTextureToMeshes(uint textureID, uint width, uint height);
+	void AddTexture2ToMeshes(uint textureID);
 	void SetCheckTextureToMeshes(bool checkTexture);
 
 	void ClearTextures();
+
+	void SetMultitexturing(bool multitexturing);
+	bool GetMultitexturing() const;
 
 	// Geometry
 	void SetGeometryName(const char* geometryName);
@@ -149,6 +153,8 @@ public:
 	std::vector<Mesh*> meshes;
 
 private:
+
+	bool multitexturing = false;
 
 	const char* geometryName = nullptr;
 	bool geometryActive = false;

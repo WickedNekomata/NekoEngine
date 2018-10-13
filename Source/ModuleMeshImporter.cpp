@@ -218,5 +218,6 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 	App->renderer3D->SetGeometryName(App->filesystem->GetFileNameFromPath(path));
 	App->renderer3D->CreateGeometryBoundingBox();
 	App->renderer3D->SetGeometryActive(true);
+	App->renderer3D->SetMultitexturing(false);
 	App->renderer3D->LookAtGeometry();
 }

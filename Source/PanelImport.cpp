@@ -20,7 +20,7 @@ bool PanelImport::Draw()
 	
 	if (ImGui::Begin(name, &enabled, importFlags))
 	{
-		// TODO: Get PHYSFS paths for combo
+		// TODO
 		ImGui::Text("Base Path:");
 		const char* items[] = { "Assets/", "Assets/Model", "." };
 		App->filesystem->GetReadPaths();

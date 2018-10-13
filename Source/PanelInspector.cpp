@@ -107,28 +107,77 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
-				bool checkImage = mesh->checkTexture;
-				if (ImGui::Checkbox("Check Image", &checkImage))
-					App->renderer3D->SetCheckTextureToMeshes(checkImage);
+				uint numTextures = 0;
 
-				ImGui::Separator();
+				if (ImGui::Checkbox("Check Image", &mesh->checkTexture))
+					App->renderer3D->SetCheckTextureToMeshes(mesh->checkTexture);
+
+				if (mesh->textureID > 0)
+					++numTextures;
+
+				bool multitexturing = App->renderer3D->GetMultitexturing();
+				static int currentTexture = 0;
+				if (ImGui::Checkbox("Multitexturing", &multitexturing))
+				{
+					if (multitexturing)
+					{
+						App->renderer3D->SetMultitexturing(true);
+
+						if (currentTexture == 0)
+							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTextureID());
+						else if (currentTexture == 1)
+							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTexture2ID());
+					}
+					else
+					{
+						App->renderer3D->SetMultitexturing(false);
+
+						App->renderer3D->AddTexture2ToMeshes(0);
+					}
+				}
+
+				if (multitexturing)
+					++numTextures;
+
+				ImGui::Text("Textures: %i", numTextures);
 
 				if (mesh->textureID > 0)
 				{
-					ImGui::Text("Textures: 1");
+					ImGui::Separator();
+					ImGui::TextColored(WHITE, "Texture 1:");
+					ImGui::Separator();
 
 					ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-					ImGui::Text("Texture ID: %i", mesh->textureID);
+					
+					ImGui::Text("ID: %i", mesh->textureID);
 
 					if (mesh->textureID != App->tex->GetCheckTextureID())
 					{
 						ImGui::Text("Width: %i", mesh->textureWidth);
 						ImGui::Text("Height %i", mesh->textureHeight);
 					}
+				}	
+
+				if (mesh->texture2ID > 0)
+				{
+					ImGui::Separator();
+					ImGui::TextColored(WHITE, "Texture 2:");
+					ImGui::Separator();
+
+					const char* multitexturingTextures[] = { "Smile", "Mask" };
+					if (ImGui::Combo("##texture2", &currentTexture, multitexturingTextures, IM_ARRAYSIZE(multitexturingTextures)))
+					{
+						if (currentTexture == 0)
+							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTextureID());
+						else if (currentTexture == 1)
+							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTexture2ID());
+					}
+
+					ImGui::Image((void*)(intptr_t)mesh->texture2ID, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
+
+					ImGui::Text("ID: %i", mesh->texture2ID);
 				}
 			}
-			else
-				ImGui::Text("Textures: 0");
 		}
 	}
 	ImGui::End();

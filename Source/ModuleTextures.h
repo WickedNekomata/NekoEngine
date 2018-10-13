@@ -14,18 +14,22 @@ public:
 	bool Start();
 	bool CleanUp();
 
-	uint LoadImageFromFile(const char* path);
+	uint LoadImageFromFile(const char* path, bool needsMeshes = true);
 	uint LoadCheckImage();
 
 	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false);
 
 	uint GetCheckTextureID() const;
 
+	uint GetMultitexturingTextureID() const;
+	uint GetMultitexturingTexture2ID() const;
+
 private:
 
 	uint checkTextureID = 0;
 
-	uint currTexIndex = 0;
+	uint multitexturingTextureID = 0;
+	uint multitexturingTexture2ID = 0;
 };
 
 #endif

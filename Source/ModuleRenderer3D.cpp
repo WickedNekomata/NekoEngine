@@ -426,7 +426,7 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glClientActiveTexture(GL_TEXTURE1);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID2);
+	glBindTexture(GL_TEXTURE_2D, mesh->texture2ID);
 
 	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); /// params: GL_ADD, GL_MODULATE, GL_DECAL, GL_BLEND, GL_REPLACE, or GL_COMBINE
 
@@ -476,21 +476,24 @@ void ModuleRenderer3D::DrawMeshFacesNormals(Mesh* mesh) const
 		mesh->normalsFacesDebug[i]->Render();
 }
 
-void ModuleRenderer3D::AddTextureToMeshes(uint textureNum, uint textureID, uint width, uint height)
+void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
 {
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
-		if (textureNum == 0)
-		{
-			meshes[i]->textureID = textureID;
-			meshes[i]->textureWidth = width;
-			meshes[i]->textureHeight = height;
-		}
-		else
-			meshes[i]->textureID2 = textureID;
+		meshes[i]->textureID = textureID;
+		meshes[i]->textureWidth = width;
+		meshes[i]->textureHeight = height;
 
 		meshes[i]->checkTexture = false;
 		meshes[i]->lastTextureID = 0;
+	}
+}
+
+void ModuleRenderer3D::AddTexture2ToMeshes(uint textureID)
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->texture2ID = textureID;
 	}
 }
 
@@ -532,6 +535,16 @@ void ModuleRenderer3D::ClearTextures()
 		meshes[i]->textureWidth = 0;
 		meshes[i]->textureHeight = 0;
 	}
+}
+
+void ModuleRenderer3D::SetMultitexturing(bool multitexturing)
+{
+	this->multitexturing = multitexturing;
+}
+
+bool ModuleRenderer3D::GetMultitexturing() const
+{
+	return multitexturing;
 }
 
 void ModuleRenderer3D::SetGeometryName(const char* geometryName)

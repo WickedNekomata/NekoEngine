@@ -42,14 +42,11 @@ bool ModuleTextures::Init(JSON_Object * jObject)
 
 bool ModuleTextures::Start()
 {
-	bool ret = false;
-
 	checkTextureID = LoadCheckImage();
+	multitexturingTextureID = LoadImageFromFile("Assets\\Textures\\smile.png", false);
+	multitexturingTexture2ID = LoadImageFromFile("Assets\\Textures\\mask.png", false);
 
-	if (checkTextureID > 0)
-		ret = true;
-
-	return ret;
+	return true;
 }
 
 bool ModuleTextures::CleanUp()
@@ -57,14 +54,20 @@ bool ModuleTextures::CleanUp()
 	if (checkTextureID > 0)
 		glDeleteTextures(1, (GLuint*)&checkTextureID);
 
+	if (multitexturingTextureID > 0)
+		glDeleteTextures(1, (GLuint*)&multitexturingTextureID);
+
+	if (multitexturingTexture2ID > 0)
+		glDeleteTextures(1, (GLuint*)&multitexturingTexture2ID);
+
 	return true;
 }
 
-uint ModuleTextures::LoadImageFromFile(const char* path)
+uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes)
 {
 	uint texName = 0;
 
-	if (App->renderer3D->GetNumMeshes() <= 0)
+	if (needsMeshes && App->renderer3D->GetNumMeshes() <= 0)
 	{
 		CONSOLE_LOG("Error at loading texture. ERROR: No meshes in the scene");
 		return texName;
@@ -90,12 +93,13 @@ uint ModuleTextures::LoadImageFromFile(const char* path)
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
 			// Create the texture
-			//App->renderer3D->ClearTextures();
+			if (needsMeshes)
+				App->renderer3D->ClearTextures();
 
 			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_FORMAT), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
 			
-			App->renderer3D->AddTextureToMeshes(currTexIndex, texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-			++currTexIndex;
+			if (needsMeshes)
+				App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -180,4 +184,14 @@ uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uin
 uint ModuleTextures::GetCheckTextureID() const
 {
 	return checkTextureID;
+}
+
+uint ModuleTextures::GetMultitexturingTextureID() const
+{
+	return multitexturingTextureID;
+}
+
+uint ModuleTextures::GetMultitexturingTexture2ID() const
+{
+	return multitexturingTexture2ID;
 }

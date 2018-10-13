@@ -56,6 +56,10 @@ struct Mesh
 	uint textureWidth = 0;
 	uint textureHeight = 0;
 
+	/// Check texture
+	bool checkTexture = false;
+	uint lastTextureID = 0;
+
 	// -----
 
 	void Init();
@@ -101,15 +105,20 @@ public:
 	// Meshes
 	bool AddMesh(Mesh* mesh);
 	bool RemoveMesh(Mesh* mesh);
-	void ClearMeshes();
-	void ClearTextures();
-	void AddTextureToMeshes(uint textureID, uint width, uint height);
 	Mesh* GetMeshAt(uint index) const;
 	uint GetNumMeshes() const;
+
+	void ClearMeshes();
 
 	void DrawMesh(Mesh* mesh) const;
 	void DrawMeshVerticesNormals(Mesh* mesh) const;
 	void DrawMeshFacesNormals(Mesh* mesh) const;
+
+	// Textures
+	void AddTextureToMeshes(uint textureID, uint width, uint height);
+	void SetCheckTextureToMeshes(bool checkTexture);
+
+	void ClearTextures();
 
 	// Geometry
 	void SetGeometryName(const char* geometryName);

@@ -106,14 +106,22 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
-				if (mesh->textureID != 0)
+				bool checkImage = mesh->checkTexture;
+				if (ImGui::Checkbox("Check Image", &checkImage))
+					App->renderer3D->SetCheckTextureToMeshes(checkImage);
+
+				if (mesh->textureID > 0)
 				{
 					ImGui::Text("Textures: 1");
 
 					ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
 					ImGui::Text("Texture ID: %i", mesh->textureID);
-					ImGui::Text("Width: %i", mesh->textureWidth);
-					ImGui::Text("Height %i", mesh->textureHeight);
+
+					if (mesh->textureID != App->tex->GetCheckTextureID())
+					{
+						ImGui::Text("Width: %i", mesh->textureWidth);
+						ImGui::Text("Height %i", mesh->textureHeight);
+					}
 				}
 			}
 			else

@@ -11,8 +11,8 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
-#define CHECKERS_HEIGHT 4
-#define CHECKERS_WIDTH 4
+#define CHECKERS_HEIGHT 128
+#define CHECKERS_WIDTH 128
 
 ModuleTextures::ModuleTextures(bool start_enabled) {}
 
@@ -40,22 +40,35 @@ bool ModuleTextures::Init(JSON_Object * jObject)
 	return ret;
 }
 
+bool ModuleTextures::Start()
+{
+	bool ret = false;
+
+	checkTextureID = LoadCheckImage();
+
+	if (checkTextureID > 0)
+		ret = true;
+
+	return ret;
+}
+
 bool ModuleTextures::CleanUp()
 {
+	if (checkTextureID > 0)
+		glDeleteTextures(1, (GLuint*)&checkTextureID);
+
 	return true;
 }
 
-bool ModuleTextures::LoadImageFromFile(const char* path) const
+uint ModuleTextures::LoadImageFromFile(const char* path) const
 {
-	bool ret = false;
+	uint texName = 0;
 
 	if (App->renderer3D->GetNumMeshes() <= 0)
 	{
 		CONSOLE_LOG("Error at loading texture. ERROR: No meshes in the scene");
-		return ret;
+		return texName;
 	}
-
-	uint texName = 0;
 
 	// Generate the image name
 	uint imageName = 0;
@@ -75,44 +88,13 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-		{		
+		{
+			// Create the texture
 			App->renderer3D->ClearTextures();
 
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-			// Generate the texture name
-			glGenTextures(1, &texName);
-
-			// Bind the texture
-			glBindTexture(GL_TEXTURE_2D, texName);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			// Set texture interpolation method
-			/// Mipmap for the highest visual quality
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
-			{
-				GLfloat largest_supported_anisotropy;
-				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
-			}
-
-			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
-
-			glGenerateMipmap(GL_TEXTURE_2D);
+			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
 
 			App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-
-			CONSOLE_LOG("Succes at loading texture: %i ID, %i Width, %i Height", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-
-			ret = true;
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -122,10 +104,10 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 	ilDeleteImages(1, &imageName);
 	
-	return ret;
+	return texName;
 }
 
-void ModuleTextures::CheckeredTexture() const
+uint ModuleTextures::LoadCheckImage() const
 {
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 
@@ -138,4 +120,64 @@ void ModuleTextures::CheckeredTexture() const
 			checkImage[i][j][3] = (GLubyte)255;
 		}
 	}
+
+	// Create the texture
+	return CreateTextureFromPixels(GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, GL_RGBA, checkImage, true);
+}
+
+uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, void* pixels, bool checkTexture) const
+{
+	uint texName = 0;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// Generate the texture name
+	glGenTextures(1, &texName);
+
+	// Bind the texture
+	glBindTexture(GL_TEXTURE_2D, texName);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Set texture interpolation method
+	if (checkTexture)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else
+	{
+		/// Mipmap for the highest visual quality
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
+		{
+			GLfloat largest_supported_anisotropy;
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
+		}
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height,
+		0, format, GL_UNSIGNED_BYTE, pixels);
+
+	if (!checkTexture)
+	{
+		/// Mipmap
+		glEnable(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
+	CONSOLE_LOG("Succes at loading texture: %i ID, %i Width, %i Height", texName, width, height);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texName;
+}
+
+uint ModuleTextures::GetCheckTextureID() const
+{
+	return checkTextureID;
 }

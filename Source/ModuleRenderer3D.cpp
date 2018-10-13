@@ -376,40 +376,6 @@ bool ModuleRenderer3D::RemoveMesh(Mesh* mesh)
 	return ret;
 }
 
-void ModuleRenderer3D::ClearMeshes() 
-{
-	for (uint i = 0; i < meshes.size(); ++i)
-		delete meshes[i];
-
-	meshes.clear();
-
-	// Clear geometry Bounding Box
-	RELEASE(geometryBoundingBoxDebug);
-}
-
-void ModuleRenderer3D::ClearTextures()
-{
-	for (uint i = 0; i < meshes.size(); ++i)
-	{
-		if (i == 0 && meshes[i]->textureID != 0)
-			glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
-
-		meshes[i]->textureHeight = 0;
-		meshes[i]->textureWidth = 0;
-		meshes[i]->textureID = 0;
-	}
-}
-
-void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
-{
-	for (uint i = 0; i < meshes.size(); ++i)
-	{
-		meshes[i]->textureID = textureID;
-		meshes[i]->textureHeight = height;
-		meshes[i]->textureWidth = width;
-	}
-}
-
 Mesh* ModuleRenderer3D::GetMeshAt(uint index) const
 {
 	if (index < meshes.size() && index >= 0)
@@ -423,14 +389,25 @@ uint ModuleRenderer3D::GetNumMeshes() const
 	return meshes.size();
 }
 
-void ModuleRenderer3D::DrawMesh(Mesh* mesh) const 
+void ModuleRenderer3D::ClearMeshes() 
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+		delete meshes[i];
+
+	meshes.clear();
+
+	// Clear geometry Bounding Box
+	RELEASE(geometryBoundingBoxDebug);
+}
+
+void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 {
 	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->verticesID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	
+
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
 	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
@@ -438,7 +415,7 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesID);
 
 	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
-	
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -457,6 +434,120 @@ void ModuleRenderer3D::DrawMeshFacesNormals(Mesh* mesh) const
 {
 	for (uint i = 0; i < mesh->indicesSize / 3; ++i)
 		mesh->normalsFacesDebug[i]->Render();
+}
+
+void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i]->textureID = textureID;
+		meshes[i]->textureWidth = width;
+		meshes[i]->textureHeight = height;
+
+		meshes[i]->checkTexture = false;
+		meshes[i]->lastTextureID = 0;
+	}
+}
+
+void ModuleRenderer3D::SetCheckTextureToMeshes(bool checkTexture)
+{
+	uint checkTextureID = App->tex->GetCheckTextureID();
+
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		if (checkTexture)
+		{
+			meshes[i]->lastTextureID = meshes[i]->textureID;
+			meshes[i]->textureID = checkTextureID;
+			meshes[i]->checkTexture = true;
+		}
+		else
+		{
+			meshes[i]->textureID = meshes[i]->lastTextureID;
+			meshes[i]->checkTexture = false;
+			meshes[i]->lastTextureID = 0;
+		}
+	}
+}
+
+void ModuleRenderer3D::ClearTextures()
+{
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		if (i == 0)
+		{
+			if (meshes[i]->checkTexture)
+				SetCheckTextureToMeshes(false);
+
+			if (meshes[i]->textureID != App->tex->GetCheckTextureID())
+				glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
+		}
+
+		meshes[i]->textureID = 0;
+		meshes[i]->textureWidth = 0;
+		meshes[i]->textureHeight = 0;
+	}
+}
+
+void ModuleRenderer3D::SetGeometryName(const char* geometryName)
+{
+	RELEASE_ARRAY(this->geometryName);
+
+	this->geometryName = geometryName;
+}
+
+const char* ModuleRenderer3D::GetGeometryName() const
+{
+	return geometryName;
+}
+
+void ModuleRenderer3D::SetGeometryActive(bool geometryActive)
+{
+	this->geometryActive = geometryActive;
+}
+
+bool ModuleRenderer3D::IsGeometryActive() const
+{
+	return geometryActive;
+}
+
+void ModuleRenderer3D::CreateGeometryBoundingBox()
+{
+	uint geometryVerticesSize = 0;
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		Mesh* mesh = GetMeshAt(i);
+		geometryVerticesSize += mesh->verticesSize;
+	}
+
+	float* geometryVertices = new float[geometryVerticesSize * 3];
+
+	int index = -1;
+	for (uint i = 0; i < meshes.size(); ++i)
+	{
+		Mesh* mesh = GetMeshAt(i);
+
+		for (uint j = 0; j < mesh->verticesSize * 3; ++j)
+			geometryVertices[++index] = mesh->vertices[j];
+	}
+
+	geometryBoundingBox.SetNegativeInfinity();
+	geometryBoundingBox.Enclose((const math::float3*)geometryVertices, geometryVerticesSize);
+
+	// Debug draw
+	geometryBoundingBoxDebug = new PrimitiveCube(geometryBoundingBox.Size(), geometryBoundingBox.CenterPoint());
+	geometryBoundingBoxDebug->SetColor(Yellow);
+	geometryBoundingBoxDebug->SetWireframeMode(true);
+}
+
+void ModuleRenderer3D::LookAtGeometry() const
+{
+	math::float3 target = geometryBoundingBox.CenterPoint(); // geometry center point
+	float targetRadius = geometryBoundingBox.Size().Length(); // geometry diameter
+
+	App->camera->SetTarget(target);
+	App->camera->SetTargetRadius(targetRadius);
+	App->camera->LookAt(target, targetRadius);
 }
 
 // Mesh --------------------------------------------------
@@ -561,65 +652,4 @@ Mesh::~Mesh()
 	}
 
 	RELEASE_ARRAY(normalsFacesDebug);
-}
-
-void ModuleRenderer3D::SetGeometryName(const char* geometryName)
-{
-	RELEASE_ARRAY(this->geometryName);
-
-	this->geometryName = geometryName;
-}
-
-const char* ModuleRenderer3D::GetGeometryName() const
-{
-	return geometryName;
-}
-
-void ModuleRenderer3D::SetGeometryActive(bool geometryActive)
-{
-	this->geometryActive = geometryActive;
-}
-
-bool ModuleRenderer3D::IsGeometryActive() const
-{
-	return geometryActive;
-}
-
-void ModuleRenderer3D::CreateGeometryBoundingBox()
-{
-	uint geometryVerticesSize = 0;
-	for (uint i = 0; i < meshes.size(); ++i)
-	{
-		Mesh* mesh = GetMeshAt(i);
-		geometryVerticesSize += mesh->verticesSize;
-	}
-
-	float* geometryVertices = new float[geometryVerticesSize * 3];
-
-	int index = -1;
-	for (uint i = 0; i < meshes.size(); ++i)
-	{
-		Mesh* mesh = GetMeshAt(i);
-
-		for (uint j = 0; j < mesh->verticesSize * 3; ++j)
-			geometryVertices[++index] = mesh->vertices[j];
-	}
-
-	geometryBoundingBox.SetNegativeInfinity();
-	geometryBoundingBox.Enclose((const math::float3*)geometryVertices, geometryVerticesSize);
-
-	// Debug draw
-	geometryBoundingBoxDebug = new PrimitiveCube(geometryBoundingBox.Size(), geometryBoundingBox.CenterPoint());
-	geometryBoundingBoxDebug->SetColor(Yellow);
-	geometryBoundingBoxDebug->SetWireframeMode(true);
-}
-
-void ModuleRenderer3D::LookAtGeometry() const
-{
-	math::float3 target = geometryBoundingBox.CenterPoint(); // geometry center point
-	float targetRadius = geometryBoundingBox.Size().Length(); // geometry diameter
-
-	App->camera->SetTarget(target);
-	App->camera->SetTargetRadius(targetRadius);
-	App->camera->LookAt(target, targetRadius);
 }

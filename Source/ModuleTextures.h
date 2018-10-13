@@ -11,10 +11,19 @@ public:
 	~ModuleTextures();
 
 	bool Init(JSON_Object* jObject);
+	bool Start();
 	bool CleanUp();
 
-	bool LoadImageFromFile(const char* path) const;
-	void CheckeredTexture() const;
+	uint LoadImageFromFile(const char* path) const;
+	uint LoadCheckImage() const;
+
+	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, void* pixels, bool checkTexture = false) const;
+
+	uint GetCheckTextureID() const;
+
+private:
+
+	uint checkTextureID = 0;
 };
 
 #endif

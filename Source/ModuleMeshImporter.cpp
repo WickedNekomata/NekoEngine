@@ -68,7 +68,7 @@ bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize, const char* path) const
 {
 	bool ret = false;
 
@@ -85,7 +85,7 @@ bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& 
 
 	if (scene != nullptr)
 	{
-		InitMeshesFromScene(scene, nullptr);
+		InitMeshesFromScene(scene, path);
 		aiReleaseImport(scene);
 
 		ret = true;
@@ -103,7 +103,7 @@ bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
 
 	if (App->filesystem->OpenRead(path, &buffer, size))
 	{
-		ret = LoadMeshesFromMemory(buffer, size);
+		ret = LoadMeshesFromMemory(buffer, size, path);
 
 		if (!ret)
 			CONSOLE_LOG("Error loading scene %s", path);

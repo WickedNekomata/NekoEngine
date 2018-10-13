@@ -25,9 +25,7 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	//App->camera->Move(math::float3(1.0f, 1.0f, 0.0f));
-	//App->camera->LookAt(math::float3(0, 0, 0));
-	App->camera->Move(math::float3(0.0f, 1.0f, -20.0f));
+	App->meshImporter->LoadMeshesFromFile("Assets\\Models\\BakerHouse.fbx");
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);

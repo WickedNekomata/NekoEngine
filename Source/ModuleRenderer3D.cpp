@@ -548,6 +548,8 @@ void ModuleRenderer3D::LookAtGeometry() const
 	math::float3 target = geometryBoundingBox.CenterPoint(); // geometry center point
 	float targetRadius = geometryBoundingBox.Size().Length(); // geometry diameter
 
+	App->camera->MoveTo(math::float3(targetRadius, targetRadius, targetRadius));
+
 	App->camera->SetTarget(target);
 	App->camera->SetTargetRadius(targetRadius);
 	App->camera->LookAt(target, targetRadius);

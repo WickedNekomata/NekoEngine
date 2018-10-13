@@ -16,7 +16,7 @@ public:
 	bool CleanUp();
 
 	bool LoadMeshesFromFile(const char* path) const;
-	bool LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const;
+	bool LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize, const char* path) const;
 	bool LoadMeshesWithPHYSFS(const char* path);
 	void InitMeshesFromScene(const aiScene* scene, const char* path) const;
 };

@@ -146,7 +146,9 @@ const char* ModuleFileSystem::GetWritePath() const
 const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
 {
 	std::string newPath = path;
-	std::string name = newPath.substr(newPath.find_last_of("\\") + 1, newPath.size());
+	std::string name = newPath;
+	name = name.substr(name.find_last_of("\\") + 1, name.size());
+	name = name.substr(name.find_last_of("//") + 1, name.size());
 	name = name.substr(0, name.find_last_of("."));
 
 	const char* result = new char[name.size() + 1];

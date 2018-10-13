@@ -64,7 +64,7 @@ bool ModuleTextures::CleanUp()
 	return true;
 }
 
-uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes)
+uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes) const
 {
 	uint texName = 0;
 
@@ -113,7 +113,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes)
 	return texName;
 }
 
-uint ModuleTextures::LoadCheckImage()
+uint ModuleTextures::LoadCheckImage() const
 {
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 
@@ -131,7 +131,7 @@ uint ModuleTextures::LoadCheckImage()
 	return CreateTextureFromPixels(GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, GL_RGBA, checkImage, true);
 }
 
-uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture)
+uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture) const
 {
 	uint texName = 0;
 

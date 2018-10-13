@@ -206,22 +206,35 @@ bool ModuleRenderer3D::CleanUp()
 	return ret;
 }
 
-void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
+bool ModuleRenderer3D::SetVSync(bool vsync)
 {
-	json_object_set_boolean(jObject, "vSync", vsync);
-	json_object_set_boolean(jObject, "debugDraw", debugDraw);
-	json_object_set_number(jObject, "fov", fov);
-	json_object_set_number(jObject, "nearClipPlane", clipPlanes.x);
-	json_object_set_number(jObject, "farClipPlane", clipPlanes.y);
+	bool ret = true;
+
+	this->vsync = vsync;
+
+	if (this->vsync) {
+
+		if (SDL_GL_SetSwapInterval(1) == -1)
+		{
+			ret = false;
+			CONSOLE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+		}
+	}
+	else {
+
+		if (SDL_GL_SetSwapInterval(0) == -1)
+		{
+			ret = false;
+			CONSOLE_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
+		}
+	}
+
+	return ret;
 }
-void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
+
+bool ModuleRenderer3D::GetVSync() const
 {
-	SetVSync(json_object_get_boolean(jObject, "vSync"));
-	if (vsync && App->GetCapFrames())
-		App->SetCapFrames(false);
-	debugDraw = json_object_get_boolean(jObject, "debugDraw");
-	fov = json_object_get_number(jObject, "fov");
-	clipPlanes = math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane"));
+	return vsync;
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -229,18 +242,6 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glViewport(0, 0, width, height);
 
 	CalculateProjectionMatrix();
-}
-
-void ModuleRenderer3D::CalculateProjectionMatrix()
-{
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), clipPlanes.x, clipPlanes.y);
-	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 void ModuleRenderer3D::SetFOV(float fov)
@@ -257,35 +258,42 @@ void ModuleRenderer3D::SetClipPlanes(math::float2 clipPlanes)
 	CalculateProjectionMatrix();
 }
 
-bool ModuleRenderer3D::SetVSync(bool vsync) 
+void ModuleRenderer3D::CalculateProjectionMatrix()
 {
-	bool ret = true;
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
-	this->vsync = vsync;
+	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), clipPlanes.x, clipPlanes.y);
+	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
 
-	if (this->vsync) {
-
-		if (SDL_GL_SetSwapInterval(1) == -1)
-		{
-			ret = false;
-			CONSOLE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
-		}
-	}
-	else {
-	
-		if (SDL_GL_SetSwapInterval(0) == -1) 
-		{
-			ret = false;
-			CONSOLE_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
-		}
-	}
-
-	return ret;
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
-bool ModuleRenderer3D::GetVSync() const 
+math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
 {
-	return vsync;
+	math::float4x4 Perspective;
+
+	float coty = 1.0f / tan(fovy * (float)M_PI / 360.0f);
+
+	Perspective[0][0] = coty / aspect;
+	Perspective[0][1] = 0.0f;
+	Perspective[0][2] = 0.0f;
+	Perspective[0][3] = 0.0f;
+	Perspective[1][0] = 0.0f;
+	Perspective[1][1] = coty;
+	Perspective[1][2] = 0.0f;
+	Perspective[1][3] = 0.0f;
+	Perspective[2][0] = 0.0f;
+	Perspective[2][1] = 0.0f;
+	Perspective[2][2] = (n + f) / (n - f);
+	Perspective[2][3] = -1.0f;
+	Perspective[3][0] = 0.0f;
+	Perspective[3][1] = 0.0f;
+	Perspective[3][2] = 2.0f * n * f / (n - f);
+	Perspective[3][3] = 0.0f;
+
+	return Perspective;
 }
 
 void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const
@@ -331,32 +339,6 @@ bool ModuleRenderer3D::IsWireframeMode() const
 		ret = true;
 
 	return ret;
-}
-
-math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
-{
-	math::float4x4 Perspective;
-
-	float coty = 1.0f / tan(fovy * (float)M_PI / 360.0f);
-
-	Perspective[0][0] = coty / aspect;
-	Perspective[0][1] = 0.0f;
-	Perspective[0][2] = 0.0f;
-	Perspective[0][3] = 0.0f;
-	Perspective[1][0] = 0.0f;
-	Perspective[1][1] = coty;
-	Perspective[1][2] = 0.0f;
-	Perspective[1][3] = 0.0f;
-	Perspective[2][0] = 0.0f;
-	Perspective[2][1] = 0.0f;
-	Perspective[2][2] = (n + f) / (n - f);
-	Perspective[2][3] = -1.0f;
-	Perspective[3][0] = 0.0f;
-	Perspective[3][1] = 0.0f;
-	Perspective[3][2] = 2.0f * n * f / (n - f);
-	Perspective[3][3] = 0.0f;
-
-	return Perspective;
 }
 
 bool ModuleRenderer3D::AddMesh(Mesh* mesh) 
@@ -492,9 +474,7 @@ void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint heigh
 void ModuleRenderer3D::AddTexture2ToMeshes(uint textureID)
 {
 	for (uint i = 0; i < meshes.size(); ++i)
-	{
 		meshes[i]->texture2ID = textureID;
-	}
 }
 
 void ModuleRenderer3D::SetCheckTextureToMeshes(bool checkTexture)
@@ -592,7 +572,11 @@ void ModuleRenderer3D::CreateGeometryBoundingBox()
 	geometryBoundingBox.SetNegativeInfinity();
 	geometryBoundingBox.Enclose((const math::float3*)geometryVertices, geometryVerticesSize);
 
+	RELEASE_ARRAY(geometryVertices);
+
 	// Debug draw
+	RELEASE(geometryBoundingBoxDebug);
+
 	geometryBoundingBoxDebug = new PrimitiveCube(geometryBoundingBox.Size(), geometryBoundingBox.CenterPoint());
 	geometryBoundingBoxDebug->SetColor(Yellow);
 	geometryBoundingBoxDebug->SetWireframeMode(true);
@@ -712,4 +696,23 @@ Mesh::~Mesh()
 	}
 
 	RELEASE_ARRAY(normalsFacesDebug);
+}
+
+void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_boolean(jObject, "vSync", vsync);
+	json_object_set_boolean(jObject, "debugDraw", debugDraw);
+	json_object_set_number(jObject, "fov", fov);
+	json_object_set_number(jObject, "nearClipPlane", clipPlanes.x);
+	json_object_set_number(jObject, "farClipPlane", clipPlanes.y);
+}
+
+void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
+{
+	SetVSync(json_object_get_boolean(jObject, "vSync"));
+	if (vsync && App->GetCapFrames())
+		App->SetCapFrames(false);
+	debugDraw = json_object_get_boolean(jObject, "debugDraw");
+	fov = json_object_get_number(jObject, "fov");
+	clipPlanes = math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane"));
 }

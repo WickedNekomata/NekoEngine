@@ -14,10 +14,10 @@ public:
 	bool Start();
 	bool CleanUp();
 
-	uint LoadImageFromFile(const char* path, bool needsMeshes = true);
-	uint LoadCheckImage();
+	uint LoadImageFromFile(const char* path, bool needsMeshes = true) const;
+	uint LoadCheckImage() const;
 
-	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false);
+	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false) const;
 
 	uint GetCheckTextureID() const;
 

@@ -81,25 +81,19 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void SaveStatus(JSON_Object*) const;
-	void LoadStatus(const JSON_Object*);
-
-	void OnResize(int width, int height);
-	void CalculateProjectionMatrix();
-
-	void SetFOV(float fov);
-	void SetClipPlanes(math::float2 clipPlanes);
-
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
+	void OnResize(int width, int height);
+	void SetFOV(float fov);
+	void SetClipPlanes(math::float2 clipPlanes);
+	void CalculateProjectionMatrix();
+	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
+
 	void SetCapabilityState(GLenum capability, bool enable) const;
 	bool GetCapabilityState(GLenum capability) const;
-
 	void SetWireframeMode(bool enable) const;
 	bool IsWireframeMode() const;
-
-	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
 	// Meshes
 	bool AddMesh(Mesh* mesh);
@@ -132,6 +126,9 @@ public:
 
 	void CreateGeometryBoundingBox();
 	void LookAtGeometry() const;
+
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
 
 public:
 

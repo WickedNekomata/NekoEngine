@@ -29,8 +29,8 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 	else
 	{
 		scale = json_object_get_number(jObject, "scale");
-		width = json_object_get_number(jObject, "width") * size;
-		height = json_object_get_number(jObject, "height") * size;
+		width = json_object_get_number(jObject, "width") * scale;
+		height = json_object_get_number(jObject, "height") * scale;
 
 		fullscreen = json_object_get_boolean(jObject, "fullscreen");
 		resizable = json_object_get_boolean(jObject, "resizable");

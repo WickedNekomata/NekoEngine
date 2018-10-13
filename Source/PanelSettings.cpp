@@ -233,6 +233,11 @@ void PanelSettings::RendererNode() const
 	if (ImGui::Checkbox("GL_LINE_SMOOTH", &lineSmooth))
 		App->renderer3D->SetCapabilityState(capability, lineSmooth);
 
+	capability = GL_BLEND;
+	bool blend = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_BLEND", &blend))
+		App->renderer3D->SetCapabilityState(capability, blend);
+
 	bool wireframeMode = App->renderer3D->IsWireframeMode();
 	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
 		App->renderer3D->SetWireframeMode(wireframeMode);

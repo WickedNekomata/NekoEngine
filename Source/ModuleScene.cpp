@@ -26,6 +26,7 @@ bool ModuleScene::Start()
 	bool ret = true;
 
 	App->meshImporter->LoadMeshesFromFile("Assets\\Models\\BakerHouse.fbx");
+	//App->meshImporter->LoadMeshesFromFile("Assets\\Models\\cube.fbx");
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);

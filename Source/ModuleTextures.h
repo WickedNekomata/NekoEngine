@@ -14,16 +14,18 @@ public:
 	bool Start();
 	bool CleanUp();
 
-	uint LoadImageFromFile(const char* path) const;
-	uint LoadCheckImage() const;
+	uint LoadImageFromFile(const char* path);
+	uint LoadCheckImage();
 
-	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false) const;
+	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false);
 
 	uint GetCheckTextureID() const;
 
 private:
 
 	uint checkTextureID = 0;
+
+	uint currTexIndex = 0;
 };
 
 #endif

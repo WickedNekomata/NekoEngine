@@ -56,6 +56,8 @@ struct Mesh
 	uint textureWidth = 0;
 	uint textureHeight = 0;
 
+	uint textureID2 = 0;
+
 	/// Check texture
 	bool checkTexture = false;
 	uint lastTextureID = 0;
@@ -112,7 +114,7 @@ public:
 	void DrawMeshFacesNormals(Mesh* mesh) const;
 
 	// Textures
-	void AddTextureToMeshes(uint textureID, uint width, uint height);
+	void AddTextureToMeshes(uint textureNum, uint textureID, uint width, uint height);
 	void SetCheckTextureToMeshes(bool checkTexture);
 
 	void ClearTextures();

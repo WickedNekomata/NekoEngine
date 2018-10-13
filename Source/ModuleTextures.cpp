@@ -60,7 +60,7 @@ bool ModuleTextures::CleanUp()
 	return true;
 }
 
-uint ModuleTextures::LoadImageFromFile(const char* path) const
+uint ModuleTextures::LoadImageFromFile(const char* path)
 {
 	uint texName = 0;
 
@@ -90,11 +90,12 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
 			// Create the texture
-			App->renderer3D->ClearTextures();
+			//App->renderer3D->ClearTextures();
 
-			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
+			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_FORMAT), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
 			
-			App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			App->renderer3D->AddTextureToMeshes(currTexIndex, texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			++currTexIndex;
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -107,7 +108,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 	return texName;
 }
 
-uint ModuleTextures::LoadCheckImage() const
+uint ModuleTextures::LoadCheckImage()
 {
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 
@@ -125,7 +126,7 @@ uint ModuleTextures::LoadCheckImage() const
 	return CreateTextureFromPixels(GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, GL_RGBA, checkImage, true);
 }
 
-uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture) const
+uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture)
 {
 	uint texName = 0;
 

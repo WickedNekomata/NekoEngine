@@ -25,7 +25,7 @@ bool ModuleFileSystem::Init(JSON_Object* jObject)
 
 	CONSOLE_LOG("Loading File System");
 
-	if (PHYSFS_setWriteDir("./Assets/") == 0)
+	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
 	return ret;

@@ -50,7 +50,7 @@ bool Application::Init()
 	// Read config file
 	char* buf;
 	uint size;
-	if (App->filesystem->OpenRead("Assets/config.json", &buf, size))
+	if (App->filesystem->OpenRead("config.json", &buf, size))
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;
@@ -188,7 +188,7 @@ void Application::Load()
 	// Read config file
 	char* buf;
 	uint size;
-	if (App->filesystem->OpenRead("Assets/config.json", &buf, size))
+	if (App->filesystem->OpenRead("config.json", &buf, size))
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;

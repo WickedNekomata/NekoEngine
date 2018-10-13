@@ -145,12 +145,14 @@ update_status ModuleInput::PreUpdate(float dt)
 		{
 			std::string droppedFileDir = event.drop.file;
 
-			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
+			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos ||
+				droppedFileDir.find(".obj") != std::string::npos || droppedFileDir.find(".OBJ") != std::string::npos)
 			{
 				App->meshImporter->LoadMeshesFromFile(droppedFileDir.data());
 			}
 			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
-				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)
+				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find(".DDS") != std::string::npos
+				|| droppedFileDir.find(".tga") != std::string::npos || droppedFileDir.find(".TGA") != std::string::npos)
 			{
 				App->tex->LoadImageFromFile(droppedFileDir.data());
 			}

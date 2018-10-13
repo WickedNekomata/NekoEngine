@@ -33,6 +33,7 @@ public:
 	void LoadStatus(const JSON_Object*);
 
 	void LogConsole(const char* log) const;
+	void AddInput(uint key, uint state) const;
 
 public:
 

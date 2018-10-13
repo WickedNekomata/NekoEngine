@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 
-#include "ImGui/imgui.h"
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "mmgr/mmgr.h"
@@ -34,26 +33,22 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("Window"))
 		{
-			if (IsActiveNode((Module*)App->window))
-				WindowNode();
+			WindowNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Renderer 3D"))
 		{
-			if (IsActiveNode((Module*)App->renderer3D))
-				RendererNode();
+			RendererNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("File System"))
 		{
-			if (IsActiveNode((Module*)App->filesystem))
-				FileSystemNode();
+			FileSystemNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Input"))
 		{
-			if (IsActiveNode((Module*)App->input))
-				InputNode();
+			InputNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Hardware"))
@@ -267,7 +262,19 @@ void PanelSettings::InputNode() const
 	ImGui::Text("Mouse Wheel:");
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->input->GetMouseZ());
 
-	// TODO: Finish this (log mouse events: up, down, repeat, etc.).
+	ImGui::Separator();
+	ImGui::Text("Input logs");
+
+	ImGuiWindowFlags scrollFlags = 0;
+	scrollFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+
+	if (ImGui::BeginChild("scroll", ImVec2(0, 0), false, scrollFlags))
+	{
+		ImGui::TextUnformatted(buf.begin());
+
+		ImGui::SetScrollHere(1.0f);
+	}
+	ImGui::EndChild();
 }
 
 void PanelSettings::HardwareNode() const
@@ -301,4 +308,18 @@ void PanelSettings::HardwareNode() const
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
+}
+
+
+void PanelSettings::AddInput(const char* input)
+{
+	int oldSize = buf.size();
+
+	buf.appendf(input);
+
+	for (int newSize = buf.size(); oldSize < newSize; ++oldSize)
+	{
+		if (buf[oldSize] == '\n')
+			lineOffsets.push_back(oldSize);
+	}
 }

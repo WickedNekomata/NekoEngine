@@ -18,23 +18,20 @@
     },
     "Camera3D": {},
     "Input": {},
-    "Audio": {},
     "GUI": {
-        "Inspector": false,
+        "Inspector": true,
         "PCG performance test": false,
         "About": false,
-        "Console": false,
-        "Settings": true,
+        "Console": true,
+        "Settings": false,
         "Import": false
     },
-    "Scene": {
-		"showGrid":true	
-	},
+    "Scene": {},
     "Renderer3D": {
         "vSync": false,
-		"debugDraw": true,
-		"fov": 45,
-		"nearClipPlane": 0.125,
-		"farClipPlane": 512
+        "debugDraw": true,
+        "fov": 45,
+        "nearClipPlane": 0.125,
+        "farClipPlane": 512
     }
 }

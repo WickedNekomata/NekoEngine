@@ -17,6 +17,7 @@ bool PanelInspector::Draw()
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
@@ -36,7 +37,7 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
-				ImGui::Text("Position");
+				ImGui::Text("Posititreon");
 				math::float3 position = mesh->position;
 				ImGui::Text("X"); ImGui::SameLine();
 				ImGui::PushItemWidth(100);
@@ -109,6 +110,8 @@ bool PanelInspector::Draw()
 				bool checkImage = mesh->checkTexture;
 				if (ImGui::Checkbox("Check Image", &checkImage))
 					App->renderer3D->SetCheckTextureToMeshes(checkImage);
+
+				ImGui::Separator();
 
 				if (mesh->textureID > 0)
 				{

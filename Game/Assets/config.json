@@ -2,13 +2,13 @@
     "Application": {
         "Title": "Neko Engine",
         "Organization": "WickedNekomata",
-        "Cap Frames": false,
-        "Max FPS": 4294967295
+        "Cap Frames": true,
+        "Max FPS": 60
     },
     "NoName": {},
     "FileSystem": {},
     "Window": {
-        "width": 1024,
+        "width": 1025,
         "height": 720,
         "size": 1,
         "fullscreen": false,
@@ -28,7 +28,7 @@
     },
     "Scene": {},
     "Renderer3D": {
-        "vSync": true,
+        "vSync": false,
         "debugDraw": true,
         "fov": 45,
         "nearClipPlane": 0.125,

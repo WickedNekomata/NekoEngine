@@ -14,22 +14,18 @@ public:
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
-	void SetTitle(const char* title);
+	void SetTitle(const char* title) const;
 
-	void SetWindowBrightness(float brightness) const;
-	float GetWindowBrightness() const;
-
-	void SetScreenSize(uint size);
-	uint GetScreenSize() const;
+	void SetScreenScale(uint scale);
+	uint GetScreenScale() const;
 	void SetWindowWidth(uint width);
 	uint GetWindowWidth() const;
 	void SetWindowHeight(uint height);
 	uint GetWindowHeight() const;
 	void UpdateWindowSize() const;
-
-	uint GetRefreshRate() const;
 	void GetScreenSize(uint& width, uint& height) const;
-	
+	uint GetRefreshRate() const;
+
 	void SetFullscreenWindow(bool fullscreen);
 	bool GetFullscreenWindow() const;
 	void SetFullDesktopWindow(bool fullDesktop);
@@ -38,20 +34,22 @@ public:
 	bool GetResizableWindow() const;
 	void SetBorderlessWindow(bool borderless);
 	bool GetBorderlessWindow() const;
+	void SetWindowBrightness(float brightness) const;
+	float GetWindowBrightness() const;
 
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
 
 public:
 	
-	SDL_Window* window; // The window we'll be rendering to	
-	SDL_Surface* screen_surface;// The surface contained by the window
+	SDL_Window* window = nullptr; // The window we'll be rendering to	
+	SDL_Surface* screen_surface = nullptr; // The surface contained by the window
 
 private:
 
 	uint width = 0;
 	uint height = 0;
-	uint size = 1;
+	uint scale = 1;
 
 	bool fullscreen = false;
 	bool resizable = false;

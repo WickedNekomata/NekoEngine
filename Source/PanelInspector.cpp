@@ -100,6 +100,8 @@ bool PanelInspector::Draw()
 
 				ImGui::Text("Texture Coords: %i", mesh->verticesSize);
 				ImGui::Text("Texture Coords ID: %i", mesh->textureCoordsID);
+
+				ImGui::Text("Triangles: %i", mesh->indicesSize / 3);
 			}
 		}
 

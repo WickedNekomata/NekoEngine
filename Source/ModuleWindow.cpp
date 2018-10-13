@@ -28,7 +28,7 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 	}
 	else
 	{
-		size = json_object_get_number(jObject, "size");
+		scale = json_object_get_number(jObject, "scale");
 		width = json_object_get_number(jObject, "width") * size;
 		height = json_object_get_number(jObject, "height") * size;
 
@@ -89,29 +89,19 @@ bool ModuleWindow::CleanUp()
 	return ret;
 }
 
-void ModuleWindow::SetTitle(const char* title)
+void ModuleWindow::SetTitle(const char* title) const
 {
 	SDL_SetWindowTitle(window, title);
 }
 
-void ModuleWindow::SetWindowBrightness(float brightness) const
+void ModuleWindow::SetScreenScale(uint scale) 
 {
-	SDL_SetWindowBrightness(window, brightness);
+	this->scale = scale;
 }
 
-float ModuleWindow::GetWindowBrightness() const
+uint ModuleWindow::GetScreenScale() const 
 {
-	return SDL_GetWindowBrightness(window);
-}
-
-void ModuleWindow::SetScreenSize(uint size) 
-{
-	this->size = size;
-}
-
-uint ModuleWindow::GetScreenSize() const 
-{
-	return size;
+	return scale;
 }
 
 void ModuleWindow::SetWindowWidth(uint width)
@@ -142,6 +132,18 @@ void ModuleWindow::UpdateWindowSize() const
 	App->renderer3D->OnResize(width, height);
 }
 
+void ModuleWindow::GetScreenSize(uint& width, uint& height) const
+{
+	SDL_DisplayMode desktopDisplay;
+	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
+	{
+		width = desktopDisplay.w;
+		height = desktopDisplay.h;
+	}
+	else
+		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+}
+
 uint ModuleWindow::GetRefreshRate() const
 {
 	uint refreshRate = 0;
@@ -153,18 +155,6 @@ uint ModuleWindow::GetRefreshRate() const
 		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 
 	return refreshRate;
-}
-
-void ModuleWindow::GetScreenSize(uint& width, uint& height) const
-{
-	SDL_DisplayMode desktopDisplay;
-	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
-	{
-		width = desktopDisplay.w;
-		height = desktopDisplay.h;
-	}
-	else
-		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 }
 
 void ModuleWindow::SetFullscreenWindow(bool fullscreen) 
@@ -227,11 +217,21 @@ bool ModuleWindow::GetBorderlessWindow() const
 	return borderless;
 }
 
+void ModuleWindow::SetWindowBrightness(float brightness) const
+{
+	SDL_SetWindowBrightness(window, brightness);
+}
+
+float ModuleWindow::GetWindowBrightness() const
+{
+	return SDL_GetWindowBrightness(window);
+}
+
 void ModuleWindow::SaveStatus(JSON_Object* jObject) const
 {
 	json_object_set_number(jObject, "width", width);
 	json_object_set_number(jObject, "height", height);
-	json_object_set_number(jObject, "size", size);
+	json_object_set_number(jObject, "scale", scale);
 
 	json_object_set_boolean(jObject, "fullscreen", fullscreen);
 	json_object_set_boolean(jObject, "resizable", resizable);
@@ -243,7 +243,7 @@ void ModuleWindow::LoadStatus(const JSON_Object* jObject)
 {
 	width = json_object_get_number(jObject, "width");
 	height = json_object_get_number(jObject, "height");
-	size = json_object_get_number(jObject, "size");
+	scale = json_object_get_number(jObject, "scale");
 
 	fullscreen = json_object_get_boolean(jObject, "fullscreen");
 	resizable = json_object_get_boolean(jObject, "resizable");

@@ -21,6 +21,7 @@ public:
 
 	uint GetCheckTextureID() const;
 
+	// Multitexturing example textures
 	uint GetMultitexturingTextureID() const;
 	uint GetMultitexturingTexture2ID() const;
 
@@ -28,6 +29,7 @@ private:
 
 	uint checkTextureID = 0;
 
+	// Multitexturing example textures
 	uint multitexturingTextureID = 0;
 	uint multitexturingTexture2ID = 0;
 };

@@ -10,7 +10,7 @@
     "Window": {
         "width": 1024,
         "height": 720,
-        "size": 1,
+        "scale": 1,
         "fullscreen": false,
         "resizable": true,
         "borderless": false,

@@ -88,13 +88,8 @@ update_status ModuleGui::Update(float dt)
 
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open")) {}
-			ImGui::Separator();
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
-			ImGui::Separator();
-			if (ImGui::MenuItem("Import")) { panelImport->OnOff(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();

@@ -17,6 +17,7 @@ bool PanelInspector::Draw()
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
@@ -106,6 +107,13 @@ bool PanelInspector::Draw()
 		{
 			if (mesh != nullptr)
 			{
+				bool checkers = false;
+				if (ImGui::Checkbox("Use checkers", &checkers))
+				{
+				}
+
+				ImGui::Separator();
+
 				if (mesh->textureID != 0)
 				{
 					ImGui::Text("Textures: 1");

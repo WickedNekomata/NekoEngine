@@ -3,7 +3,7 @@
 #include "ModuleCamera3D.h"
 
 #define CAMERA_MOVEMENT_SPEED 5.0f
-#define CAMERA_ROTATE_SENSITIVITY 0.1f
+#define CAMERA_ROTATE_SENSITIVITY 0.5f
 #define CAMERA_ZOOM_SPEED 100.0f
 #define CAMERA_ORBIT_SPEED 0.5f
 

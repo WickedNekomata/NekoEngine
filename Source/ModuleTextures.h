@@ -17,7 +17,7 @@ public:
 	uint LoadImageFromFile(const char* path) const;
 	uint LoadCheckImage() const;
 
-	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, void* pixels, bool checkTexture = false) const;
+	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false) const;
 
 	uint GetCheckTextureID() const;
 

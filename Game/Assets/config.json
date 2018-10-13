@@ -29,8 +29,8 @@
     "Scene": {},
     "Renderer3D": {
         "vSync": false,
-        "debugDraw": true,
-        "fov": 45,
+        "debugDraw": false,
+        "fov": 60,
         "nearClipPlane": 0.125,
         "farClipPlane": 512
     }

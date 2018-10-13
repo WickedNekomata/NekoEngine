@@ -72,7 +72,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 
 	// Generate the image name
 	uint imageName = 0;
-	ilGenImages(1, &imageName);
+	ilGenImages(1, (ILuint*)&imageName);
 
 	// Bind the image
 	ilBindImage(imageName);
@@ -93,7 +93,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 			App->renderer3D->ClearTextures();
 
 			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
-
+			
 			App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 		}
 		else
@@ -102,7 +102,7 @@ uint ModuleTextures::LoadImageFromFile(const char* path) const
 	else
 		CONSOLE_LOG("DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
-	ilDeleteImages(1, &imageName);
+	ilDeleteImages(1, (const ILuint*)&imageName);
 	
 	return texName;
 }
@@ -125,14 +125,14 @@ uint ModuleTextures::LoadCheckImage() const
 	return CreateTextureFromPixels(GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, GL_RGBA, checkImage, true);
 }
 
-uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, void* pixels, bool checkTexture) const
+uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture) const
 {
 	uint texName = 0;
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// Generate the texture name
-	glGenTextures(1, &texName);
+	glGenTextures(1, (GLuint*)&texName);
 
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, texName);
@@ -143,14 +143,14 @@ uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uin
 	// Set texture interpolation method
 	if (checkTexture)
 	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 	else
 	{
 		/// Mipmap for the highest visual quality
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 		if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
 		{
@@ -160,8 +160,7 @@ uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uin
 		}
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height,
-		0, format, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
 
 	if (!checkTexture)
 	{

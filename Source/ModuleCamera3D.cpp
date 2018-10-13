@@ -135,6 +135,9 @@ update_status ModuleCamera3D::Update(float dt)
 		}
 	}
 
+	// Recalculate View Matrix
+	CalculateViewMatrix();
+
 	return UPDATE_CONTINUE;
 }
 

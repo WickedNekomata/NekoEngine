@@ -437,6 +437,7 @@ PrimitiveCube::PrimitiveCube(math::float3 size, math::float3 position) : Primiti
 // Sphere --------------------------------------------------
 PrimitiveSphere::PrimitiveSphere(float radius, uint segments) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius), segments(segments)
 {
+	// TODO
 	axis = new PrimitiveAxis();
 
 	// Vertices

@@ -171,13 +171,13 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 		}
 
 		// Transform
-		if (scene->mRootNode->mChildren[i] != nullptr)
+		if (scene->mRootNode != nullptr)
 		{
 			aiVector3D position;
 			aiVector3D scale;
 			aiQuaternion rotation;
 
-			scene->mRootNode->mChildren[i]->mTransformation.Decompose(scale, rotation, position);
+			scene->mRootNode->mTransformation.Decompose(scale, rotation, position);
 			mesh->position = { position.x, position.y, position.z };
 			mesh->scale = { scale.x, scale.y, scale.z };
 			mesh->rotation = { rotation.x, rotation.y, rotation.z, rotation.w };

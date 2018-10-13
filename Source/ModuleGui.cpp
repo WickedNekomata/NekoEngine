@@ -158,13 +158,29 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::SameLine();
 
-		static bool showGrid = App->scene->GetShowGrid();
+		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
 
 		ImGui::SameLine();
 
-		static bool debugDraw = App->renderer3D->GetDebugDraw();
-		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
+		bool wireframeMode = App->renderer3D->IsWireframeMode();
+		if (ImGui::Checkbox("Wireframe", &wireframeMode))
+			App->renderer3D->SetWireframeMode(wireframeMode);
+
+		ImGui::SameLine();
+
+		ImGui::Checkbox("Debug Draw", &App->renderer3D->debugDraw);
+
+		ImGui::SameLine();
+
+		if (App->renderer3D->debugDraw)
+		{
+			ImGui::Checkbox("Debug Vertices Normals", &App->renderer3D->debugVerticesNormals);
+			ImGui::SameLine();
+			ImGui::Checkbox("Debug Faces Normals", &App->renderer3D->debugFacesNormals);
+			ImGui::SameLine();
+			ImGui::Checkbox("Debug Bounding Box", &App->renderer3D->debugBoundingBox);
+		}
 	}
 	ImGui::End();
 

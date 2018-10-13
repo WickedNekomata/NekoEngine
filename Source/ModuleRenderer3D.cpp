@@ -168,16 +168,16 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 		{
 			for (uint i = 0; i < meshes.size(); ++i)
 			{
-				if (debugVerticesNormals)
+				if (debugDrawVerticesNormals)
 					DrawMeshVerticesNormals(meshes[i]);
-				if (debugFacesNormals)
+				if (debugDrawFacesNormals)
 					DrawMeshFacesNormals(meshes[i]);
 
-				if (meshes[i]->boundingBoxDebug != nullptr && debugBoundingBox)
+				if (meshes[i]->boundingBoxDebug != nullptr && debugDrawBoundingBoxes)
 					meshes[i]->boundingBoxDebug->Render();
 			}
 
-			if (geometryBoundingBoxDebug != nullptr && debugBoundingBox)
+			if (geometryBoundingBoxDebug != nullptr && debugDrawBoundingBoxes)
 				geometryBoundingBoxDebug->Render();
 		}
 	}
@@ -237,6 +237,46 @@ bool ModuleRenderer3D::GetVSync() const
 	return vsync;
 }
 
+void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
+{
+	this->debugDraw = debugDraw;
+}
+
+bool ModuleRenderer3D::GetDebugDraw() const
+{
+	return debugDraw;
+}
+
+void ModuleRenderer3D::SetDebugDrawVerticesNormals(bool debugVerticesNormals)
+{
+	this->debugDrawVerticesNormals = debugVerticesNormals;
+}
+
+bool ModuleRenderer3D::GetDebugDrawVerticesNormals() const
+{
+	return debugDrawVerticesNormals;
+}
+
+void ModuleRenderer3D::SetDebugDrawFacesNormals(bool debugFacesNormals)
+{
+	this->debugDrawFacesNormals = debugFacesNormals;
+}
+
+bool ModuleRenderer3D::GetDebugDrawFacesNormals() const
+{
+	return debugDrawFacesNormals;
+}
+
+void ModuleRenderer3D::SetDebugDrawBoundingBoxes(bool debugBoundingBoxes)
+{
+	this->debugDrawBoundingBoxes = debugBoundingBoxes;
+}
+
+bool ModuleRenderer3D::GetDebugDrawBoundingBoxes() const
+{
+	return debugDrawBoundingBoxes;
+}
+
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -251,7 +291,7 @@ void ModuleRenderer3D::SetFOV(float fov)
 	CalculateProjectionMatrix();
 }
 
-void ModuleRenderer3D::SetClipPlanes(math::float2 clipPlanes)
+void ModuleRenderer3D::SetClipPlanes(const math::float2& clipPlanes)
 {
 	this->clipPlanes = clipPlanes;
 

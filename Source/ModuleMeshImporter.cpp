@@ -49,9 +49,9 @@ bool ModuleMeshImporter::LoadMeshesFromFile(const char* path) const
 	
 	uint postProcessingFlags = 0;
 	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
 
 	const aiScene* scene = aiImportFile(path, postProcessingFlags);
 
@@ -77,9 +77,9 @@ bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& 
 
 	uint postProcessingFlags = 0;
 	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+	//postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
 
 	const aiScene* scene = aiImportFileFromMemory(buffer, bufferSize, postProcessingFlags, nullptr);
 
@@ -94,7 +94,7 @@ bool ModuleMeshImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& 
 	return ret;
 }
 
-bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path)
+bool ModuleMeshImporter::LoadMeshesWithPHYSFS(const char* path) const
 {
 	bool ret = false;
 

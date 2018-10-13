@@ -196,8 +196,6 @@ void PanelSettings::RendererNode() const
 {
 	GLenum capability = 0;
 
-	ImGui::Checkbox("Debug Draw", &App->renderer3D->debugDraw);
-
 	capability = GL_DEPTH_TEST;
 	bool depthTest = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest))

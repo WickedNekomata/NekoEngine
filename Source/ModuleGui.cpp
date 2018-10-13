@@ -170,17 +170,21 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::SameLine();
 
-		ImGui::Checkbox("Debug Draw", &App->renderer3D->debugDraw);
+		bool debugDraw = App->renderer3D->GetDebugDraw();
+		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
 
 		ImGui::SameLine();
 
-		if (App->renderer3D->debugDraw)
+		if (debugDraw)
 		{
-			ImGui::Checkbox("Debug Vertices Normals", &App->renderer3D->debugVerticesNormals);
+			bool debugDrawVerticesNormals = App->renderer3D->GetDebugDrawVerticesNormals();
+			if (ImGui::Checkbox("Vertices Normals", &debugDrawVerticesNormals)) { App->renderer3D->SetDebugDrawVerticesNormals(debugDrawVerticesNormals); }
 			ImGui::SameLine();
-			ImGui::Checkbox("Debug Faces Normals", &App->renderer3D->debugFacesNormals);
+			bool debugDrawFacesNormals = App->renderer3D->GetDebugDrawFacesNormals();
+			if (ImGui::Checkbox("Faces Normals", &debugDrawFacesNormals)) { App->renderer3D->SetDebugDrawFacesNormals(debugDrawFacesNormals); }
 			ImGui::SameLine();
-			ImGui::Checkbox("Debug Bounding Box", &App->renderer3D->debugBoundingBox);
+			bool debugDrawBoundingBoxes = App->renderer3D->GetDebugDrawBoundingBoxes();
+			if (ImGui::Checkbox("Bounding Boxes", &debugDrawBoundingBoxes)) { App->renderer3D->SetDebugDrawBoundingBoxes(debugDrawBoundingBoxes); }
 		}
 	}
 	ImGui::End();

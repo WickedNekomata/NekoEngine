@@ -83,10 +83,18 @@ public:
 
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
+	void SetDebugDraw(bool debugDraw);
+	bool GetDebugDraw() const;
+	void SetDebugDrawVerticesNormals(bool debugVerticesNormals);
+	bool GetDebugDrawVerticesNormals() const;
+	void SetDebugDrawFacesNormals(bool debugFacesNormals);
+	bool GetDebugDrawFacesNormals() const;
+	void SetDebugDrawBoundingBoxes(bool debugBoundingBoxes);
+	bool GetDebugDrawBoundingBoxes() const;
 
 	void OnResize(int width, int height);
 	void SetFOV(float fov);
-	void SetClipPlanes(math::float2 clipPlanes);
+	void SetClipPlanes(const math::float2& clipPlanes);
 	void CalculateProjectionMatrix();
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
@@ -137,19 +145,18 @@ public:
 	math::float3x3 NormalMatrix;
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
+private:
+
 	bool vsync = false;
 	bool debugDraw = false;
-	bool debugVerticesNormals = true;
-	bool debugFacesNormals = true;
-	bool debugBoundingBox = true;
+	bool debugDrawVerticesNormals = true;
+	bool debugDrawFacesNormals = true;
+	bool debugDrawBoundingBoxes = true;
 
 	float fov = 0.0f;
 	math::float2 clipPlanes = { 0.0f, 0.0f };
 
-	// Meshes
 	std::vector<Mesh*> meshes;
-
-private:
 
 	bool multitexturing = false;
 

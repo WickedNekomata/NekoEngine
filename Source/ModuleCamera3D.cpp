@@ -150,7 +150,7 @@ bool ModuleCamera3D::CleanUp()
 	return ret;
 }
 
-void ModuleCamera3D::SetTarget(math::float3 target)
+void ModuleCamera3D::SetTarget(const math::float3& target)
 {
 	reference = target;
 }
@@ -161,7 +161,7 @@ void ModuleCamera3D::SetTargetRadius(float targetRadius)
 }
 
 // Creates a View Matrix that looks at the given target
-void ModuleCamera3D::LookAt(const math::float3 &reference, float radius)
+void ModuleCamera3D::LookAt(const math::float3& reference, float radius)
 {
 	Z = (position - reference).Normalized(); // Direction the camera is looking at (reverse direction of what the camera is targeting)
 	X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized(); // X is perpendicular to vectors Y and Z
@@ -179,7 +179,7 @@ void ModuleCamera3D::LookAt(const math::float3 &reference, float radius)
 }
 
 // Creates a View Matrix that looks around the given target
-void ModuleCamera3D::LookAround(const math::float3 &reference, float pitch, float yaw)
+void ModuleCamera3D::LookAround(const math::float3& reference, float pitch, float yaw)
 {
 	position -= reference;
 
@@ -214,14 +214,14 @@ void ModuleCamera3D::LookAround(const math::float3 &reference, float pitch, floa
 	CalculateViewMatrix();
 }
 
-void ModuleCamera3D::Move(const math::float3 &movement)
+void ModuleCamera3D::Move(const math::float3& movement)
 {
 	position += movement;
 
 	CalculateViewMatrix();
 }
 
-void ModuleCamera3D::MoveTo(const math::float3 &position)
+void ModuleCamera3D::MoveTo(const math::float3& position)
 {
 	this->position = position;
 

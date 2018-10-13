@@ -19,14 +19,14 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void SetTarget(math::float3 target);
+	void SetTarget(const math::float3& target);
 	void SetTargetRadius(float targetRadius);
 
-	void LookAt(const math::float3 &reference, float radius);
-	void LookAround(const math::float3 &reference, float pitch, float yaw);
+	void LookAt(const math::float3& reference, float radius);
+	void LookAround(const math::float3& reference, float pitch, float yaw);
 
-	void Move(const math::float3 &movement);
-	void MoveTo(const math::float3 &position);
+	void Move(const math::float3& movement);
+	void MoveTo(const math::float3& position);
 
 	void Zoom(float zoom);
 

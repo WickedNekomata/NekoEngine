@@ -43,12 +43,10 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			GameObject* child = root->GetChild(i);
 			if (child->HasChildren())
 			{
-				ImGui::Unindent();
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 				{
 					if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 						App->scene->currentGameObject = child;
-					ImGui::Indent();
 					IterateAllChildren(child);
 					ImGui::TreePop();
 				}

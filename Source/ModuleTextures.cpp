@@ -44,8 +44,6 @@ bool ModuleTextures::Init(JSON_Object * jObject)
 bool ModuleTextures::Start()
 {
 	checkTextureID = LoadCheckImage();
-	multitexturingTextureID = LoadImageFromFile("Assets\\Textures\\smile.png", false);
-	multitexturingTexture2ID = LoadImageFromFile("Assets\\Textures\\mask.png", false);
 
 	return true;
 }
@@ -55,20 +53,14 @@ bool ModuleTextures::CleanUp()
 	if (checkTextureID > 0)
 		glDeleteTextures(1, (GLuint*)&checkTextureID);
 
-	if (multitexturingTextureID > 0)
-		glDeleteTextures(1, (GLuint*)&multitexturingTextureID);
-
-	if (multitexturingTexture2ID > 0)
-		glDeleteTextures(1, (GLuint*)&multitexturingTexture2ID);
-
 	return true;
 }
 
-uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes) const
+uint ModuleTextures::LoadImageFromFile(const char* path) const
 {
 	uint texName = 0;
 
-	if (needsMeshes && App->renderer3D->GetNumMeshes() <= 0)
+	if (App->renderer3D->GetNumMeshes() <= 0)
 	{
 		CONSOLE_LOG("Error at loading texture. ERROR: No meshes in the scene");
 		return texName;
@@ -94,13 +86,11 @@ uint ModuleTextures::LoadImageFromFile(const char* path, bool needsMeshes) const
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
 			// Create the texture
-			if (needsMeshes)
-				App->renderer3D->ClearTextures();
+			App->renderer3D->RemoveTextureFromMeshes(droppedTextureUnit);
 
 			texName = CreateTextureFromPixels(ilGetInteger(IL_IMAGE_FORMAT), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), ilGetInteger(IL_IMAGE_FORMAT), ilGetData());
 			
-			if (needsMeshes)
-				App->renderer3D->AddTextureToMeshes(texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			App->renderer3D->AddTextureToMeshes(droppedTextureUnit, texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 		}
 		else
 			CONSOLE_LOG("Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -178,8 +168,6 @@ uint ModuleTextures::CreateTextureFromPixels(int internalFormat, uint width, uin
 
 	CONSOLE_LOG("Succes at loading texture: %i ID, %i Width, %i Height", texName, width, height);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	return texName;
 }
 
@@ -188,12 +176,12 @@ uint ModuleTextures::GetCheckTextureID() const
 	return checkTextureID;
 }
 
-uint ModuleTextures::GetMultitexturingTextureID() const
+void ModuleTextures::SetDroppedTextureUnit(uint droppedTextureUnit)
 {
-	return multitexturingTextureID;
+	this->droppedTextureUnit = droppedTextureUnit;
 }
 
-uint ModuleTextures::GetMultitexturingTexture2ID() const
+uint ModuleTextures::GetDroppedTextureUnit() const
 {
-	return multitexturingTexture2ID;
+	return droppedTextureUnit;
 }

@@ -56,6 +56,9 @@ texture to a texture unit, first select the texture unit in which you want to ad
 texture and then drag and drop the texture. All the textures used by the texture
 units will be blended together. Be creative!
 
+## Assets
+Both the Scarfy model and the tree model belong to the 3D artist [Mateo Costa](https://www.artstation.com/mateocosta).
+
 ## License
 
 MIT License

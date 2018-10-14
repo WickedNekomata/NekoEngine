@@ -45,6 +45,14 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			{
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 				{
+					if (ImGui::BeginPopupContextItem())
+					{
+						if (ImGui::Selectable("Delete")) {
+							MessageBox(0, "CHECK WARNING TODO AT Gos's PostUdate Method", "MessageBox caption", MB_OK);
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::EndPopup();
+					}
 					if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 						App->scene->currentGameObject = child;
 					IterateAllChildren(child);

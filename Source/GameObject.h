@@ -47,6 +47,7 @@ private:
 
 public:
 	bool enabled = true;
+	bool needToBeDeleted = false;
 };
 
 #endif

@@ -19,7 +19,7 @@ void GameObject::Update() const
 
 void inline GameObject::SetParent(GameObject* parent)
 {
-	// TODO: Reset childrens' transform
+	// WARNING: Reset childrens' transform
 	this->parent = parent;
 }
 
@@ -42,7 +42,7 @@ void GameObject::DeleteChild(uint index)
 void GameObject::DeleteChildren()
 {
 	for (int i = 0; i < children.size(); ++i)
-		delete children[i];
+		children[i]->needToBeDeleted = true;
 
 	children.clear();
 }
@@ -85,12 +85,18 @@ void GameObject::AddComponent(ComponentType type)
 
 void GameObject::DeleteComponent(uint index)
 {
+	MessageBox(0, "CHECK WARNING TODO AT Gos's PostUdate Method", "MessageBox caption", MB_OK);
+	return;
+
 	delete components[index];
 	components.erase(components.begin() + index);
 }
 
 void GameObject::DeleteComponents()
 {
+	// WARNING: probably need to set a bool to delete at Component and delete de components at the end of gamobject's update
+	MessageBox(0, "CHECK WARNING TODO AT Gos's PostUdate Method", "MessageBox caption", MB_OK);
+	return;
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
 

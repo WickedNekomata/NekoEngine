@@ -114,14 +114,15 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_COLOR_MATERIAL);
 		glEnable(GL_BLEND);
 
-		uint units = 0;
-		glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&units);
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&maxTextureUnits);
 
 		/// Enable Multitexturing
-		glActiveTexture(GL_TEXTURE0);
-		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE1);
-		glEnable(GL_TEXTURE_2D);
+		for (uint i = 0; i < maxTextureUnits; ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glEnable(GL_TEXTURE_2D);
+		}
+
 		glActiveTexture(GL_TEXTURE0);
 	}
 
@@ -134,6 +135,13 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+	// Remove textures
+	for (std::list<uint>::const_iterator it = texturesToRemove.begin(); it != texturesToRemove.end(); ++it)
+	{
+		RemoveTextureFromMeshes(*it);
+	}
+	texturesToRemove.clear();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -438,29 +446,20 @@ void ModuleRenderer3D::ClearMeshes()
 void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 {
 	// Enable Multitexturing
-	/// Texture 0
-	glClientActiveTexture(GL_TEXTURE0);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glActiveTexture(GL_TEXTURE0);
+	for (int i = 0; i < maxTextureUnits; ++i)
+	{
+		glClientActiveTexture(GL_TEXTURE0 + i);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glActiveTexture(GL_TEXTURE0 + i);
 
-	if (checkTexture)
-		glBindTexture(GL_TEXTURE_2D, App->tex->GetCheckTextureID());
-	else
-		glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+		if (i == 0 && checkTexture)
+			glBindTexture(GL_TEXTURE_2D, App->tex->GetCheckTextureID());
+		else
+			glBindTexture(GL_TEXTURE_2D, mesh->texturesID[i]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-
-	/// Texture 1
-	glClientActiveTexture(GL_TEXTURE1);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mesh->texture2ID);
-
-	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); /// params: GL_ADD, GL_MODULATE, GL_DECAL, GL_BLEND, GL_REPLACE, or GL_COMBINE
-
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->textureCoordsID);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+	}
 
 	// -----
 
@@ -480,17 +479,13 @@ void ModuleRenderer3D::DrawMesh(Mesh* mesh) const
 	// -----
 
 	// Disable Multitexturing
-	/// Texture 1
-	glClientActiveTexture(GL_TEXTURE1);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	/// Texture 0
-	glClientActiveTexture(GL_TEXTURE0);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	for (int i = maxTextureUnits - 1; i >= 0; --i)
+	{
+		glClientActiveTexture(GL_TEXTURE0 + i);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 void ModuleRenderer3D::DrawMeshVerticesNormals(Mesh* mesh) const
@@ -509,43 +504,78 @@ void ModuleRenderer3D::DrawMeshFacesNormals(Mesh* mesh) const
 		*/
 }
 
-void ModuleRenderer3D::AddTextureToMeshes(uint textureID, uint width, uint height)
+bool ModuleRenderer3D::AddTextureToMeshes(uint textureUnit, uint textureID, uint width, uint height)
 {
+	bool ret = false;
+
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
-		meshes[i]->textureID = textureID;
-		meshes[i]->textureWidth = width;
-		meshes[i]->textureHeight = height;
+		meshes[i]->texturesID[textureUnit] = textureID;
+		meshes[i]->texturesWidth[textureUnit] = width;
+		meshes[i]->texturesHeight[textureUnit] = height;
+
+		ret = true;
 	}
+
+	return ret;
 }
 
-void ModuleRenderer3D::AddTexture2ToMeshes(uint textureID)
+bool ModuleRenderer3D::AddTextureToRemove(uint textureUnit)
 {
+	bool ret = false;
+
+	if (std::find(texturesToRemove.begin(), texturesToRemove.end(), textureUnit) == texturesToRemove.end())
+	{
+		texturesToRemove.push_back(textureUnit);
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool ModuleRenderer3D::RemoveTextureFromMeshes(uint textureUnit)
+{
+	bool ret = false;
+
 	for (uint i = 0; i < meshes.size(); ++i)
-		meshes[i]->texture2ID = textureID;
-}
+	{
+		if (meshes[i]->texturesID[textureUnit] > 0)
+		{
+			if (i == 0)
+			{
+				glDeleteTextures(1, (GLuint*)&meshes[i]->texturesID[textureUnit]);
+				ret = true;
+			}
 
-void ModuleRenderer3D::SetCheckTexture(bool checkTexture)
-{
-	this->checkTexture = checkTexture;
-}
+			meshes[i]->texturesID[textureUnit] = 0;
+			meshes[i]->texturesWidth[textureUnit] = 0;
+			meshes[i]->texturesHeight[textureUnit] = 0;
+		}
+	}
 
-bool ModuleRenderer3D::IsCheckTexture() const
-{
-	return checkTexture;
+	return ret;
 }
 
 void ModuleRenderer3D::ClearTextures()
 {
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
-		if (i == 0 && meshes[i]->textureID > 0)
-			glDeleteTextures(1, (GLuint*)&meshes[i]->textureID);
+		for (uint j = 0; j < maxTextureUnits; ++j)
+		{
+			if (meshes[i]->texturesID[j] > 0)
+			{
+				if (i == 0)
+					glDeleteTextures(1, (GLuint*)&meshes[i]->texturesID[j]);
 
-		meshes[i]->textureID = 0;
-		meshes[i]->textureWidth = 0;
-		meshes[i]->textureHeight = 0;
+				meshes[i]->texturesID[j] = 0;
+				meshes[i]->texturesWidth[j] = 0;
+				meshes[i]->texturesHeight[j] = 0;
+			}
+		}
 	}
+
+	currentTextureUnits = 0;
+	App->tex->SetDroppedTextureUnit(0);
 }
 
 void ModuleRenderer3D::SetMultitexturing(bool multitexturing)
@@ -556,6 +586,31 @@ void ModuleRenderer3D::SetMultitexturing(bool multitexturing)
 bool ModuleRenderer3D::GetMultitexturing() const
 {
 	return multitexturing;
+}
+
+uint ModuleRenderer3D::GetMaxTextureUnits() const
+{
+	return maxTextureUnits;
+}
+
+void ModuleRenderer3D::SetCurrentTextureUnits(uint currentTextureUnits)
+{
+	this->currentTextureUnits = currentTextureUnits;
+}
+
+uint ModuleRenderer3D::GetCurrentTextureUnits() const
+{
+	return currentTextureUnits;
+}
+
+void ModuleRenderer3D::SetCheckTexture(bool checkTexture)
+{
+	this->checkTexture = checkTexture;
+}
+
+bool ModuleRenderer3D::IsCheckTexture() const
+{
+	return checkTexture;
 }
 
 void ModuleRenderer3D::SetGeometryName(const char* geometryName)
@@ -640,7 +695,7 @@ void Mesh::Init()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	// Generate Texture Coords
+	// Generate texture coords
 	glGenBuffers(1, (GLuint*)&textureCoordsID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
@@ -688,6 +743,16 @@ void Mesh::Init()
 	}
 	*/
 
+	// Create textures
+	texturesID = new uint[App->renderer3D->GetMaxTextureUnits()];
+	memset(texturesID, 0, sizeof(uint) * App->renderer3D->GetMaxTextureUnits());
+
+	texturesWidth = new uint[App->renderer3D->GetMaxTextureUnits()];
+	memset(texturesWidth, 0, sizeof(uint) * App->renderer3D->GetMaxTextureUnits());
+
+	texturesHeight = new uint[App->renderer3D->GetMaxTextureUnits()];
+	memset(texturesHeight, 0, sizeof(uint) * App->renderer3D->GetMaxTextureUnits());
+
 	// Create Bounding Box
 	boundingBox.SetNegativeInfinity();
 	boundingBox.Enclose((const math::float3*)vertices, verticesSize);
@@ -698,11 +763,6 @@ void Mesh::Init()
 	boundingBoxDebug->SetWireframeMode(true);
 }
 
-void Mesh::EmbedTexture(uint textureID)
-{
-	this->textureID = textureID;
-}
-
 Mesh::~Mesh()
 {
 	glDeleteBuffers(1, (GLuint*)&verticesID);
@@ -711,8 +771,12 @@ Mesh::~Mesh()
 
 	RELEASE_ARRAY(name);
 	RELEASE_ARRAY(vertices);
-	RELEASE_ARRAY(normals);
+	//RELEASE_ARRAY(normals);
 	RELEASE_ARRAY(textureCoords);
+
+	RELEASE_ARRAY(texturesID);
+	RELEASE_ARRAY(texturesWidth);
+	RELEASE_ARRAY(texturesHeight);
 
 	RELEASE(boundingBoxDebug);
 

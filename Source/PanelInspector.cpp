@@ -116,70 +116,67 @@ bool PanelInspector::Draw()
 				bool checkTexture = App->renderer3D->IsCheckTexture();
 				if (ImGui::Checkbox("Check Texture", &checkTexture)) { App->renderer3D->SetCheckTexture(checkTexture); }			
 
-				if (mesh->textureID > 0)
-					++numTextures;
-
 				bool multitexturing = App->renderer3D->GetMultitexturing();
-				static int currentTexture = 0;
-				if (ImGui::Checkbox("Multitexturing", &multitexturing))
-				{
-					if (multitexturing)
-					{
-						App->renderer3D->SetMultitexturing(true);
+				if (ImGui::Checkbox("Multitexturing", &multitexturing)) 
+				{ 
+					App->renderer3D->SetMultitexturing(multitexturing); 
 
-						if (currentTexture == 0)
-							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTextureID());
-						else if (currentTexture == 1)
-							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTexture2ID());
-					}
-					else
-					{
-						App->renderer3D->SetMultitexturing(false);
+					App->tex->SetDroppedTextureUnit(0);
+					App->renderer3D->SetCurrentTextureUnits(1);
 
-						App->renderer3D->AddTexture2ToMeshes(0);
+					if (!multitexturing)
+					{
+						for (uint i = 1; i < App->renderer3D->GetMaxTextureUnits(); ++i)
+							App->renderer3D->AddTextureToRemove(i);
 					}
 				}
 
 				if (multitexturing)
-					++numTextures;
+				{
+					int currentTextureUnits = App->renderer3D->GetCurrentTextureUnits();
+					if (ImGui::SliderInt("Texture units", &currentTextureUnits, 1, App->renderer3D->GetMaxTextureUnits() - 1)) 
+					{ 
+						App->tex->SetDroppedTextureUnit(0);
+						App->renderer3D->SetCurrentTextureUnits(currentTextureUnits);
+
+						for (uint i = currentTextureUnits; i < App->renderer3D->GetMaxTextureUnits(); ++i)
+							App->renderer3D->AddTextureToRemove(i);
+					}
+
+					int droppedTextureUnit = App->tex->GetDroppedTextureUnit();
+					int maxSliderInt = currentTextureUnits;
+					if (maxSliderInt > 0)
+						--maxSliderInt;
+					if (ImGui::SliderInt("Dropped texture unit", &droppedTextureUnit, 0, maxSliderInt)) { App->tex->SetDroppedTextureUnit(droppedTextureUnit); }
+				}
+
+				for (uint i = 0; i < App->renderer3D->GetMaxTextureUnits(); ++i)
+				{
+					if (mesh->texturesID[i] > 0)
+						++numTextures;
+				}
 
 				ImGui::Text("Textures: %i", numTextures);
 
-				if (mesh->textureID > 0)
+				for (uint i = 0; i < App->renderer3D->GetCurrentTextureUnits(); ++i)
 				{
 					ImGui::Separator();
-					ImGui::TextColored(WHITE, "Texture 1:");
+					ImGui::TextColored(WHITE, "Texture %i:", i);
 					ImGui::Separator();
 
-					ImGui::Image((void*)(intptr_t)mesh->textureID, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-					
-					ImGui::Text("ID: %i", mesh->textureID);
+					ImGui::Image((void*)(intptr_t)mesh->texturesID[i], ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
 
-					if (mesh->textureID != App->tex->GetCheckTextureID())
+					ImGui::Text("ID: %i", mesh->texturesID[i]);
+
+					if (mesh->texturesID[i] != App->tex->GetCheckTextureID())
 					{
-						ImGui::Text("Width: %i", mesh->textureWidth);
-						ImGui::Text("Height %i", mesh->textureHeight);
-					}
-				}	
-
-				if (mesh->texture2ID > 0)
-				{
-					ImGui::Separator();
-					ImGui::TextColored(WHITE, "Texture 2:");
-					ImGui::Separator();
-
-					const char* multitexturingTextures[] = { "Smile", "Mask" };
-					if (ImGui::Combo("##texture2", &currentTexture, multitexturingTextures, IM_ARRAYSIZE(multitexturingTextures)))
-					{
-						if (currentTexture == 0)
-							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTextureID());
-						else if (currentTexture == 1)
-							App->renderer3D->AddTexture2ToMeshes(App->tex->GetMultitexturingTexture2ID());
+						ImGui::Text("Width: %i", mesh->texturesWidth[i]);
+						ImGui::Text("Height %i", mesh->texturesHeight[i]);
 					}
 
-					ImGui::Image((void*)(intptr_t)mesh->texture2ID, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-
-					ImGui::Text("ID: %i", mesh->texture2ID);
+					ImGui::PushID(i);
+					if (ImGui::SmallButton("Remove texture")) { App->renderer3D->AddTextureToRemove(i); }
+					ImGui::PopID();
 				}
 			}
 		}

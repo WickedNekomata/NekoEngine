@@ -6,6 +6,7 @@
 #include "Light.h"
 
 #include <vector>
+#include <list>
 
 #include "MathGeoLib/include/Math/float2.h"
 #include "MathGeoLib/include/Math/float3x3.h"
@@ -44,7 +45,7 @@ struct Mesh
 	uint indicesSize = 0;
 
 	// Normals
-	float* normals = nullptr;
+	//float* normals = nullptr;
 	//PrimitiveRay** normalsVerticesDebug = nullptr;
 	//PrimitiveRay** normalsFacesDebug = nullptr;
 
@@ -52,17 +53,14 @@ struct Mesh
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 
-	// Texture
-	uint textureID = 0;
-	uint textureWidth = 0;
-	uint textureHeight = 0;
-
-	uint texture2ID = 0;
+	// Texture (multitextures)
+	uint* texturesID = nullptr;
+	uint* texturesWidth = nullptr;
+	uint* texturesHeight = nullptr;
 
 	// -----
 
 	void Init();
-	void EmbedTexture(uint textureID);
 	~Mesh();
 };
 
@@ -113,16 +111,19 @@ public:
 	void DrawMeshFacesNormals(Mesh* mesh) const;
 
 	// Textures
-	void AddTextureToMeshes(uint textureID, uint width, uint height);
-	void AddTexture2ToMeshes(uint textureID);
-
-	void SetCheckTexture(bool checkTexture);
-	bool IsCheckTexture() const;
+	bool AddTextureToMeshes(uint textureUnit, uint textureID, uint width, uint height);
+	bool AddTextureToRemove(uint textureUnit);
+	bool RemoveTextureFromMeshes(uint textureUnit);
 
 	void ClearTextures();
 
 	void SetMultitexturing(bool multitexturing);
 	bool GetMultitexturing() const;
+	uint GetMaxTextureUnits() const;
+	void SetCurrentTextureUnits(uint currentTextureUnits);
+	uint GetCurrentTextureUnits() const;
+	void SetCheckTexture(bool checkTexture);
+	bool IsCheckTexture() const;
 
 	// Geometry
 	void SetGeometryName(const char* geometryName);
@@ -159,6 +160,9 @@ private:
 
 	bool checkTexture = false;
 	bool multitexturing = false;
+	uint maxTextureUnits = 0;
+	uint currentTextureUnits = 0;
+	std::list<uint> texturesToRemove;
 
 	const char* geometryName = nullptr;
 	bool geometryActive = false;

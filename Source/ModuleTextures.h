@@ -14,24 +14,24 @@ public:
 	bool Start();
 	bool CleanUp();
 
-	uint LoadImageFromFile(const char* path, bool needsMeshes = true) const;
+	// Images
+	uint LoadImageFromFile(const char* path) const;
 	uint LoadCheckImage() const;
 
+	// Textures
 	uint CreateTextureFromPixels(int internalFormat, uint width, uint height, uint format, const void* pixels, bool checkTexture = false) const;
 
 	uint GetCheckTextureID() const;
 
-	// Multitexturing example textures
-	uint GetMultitexturingTextureID() const;
-	uint GetMultitexturingTexture2ID() const;
+	// Multitexturing
+	void SetDroppedTextureUnit(uint droppedTextureUnit);
+	uint GetDroppedTextureUnit() const;
 
 private:
 
 	uint checkTextureID = 0;
 
-	// Multitexturing example textures
-	uint multitexturingTextureID = 0;
-	uint multitexturingTexture2ID = 0;
+	uint droppedTextureUnit = 0;
 };
 
 #endif

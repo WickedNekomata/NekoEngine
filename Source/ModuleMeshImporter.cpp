@@ -150,12 +150,14 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 		}
 
 		// Normals
+		/*
 		if (scene->mMeshes[i]->HasNormals())
 		{
 			mesh->normals = new float[mesh->verticesSize * 3];
 			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
 			CONSOLE_LOG("Mesh vertices normals loaded");
 		}
+		*/
 	
 		// Texture coords
 		if (scene->mMeshes[i]->HasTextureCoords(0))
@@ -206,16 +208,25 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 					CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
 				}
 				else
+				{
 					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+				}
 			}
 			else
+			{
 				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+			}
 		}
 		else
+		{
 			CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+		}
 	}
 
 	App->renderer3D->SetGeometryActive(true);
+
+	App->renderer3D->SetCurrentTextureUnits(1);
+
 	App->renderer3D->SetCheckTexture(false);
 	App->renderer3D->SetMultitexturing(false);
 

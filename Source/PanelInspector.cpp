@@ -26,28 +26,39 @@ bool PanelInspector::Draw()
 		{
 			GameObject* currObject = App->scene->currentGameObject;
 
-			ImGui::Checkbox("", &currObject->enabled);
-			ImGui::SameLine();
+			ImGui::Checkbox("##Enabled", &currObject->enabled);
 
+			ImGui::SameLine();
 			static char objName[STR_INPUT_SIZE];
 			if (currObject->GetName() != nullptr)
 				strcpy_s(objName, IM_ARRAYSIZE(objName), currObject->GetName());
-			if (ImGui::InputText("", objName, IM_ARRAYSIZE(objName)))
+			ImGui::PushItemWidth(100);
+			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName)))
 				currObject->SetName(objName);
+			ImGui::PopItemWidth();
 
-			/*
+			ImGui::SameLine(0.0f, 30.f);
+			static bool isStatic = false;
+			ImGui::Checkbox("##static", &isStatic);
+			ImGui::SameLine();
+			ImGui::Text("Static");
+
 			ImGui::Text("Tag"); 
 			ImGui::SameLine();
 			const char* tags[] = { "Untagged", "Player" };
 			static int currentTag = 0;
-			ImGui::Combo("", &currentTag, tags, IM_ARRAYSIZE(tags));
+			ImGui::PushItemWidth(75);
+			ImGui::Combo("##tag", &currentTag, tags, IM_ARRAYSIZE(tags));
+			ImGui::PopItemWidth();
 
+			ImGui::SameLine();
 			ImGui::Text("Layer");
 			ImGui::SameLine();
 			const char* layers[] = { "Default", "Collider", "PostProcessing" };
 			static int currentLayer = 0;
-			ImGui::Combo("", &currentLayer, layers, IM_ARRAYSIZE(layers));
-			*/
+			ImGui::PushItemWidth(75);
+			ImGui::Combo("##layer", &currentLayer, layers, IM_ARRAYSIZE(layers));
+			ImGui::PopItemWidth();
 
 			for (int i = 0; i < currObject->GetComponenetsLength(); ++i)
 			{

@@ -2,7 +2,6 @@
 #include "Application.h"
 #include "GameObject.h"
 #include "ModuleScene.h"
-
 #include "ImGui/imgui.h"
 
 PanelHierarchy::PanelHierarchy(char* name) : Panel(name) {}
@@ -35,6 +34,8 @@ bool PanelHierarchy::Draw()
 void PanelHierarchy::IterateAllChildren(GameObject* root)
 {
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
+	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
 	if (root->HasChildren())
 	{
 		for (int i = 0; i < root->GetChildrenLength(); ++i)
@@ -45,6 +46,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				ImGui::Unindent();
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 				{
+					if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
+						App->scene->currentGameObject = child;
 					ImGui::Indent();
 					IterateAllChildren(child);
 					ImGui::TreePop();
@@ -52,7 +55,12 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			}
 			else
 			{
-				ImGui::Text(child->GetName());
+				treeNodeFlags = 0;
+				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+				ImGui::TreeNodeEx(child->GetName(), treeNodeFlags);
+				ImGui::TreePop();
+				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
+					App->scene->currentGameObject = child;
 			}
 		}
 	}

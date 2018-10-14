@@ -24,32 +24,25 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	//App->camera->Move(math::float3(1.0f, 1.0f, 0.0f));
-	//App->camera->LookAt(math::float3(0, 0, 0));
 	App->camera->Move(math::float3(0.0f, 1.0f, 5.0f));
-	//App->camera->LookAt(math::float3(0.0f, 0.0f, 0.0f), math::float3(0.0f, 1.0f, 0.0f));
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 
 	root = App->GOs->CreateGameObject("Root", nullptr);
-
+	child = App->GOs->CreateGameObject("Guillem", root);
+	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Guillem", child);
+	App->GOs->CreateGameObject("net de Guillem1", fillGuillem);
+	App->GOs->CreateGameObject("net de Guillem2", fillGuillem);
+	child = App->GOs->CreateGameObject("Sandra", root);
+	fillGuillem = App->GOs->CreateGameObject("fill de Sandra", child);
+	App->GOs->CreateGameObject("net de Sandra", fillGuillem);
 	return ret;
 }
 
 update_status ModuleScene::Update(float dt)
 {
-	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
-	{
-		child = App->GOs->CreateGameObject("a", root);
-		currentGameObject = child;
-	}
 
-	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
-	{
-		if (child != nullptr)
-			child = App->GOs->CreateGameObject("b", child);
-	}
 
 	return UPDATE_CONTINUE;
 }

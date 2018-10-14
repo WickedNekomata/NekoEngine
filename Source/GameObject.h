@@ -5,8 +5,9 @@
 
 #include <vector>
 
+#include "ComponentTypes.h"
+
 struct Component;
-enum ComponentType;
 
 class GameObject
 {

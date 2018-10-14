@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
-#include "Component.h"
+#include "ComponentMesh.h"
+#include "ComponentMaterial.h"
 
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
 {
@@ -63,8 +64,21 @@ GameObject* GameObject::GetChild(uint index) const
 
 void GameObject::AddComponent(ComponentType type)
 {
-	// TODO: Add type as argument to Component constructor
-	Component* newComponent = new Component(this);
+	Component* newComponent;
+
+	switch (type)
+	{
+	case No_type:
+		break;
+	case Mesh_Component:
+		newComponent = new ComponentMesh(this, type);
+		break;
+	case Material_Component:
+		newComponent = new ComponentMaterial(this, type);
+		break;
+	default:
+		break;
+	}
 	
 	components.push_back(newComponent);
 }

@@ -3,12 +3,10 @@
 
 struct GameObject;
 
+#include "ComponentTypes.h"
+
 class Component
 {
-private:
-
-	enum class ComponentType { No_type };
-
 public:
 
 	Component(GameObject* parent, ComponentType type = ComponentType::No_type);
@@ -18,7 +16,7 @@ public:
 
 	virtual void OnEditor() const;
 
-private:
+protected:
 
 	ComponentType type;
 	GameObject* parent = nullptr;

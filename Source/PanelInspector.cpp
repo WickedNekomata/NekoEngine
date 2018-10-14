@@ -43,7 +43,7 @@ bool PanelInspector::Draw()
 			ImGui::SameLine();
 			ImGui::Text("Static");
 
-			ImGui::Text("Tag"); 
+			ImGui::Text("Tag");
 			ImGui::SameLine();
 			const char* tags[] = { "Untagged", "Player" };
 			static int currentTag = 0;
@@ -66,9 +66,14 @@ bool PanelInspector::Draw()
 				currObject->GetComponent(i)->OnEditor();
 			}
 			ImGui::Separator();
-			if (ImGui::Button("Add Component"))
+			ImGui::Button("Add Component");
+			if (ImGui::BeginPopupContextItem((const char*)0, 0))
 			{
-
+				if (ImGui::Selectable("Mesh"))		{ currObject->AddComponent(ComponentType::Mesh_Component); 
+													  ImGui::CloseCurrentPopup(); }
+				if (ImGui::Selectable("Material"))  { currObject->AddComponent(ComponentType::Material_Component); 
+													  ImGui::CloseCurrentPopup(); }
+				ImGui::EndPopup();
 			}
 		}
 	}

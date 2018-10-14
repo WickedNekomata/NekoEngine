@@ -793,6 +793,7 @@ Mesh::~Mesh()
 
 	RELEASE_ARRAY(name);
 	RELEASE_ARRAY(vertices);
+	RELEASE_ARRAY(indices);
 	//RELEASE_ARRAY(normals);
 	RELEASE_ARRAY(textureCoords);
 
@@ -840,6 +841,10 @@ void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 	if (vsync && App->GetCapFrames())
 		App->SetCapFrames(false);
 	debugDraw = json_object_get_boolean(jObject, "debugDraw");
+
 	fov = json_object_get_number(jObject, "fov");
 	clipPlanes = math::float2(json_object_get_number(jObject, "nearClipPlane"), json_object_get_number(jObject, "farClipPlane"));
+
+	// Projection Matrix for
+	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 }

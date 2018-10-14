@@ -17,13 +17,12 @@ void myCallback(const char* msg, char* userData)
 	CONSOLE_LOG("%s", msg);
 }
 
-ModuleMeshImporter::ModuleMeshImporter(bool start_enabled)
+ModuleMeshImporter::ModuleMeshImporter(bool start_enabled) : Module(start_enabled)
 {
+	name = "MeshImporter";
 }
 
-ModuleMeshImporter::~ModuleMeshImporter()
-{
-}
+ModuleMeshImporter::~ModuleMeshImporter() {}
 
 bool ModuleMeshImporter::Init(JSON_Object* jObject)
 {
@@ -231,13 +230,12 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 		}
 	}
 
-	App->renderer3D->SetGeometryActive(true);
-
-	App->renderer3D->SetCurrentTextureUnits(1);
-
 	App->renderer3D->SetCheckTexture(false);
 	App->renderer3D->SetMultitexturing(false);
+	App->renderer3D->SetCurrentTextureUnits(1);
 
+	// Geometry
+	App->renderer3D->SetGeometryActive(true);
 	App->renderer3D->SetGeometryName(App->filesystem->GetFileNameFromPath(path));
 	App->renderer3D->CreateGeometryBoundingBox();
 	App->renderer3D->LookAtGeometry();

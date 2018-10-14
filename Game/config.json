@@ -5,7 +5,8 @@
         "Cap Frames": true,
         "Max FPS": 60
     },
-    "NoName": {},
+    "Textures": {},
+    "MeshImporter": {},
     "FileSystem": {},
     "Window": {
         "width": 1024,
@@ -16,7 +17,12 @@
         "borderless": false,
         "fullDesktop": false
     },
-    "Camera3D": {},
+    "Camera3D": {
+        "movementSpeed": 10,
+        "rotateSensitivity": 0.5,
+        "zoomSpeed": 100,
+        "orbitSpeed": 0.5
+    },
     "Input": {},
     "GUI": {
         "Inspector": true,

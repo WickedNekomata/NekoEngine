@@ -187,7 +187,7 @@ bool ModuleGui::CleanUp()
 {
 	bool ret = true;
 
-	for (int i = 0; i < panels.size(); ++i)
+	for (uint i = 0; i < panels.size(); ++i)
 	{
 		if (panels[i] != nullptr)
 			delete panels[i];

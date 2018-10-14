@@ -14,7 +14,10 @@
 #define CHECKERS_HEIGHT 128
 #define CHECKERS_WIDTH 128
 
-ModuleTextures::ModuleTextures(bool start_enabled) {}
+ModuleTextures::ModuleTextures(bool start_enabled) : Module(start_enabled)
+{
+	name = "Textures";
+}
 
 ModuleTextures::~ModuleTextures() {}
 

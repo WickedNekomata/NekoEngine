@@ -2,11 +2,6 @@
 #include "Application.h"
 #include "ModuleCamera3D.h"
 
-#define CAMERA_MOVEMENT_SPEED 5.0f
-#define CAMERA_ROTATE_SENSITIVITY 0.5f
-#define CAMERA_ZOOM_SPEED 100.0f
-#define CAMERA_ORBIT_SPEED 0.5f
-
 // Reference: https://learnopengl.com/Getting-started/Camera
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
@@ -35,6 +30,11 @@ ModuleCamera3D::~ModuleCamera3D()
 
 bool ModuleCamera3D::Init(JSON_Object * jObject)
 {
+	movementSpeed = json_object_get_number(jObject, "movementSpeed");
+	rotateSensitivity = json_object_get_number(jObject, "rotateSensitivity");
+	zoomSpeed = json_object_get_number(jObject, "zoomSpeed");
+	orbitSpeed = json_object_get_number(jObject, "orbitSpeed");
+
 	return true;
 }
 
@@ -53,8 +53,8 @@ update_status ModuleCamera3D::Update(float dt)
 	if (play)
 	{
 		// Update position
-		float orbitSpeed = CAMERA_ORBIT_SPEED * referenceRadius;
-		math::float3 newPosition = X * orbitSpeed * dt;
+		float cameraOrbitSpeed = orbitSpeed * referenceRadius;
+		math::float3 newPosition = X * cameraOrbitSpeed * dt;
 		Move(newPosition);
 
 		// Update Look At
@@ -66,25 +66,25 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 		{
 			// Move
-			float cameraSpeed = CAMERA_MOVEMENT_SPEED * dt;
+			float cameraMovementSpeed = movementSpeed * dt;
 
 			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-				cameraSpeed *= 2.0f; // double speed
+				cameraMovementSpeed *= 2.0f; // double speed
 
 			math::float3 newPosition(0.0f, 0.0f, 0.0f);
 
 			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-				newPosition -= Z * cameraSpeed;
+				newPosition -= Z * cameraMovementSpeed;
 			if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-				newPosition += Z * cameraSpeed;
+				newPosition += Z * cameraMovementSpeed;
 			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-				newPosition -= X * cameraSpeed;
+				newPosition -= X * cameraMovementSpeed;
 			if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-				newPosition += X * cameraSpeed;
+				newPosition += X * cameraMovementSpeed;
 			if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
-				newPosition -= math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+				newPosition -= math::float3(0.0f, 1.0f, 0.0f) * cameraMovementSpeed;
 			if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
-				newPosition += math::float3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+				newPosition += math::float3(0.0f, 1.0f, 0.0f) * cameraMovementSpeed;
 
 			Move(newPosition);
 
@@ -92,7 +92,6 @@ update_status ModuleCamera3D::Update(float dt)
 			int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
 			int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
 
-			float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
 			float deltaX = (float)dx * rotateSensitivity * dt;
 			float deltaY = (float)dy * rotateSensitivity * dt;
 
@@ -104,7 +103,6 @@ update_status ModuleCamera3D::Update(float dt)
 		int mouseWheel = App->input->GetMouseZ();
 		if (mouseWheel != 0)
 		{
-			float zoomSpeed = CAMERA_ZOOM_SPEED;
 			float zoom = (float)mouseWheel * zoomSpeed * dt;
 
 			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
@@ -126,7 +124,6 @@ update_status ModuleCamera3D::Update(float dt)
 				int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
 				int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
 
-				float rotateSensitivity = CAMERA_ROTATE_SENSITIVITY;
 				float deltaX = (float)dx * rotateSensitivity * dt;
 				float deltaY = (float)dy * rotateSensitivity * dt;
 
@@ -261,7 +258,7 @@ bool ModuleCamera3D::IsPlay() const
 	return play;
 }
 
-float* ModuleCamera3D::GetViewMatrix()
+const float* ModuleCamera3D::GetViewMatrix() const
 {
 	return ViewMatrix.ptr();
 }
@@ -271,4 +268,20 @@ void ModuleCamera3D::CalculateViewMatrix()
 	// We move the entire scene around inversed to where we want the camera to move
 	ViewMatrix = math::float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -math::Dot(X, position), -math::Dot(Y, position), -math::Dot(Z, position), 1.0f);
 	ViewMatrixInverse = ViewMatrix.Inverted();
+}
+
+void ModuleCamera3D::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_number(jObject, "movementSpeed", movementSpeed);
+	json_object_set_number(jObject, "rotateSensitivity", rotateSensitivity);
+	json_object_set_number(jObject, "zoomSpeed", zoomSpeed);
+	json_object_set_number(jObject, "orbitSpeed", orbitSpeed);
+}
+
+void ModuleCamera3D::LoadStatus(const JSON_Object* jObject)
+{
+	movementSpeed = json_object_get_number(jObject, "movementSpeed");
+	rotateSensitivity = json_object_get_number(jObject, "rotateSensitivity");
+	zoomSpeed = json_object_get_number(jObject, "zoomSpeed");
+	orbitSpeed = json_object_get_number(jObject, "orbitSpeed");
 }

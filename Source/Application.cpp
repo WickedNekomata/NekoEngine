@@ -200,7 +200,7 @@ void Application::Load()
 		window->SetTitle(GetAppName());
 		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
-		SetMaxFramerate(json_object_get_boolean(modulejObject, "Max FPS"));
+		SetMaxFramerate(json_object_get_number(modulejObject, "Max FPS"));
 
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
 		{

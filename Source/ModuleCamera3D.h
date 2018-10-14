@@ -33,28 +33,36 @@ public:
 	void SetPlay(bool play);
 	bool IsPlay() const;
 
-	float* GetViewMatrix();
+	const float* GetViewMatrix() const;
+
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
 
 private:
 
 	void CalculateViewMatrix();
 
 public:
-	
-	// Camera
+
 	math::float3 X, Y, Z;
 	math::float3 position;
+
+private:
+
 	math::float3 lastX, lastY, lastZ;
 	math::float3 lastPosition;
 
 	math::float3 reference;
 	float referenceRadius = 0.0f;
 
-private:
-
 	math::float4x4 ViewMatrix, ViewMatrixInverse;
 
 	bool play = false;
+
+	float movementSpeed = 0.0f;
+	float rotateSensitivity = 0.0f;
+	float zoomSpeed = 0.0f;
+	float orbitSpeed = 0.0f;
 };
 
 #endif

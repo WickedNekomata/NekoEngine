@@ -240,20 +240,19 @@ void ModuleWindow::SaveStatus(JSON_Object* jObject) const
 
 void ModuleWindow::LoadStatus(const JSON_Object* jObject)
 {
-	width = json_object_get_number(jObject, "width");
-	height = json_object_get_number(jObject, "height");
 	scale = json_object_get_number(jObject, "scale");
+	width = json_object_get_number(jObject, "width") * scale;
+	height = json_object_get_number(jObject, "height") * scale;
+
+	UpdateWindowSize();
 
 	fullscreen = json_object_get_boolean(jObject, "fullscreen");
 	resizable = json_object_get_boolean(jObject, "resizable");
 	borderless = json_object_get_boolean(jObject, "borderless");
 	fullDesktop = json_object_get_boolean(jObject, "fullDesktop");
 
-	SetWindowWidth(width);
-	SetWindowHeight(height);
-
 	SetFullDesktopWindow(fullDesktop);
 	SetFullscreenWindow(fullscreen);
 	SetBorderlessWindow(borderless);
-	SetResizableWindow(resizable);	
+	SetResizableWindow(resizable);
 }

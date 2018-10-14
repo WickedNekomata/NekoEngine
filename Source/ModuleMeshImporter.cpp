@@ -194,32 +194,40 @@ void ModuleMeshImporter::InitMeshesFromScene(const aiScene* scene, const char* p
 	{
 		aiString textureName;
 		scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
+		std::string realTextureName = textureName.data;
+		realTextureName = realTextureName.substr((realTextureName.find_last_of("\\") + 1), strlen(textureName.data));
 		std::string fbxPathString = path;
-		std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + textureName.data;
-		
+		std::string texturePath = fbxPathString.substr(0, fbxPathString.find_last_of("\\") + 1) + realTextureName.data();
 		if (!App->tex->LoadImageFromFile(texturePath.data()))
 		{
-			std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Assets\\") + 7) + "Textures\\" + textureName.data;
+			std::string texturePath = "Assets\\Textures\\Models\\";
+			texturePath += realTextureName.data();
 			if (!App->tex->LoadImageFromFile(texturePath.data()))
 			{
-				std::string texturePath = fbxPathString.substr(0, fbxPathString.find("Game\\") + 5) + textureName.data;
+				std::string texturePath = "Assets\\Textures\\";
+				texturePath += realTextureName.data();
 				if (!App->tex->LoadImageFromFile(texturePath.data()))
 				{
-					CONSOLE_LOG("Impossible to load texture: %s", textureName.data);
+					std::string texturePath = "Game\\";
+					texturePath += realTextureName.data();
+					if (!App->tex->LoadImageFromFile(texturePath.data()))
+					{
+						CONSOLE_LOG("Impossible to load texture: %s", realTextureName.data());
+					}
+					else
+					{
+						CONSOLE_LOG("Loaded correctly texture: %s", realTextureName.data());
+					}
 				}
 				else
 				{
-					CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+					CONSOLE_LOG("Loaded correctly texture: %s", realTextureName.data());
 				}
 			}
 			else
 			{
-				CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
+				CONSOLE_LOG("Loaded correctly texture: %s", realTextureName.data());
 			}
-		}
-		else
-		{
-			CONSOLE_LOG("Loaded correctly texture: %s", textureName.data);
 		}
 	}
 

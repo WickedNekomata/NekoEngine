@@ -232,7 +232,7 @@ void PanelSettings::RendererNode() const
 		App->renderer3D->SetCapabilityState(capability, blend);
 
 	bool wireframeMode = App->renderer3D->IsWireframeMode();
-	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
+	if (ImGui::Checkbox("Wireframe", &wireframeMode))
 		App->renderer3D->SetWireframeMode(wireframeMode);
 }
 
@@ -259,7 +259,7 @@ void PanelSettings::InputNode() const
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->input->GetMouseZ());
 
 	ImGui::Separator();
-	ImGui::Text("Input logs");
+	ImGui::Text("Input LOGS:");
 
 	ImGuiWindowFlags scrollFlags = 0;
 	scrollFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;

@@ -351,12 +351,34 @@ void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const
 	if (GetCapabilityState(capability))
 	{
 		if (!enable)
-			glDisable(capability);
+		{
+			if (capability == GL_TEXTURE_2D)
+			{
+				for (uint i = 0; i < maxTextureUnits; ++i)
+				{
+					glActiveTexture(GL_TEXTURE0 + i);
+					glDisable(GL_TEXTURE_2D);
+				}
+			}
+			else
+				glDisable(capability);
+		}
 	}
 	else
 	{
 		if (enable)
-			glEnable(capability);
+		{
+			if (capability == GL_TEXTURE_2D)
+			{
+				for (uint i = 0; i < maxTextureUnits; ++i)
+				{
+					glActiveTexture(GL_TEXTURE0 + i);
+					glEnable(GL_TEXTURE_2D);
+				}
+			}
+			else
+				glEnable(capability);
+		}
 	}
 }
 

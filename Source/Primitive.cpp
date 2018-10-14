@@ -169,6 +169,7 @@ PrimitiveAxis::~PrimitiveAxis()
 
 void PrimitiveAxis::InnerRender() const 
 {
+	bool depthTest = App->renderer3D->GetCapabilityState(GL_DEPTH_TEST);
 	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
 	if (x != nullptr)
 		x->Render();
@@ -176,7 +177,7 @@ void PrimitiveAxis::InnerRender() const
 		y->Render();
 	if (z != nullptr)
 		z->Render();
-	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
+	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, depthTest);
 }
 
 // Circle --------------------------------------------------

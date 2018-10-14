@@ -45,10 +45,11 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			{
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 				{
+					// TODO: Bug with contextitem and isitemhovered(). only workig if treenode is open.
 					if (ImGui::BeginPopupContextItem())
 					{
 						if (ImGui::Selectable("Delete")) {
-							MessageBox(0, "CHECK WARNING TODO AT Gos's PostUdate Method", "MessageBox caption", MB_OK);
+							MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
 							ImGui::CloseCurrentPopup();
 						}
 						ImGui::EndPopup();

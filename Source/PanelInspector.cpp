@@ -169,10 +169,7 @@ bool PanelInspector::Draw()
 					ImGui::Text("ID: %i", mesh->texturesID[i]);
 
 					if (mesh->texturesID[i] != App->tex->GetCheckTextureID())
-					{
-						ImGui::Text("Width: %i", mesh->texturesWidth[i]);
-						ImGui::Text("Height %i", mesh->texturesHeight[i]);
-					}
+						ImGui::Text("%i x %i", mesh->texturesWidth[i], mesh->texturesHeight[i]);
 
 					ImGui::PushID(i);
 					if (ImGui::SmallButton("Remove texture")) { App->renderer3D->AddTextureToRemove(i); }

@@ -53,23 +53,26 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			GameObject* child = root->GetChild(i);
 			if (child->HasChildren())
 			{
+				bool treeNodeOpened = false;
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
+					treeNodeOpened = true;
+
+				if (ImGui::BeginPopupContextItem())
 				{
-					// TODO: Bug with contextitem and isitemhovered(). only workig if treenode is open.
-					if (ImGui::BeginPopupContextItem())
-					{
-						if (ImGui::Selectable("Create object")) {
-							App->GOs->CreateGameObject((char*)child->GetName(), child);
-							ImGui::CloseCurrentPopup();
-						}
-						if (ImGui::Selectable("Delete")) {
-							MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::EndPopup();
+					if (ImGui::Selectable("Create object")) {
+						App->GOs->CreateGameObject((char*)child->GetName(), child);
+						ImGui::CloseCurrentPopup();
 					}
-					if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
-						App->scene->currentGameObject = child;
+					if (ImGui::Selectable("Delete")) {
+						MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
+				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
+					App->scene->currentGameObject = child;
+
+				if (treeNodeOpened) {
 					IterateAllChildren(child);
 					ImGui::TreePop();
 				}

@@ -57,18 +57,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 					treeNodeOpened = true;
 
-				if (ImGui::BeginPopupContextItem())
-				{
-					if (ImGui::Selectable("Create object")) {
-						App->GOs->CreateGameObject((char*)child->GetName(), child);
-						ImGui::CloseCurrentPopup();
-					}
-					if (ImGui::Selectable("Delete")) {
-						MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndPopup();
-				}
+				AtGameObjectPopUp(child);
+
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 					App->scene->currentGameObject = child;
 
@@ -81,23 +71,30 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			{
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+
 				ImGui::TreeNodeEx(child->GetName(), treeNodeFlags);
 				ImGui::TreePop();
-				if (ImGui::BeginPopupContextItem())
-				{
-					if (ImGui::Selectable("Create object")) {
-						App->GOs->CreateGameObject("aaa", child);
-						ImGui::CloseCurrentPopup();
-					}
-					if (ImGui::Selectable("Delete")) {
-						MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndPopup();
-				}
+				AtGameObjectPopUp(child);
+
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 					App->scene->currentGameObject = child;
 			}
 		}
+	}
+}
+
+void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
+{
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::Selectable("Create object")) {
+			App->GOs->CreateGameObject("aaa", child);
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::Selectable("Delete")) {
+			MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 }

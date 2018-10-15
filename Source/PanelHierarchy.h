@@ -14,8 +14,10 @@ public:
 
 	virtual bool Draw();
 
+private:
 	void IterateAllChildren(GameObject* root);
-
+	void AtGameObjectPopUp(GameObject* child);
+	
 };
 
 #endif

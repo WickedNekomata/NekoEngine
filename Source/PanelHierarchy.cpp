@@ -108,7 +108,7 @@ void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* SourceTarget)
 {
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 	{
-		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", root, sizeof(GameObject));
+		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", SourceTarget, sizeof(GameObject));
 		ImGui::EndDragDropSource();
 	}
 	if (ImGui::BeginDragDropTarget())

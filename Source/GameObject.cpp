@@ -18,10 +18,15 @@ void GameObject::Update() const
 {
 }
 
-void inline GameObject::SetParent(GameObject* parent)
+void GameObject::SetParent(GameObject* parent)
 {
 	// WARNING: Reset childrens' transform
 	this->parent = parent;
+}
+
+GameObject* GameObject::GetParent()
+{
+	return parent;
 }
 
 void GameObject::DeleteMe()

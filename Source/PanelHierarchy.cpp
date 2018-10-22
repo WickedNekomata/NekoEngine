@@ -51,12 +51,14 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 		for (int i = 0; i < root->GetChildrenLength(); ++i)
 		{
 			GameObject* child = root->GetChild(i);
+
 			if (child->HasChildren())
 			{
 				bool treeNodeOpened = false;
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 					treeNodeOpened = true;
 
+				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
@@ -74,6 +76,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 
 				ImGui::TreeNodeEx(child->GetName(), treeNodeFlags);
 				ImGui::TreePop();
+
+				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
@@ -96,5 +100,27 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
+	}
+}
+
+void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* root)
+{
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", root, sizeof(GameObject));
+		ImGui::EndDragDropSource();
+	}
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY"))
+		{
+			GameObject* payload_n = (GameObject*)payload->Data;
+			
+			//payload_n->GetParent()->EraseChild(payload_n);
+			//root->AddChild(payload_n);
+			
+			// TODO: SWAP PARENTS AND PARENTS CHILD AND RECALCULATE EVERYTHING
+		}
+		ImGui::EndDragDropTarget();
 	}
 }

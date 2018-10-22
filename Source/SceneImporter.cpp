@@ -1,4 +1,4 @@
-#include "ModuleMeshes.h"
+#include "SceneImporter.h"
 
 #include "Application.h"
 
@@ -14,15 +14,15 @@ void myCallback(const char* msg, char* userData)
 	CONSOLE_LOG("%s", msg);
 }
 
-ModuleMeshes::ModuleMeshes(bool start_enabled)
+SceneImporter::SceneImporter(bool start_enabled)
 {
 }
 
-ModuleMeshes::~ModuleMeshes()
+SceneImporter::~SceneImporter()
 {
 }
 
-bool ModuleMeshes::Init(JSON_Object* jObject)
+bool SceneImporter::Init(JSON_Object* jObject)
 {
 	struct aiLogStream stream;
 	stream.callback = myCallback;
@@ -31,13 +31,13 @@ bool ModuleMeshes::Init(JSON_Object* jObject)
 	return true;
 }
 
-bool ModuleMeshes::CleanUp()
+bool SceneImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-bool ModuleMeshes::LoadMeshesFromFile(const char* path) const
+bool SceneImporter::LoadMeshesFromFile(const char* path) const
 {
 	bool ret = false;
 	
@@ -62,7 +62,7 @@ bool ModuleMeshes::LoadMeshesFromFile(const char* path) const
 	return ret;
 }
 
-bool ModuleMeshes::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
+bool SceneImporter::LoadMeshesFromMemory(const char* buffer, unsigned int& bufferSize) const
 {
 	bool ret = false;
 
@@ -85,14 +85,14 @@ bool ModuleMeshes::LoadMeshesFromMemory(const char* buffer, unsigned int& buffer
 	return ret;
 }
 
-bool ModuleMeshes::LoadMeshesWithPHYSFS(const char* path)
+bool SceneImporter::LoadMeshesWithPHYSFS(const char* path)
 {
 	bool ret = false;
 
 	char* buffer;
-	uint size;
+	uint size = App->filesystem->Load(path, &buffer);
 
-	if (App->filesystem->OpenRead(path, &buffer, size))
+	if (size > 0)
 	{
 		ret = LoadMeshesFromMemory(buffer, size);
 
@@ -105,7 +105,7 @@ bool ModuleMeshes::LoadMeshesWithPHYSFS(const char* path)
 	return ret;
 }
 
-void ModuleMeshes::InitMeshesFromScene(const aiScene* scene, const char* path) const
+void SceneImporter::InitMeshesFromScene(const aiScene* scene, const char* path) const
 {
 	for (uint i = 0; i < scene->mNumMeshes; ++i)
 	{

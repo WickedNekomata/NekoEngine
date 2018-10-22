@@ -1,5 +1,5 @@
-#ifndef __MODULE_MESHES_H__
-#define __MODULE_MESHES_H__
+#ifndef __SCENE_IMPORTER_H__
+#define __SCENE_IMPORTER_H__
 
 #include "Module.h"
 
@@ -21,12 +21,12 @@ struct Mesh
 	uint textureCoordsID = 0;
 };
 
-class ModuleMeshes : public Module
+class SceneImporter : public Module
 {
 public:
 
-	ModuleMeshes(bool start_enabled = true);
-	~ModuleMeshes();
+	SceneImporter(bool start_enabled = true);
+	~SceneImporter();
 
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();

@@ -11,8 +11,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	camera = new ModuleCamera3D();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	meshImporter = new ModuleMeshes();
-	tex = new ModuleTextures();
+	sceneImporter = new SceneImporter();
+	materialImporter = new MaterialImporter();
 	GOs = new ModuleGOs();
 
 	// The order of calls is very important!
@@ -21,8 +21,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	// Main Modules
 	AddModule(GOs);
-	AddModule(tex);
-	AddModule(meshImporter);
+	AddModule(materialImporter);
+	AddModule(sceneImporter);
 	AddModule(filesystem);
 	AddModule(window);
 	AddModule(camera);
@@ -51,8 +51,8 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	uint size;
-	if (App->filesystem->OpenRead("Assets/config.json", &buf, size))
+	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;
@@ -189,8 +189,8 @@ void Application::Load()
 {
 	// Read config file
 	char* buf;
-	uint size;
-	if (App->filesystem->OpenRead("Assets/config.json", &buf, size))
+	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;
@@ -241,9 +241,9 @@ void Application::Save() const
 	}
 
 	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
+	char* buf;
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	filesystem->OpenWrite("config.json", buf);
+	filesystem->Save("config.json", &buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 

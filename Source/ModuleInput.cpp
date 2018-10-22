@@ -1,8 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleMeshes.h"
-#include "ModuleTextures.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 #include "ModuleRenderer3D.h"
 
 #include "imgui/imgui.h"
@@ -126,12 +126,12 @@ update_status ModuleInput::PreUpdate(float dt)
 
 			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
 			{
-				App->meshImporter->LoadMeshesFromFile(droppedFileDir.data());
+				App->sceneImporter->LoadMeshesFromFile(droppedFileDir.data());
 			}
 			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
 				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)
 			{
-				App->tex->LoadImageFromFile(droppedFileDir.data());
+				App->materialImporter->LoadImageFromFile(droppedFileDir.data());
 			}
 
 			SDL_free((char*)droppedFileDir.data());

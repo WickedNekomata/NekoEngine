@@ -3,6 +3,12 @@
 
 #include "Module.h"
 
+enum FileType
+{
+	MeshFile,
+	TextureFile
+};
+
 class ModuleFileSystem : public Module
 {
 public:
@@ -14,15 +20,16 @@ public:
 
 	bool CleanUp();
 
+	bool CreateDir(const char* dirName) const;
 	bool AddPath(const char* newDir, const char* mountPoint = nullptr);
-
-	uint OpenRead(const char* file, char** buffer, uint& size) const;
-	uint OpenWrite(const char* file, const char* buffer) const;
 
 	const char* GetBasePath() const;
 	const char* GetReadPaths() const;
-	void GetReadPathsAsArray(const char* const paths[]) const;
 	const char* GetWritePath() const;
+
+	uint SaveUnique(const char* fileName, const void* buffer, uint size, FileType fileType) const;
+	uint Save(const char* file, const void* buffer, uint size, bool append = false) const;	// file means PHYSFS path + file
+	uint Load(const char* file, char** buffer) const;	// file means PHYSFS path + file
 };
 
 #endif

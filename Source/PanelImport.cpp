@@ -4,7 +4,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
-#include "ModuleMeshes.h"
+#include "SceneImporter.h"
 
 #include "Globals.h"
 
@@ -31,7 +31,7 @@ bool PanelImport::Draw()
 
 		std::string file = items[item_current];
 		file += fileNameBuf;
-		if (ImGui::Button("Import file")) { App->meshImporter->LoadMeshesWithPHYSFS(file.c_str()); }
+		if (ImGui::Button("Import file")) { App->sceneImporter->LoadMeshesWithPHYSFS(file.c_str()); }
 	}
 	ImGui::End();
 

@@ -13,8 +13,8 @@
 #include "ModuleCamera3D.h"
 #include "ModuleGui.h"
 #include "ModuleFileSystem.h"
-#include "ModuleMeshes.h"
-#include "ModuleTextures.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 #include "ModuleGOs.h"
 
 #include "PerfTimer.h"
@@ -71,8 +71,8 @@ public:
 	ModuleCamera3D*		camera;
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
-	ModuleMeshes*		meshImporter;
-	ModuleTextures*		tex;
+	SceneImporter*		sceneImporter;
+	MaterialImporter*	materialImporter;
 	ModuleGOs*			GOs;
 
 private:

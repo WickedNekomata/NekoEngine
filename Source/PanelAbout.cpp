@@ -8,6 +8,7 @@
 #include "SDL/include/SDL_version.h"
 #include "ImGui/imgui.h"
 #include "Assimp/include/version.h"
+#include "physfs/include/physfs.h"
 
 #include "DevIL/include/il.h"
 #include "DevIL/include/ilu.h"
@@ -86,7 +87,7 @@ bool PanelAbout::Draw()
 		if (ImGui::Button("Parson")) { OpenInBrowser("https://github.com/kgabis/parson"); }
 
 		if (ImGui::Button("PhysFS")) { OpenInBrowser("https://icculus.org/physfs/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("3.0.1");
+		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", PHYSFS_VER_MAJOR, PHYSFS_VER_MINOR, PHYSFS_VER_PATCH);
 
 		if (ImGui::Button("MMGR")) { OpenInBrowser("http://www.paulnettle.com/"); }
 		ImGui::Spacing();

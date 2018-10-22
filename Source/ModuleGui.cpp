@@ -133,7 +133,7 @@ update_status ModuleGui::Update(float dt)
 			panels[i]->Draw();
 	}
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	return UPDATE_CONTINUE;
 }

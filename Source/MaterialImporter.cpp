@@ -1,4 +1,4 @@
-#include "ModuleTextures.h"
+#include "MaterialImporter.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "Globals.h"
@@ -11,11 +11,11 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
-ModuleTextures::ModuleTextures(bool start_enabled) {}
+MaterialImporter::MaterialImporter(bool start_enabled) {}
 
-ModuleTextures::~ModuleTextures() {}
+MaterialImporter::~MaterialImporter() {}
 
-bool ModuleTextures::Init(JSON_Object * jObject)
+bool MaterialImporter::Init(JSON_Object * jObject)
 {
 	bool ret = true;
 
@@ -37,12 +37,12 @@ bool ModuleTextures::Init(JSON_Object * jObject)
 	return ret;
 }
 
-bool ModuleTextures::CleanUp()
+bool MaterialImporter::CleanUp()
 {
 	return true;
 }
 
-bool ModuleTextures::LoadImageFromFile(const char* path) const
+bool MaterialImporter::LoadImageFromFile(const char* path) const
 {
 	bool ret = false;
 
@@ -113,5 +113,77 @@ bool ModuleTextures::LoadImageFromFile(const char* path) const
 
 	ilDeleteImages(1, &imageName);
 	
+	return ret;
+}
+
+bool MaterialImporter::Import(const char* importFile, const char* path, const char* outputFile)
+{
+	bool ret = false;
+
+	char* buffer;
+	uint size = App->filesystem->Load(importFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("Successfully loaded texture %s", importFile);
+
+		ret = Import(buffer, size, outputFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+		CONSOLE_LOG("Could not load texture %s", importFile);
+
+	return ret;
+}
+
+bool MaterialImporter::Import(const void* buffer, uint size, const char* outputFile)
+{
+	uint ret = 0;
+
+	// Generate the image name
+	uint imageName = 0;
+	ilGenImages(1, &imageName);
+
+	// Bind the image
+	ilBindImage(imageName);
+
+	// Load the image
+	if (ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
+	{
+		ilEnable(IL_FILE_OVERWRITE);
+
+		uint size = 0;
+		ILubyte* data = nullptr;
+
+		// Pick a specific DXT compression use
+		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+
+		// Get the size of the data buffer
+		size = ilSaveL(IL_DDS, NULL, 0);
+
+		if (size > 0)
+		{
+			ilEnable(IL_FILE_OVERWRITE);
+
+			// Allocate the data buffer
+			data = new ILubyte[size];
+
+			// Save to the buffer
+			if (ilSaveL(IL_DDS, data, size) > 0)
+			{
+				if (App->filesystem->Save(outputFile, data, size) > 0)
+				{
+					ret = true;
+					CONSOLE_LOG("Successfully saved texture %s", outputFile);
+				}
+				else
+					CONSOLE_LOG("Could not save texture %s", outputFile);
+			}
+
+			RELEASE_ARRAY(data);
+		}
+
+		ilDeleteImages(1, &imageName);
+	}
+
 	return ret;
 }

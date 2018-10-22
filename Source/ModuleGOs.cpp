@@ -40,7 +40,10 @@ update_status ModuleGOs::PostUpdate(float dt)
 		{
 			delete gameObjects[i];
 			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
+			continue;
 		}
+
+		gameObjects[i]->InternallyDeleteMarkedComponents();
 	}
 
 	return UPDATE_CONTINUE;

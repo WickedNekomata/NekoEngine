@@ -97,6 +97,8 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 			ImGui::CloseCurrentPopup();
 		}
 		if (ImGui::Selectable("Delete")) {
+			if (child == App->scene->currentGameObject)
+				App->scene->currentGameObject = nullptr;
 			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();
 		}

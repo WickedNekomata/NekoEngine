@@ -20,6 +20,9 @@ protected:
 
 	ComponentType type;
 	GameObject* parent = nullptr;
+
+public:
+	bool needToBeDelated = false;
 };
 
 #endif

@@ -11,7 +11,7 @@ GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(pare
 
 GameObject::~GameObject()
 {
-	DeleteComponents();
+	InternallyDeleteComponents();
 }
 
 void GameObject::Update() const
@@ -99,18 +99,38 @@ void GameObject::AddComponent(ComponentType type)
 	components.push_back(newComponent);
 }
 
-void GameObject::DeleteComponent(uint index)
+void GameObject::MarkToDeleteComponent(uint index)
+{
+	components[index]->needToBeDelated = true;
+}
+
+void GameObject::MarkToDeleteAllComponents()
+{
+	for (int i = 0; i < components.size(); ++i)
+		components[i]->needToBeDelated = true;
+}
+
+void GameObject::InternallyDeleteComponent(uint index)
 {
 	delete components[index];
 	components.erase(components.begin() + index);
 }
 
-void GameObject::DeleteComponents()
+void GameObject::InternallyDeleteComponents()
 {
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
 
 	components.clear();
+}
+
+void GameObject::InternallyDeleteMarkedComponents()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->needToBeDelated)
+			InternallyDeleteComponent(i);
+	}
 }
 
 bool GameObject::HasComponents() const

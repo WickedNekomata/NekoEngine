@@ -30,8 +30,11 @@ public:
 	GameObject* GetChild(uint index) const;
 
 	void AddComponent(ComponentType type);
-	void DeleteComponent(uint index);
-	void DeleteComponents();
+	void MarkToDeleteComponent(uint index);
+	void MarkToDeleteAllComponents();
+	void InternallyDeleteComponent(uint index);
+	void InternallyDeleteComponents();
+	void InternallyDeleteMarkedComponents();
 	bool HasComponents() const;
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;

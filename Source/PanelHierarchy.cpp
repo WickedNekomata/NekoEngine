@@ -92,7 +92,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 			ImGui::CloseCurrentPopup();
 		}
 		if (ImGui::Selectable("Delete")) {
-			MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
+			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

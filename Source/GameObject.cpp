@@ -3,6 +3,8 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 
+#include <algorithm>
+
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
 {
 }
@@ -10,7 +12,6 @@ GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(pare
 GameObject::~GameObject()
 {
 	DeleteComponents();
-	DeleteChildren();
 }
 
 void GameObject::Update() const
@@ -23,26 +24,36 @@ void inline GameObject::SetParent(GameObject* parent)
 	this->parent = parent;
 }
 
+void GameObject::DeleteMe()
+{
+	needToBeDeleted = true;
+
+	parent->EraseChild(this);
+
+	DeleteChildren();
+}
+
 void GameObject::AddChild(GameObject* children)
 {
 	this->children.push_back(children);
 }
 
-void GameObject::EraseChild(uint index)
+void GameObject::EraseChild(GameObject* child)
 {
-	components.erase(components.begin() + index);
+	children.erase(std::remove(children.begin(), children.end(), child), children.end());
 }
 
+// EDIT
 void GameObject::DeleteChild(uint index)
 {
-	delete components[index];
-	components.erase(components.begin() + index);
+	children[index]->DeleteMe();
+	children.erase(children.begin() + index);
 }
 
 void GameObject::DeleteChildren()
 {
 	for (int i = 0; i < children.size(); ++i)
-		children[i]->needToBeDeleted = true;
+		children[i]->DeleteMe();
 
 	children.clear();
 }
@@ -85,18 +96,12 @@ void GameObject::AddComponent(ComponentType type)
 
 void GameObject::DeleteComponent(uint index)
 {
-	MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-	return;
-
 	delete components[index];
 	components.erase(components.begin() + index);
 }
 
 void GameObject::DeleteComponents()
 {
-	// WARNING: probably need to set a bool to delete at Component and delete de components at the end of gamobject's update
-	MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-	return;
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
 

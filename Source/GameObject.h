@@ -19,8 +19,9 @@ public:
 	void Update() const;
 
 	inline void SetParent(GameObject* parent);
+	void DeleteMe();
 	void AddChild(GameObject* children);
-	void EraseChild(uint index);
+	void EraseChild(GameObject* child);
 	void DeleteChild(uint index);
 	void DeleteChildren();
 	bool HasChildren() const;

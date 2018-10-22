@@ -3,24 +3,42 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 
+#include "Application.h"
+#include "ModuleRenderer3D.h"
+
+#include <algorithm>
+
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
 {
 }
 
 GameObject::~GameObject()
 {
-	DeleteComponents();
-	DeleteChildren();
+	InternallyDeleteComponents();
 }
 
 void GameObject::Update() const
 {
 }
 
-void inline GameObject::SetParent(GameObject* parent)
+void GameObject::SetParent(GameObject* parent)
 {
 	// WARNING: Reset childrens' transform
 	this->parent = parent;
+}
+
+GameObject* GameObject::GetParent()
+{
+	return parent;
+}
+
+void GameObject::DeleteMe()
+{
+	needToBeDeleted = true;
+
+	parent->EraseChild(this);
+
+	DeleteChildren();
 }
 
 void GameObject::AddChild(GameObject* children)
@@ -28,21 +46,22 @@ void GameObject::AddChild(GameObject* children)
 	this->children.push_back(children);
 }
 
-void GameObject::EraseChild(uint index)
+void GameObject::EraseChild(GameObject* child)
 {
-	components.erase(components.begin() + index);
+	children.erase(std::remove(children.begin(), children.end(), child), children.end());
 }
 
+// EDIT
 void GameObject::DeleteChild(uint index)
 {
-	delete components[index];
-	components.erase(components.begin() + index);
+	children[index]->DeleteMe();
+	children.erase(children.begin() + index);
 }
 
 void GameObject::DeleteChildren()
 {
 	for (int i = 0; i < children.size(); ++i)
-		children[i]->needToBeDeleted = true;
+		children[i]->DeleteMe();
 
 	children.clear();
 }
@@ -71,10 +90,10 @@ void GameObject::AddComponent(ComponentType type)
 	case No_type:
 		break;
 	case Mesh_Component:
-		newComponent = new ComponentMesh(this, type);
+		newComponent = App->renderer3D->CreateMeshComponent(this);
 		break;
 	case Material_Component:
-		newComponent = new ComponentMaterial(this, type);
+		newComponent = new ComponentMaterial(this);
 		break;
 	default:
 		break;
@@ -83,24 +102,38 @@ void GameObject::AddComponent(ComponentType type)
 	components.push_back(newComponent);
 }
 
-void GameObject::DeleteComponent(uint index)
+void GameObject::MarkToDeleteComponent(uint index)
 {
-	MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-	return;
+	components[index]->needToBeDelated = true;
+}
 
+void GameObject::MarkToDeleteAllComponents()
+{
+	for (int i = 0; i < components.size(); ++i)
+		components[i]->needToBeDelated = true;
+}
+
+void GameObject::InternallyDeleteComponent(uint index)
+{
 	delete components[index];
 	components.erase(components.begin() + index);
 }
 
-void GameObject::DeleteComponents()
+void GameObject::InternallyDeleteComponents()
 {
-	// WARNING: probably need to set a bool to delete at Component and delete de components at the end of gamobject's update
-	MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
-	return;
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
 
 	components.clear();
+}
+
+void GameObject::InternallyDeleteMarkedComponents()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->needToBeDelated)
+			InternallyDeleteComponent(i);
+	}
 }
 
 bool GameObject::HasComponents() const

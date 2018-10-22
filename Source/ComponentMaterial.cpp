@@ -3,7 +3,7 @@
 
 #include "imgui/imgui.h"
 
-ComponentMaterial::ComponentMaterial(GameObject* parent, ComponentType type) : Component(parent, type)
+ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component)
 {
 }
 

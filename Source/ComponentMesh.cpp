@@ -3,7 +3,7 @@
 
 #include "imgui/imgui.h"
 
-ComponentMesh::ComponentMesh(GameObject* parent, ComponentType type) : Component(parent, type)
+ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentType::Mesh_Component)
 {
 }
 

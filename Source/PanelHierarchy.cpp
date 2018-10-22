@@ -51,12 +51,14 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 		for (int i = 0; i < root->GetChildrenLength(); ++i)
 		{
 			GameObject* child = root->GetChild(i);
+
 			if (child->HasChildren())
 			{
 				bool treeNodeOpened = false;
 				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
 					treeNodeOpened = true;
 
+				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
@@ -74,6 +76,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 
 				ImGui::TreeNodeEx(child->GetName(), treeNodeFlags);
 				ImGui::TreePop();
+
+				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
@@ -88,13 +92,38 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 	if (ImGui::BeginPopupContextItem())
 	{
 		if (ImGui::Selectable("Create object")) {
+			// TODO: Create a gameobject with the name of the parent + a number
 			App->GOs->CreateGameObject("aaa", child);
 			ImGui::CloseCurrentPopup();
 		}
 		if (ImGui::Selectable("Delete")) {
-			MessageBox(0, "CHECK WARNING TODO at Gos's PostUdate Method", "MessageBox caption", MB_OK);
+			if (child == App->scene->currentGameObject)
+				App->scene->currentGameObject = nullptr;
+			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
+	}
+}
+
+void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* SourceTarget)
+{
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", SourceTarget, sizeof(GameObject));
+		ImGui::EndDragDropSource();
+	}
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY"))
+		{
+			GameObject* payload_n = (GameObject*)payload->Data;
+			
+			//payload_n->GetParent()->EraseChild(payload_n);
+			//root->AddChild(payload_n);
+			
+			// TODO: SWAP PARENTS AND PARENTS CHILD AND RECALCULATE EVERYTHING
+		}
+		ImGui::EndDragDropTarget();
 	}
 }

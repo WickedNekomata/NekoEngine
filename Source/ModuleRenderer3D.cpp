@@ -4,11 +4,16 @@
 #include "Primitive.h"
 #include "Color.h"
 
+#include "GameObject.h"
+#include "ComponentMesh.h"
+
 #include "MathGeoLib/include/Geometry/Sphere.h"
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew/libx86/glew32.lib")
+
+#include <algorithm>
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
 {
@@ -143,6 +148,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	// 1. Level geometry
 	App->scene->Draw();
+
+	for (int i = 0; i < meshComponenets.size(); ++i)
+		meshComponenets[i]->Update();
 
 	// 3. Editor
 	App->gui->Draw();
@@ -313,4 +321,26 @@ math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, 
 	Perspective[3][3] = 0.0f;
 
 	return Perspective;
+}
+
+// -------------------- COMPONENTS------------------------------COMPONENTS--------------------------------COMPONENTS-------------------- //
+
+ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
+{
+	ComponentMesh* newComponent;
+
+	newComponent = new ComponentMesh(parent);
+
+	meshComponenets.push_back(newComponent);
+
+	return newComponent;
+}
+
+void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
+{
+	for (int i = 0; i < meshComponenets.size(); ++i)
+	{
+		if (meshComponenets[i] == toErase)
+			meshComponenets.erase(std::remove(meshComponenets.begin(), meshComponenets.end(), meshComponenets[i]), meshComponenets.end());
+	}
 }

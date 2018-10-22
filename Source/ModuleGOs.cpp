@@ -34,22 +34,16 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	/* TODO WARNING: think about how to approach the children deletion. Create a method in go to erase a go and call it 
-					 on go's parent deletechildren method? Or only set a bool to delete and delete them here (TAKE CARE if
-					 parent is constantly beeing swaped cause of gameobjects' vector iteration order).
-					
-					 Not easy to approach.
-
-	  				 ps: the same problem need to be solved at components :)
-	*/
-
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i]->needToBeDeleted)
 		{
 			delete gameObjects[i];
 			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
+			continue;
 		}
+
+		gameObjects[i]->InternallyDeleteMarkedComponents();
 	}
 
 	return UPDATE_CONTINUE;
@@ -57,6 +51,11 @@ update_status ModuleGOs::PostUpdate(float dt)
 
 bool ModuleGOs::CleanUp()
 {
+	for (int i = 0; i < gameObjects.size(); ++i)
+		RELEASE(gameObjects[i]);
+	
+	gameObjects.clear();
+
 	return true;
 }
 
@@ -76,11 +75,8 @@ void ModuleGOs::DeleteGameObject(const char* name)
 {
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
-		//if (gameObjects[i]->GetName() == name)
-		//{
-			//delete gameObjects[i];
-			//gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), name), gameObjects.end());
-		//}
+		if (gameObjects[i]->GetName() == name)
+			gameObjects[i]->DeleteMe();
 	}
 }
 
@@ -89,7 +85,7 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i] == toDelete)
-			gameObjects[i]->needToBeDeleted = true;
+			gameObjects[i]->DeleteMe();
 	}
 }
 

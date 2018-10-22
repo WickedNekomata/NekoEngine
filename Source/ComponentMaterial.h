@@ -7,7 +7,7 @@ class ComponentMaterial : public Component
 {
 public:
 
-	ComponentMaterial(GameObject* parent, ComponentType type = ComponentType::No_type);
+	ComponentMaterial(GameObject* parent);
 	virtual ~ComponentMaterial();
 
 	void Update() const;

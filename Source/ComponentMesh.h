@@ -7,7 +7,7 @@ class ComponentMesh : public Component
 {
 public:
 
-	ComponentMesh(GameObject* parent, ComponentType type = ComponentType::No_type);
+	ComponentMesh(GameObject* parent);
 	virtual ~ComponentMesh();
 
 	void Update() const;

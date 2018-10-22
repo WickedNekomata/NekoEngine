@@ -3,6 +3,9 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 
+#include "Application.h"
+#include "ModuleRenderer3D.h"
+
 #include <algorithm>
 
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
@@ -87,10 +90,10 @@ void GameObject::AddComponent(ComponentType type)
 	case No_type:
 		break;
 	case Mesh_Component:
-		newComponent = new ComponentMesh(this, type);
+		newComponent = App->renderer3D->CreateMeshComponent(this);
 		break;
 	case Material_Component:
-		newComponent = new ComponentMaterial(this, type);
+		newComponent = new ComponentMaterial(this);
 		break;
 	default:
 		break;

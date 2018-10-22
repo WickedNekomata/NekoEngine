@@ -13,6 +13,10 @@
 
 #define MAX_LIGHTS 8
 
+struct GameObject;
+struct Component;
+struct ComponentMesh;
+
 class ModuleRenderer3D : public Module
 {
 public:
@@ -47,6 +51,13 @@ public:
 	bool GetDebugDraw() const;
 
 	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
+
+	// GO' COMPONENTS
+	ComponentMesh* CreateMeshComponent(GameObject* parent);
+	void EraseComponent(ComponentMesh* toErase);
+
+private:
+	std::vector<ComponentMesh*> meshComponenets;
 
 public:
 

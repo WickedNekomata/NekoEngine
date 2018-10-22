@@ -51,6 +51,11 @@ update_status ModuleGOs::PostUpdate(float dt)
 
 bool ModuleGOs::CleanUp()
 {
+	for (int i = 0; i < gameObjects.size(); ++i)
+		RELEASE(gameObjects[i]);
+	
+	gameObjects.clear();
+
 	return true;
 }
 

@@ -17,7 +17,7 @@ public:
 private:
 	void IterateAllChildren(GameObject* root);
 	void AtGameObjectPopUp(GameObject* child);
-	void SetGameObjectDragAndDrop(GameObject* root);
+	void SetGameObjectDragAndDrop(GameObject* SourceTarget);
 	
 };
 

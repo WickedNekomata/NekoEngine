@@ -92,6 +92,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 	if (ImGui::BeginPopupContextItem())
 	{
 		if (ImGui::Selectable("Create object")) {
+			// TODO: Create a gameobject with the name of the parent + a number
 			App->GOs->CreateGameObject("aaa", child);
 			ImGui::CloseCurrentPopup();
 		}
@@ -103,7 +104,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 	}
 }
 
-void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* root)
+void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* SourceTarget)
 {
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 	{

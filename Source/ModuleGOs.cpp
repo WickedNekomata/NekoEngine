@@ -1,6 +1,7 @@
 #include "ModuleGOs.h"
 
 #include "GameObject.h"
+#include "Component.h"
 
 #include <algorithm>
 
@@ -34,17 +35,21 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	for (int i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->needToBeDeleted)
-		{
-			delete gameObjects[i];
-			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
-			continue;
-		}
 
-		gameObjects[i]->InternallyDeleteMarkedComponents();
+	for (int i = 0; i < needToBeDeleted.size(); ++i)
+	{
+		delete needToBeDeleted[i];
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
 	}
+
+	needToBeDeleted.clear();
+
+	for (int i = 0; i < componentsToDelete.size(); ++i)
+	{
+		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
+	}
+
+	componentsToDelete.clear();
 
 	return UPDATE_CONTINUE;
 }
@@ -87,6 +92,16 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 		if (gameObjects[i] == toDelete)
 			gameObjects[i]->DeleteMe();
 	}
+}
+
+void ModuleGOs::SetToDelete(GameObject* toDelete)
+{
+	needToBeDeleted.push_back(toDelete);
+}
+
+void ModuleGOs::SetComponentToDelete(Component* toDelete)
+{
+	componentsToDelete.push_back(toDelete);
 }
 
 GameObject* ModuleGOs::GetGameObject(uint index) const

@@ -15,7 +15,7 @@ void ComponentMesh::Update() const
 {
 }
 
-void ComponentMesh::OnEditor() const
+void ComponentMesh::OnUniqueEditor() const
 {
 	ImGui::Text("THIS IS A MESH COMPONENT");
 }

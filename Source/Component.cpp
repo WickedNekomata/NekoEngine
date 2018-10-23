@@ -15,4 +15,20 @@ void Component::Update() const
 
 void Component::OnEditor() const
 {
+
+
+	OnUniqueEditor();
 }
+
+void Component::OnUniqueEditor() const {}
+
+ComponentType Component::GetType()
+{
+	return type;
+}
+
+GameObject* Component::GetParent()
+{
+	return parent;
+}
+

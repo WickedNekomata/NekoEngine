@@ -13,6 +13,7 @@ struct PanelConsole;
 struct PanelSettings;
 struct PanelImport;
 struct PanelHierarchy;
+struct PanelGame;
 
 class ModuleGui : public Module
 {
@@ -29,6 +30,7 @@ public:
 	bool CleanUp();
 
 	void Draw() const;
+	void DockSpace() const;
 
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
@@ -44,6 +46,7 @@ public:
 	PanelSettings* panelSettings = nullptr;
 	PanelImport* panelImport = nullptr;
 	PanelHierarchy* panelHierarchy = nullptr;
+	PanelGame* panelGame = nullptr;
 
 private:
 

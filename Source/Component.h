@@ -16,13 +16,16 @@ public:
 
 	virtual void OnEditor() const;
 
+	virtual ComponentType GetType();
+	virtual GameObject* GetParent();
+
+private:
+	virtual void OnUniqueEditor() const;
+
 protected:
 
 	ComponentType type;
 	GameObject* parent = nullptr;
-
-public:
-	bool needToBeDelated = false;
 };
 
 #endif

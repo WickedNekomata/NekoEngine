@@ -6,6 +6,7 @@
 #include <vector>
 
 struct GameObject;
+struct Component;
 
 class ModuleGOs : public Module
 {
@@ -25,11 +26,17 @@ public:
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
 
+	void SetToDelete(GameObject* toDelete);
+	void SetComponentToDelete(Component* toDelete);
+
 	GameObject* GetGameObject(uint index) const;
 	uint GetGameObjectsLength() const;
 
 private:
 	std::vector<GameObject*> gameObjects;
+	std::vector<GameObject*> needToBeDeleted;
+
+	std::vector<Component*> componentsToDelete;
 };
 
 #endif

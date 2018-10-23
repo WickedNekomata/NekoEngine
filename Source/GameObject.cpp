@@ -34,7 +34,7 @@ GameObject* GameObject::GetParent()
 
 void GameObject::DeleteMe()
 {
-	needToBeDeleted = true;
+	App->GOs->SetToDelete(this);
 
 	parent->EraseChild(this);
 
@@ -104,36 +104,41 @@ void GameObject::AddComponent(ComponentType type)
 
 void GameObject::MarkToDeleteComponent(uint index)
 {
-	components[index]->needToBeDelated = true;
+	App->GOs->SetComponentToDelete(components[index]);
 }
 
 void GameObject::MarkToDeleteAllComponents()
 {
 	for (int i = 0; i < components.size(); ++i)
-		components[i]->needToBeDelated = true;
+		App->GOs->SetComponentToDelete(components[i]);
 }
 
-void GameObject::InternallyDeleteComponent(uint index)
+void GameObject::InternallyDeleteComponent(Component* toDelete)
 {
-	delete components[index];
-	components.erase(components.begin() + index);
+	switch (toDelete->GetType())
+	{
+	case ComponentType::Mesh_Component:
+		App->renderer3D->EraseComponent((ComponentMesh*)toDelete);
+		break;
+	}
+
+	delete toDelete;
+	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 }
 
 void GameObject::InternallyDeleteComponents()
 {
 	for (int i = 0; i < components.size(); ++i)
+	{   
+		switch (components[i]->GetType())
+		{
+		case ComponentType::Mesh_Component:
+			App->renderer3D->EraseComponent((ComponentMesh*)components[i]);
+			break;
+		}		
 		delete components[i];
-
-	components.clear();
-}
-
-void GameObject::InternallyDeleteMarkedComponents()
-{
-	for (int i = 0; i < components.size(); ++i)
-	{
-		if (components[i]->needToBeDelated)
-			InternallyDeleteComponent(i);
 	}
+	components.clear();
 }
 
 bool GameObject::HasComponents() const

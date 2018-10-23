@@ -32,9 +32,8 @@ public:
 	void AddComponent(ComponentType type);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteAllComponents();
-	void InternallyDeleteComponent(uint index);
+	void InternallyDeleteComponent(Component* index);
 	void InternallyDeleteComponents();
-	void InternallyDeleteMarkedComponents();
 	bool HasComponents() const;
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;
@@ -52,7 +51,6 @@ private:
 
 public:
 	bool enabled = true;
-	bool needToBeDeleted = false;
 };
 
 #endif

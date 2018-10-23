@@ -70,16 +70,16 @@ const char* ModuleFileSystem::GetBasePath() const
 
 const char* ModuleFileSystem::GetReadPaths() const
 {
-	static char paths[BUF_SIZE];
+	static char paths[MAX_BUF_SIZE];
 	paths[0] = '\0'; // null-terminated byte string
 
-	static char tmp_string[BUF_SIZE];
+	static char tmp_string[MAX_BUF_SIZE];
 
 	char** path;
 	for (path = PHYSFS_getSearchPath(); *path != nullptr; ++path)
 	{
-		sprintf_s(tmp_string, BUF_SIZE, "%s", *path);
-		strcat_s(paths, BUF_SIZE, tmp_string);
+		sprintf_s(tmp_string, MAX_BUF_SIZE, "%s", *path);
+		strcat_s(paths, MAX_BUF_SIZE, tmp_string);
 	}
 
 	return paths;
@@ -106,29 +106,32 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveUnique(const char* fileName, const void* buffer, uint size, FileType fileType) const
+uint ModuleFileSystem::SaveInLibrary(const char* fileName, const void* buffer, uint size, FileType fileType) const
 {
-	char file[BUF_SIZE];
+	uint ret = 0;
+
+	char file[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(file, BUF_SIZE, "Library/Meshes/%s.fbx", fileName);
+		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Meshes/%s.neko", fileName);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(file, BUF_SIZE, "Library/Materials/%s.dds", fileName);
+		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Materials/%s.neko", fileName);
 		break;
 	}
 
-	if (Save(file, buffer, size))
-		return size;
-	else
-		return size;
+	ret = Save(file, buffer, size);
+
+	return ret;
 }
 
 uint ModuleFileSystem::Save(const char* file, const void* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
+
+	const char* fileName = GetFileNameFromPath(file);
 
 	bool exists = PHYSFS_exists(file);
 
@@ -148,29 +151,52 @@ uint ModuleFileSystem::Save(const char* file, const void* buffer, uint size, boo
 			{
 				if (append)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, file);
+					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName);
 				}
 				else
-					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", file, objCount);
+					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName, objCount);
 			}			
 			else
-				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", file, objCount);
+				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName, objCount);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", file, PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
 
 		if (PHYSFS_close(filehandle) == 0)
-			CONSOLE_LOG("FILE SYSTEM: Could not close file %s. ERROR: %s", PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", file, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName, PHYSFS_getLastError());
 
 	return objCount;
+}
+
+uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const
+{
+	uint ret = 0;
+
+	char file[DEFAULT_BUF_SIZE];
+
+	switch (fileType)
+	{
+	case FileType::MeshFile:
+		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Meshes/%s.neko", fileName);
+		break;
+	case FileType::TextureFile:
+		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Materials/%s.neko", fileName);
+		break;
+	}
+
+	ret = Load(file, buffer);
+	
+	return ret;
 }
 
 uint ModuleFileSystem::Load(const char* file, char** buffer) const
 {
 	uint objCount = 0;
+
+	const char* fileName = GetFileNameFromPath(file);
 
 	bool exists = PHYSFS_exists(file);
 
@@ -189,23 +215,37 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 			
 				if (objCount == size)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, file);
+					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName);
 				}
 				else
 				{
 					RELEASE(buffer);
-					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", file, PHYSFS_getLastError());
+					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
 				}
 
 				if (PHYSFS_close(filehandle) == 0)
-					CONSOLE_LOG("FILE SYSTEM: Could not close file %s. ERROR: %s", PHYSFS_getLastError());
+					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
 			}
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", file, PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName, PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist");
+		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName);
 
 	return objCount;
+}
+
+const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
+{
+	std::string newPath = path;
+	std::string name = newPath;
+	name = name.substr(name.find_last_of("\\") + 1, name.size());
+	name = name.substr(name.find_last_of("//") + 1, name.size());
+	name = name.substr(0, name.find_last_of("."));
+
+	const char* result = new char[name.size() + 1];
+	strcpy_s((char*)result, name.size() + 1, name.data());
+
+	return result;
 }

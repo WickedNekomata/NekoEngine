@@ -1,5 +1,5 @@
 #include "PanelAbout.h"
-
+#include "Application.h"
 #include "Globals.h"
 
 #include <windows.h>
@@ -7,12 +7,7 @@
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "ImGui/imgui.h"
-#include "Assimp/include/version.h"
 #include "physfs/include/physfs.h"
-
-#include "DevIL/include/il.h"
-#include "DevIL/include/ilu.h"
-#include "DevIL/include/ilut.h"
 
 PanelAbout::PanelAbout(char* name) : Panel(name) {}
 
@@ -64,16 +59,10 @@ bool PanelAbout::Draw()
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
 
 		if (ImGui::Button("Assimp")) { OpenInBrowser("http://cms.assimp.org/index.php"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
-		
-		int devilVersion = 0;
-		if (!(ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
-			iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION ||
-			ilutGetInteger(ILUT_VERSION_NUM) < ILUT_VERSION))
-			devilVersion = IL_VERSION;
+		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", App->sceneImporter->GetAssimpMajorVersion(), App->sceneImporter->GetAssimpMinorVersion(), App->sceneImporter->GetAssimpRevisionVersion());
 
 		if (ImGui::Button("DevIL")) { OpenInBrowser("http://openil.sourceforge.net/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i", devilVersion);
+		ImGui::SameLine(); ImGui::TextWrapped("%i", App->materialImporter->GetDevILVersion());
 
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());

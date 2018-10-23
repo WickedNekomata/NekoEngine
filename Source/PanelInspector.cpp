@@ -29,7 +29,7 @@ bool PanelInspector::Draw()
 			ImGui::Checkbox("##Enabled", &currObject->enabled);
 
 			ImGui::SameLine();
-			static char objName[STR_INPUT_SIZE];
+			static char objName[INPUT_BUF_SIZE];
 			if (currObject->GetName() != nullptr)
 				strcpy_s(objName, IM_ARRAYSIZE(objName), currObject->GetName());
 			ImGui::PushItemWidth(100);

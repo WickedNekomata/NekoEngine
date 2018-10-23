@@ -77,14 +77,14 @@ bool PanelSettings::Draw()
 void PanelSettings::ApplicationNode() const
 {
 	// Application name
-	static char appName[STR_INPUT_SIZE];
+	static char appName[INPUT_BUF_SIZE];
 	if (App->GetAppName() != nullptr)
 		strcpy_s(appName, IM_ARRAYSIZE(appName), App->GetAppName());
 	if (ImGui::InputText("App Name", appName, IM_ARRAYSIZE(appName)))
 		App->SetAppName(appName);
 
 	// Organization name
-	static char organizationName[STR_INPUT_SIZE];
+	static char organizationName[INPUT_BUF_SIZE];
 	if (App->GetOrganizationName() != nullptr)
 		strcpy_s(organizationName, IM_ARRAYSIZE(organizationName), App->GetOrganizationName());
 	if (ImGui::InputText("Organization Name", organizationName, IM_ARRAYSIZE(organizationName)))

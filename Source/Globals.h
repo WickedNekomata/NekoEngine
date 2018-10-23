@@ -41,7 +41,8 @@ enum update_status
 	UPDATE_ERROR
 };
 
-#define BUF_SIZE 4096
-#define STR_INPUT_SIZE 128
+#define MAX_BUF_SIZE 4096
+#define DEFAULT_BUF_SIZE 256
+#define INPUT_BUF_SIZE 128
 
 #define MAX_FOV 45.0f

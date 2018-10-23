@@ -11,9 +11,9 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	camera = new ModuleCamera3D();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	sceneImporter = new SceneImporter();
-	materialImporter = new MaterialImporter();
 	GOs = new ModuleGOs();
+	materialImporter = new MaterialImporter();
+	sceneImporter = new SceneImporter();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -21,8 +21,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	// Main Modules
 	AddModule(GOs);
-	AddModule(materialImporter);
-	AddModule(sceneImporter);
 	AddModule(filesystem);
 	AddModule(window);
 	AddModule(camera);
@@ -257,8 +255,8 @@ void Application::AddModule(Module* mod)
 
 void Application::SetAppName(const char* name)
 {
-	appName = new char[STR_INPUT_SIZE];
-	strcpy_s((char*)appName, STR_INPUT_SIZE, name);
+	appName = new char[INPUT_BUF_SIZE];
+	strcpy_s((char*)appName, INPUT_BUF_SIZE, name);
 
 	if (window != nullptr)
 		window->SetTitle(name);
@@ -271,8 +269,8 @@ const char* Application::GetAppName() const
 
 void Application::SetOrganizationName(const char* name)
 {
-	organizationName = new char[STR_INPUT_SIZE];
-	strcpy_s((char*)organizationName, STR_INPUT_SIZE, name);
+	organizationName = new char[INPUT_BUF_SIZE];
+	strcpy_s((char*)organizationName, INPUT_BUF_SIZE, name);
 }
 
 const char* Application::GetOrganizationName() const

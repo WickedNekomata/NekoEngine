@@ -122,19 +122,21 @@ update_status ModuleInput::PreUpdate(float dt)
 		}
 		case (SDL_DROPFILE):
 		{
-			std::string droppedFileDir = event.drop.file;
+			std::string droppedFilePath = event.drop.file;
 
-			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos)
+			if (droppedFilePath.find(".fbx") != std::string::npos || droppedFilePath.find(".FBX") != std::string::npos
+				|| droppedFilePath.find(".obj") != std::string::npos || droppedFilePath.find(".OBJ") != std::string::npos)
 			{
-				App->sceneImporter->LoadMeshesFromFile(droppedFileDir.data());
+				App->sceneImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
-			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
-				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find("DDS") != std::string::npos)
+			else if (droppedFilePath.find(".png") != std::string::npos || droppedFilePath.find(".PNG") != std::string::npos
+				|| droppedFilePath.find(".dds") != std::string::npos || droppedFilePath.find(".DDS") != std::string::npos)
 			{
-				App->materialImporter->LoadImageFromFile(droppedFileDir.data());
+
+				App->materialImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
 
-			SDL_free((char*)droppedFileDir.data());
+			SDL_free((char*)droppedFilePath.data());
 
 			break;
 		}

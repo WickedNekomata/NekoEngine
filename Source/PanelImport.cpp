@@ -26,12 +26,12 @@ bool PanelImport::Draw()
 		App->filesystem->GetReadPaths();
 		static int item_current = 0;
 		ImGui::Combo("", &item_current, items, IM_ARRAYSIZE(items));
-		static char fileNameBuf[STR_INPUT_SIZE];
+		static char fileNameBuf[INPUT_BUF_SIZE];
 		ImGui::InputText("File", fileNameBuf, IM_ARRAYSIZE(fileNameBuf));
 
 		std::string file = items[item_current];
 		file += fileNameBuf;
-		if (ImGui::Button("Import file")) { App->sceneImporter->LoadMeshesWithPHYSFS(file.c_str()); }
+		//if (ImGui::Button("Import file")) { App->sceneImporter->LoadMeshesWithPHYSFS(file.c_str()); }
 	}
 	ImGui::End();
 

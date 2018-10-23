@@ -19,6 +19,9 @@ public:
 	virtual ComponentType GetType();
 	virtual GameObject* GetParent();
 
+private:
+	virtual void OnUniqueEditor() const;
+
 protected:
 
 	ComponentType type;

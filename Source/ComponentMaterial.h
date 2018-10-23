@@ -12,7 +12,7 @@ public:
 
 	void Update() const;
 
-	virtual void OnEditor() const;
+	virtual void OnUniqueEditor() const;
 };
 
 #endif

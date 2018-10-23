@@ -2,6 +2,7 @@
 
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
@@ -10,6 +11,7 @@
 
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
 {
+	AddComponent(ComponentType::Transform_Component);
 }
 
 GameObject::~GameObject()
@@ -88,6 +90,9 @@ void GameObject::AddComponent(ComponentType type)
 	switch (type)
 	{
 	case No_type:
+		break;
+	case Transform_Component:
+		newComponent = new ComponentTransform(this);
 		break;
 	case Mesh_Component:
 		newComponent = App->renderer3D->CreateMeshComponent(this);

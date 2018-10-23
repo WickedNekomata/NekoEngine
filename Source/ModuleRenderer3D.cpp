@@ -131,6 +131,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glLoadIdentity();
 
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
 
@@ -155,7 +156,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 3. Editor
 	App->gui->Draw();
 
+
 	// 4. Swap buffers
+	SDL_GL_MakeCurrent(App->window->window, context);
 	SDL_GL_SwapWindow(App->window->window);
 
 	return UPDATE_CONTINUE;
@@ -164,6 +167,11 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	uint x, y;
+	App->window->GetScreenSize(x, y);
+	glViewport(0, 0, x, y);
 
 	CONSOLE_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);

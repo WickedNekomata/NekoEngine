@@ -137,7 +137,7 @@
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl2.h" />
+    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
@@ -206,6 +206,7 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="PanelGame.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -244,7 +245,7 @@
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -282,6 +283,7 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="PanelGame.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />

@@ -62,6 +62,8 @@ private:
 
 public:
 
+	uint rendererTexture_id = 0;
+
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	math::float3x3 NormalMatrix;

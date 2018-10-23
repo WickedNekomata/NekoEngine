@@ -135,9 +135,6 @@
     <ClInclude Include="ModuleGui.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl2.h">
-      <Filter>Sources\3rd Party\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imgui_impl_sdl.h">
       <Filter>Sources\3rd Party\ImGui</Filter>
     </ClInclude>
@@ -555,6 +552,12 @@
     <ClInclude Include="ComponentTransform.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelGame.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -601,9 +604,6 @@
     </ClCompile>
     <ClCompile Include="ModuleGui.cpp">
       <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_opengl2.cpp">
-      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_impl_sdl.cpp">
       <Filter>Sources\3rd Party\ImGui</Filter>
@@ -766,6 +766,12 @@
     </ClCompile>
     <ClCompile Include="ComponentTransform.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelGame.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

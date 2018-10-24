@@ -3,6 +3,8 @@
 
 #include "Component.h"
 
+#include "Globals.h"
+
 class ComponentMesh : public Component
 {
 public:
@@ -13,6 +15,13 @@ public:
 	void Update() const;
 
 	virtual void OnUniqueEditor() const;
+
+public:
+	float* vertices = nullptr;
+	uint verticesID = 0;
+	uint indicesID = 0;
+	uint indicesSize = 0;
+	uint textCoordsID = 0;
 };
 
 #endif

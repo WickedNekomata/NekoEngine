@@ -6,6 +6,8 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentTransform.h"
+#include "ComponentMaterial.h"
 
 #include "MathGeoLib/include/Geometry/Sphere.h"
 
@@ -151,7 +153,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	App->scene->Draw();
 
 	for (int i = 0; i < meshComponenets.size(); ++i)
-		meshComponenets[i]->Update();
+		DrawAsset(meshComponenets[i]);
 
 	// 3. Editor
 	App->gui->Draw();
@@ -351,4 +353,61 @@ void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
 		if (meshComponenets[i] == toErase)
 			meshComponenets.erase(std::remove(meshComponenets.begin(), meshComponenets.end(), meshComponenets[i]), meshComponenets.end());
 	}
+}
+
+void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
+{
+	glPushMatrix();
+	math::float4x4 matrix = math::float4x4::FromTRS(toDraw->GetParent()->transform->Position,
+													toDraw->GetParent()->transform->Rotation,
+													toDraw->GetParent()->transform->Scale);
+	glMultMatrixf(matrix.Transposed().ptr());
+	
+	ComponentMaterial* material = toDraw->GetParent()->material;
+
+	if (material != nullptr)
+	{
+		for (int i = 0; i < material->textures.size(); ++i)
+		{
+			glClientActiveTexture(GL_TEXTURE0 + i);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			glBindTexture(GL_TEXTURE_2D, material->textures[i]);
+
+			glBindBuffer(GL_ARRAY_BUFFER, toDraw->textCoordsID);
+			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		}
+	}
+
+	// -----
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, toDraw->verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, toDraw->indicesID);
+	glDrawElements(GL_TRIANGLES, toDraw->indicesSize, GL_UNSIGNED_INT, NULL);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// -----
+
+	// Disable Multitexturing
+	if (material != nullptr)
+	{
+		for (int i = 0; i < material->textures.size(); ++i)
+		{
+			glClientActiveTexture(GL_TEXTURE0 + i);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
+	
+	glPopMatrix();
 }

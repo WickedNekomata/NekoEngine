@@ -57,6 +57,8 @@ public:
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	void EraseComponent(ComponentMesh* toErase);
 
+	void DrawAsset(ComponentMesh* toDraw);
+
 private:
 	std::vector<ComponentMesh*> meshComponenets;
 

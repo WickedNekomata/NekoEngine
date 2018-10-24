@@ -83,7 +83,7 @@ GameObject* GameObject::GetChild(uint index) const
 	return children[index];
 }
 
-void GameObject::AddComponent(ComponentType type)
+Component* GameObject::AddComponent(ComponentType type)
 {
 	Component* newComponent;
 
@@ -92,19 +92,21 @@ void GameObject::AddComponent(ComponentType type)
 	case No_type:
 		break;
 	case Transform_Component:
-		newComponent = new ComponentTransform(this);
+		newComponent = transform = new ComponentTransform(this);
 		break;
 	case Mesh_Component:
-		newComponent = App->renderer3D->CreateMeshComponent(this);
+		newComponent = mesh = App->renderer3D->CreateMeshComponent(this);
 		break;
 	case Material_Component:
-		newComponent = new ComponentMaterial(this);
+		newComponent = material = new ComponentMaterial(this);
 		break;
 	default:
 		break;
 	}
 	
 	components.push_back(newComponent);
+
+	return newComponent;
 }
 
 void GameObject::MarkToDeleteComponent(uint index)

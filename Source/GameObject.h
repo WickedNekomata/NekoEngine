@@ -8,6 +8,9 @@
 #include "ComponentTypes.h"
 
 struct Component;
+struct ComponentTransform;
+struct ComponentMaterial;
+struct ComponentMesh;
 
 class GameObject
 {
@@ -29,7 +32,7 @@ public:
 	uint GetChildrenLength() const;
 	GameObject* GetChild(uint index) const;
 
-	void AddComponent(ComponentType type);
+	Component* AddComponent(ComponentType type);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteAllComponents();
 	void InternallyDeleteComponent(Component* index);
@@ -51,6 +54,10 @@ private:
 
 public:
 	bool enabled = true;
+
+	ComponentTransform* transform = nullptr;
+	ComponentMaterial* material = nullptr;
+	ComponentMesh* mesh = nullptr;
 };
 
 #endif

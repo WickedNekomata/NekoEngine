@@ -35,7 +35,7 @@ MaterialImporter::MaterialImporter()
 
 MaterialImporter::~MaterialImporter() {}
 
-bool MaterialImporter::Import(const char* importFile, const char* importPath, const char* outputFile)
+bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName)
 {
 	bool ret = false;
 
@@ -43,40 +43,26 @@ bool MaterialImporter::Import(const char* importFile, const char* importPath, co
 		return ret;
 
 	char importFilePath[DEFAULT_BUF_SIZE];
-	char outputFileName[DEFAULT_BUF_SIZE];
-
 	strcpy_s(importFilePath, strlen(importPath) + 1, importPath);
-
-	// If importFile == nullptr, it means that importPath already contains the name of the file to be imported
-	// If outputFile == nullptr, use the name of importFile (or, if importFile == nullptr, find its name from importPath)
-	if (outputFile != nullptr)
-		strcpy_s(outputFileName, strlen(outputFile) + 1, outputFile);
-	else if (importFile != nullptr)
-	{
-		strcat_s(importFilePath, strlen(importFile) + 1, importFile);
-		strcpy_s(outputFileName, strlen(importFile) + 1, importFile);
-	}
-	else
-	{
-		const char* importFileName = App->filesystem->GetFileNameFromPath(importPath);
-		strcpy_s(outputFileName, strlen(importFileName) + 1, importFileName);
-	}
+	if (importFileName != nullptr)
+		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFileName) + 1, importFileName);
+	outputFileName = App->filesystem->GetFileNameFromPath(importFilePath);
 
 	char* buffer;
 	uint size = App->filesystem->Load(importFilePath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (original format)", importFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (original format)", importFileName);
 		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (original format)", importFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (original format)", importFileName);
 
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, const char* outputFile)
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName)
 {
 	bool ret = false;
 
@@ -114,13 +100,13 @@ bool MaterialImporter::Import(const void* buffer, uint size, const char* outputF
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				if (App->filesystem->SaveInLibrary(outputFile, data, size, FileType::TextureFile) > 0)
+				if (App->filesystem->SaveInLibrary(data, size, FileType::TextureFile, outputFileName) > 0)
 				{
-					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFile);
+					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFileName);
 					ret = true;
 				}
 				else
-					CONSOLE_LOG("MATERIAL IMPORTER: Could not save texture %s to own format", outputFile);
+					CONSOLE_LOG("MATERIAL IMPORTER: Could not save texture %s to own format", outputFileName);
 			}
 
 			RELEASE_ARRAY(data);
@@ -134,20 +120,20 @@ bool MaterialImporter::Import(const void* buffer, uint size, const char* outputF
 	return ret;
 }
 
-bool MaterialImporter::Load(const char* exportedFile, Texture* outputTexture)
+bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture)
 {
 	bool ret = false;
 
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(exportedFile, &buffer, FileType::TextureFile);
+	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (own format)", exportedFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (own format)", exportedFileName);
 		ret = Load(buffer, size, outputTexture);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (own format)", exportedFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (own format)", exportedFileName);
 
 	return ret;
 }

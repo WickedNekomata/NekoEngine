@@ -127,13 +127,13 @@ update_status ModuleInput::PreUpdate(float dt)
 			if (droppedFilePath.find(".fbx") != std::string::npos || droppedFilePath.find(".FBX") != std::string::npos
 				|| droppedFilePath.find(".obj") != std::string::npos || droppedFilePath.find(".OBJ") != std::string::npos)
 			{
-				App->sceneImporter->Import(nullptr, droppedFilePath.data(), nullptr);
+				//App->sceneImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
 			else if (droppedFilePath.find(".png") != std::string::npos || droppedFilePath.find(".PNG") != std::string::npos
 				|| droppedFilePath.find(".dds") != std::string::npos || droppedFilePath.find(".DDS") != std::string::npos)
 			{
 
-				App->materialImporter->Import(nullptr, droppedFilePath.data(), nullptr);
+				//App->materialImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
 
 			SDL_free((char*)droppedFilePath.data());

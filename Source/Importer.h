@@ -12,8 +12,8 @@ public:
 	Importer() {}
 	virtual ~Importer() {}
 
-	virtual bool Import(const char* importFile, const char* importPath, const char* outputFile) = 0;
-	virtual bool Import(const void* buffer, uint size, const char* outputFile) = 0;
+	virtual bool Import(const char* importFile, const char* importPath, std::string& outputFile) = 0;
+	virtual bool Import(const void* buffer, uint size, std::string& outputFile) = 0;
 };
 
 #endif

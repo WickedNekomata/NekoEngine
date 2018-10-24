@@ -27,7 +27,7 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* importFile, const char* importPath, const char* outputFile)
+bool SceneImporter::Import(const char* importFile, const char* importPath, std::string& outputFile)
 {
 	bool ret = false;
 
@@ -35,24 +35,9 @@ bool SceneImporter::Import(const char* importFile, const char* importPath, const
 		return ret;
 
 	char importFilePath[DEFAULT_BUF_SIZE];
-	char outputFileName[DEFAULT_BUF_SIZE];
-
 	strcpy_s(importFilePath, strlen(importPath) + 1, importPath);
-
-	// If importFile == nullptr, it means that importPath already contains the name of the file to be imported
-	// If outputFile == nullptr, use the name of importFile (or, if importFile == nullptr, find its name from importPath)
-	if (outputFile != nullptr)
-		strcpy_s(outputFileName, strlen(outputFile) + 1, outputFile);
-	else if (importFile != nullptr)
-	{
-		strcat_s(importFilePath, strlen(importFile) + 1, importFile);
-		strcpy_s(outputFileName, strlen(importFile) + 1, importFile);
-	}
-	else
-	{
-		const char* importFileName = App->filesystem->GetFileNameFromPath(importPath);
-		strcpy_s(outputFileName, strlen(importFileName) + 1, importFileName);
-	}
+	if (importFile != nullptr)
+		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFile) + 1, importFile);
 
 	char* buffer;
 	uint size = App->filesystem->Load(importFilePath, &buffer);
@@ -68,7 +53,7 @@ bool SceneImporter::Import(const char* importFile, const char* importPath, const
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, const char* outputFile)
+bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFile)
 {
 	bool ret = false;
 
@@ -140,11 +125,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* outputFile
 			{
 				aiString texName;
 				scene->mMaterials[0]->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
-				std::string realTexName = texName.data;
-				realTexName = realTexName.substr((realTexName.find_last_of("\\") + 1), realTexName.size());
-
-				textureName = realTexName.data();
-				textureNameSize = realTexName.size();
+				textureName = texName.data;
+				textureNameSize = texName.length;
 			}
 
 			// Normals
@@ -158,9 +140,9 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* outputFile
 			*/
 
 			// Mesh Name + Vertices + Indices + Texture Coords + Texture Name
-			uint ranges[5] = { meshNameSize, verticesSize, indicesSize, textureCoordsSize, textureNameSize };
+			uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
 
-			uint size = sizeof(ranges) + sizeof(char) * meshNameSize + sizeof(float) * verticesSize + sizeof(uint) * indicesSize + sizeof(float) * textureCoordsSize + sizeof(char) * textureNameSize;
+			uint size = sizeof(ranges) + sizeof(float) * verticesSize + sizeof(uint) * indicesSize + sizeof(float) * textureCoordsSize;
 
 			char* data = new char[size];
 			char* cursor = data;
@@ -172,8 +154,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* outputFile
 			cursor += bytes;
 
 			// 2. Store mesh name
-			bytes = sizeof(float) * meshNameSize;
-			memcpy(cursor, meshName, bytes);
+			//bytes = sizeof(char) * meshNameSize;
+			//memcpy(cursor, meshName, bytes);
 
 			// 3. Store vertices
 			bytes = sizeof(float) * verticesSize;
@@ -188,10 +170,10 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* outputFile
 			memcpy(cursor, textureCoords, bytes);
 
 			// 6. Store texture name
-			bytes = sizeof(float) * textureNameSize;
-			memcpy(cursor, textureName, bytes);
+			//bytes = sizeof(char) * textureNameSize;
+			//memcpy(cursor, textureName, bytes);
 
-			if (App->filesystem->SaveInLibrary(outputFile, data, size, FileType::MeshFile) > 0)
+			if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFile) > 0)
 			{
 				CONSOLE_LOG("SCENE IMPORTER: Successfully saved mesh %s to own format", meshName);
 				ret = true;
@@ -252,22 +234,22 @@ bool SceneImporter::Load(const void* buffer, uint size, Mesh* outputMesh)
 	char* cursor = (char*)buffer;
 
 	// Mesh Name + Vertices + Indices + Texture Coords + Texture Name
-	uint ranges[5];
+	uint ranges[3];
 	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
 
 	cursor += bytes;
 
-	uint meshNameSize = ranges[0];
-	outputMesh->verticesSize = ranges[1];
-	outputMesh->indicesSize = ranges[2];
-	outputMesh->textureCoordsSize = ranges[3];
-	uint textureNameSize = ranges[4];
+	//uint meshNameSize = ranges[0];
+	outputMesh->verticesSize = ranges[0];
+	outputMesh->indicesSize = ranges[1];
+	outputMesh->textureCoordsSize = ranges[2];
+	//uint textureNameSize = ranges[4];
 
 	// 1. Load mesh name
-	bytes = sizeof(char) * meshNameSize;
-	outputMesh->name = new char[meshNameSize];
-	memcpy((char*)outputMesh->name, cursor, bytes);
+	//bytes = sizeof(char) * meshNameSize;
+	//outputMesh->name = new char[meshNameSize];
+	//memcpy((char*)outputMesh->name, cursor, bytes);
 
 	// 2. Load vertices
 	bytes = sizeof(float) * outputMesh->verticesSize;
@@ -285,62 +267,16 @@ bool SceneImporter::Load(const void* buffer, uint size, Mesh* outputMesh)
 	memcpy(outputMesh->textureCoords, cursor, bytes);
 
 	// 5. Load texture name
-	bytes = sizeof(char) * textureNameSize;
-	const char* textureName = new char[textureNameSize];
-	memcpy((char*)textureName, cursor, bytes);
+	//bytes = sizeof(char) * textureNameSize;
+	//const char* textureName = new char[textureNameSize];
+	//memcpy((char*)textureName, cursor, bytes);
 
 	// TODO: find the texture associated with the material 0 of the mesh
 
 	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %i vertices, %i indices, %i texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
 	ret = true;
 
-	RELEASE_ARRAY(textureName);
-}
-
-void SceneImporter::InitMeshesFromScene(const aiScene* scene, const char* path) const
-{
-	for (uint i = 0; i < scene->mNumMeshes; ++i)
-	{
-		Mesh* mesh = new Mesh();
-
-		// Unique vertices
-		mesh->verticesSize = scene->mMeshes[i]->mNumVertices;
-		mesh->vertices = new float[mesh->verticesSize * 3];
-		memcpy(mesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * mesh->verticesSize * 3);
-		CONSOLE_LOG("New mesh with %d vertices", mesh->verticesSize);
-
-		// Indices
-		if (scene->mMeshes[i]->HasFaces())
-		{
-			mesh->indicesSize = scene->mMeshes[i]->mNumFaces * 3;
-			mesh->indices = new uint[mesh->indicesSize];
-			
-			for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
-			{
-				if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3)
-				{
-					CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
-				}
-				else
-				{
-					memcpy(&mesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
-				}
-			}
-		}
-	
-		// Texture coords
-		if (scene->mMeshes[i]->HasTextureCoords(0))
-		{
-			mesh->textureCoords = new float[scene->mMeshes[i]->mNumVertices * 2];
-
-			for (uint j = 0; j < scene->mMeshes[i]->mNumVertices; ++j)
-			{
-				memcpy(&mesh->textureCoords[j * 2], &scene->mMeshes[i]->mTextureCoords[0][j].x, sizeof(float));
-				memcpy(&mesh->textureCoords[(j * 2) + 1], &scene->mMeshes[i]->mTextureCoords[0][j].y, sizeof(float));
-			}
-			CONSOLE_LOG("Mesh tex coords at channel 0 loaded");
-		}
-	}	
+	//RELEASE_ARRAY(textureName);
 }
 
 uint SceneImporter::GetAssimpMajorVersion() const

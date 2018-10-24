@@ -27,11 +27,11 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 
-	uint SaveInLibrary(const char* fileName, const void* buffer, uint size, FileType fileType) const;
-	uint Save(const char* file, const void* buffer, uint size, bool append = false) const;	// file means PHYSFS path + file
+	uint SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFile) const;
+	uint Save(const char* filePath, const void* buffer, uint size, bool append = false) const;
 
 	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;
-	uint Load(const char* file, char** buffer) const; // file means PHYSFS path + file
+	uint Load(const char* filePath, char** buffer) const;
 
 	const char* GetFileNameFromPath(const char* path) const;
 };

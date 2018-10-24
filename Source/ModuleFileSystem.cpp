@@ -26,9 +26,6 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 		CreateDir("Library/Animation");
 
 		AddPath("./Library/", "Library");
-
-		if (PHYSFS_setWriteDir("Library") == 0)
-			CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 	}
 }
 
@@ -98,7 +95,7 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 
 	if (ret)
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'");
+		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
 	}
 	else
 		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
@@ -106,40 +103,42 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(const char* fileName, const void* buffer, uint size, FileType fileType) const
+uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFile) const
 {
 	uint ret = 0;
 
-	char file[DEFAULT_BUF_SIZE];
+	char filePath[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Meshes/%s.neko", fileName);
+		sprintf_s(filePath, "Library/Meshes/BH.%s", FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Materials/%s.neko", fileName);
+		sprintf_s(filePath, "Library/Materials/BH.%s", FILE_EXTENSION);
 		break;
 	}
 
-	ret = Save(file, buffer, size);
+	outputFile = "BH"; // TODO: outputFile == UUID
+
+	ret = Save(filePath, buffer, size);
 
 	return ret;
 }
 
-uint ModuleFileSystem::Save(const char* file, const void* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(const char* filePath, const void* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
-	const char* fileName = GetFileNameFromPath(file);
+	const char* fileName = GetFileNameFromPath(filePath);
 
-	bool exists = PHYSFS_exists(file);
+	bool exists = PHYSFS_exists(filePath);
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
-		filehandle = PHYSFS_openAppend(file);
+		filehandle = PHYSFS_openAppend(filePath);
 	else
-		filehandle = PHYSFS_openWrite(file);
+		filehandle = PHYSFS_openWrite(filePath);
 
 	if (filehandle != nullptr)
 	{
@@ -175,34 +174,34 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 {
 	uint ret = 0;
 
-	char file[DEFAULT_BUF_SIZE];
+	char filePath[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Meshes/%s.neko", fileName);
+		sprintf_s(filePath, "Library/Meshes/BH.%s", FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(file, DEFAULT_BUF_SIZE, "Library/Materials/%s.neko", fileName);
+		sprintf_s(filePath, "Library/Materials/BH.%s", FILE_EXTENSION);
 		break;
 	}
 
-	ret = Load(file, buffer);
+	ret = Load(filePath, buffer);
 	
 	return ret;
 }
 
-uint ModuleFileSystem::Load(const char* file, char** buffer) const
+uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 {
 	uint objCount = 0;
 
-	const char* fileName = GetFileNameFromPath(file);
+	const char* fileName = GetFileNameFromPath(filePath);
 
-	bool exists = PHYSFS_exists(file);
+	bool exists = PHYSFS_exists(filePath);
 
 	if (exists)
 	{
-		PHYSFS_file* filehandle = PHYSFS_openRead(file);
+		PHYSFS_file* filehandle = PHYSFS_openRead(filePath);
 
 		if (filehandle != nullptr)
 		{

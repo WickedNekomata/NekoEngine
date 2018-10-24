@@ -3,7 +3,7 @@
 
 #include "Importer.h"
 
-#include <string>
+#include <vector>
 
 struct Texture
 {
@@ -19,8 +19,8 @@ public:
 	MaterialImporter();
 	~MaterialImporter();
 
-	bool Import(const char* importFile, const char* importPath, const char* outputFile);
-	bool Import(const void* buffer, uint size, const char* outputFile);
+	bool Import(const char* importFile, const char* importPath, std::string& outputFile);
+	bool Import(const void* buffer, uint size, std::string& outputFile);
 	
 	bool Load(const char* exportedFile, Texture* outputTexture);
 	bool Load(const void* buffer, uint size, Texture* outputTexture);

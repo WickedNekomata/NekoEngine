@@ -37,6 +37,18 @@ bool ModuleScene::Start()
 	child = App->GOs->CreateGameObject("Sandra", root);
 	fillGuillem = App->GOs->CreateGameObject("fill de Sandra", child);
 	App->GOs->CreateGameObject("net de Sandra", fillGuillem);
+
+	// Load Baker House last mesh
+	std::string outputFile;
+	App->sceneImporter->Import("BakerHouse.fbx", "Assets/", outputFile);
+	Mesh* mesh = new Mesh();
+	App->sceneImporter->Load(outputFile.data(), mesh);
+
+	// Load Baker House texture
+	App->materialImporter->Import("Baker_house.png", "Assets/", outputFile);
+	Texture* texture = new Texture();
+	App->materialImporter->Load(outputFile.data(), texture);
+
 	return ret;
 }
 

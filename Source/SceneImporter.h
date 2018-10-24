@@ -36,11 +36,6 @@ struct Mesh
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 	uint textureCoordsSize = 0;
-
-	// Texture
-	uint textureID = 0;
-	uint textureWidth = 0;
-	uint textureHeight = 0;
 };
 
 class SceneImporter : public Importer
@@ -50,13 +45,11 @@ public:
 	SceneImporter();
 	~SceneImporter();
 
-	bool Import(const char* importFile, const char* importPath, const char* outputFile);
-	bool Import(const void* buffer, uint size, const char* outputFile);
+	bool Import(const char* importFile, const char* importPath, std::string& outputFile);
+	bool Import(const void* buffer, uint size, std::string& outputFile);
 
 	bool Load(const char* exportedFile, Mesh* outputMesh);
 	bool Load(const void* buffer, uint size, Mesh* outputMesh);
-
-	void InitMeshesFromScene(const aiScene* scene, const char* path) const;
 
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;

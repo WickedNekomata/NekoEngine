@@ -14,13 +14,13 @@ public:
 
 	void Update() const;
 
-	virtual void OnEditor() const;
+	virtual void OnEditor();
 
 	virtual ComponentType GetType();
 	virtual GameObject* GetParent();
 
 private:
-	virtual void OnUniqueEditor() const;
+	virtual void OnUniqueEditor();
 
 protected:
 

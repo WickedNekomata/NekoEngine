@@ -15,7 +15,9 @@ void ComponentMesh::Update() const
 {
 }
 
-void ComponentMesh::OnUniqueEditor() const
+void ComponentMesh::OnUniqueEditor()
 {
-	ImGui::Text("THIS IS A MESH COMPONENT");
+	ImGui::Text("Mesh"); ImGui::SameLine();
+
+	// https://github.com/ocornut/imgui/issues/1566
 }

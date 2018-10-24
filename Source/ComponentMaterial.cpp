@@ -15,7 +15,7 @@ void ComponentMaterial::Update() const
 {
 }
 
-void ComponentMaterial::OnUniqueEditor() const
+void ComponentMaterial::OnUniqueEditor()
 {
 	ImGui::Text("THIS IS A MATERIAL COMPONENT");
 }

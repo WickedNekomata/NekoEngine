@@ -16,7 +16,7 @@ public:
 
 	void Update() const;
 
-	virtual void OnUniqueEditor() const;
+	virtual void OnUniqueEditor();
 
 public:
 	std::vector<uint> textures;

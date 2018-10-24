@@ -30,13 +30,13 @@ bool ModuleScene::Start()
 	grid->ShowAxis(true);
 
 	root = App->GOs->CreateGameObject("Root", nullptr);
-	child = App->GOs->CreateGameObject("Guillem", root);
-	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Guillem", child);
-	App->GOs->CreateGameObject("net de Guillem1", fillGuillem);
-	App->GOs->CreateGameObject("net de Guillem2", fillGuillem);
-	child = App->GOs->CreateGameObject("Sandra", root);
-	fillGuillem = App->GOs->CreateGameObject("fill de Sandra", child);
-	App->GOs->CreateGameObject("net de Sandra", fillGuillem);
+	child = App->GOs->CreateGameObject("Api", root);
+	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
+	App->GOs->CreateGameObject("net de Api1", fillGuillem);
+	App->GOs->CreateGameObject("net de Api2", fillGuillem);
+	child = App->GOs->CreateGameObject("Patata", root);
+	fillGuillem = App->GOs->CreateGameObject("fill de Patata", child);
+	App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	return ret;
 }
 

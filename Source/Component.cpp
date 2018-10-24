@@ -13,14 +13,14 @@ void Component::Update() const
 {
 }
 
-void Component::OnEditor() const
+void Component::OnEditor()
 {
 
 
 	OnUniqueEditor();
 }
 
-void Component::OnUniqueEditor() const {}
+void Component::OnUniqueEditor() {}
 
 ComponentType Component::GetType()
 {

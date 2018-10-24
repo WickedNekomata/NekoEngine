@@ -358,10 +358,8 @@ void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
 void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
 {
 	glPushMatrix();
-	math::float4x4 matrix = math::float4x4::FromTRS(toDraw->GetParent()->transform->Position,
-													toDraw->GetParent()->transform->Rotation,
-													toDraw->GetParent()->transform->Scale);
-	glMultMatrixf(matrix.Transposed().ptr());
+	
+	glMultMatrixf(toDraw->GetParent()->transform->GetGlobalMatrix().Transposed().ptr());
 	
 	ComponentMaterial* material = toDraw->GetParent()->material;
 

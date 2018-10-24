@@ -11,7 +11,8 @@
 
 GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
 {
-	AddComponent(ComponentType::Transform_Component);
+	if (parent != nullptr)
+		AddComponent(ComponentType::Transform_Component);
 }
 
 GameObject::~GameObject()

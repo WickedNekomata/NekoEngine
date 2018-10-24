@@ -3,6 +3,10 @@
 
 #include "Component.h"
 
+#include "Globals.h"
+
+#include <vector>
+
 class ComponentMaterial : public Component
 {
 public:
@@ -13,6 +17,9 @@ public:
 	void Update() const;
 
 	virtual void OnUniqueEditor() const;
+
+public:
+	std::vector<uint> textures;
 };
 
 #endif

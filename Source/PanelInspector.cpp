@@ -69,10 +69,18 @@ bool PanelInspector::Draw()
 			ImGui::Button("Add Component");
 			if (ImGui::BeginPopupContextItem((const char*)0, 0))
 			{
-				if (ImGui::Selectable("Mesh"))		{ currObject->AddComponent(ComponentType::Mesh_Component); 
-													  ImGui::CloseCurrentPopup(); }
-				if (ImGui::Selectable("Material"))  { currObject->AddComponent(ComponentType::Material_Component); 
-													  ImGui::CloseCurrentPopup(); }
+				if (currObject->mesh == nullptr) {
+					if (ImGui::Selectable("Mesh")) {
+						currObject->AddComponent(ComponentType::Mesh_Component);
+						ImGui::CloseCurrentPopup();
+					}
+				}
+				if (currObject->material == nullptr) {
+					if (ImGui::Selectable("Material")) {
+						currObject->AddComponent(ComponentType::Material_Component);
+						ImGui::CloseCurrentPopup();
+					}
+				}
 				ImGui::EndPopup();
 			}
 		}

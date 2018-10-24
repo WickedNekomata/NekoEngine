@@ -3,6 +3,9 @@
 
 #include "Component.h"
 
+#include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib/include/Math/Quat.h"
+
 class ComponentTransform : public Component
 {
 public:
@@ -14,7 +17,10 @@ public:
 
 	virtual void OnUniqueEditor() const;
 
-private:
+public:
+	math::float3 Position = { 0,0,0 };
+	math::Quat Rotation = { 1,0,0,0 };
+	math::float3 Scale = { 0,0,0 };
 
 };
 

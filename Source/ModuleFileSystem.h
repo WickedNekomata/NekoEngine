@@ -27,7 +27,7 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 
-	uint SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFile) const;
+	uint SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName) const;
 	uint Save(const char* filePath, const void* buffer, uint size, bool append = false) const;
 
 	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;

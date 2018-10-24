@@ -27,7 +27,7 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* importFile, const char* importPath, std::string& outputFile)
+bool SceneImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName)
 {
 	bool ret = false;
 
@@ -36,24 +36,25 @@ bool SceneImporter::Import(const char* importFile, const char* importPath, std::
 
 	char importFilePath[DEFAULT_BUF_SIZE];
 	strcpy_s(importFilePath, strlen(importPath) + 1, importPath);
-	if (importFile != nullptr)
-		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFile) + 1, importFile);
+	if (importFileName != nullptr)
+		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFileName) + 1, importFileName);
+	outputFileName = App->filesystem->GetFileNameFromPath(importFilePath);
 
 	char* buffer;
 	uint size = App->filesystem->Load(importFilePath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded mesh(es) %s (original format)", importFile);
-		ret = Import(buffer, size, outputFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded mesh(es) %s (original format)", importFileName);
+		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load mesh(es) %s (original format)", importFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load mesh(es) %s (original format)", importFileName);
 
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFile)
+bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFileName)
 {
 	bool ret = false;
 
@@ -173,7 +174,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 			//bytes = sizeof(char) * textureNameSize;
 			//memcpy(cursor, textureName, bytes);
 
-			if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFile) > 0)
+			if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
 			{
 				CONSOLE_LOG("SCENE IMPORTER: Successfully saved mesh %s to own format", meshName);
 				ret = true;
@@ -206,20 +207,20 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	return ret;
 }
 
-bool SceneImporter::Load(const char* exportedFile, Mesh* outputMesh)
+bool SceneImporter::Load(const char* exportedFileName, Mesh* outputMesh)
 {
 	bool ret = false;
 
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(exportedFile, &buffer, FileType::MeshFile);
+	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded mesh %s (own format)", exportedFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded mesh %s (own format)", exportedFileName);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load mesh %s (own format)", exportedFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load mesh %s (own format)", exportedFileName);
 
 	return ret;
 }

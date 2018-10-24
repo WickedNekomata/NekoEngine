@@ -45,10 +45,10 @@ public:
 	SceneImporter();
 	~SceneImporter();
 
-	bool Import(const char* importFile, const char* importPath, std::string& outputFile);
-	bool Import(const void* buffer, uint size, std::string& outputFile);
+	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
+	bool Import(const void* buffer, uint size, std::string& outputFileName);
 
-	bool Load(const char* exportedFile, Mesh* outputMesh);
+	bool Load(const char* exportedFileName, Mesh* outputMesh);
 	bool Load(const void* buffer, uint size, Mesh* outputMesh);
 
 	uint GetAssimpMajorVersion() const;

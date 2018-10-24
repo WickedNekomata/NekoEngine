@@ -27,6 +27,8 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		AddPath("./Library/", "Library");
 	}
+	
+	CreateDir("Settings");
 }
 
 ModuleFileSystem::~ModuleFileSystem() {}
@@ -103,23 +105,26 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFile) const
+uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName) const
 {
 	uint ret = 0;
 
 	char filePath[DEFAULT_BUF_SIZE];
+	char fileName[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(filePath, "Library/Meshes/BH.%s", FILE_EXTENSION);
+		sprintf_s(fileName, "%s_Mesh", outputFileName.data());
+		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(filePath, "Library/Materials/BH.%s", FILE_EXTENSION);
+		sprintf_s(fileName, "%s_Texture", outputFileName.data());
+		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	}
 
-	outputFile = "BH"; // TODO: outputFile == UUID
+	 // TODO: outputFile == UUID
 
 	ret = Save(filePath, buffer, size);
 
@@ -179,10 +184,10 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(filePath, "Library/Meshes/BH.%s", FILE_EXTENSION);
+		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(filePath, "Library/Materials/BH.%s", FILE_EXTENSION);
+		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	}
 

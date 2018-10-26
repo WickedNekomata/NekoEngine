@@ -5,6 +5,8 @@
 
 #include "Globals.h"
 
+struct Mesh;
+
 class ComponentMesh : public Component
 {
 public:
@@ -17,11 +19,8 @@ public:
 	virtual void OnUniqueEditor();
 
 public:
-	float* vertices = nullptr;
-	uint verticesID = 0;
-	uint indicesID = 0;
-	uint indicesSize = 0;
-	uint textCoordsID = 0;
+
+	Mesh* mesh = nullptr;
 };
 
 #endif

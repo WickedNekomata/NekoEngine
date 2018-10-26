@@ -9,14 +9,18 @@
 
 #include <algorithm>
 
-GameObject::GameObject(char* name, GameObject* parent) : name(name), parent(parent)
+GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 {
+	this->name = new char[DEFAULT_BUF_SIZE];
+	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
+
 	if (parent != nullptr)
 		AddComponent(ComponentType::Transform_Component);
 }
 
 GameObject::~GameObject()
 {
+	RELEASE_ARRAY(name);
 	InternallyDeleteComponents();
 }
 
@@ -96,10 +100,10 @@ Component* GameObject::AddComponent(ComponentType type)
 		newComponent = transform = new ComponentTransform(this);
 		break;
 	case Mesh_Component:
-		newComponent = mesh = App->renderer3D->CreateMeshComponent(this);
+		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		break;
 	case Material_Component:
-		newComponent = material = new ComponentMaterial(this);
+		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
 	default:
 		break;
@@ -171,7 +175,5 @@ const char* GameObject::GetName() const
 
 void GameObject::SetName(char* name)
 {
-	this->name = name;
+	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 }
-
-

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+struct Texture;
+
 class ComponentMaterial : public Component
 {
 public:
@@ -19,7 +21,8 @@ public:
 	virtual void OnUniqueEditor();
 
 public:
-	std::vector<uint> textures;
+
+	std::vector<Texture*> textures;
 };
 
 #endif

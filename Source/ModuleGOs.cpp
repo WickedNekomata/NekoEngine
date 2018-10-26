@@ -35,7 +35,6 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-
 	for (int i = 0; i < needToBeDeleted.size(); ++i)
 	{
 		delete needToBeDeleted[i];
@@ -56,7 +55,7 @@ update_status ModuleGOs::PostUpdate(float dt)
 
 bool ModuleGOs::CleanUp()
 {
-	for (int i = 0; i < gameObjects.size(); ++i)
+	for (uint i = 0; i < gameObjects.size(); ++i)
 		RELEASE(gameObjects[i]);
 	
 	gameObjects.clear();

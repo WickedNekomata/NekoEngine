@@ -31,7 +31,8 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	CreateDir("Settings");
 }
 
-ModuleFileSystem::~ModuleFileSystem() {}
+ModuleFileSystem::~ModuleFileSystem() 
+{}
 
 bool ModuleFileSystem::Init(JSON_Object* jObject)
 {
@@ -105,7 +106,7 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName) const
+uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID) const
 {
 	uint ret = 0;
 
@@ -115,16 +116,22 @@ uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fil
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(fileName, "%s_Mesh", outputFileName.data());
+		if (ID > 0)
+			sprintf_s(fileName, "%s_Mesh%u", outputFileName.data(), ID);
+		else
+			sprintf_s(fileName, "%s_Mesh", outputFileName.data());
 		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(fileName, "%s_Texture", outputFileName.data());
+		if (ID > 0)
+			sprintf_s(fileName, "%s_Texture%u", outputFileName.data(), ID);
+		else
+			sprintf_s(fileName, "%s_Texture", outputFileName.data());
 		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	}
 
-	 // TODO: outputFile == UUID
+	outputFileName = fileName;
 
 	ret = Save(filePath, buffer, size);
 
@@ -137,7 +144,7 @@ uint ModuleFileSystem::Save(const char* filePath, const void* buffer, uint size,
 
 	const char* fileName = GetFileNameFromPath(filePath);
 
-	bool exists = PHYSFS_exists(filePath);
+	bool exists = Exists(filePath);
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
@@ -202,7 +209,7 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 
 	const char* fileName = GetFileNameFromPath(filePath);
 
-	bool exists = PHYSFS_exists(filePath);
+	bool exists = Exists(filePath);
 
 	if (exists)
 	{
@@ -240,6 +247,35 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 	return objCount;
 }
 
+bool ModuleFileSystem::Exists(const char* filePath) const
+{
+	return PHYSFS_exists(filePath);
+}
+
+bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const
+{
+	uint ret = 0;
+
+	char filePath[DEFAULT_BUF_SIZE];
+
+	switch (fileType)
+	{
+	case FileType::MeshFile:
+		outputFilePath = "Assets/Meshes/";
+		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		break;
+	case FileType::TextureFile:
+		outputFilePath = "Assets/Textures/";
+		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		break;
+	}
+
+	ret = Exists(filePath);
+
+	return ret;
+}
+
+// TODO CHECK NEW ALWAYS DELETED
 const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
 {
 	std::string newPath = path;

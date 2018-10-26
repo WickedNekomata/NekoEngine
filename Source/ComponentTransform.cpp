@@ -65,18 +65,22 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 	while (globalParent->GetParent() != nullptr)
 	{
 		aux_list.push_back(globalParent);
-		globalParent = parent->GetParent();
+		globalParent = globalParent->GetParent();
 	}
 	
 	math::float4x4 matrix = math::float4x4::identity;
 
 	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
 	{
-		if (it == aux_list.rbegin())
+		if (it == aux_list.rbegin()) 
+		{
 			matrix = (*it)->transform->GetMatrix();
+			continue;
+		}
 
 		matrix = matrix * (*it)->transform->GetMatrix();
 	}
 
+	math::float4x4 other = GetMatrix();
 	return matrix * GetMatrix();
 }

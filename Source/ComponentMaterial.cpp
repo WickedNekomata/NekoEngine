@@ -1,5 +1,6 @@
 #include "ComponentMaterial.h"
 #include "GameObject.h"
+#include "MaterialImporter.h"
 
 #include "imgui/imgui.h"
 

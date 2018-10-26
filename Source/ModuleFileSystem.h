@@ -27,11 +27,14 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 
-	uint SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName) const;
+	uint SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID = 0) const;
 	uint Save(const char* filePath, const void* buffer, uint size, bool append = false) const;
 
 	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;
 	uint Load(const char* filePath, char** buffer) const;
+
+	bool Exists(const char* filePath) const;
+	bool ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const;
 
 	const char* GetFileNameFromPath(const char* path) const;
 };

@@ -53,11 +53,12 @@ private:
 	std::vector<GameObject*> children;
 
 public:
+
 	bool enabled = true;
 
 	ComponentTransform* transform = nullptr;
-	ComponentMaterial* material = nullptr;
-	ComponentMesh* mesh = nullptr;
+	ComponentMaterial* materialRenderer = nullptr;
+	ComponentMesh* meshRenderer = nullptr;
 };
 
 #endif

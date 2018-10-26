@@ -25,10 +25,10 @@ public:
 	math::float4x4 GetGlobalMatrix();
 
 public:
+
 	math::float3 position = math::float3::zero;
 	math::Quat rotation = math::Quat::identity;
 	math::float3 scale = math::float3::zero;
-
 };
 
 #endif

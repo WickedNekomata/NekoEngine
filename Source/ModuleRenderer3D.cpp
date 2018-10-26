@@ -357,23 +357,25 @@ void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
 
 void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
 {
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	
-	glMultMatrixf(toDraw->GetParent()->transform->GetGlobalMatrix().Transposed().ptr());
+	math::float4x4 matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
+	glMultMatrixf(matrix.Transposed().ptr());
 	
-	ComponentMaterial* material = toDraw->GetParent()->material;
+	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
 
-	if (material != nullptr)
+	if (materialRenderer != nullptr)
 	{
-		for (int i = 0; i < material->textures.size(); ++i)
+		for (int i = 0; i < materialRenderer->textures.size(); ++i)
 		{
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glActiveTexture(GL_TEXTURE0 + i);
 
-			glBindTexture(GL_TEXTURE_2D, material->textures[i]);
+			glBindTexture(GL_TEXTURE_2D, materialRenderer->textures[i]->id);
 
-			glBindBuffer(GL_ARRAY_BUFFER, toDraw->textCoordsID);
+			glBindBuffer(GL_ARRAY_BUFFER, toDraw->mesh->textureCoordsID);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 		}
 	}
@@ -382,11 +384,11 @@ void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glBindBuffer(GL_ARRAY_BUFFER, toDraw->verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, toDraw->mesh->verticesID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, toDraw->indicesID);
-	glDrawElements(GL_TRIANGLES, toDraw->indicesSize, GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, toDraw->mesh->indicesID);
+	glDrawElements(GL_TRIANGLES, toDraw->mesh->indicesSize, GL_UNSIGNED_INT, NULL);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -396,9 +398,9 @@ void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
 	// -----
 
 	// Disable Multitexturing
-	if (material != nullptr)
+	if (materialRenderer != nullptr)
 	{
-		for (int i = 0; i < material->textures.size(); ++i)
+		for (int i = 0; i < materialRenderer->textures.size(); ++i)
 		{
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);

@@ -7,16 +7,8 @@
 
 #include <vector>
 
-struct aiScene;
-
 struct Mesh
 {
-	const char* name = nullptr;
-
-	math::float3 position;
-	math::float3 scale;
-	math::Quat rotation;
-
 	// Unique vertices
 	float* vertices = nullptr;
 	uint verticesID = 0;
@@ -27,16 +19,18 @@ struct Mesh
 	uint indicesID = 0;
 	uint indicesSize = 0;
 
-	// Normals
-	//float* normals = nullptr;
-	//PrimitiveRay** normalsVerticesDebug = nullptr;
-	//PrimitiveRay** normalsFacesDebug = nullptr;
-
 	// Texture Coords
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 	uint textureCoordsSize = 0;
+
+	void Init();
+	~Mesh();
 };
+
+struct aiScene;
+struct aiNode;
+class GameObject;
 
 class SceneImporter : public Importer
 {
@@ -47,6 +41,7 @@ public:
 
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
+	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, std::string& outputFileName);
 
 	bool Load(const char* exportedFileName, Mesh* outputMesh);
 	bool Load(const void* buffer, uint size, Mesh* outputMesh);

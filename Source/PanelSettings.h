@@ -29,6 +29,8 @@ private:
 	void InputNode() const;
 	void HardwareNode() const;
 	void SceneNode() const;
+
+	void RecursiveDrawQuadtree() const;
 };
 
 #endif

@@ -156,6 +156,7 @@ PrimitiveAxis::~PrimitiveAxis()
 
 void PrimitiveAxis::InnerRender(const math::float4x4 globalTransform) const
 {
+	// TODO: UPDATE PRIMITIVES FROM MASTER VERSION (ALSO UPDATE PANELS) and fix things like setcapabilitystate
 	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
 
 	if (x != nullptr)

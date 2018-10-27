@@ -30,7 +30,6 @@ bool ModuleScene::Start()
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-	grid->SetPosition({ 0, -1, 0 });
 	root = App->GOs->CreateGameObject("Root", nullptr);
 	child = App->GOs->CreateGameObject("Api", root);
 	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
@@ -42,7 +41,7 @@ bool ModuleScene::Start()
 	App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 	std::string outputFile;
-	App->sceneImporter->Import("cube.FBX", "Assets/Meshes/", outputFile);
+	App->sceneImporter->Import("street.FBX", "Assets/Meshes/", outputFile);
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);
@@ -71,14 +70,43 @@ bool ModuleScene::CleanUp()
 void ModuleScene::Draw() const
 {
 	grid->Render();
+
+	bool cullFace = App->renderer3D->GetCapabilityState(GL_CULL_FACE);
+	App->renderer3D->SetCapabilityState(GL_CULL_FACE, false);
+	RecursiveDrawQuadtree(quadtree.root);
+	App->renderer3D->SetCapabilityState(GL_CULL_FACE, cullFace);
 }
 
 void ModuleScene::CreateQuadtree()
 {
-	const math::float3 center(0.0f, 10.0f, 0.0f);
-	const math::float3 size(1000.0f, 20.0f, 1000.0f);
+	const math::float3 center(0.0f, 5.0f, 0.0f);
+	const math::float3 size(100.0f, 10.0f, 100.0f);
 	math::AABB boundary;
 	boundary.SetFromCenterAndSize(center, size);
 
 	quadtree.SetBoundary(boundary);
+}
+
+void ModuleScene::RecursiveDrawQuadtree(QuadtreeNode* node) const
+{
+	PrimitiveCube nodeBoundingBox(node->boundingBox.Size());
+	nodeBoundingBox.SetColor(Yellow);
+	nodeBoundingBox.SetWireframeMode(true);
+	math::float3 position = node->boundingBox.CenterPoint();
+	nodeBoundingBox.Render(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
+
+	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
+	{
+		PrimitiveCube objectBoundingBox((*it)->boundingBox.Size());
+		objectBoundingBox.SetColor(Red);
+		objectBoundingBox.SetWireframeMode(true);
+		position = (*it)->boundingBox.CenterPoint();
+		objectBoundingBox.Render(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
+	}
+
+	if (!node->IsLeaf())
+	{
+		for (uint i = 0; i < 4; ++i)
+			RecursiveDrawQuadtree(node->children[i]);
+	}
 }

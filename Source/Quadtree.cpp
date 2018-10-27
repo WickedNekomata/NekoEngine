@@ -28,22 +28,23 @@ bool QuadtreeNode::IsLeaf() const
 
 void QuadtreeNode::Insert(GameObject* gameObject)
 {
-	objects.push_back(gameObject);
-
 	if (objects.size() == BUCKET_SIZE)
 	{
 		if (IsLeaf())
 			Subdivide();
 
+		objects.push_back(gameObject);
 		RedistributeChildren();
 	}
+	else
+		objects.push_back(gameObject);
 }
 
 void QuadtreeNode::Subdivide()
 {
 	const math::float3 size = boundingBox.Size();
-	const math::float3 quarterSize(0.25f * size.x, size.y, 0.25f * size.z);
-	const math::float3 halfQuarterSize(quarterSize.x / 2.0f, size.y, size.z / 2.0f);
+	const math::float3 halfSize(size.x / 2.0f, size.y, size.z / 2.0f);
+	const math::float3 quarterSize(halfSize.x / 2.0f, size.y, halfSize.z / 2.0f);
 
 	const math::float3 center = boundingBox.CenterPoint();
 	math::float3 quarterCenter;
@@ -51,23 +52,23 @@ void QuadtreeNode::Subdivide()
 	math::AABB quarterBoundingBox;
 
 	// North East
-	quarterCenter = { center.x + halfQuarterSize.x, center.y, center.z - halfQuarterSize.z };
-	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, quarterSize);
+	quarterCenter = { center.x + quarterSize.x, center.y, center.z - quarterSize.z };
+	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, halfSize);
 	children[NE] = new QuadtreeNode(quarterBoundingBox);
 
 	// North West
-	quarterCenter = { center.x - halfQuarterSize.x, center.y, center.z - halfQuarterSize.z };
-	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, quarterSize);
+	quarterCenter = { center.x - quarterSize.x, center.y, center.z - quarterSize.z };
+	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, halfSize);
 	children[NW] = new QuadtreeNode(quarterBoundingBox);
 
 	// South East
-	quarterCenter = { center.x + halfQuarterSize.x, center.y, center.z + halfQuarterSize.z };
-	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, quarterSize);
+	quarterCenter = { center.x + quarterSize.x, center.y, center.z + quarterSize.z };
+	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, halfSize);
 	children[SE] = new QuadtreeNode(quarterBoundingBox);
 
 	// South West
-	quarterCenter = { center.x - halfQuarterSize.x, center.y, center.z + halfQuarterSize.z };
-	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, quarterSize);
+	quarterCenter = { center.x - quarterSize.x, center.y, center.z + quarterSize.z };
+	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, halfSize);
 	children[SW] = new QuadtreeNode(quarterBoundingBox);
 }
 
@@ -81,7 +82,7 @@ void QuadtreeNode::RedistributeChildren()
 		uint lastIntersection = 0;
 		for (uint i = 0; i < 4; ++i)
 		{
-			if ((*it)->boundingBox.Intersects(boundingBox))
+			if ((*it)->boundingBox.Intersects(children[i]->boundingBox))
 			{
 				++intersections;
 				lastIntersection = i;

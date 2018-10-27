@@ -28,6 +28,7 @@ public:
 	void Draw() const;
 
 	void CreateQuadtree();
+	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 private:
 

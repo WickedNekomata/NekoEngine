@@ -158,8 +158,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-		for (uint i = 0; i < meshComponents.size(); ++i)
-			DrawBoundingBox(meshComponents[i]);
+		//for (uint i = 0; i < meshComponents.size(); ++i)
+			//DrawBoundingBox(meshComponents[i]);
 	}
 
 	// 3. Editor

@@ -24,7 +24,7 @@ ComponentCamera::~ComponentCamera()
 {
 }
 
-void ComponentCamera::Update()
+void ComponentCamera::UpdateTransform()
 {
 	math::float4x4 matrix = parent->transform->GetGlobalMatrix();
 	cameraFrustum.pos = matrix.TranslatePart();

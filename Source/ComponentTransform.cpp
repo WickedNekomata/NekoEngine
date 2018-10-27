@@ -1,6 +1,8 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
 
+#include "ComponentCamera.h"
+
 #include "imgui/imgui.h"
 
 #include <list>
@@ -57,6 +59,9 @@ void ComponentTransform::OnUniqueEditor()
 		|| lastRotation.x != rotation.x || lastRotation.y != rotation.y || lastRotation.z != rotation.z || lastRotation.w != rotation.w
 		|| lastScale.x != scale.x || lastScale.y != scale.y || lastScale.z != scale.z)
 		parent->RecalculateBoundingBox();
+
+	if (parent->camera != nullptr)
+		parent->camera->UpdateTransform();
 }
 
 math::float4x4 ComponentTransform::GetMatrix()
@@ -81,6 +86,5 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
 		matrix = matrix * (*it)->transform->GetMatrix();
 
-	math::float4x4 myMatrix = GetMatrix();
 	return matrix * GetMatrix();
 }

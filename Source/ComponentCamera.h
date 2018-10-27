@@ -15,7 +15,7 @@ public:
 	ComponentCamera(GameObject* parent);
 	virtual ~ComponentCamera();
 
-	void Update();
+	void UpdateTransform();
 
 	virtual void OnUniqueEditor();
 

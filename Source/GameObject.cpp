@@ -29,11 +29,7 @@ GameObject::~GameObject()
 	InternallyDeleteComponents();
 }
 
-void GameObject::Update()
-{
-	if (camera != nullptr)
-		camera->Update();
-}
+void GameObject::Update() {}
 
 void GameObject::SetParent(GameObject* parent)
 {

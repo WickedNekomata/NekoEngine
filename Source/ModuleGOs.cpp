@@ -30,9 +30,6 @@ update_status ModuleGOs::PreUpdate(float dt)
 
 update_status ModuleGOs::Update(float dt)
 {
-	for (uint i = 0; i < gameObjects.size(); ++i)
-		gameObjects[i]->Update();
-
 	return UPDATE_CONTINUE;
 }
 

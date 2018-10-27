@@ -4,6 +4,8 @@
 #include "ModuleScene.h"
 #include "ImGui/imgui.h"
 
+#include "ComponentTransform.h"
+
 PanelHierarchy::PanelHierarchy(char* name) : Panel(name) {}
 
 PanelHierarchy::~PanelHierarchy()
@@ -32,6 +34,21 @@ bool PanelHierarchy::Draw()
 
 		if (ImGui::TreeNodeEx(root->GetName()))
 		{
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY"))
+				{
+					GameObject* payload_n = *(GameObject**)payload->Data;
+
+					payload_n->GetParent()->EraseChild(payload_n);
+					root->AddChild(payload_n);
+
+					payload_n->SetParent(root);
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
 			IterateAllChildren(root);
 			ImGui::TreePop();
 		}
@@ -110,19 +127,19 @@ void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* SourceTarget)
 {
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 	{
-		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", SourceTarget, sizeof(GameObject));
+		ImGui::SetDragDropPayload("GAMEOBJECTS_HIERARCHY", &SourceTarget, sizeof(GameObject));
 		ImGui::EndDragDropSource();
 	}
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY"))
 		{
-			GameObject* payload_n = (GameObject*)payload->Data;
+			GameObject* payload_n = *(GameObject**)payload->Data;
 			
-			//payload_n->GetParent()->EraseChild(payload_n);
-			//root->AddChild(payload_n);
+			payload_n->GetParent()->EraseChild(payload_n);
+			SourceTarget->AddChild(payload_n);
 			
-			// TODO: SWAP PARENTS AND PARENTS CHILD AND RECALCULATE EVERYTHING
+			payload_n->SetParent(SourceTarget);
 		}
 		ImGui::EndDragDropTarget();
 	}

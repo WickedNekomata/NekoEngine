@@ -33,7 +33,8 @@ bool PanelInspector::Draw()
 			if (currObject->GetName() != nullptr)
 				strcpy_s(objName, IM_ARRAYSIZE(objName), currObject->GetName());
 			ImGui::PushItemWidth(100);
-			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName)))
+			ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
 				currObject->SetName(objName);
 			ImGui::PopItemWidth();
 

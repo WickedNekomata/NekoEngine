@@ -35,7 +35,7 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	for (int i = 0; i < needToBeDeleted.size(); ++i)
+	for (uint i = 0; i < needToBeDeleted.size(); ++i)
 	{
 		delete needToBeDeleted[i];
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
@@ -43,7 +43,7 @@ update_status ModuleGOs::PostUpdate(float dt)
 
 	needToBeDeleted.clear();
 
-	for (int i = 0; i < componentsToDelete.size(); ++i)
+	for (uint i = 0; i < componentsToDelete.size(); ++i)
 	{
 		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
 	}
@@ -77,7 +77,7 @@ GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)
 
 void ModuleGOs::DeleteGameObject(const char* name)
 {
-	for (int i = 0; i < gameObjects.size(); ++i)
+	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i]->GetName() == name)
 			gameObjects[i]->DeleteMe();
@@ -86,7 +86,7 @@ void ModuleGOs::DeleteGameObject(const char* name)
 
 void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 {
-	for (int i = 0; i < gameObjects.size(); ++i)
+	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i] == toDelete)
 			gameObjects[i]->DeleteMe();

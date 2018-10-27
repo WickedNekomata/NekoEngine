@@ -20,6 +20,7 @@ public:
 	virtual GameObject* GetParent();
 
 private:
+
 	virtual void OnUniqueEditor();
 
 protected:

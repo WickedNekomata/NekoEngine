@@ -14,11 +14,11 @@ class ComponentMaterial : public Component
 public:
 
 	ComponentMaterial(GameObject* parent);
-	virtual ~ComponentMaterial();
+	~ComponentMaterial();
 
-	void Update() const;
+	void Update();
 
-	virtual void OnUniqueEditor();
+	void OnUniqueEditor();
 
 public:
 

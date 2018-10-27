@@ -2,10 +2,11 @@
 #define __GAMEOBJECT_H__
 
 #include "Globals.h"
+#include "ComponentTypes.h"
+
+#include "MathGeoLib/include/Geometry/AABB.h"
 
 #include <vector>
-
-#include "ComponentTypes.h"
 
 struct Component;
 struct ComponentTransform;
@@ -19,7 +20,7 @@ public:
 	GameObject(char* name, GameObject* parent);
 	virtual ~GameObject();
 
-	void Update() const;
+	void Update();
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent();
@@ -44,6 +45,8 @@ public:
 	const char* GetName() const;
 	void SetName(char* name);
 
+	void RecalculateBoundingBox();
+
 private:
 
 	char* name = nullptr;
@@ -59,6 +62,8 @@ public:
 	ComponentTransform* transform = nullptr;
 	ComponentMaterial* materialRenderer = nullptr;
 	ComponentMesh* meshRenderer = nullptr;
+
+	math::AABB boundingBox;
 };
 
 #endif

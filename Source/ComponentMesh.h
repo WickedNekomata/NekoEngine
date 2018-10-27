@@ -14,7 +14,7 @@ public:
 	ComponentMesh(GameObject* parent);
 	virtual ~ComponentMesh();
 
-	void Update() const;
+	void Update();
 
 	virtual void OnUniqueEditor();
 

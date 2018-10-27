@@ -16,7 +16,7 @@ public:
 	ComponentTransform(GameObject* parent);
 	virtual ~ComponentTransform();
 
-	void Update() const;
+	void Update();
 
 	virtual void OnUniqueEditor();
 

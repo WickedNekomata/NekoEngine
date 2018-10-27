@@ -12,7 +12,7 @@ public:
 	Component(GameObject* parent, ComponentType type = ComponentType::No_type);
 	virtual ~Component();
 
-	void Update() const;
+	void Update();
 
 	virtual void OnEditor();
 

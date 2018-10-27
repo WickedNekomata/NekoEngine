@@ -13,7 +13,7 @@ ComponentTransform::~ComponentTransform()
 {
 }
 
-void ComponentTransform::Update() const
+void ComponentTransform::Update()
 {
 }
 
@@ -31,14 +31,14 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
 	ImGui::Text("Rotation");
-	math::float3 euler = rotation.ToEulerXYZ();
+	math::float3 euler = rotation.ToEulerXYZ() * RADTODEG;
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##EulerX", ImGuiDataType_Float, (void*)&euler.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##EulerY", ImGuiDataType_Float, (void*)&euler.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##EulerZ", ImGuiDataType_Float, (void*)&euler.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-
+	euler *= DEGTORAD;
 	rotation = math::Quat::FromEulerXYZ(euler.x, euler.y, euler.z);
 
 	ImGui::Text("Scale");

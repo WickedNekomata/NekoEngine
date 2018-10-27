@@ -14,13 +14,13 @@ ComponentMesh::~ComponentMesh()
 	RELEASE(mesh);
 }
 
-void ComponentMesh::Update() const
+void ComponentMesh::Update()
 {
 }
 
 void ComponentMesh::OnUniqueEditor()
 {
-	ImGui::Text("Mesh"); ImGui::SameLine();
+	ImGui::Text("Mesh");// ImGui::SameLine();
 
 	// https://github.com/ocornut/imgui/issues/1566
 }

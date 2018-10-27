@@ -8,7 +8,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	input = new ModuleInput();
 	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
-	camera = new ModuleCamera3D();
+	camera = new ModuleCameraEditor();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
 	GOs = new ModuleGOs();

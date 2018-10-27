@@ -36,9 +36,6 @@ public:
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
 
-	float GetFOV() const;
-	void SetFOV(float fov);
-
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
@@ -50,8 +47,6 @@ public:
 
 	void SetDebugDraw(bool debugDraw);
 	bool GetDebugDraw() const;
-
-	math::float4x4 Perspective(float fovy, float aspect, float n, float f) const;
 
 	// GO' COMPONENTS
 	ComponentMesh* CreateMeshComponent(GameObject* parent);

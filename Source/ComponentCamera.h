@@ -19,6 +19,9 @@ public:
 
 	virtual void OnUniqueEditor();
 
+	float* GetOpenGLViewMatrix();
+	float* GetOpenGLProjectionMatrix();
+
 public:
 	math::Frustum cameraFrustum;
 };

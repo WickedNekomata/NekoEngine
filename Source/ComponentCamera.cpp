@@ -14,7 +14,7 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 
 	cameraFrustum.nearPlaneDistance = 0.1f;
 	cameraFrustum.farPlaneDistance = 1000.0f;
-	cameraFrustum.verticalFov = DEGTORAD * 60.0f;
+	cameraFrustum.verticalFov = 60.0f * DEGTORAD;
 	cameraFrustum.horizontalFov = 2.f * atanf(tanf(cameraFrustum.verticalFov * 0.5f) * 1.3f);	
 }
 
@@ -33,4 +33,14 @@ void ComponentCamera::Update()
 void ComponentCamera::OnUniqueEditor()
 {
 	ImGui::Text("This is a camera component");
+}
+
+float* ComponentCamera::GetOpenGLViewMatrix()
+{
+	return ((math::float4x4)cameraFrustum.ViewMatrix()).Transposed().ptr();
+}
+
+float* ComponentCamera::GetOpenGLProjectionMatrix()
+{
+	return cameraFrustum.ProjectionMatrix().Transposed().ptr();
 }

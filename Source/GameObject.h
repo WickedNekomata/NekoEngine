@@ -45,11 +45,15 @@ public:
 	const char* GetName() const;
 	void SetName(char* name);
 
+	bool GetIsStatic() const;
+	void ToggleIsStatic();
+
 	void RecalculateBoundingBox();
 
 private:
 
 	char* name = nullptr;
+	bool isStatic = true;
 	std::vector<Component*> components;
 
 	GameObject* parent = nullptr;

@@ -3,6 +3,8 @@
 
 #include "Module.h"
 
+#include "Quadtree.h"
+
 #include "glew\include\GL\glew.h"
 
 #include "MathGeoLib/include/Math/TransformOps.h"
@@ -25,14 +27,19 @@ public:
 
 	void Draw() const;
 
+	void CreateQuadtree();
+
 private:
 
 	PrimitiveGrid* grid = nullptr;
 
 public:
+
 	GameObject* child = nullptr;
 	GameObject* root = nullptr;
 	GameObject* currentGameObject = nullptr;
+
+	Quadtree quadtree;
 };
 
 #endif

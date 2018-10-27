@@ -61,6 +61,11 @@ bool PanelSettings::Draw()
 			HardwareNode();
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNode("Scene"))
+		{
+			SceneNode();
+			ImGui::TreePop();
+		}
 #if _DEBUG
 		if (ImGui::TreeNode("Demo Window"))
 		{
@@ -301,4 +306,9 @@ void PanelSettings::HardwareNode() const
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
+}
+
+void PanelSettings::SceneNode() const
+{
+	
 }

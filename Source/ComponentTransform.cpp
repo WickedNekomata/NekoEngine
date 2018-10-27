@@ -81,6 +81,5 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
 		matrix = matrix * (*it)->transform->GetMatrix();
 
-	math::float4x4 myMatrix = GetMatrix();
 	return matrix * GetMatrix();
 }

@@ -19,6 +19,8 @@ ModuleScene::~ModuleScene()
 
 bool ModuleScene::Init(JSON_Object* jObject)
 {
+	CreateQuadtree();
+
 	return true;
 }
 
@@ -68,7 +70,17 @@ bool ModuleScene::CleanUp()
 	return ret;
 }
 
-void ModuleScene::Draw() const 
+void ModuleScene::Draw() const
 {
 	grid->Render();
+}
+
+void ModuleScene::CreateQuadtree()
+{
+	const math::float3 center(0.0f, 10.0f, 0.0f);
+	const math::float3 size(1000.0f, 20.0f, 1000.0f);
+	math::AABB boundary;
+	boundary.SetFromCenterAndSize(center, size);
+
+	quadtree.SetBoundary(boundary);
 }

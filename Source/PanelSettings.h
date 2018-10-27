@@ -28,6 +28,7 @@ private:
 	void FileSystemNode() const;
 	void InputNode() const;
 	void HardwareNode() const;
+	void SceneNode() const;
 };
 
 #endif

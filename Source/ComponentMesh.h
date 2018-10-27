@@ -20,7 +20,8 @@ public:
 	void OnUniqueEditor();
 
 	void GrowBoundingBox() const;
-	void RecalculateDebugBoundingBox();
+
+	void CreateDebugBoundingBox();
 
 public:
 

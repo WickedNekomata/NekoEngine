@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleScene.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
 
@@ -182,6 +183,25 @@ void GameObject::SetName(char* name)
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 }
 
+bool GameObject::GetIsStatic() const
+{
+	return isStatic;
+}
+
+void GameObject::ToggleIsStatic()
+{
+	isStatic = !isStatic;
+
+	if (isStatic)
+		App->scene->quadtree.Insert(this);
+	else
+	{
+		// Recalculate the quadtree
+		App->scene->quadtree.Clear();
+		App->scene->CreateQuadtree();
+	}
+}
+
 void GameObject::RecalculateBoundingBox()
 {
 	boundingBox.SetNegativeInfinity();
@@ -190,11 +210,14 @@ void GameObject::RecalculateBoundingBox()
 		meshRenderer->GrowBoundingBox();
 
 	math::OBB obb = boundingBox.Transform(transform->GetGlobalMatrix());
-	math::float3 size = obb.Size();
+
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
-	size = boundingBox.Size();
 
-	if (meshRenderer != nullptr)
-		meshRenderer->RecalculateDebugBoundingBox();
+	if (isStatic)
+		// Since static objects only calculate their bounding box once, this should not happen twice
+		App->scene->quadtree.Insert(this);
+
+	for (uint i = 0; i < children.size(); ++i)
+		children[i]->RecalculateBoundingBox();
 }

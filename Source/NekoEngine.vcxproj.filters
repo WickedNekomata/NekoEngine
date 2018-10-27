@@ -564,6 +564,9 @@
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Quadtree.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCamera3D.cpp">
@@ -782,13 +785,11 @@
     <ClCompile Include="PanelGame.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
-=======
+    </ClCompile>
     <ClCompile Include="Quadtree.cpp">
       <Filter>Sources\Containers</Filter>
->>>>>>> c449d4ff8179f277cebe05ec31b8cf7155e6b8f8
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
@@ -30,6 +31,8 @@ GameObject::~GameObject()
 
 void GameObject::Update()
 {
+	if (camera != nullptr)
+		camera->Update();
 }
 
 void GameObject::SetParent(GameObject* parent)
@@ -108,6 +111,9 @@ Component* GameObject::AddComponent(ComponentType type)
 		break;
 	case Material_Component:
 		newComponent = materialRenderer = new ComponentMaterial(this);
+		break;
+	case Camera_Component:
+		newComponent = camera = new ComponentCamera(this);
 		break;
 	default:
 		break;

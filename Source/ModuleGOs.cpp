@@ -30,6 +30,9 @@ update_status ModuleGOs::PreUpdate(float dt)
 
 update_status ModuleGOs::Update(float dt)
 {
+	for (uint i = 0; i < gameObjects.size(); ++i)
+		gameObjects[i]->Update();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -44,9 +47,7 @@ update_status ModuleGOs::PostUpdate(float dt)
 	needToBeDeleted.clear();
 
 	for (uint i = 0; i < componentsToDelete.size(); ++i)
-	{
 		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
-	}
 
 	componentsToDelete.clear();
 

@@ -19,6 +19,10 @@ public:
 
 	virtual void OnUniqueEditor();
 
+	void SetFOV(float fov);
+	void SetNearPlaneDistance(float nearPlane);
+	void SetFarPlaneDistance(float farPlane);
+
 	float* GetOpenGLViewMatrix();
 	float* GetOpenGLProjectionMatrix();
 

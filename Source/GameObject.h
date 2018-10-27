@@ -12,6 +12,7 @@ struct Component;
 struct ComponentTransform;
 struct ComponentMaterial;
 struct ComponentMesh;
+struct ComponentCamera;
 
 class GameObject
 {
@@ -62,6 +63,7 @@ public:
 	ComponentTransform* transform = nullptr;
 	ComponentMaterial* materialRenderer = nullptr;
 	ComponentMesh* meshRenderer = nullptr;
+	ComponentCamera* camera = nullptr;
 
 	math::AABB boundingBox;
 };

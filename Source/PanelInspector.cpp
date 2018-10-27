@@ -81,6 +81,11 @@ bool PanelInspector::Draw()
 						ImGui::CloseCurrentPopup();
 					}
 				}
+				if (currObject->camera == nullptr)
+					if (ImGui::Selectable("Camera")) {
+						currObject->AddComponent(ComponentType::Camera_Component);
+						ImGui::CloseCurrentPopup();
+					}
 				ImGui::EndPopup();
 			}
 		}

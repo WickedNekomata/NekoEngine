@@ -34,7 +34,7 @@ bool ModuleCameraEditor::Start()
 
 	CONSOLE_LOG("Setting up the camera");
 
-	camera->cameraFrustum.pos = { 0,0,0 };
+	camera->cameraFrustum.pos = { 0.0f,1.0f,-5.0f };
 	return ret;
 }
 

@@ -7,6 +7,8 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 
+#include "MathGeoLib/include/Geometry/OBB.h"
+
 #include <algorithm>
 
 GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
@@ -16,6 +18,8 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 
 	if (parent != nullptr)
 		AddComponent(ComponentType::Transform_Component);
+
+	boundingBox.SetNegativeInfinity();
 }
 
 GameObject::~GameObject()
@@ -24,7 +28,7 @@ GameObject::~GameObject()
 	InternallyDeleteComponents();
 }
 
-void GameObject::Update() const
+void GameObject::Update()
 {
 }
 
@@ -176,4 +180,21 @@ const char* GameObject::GetName() const
 void GameObject::SetName(char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
+}
+
+void GameObject::RecalculateBoundingBox()
+{
+	boundingBox.SetNegativeInfinity();
+
+	if (meshRenderer != nullptr)
+		meshRenderer->GrowBoundingBox();
+
+	math::OBB obb = boundingBox.Transform(transform->GetGlobalMatrix());
+	math::float3 size = obb.Size();
+	if (obb.IsFinite())
+		boundingBox = obb.MinimalEnclosingAABB();
+	size = boundingBox.Size();
+
+	if (meshRenderer != nullptr)
+		meshRenderer->RecalculateDebugBoundingBox();
 }

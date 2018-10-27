@@ -12,7 +12,7 @@ ComponentMaterial::~ComponentMaterial()
 {
 }
 
-void ComponentMaterial::Update() const
+void ComponentMaterial::Update()
 {
 }
 

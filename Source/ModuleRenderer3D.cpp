@@ -152,12 +152,18 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	for (int i = 0; i < meshComponenets.size(); ++i)
-		DrawAsset(meshComponenets[i]);
+	for (uint i = 0; i < meshComponents.size(); ++i)
+		DrawMesh(meshComponents[i]);
+
+	// 2. Debug geometry
+	if (debugDraw)
+	{
+		for (uint i = 0; i < meshComponents.size(); ++i)
+			DrawBoundingBox(meshComponents[i]);
+	}
 
 	// 3. Editor
 	App->gui->Draw();
-
 
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
@@ -341,21 +347,21 @@ ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 
 	newComponent = new ComponentMesh(parent);
 
-	meshComponenets.push_back(newComponent);
+	meshComponents.push_back(newComponent);
 
 	return newComponent;
 }
 
 void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
 {
-	for (int i = 0; i < meshComponenets.size(); ++i)
+	for (int i = 0; i < meshComponents.size(); ++i)
 	{
-		if (meshComponenets[i] == toErase)
-			meshComponenets.erase(std::remove(meshComponenets.begin(), meshComponenets.end(), meshComponenets[i]), meshComponenets.end());
+		if (meshComponents[i] == toErase)
+			meshComponents.erase(std::remove(meshComponents.begin(), meshComponents.end(), meshComponents[i]), meshComponents.end());
 	}
 }
 
-void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
+void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -410,4 +416,10 @@ void ModuleRenderer3D::DrawAsset(ComponentMesh* toDraw)
 	}
 	
 	glPopMatrix();
+}
+
+void ModuleRenderer3D::DrawBoundingBox(ComponentMesh* toDraw) const
+{
+	if (toDraw->debugBoundingBox != nullptr)
+		toDraw->debugBoundingBox->Render();
 }

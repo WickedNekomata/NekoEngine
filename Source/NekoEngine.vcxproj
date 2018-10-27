@@ -208,6 +208,7 @@
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="PanelGame.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="PanelGame.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />

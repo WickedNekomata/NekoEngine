@@ -57,10 +57,12 @@ public:
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	void EraseComponent(ComponentMesh* toErase);
 
-	void DrawAsset(ComponentMesh* toDraw);
+	void DrawMesh(ComponentMesh* toDraw) const;
+	void DrawBoundingBox(ComponentMesh* toDraw) const;
 
 private:
-	std::vector<ComponentMesh*> meshComponenets;
+
+	std::vector<ComponentMesh*> meshComponents;
 
 public:
 

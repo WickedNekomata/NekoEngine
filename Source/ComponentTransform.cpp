@@ -13,7 +13,7 @@ ComponentTransform::~ComponentTransform()
 {
 }
 
-void ComponentTransform::Update() const
+void ComponentTransform::Update()
 {
 }
 
@@ -21,6 +21,7 @@ void ComponentTransform::OnUniqueEditor()
 {
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
+	math::float3 lastPosition = position;
 	ImGui::Text("Position");
 
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
@@ -30,7 +31,9 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
+	math::Quat lastRotation = rotation;
 	ImGui::Text("Rotation");
+
 	math::float3 euler = rotation.ToEulerXYZ();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##EulerX", ImGuiDataType_Float, (void*)&euler.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
@@ -38,9 +41,9 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::DragScalar("##EulerY", ImGuiDataType_Float, (void*)&euler.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##EulerZ", ImGuiDataType_Float, (void*)&euler.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-
 	rotation = math::Quat::FromEulerXYZ(euler.x, euler.y, euler.z);
 
+	math::float3 lastScale = scale;
 	ImGui::Text("Scale");
 
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
@@ -49,6 +52,11 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+
+	if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z
+		|| lastRotation.x != rotation.x || lastRotation.y != rotation.y || lastRotation.z != rotation.z || lastRotation.w != rotation.w
+		|| lastScale.x != scale.x || lastScale.y != scale.y || lastScale.z != scale.z)
+		parent->RecalculateBoundingBox();
 }
 
 math::float4x4 ComponentTransform::GetMatrix()
@@ -71,16 +79,8 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 	math::float4x4 matrix = math::float4x4::identity;
 
 	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
-	{
-		if (it == aux_list.rbegin()) 
-		{
-			matrix = (*it)->transform->GetMatrix();
-			continue;
-		}
-
 		matrix = matrix * (*it)->transform->GetMatrix();
-	}
 
-	math::float4x4 other = GetMatrix();
+	math::float4x4 myMatrix = GetMatrix();
 	return matrix * GetMatrix();
 }

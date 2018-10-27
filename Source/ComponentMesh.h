@@ -6,21 +6,26 @@
 #include "Globals.h"
 
 struct Mesh;
+class PrimitiveCube;
 
 class ComponentMesh : public Component
 {
 public:
 
 	ComponentMesh(GameObject* parent);
-	virtual ~ComponentMesh();
+	~ComponentMesh();
 
-	void Update() const;
+	void Update();
 
-	virtual void OnUniqueEditor();
+	void OnUniqueEditor();
+
+	void GrowBoundingBox() const;
+	void RecalculateDebugBoundingBox();
 
 public:
 
 	Mesh* mesh = nullptr;
+	PrimitiveCube* debugBoundingBox = nullptr;
 };
 
 #endif

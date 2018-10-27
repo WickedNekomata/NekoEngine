@@ -9,8 +9,9 @@ Component::~Component()
 {
 }
 
-void Component::Update() const
+void Component::Update()
 {
+
 }
 
 void Component::OnEditor()

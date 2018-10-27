@@ -14,11 +14,11 @@ class ComponentTransform : public Component
 public:
 
 	ComponentTransform(GameObject* parent);
-	virtual ~ComponentTransform();
+	~ComponentTransform();
 
-	void Update() const;
+	void Update();
 
-	virtual void OnUniqueEditor();
+	void OnUniqueEditor();
 
 	math::float4x4 GetMatrix();
 

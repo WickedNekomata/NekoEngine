@@ -15,9 +15,16 @@ public:
 	ComponentCamera(GameObject* parent);
 	virtual ~ComponentCamera();
 
-	void Update();
+	void UpdateTransform();
 
 	virtual void OnUniqueEditor();
+
+	void SetFOV(float fov);
+	void SetNearPlaneDistance(float nearPlane);
+	void SetFarPlaneDistance(float farPlane);
+
+	float* GetOpenGLViewMatrix();
+	float* GetOpenGLProjectionMatrix();
 
 public:
 	math::Frustum cameraFrustum;

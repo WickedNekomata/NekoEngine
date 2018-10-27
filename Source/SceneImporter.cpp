@@ -212,16 +212,6 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		}
 		else
 			CONSOLE_LOG("SCENE IMPORTER: Could not save mesh %s to own format", go->GetName());
-
-		// Normals
-		/*
-		if (scene->mMeshes[i]->HasNormals())
-		{
-			mesh->normals = new float[mesh->verticesSize * 3];
-			memcpy(mesh->normals, scene->mMeshes[i]->mNormals, sizeof(float) * mesh->verticesSize * 3);
-			CONSOLE_LOG("Mesh vertices normals loaded");
-		}
-		*/
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

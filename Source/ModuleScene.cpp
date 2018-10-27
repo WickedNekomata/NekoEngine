@@ -28,11 +28,9 @@ bool ModuleScene::Start()
 {
 	bool ret = true;
 
-	App->camera->Move(math::float3(0.0f, 1.0f, 5.0f));
-
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-
+	grid->SetPosition({ 0, -1, 0 });
 	root = App->GOs->CreateGameObject("Root", nullptr);
 	child = App->GOs->CreateGameObject("Api", root);
 	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);

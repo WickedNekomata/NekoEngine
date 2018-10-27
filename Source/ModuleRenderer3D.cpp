@@ -8,6 +8,7 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
+#include "ComponentCamera.h"
 
 #include "MathGeoLib/include/Geometry/Sphere.h"
 
@@ -45,7 +46,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		// TODO: load this variables from .json (and save them when the app is closed)
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
 		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
-		SetFOV(MAX_FOV);
+		//SetFOV(MAX_FOV);
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -133,12 +134,11 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glLoadIdentity();
 
-
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->camera->camera->GetOpenGLViewMatrix());
 
 	// Light 0 on cam pos
-	lights[0].SetPos(App->camera->position.x, App->camera->position.y, App->camera->position.z);
+	lights[0].SetPos(App->camera->camera->cameraFrustum.pos.x, App->camera->camera->cameraFrustum.pos.y, App->camera->camera->cameraFrustum.pos.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -208,23 +208,10 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	ProjectionMatrix = Perspective(fov, (float)App->window->GetWindowWidth() / (float)App->window->GetWindowHeight(), 0.1f, 100.0f);
-	glLoadMatrixf((GLfloat*)ProjectionMatrix.ptr());
+	glLoadMatrixf(App->camera->camera->GetOpenGLProjectionMatrix());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
-
-float ModuleRenderer3D::GetFOV() const
-{
-	return fov;
-}
-
-void ModuleRenderer3D::SetFOV(float fov)
-{
-	this->fov = fov;
-
-	CalculateProjectionMatrix();
 }
 
 bool ModuleRenderer3D::SetVSync(bool vsync) 
@@ -311,32 +298,6 @@ void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
 bool ModuleRenderer3D::GetDebugDraw() const 
 {
 	return debugDraw;
-}
-
-math::float4x4 ModuleRenderer3D::Perspective(float fovy, float aspect, float n, float f) const
-{
-	math::float4x4 Perspective;
-
-	float coty = 1.0f / tan(fovy * (float)M_PI / 360.0f);
-
-	Perspective[0][0] = coty / aspect;
-	Perspective[0][1] = 0.0f;
-	Perspective[0][2] = 0.0f;
-	Perspective[0][3] = 0.0f;
-	Perspective[1][0] = 0.0f;
-	Perspective[1][1] = coty;
-	Perspective[1][2] = 0.0f;
-	Perspective[1][3] = 0.0f;
-	Perspective[2][0] = 0.0f;
-	Perspective[2][1] = 0.0f;
-	Perspective[2][2] = (n + f) / (n - f);
-	Perspective[2][3] = -1.0f;
-	Perspective[3][0] = 0.0f;
-	Perspective[3][1] = 0.0f;
-	Perspective[3][2] = 2.0f * n * f / (n - f);
-	Perspective[3][3] = 0.0f;
-
-	return Perspective;
 }
 
 // -------------------- COMPONENTS------------------------------COMPONENTS--------------------------------COMPONENTS-------------------- //

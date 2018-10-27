@@ -44,9 +44,7 @@ update_status ModuleGOs::PostUpdate(float dt)
 	needToBeDeleted.clear();
 
 	for (uint i = 0; i < componentsToDelete.size(); ++i)
-	{
 		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
-	}
 
 	componentsToDelete.clear();
 

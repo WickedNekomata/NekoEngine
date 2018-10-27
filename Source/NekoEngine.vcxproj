@@ -211,7 +211,7 @@
     <ClInclude Include="PanelGame.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="SceneImporter.h" />
-    <ClInclude Include="ModuleCamera3D.h" />
+    <ClInclude Include="ModuleCameraEditor.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleGui.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
@@ -291,7 +291,7 @@
     <ClCompile Include="PanelGame.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
-    <ClCompile Include="ModuleCamera3D.cpp" />
+    <ClCompile Include="ModuleCameraEditor.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleGui.cpp" />
     <ClCompile Include="ModuleInput.cpp" />

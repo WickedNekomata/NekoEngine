@@ -31,7 +31,7 @@ bool ModuleScene::Start()
 
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-	root = App->GOs->CreateGameObject("Root", nullptr);
+	root = new GameObject("Root", nullptr);
 	child = App->GOs->CreateGameObject("Api", root);
 	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
 	App->GOs->CreateGameObject("net de Api1", fillGuillem);

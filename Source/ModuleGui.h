@@ -28,6 +28,7 @@ public:
 
 	void Draw() const;
 	void DockSpace() const;
+	void SaveScenePopUp();
 
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
@@ -46,6 +47,8 @@ public:
 private:
 
 	std::vector<Panel*> panels;
+
+	bool showSaveScenePopUp = false;
 };
 
 #endif

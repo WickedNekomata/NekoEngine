@@ -96,6 +96,8 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();
+			if (ImGui::MenuItem("Save Scene")) { showSaveScenePopUp = true; }
+			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
 
@@ -129,6 +131,13 @@ update_status ModuleGui::Update(float dt)
 			panels[i]->Draw();
 	}
 
+	if (showSaveScenePopUp)
+	{
+		ImGui::OpenPopup("SaveScenePopUp");
+		SaveScenePopUp();
+	}
+	//ImGui::ShowDemoWindow();
+	/*
 	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
 	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
 	ImGuiWindowFlags flags = 0;
@@ -165,6 +174,7 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::SameLine();
 		*/
+	/*
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
 
@@ -192,7 +202,7 @@ update_status ModuleGui::Update(float dt)
 		}
 	}
 	ImGui::End();
-
+	*/
 	// End dock space
 	ImGui::End();
 
@@ -262,6 +272,27 @@ void ModuleGui::DockSpace() const
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruDockspace;
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+}
+
+void ModuleGui::SaveScenePopUp()
+{
+	if (ImGui::BeginPopupModal("SaveScenePopUp", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Current scene will be save to the next directory:");
+		ImGui::Separator();
+
+		ImGui::Text("Assets/Scenes/Scene.neko_scene");
+		ImGui::Button("Explorer");
+
+		if (ImGui::Button("Save", ImVec2(120, 0))) {
+			ImGui::CloseCurrentPopup(); App->GOs->MarkSceneToSerialize();
+			showSaveScenePopUp = false;
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); showSaveScenePopUp = false; }
+		ImGui::EndPopup();
+	}
 }
 
 void ModuleGui::SaveStatus(JSON_Object* jObject) const

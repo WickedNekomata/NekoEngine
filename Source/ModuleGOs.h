@@ -25,6 +25,7 @@ public:
 	GameObject* CreateGameObject(char* name, GameObject* parent);
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
+	void ClearScene();
 
 	void SetToDelete(GameObject* toDelete);
 	void SetComponentToDelete(Component* toDelete);
@@ -32,12 +33,17 @@ public:
 	GameObject* GetGameObject(uint index) const;
 	uint GetGameObjectsLength() const;
 
+	void MarkSceneToSerialize();
+	void SerializeScene();
+
 private:
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> needToBeDeleted;
 
 	std::vector<Component*> componentsToDelete;
+
+	bool serializeScene = false;
 };
 
 #endif

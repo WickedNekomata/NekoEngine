@@ -106,7 +106,7 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID) const
+uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID) const
 {
 	uint ret = 0;
 
@@ -138,7 +138,7 @@ uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fil
 	return ret;
 }
 
-uint ModuleFileSystem::Save(const char* filePath, const void* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(const char* filePath, char* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
@@ -154,7 +154,7 @@ uint ModuleFileSystem::Save(const char* filePath, const void* buffer, uint size,
 
 	if (filehandle != nullptr)
 	{
-		objCount = PHYSFS_write(filehandle, buffer, 1, size);
+		objCount = PHYSFS_writeBytes(filehandle, (const void*)buffer, size);
 	
 		if (objCount == size)
 		{

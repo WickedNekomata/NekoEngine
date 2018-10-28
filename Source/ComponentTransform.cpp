@@ -88,3 +88,17 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 
 	return matrix * GetMatrix();
 }
+
+void ComponentTransform::OnSave(JSON_Object* file)
+{
+	json_object_set_number(file, "PosX", position.x);
+	json_object_set_number(file, "PosY", position.y);
+	json_object_set_number(file, "PosZ", position.z);
+	json_object_set_number(file, "RotX", rotation.x);
+	json_object_set_number(file, "RotY", rotation.y);
+	json_object_set_number(file, "RotZ", rotation.z);
+	json_object_set_number(file, "RotW", rotation.w);
+	json_object_set_number(file, "ScaleX", scale.x);
+	json_object_set_number(file, "ScaleY", scale.y);
+	json_object_set_number(file, "ScaleZ", scale.z);
+}

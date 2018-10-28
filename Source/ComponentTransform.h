@@ -3,6 +3,8 @@
 
 #include "Component.h"
 
+#include "Globals.h"
+
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float4x4.h"
@@ -22,6 +24,9 @@ public:
 
 	math::float4x4 GetMatrix();
 	math::float4x4 GetGlobalMatrix();
+
+	virtual void OnSave(JSON_Object* file);
+
 
 public:
 

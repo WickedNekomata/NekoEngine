@@ -35,6 +35,8 @@ public:
 	void SetMainCamera(bool mainCamera);
 	bool GetMainCamera() const;
 
+	void OnSave(JSON_Object* file);
+
 public:
 
 	math::Frustum cameraFrustum;

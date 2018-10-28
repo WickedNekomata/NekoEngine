@@ -69,7 +69,8 @@ bool ModuleScene::CleanUp()
 
 void ModuleScene::Draw() const
 {
-	grid->Render();
+	if (showGrid)
+		grid->Render();
 
 	bool cullFace = App->renderer3D->GetCapabilityState(GL_CULL_FACE);
 	App->renderer3D->SetCapabilityState(GL_CULL_FACE, false);

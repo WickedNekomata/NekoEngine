@@ -122,8 +122,6 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::EndMainMenuBar();
 	}
-	// End dock space
-	ImGui::End();
 
 	for (uint i = 0; i < panels.size(); ++i)
 	{
@@ -131,18 +129,18 @@ update_status ModuleGui::Update(float dt)
 			panels[i]->Draw();
 	}
 
-	ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
-	ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
+	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
+	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	flags |= ImGuiWindowFlags_NoTitleBar;
 	flags |= ImGuiWindowFlags_NoResize;
-	flags |= ImGuiWindowFlags_NoMove;
+	//flags |= ImGuiWindowFlags_NoMove;
 	flags |= ImGuiWindowFlags_NoScrollbar;
 	flags |= ImGuiWindowFlags_NoScrollWithMouse;
 
 	static bool open = true;
-	if (ImGui::Begin("subMenu", &open, flags))
+	if (ImGui::Begin("subMenu", &open))
 	{
 		/*
 		if (App->camera->IsPlay())
@@ -173,14 +171,16 @@ update_status ModuleGui::Update(float dt)
 		ImGui::SameLine();
 
 		bool wireframeMode = App->renderer3D->IsWireframeMode();
-		if (ImGui::Checkbox("Wireframe", &wireframeMode))
-			App->renderer3D->SetWireframeMode(wireframeMode);
+		if (ImGui::Checkbox("Wireframe", &wireframeMode)) { App->renderer3D->SetWireframeMode(wireframeMode); }
 
 		ImGui::SameLine();
 
 		bool debugDraw = App->renderer3D->GetDebugDraw();
 		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
 	}
+	ImGui::End();
+
+	// End dock space
 	ImGui::End();
 
 	return UPDATE_CONTINUE;

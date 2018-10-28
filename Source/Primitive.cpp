@@ -11,10 +11,7 @@ Primitive::Primitive(PrimitiveTypes type) : type(type) {}
 
 Primitive::~Primitive()
 {
-	// Delete vertices buffer
 	glDeleteBuffers(1, (GLuint*)&verticesID);
-
-	// Delete indices buffer
 	glDeleteBuffers(1, (GLuint*)&indicesID);
 
 	RELEASE_ARRAY(vertices);
@@ -23,49 +20,49 @@ Primitive::~Primitive()
 	RELEASE(axis);
 }
 
-void Primitive::Render() const
-{
-	InnerRender();
-
-	if (showAxis && axis != nullptr)
-		axis->Render();
-}
-
-void Primitive::InnerRender() const
+void Primitive::Render(const math::float4x4 globalTransform) const
 {
 	bool isWireframeMode = App->renderer3D->IsWireframeMode();
 
 	if (wireframeMode && !isWireframeMode)
 		App->renderer3D->SetWireframeMode(true);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	// Array Buffer
-	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-
-	glColor3f(color.r, color.g, color.b);
-	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
-	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
-
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//_Array_Buffer
-
-	// Element Array Buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
-
-	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
-	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//_Element_Array_buffer
-
-	glDisableClientState(GL_VERTEX_ARRAY);
+	InnerRender(globalTransform);
 
 	if (wireframeMode && !isWireframeMode)
 		App->renderer3D->SetWireframeMode(false);
+
+	// -----
+
+	if (showAxis && axis != nullptr)
+		axis->Render(globalTransform);
+}
+
+void Primitive::InnerRender(const math::float4x4 globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf((globalTransform * this->localTransform).Transposed().ptr());
+
+	// -----
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// -----
+
+	glPopMatrix();
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 PrimitiveTypes Primitive::GetType() const 
@@ -73,18 +70,12 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
-void Primitive::SetPosition(const math::float3& position)
+void Primitive::SetLocalTransform(const math::float4x4 localTransform)
 {
-	transform.position = transform.startPosition + position;
+	this->localTransform = localTransform;
 }
 
-void Primitive::SetRotation(float angle, const math::float3& u)
-{
-	transform.angle = angle;
-	transform.u = u;
-}
-
-void Primitive::SetColor(const Color& color)
+void Primitive::SetColor(Color color)
 {
 	this->color = color;
 }
@@ -100,19 +91,16 @@ void Primitive::ShowAxis(bool showAxis)
 }
 
 // Ray --------------------------------------------------
-PrimitiveRay::PrimitiveRay(const math::float3& direction, float length, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
+PrimitiveRay::PrimitiveRay(math::float3 direction, float length) : Primitive(PrimitiveTypes::PrimitiveTypeRay), direction(direction), length(length)
 {
-	transform.startPosition = position;
-
-	math::float3 dir = direction;
-	dir.Normalize();
-	math::float3 endPosition = position + (dir * length);
+	direction.Normalize();
+	math::float3 endPosition = direction * length;
 	
 	// Vertices
 	uint verticesSize = 3 * 2;
 	vertices = new float[verticesSize]{
 
-		position.x, position.y, position.z,
+		0.0f, 0.0f, 0.0f,
 		endPosition.x, endPosition.y, endPosition.z
 	};
 
@@ -124,39 +112,38 @@ PrimitiveRay::PrimitiveRay(const math::float3& direction, float length, const ma
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void PrimitiveRay::InnerRender() const
+void PrimitiveRay::InnerRender(const math::float4x4 globalTransform) const
 {
-	// Draw (Vertex Array)
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf((globalTransform * this->localTransform).Transposed().ptr());
+
+	// -----
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-
-	glColor3f(color.r, color.g, color.b);
-	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
-	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
-
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glDrawArrays(GL_LINES, 0, indicesSize);
 
-	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
-	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
-	glColor3f(1.0f, 1.0f, 1.0f);
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//_Array_Buffer
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// -----
+
+	glPopMatrix();
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 // Axis --------------------------------------------------
-PrimitiveAxis::PrimitiveAxis(const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
+PrimitiveAxis::PrimitiveAxis() : Primitive(PrimitiveTypes::PrimitiveTypeAxis)
 {
-	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f, position);
+	x = new PrimitiveRay(math::float3(1.0f, 0.0f, 0.0f), 1.0f);
 	x->SetColor(Red);
-	y = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), 1.0f, position);
+	y = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), 1.0f);
 	y->SetColor(Green);
-	z = new PrimitiveRay(math::float3(0.0f, 0.0f, 1.0f), 1.0f, position);
+	z = new PrimitiveRay(math::float3(0.0f, 0.0f, 1.0f), 1.0f);
 	z->SetColor(Blue);
 }
 
@@ -167,17 +154,22 @@ PrimitiveAxis::~PrimitiveAxis()
 	RELEASE_ARRAY(z);
 }
 
-void PrimitiveAxis::InnerRender() const 
+void PrimitiveAxis::InnerRender(const math::float4x4 globalTransform) const
 {
 	bool depthTest = App->renderer3D->GetCapabilityState(GL_DEPTH_TEST);
-	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
+
+	if (depthTest)
+		App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
+
 	if (x != nullptr)
-		x->Render();
+		x->Render(globalTransform);
 	if (y != nullptr)
-		y->Render();
+		y->Render(globalTransform);
 	if (z != nullptr)
-		z->Render();
-	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, depthTest);
+		z->Render(globalTransform);
+
+	if (depthTest)
+		App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
 }
 
 // Circle --------------------------------------------------
@@ -232,7 +224,7 @@ PrimitiveCircle::PrimitiveCircle(float radius, uint sides) : Primitive(Primitive
 }
 
 // Plane --------------------------------------------------
-PrimitivePlane::PrimitivePlane(const math::float2& size) : Primitive(PrimitiveTypes::PrimitiveTypePlane), size(size)
+PrimitivePlane::PrimitivePlane(math::float2 size) : Primitive(PrimitiveTypes::PrimitiveTypePlane), size(size)
 {
 	axis = new PrimitiveAxis();
 
@@ -344,40 +336,36 @@ PrimitiveGrid::PrimitiveGrid(uint quadSize, uint quadsX, uint quadsZ) : Primitiv
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void PrimitiveGrid::InnerRender() const
+void PrimitiveGrid::InnerRender(const math::float4x4 globalTransform) const
 {
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf((globalTransform * this->localTransform).Transposed().ptr());
+
+	// -----
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	// Array Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-
-	glColor3f(color.r, color.g, color.b);
-	glTranslatef(transform.position.x, transform.position.y, transform.position.z);
-	glRotatef(transform.angle, transform.u.x, transform.u.y, transform.u.z);
-
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//_Array_Buffer
 
-	// Element Array Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
 	glDrawElements(GL_LINES, indicesSize, GL_UNSIGNED_INT, NULL);
 
-	glRotatef(-transform.angle, transform.u.x, transform.u.y, transform.u.z);
-	glTranslatef(-transform.position.x, -transform.position.y, -transform.position.z);
-	glColor3f(1.0f, 1.0f, 1.0f);
-
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//_Element_Array_buffer
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	// -----
+
+	glPopMatrix();
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 // Cube --------------------------------------------------
-PrimitiveCube::PrimitiveCube(const math::float3& size, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
+PrimitiveCube::PrimitiveCube(math::float3 size) : Primitive(PrimitiveTypes::PrimitiveTypeCube), size(size)
 {
-	transform.startPosition = position;
-
 	axis = new PrimitiveAxis();
 
 	math::float3 radius = size / 2.0f;
@@ -386,14 +374,14 @@ PrimitiveCube::PrimitiveCube(const math::float3& size, const math::float3& posit
 	uint verticesSize = 3 * 8;
 	vertices = new float[verticesSize]{
 
-		position.x - radius.x, position.y - radius.y, position.z + radius.z, /// A (0)
-		position.x + radius.x, position.y - radius.y, position.z + radius.z, /// B (1)
-		position.x - radius.x, position.y + radius.y, position.z + radius.z, /// C (2)
-		position.x + radius.x, position.y + radius.y, position.z + radius.z, /// D (3)
-		position.x - radius.x, position.y - radius.y, position.z - radius.z, /// E (4)
-	   	position.x + radius.x, position.y - radius.y, position.z - radius.z, /// F (5)
-		position.x - radius.x, position.y + radius.y, position.z - radius.z, /// G (6)
-		position.x + radius.x, position.y + radius.y, position.z - radius.z  /// H (7)
+		0.0f - radius.x, 0.0f - radius.y, 0.0f + radius.z, /// A (0)
+		0.0f + radius.x, 0.0f - radius.y, 0.0f + radius.z, /// B (1)
+		0.0f - radius.x, 0.0f + radius.y, 0.0f + radius.z, /// C (2)
+		0.0f + radius.x, 0.0f + radius.y, 0.0f + radius.z, /// D (3)
+		0.0f - radius.x, 0.0f - radius.y, 0.0f - radius.z, /// E (4)
+	   	0.0f + radius.x, 0.0f - radius.y, 0.0f - radius.z, /// F (5)
+		0.0f - radius.x, 0.0f + radius.y, 0.0f - radius.z, /// G (6)
+		0.0f + radius.x, 0.0f + radius.y, 0.0f - radius.z  /// H (7)
 	};
 
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -439,7 +427,6 @@ PrimitiveCube::PrimitiveCube(const math::float3& size, const math::float3& posit
 // Sphere --------------------------------------------------
 PrimitiveSphere::PrimitiveSphere(float radius, uint segments) : Primitive(PrimitiveTypes::PrimitiveTypeSphere), radius(radius), segments(segments)
 {
-	// TODO: Finish Sphere
 	axis = new PrimitiveAxis();
 
 	// Vertices
@@ -669,10 +656,8 @@ PrimitiveCylinder::PrimitiveCylinder(float height, float radius, uint sides) : P
 }
 
 // Cone 
-PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, const math::float3& position) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
+PrimitiveCone::PrimitiveCone(float height, float radius, uint sides) : Primitive(PrimitiveTypes::PrimitiveTypeCone), height(height), radius(radius), sides(sides)
 {
-	transform.startPosition = position;
-
 	axis = new PrimitiveAxis();
 
 	// Vertices
@@ -688,25 +673,25 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, const math:
 
 	/// Center (0)
 	int i = 0;
-	vertices[i] = position.x;
-	vertices[++i] = position.y - halfHeight;
-	vertices[++i] = position.z;
+	vertices[i] = 0.0f;
+	vertices[++i] = 0.0f - halfHeight;
+	vertices[++i] = 0.0f;
 
 	/// Circle (normals down)
 	for (float angle = 0.0f; angle < 360.0f; angle += deltaAngle)
 	{
 		/// (1), (2)... (sides)
-		vertices[++i] = position.x + radius * cosf(DEGTORAD * angle);
-		vertices[++i] = position.y - halfHeight;
-		vertices[++i] = position.z + radius * sinf(DEGTORAD * angle);
+		vertices[++i] = 0.0f + radius * cosf(DEGTORAD * angle);
+		vertices[++i] = 0.0f - halfHeight;
+		vertices[++i] = 0.0f + radius * sinf(DEGTORAD * angle);
 	}
 
 	// 2. Top
 	// size = 1
 	/// Center (sides + 1)
-	vertices[++i] = position.x;
-	vertices[++i] = position.y + halfHeight;
-	vertices[++i] = position.z;
+	vertices[++i] =0.0f;
+	vertices[++i] =0.0f + halfHeight;
+	vertices[++i] =0.0f;
 
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
@@ -748,18 +733,21 @@ PrimitiveCone::PrimitiveCone(float height, float radius, uint sides, const math:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-// Arrow
+// Arrow --------------------------------------------------
 PrimitiveArrow::PrimitiveArrow(float lineLength, float coneHeight, float coneRadius, uint coneSides) : Primitive(PrimitiveTypes::PrimitiveTypeArrow)
 {
 	// Cone + Line
-
+	float coneHalfHeight = coneHeight / 2.0f;
 	float arrowLength = lineLength + coneHeight;
 	float arrowHalfLength = arrowLength / 2.0f;
 
-	float coneHalfHeight = coneHeight / 2.0f;
+	cone = new PrimitiveCone(coneHeight, coneRadius, coneSides);
+	math::float3 position = math::float3(0.0f, arrowHalfLength - coneHalfHeight, 0.0f);
+	cone->SetLocalTransform(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
 
-	cone = new PrimitiveCone(coneHeight, coneRadius, coneSides, math::float3(0.0f, arrowHalfLength - coneHalfHeight, 0.0f));
-	line = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), lineLength, math::float3(0.0f, -arrowHalfLength, 0.0f));
+	line = new PrimitiveRay(math::float3(0.0f, 1.0f, 0.0f), lineLength);
+	position = math::float3(0.0f, -arrowHalfLength, 0.0f);
+	line->SetLocalTransform(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
 }
 
 PrimitiveArrow::~PrimitiveArrow() 
@@ -768,16 +756,16 @@ PrimitiveArrow::~PrimitiveArrow()
 	RELEASE(line);
 }
 
-void PrimitiveArrow::InnerRender() const 
+void PrimitiveArrow::InnerRender(const math::float4x4 transform) const
 {
 	if (cone != nullptr)
-		cone->Render();
+		cone->Render(transform);
 	if (line != nullptr)
-		line->Render();
+		line->Render(transform);
 }
 
 // Frustum --------------------------------------------------
-PrimitiveFrustum::PrimitiveFrustum(const math::float2& startSize, const math::float3& endPosition, const math::float2& endSize) : Primitive(PrimitiveTypes::PrimitiveTypeFrustum), startSize(startSize), endPosition(endPosition), endSize(endSize)
+PrimitiveFrustum::PrimitiveFrustum(math::float2 startSize, math::float2 endSize, math::float3 endPosition) : Primitive(PrimitiveTypes::PrimitiveTypeFrustum), startSize(startSize), endSize(endSize), endPosition(endPosition)
 {
 	axis = new PrimitiveAxis();
 

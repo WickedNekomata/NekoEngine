@@ -12,7 +12,8 @@ ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 	screen_surface = NULL;
 }
 
-ModuleWindow::~ModuleWindow() {}
+ModuleWindow::~ModuleWindow()
+{}
 
 bool ModuleWindow::Init(JSON_Object* jObject)
 {
@@ -27,9 +28,9 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 	}
 	else
 	{
-		scale = json_object_get_number(jObject, "scale");
-		width = json_object_get_number(jObject, "width") * scale;
-		height = json_object_get_number(jObject, "height") * scale;
+		size = json_object_get_number(jObject, "size");
+		width = json_object_get_number(jObject, "width") * size;
+		height = json_object_get_number(jObject, "height") * size;
 
 		fullscreen = json_object_get_boolean(jObject, "fullscreen");
 		resizable = json_object_get_boolean(jObject, "resizable");
@@ -88,24 +89,34 @@ bool ModuleWindow::CleanUp()
 	return ret;
 }
 
-void ModuleWindow::SetTitle(const char* title) const
+void ModuleWindow::SetTitle(const char* title)
 {
 	SDL_SetWindowTitle(window, title);
 }
 
-void ModuleWindow::SetScreenScale(uint scale) 
+void ModuleWindow::SetWindowBrightness(float brightness) const
 {
-	this->scale = scale;
+	SDL_SetWindowBrightness(window, brightness);
 }
 
-uint ModuleWindow::GetScreenScale() const 
+float ModuleWindow::GetWindowBrightness() const
 {
-	return scale;
+	return SDL_GetWindowBrightness(window);
+}
+
+void ModuleWindow::SetScreenSize(uint size) 
+{
+	this->size = size;
+}
+
+uint ModuleWindow::GetScreenSize() const 
+{
+	return size;
 }
 
 void ModuleWindow::SetWindowWidth(uint width)
 {
-	this->width = width * scale;
+	this->width = width;
 	UpdateWindowSize();
 }
 
@@ -116,7 +127,7 @@ uint ModuleWindow::GetWindowWidth() const
 
 void ModuleWindow::SetWindowHeight(uint height) 
 {
-	this->height = height * scale;
+	this->height = height;
 	UpdateWindowSize();
 }
 
@@ -131,18 +142,6 @@ void ModuleWindow::UpdateWindowSize() const
 	App->renderer3D->OnResize(width, height);
 }
 
-void ModuleWindow::GetScreenSize(uint& width, uint& height) const
-{
-	SDL_DisplayMode desktopDisplay;
-	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
-	{
-		width = desktopDisplay.w;
-		height = desktopDisplay.h;
-	}
-	else
-		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
-}
-
 uint ModuleWindow::GetRefreshRate() const
 {
 	uint refreshRate = 0;
@@ -154,6 +153,18 @@ uint ModuleWindow::GetRefreshRate() const
 		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 
 	return refreshRate;
+}
+
+void ModuleWindow::GetScreenSize(uint& width, uint& height) const
+{
+	SDL_DisplayMode desktopDisplay;
+	if (SDL_GetDesktopDisplayMode(0, &desktopDisplay) == 0)
+	{
+		width = desktopDisplay.w;
+		height = desktopDisplay.h;
+	}
+	else
+		CONSOLE_LOG("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
 }
 
 void ModuleWindow::SetFullscreenWindow(bool fullscreen) 
@@ -216,21 +227,11 @@ bool ModuleWindow::GetBorderlessWindow() const
 	return borderless;
 }
 
-void ModuleWindow::SetWindowBrightness(float brightness) const
-{
-	SDL_SetWindowBrightness(window, brightness);
-}
-
-float ModuleWindow::GetWindowBrightness() const
-{
-	return SDL_GetWindowBrightness(window);
-}
-
 void ModuleWindow::SaveStatus(JSON_Object* jObject) const
 {
 	json_object_set_number(jObject, "width", width);
 	json_object_set_number(jObject, "height", height);
-	json_object_set_number(jObject, "scale", scale);
+	json_object_set_number(jObject, "size", size);
 
 	json_object_set_boolean(jObject, "fullscreen", fullscreen);
 	json_object_set_boolean(jObject, "resizable", resizable);
@@ -240,19 +241,20 @@ void ModuleWindow::SaveStatus(JSON_Object* jObject) const
 
 void ModuleWindow::LoadStatus(const JSON_Object* jObject)
 {
-	scale = json_object_get_number(jObject, "scale");
-	width = json_object_get_number(jObject, "width") * scale;
-	height = json_object_get_number(jObject, "height") * scale;
-
-	UpdateWindowSize();
+	width = json_object_get_number(jObject, "width");
+	height = json_object_get_number(jObject, "height");
+	size = json_object_get_number(jObject, "size");
 
 	fullscreen = json_object_get_boolean(jObject, "fullscreen");
 	resizable = json_object_get_boolean(jObject, "resizable");
 	borderless = json_object_get_boolean(jObject, "borderless");
 	fullDesktop = json_object_get_boolean(jObject, "fullDesktop");
 
+	SetWindowWidth(width);
+	SetWindowHeight(height);
+
 	SetFullDesktopWindow(fullDesktop);
 	SetFullscreenWindow(fullscreen);
 	SetBorderlessWindow(borderless);
-	SetResizableWindow(resizable);
+	SetResizableWindow(resizable);	
 }

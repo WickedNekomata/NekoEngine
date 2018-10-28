@@ -3,10 +3,10 @@
 
 #include "Panel.h"
 
+#include "ImGui/imgui.h"
+
 #define SCREEN_MIN_WIDTH 640
 #define SCREEN_MIN_HEIGHT 480
-
-#include "ImGui/imgui.h"
 
 class Module;
 
@@ -15,9 +15,9 @@ class PanelSettings : public Panel
 public:
 
 	PanelSettings(char* name);
-	virtual ~PanelSettings();
+	~PanelSettings();
 
-	virtual bool Draw();
+	bool Draw();
 
 	void AddInput(const char* input);
 
@@ -32,6 +32,9 @@ private:
 	void FileSystemNode() const;
 	void InputNode() const;
 	void HardwareNode() const;
+	void SceneNode() const;
+
+	void RecursiveDrawQuadtree() const;
 
 private:
 

@@ -3,8 +3,10 @@
 #include "Globals.h"
 
 #include "Application.h"
-#include "ModuleWindow.h"
-#include "ModuleRenderer3D.h"
+#include "ModuleScene.h"
+
+#include "GameObject.h"
+#include "Component.h"
 
 #include "ImGui/imgui.h"
 
@@ -20,161 +22,75 @@ bool PanelInspector::Draw()
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
 	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
-
+	
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
-		const char* geometryName = App->renderer3D->GetGeometryName();
-		if (geometryName != nullptr)
+		if (App->scene->currentGameObject != nullptr)
 		{
-			bool isGeometryActive = App->renderer3D->IsGeometryActive();
-			if (ImGui::Checkbox(geometryName, &isGeometryActive))
-				App->renderer3D->SetGeometryActive(isGeometryActive);
-		}
+			GameObject* currObject = App->scene->currentGameObject;
 
-		ImGui::Spacing();
+			ImGui::Checkbox("##Enabled", &currObject->enabled);
 
-		Mesh* mesh = App->renderer3D->GetMeshAt(0);
+			ImGui::SameLine();
+			static char objName[INPUT_BUF_SIZE];
+			if (currObject->GetName() != nullptr)
+				strcpy_s(objName, IM_ARRAYSIZE(objName), currObject->GetName());
+			ImGui::PushItemWidth(100);
+			ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
+				currObject->SetName(objName);
+			ImGui::PopItemWidth();
 
-		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			if (mesh != nullptr)
-			{
-				ImGui::Text("Position");
-				math::float3 position = mesh->position;
-				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##posX", &position.x); ImGui::SameLine();
-				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##posY", &position.y); ImGui::SameLine();
-				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##posZ", &position.z);
+			ImGui::SameLine(0.0f, 30.f);
+			bool isStatic = currObject->GetIsStatic();
+			if (ImGui::Checkbox("##static", &isStatic)) { currObject->ToggleIsStatic(); }
+			ImGui::SameLine();
+			ImGui::Text("Static");
 
-				ImGui::Text("Rotation");
-				math::Quat rotationQuat = mesh->rotation;
-				math::float3 rotationEuler = RADTODEG * rotationQuat.ToEulerXYZ();
-				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##rotX", &rotationEuler.x); ImGui::SameLine();
-				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##rotY", &rotationEuler.y); ImGui::SameLine();
-				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##rotZ", &rotationEuler.z);
+			ImGui::Text("Tag");
+			ImGui::SameLine();
+			const char* tags[] = { "Untagged", "Player" };
+			static int currentTag = 0;
+			ImGui::PushItemWidth(75);
+			ImGui::Combo("##tag", &currentTag, tags, IM_ARRAYSIZE(tags));
+			ImGui::PopItemWidth();
 
-				ImGui::Text("Scale");
-				math::float3 scale = mesh->scale;
-				ImGui::Text("X"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##scaleX", &scale.x); ImGui::SameLine();
-				ImGui::Text("Y"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##scaleY", &scale.y); ImGui::SameLine();
-				ImGui::Text("Z"); ImGui::SameLine();
-				ImGui::PushItemWidth(70);
-				ImGui::InputFloat("##scaleZ", &scale.z);
-			}
-		}
+			ImGui::SameLine();
+			ImGui::Text("Layer");
+			ImGui::SameLine();
+			const char* layers[] = { "Default", "Collider", "PostProcessing" };
+			static int currentLayer = 0;
+			ImGui::PushItemWidth(75);
+			ImGui::Combo("##layer", &currentLayer, layers, IM_ARRAYSIZE(layers));
+			ImGui::PopItemWidth();
 
-		ImGui::Spacing();
-
-		if (ImGui::CollapsingHeader("Geometry", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			uint numMeshes = App->renderer3D->GetNumMeshes();
-			ImGui::Text("Meshes: %i", numMeshes);
-
-			for (int i = 0; i < numMeshes; ++i)
+			for (int i = 0; i < currObject->GetComponenetsLength(); ++i)
 			{
 				ImGui::Separator();
-				Mesh* mesh = App->renderer3D->GetMeshAt(i);
-				ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
-				ImGui::Separator();
-
-				ImGui::Text("Vertices: %i", mesh->verticesSize);
-				ImGui::Text("Vertices ID: %i", mesh->verticesID);
-
-				ImGui::Text("Indices: %i", mesh->indicesSize);
-				ImGui::Text("Indices ID: %i", mesh->indicesID);
-
-				ImGui::Text("Texture Coords: %i", mesh->verticesSize);
-				ImGui::Text("Texture Coords ID: %i", mesh->textureCoordsID);
-
-				ImGui::Text("Triangles: %i", mesh->indicesSize / 3);
+				currObject->GetComponent(i)->OnEditor();
 			}
-		}
-
-		ImGui::Spacing();
-
-		if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			if (mesh != nullptr)
+			ImGui::Separator();
+			ImGui::Button("Add Component");
+			if (ImGui::BeginPopupContextItem((const char*)0, 0))
 			{
-				uint numTextures = 0;
-
-				bool checkTexture = App->renderer3D->IsCheckTexture();
-				if (ImGui::Checkbox("Check Texture", &checkTexture)) { App->renderer3D->SetCheckTexture(checkTexture); }			
-
-				bool multitexturing = App->renderer3D->GetMultitexturing();
-				if (ImGui::Checkbox("Multitexturing", &multitexturing)) 
-				{ 
-					App->renderer3D->SetMultitexturing(multitexturing); 
-
-					App->tex->SetDroppedTextureUnit(0);
-					App->renderer3D->SetCurrentTextureUnits(1);
-
-					if (!multitexturing)
-					{
-						for (uint i = 1; i < App->renderer3D->GetMaxTextureUnits(); ++i)
-							App->renderer3D->AddTextureToRemove(i);
+				if (currObject->meshRenderer == nullptr) {
+					if (ImGui::Selectable("Mesh")) {
+						currObject->AddComponent(ComponentType::Mesh_Component);
+						ImGui::CloseCurrentPopup();
 					}
 				}
-
-				if (multitexturing)
-				{
-					int currentTextureUnits = App->renderer3D->GetCurrentTextureUnits();
-					if (ImGui::SliderInt("Texture units", &currentTextureUnits, 1, App->renderer3D->GetMaxTextureUnits() - 1)) 
-					{ 
-						App->tex->SetDroppedTextureUnit(0);
-						App->renderer3D->SetCurrentTextureUnits(currentTextureUnits);
-
-						for (uint i = currentTextureUnits; i < App->renderer3D->GetMaxTextureUnits(); ++i)
-							App->renderer3D->AddTextureToRemove(i);
+				if (currObject->materialRenderer == nullptr) {
+					if (ImGui::Selectable("Material")) {
+						currObject->AddComponent(ComponentType::Material_Component);
+						ImGui::CloseCurrentPopup();
 					}
-
-					int droppedTextureUnit = App->tex->GetDroppedTextureUnit();
-					int maxSliderInt = currentTextureUnits;
-					if (maxSliderInt > 0)
-						--maxSliderInt;
-					if (ImGui::SliderInt("Dropped texture unit", &droppedTextureUnit, 0, maxSliderInt)) { App->tex->SetDroppedTextureUnit(droppedTextureUnit); }
 				}
-
-				for (uint i = 0; i < App->renderer3D->GetMaxTextureUnits(); ++i)
-				{
-					if (mesh->texturesID[i] > 0)
-						++numTextures;
-				}
-
-				ImGui::Text("Textures: %i", numTextures);
-
-				for (uint i = 0; i < App->renderer3D->GetCurrentTextureUnits(); ++i)
-				{
-					ImGui::Separator();
-					ImGui::TextColored(WHITE, "Texture %i:", i);
-					ImGui::Separator();
-
-					ImGui::Image((void*)(intptr_t)mesh->texturesID[i], ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-
-					ImGui::Text("ID: %i", mesh->texturesID[i]);
-
-					if (mesh->texturesID[i] != App->tex->GetCheckTextureID())
-						ImGui::Text("%i x %i", mesh->texturesWidth[i], mesh->texturesHeight[i]);
-
-					ImGui::PushID(i);
-					if (ImGui::SmallButton("Remove texture")) { App->renderer3D->AddTextureToRemove(i); }
-					ImGui::PopID();
-				}
+				if (currObject->camera == nullptr)
+					if (ImGui::Selectable("Camera")) {
+						currObject->AddComponent(ComponentType::Camera_Component);
+						ImGui::CloseCurrentPopup();
+					}
+				ImGui::EndPopup();
 			}
 		}
 	}

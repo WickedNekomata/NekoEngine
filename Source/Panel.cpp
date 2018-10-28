@@ -1,12 +1,8 @@
 #include "Panel.h"
 
-Panel::Panel(char* name) : name(name)
-{
-}
+Panel::Panel(char* name) : name(name) {}
 
-Panel::~Panel()
-{
-}
+Panel::~Panel() {}
 
 void Panel::OnOff()
 {

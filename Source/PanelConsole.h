@@ -10,9 +10,9 @@ class PanelConsole : public Panel
 public:
 
 	PanelConsole(char* name);
-	virtual ~PanelConsole();
+	~PanelConsole();
 
-	virtual bool Draw();
+	bool Draw();
 
 	void AddLog(const char* log);
 	void Clear();
@@ -22,7 +22,7 @@ private:
 	ImGuiTextBuffer buf;
 	ImGuiTextFilter filter;
 	ImVector<int> lineOffsets;
-	bool scrollToBottom = true;
+	bool scrollToBottom = false;
 };
 
 #endif

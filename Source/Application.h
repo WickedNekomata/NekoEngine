@@ -10,11 +10,12 @@
 #include "ModuleInput.h"
 #include "ModuleScene.h"
 #include "ModuleRenderer3D.h"
-#include "ModuleCamera3D.h"
+#include "ModuleCameraEditor.h"
 #include "ModuleGui.h"
 #include "ModuleFileSystem.h"
-#include "ModuleMeshImporter.h"
-#include "ModuleTextures.h"
+#include "ModuleGOs.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 
 #include "PerfTimer.h"
 
@@ -35,9 +36,9 @@ public:
 	void CloseApp();
 	void LogGui(const char* log) const;
 
-	void SetAppName(const char* name);
+	void SetAppName(const char* title);
 	const char* GetAppName() const;
-	void SetOrganizationName(const char* name);
+	void SetOrganizationName(const char* title);
 	const char* GetOrganizationName() const;
 
 	void SetCapFrames(bool capFrames);
@@ -67,11 +68,13 @@ public:
 	ModuleInput*		input;
 	ModuleScene*		scene;
 	ModuleRenderer3D*	renderer3D;
-	ModuleCamera3D*		camera;
+	ModuleCameraEditor*		camera;
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
-	ModuleMeshImporter*	meshImporter;
-	ModuleTextures*		tex;
+	ModuleGOs*			GOs;
+
+	MaterialImporter*	materialImporter;
+	SceneImporter*		sceneImporter;
 
 private:
 

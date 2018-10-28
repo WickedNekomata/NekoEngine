@@ -4,6 +4,7 @@
 
 #include "MathGeoLib/include/Math/float2.h"
 #include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib/include/Math/float4x4.h"
 
 enum PrimitiveTypes
 {
@@ -21,19 +22,6 @@ enum PrimitiveTypes
 	PrimitiveTypeFrustum,
 };
 
-struct Transform 
-{
-	// Position
-	math::float3 startPosition = { 0.0f, 0.0f, 0.0f };
-	math::float3 position = { 0.0f, 0.0f, 0.0f };
-
-	// Rotation
-	float angle = 0.0f;
-	math::float3 u = { 0.0f, 0.0f, 0.0f };
-
-	// TODO: Scale
-};
-
 struct Color;
 class PrimitiveAxis;
 
@@ -44,36 +32,34 @@ public:
 	Primitive(PrimitiveTypes type = PrimitiveTypes::PrimitiveNoType);
 	virtual ~Primitive();
 
-	virtual void Render() const;
+	void Render(const math::float4x4 globalTransform = math::float4x4::identity) const;
 
 	// -----
 
 	PrimitiveTypes GetType() const;
 
-	virtual void SetPosition(const math::float3& position);
-	virtual void SetRotation(float angle, const math::float3& u); // angle in degrees
-	virtual void SetColor(const Color& color);
-
+	void SetLocalTransform(const math::float4x4 localTransform);
+	void SetColor(Color color);
 	void SetWireframeMode(bool wireframeMode);
 	void ShowAxis(bool showAxis);
 
 protected:
 
-	virtual void InnerRender() const;
+	virtual void InnerRender(const math::float4x4 globalTransform) const;
 
 protected:
 
 	PrimitiveTypes type = PrimitiveTypes::PrimitiveNoType;
-	Transform transform;
-	Color color = White;
 
+	math::float4x4 localTransform = math::float4x4::identity;
+	Color color = White;
 	bool wireframeMode = false;
 	bool showAxis = false;
 	PrimitiveAxis* axis = nullptr;
 
-	// Draw (Vertex Array with indices)
 	float* vertices = nullptr;
 	uint verticesID = 0;
+	uint verticesSize = 0;
 
 	uint* indices = nullptr;
 	uint indicesID = 0;
@@ -85,11 +71,11 @@ class PrimitiveRay : public Primitive
 {
 public:
 
-	PrimitiveRay(const math::float3& direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f, const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveRay(math::float3 direction = math::float3(0.0f, 0.0f, -1.0f), float length = 100.0f);
 
 private:
 	
-	void InnerRender() const;
+	void InnerRender(const math::float4x4 transform) const;
 
 private:
 
@@ -102,12 +88,12 @@ class PrimitiveAxis : public Primitive
 {
 public:
 
-	PrimitiveAxis(const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveAxis();
 	~PrimitiveAxis();
 
 private:
 
-	void InnerRender() const;
+	void InnerRender(const math::float4x4 transform) const;
 
 private:
 
@@ -134,11 +120,11 @@ class PrimitivePlane : public Primitive
 {
 public:
 
-	PrimitivePlane(const math::float2& size = math::float2(100.0f, 100.0f));
+	PrimitivePlane(math::float2 size = math::float2(100.0f, 100.0f));
 
 private:
 
-	math::float2 size; // x and z size
+	math::float2 size = { 0.0f,0.0f }; // x and z size
 };
 
 // Grid --------------------------------------------------
@@ -150,7 +136,7 @@ public:
 
 private:
 
-	void InnerRender() const;
+	void InnerRender(const math::float4x4 transform) const;
 
 private:
 
@@ -164,7 +150,7 @@ class PrimitiveCube : public Primitive
 {
 public:
 
-	PrimitiveCube(const math::float3& size = math::float3(1.0f, 1.0f, 1.0f), const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveCube(math::float3 size = math::float3(1.0f, 1.0f, 1.0f));
 
 private:
 
@@ -203,7 +189,7 @@ class PrimitiveCone : public Primitive
 {
 public:
 
-	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5, const math::float3& position = math::float3(0.0f, 0.0f, 0.0f));
+	PrimitiveCone(float height = 5.0f, float radius = 1.0f, uint sides = 5);
 
 private:
 
@@ -222,7 +208,7 @@ public:
 
 private:
 
-	void InnerRender() const;
+	void InnerRender(const math::float4x4 transform) const;
 
 private:
 
@@ -235,7 +221,7 @@ class PrimitiveFrustum : public Primitive
 {
 public:
 
-	PrimitiveFrustum(const math::float2& startSize = math::float2(0.5f, 0.5f), const math::float3& endPosition = math::float3(0.0f, 0.0f, -1.0f), const math::float2& endSize = math::float2(1.0f, 1.0f));
+	PrimitiveFrustum(math::float2 startSize = math::float2(0.5f, 0.5f), math::float2 endSize = math::float2(1.0f, 1.0f), math::float3 endPosition = math::float3(0.0f, 0.0f, -1.0f));
 
 private:
 
@@ -244,5 +230,3 @@ private:
 
 	math::float3 endPosition = { 0.0f, 0.0f, 0.0f };
 };
-
-// TODO: Capsule

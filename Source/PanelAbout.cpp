@@ -1,5 +1,5 @@
 #include "PanelAbout.h"
-
+#include "Application.h"
 #include "Globals.h"
 
 #include <windows.h>
@@ -7,11 +7,7 @@
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "ImGui/imgui.h"
-#include "Assimp/include/version.h"
-
-#include "DevIL/include/il.h"
-#include "DevIL/include/ilu.h"
-#include "DevIL/include/ilut.h"
+#include "physfs/include/physfs.h"
 
 PanelAbout::PanelAbout(char* name) : Panel(name) {}
 
@@ -24,7 +20,7 @@ bool PanelAbout::Draw()
 	ImGuiWindowFlags aboutFlags = 0;
 	aboutFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	aboutFlags |= ImGuiWindowFlags_NoSavedSettings;
-	
+
 	if (ImGui::Begin(name, &enabled, aboutFlags))
 	{
 		// Engine description
@@ -58,21 +54,15 @@ bool PanelAbout::Draw()
 
 		if (ImGui::Button("OpenGL")) { OpenInBrowser("https://www.opengl.org/"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glGetString(GL_VERSION));
-		
+
 		if (ImGui::Button("Glew")) { OpenInBrowser("http://glew.sourceforge.net/"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
 
 		if (ImGui::Button("Assimp")) { OpenInBrowser("http://cms.assimp.org/index.php"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
-		
-		int devilVersion = 0;
-		if (!(ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
-			iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION ||
-			ilutGetInteger(ILUT_VERSION_NUM) < ILUT_VERSION))
-			devilVersion = IL_VERSION;
+		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", App->sceneImporter->GetAssimpMajorVersion(), App->sceneImporter->GetAssimpMinorVersion(), App->sceneImporter->GetAssimpRevisionVersion());
 
 		if (ImGui::Button("DevIL")) { OpenInBrowser("http://openil.sourceforge.net/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i", devilVersion);
+		ImGui::SameLine(); ImGui::TextWrapped("%i", App->materialImporter->GetDevILVersion());
 
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
@@ -101,6 +91,6 @@ bool PanelAbout::Draw()
 		ImGui::TextWrapped("THE SOFTWARE IS PROVIDED %cAS IS%c, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.", 34, 34);
 	}
 	ImGui::End();
-	
+
 	return true;
 }

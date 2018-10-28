@@ -5,15 +5,15 @@
 #include "ModuleRenderer3D.h"
 #include "Panel.h"
 #include "PanelInspector.h"
-#include "PanelTestPCG.h"
 #include "PanelAbout.h"
 #include "PanelConsole.h"
 #include "PanelSettings.h"
-#include "PanelImport.h"
+#include "PanelHierarchy.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_internal.h"
 
 ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 {
@@ -26,20 +26,16 @@ ModuleGui::~ModuleGui()
 bool ModuleGui::Init(JSON_Object* jObject)
 {
 	panelInspector = new PanelInspector("Inspector");
-	panelRandomNumber = new PanelTestPCG("PCG performance test");
 	panelAbout = new PanelAbout("About");
 	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
-	panelImport = new PanelImport("Import");
+	panelHierarchy = new PanelHierarchy("Hierarchy");
 
 	panels.push_back(panelInspector);
-	panels.push_back(panelRandomNumber);
 	panels.push_back(panelAbout);
 	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
-	panels.push_back(panelImport);
-
-	this->LoadStatus(jObject);
+	panels.push_back(panelHierarchy);
 
 	return true;
 }
@@ -54,12 +50,16 @@ bool ModuleGui::Start()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+	io.ConfigResizeWindowsFromEdges = true;
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
-	ImGui_ImplOpenGL2_Init();
+	ImGui_ImplOpenGL3_Init();
 
 	// Setup style
-	ImGui::StyleColorsCustom();
+	ImGui::StyleColorsLight();
 	
 	return ret;
 }
@@ -67,7 +67,7 @@ bool ModuleGui::Start()
 update_status ModuleGui::PreUpdate(float dt) 
 {
 	// Start the frame
-	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 
@@ -79,6 +79,10 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
+	
+	// Begin dock space
+	DockSpace();
 
 	ImVec2 mainMenuBarSize(0.0f, 0.0f);
 
@@ -102,6 +106,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Inspector", "CTRL+I")) { panelInspector->OnOff(); }
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
+			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -117,8 +122,10 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::EndMainMenuBar();
 	}
+	// End dock space
+	ImGui::End();
 
-	for (int i = 0; i < panels.size(); ++i)
+	for (uint i = 0; i < panels.size(); ++i)
 	{
 		if (panels[i]->IsEnabled())
 			panels[i]->Draw();
@@ -137,6 +144,7 @@ update_status ModuleGui::Update(float dt)
 	static bool open = true;
 	if (ImGui::Begin("subMenu", &open, flags))
 	{
+		/*
 		if (App->camera->IsPlay())
 		{
 			ImGui::PushID("play");
@@ -158,7 +166,7 @@ update_status ModuleGui::Update(float dt)
 		}
 
 		ImGui::SameLine();
-
+		*/
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
 
@@ -194,15 +202,13 @@ bool ModuleGui::CleanUp()
 	}
 
 	panelInspector = nullptr;
-	panelRandomNumber = nullptr;
 	panelAbout = nullptr;
 	panelConsole = nullptr;
 	panelSettings = nullptr;
-	panelImport = nullptr;
 
 	CONSOLE_LOG("Cleaning up ImGui");
 
-	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
@@ -212,7 +218,37 @@ bool ModuleGui::CleanUp()
 void ModuleGui::Draw() const 
 {
 	ImGui::Render();
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+}
+
+void ModuleGui::DockSpace() const
+{
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::SetNextWindowBgAlpha(0.0f);
+
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	static bool p_open = true;
+	ImGui::Begin("DockSpace Demo", &p_open, window_flags);
+	ImGui::PopStyleVar(3);
+
+	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+	ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruDockspace;
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 }
 
 void ModuleGui::SaveStatus(JSON_Object* jObject) const

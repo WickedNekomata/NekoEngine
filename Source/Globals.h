@@ -11,7 +11,7 @@
 
 void Log(const char file[], int line, const char* format, ...);
 
-void OpenInBrowser(const char* url);
+void OpenInBrowser(char* url);
 
 void OpenInExplorer();
 
@@ -43,5 +43,8 @@ enum update_status
 	UPDATE_ERROR
 };
 
-#define BUF_SIZE 4096
-#define STR_INPUT_SIZE 128
+#define FILE_EXTENSION "neko"
+
+#define MAX_BUF_SIZE 4096
+#define DEFAULT_BUF_SIZE 256
+#define INPUT_BUF_SIZE 128

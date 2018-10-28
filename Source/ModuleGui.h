@@ -7,11 +7,10 @@
 
 struct Panel;
 struct PanelInspector;
-struct PanelTestPCG;
 struct PanelAbout;
 struct PanelConsole;
 struct PanelSettings;
-struct PanelImport;
+struct PanelHierarchy;
 
 class ModuleGui : public Module
 {
@@ -28,6 +27,7 @@ public:
 	bool CleanUp();
 
 	void Draw() const;
+	void DockSpace() const;
 
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
@@ -38,11 +38,10 @@ public:
 public:
 
 	PanelInspector* panelInspector = nullptr;
-	PanelTestPCG* panelRandomNumber = nullptr;
 	PanelAbout* panelAbout = nullptr;
 	PanelConsole* panelConsole = nullptr;
 	PanelSettings* panelSettings = nullptr;
-	PanelImport* panelImport = nullptr;
+	PanelHierarchy* panelHierarchy = nullptr;
 
 private:
 

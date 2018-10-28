@@ -3,12 +3,15 @@
 
 #include "Module.h"
 
+#include "Quadtree.h"
+
 #include "glew\include\GL\glew.h"
 
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"
 
 class PrimitiveGrid;
+class GameObject;
 
 class ModuleScene : public Module
 {
@@ -27,10 +30,21 @@ public:
 	bool GetShowGrid() const;
 	void SetShowGrid(bool showGrid);
 
+	void CreateQuadtree();
+	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
+
 private:
 
 	PrimitiveGrid* grid = nullptr;
 	bool showGrid = true;
+
+public:
+
+	GameObject* child = nullptr;
+	GameObject* root = nullptr;
+	GameObject* currentGameObject = nullptr;
+
+	Quadtree quadtree;
 };
 
 #endif

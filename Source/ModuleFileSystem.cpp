@@ -15,20 +15,30 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+
+	if (PHYSFS_setWriteDir(".") == 0)
+		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
+
+	if (CreateDir("Library"))
+	{
+		CreateDir("Library/Meshes");
+		CreateDir("Library/Materials");
+		CreateDir("Library/Animation");
+
+		AddPath("./Library/", "Library");
+	}
+	
+	CreateDir("Settings");
 }
 
-ModuleFileSystem::~ModuleFileSystem() {}
+ModuleFileSystem::~ModuleFileSystem() 
+{}
 
 bool ModuleFileSystem::Init(JSON_Object* jObject)
 {
-	bool ret = true;
-
 	CONSOLE_LOG("Loading File System");
 
-	if (PHYSFS_setWriteDir(".") == 0)
-		CONSOLE_LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
-
-	return ret;
+	return true;
 }
 
 bool ModuleFileSystem::CleanUp()
@@ -48,71 +58,8 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("File System error while adding a path or zip (%s): %s\n", newDir, PHYSFS_getLastError());
+		CONSOLE_LOG("File System error while adding a path or zip (%s): %s", newDir, PHYSFS_getLastError());
 		
-	return ret;
-}
-
-uint ModuleFileSystem::OpenRead(const char* file, char** buffer, uint& size) const
-{
-	uint ret = 0;
-	if (PHYSFS_exists(file))
-	{
-		PHYSFS_file* fsFile = PHYSFS_openRead(file);
-
-		if (fsFile != nullptr)
-		{
-			size = PHYSFS_fileLength(fsFile);
-
-			if (size > 0)
-			{
-				*buffer = new char[(uint)size];
-				PHYSFS_sint64 readed = PHYSFS_readBytes(fsFile, *buffer, size);
-
-				if (readed == size)
-					ret = (uint)readed;
-				else
-				{
-					CONSOLE_LOG("File System error while reading from file %s: %s\n", file, PHYSFS_getLastError());
-					RELEASE(buffer);
-				}
-			}
-
-			if (PHYSFS_close(fsFile) == 0)
-				CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
-		}
-		else
-			CONSOLE_LOG("File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
-	}
-	else
-		CONSOLE_LOG("File System could not find the file");
-
-	return ret;
-}
-
-uint ModuleFileSystem::OpenWrite(const char* file, const char* buffer) const
-{
-	uint ret = 0;
-
-	PHYSFS_file* fsFile = PHYSFS_openWrite(file);
-
-	if (fsFile != nullptr)
-	{
-		PHYSFS_sint64 size = strlen(buffer);
-
-		PHYSFS_sint64 written = PHYSFS_writeBytes(fsFile, (const void*)buffer, size);
-
-		if (written == size)
-			ret = (uint)written;
-		else
-			CONSOLE_LOG("File System error while writing to file %s: %s\n", file, PHYSFS_getLastError());
-
-		if (PHYSFS_close(fsFile) == 0)
-			CONSOLE_LOG("File System error while closing file %s: %s\n", file, PHYSFS_getLastError());
-	}
-	else
-		CONSOLE_LOG("File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
-
 	return ret;
 }
 
@@ -123,16 +70,16 @@ const char* ModuleFileSystem::GetBasePath() const
 
 const char* ModuleFileSystem::GetReadPaths() const
 {
-	static char paths[BUF_SIZE];
+	static char paths[MAX_BUF_SIZE];
 	paths[0] = '\0'; // null-terminated byte string
 
-	static char tmp_string[BUF_SIZE];
+	static char tmp_string[MAX_BUF_SIZE];
 
 	char** path;
 	for (path = PHYSFS_getSearchPath(); *path != nullptr; ++path)
 	{
-		sprintf_s(tmp_string, BUF_SIZE, "%s\n", *path);
-		strcat_s(paths, BUF_SIZE, tmp_string);
+		sprintf_s(tmp_string, MAX_BUF_SIZE, "%s", *path);
+		strcat_s(paths, MAX_BUF_SIZE, tmp_string);
 	}
 
 	return paths;
@@ -143,6 +90,192 @@ const char* ModuleFileSystem::GetWritePath() const
 	return PHYSFS_getWriteDir();
 }
 
+bool ModuleFileSystem::CreateDir(const char* dirName) const
+{
+	bool ret = true;
+
+	ret = PHYSFS_mkdir(dirName) != 0;
+
+	if (ret)
+	{
+		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
+	}
+	else
+		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
+
+	return ret;
+}
+
+uint ModuleFileSystem::SaveInLibrary(const void* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID) const
+{
+	uint ret = 0;
+
+	char filePath[DEFAULT_BUF_SIZE];
+	char fileName[DEFAULT_BUF_SIZE];
+
+	switch (fileType)
+	{
+	case FileType::MeshFile:
+		if (ID > 0)
+			sprintf_s(fileName, "%s_Mesh%u", outputFileName.data(), ID);
+		else
+			sprintf_s(fileName, "%s_Mesh", outputFileName.data());
+		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+		break;
+	case FileType::TextureFile:
+		if (ID > 0)
+			sprintf_s(fileName, "%s_Texture%u", outputFileName.data(), ID);
+		else
+			sprintf_s(fileName, "%s_Texture", outputFileName.data());
+		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+		break;
+	}
+
+	outputFileName = fileName;
+
+	ret = Save(filePath, buffer, size);
+
+	return ret;
+}
+
+uint ModuleFileSystem::Save(const char* filePath, const void* buffer, uint size, bool append) const
+{
+	uint objCount = 0;
+
+	const char* fileName = GetFileNameFromPath(filePath);
+
+	bool exists = Exists(filePath);
+
+	PHYSFS_file* filehandle = nullptr;
+	if (append)
+		filehandle = PHYSFS_openAppend(filePath);
+	else
+		filehandle = PHYSFS_openWrite(filePath);
+
+	if (filehandle != nullptr)
+	{
+		objCount = PHYSFS_write(filehandle, buffer, 1, size);
+	
+		if (objCount == size)
+		{
+			if (exists)
+			{
+				if (append)
+				{
+					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName);
+				}
+				else
+					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName, objCount);
+			}			
+			else
+				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName, objCount);
+		}
+		else
+			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+
+		if (PHYSFS_close(filehandle) == 0)
+			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+	}
+	else
+		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName, PHYSFS_getLastError());
+
+	return objCount;
+}
+
+uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const
+{
+	uint ret = 0;
+
+	char filePath[DEFAULT_BUF_SIZE];
+
+	switch (fileType)
+	{
+	case FileType::MeshFile:
+		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+		break;
+	case FileType::TextureFile:
+		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+		break;
+	}
+
+	ret = Load(filePath, buffer);
+	
+	return ret;
+}
+
+uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
+{
+	uint objCount = 0;
+
+	const char* fileName = GetFileNameFromPath(filePath);
+
+	bool exists = Exists(filePath);
+
+	if (exists)
+	{
+		PHYSFS_file* filehandle = PHYSFS_openRead(filePath);
+
+		if (filehandle != nullptr)
+		{
+			PHYSFS_sint64 size = PHYSFS_fileLength(filehandle);
+
+			if (size > 0)
+			{
+				*buffer = new char[size];
+				objCount = PHYSFS_read(filehandle, *buffer, 1, size);
+			
+				if (objCount == size)
+				{
+					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName);
+				}
+				else
+				{
+					RELEASE(buffer);
+					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+				}
+
+				if (PHYSFS_close(filehandle) == 0)
+					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+			}
+		}
+		else
+			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName, PHYSFS_getLastError());
+	}
+	else
+		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName);
+
+	return objCount;
+}
+
+bool ModuleFileSystem::Exists(const char* filePath) const
+{
+	return PHYSFS_exists(filePath);
+}
+
+bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const
+{
+	uint ret = 0;
+
+	char filePath[DEFAULT_BUF_SIZE];
+
+	switch (fileType)
+	{
+	case FileType::MeshFile:
+		outputFilePath = "Assets/Meshes/";
+		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		break;
+	case FileType::TextureFile:
+		outputFilePath = "Assets/Textures/";
+		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		break;
+	}
+
+	ret = Exists(filePath);
+
+	return ret;
+}
+
+// TODO CHECK NEW ALWAYS DELETED
 const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
 {
 	std::string newPath = path;

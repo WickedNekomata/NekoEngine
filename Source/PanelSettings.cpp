@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 
+#include "ImGui/imgui.h"
 #include "SDL/include/SDL_cpuinfo.h"
 #include "SDL/include/SDL_version.h"
 #include "mmgr/mmgr.h"
@@ -10,13 +11,9 @@
 
 #include "glew\include\GL\glew.h"
 
-PanelSettings::PanelSettings(char* name) : Panel(name)
-{
-}
+PanelSettings::PanelSettings(char* name) : Panel(name) {}
 
-PanelSettings::~PanelSettings()
-{
-}
+PanelSettings::~PanelSettings() {}
 
 bool PanelSettings::Draw()
 {
@@ -35,27 +32,37 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("Window"))
 		{
-			WindowNode();
+			if (App->window->IsActive())
+				WindowNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Renderer 3D"))
 		{
-			RendererNode();
+			if (App->renderer3D->IsActive())
+				RendererNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("File System"))
 		{
-			FileSystemNode();
+			if (App->filesystem->IsActive())
+				FileSystemNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Input"))
 		{
-			InputNode();
+			if (App->input->IsActive())
+				InputNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Hardware"))
 		{
 			HardwareNode();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Scene"))
+		{
+			if (App->scene->IsActive())
+				SceneNode();
 			ImGui::TreePop();
 		}
 	}
@@ -67,14 +74,14 @@ bool PanelSettings::Draw()
 void PanelSettings::ApplicationNode() const
 {
 	// Application name
-	static char appName[STR_INPUT_SIZE];
+	static char appName[INPUT_BUF_SIZE];
 	if (App->GetAppName() != nullptr)
 		strcpy_s(appName, IM_ARRAYSIZE(appName), App->GetAppName());
 	if (ImGui::InputText("App Name", appName, IM_ARRAYSIZE(appName)))
 		App->SetAppName(appName);
 
 	// Organization name
-	static char organizationName[STR_INPUT_SIZE];
+	static char organizationName[INPUT_BUF_SIZE];
 	if (App->GetOrganizationName() != nullptr)
 		strcpy_s(organizationName, IM_ARRAYSIZE(organizationName), App->GetOrganizationName());
 	if (ImGui::InputText("Organization Name", organizationName, IM_ARRAYSIZE(organizationName)))
@@ -110,14 +117,14 @@ void PanelSettings::ApplicationNode() const
 	std::vector<float> framerateTrack = App->GetFramerateTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Framerate %.1f", framerateTrack.back());
 	ImGui::PlotHistogram("##framerate", &framerateTrack.front(), framerateTrack.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
-	
+
 	// Ms
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
 
 	sMStats memStats = m_getMemoryStatistics();
-	
+
 	static std::vector<float> memory(100);
 
 	for (uint i = memory.size() - 1; i > 0; --i)
@@ -136,16 +143,6 @@ void PanelSettings::ApplicationNode() const
 	ImGui::Text("Acumulated Alloc Unit Count: %u", memStats.accumulatedAllocUnitCount);
 	ImGui::Text("Total Alloc Unit Count: %u", memStats.totalAllocUnitCount);
 	ImGui::Text("Peak Alloc Unit Count: %u", memStats.peakAllocUnitCount);
-}
-
-bool PanelSettings::IsActiveNode(Module* module) const
-{
-	// Active
-	static bool active = module->IsActive();
-	if (ImGui::Checkbox("Active", &active))
-		module->SetActive(active);
-
-	return active;
 }
 
 void PanelSettings::WindowNode() const
@@ -267,7 +264,6 @@ void PanelSettings::InputNode() const
 	if (ImGui::BeginChild("scroll", ImVec2(0, 0), false, scrollFlags))
 	{
 		ImGui::TextUnformatted(buf.begin());
-
 		ImGui::SetScrollHere(1.0f);
 	}
 	ImGui::EndChild();
@@ -306,6 +302,10 @@ void PanelSettings::HardwareNode() const
 	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
 }
 
+void PanelSettings::SceneNode() const
+{
+	
+}
 
 void PanelSettings::AddInput(const char* input)
 {

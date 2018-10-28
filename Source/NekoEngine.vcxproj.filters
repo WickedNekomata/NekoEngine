@@ -73,12 +73,15 @@
     <Filter Include="Sources\3rd Party\DevIL">
       <UniqueIdentifier>{50eebea3-c08e-4dcf-993f-4fef30e2e0aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components">
+      <UniqueIdentifier>{66587a08-64a5-45a1-bc3c-c345fd61173d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components">
+      <UniqueIdentifier>{c42249c4-6e3d-4654-81b0-f0920e0e4e88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleCamera3D.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
     <ClInclude Include="ModuleInput.h">
@@ -128,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="ModuleGui.h">
       <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl2.h">
-      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_sdl.h">
       <Filter>Sources\3rd Party\ImGui</Filter>
@@ -345,9 +345,6 @@
     <ClInclude Include="mmgr\nommgr.h">
       <Filter>Sources\3rd Party\mmgr</Filter>
     </ClInclude>
-    <ClInclude Include="PanelTestPCG.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="glew\include\GL\eglew.h">
       <Filter>Sources\3rd Party\glew</Filter>
     </ClInclude>
@@ -492,12 +489,6 @@
     <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
       <Filter>Sources\3rd Party\Assimp\Port</Filter>
     </ClInclude>
-    <ClInclude Include="PanelImport.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleTextures.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
       <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
@@ -522,14 +513,53 @@
     <ClInclude Include="DevIL\include\ilut_config.h">
       <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleMeshImporter.h">
+    <ClInclude Include="ModuleGOs.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelHierarchy.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMesh.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMaterial.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTypes.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialImporter.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneImporter.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTransform.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Quadtree.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleCameraEditor.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ModuleCamera3D.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleInput.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
@@ -571,9 +601,6 @@
     </ClCompile>
     <ClCompile Include="ModuleGui.cpp">
       <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_opengl2.cpp">
-      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_impl_sdl.cpp">
       <Filter>Sources\3rd Party\ImGui</Filter>
@@ -695,9 +722,6 @@
     <ClCompile Include="mmgr\mmgr.cpp">
       <Filter>Sources\3rd Party\mmgr</Filter>
     </ClCompile>
-    <ClCompile Include="PanelTestPCG.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="Globals.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -707,13 +731,46 @@
     <ClCompile Include="PanelSettings.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="PanelImport.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleTextures.cpp">
+    <ClCompile Include="ModuleGOs.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleMeshImporter.cpp">
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelHierarchy.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMesh.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMaterial.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneImporter.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialImporter.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTransform.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Quadtree.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleCameraEditor.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

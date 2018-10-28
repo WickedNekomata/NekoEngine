@@ -8,9 +8,9 @@ class PanelInspector : public Panel
 public:
 
 	PanelInspector(char* name);
-	virtual ~PanelInspector();
+	~PanelInspector();
 
-	virtual bool Draw();
+	bool Draw();
 };
 
 #endif

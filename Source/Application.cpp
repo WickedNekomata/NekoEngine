@@ -8,19 +8,19 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	input = new ModuleInput();
 	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
-	camera = new ModuleCamera3D();
+	camera = new ModuleCameraEditor();
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
-	meshImporter = new ModuleMeshImporter();
-	tex = new ModuleTextures();
+	GOs = new ModuleGOs();
+	materialImporter = new MaterialImporter();
+	sceneImporter = new SceneImporter();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 
 	// Main Modules
-	AddModule(tex);
-	AddModule(meshImporter);
+	AddModule(GOs);
 	AddModule(filesystem);
 	AddModule(window);
 	AddModule(camera);
@@ -49,8 +49,8 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	uint size;
-	if (App->filesystem->OpenRead("config.json", &buf, size))
+	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;
@@ -187,8 +187,8 @@ void Application::Load()
 {
 	// Read config file
 	char* buf;
-	uint size;
-	if (App->filesystem->OpenRead("config.json", &buf, size))
+	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
 		delete[] buf;
@@ -200,7 +200,7 @@ void Application::Load()
 		window->SetTitle(GetAppName());
 		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
-		SetMaxFramerate(json_object_get_number(modulejObject, "Max FPS"));
+		SetMaxFramerate(json_object_get_boolean(modulejObject, "Max FPS"));
 
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
 		{
@@ -239,9 +239,9 @@ void Application::Save() const
 	}
 
 	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
+	char* buf;
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	filesystem->OpenWrite("config.json", buf);
+	filesystem->Save("config.json", &buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 
@@ -255,8 +255,8 @@ void Application::AddModule(Module* mod)
 
 void Application::SetAppName(const char* name)
 {
-	appName = new char[STR_INPUT_SIZE];
-	strcpy_s((char*)appName, STR_INPUT_SIZE, name);
+	appName = new char[INPUT_BUF_SIZE];
+	strcpy_s((char*)appName, INPUT_BUF_SIZE, name);
 
 	if (window != nullptr)
 		window->SetTitle(name);
@@ -269,8 +269,8 @@ const char* Application::GetAppName() const
 
 void Application::SetOrganizationName(const char* name)
 {
-	organizationName = new char[STR_INPUT_SIZE];
-	strcpy_s((char*)organizationName, STR_INPUT_SIZE, name);
+	organizationName = new char[INPUT_BUF_SIZE];
+	strcpy_s((char*)organizationName, INPUT_BUF_SIZE, name);
 }
 
 const char* Application::GetOrganizationName() const

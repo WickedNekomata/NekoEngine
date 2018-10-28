@@ -1,15 +1,13 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleMeshImporter.h"
-#include "ModuleTextures.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 #include "ModuleRenderer3D.h"
-#include "PanelSettings.h"
-#include "ModuleGui.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #define MAX_KEYS 300
 
@@ -53,23 +51,14 @@ update_status ModuleInput::PreUpdate(float dt)
 		if (keys[i] == 1)
 		{
 			if (keyboard[i] == KEY_IDLE)
-			{
 				keyboard[i] = KEY_DOWN;
-				App->gui->AddInput(i, KEY_DOWN);
-			}
 			else
-			{
 				keyboard[i] = KEY_REPEAT;
-				App->gui->AddInput(i, KEY_REPEAT);
-			}
 		}
 		else
 		{
 			if (keyboard[i] == KEY_REPEAT || keyboard[i] == KEY_DOWN)
-			{
 				keyboard[i] = KEY_UP;
-				App->gui->AddInput(i, KEY_UP);
-			}
 			else
 				keyboard[i] = KEY_IDLE;
 		}
@@ -77,7 +66,7 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	Uint32 buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
 
-	uint screenSize = App->window->GetScreenScale();
+	uint screenSize = App->window->GetScreenSize();
 	mouse_x /= screenSize;
 	mouse_y /= screenSize;
 	mouse_z = 0;
@@ -87,23 +76,14 @@ update_status ModuleInput::PreUpdate(float dt)
 		if (buttons & SDL_BUTTON(i))
 		{
 			if (mouse_buttons[i] == KEY_IDLE)
-			{
 				mouse_buttons[i] = KEY_DOWN;
-				App->gui->AddInput(i, KEY_DOWN);
-			}
 			else
-			{
 				mouse_buttons[i] = KEY_REPEAT;
-				App->gui->AddInput(i, KEY_REPEAT);
-			}
 		}
 		else
 		{
 			if (mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN)
-			{
 				mouse_buttons[i] = KEY_UP;
-				App->gui->AddInput(i, KEY_UP);
-			}
 			else
 				mouse_buttons[i] = KEY_IDLE;
 		}
@@ -120,7 +100,6 @@ update_status ModuleInput::PreUpdate(float dt)
 		{
 		case SDL_MOUSEWHEEL:
 			mouse_z = event.wheel.y;
-		
 			break;
 
 		case SDL_MOUSEMOTION:
@@ -143,21 +122,21 @@ update_status ModuleInput::PreUpdate(float dt)
 		}
 		case (SDL_DROPFILE):
 		{
-			std::string droppedFileDir = event.drop.file;
+			std::string droppedFilePath = event.drop.file;
 
-			if (droppedFileDir.find(".fbx") != std::string::npos || droppedFileDir.find(".FBX") != std::string::npos ||
-				droppedFileDir.find(".obj") != std::string::npos || droppedFileDir.find(".OBJ") != std::string::npos)
+			if (droppedFilePath.find(".fbx") != std::string::npos || droppedFilePath.find(".FBX") != std::string::npos
+				|| droppedFilePath.find(".obj") != std::string::npos || droppedFilePath.find(".OBJ") != std::string::npos)
 			{
-				App->meshImporter->LoadMeshesFromFile(droppedFileDir.data());
+				//App->sceneImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
-			else if (droppedFileDir.find(".png") != std::string::npos || droppedFileDir.find(".PNG") != std::string::npos
-				|| droppedFileDir.find(".dds") != std::string::npos || droppedFileDir.find(".DDS") != std::string::npos
-				|| droppedFileDir.find(".tga") != std::string::npos || droppedFileDir.find(".TGA") != std::string::npos)
+			else if (droppedFilePath.find(".png") != std::string::npos || droppedFilePath.find(".PNG") != std::string::npos
+				|| droppedFilePath.find(".dds") != std::string::npos || droppedFilePath.find(".DDS") != std::string::npos)
 			{
-				App->tex->LoadImageFromFile(droppedFileDir.data());
+
+				//App->materialImporter->Import(nullptr, droppedFilePath.data(), nullptr);
 			}
 
-			SDL_free((char*)droppedFileDir.data());
+			SDL_free((char*)droppedFilePath.data());
 
 			break;
 		}

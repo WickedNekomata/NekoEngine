@@ -99,6 +99,12 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 	}
 }
 
+void ModuleGOs::ClearScene()
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+			gameObjects[i]->DeleteMe();
+}
+
 void ModuleGOs::SetToDelete(GameObject* toDelete)
 {
 	needToBeDeleted.push_back(toDelete);

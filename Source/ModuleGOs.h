@@ -25,6 +25,7 @@ public:
 	GameObject* CreateGameObject(char* name, GameObject* parent);
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
+	void ClearScene();
 
 	void SetToDelete(GameObject* toDelete);
 	void SetComponentToDelete(Component* toDelete);

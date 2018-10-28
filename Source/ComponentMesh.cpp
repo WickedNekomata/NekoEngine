@@ -62,7 +62,7 @@ void ComponentMesh::GrowBoundingBox() const
 
 void ComponentMesh::CreateDebugBoundingBox()
 {
-	debugBoundingBox = new PrimitiveCube(parent->boundingBox.Size());
-	debugBoundingBox->SetColor(Yellow);
-	debugBoundingBox->SetWireframeMode(true);
+	debugBoundingBox = new PrimitiveCube();
+	debugBoundingBox->SetColor(Green);
+	//debugBoundingBox->SetWireframeMode(true);
 }

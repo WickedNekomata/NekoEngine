@@ -8,6 +8,7 @@
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ComponentMesh.h"
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -41,7 +42,7 @@ bool ModuleScene::Start()
 	App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 	std::string outputFile;
-	App->sceneImporter->Import("cube.FBX", "Assets/Meshes/", outputFile);
+	App->sceneImporter->Import("Astronaut.FBX", "Assets/Meshes/", outputFile);
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);
@@ -71,11 +72,6 @@ void ModuleScene::Draw() const
 {
 	if (showGrid)
 		grid->Render();
-
-	bool cullFace = App->renderer3D->GetCapabilityState(GL_CULL_FACE);
-	App->renderer3D->SetCapabilityState(GL_CULL_FACE, false);
-	RecursiveDrawQuadtree(quadtree.root);
-	App->renderer3D->SetCapabilityState(GL_CULL_FACE, cullFace);
 }
 
 bool ModuleScene::GetShowGrid() const
@@ -88,6 +84,16 @@ void ModuleScene::SetShowGrid(bool showGrid)
 	this->showGrid = showGrid;
 }
 
+bool ModuleScene::GetDrawQuadtree() const
+{
+	return drawQuadtree;
+}
+
+void ModuleScene::SetDrawQuadtree(bool drawQuadtree)
+{
+	this->drawQuadtree = drawQuadtree;
+}
+
 void ModuleScene::CreateQuadtree()
 {
 	const math::float3 center(0.0f, 5.0f, 0.0f);
@@ -96,6 +102,21 @@ void ModuleScene::CreateQuadtree()
 	boundary.SetFromCenterAndSize(center, size);
 
 	quadtree.SetBoundary(boundary);
+}
+
+void ModuleScene::CreateRandomGameObject()
+{
+	GameObject* random = App->GOs->CreateGameObject("Random", root);
+	random->transform->position = math::float3(rand() % (50 + 50 + 1) - 50, rand() % 10, rand() % (50 + 50 + 1) - 50);
+
+	const math::float3 center(random->transform->position.x, random->transform->position.y, random->transform->position.z);
+	const math::float3 size(2.0f, 2.0f, 2.0f);
+	random->boundingBox.SetFromCenterAndSize(center, size);
+
+	random->AddComponent(ComponentType::Mesh_Component);
+	random->meshRenderer->CreateDebugBoundingBox();
+
+	quadtree.Insert(random);
 }
 
 void ModuleScene::RecursiveDrawQuadtree(QuadtreeNode* node) const

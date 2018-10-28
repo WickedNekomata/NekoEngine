@@ -304,7 +304,21 @@ void PanelSettings::HardwareNode() const
 
 void PanelSettings::SceneNode() const
 {
-	
+	ImGui::Text("Quadtree");
+	if (ImGui::Button("Create Random Game Object")) { App->scene->CreateRandomGameObject(); }
+
+	ImGui::Separator();
+
+	if (ImGui::TreeNodeEx("Root Node (Subdivision 0)"))
+	{
+		QuadtreeNode* root = App->scene->quadtree.root;
+
+		for (std::list<GameObject*>::const_iterator it = root->objects.begin(); it != root->objects.end(); ++it)
+			ImGui::TextColored(WHITE, (*it)->GetName());
+
+		RecursiveDrawQuadtreeHierarchy(root);
+		ImGui::TreePop();
+	}
 }
 
 void PanelSettings::AddInput(const char* input)
@@ -317,5 +331,57 @@ void PanelSettings::AddInput(const char* input)
 	{
 		if (buf[oldSize] == '\n')
 			lineOffsets.push_back(oldSize);
+	}
+}
+
+void PanelSettings::RecursiveDrawQuadtreeHierarchy(QuadtreeNode* node) const
+{
+	ImGuiTreeNodeFlags treeNodeFlags = 0;
+	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+	if (!node->IsLeaf())
+	{
+		for (uint i = 0; i < 4; ++i)
+		{
+			QuadtreeNode* child = node->children[i];
+
+			if (child->objects.size() > 0 || !child->IsLeaf())
+			{
+				bool treeNodeOpened = false;
+
+				treeNodeFlags = 0;
+				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+				char name[DEFAULT_BUF_SIZE];
+				if (!child->IsLeaf())
+					sprintf_s(name, DEFAULT_BUF_SIZE, "Node %i (Subdivison %i)", i, child->subdivision);
+				else
+					sprintf_s(name, DEFAULT_BUF_SIZE, "Leaf Node %i (Subdivison %i)", i, child->subdivision);
+				if (ImGui::TreeNodeEx(name, treeNodeFlags))
+					treeNodeOpened = true;
+
+				if (treeNodeOpened)
+				{
+					for (std::list<GameObject*>::const_iterator it = child->objects.begin(); it != child->objects.end(); ++it)
+						ImGui::TextColored(WHITE, (*it)->GetName());
+
+					if (!child->IsLeaf())
+						RecursiveDrawQuadtreeHierarchy(child);
+
+					ImGui::TreePop();
+				}
+			}
+			else
+			{
+				treeNodeFlags = 0;
+				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+
+				char name[DEFAULT_BUF_SIZE];
+				sprintf_s(name, DEFAULT_BUF_SIZE, "Leaf Node %i (Subdivison %i)", i, child->subdivision);
+				ImGui::TreeNodeEx(name, treeNodeFlags);
+
+				ImGui::TreePop();
+			}
+		}
 	}
 }

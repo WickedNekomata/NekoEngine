@@ -8,6 +8,7 @@
 #include <list>
 
 #define BUCKET_SIZE 1
+#define MAX_SUBDIVISIONS 10
 
 class QuadtreeNode 
 {
@@ -32,6 +33,8 @@ public:
 
 	QuadtreeNode* parent = nullptr;
 	QuadtreeNode* children[4];
+
+	uint subdivision = 0;
 };
 
 class Quadtree

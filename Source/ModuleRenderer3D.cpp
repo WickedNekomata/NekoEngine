@@ -163,8 +163,16 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 		bool texture2D = GetCapabilityState(GL_TEXTURE_2D);
 
 		SetDebugDrawCapabilitiesState(false, false, false);
-		//for (uint i = 0; i < meshComponents.size(); ++i)
-			//DrawBoundingBox(meshComponents[i]);
+
+		if (App->scene->GetDrawQuadtree())
+			App->scene->RecursiveDrawQuadtree(App->scene->quadtree.root);
+
+		if (drawBoundingBoxes)
+		{
+			for (uint i = 0; i < meshComponents.size(); ++i)
+				DrawBoundingBox(meshComponents[i]);
+		}
+
 		SetDebugDrawCapabilitiesState(cullFace, lighting, texture2D);
 	}
 
@@ -313,6 +321,16 @@ bool ModuleRenderer3D::GetDebugDraw() const
 	return debugDraw;
 }
 
+void ModuleRenderer3D::SetDrawBoundingBoxes(bool drawBoundingBoxes)
+{
+	this->drawBoundingBoxes = drawBoundingBoxes;
+}
+
+bool ModuleRenderer3D::GetDrawBoundingBoxes() const
+{
+	return drawBoundingBoxes;
+}
+
 // -------------------- COMPONENTS------------------------------COMPONENTS--------------------------------COMPONENTS-------------------- //
 
 ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
@@ -397,47 +415,5 @@ void ModuleRenderer3D::DrawBoundingBox(ComponentMesh* toDraw) const
 		math::float3 position = toDraw->GetParent()->boundingBox.CenterPoint();
 		math::float3 scale = toDraw->GetParent()->boundingBox.Size();
 		toDraw->debugBoundingBox->Render(math::float4x4::FromTRS(position, math::Quat::identity, scale));
-		//toDraw->debugBoundingBox->Render(toDraw->GetParent()->transform->GetGlobalMatrix());
-
-		/*
-		static math::float3 corners[8];
-		toDraw->GetParent()->boundingBox.GetCornerPoints(corners);
-
-		Color color = Yellow;
-		glColor3f(color.r, color.g, color.b);
-		glBegin(GL_QUADS);
-
-		glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy, sz);
-		glVertex3fv((GLfloat*)&corners[5]); //glVertex3f( sx, -sy, sz);
-		glVertex3fv((GLfloat*)&corners[7]); //glVertex3f( sx,  sy, sz);
-		glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx,  sy, sz);
-
-		glVertex3fv((GLfloat*)&corners[4]); //glVertex3f( sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx,  sy, -sz);
-		glVertex3fv((GLfloat*)&corners[6]); //glVertex3f( sx,  sy, -sz);
-
-		glVertex3fv((GLfloat*)&corners[5]); //glVertex3f(sx, -sy,  sz);
-		glVertex3fv((GLfloat*)&corners[4]); //glVertex3f(sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[6]); //glVertex3f(sx,  sy, -sz);
-		glVertex3fv((GLfloat*)&corners[7]); //glVertex3f(sx,  sy,  sz);
-
-		glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy,  sz);
-		glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx,  sy,  sz);
-		glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx,  sy, -sz);
-
-		glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx, sy,  sz);
-		glVertex3fv((GLfloat*)&corners[7]); //glVertex3f( sx, sy,  sz);
-		glVertex3fv((GLfloat*)&corners[6]); //glVertex3f( sx, sy, -sz);
-		glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx, sy, -sz);
-
-		glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[4]); //glVertex3f( sx, -sy, -sz);
-		glVertex3fv((GLfloat*)&corners[5]); //glVertex3f( sx, -sy,  sz);
-		glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy,  sz);
-
-		glEnd();
-		*/
 	}
 }

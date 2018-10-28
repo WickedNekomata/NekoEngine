@@ -7,13 +7,10 @@
 
 struct Panel;
 struct PanelInspector;
-struct PanelTestPCG;
 struct PanelAbout;
 struct PanelConsole;
 struct PanelSettings;
-struct PanelImport;
 struct PanelHierarchy;
-struct PanelGame;
 
 class ModuleGui : public Module
 {
@@ -36,17 +33,15 @@ public:
 	void LoadStatus(const JSON_Object*);
 
 	void LogConsole(const char* log) const;
+	void AddInput(uint key, uint state) const;
 
 public:
 
 	PanelInspector* panelInspector = nullptr;
-	PanelTestPCG* panelRandomNumber = nullptr;
 	PanelAbout* panelAbout = nullptr;
 	PanelConsole* panelConsole = nullptr;
 	PanelSettings* panelSettings = nullptr;
-	PanelImport* panelImport = nullptr;
 	PanelHierarchy* panelHierarchy = nullptr;
-	PanelGame* panelGame = nullptr;
 
 private:
 

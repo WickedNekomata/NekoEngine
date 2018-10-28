@@ -13,11 +13,11 @@ class ComponentCamera : public Component
 public:
 
 	ComponentCamera(GameObject* parent);
-	virtual ~ComponentCamera();
+	~ComponentCamera();
 
 	void UpdateTransform();
 
-	virtual void OnUniqueEditor();
+	void OnUniqueEditor();
 
 	void SetFOV(float fov);
 	void SetNearPlaneDistance(float nearPlane);
@@ -26,8 +26,16 @@ public:
 	float* GetOpenGLViewMatrix();
 	float* GetOpenGLProjectionMatrix();
 
+	void SetPlay(bool play);
+	bool IsPlay() const;
+
 public:
+
 	math::Frustum cameraFrustum;
+
+private:
+
+	bool play = false;
 };
 
 #endif

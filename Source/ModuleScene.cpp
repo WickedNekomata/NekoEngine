@@ -41,7 +41,7 @@ bool ModuleScene::Start()
 	App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 	std::string outputFile;
-	App->sceneImporter->Import("street.FBX", "Assets/Meshes/", outputFile);
+	App->sceneImporter->Import("cube.FBX", "Assets/Meshes/", outputFile);
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);
@@ -75,6 +75,16 @@ void ModuleScene::Draw() const
 	App->renderer3D->SetCapabilityState(GL_CULL_FACE, false);
 	RecursiveDrawQuadtree(quadtree.root);
 	App->renderer3D->SetCapabilityState(GL_CULL_FACE, cullFace);
+}
+
+bool ModuleScene::GetShowGrid() const
+{
+	return showGrid;
+}
+
+void ModuleScene::SetShowGrid(bool showGrid)
+{
+	this->showGrid = showGrid;
 }
 
 void ModuleScene::CreateQuadtree()

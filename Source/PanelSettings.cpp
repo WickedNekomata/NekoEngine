@@ -11,19 +11,17 @@
 
 #include "glew\include\GL\glew.h"
 
-PanelSettings::PanelSettings(char* name) : Panel(name)
-{
-}
+PanelSettings::PanelSettings(char* name) : Panel(name) {}
 
-PanelSettings::~PanelSettings()
-{
-}
+PanelSettings::~PanelSettings() {}
 
 bool PanelSettings::Draw()
 {
+	ImGui::SetNextWindowPos({ 20,80 }, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags settingsFlags = 0;
 	settingsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	settingsFlags |= ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin(name, &enabled, settingsFlags))
 	{
@@ -34,25 +32,25 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("Window"))
 		{
-			if (IsActiveNode((Module*)App->window))
+			if (App->window->IsActive())
 				WindowNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Renderer 3D"))
 		{
-			if (IsActiveNode((Module*)App->renderer3D))
+			if (App->renderer3D->IsActive())
 				RendererNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("File System"))
 		{
-			if (IsActiveNode((Module*)App->filesystem))
+			if (App->filesystem->IsActive())
 				FileSystemNode();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Input"))
 		{
-			if (IsActiveNode((Module*)App->input))
+			if (App->input->IsActive())
 				InputNode();
 			ImGui::TreePop();
 		}
@@ -63,16 +61,10 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("Scene"))
 		{
-			SceneNode();
+			if (App->scene->IsActive())
+				SceneNode();
 			ImGui::TreePop();
 		}
-#if _DEBUG
-		if (ImGui::TreeNode("Demo Window"))
-		{
-			ImGui::ShowDemoWindow();
-			ImGui::TreePop();
-		}
-#endif
 	}
 	ImGui::End();
 
@@ -125,14 +117,14 @@ void PanelSettings::ApplicationNode() const
 	std::vector<float> framerateTrack = App->GetFramerateTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Framerate %.1f", framerateTrack.back());
 	ImGui::PlotHistogram("##framerate", &framerateTrack.front(), framerateTrack.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
-	
+
 	// Ms
 	std::vector<float> msTrack = App->GetMsTrack();
 	sprintf_s(title, IM_ARRAYSIZE(title), "Milliseconds %.1f", msTrack.back());
 	ImGui::PlotHistogram("##milliseconds", &msTrack.front(), msTrack.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
 
 	sMStats memStats = m_getMemoryStatistics();
-	
+
 	static std::vector<float> memory(100);
 
 	for (uint i = memory.size() - 1; i > 0; --i)
@@ -151,16 +143,6 @@ void PanelSettings::ApplicationNode() const
 	ImGui::Text("Acumulated Alloc Unit Count: %u", memStats.accumulatedAllocUnitCount);
 	ImGui::Text("Total Alloc Unit Count: %u", memStats.totalAllocUnitCount);
 	ImGui::Text("Peak Alloc Unit Count: %u", memStats.peakAllocUnitCount);
-}
-
-bool PanelSettings::IsActiveNode(Module* module) const
-{
-	// Active
-	static bool active = module->IsActive();
-	if (ImGui::Checkbox("Active", &active))
-		module->SetActive(active);
-
-	return active;
 }
 
 void PanelSettings::WindowNode() const
@@ -211,42 +193,43 @@ void PanelSettings::RendererNode() const
 {
 	GLenum capability = 0;
 
-	static bool debugDraw = App->renderer3D->GetDebugDraw();
-	if (ImGui::Checkbox("Debug Draw", &debugDraw))
-		App->renderer3D->SetDebugDraw(debugDraw);
-
 	capability = GL_DEPTH_TEST;
-	static bool depthTest = App->renderer3D->GetCapabilityState(capability);
+	bool depthTest = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest))
 		App->renderer3D->SetCapabilityState(capability, depthTest);
 
 	capability = GL_CULL_FACE;
-	static bool cullFace = App->renderer3D->GetCapabilityState(capability);
+	bool cullFace = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_CULL_FACE", &cullFace))
 		App->renderer3D->SetCapabilityState(capability, cullFace);
 
 	capability = GL_LIGHTING;
-	static bool lighting = App->renderer3D->GetCapabilityState(capability);
+	bool lighting = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_LIGHTING", &lighting))
 		App->renderer3D->SetCapabilityState(capability, lighting);
 
 	capability = GL_COLOR_MATERIAL;
-	static bool colorMaterial = App->renderer3D->GetCapabilityState(capability);
+	bool colorMaterial = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial))
 		App->renderer3D->SetCapabilityState(capability, colorMaterial);
 
 	capability = GL_TEXTURE_2D;
-	static bool texture2D = App->renderer3D->GetCapabilityState(capability);
+	bool texture2D = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D))
 		App->renderer3D->SetCapabilityState(capability, texture2D);
 
 	capability = GL_LINE_SMOOTH;
-	static bool lineSmooth = App->renderer3D->GetCapabilityState(capability);
+	bool lineSmooth = App->renderer3D->GetCapabilityState(capability);
 	if (ImGui::Checkbox("GL_LINE_SMOOTH", &lineSmooth))
 		App->renderer3D->SetCapabilityState(capability, lineSmooth);
 
-	static bool wireframeMode = App->renderer3D->IsWireframeMode();
-	if (ImGui::Checkbox("Wireframe Mode", &wireframeMode))
+	capability = GL_BLEND;
+	bool blend = App->renderer3D->GetCapabilityState(capability);
+	if (ImGui::Checkbox("GL_BLEND", &blend))
+		App->renderer3D->SetCapabilityState(capability, blend);
+
+	bool wireframeMode = App->renderer3D->IsWireframeMode();
+	if (ImGui::Checkbox("Wireframe", &wireframeMode))
 		App->renderer3D->SetWireframeMode(wireframeMode);
 }
 
@@ -272,7 +255,18 @@ void PanelSettings::InputNode() const
 	ImGui::Text("Mouse Wheel:");
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->input->GetMouseZ());
 
-	// TODO: Finish this (log mouse events: up, down, repeat, etc.).
+	ImGui::Separator();
+	ImGui::Text("Input LOGS:");
+
+	ImGuiWindowFlags scrollFlags = 0;
+	scrollFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+
+	if (ImGui::BeginChild("scroll", ImVec2(0, 0), false, scrollFlags))
+	{
+		ImGui::TextUnformatted(buf.begin());
+		ImGui::SetScrollHere(1.0f);
+	}
+	ImGui::EndChild();
 }
 
 void PanelSettings::HardwareNode() const
@@ -311,4 +305,17 @@ void PanelSettings::HardwareNode() const
 void PanelSettings::SceneNode() const
 {
 	
+}
+
+void PanelSettings::AddInput(const char* input)
+{
+	int oldSize = buf.size();
+
+	buf.appendf(input);
+
+	for (int newSize = buf.size(); oldSize < newSize; ++oldSize)
+	{
+		if (buf[oldSize] == '\n')
+			lineOffsets.push_back(oldSize);
+	}
 }

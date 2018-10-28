@@ -156,8 +156,10 @@ PrimitiveAxis::~PrimitiveAxis()
 
 void PrimitiveAxis::InnerRender(const math::float4x4 globalTransform) const
 {
-	// TODO: UPDATE PRIMITIVES FROM MASTER VERSION (ALSO UPDATE PANELS) and fix things like setcapabilitystate
-	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
+	bool depthTest = App->renderer3D->GetCapabilityState(GL_DEPTH_TEST);
+
+	if (depthTest)
+		App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, false);
 
 	if (x != nullptr)
 		x->Render(globalTransform);
@@ -166,7 +168,8 @@ void PrimitiveAxis::InnerRender(const math::float4x4 globalTransform) const
 	if (z != nullptr)
 		z->Render(globalTransform);
 
-	App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
+	if (depthTest)
+		App->renderer3D->SetCapabilityState(GL_DEPTH_TEST, true);
 }
 
 // Circle --------------------------------------------------

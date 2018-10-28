@@ -345,9 +345,6 @@
     <ClInclude Include="mmgr\nommgr.h">
       <Filter>Sources\3rd Party\mmgr</Filter>
     </ClInclude>
-    <ClInclude Include="PanelTestPCG.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="glew\include\GL\eglew.h">
       <Filter>Sources\3rd Party\glew</Filter>
     </ClInclude>
@@ -492,9 +489,6 @@
     <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
       <Filter>Sources\3rd Party\Assimp\Port</Filter>
     </ClInclude>
-    <ClInclude Include="PanelImport.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
       <Filter>Sources\3rd Party\DevIL</Filter>
     </ClInclude>
@@ -554,9 +548,6 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_opengl3.h">
       <Filter>Sources\3rd Party\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelGame.h">
-      <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
@@ -731,9 +722,6 @@
     <ClCompile Include="mmgr\mmgr.cpp">
       <Filter>Sources\3rd Party\mmgr</Filter>
     </ClCompile>
-    <ClCompile Include="PanelTestPCG.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="Globals.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -741,9 +729,6 @@
       <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="PanelSettings.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelImport.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="ModuleGOs.cpp">
@@ -778,9 +763,6 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
       <Filter>Sources\3rd Party\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelGame.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>

@@ -22,8 +22,8 @@ public:
 	bool CleanUp();
 
 public:
+
 	ComponentCamera* camera = nullptr;
-	
 };
 
 #endif

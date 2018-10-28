@@ -16,10 +16,13 @@ PanelInspector::~PanelInspector() {}
 
 bool PanelInspector::Draw()
 {
-	ImGui::SetNextWindowSize({ 250,300 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({ (float)App->window->GetWindowWidth() - 300,50 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({ 300,(float)App->window->GetWindowHeight() - 50 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
+	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+	
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
 		if (App->scene->currentGameObject != nullptr)
@@ -92,5 +95,6 @@ bool PanelInspector::Draw()
 		}
 	}
 	ImGui::End();
+
 	return true;
 }

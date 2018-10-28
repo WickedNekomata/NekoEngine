@@ -117,8 +117,8 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
 		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_COLOR_MATERIAL);
 	}
 
 	// Projection Matrix for
@@ -158,8 +158,14 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 2. Debug geometry
 	if (debugDraw)
 	{
+		bool cullFace = GetCapabilityState(GL_CULL_FACE);
+		bool lighting = GetCapabilityState(GL_LIGHTING);
+		bool texture2D = GetCapabilityState(GL_TEXTURE_2D);
+
+		SetDebugDrawCapabilitiesState(false, false, false);
 		//for (uint i = 0; i < meshComponents.size(); ++i)
 			//DrawBoundingBox(meshComponents[i]);
+		SetDebugDrawCapabilitiesState(cullFace, lighting, texture2D);
 	}
 
 	// 3. Editor
@@ -243,6 +249,13 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 bool ModuleRenderer3D::GetVSync() const 
 {
 	return vsync;
+}
+
+void ModuleRenderer3D::SetDebugDrawCapabilitiesState(bool cullFace, bool lighting, bool texture2D) const
+{
+	SetCapabilityState(GL_CULL_FACE, cullFace);
+	SetCapabilityState(GL_LIGHTING, lighting);
+	SetCapabilityState(GL_TEXTURE_2D, texture2D);
 }
 
 void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const

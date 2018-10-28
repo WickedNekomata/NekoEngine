@@ -208,7 +208,6 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
-    <ClInclude Include="PanelGame.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCameraEditor.h" />
@@ -224,10 +223,8 @@
     <ClInclude Include="PanelAbout.h" />
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelHierarchy.h" />
-    <ClInclude Include="PanelImport.h" />
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelSettings.h" />
-    <ClInclude Include="PanelTestPCG.h" />
     <ClInclude Include="parson\parson.h" />
     <ClInclude Include="Pcg\entropy.h" />
     <ClInclude Include="Pcg\pcg_spinlock.h" />
@@ -288,7 +285,6 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
-    <ClCompile Include="PanelGame.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCameraEditor.cpp" />
@@ -303,10 +299,8 @@
     <ClCompile Include="PanelAbout.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelHierarchy.cpp" />
-    <ClCompile Include="PanelImport.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelSettings.cpp" />
-    <ClCompile Include="PanelTestPCG.cpp" />
     <ClCompile Include="parson\parson.c" />
     <ClCompile Include="Pcg\entropy.c" />
     <ClCompile Include="PerfTimer.cpp" />

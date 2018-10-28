@@ -5,13 +5,10 @@
 #include "ModuleRenderer3D.h"
 #include "Panel.h"
 #include "PanelInspector.h"
-#include "PanelTestPCG.h"
 #include "PanelAbout.h"
 #include "PanelConsole.h"
 #include "PanelSettings.h"
-#include "PanelImport.h"
 #include "PanelHierarchy.h"
-#include "PanelGame.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -29,22 +26,16 @@ ModuleGui::~ModuleGui()
 bool ModuleGui::Init(JSON_Object* jObject)
 {
 	panelInspector = new PanelInspector("Inspector");
-	panelRandomNumber = new PanelTestPCG("PCG performance test");
 	panelAbout = new PanelAbout("About");
 	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
-	panelImport = new PanelImport("Import");
 	panelHierarchy = new PanelHierarchy("Hierarchy");
-	panelGame = new PanelGame("Game");
 
 	panels.push_back(panelInspector);
-	panels.push_back(panelRandomNumber);
 	panels.push_back(panelAbout);
 	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
-	panels.push_back(panelImport);
 	panels.push_back(panelHierarchy);
-	panels.push_back(panelGame);
 
 	return true;
 }
@@ -88,21 +79,22 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
 	
-	// BEGIN DOCK SPACE
+	// Begin dock space
 	DockSpace();
+
+	ImVec2 mainMenuBarSize(0.0f, 0.0f);
 
 	if (ImGui::BeginMainMenuBar())
 	{
+		mainMenuBarSize = ImGui::GetWindowSize();
+
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open")) {}
-			ImGui::Separator();
+			if (ImGui::MenuItem("Open In Explorer")) { OpenInExplorer(); }
 			if (ImGui::MenuItem("Save")) { App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
-			ImGui::Separator();
-			if (ImGui::MenuItem("Import")) { panelImport->OnOff(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
@@ -115,17 +107,9 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
-			if (ImGui::MenuItem("Game", "CTRL+G")) { panelGame->OnOff(); }
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Tools"))
-		{
-			if (ImGui::MenuItem("PCG performance test")) { panelRandomNumber->OnOff(); }
-
-			ImGui::EndMenu();
-		}
-
 		if (ImGui::BeginMenu("Others"))
 		{
 			if (ImGui::MenuItem("Documentation")) { OpenInBrowser("https://github.com/WickedNekomata/NekoEngine"); }
@@ -138,14 +122,65 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::EndMainMenuBar();
 	}
+	// End dock space
+	ImGui::End();
 
-	for (int i = 0; i < panels.size(); ++i)
+	for (uint i = 0; i < panels.size(); ++i)
 	{
 		if (panels[i]->IsEnabled())
 			panels[i]->Draw();
 	}
 
-	// END DOCK SPACE
+	ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
+	ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	flags |= ImGuiWindowFlags_NoTitleBar;
+	flags |= ImGuiWindowFlags_NoResize;
+	flags |= ImGuiWindowFlags_NoMove;
+	flags |= ImGuiWindowFlags_NoScrollbar;
+	flags |= ImGuiWindowFlags_NoScrollWithMouse;
+
+	static bool open = true;
+	if (ImGui::Begin("subMenu", &open, flags))
+	{
+		/*
+		if (App->camera->IsPlay())
+		{
+			ImGui::PushID("play");
+			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::Button("PLAY");
+
+			if (ImGui::IsItemClicked(0))
+				App->camera->SetPlay(false);
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopID();
+		}
+		else
+		{
+			if (ImGui::Button("PLAY"))
+				App->camera->SetPlay(true);
+		}
+
+		ImGui::SameLine();
+		*/
+		bool showGrid = App->scene->GetShowGrid();
+		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
+
+		ImGui::SameLine();
+
+		bool wireframeMode = App->renderer3D->IsWireframeMode();
+		if (ImGui::Checkbox("Wireframe", &wireframeMode))
+			App->renderer3D->SetWireframeMode(wireframeMode);
+
+		ImGui::SameLine();
+
+		bool debugDraw = App->renderer3D->GetDebugDraw();
+		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
+	}
 	ImGui::End();
 
 	return UPDATE_CONTINUE;
@@ -160,19 +195,16 @@ bool ModuleGui::CleanUp()
 {
 	bool ret = true;
 
-	for (int i = 0; i < panels.size(); ++i)
+	for (uint i = 0; i < panels.size(); ++i)
 	{
 		if (panels[i] != nullptr)
 			delete panels[i];
 	}
 
 	panelInspector = nullptr;
-	panelRandomNumber = nullptr;
 	panelAbout = nullptr;
 	panelConsole = nullptr;
 	panelSettings = nullptr;
-	panelImport = nullptr;
-	panelGame = nullptr;
 
 	CONSOLE_LOG("Cleaning up ImGui");
 
@@ -235,4 +267,19 @@ void ModuleGui::LogConsole(const char* log) const
 {
 	if (panelConsole != nullptr)
 		panelConsole->AddLog(log);
+}
+
+void ModuleGui::AddInput(uint key, uint state) const
+{
+	static char input[512];
+	static const char* states[] = { "IDLE", "DOWN", "REPEAT", "UP" };
+
+	if (panelSettings != nullptr)
+	{
+		if (key < 1000)
+			sprintf_s(input, 512, "Keybr: %02u - %s\n", key, states[state]);
+		else
+			sprintf_s(input, 512, "Mouse: %02u - %s\n", key - 1000, states[state]);
+		panelSettings->AddInput(input);
+	}
 }

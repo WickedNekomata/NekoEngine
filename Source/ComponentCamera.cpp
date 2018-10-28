@@ -20,9 +20,7 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);	
 }
 
-ComponentCamera::~ComponentCamera()
-{
-}
+ComponentCamera::~ComponentCamera() {}
 
 void ComponentCamera::UpdateTransform()
 {
@@ -120,4 +118,16 @@ float* ComponentCamera::GetOpenGLViewMatrix()
 float* ComponentCamera::GetOpenGLProjectionMatrix()
 {
 	return cameraFrustum.ProjectionMatrix().Transposed().ptr();
+}
+
+
+void ComponentCamera::SetPlay(bool play)
+{
+	this->play = play;
+	// TODO
+}
+
+bool ComponentCamera::IsPlay() const
+{
+	return play;
 }

@@ -8,16 +8,16 @@
 
 PanelHierarchy::PanelHierarchy(char* name) : Panel(name) {}
 
-PanelHierarchy::~PanelHierarchy()
-{
-}
+PanelHierarchy::~PanelHierarchy() {}
 
 bool PanelHierarchy::Draw()
 {
-	ImGui::SetNextWindowSize({ 150,200 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({ 0,(float)App->window->GetWindowHeight() - 200 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize({ (float)App->window->GetWindowWidth() - 300,200 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags hierarchyFlags = 0;
 	hierarchyFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	hierarchyFlags |= ImGuiWindowFlags_NoSavedSettings;
+	hierarchyFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
 	if (ImGui::Begin(name, &enabled, hierarchyFlags))
 	{

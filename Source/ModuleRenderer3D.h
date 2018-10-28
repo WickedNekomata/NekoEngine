@@ -39,6 +39,7 @@ public:
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
+	void SetDebugDrawCapabilitiesState(bool cullFace, bool lighting, bool texture2D) const;
 	void SetCapabilityState(GLenum capability, bool enable) const;
 	bool GetCapabilityState(GLenum capability) const;
 
@@ -54,6 +55,7 @@ public:
 
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void DrawBoundingBox(ComponentMesh* toDraw) const;
+
 
 private:
 

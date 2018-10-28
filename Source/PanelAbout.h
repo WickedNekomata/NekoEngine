@@ -8,9 +8,9 @@ class PanelAbout : public Panel
 public:
 
 	PanelAbout(char* name);
-	virtual ~PanelAbout();
+	~PanelAbout();
 
-	virtual bool Draw();
+	bool Draw();
 };
 
 #endif

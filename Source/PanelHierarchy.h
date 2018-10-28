@@ -10,15 +10,15 @@ class PanelHierarchy : public Panel
 public:
 
 	PanelHierarchy(char* name);
-	virtual ~PanelHierarchy();
+	~PanelHierarchy();
 
-	virtual bool Draw();
+	bool Draw();
 
 private:
+
 	void IterateAllChildren(GameObject* root);
 	void AtGameObjectPopUp(GameObject* child);
 	void SetGameObjectDragAndDrop(GameObject* SourceTarget);
-	
 };
 
 #endif

@@ -28,3 +28,10 @@ void OpenInBrowser(char* url)
 {
 	ShellExecute(0, 0, url, 0, 0, SW_SHOW);
 }
+
+void OpenInExplorer()
+{
+	TCHAR pwd[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, pwd);
+	ShellExecute(NULL, "open", pwd, NULL, NULL, SW_SHOWDEFAULT);
+}

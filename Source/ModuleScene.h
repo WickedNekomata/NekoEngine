@@ -27,12 +27,16 @@ public:
 
 	void Draw() const;
 
+	bool GetShowGrid() const;
+	void SetShowGrid(bool showGrid);
+
 	void CreateQuadtree();
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 private:
 
 	PrimitiveGrid* grid = nullptr;
+	bool showGrid = true;
 
 public:
 

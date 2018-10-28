@@ -23,9 +23,36 @@ void ComponentMesh::Update()
 
 void ComponentMesh::OnUniqueEditor()
 {
-	ImGui::Text("Mesh");// ImGui::SameLine();
+	ImGui::Text("Mesh");
 
 	// https://github.com/ocornut/imgui/issues/1566
+
+	/*
+	if (ImGui::CollapsingHeader("Geometry", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		uint numMeshes = App->renderer3D->GetNumMeshes();
+		ImGui::Text("Meshes: %i", numMeshes);
+
+		for (int i = 0; i < numMeshes; ++i)
+		{
+			ImGui::Separator();
+			Mesh* mesh = App->renderer3D->GetMeshAt(i);
+			ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
+			ImGui::Separator();
+
+			ImGui::Text("Vertices: %i", mesh->verticesSize);
+			ImGui::Text("Vertices ID: %i", mesh->verticesID);
+
+			ImGui::Text("Indices: %i", mesh->indicesSize);
+			ImGui::Text("Indices ID: %i", mesh->indicesID);
+
+			ImGui::Text("Texture Coords: %i", mesh->verticesSize);
+			ImGui::Text("Texture Coords ID: %i", mesh->textureCoordsID);
+
+			ImGui::Text("Triangles: %i", mesh->indicesSize / 3);
+		}
+	}
+	*/
 }
 
 void ComponentMesh::GrowBoundingBox() const

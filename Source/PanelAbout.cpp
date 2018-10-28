@@ -15,13 +15,13 @@ PanelAbout::~PanelAbout() {}
 
 bool PanelAbout::Draw()
 {
-	//ImGui::SetNextWindowPos({ 100,50 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos({ 20,80 }, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings; // TODO: Save & Load
+	ImGuiWindowFlags aboutFlags = 0;
+	aboutFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	aboutFlags |= ImGuiWindowFlags_NoSavedSettings;
 
-	if (ImGui::Begin(name, &enabled, inspectorFlags))
+	if (ImGui::Begin(name, &enabled, aboutFlags))
 	{
 		// Engine description
 		ImGui::Text("Neko Engine");
@@ -54,7 +54,7 @@ bool PanelAbout::Draw()
 
 		if (ImGui::Button("OpenGL")) { OpenInBrowser("https://www.opengl.org/"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glGetString(GL_VERSION));
-		
+
 		if (ImGui::Button("Glew")) { OpenInBrowser("http://glew.sourceforge.net/"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", glewGetString(GLEW_VERSION));
 
@@ -76,7 +76,7 @@ bool PanelAbout::Draw()
 		if (ImGui::Button("Parson")) { OpenInBrowser("https://github.com/kgabis/parson"); }
 
 		if (ImGui::Button("PhysFS")) { OpenInBrowser("https://icculus.org/physfs/"); }
-		ImGui::SameLine(); ImGui::TextWrapped("%i.%i.%i", PHYSFS_VER_MAJOR, PHYSFS_VER_MINOR, PHYSFS_VER_PATCH);
+		ImGui::SameLine(); ImGui::TextWrapped("3.0.1");
 
 		if (ImGui::Button("MMGR")) { OpenInBrowser("http://www.paulnettle.com/"); }
 		ImGui::Spacing();
@@ -89,8 +89,8 @@ bool PanelAbout::Draw()
 		ImGui::TextWrapped("Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the %cSoftware%c), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:", 34, 34);
 		ImGui::TextWrapped("The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.");
 		ImGui::TextWrapped("THE SOFTWARE IS PROVIDED %cAS IS%c, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.", 34, 34);
-		ImGui::End();
 	}
-	
+	ImGui::End();
+
 	return true;
 }

@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "GameObject.h"
 
 #include "ImGui/imgui.h"
 #include "SDL/include/SDL_cpuinfo.h"

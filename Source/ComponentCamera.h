@@ -29,6 +29,12 @@ public:
 	void SetPlay(bool play);
 	bool IsPlay() const;
 
+	void SetFrustumCulling(bool frustumCulling);
+	bool GetFrustumCulling() const;
+
+	void SetMainCamera(bool mainCamera);
+	bool GetMainCamera() const;
+
 public:
 
 	math::Frustum cameraFrustum;
@@ -36,6 +42,8 @@ public:
 private:
 
 	bool play = false;
+	bool frustumCulling = true;
+	bool mainCamera = false;
 };
 
 #endif

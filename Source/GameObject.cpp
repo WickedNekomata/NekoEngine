@@ -175,19 +175,14 @@ Component* GameObject::GetComponent(uint index) const
 	return components[index];
 }
 
-const char* GameObject::GetName() const
-{
-	return name;
-}
-
 void GameObject::SetName(char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 }
 
-bool GameObject::GetIsStatic() const
+const char* GameObject::GetName() const
 {
-	return isStatic;
+	return name;
 }
 
 void GameObject::ToggleIsStatic()
@@ -202,6 +197,21 @@ void GameObject::ToggleIsStatic()
 		App->scene->quadtree.Clear();
 		App->scene->CreateQuadtree();
 	}
+}
+
+bool GameObject::GetIsStatic() const
+{
+	return isStatic;
+}
+
+void GameObject::SetSeenLastFrame(bool seenLastFrame)
+{
+	this->seenLastFrame = seenLastFrame;
+}
+
+bool GameObject::GetSeenLastFrame() const
+{
+	return seenLastFrame;
 }
 
 void GameObject::RecalculateBoundingBox()

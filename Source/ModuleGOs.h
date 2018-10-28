@@ -33,6 +33,7 @@ public:
 	uint GetGameObjectsLength() const;
 
 private:
+
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> needToBeDeleted;
 

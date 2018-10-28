@@ -3,6 +3,7 @@
 #include "ComponentTransform.h"
 #include "ModuleWindow.h"
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "imgui/imgui.h"
 
@@ -77,6 +78,11 @@ void ComponentCamera::UpdateTransform()
 
 void ComponentCamera::OnUniqueEditor()
 {
+	if (ImGui::Checkbox("Main Camera", &mainCamera))
+		App->renderer3D->SetMainCamera(this, mainCamera);
+
+	if (ImGui::Checkbox("Frustum Culling", &frustumCulling)) { SetFrustumCulling(frustumCulling); }
+
 	ImGui::Text("Field of View");
 	ImGui::SameLine();
 	float fov = cameraFrustum.verticalFov * RADTODEG;
@@ -120,7 +126,6 @@ float* ComponentCamera::GetOpenGLProjectionMatrix()
 	return cameraFrustum.ProjectionMatrix().Transposed().ptr();
 }
 
-
 void ComponentCamera::SetPlay(bool play)
 {
 	this->play = play;
@@ -130,4 +135,24 @@ void ComponentCamera::SetPlay(bool play)
 bool ComponentCamera::IsPlay() const
 {
 	return play;
+}
+
+void ComponentCamera::SetFrustumCulling(bool frustumCulling)
+{
+	this->frustumCulling = frustumCulling;
+}
+
+bool ComponentCamera::GetFrustumCulling() const
+{
+	return frustumCulling;
+}
+
+void ComponentCamera::SetMainCamera(bool mainCamera)
+{
+	this->mainCamera = mainCamera;
+}
+
+bool ComponentCamera::GetMainCamera() const
+{
+	return mainCamera;
 }

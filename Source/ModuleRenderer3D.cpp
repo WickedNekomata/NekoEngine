@@ -10,8 +10,6 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 
-#include "MathGeoLib/include/Geometry/Sphere.h"
-
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew/libx86/glew32.lib")
@@ -152,8 +150,17 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	for (uint i = 0; i < meshComponents.size(); ++i)
-		DrawMesh(meshComponents[i]);
+	if (mainCamera != nullptr)
+	{
+		if (mainCamera->GetFrustumCulling())
+			FrustumCulling();
+
+		for (uint i = 0; i < meshComponents.size(); ++i)
+		{
+			if (meshComponents[i]->GetParent()->GetSeenLastFrame())
+				DrawMesh(meshComponents[i]);
+		}
+	}
 
 	// 2. Debug geometry
 	if (debugDraw)
@@ -329,6 +336,48 @@ void ModuleRenderer3D::SetDrawBoundingBoxes(bool drawBoundingBoxes)
 bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 {
 	return drawBoundingBoxes;
+}
+
+void ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
+{
+	if (mainCamera == nullptr)
+		return;
+
+	if (this->mainCamera != nullptr && this->mainCamera != mainCamera)
+		this->mainCamera->SetMainCamera(false);
+
+	this->mainCamera = mainCamera;
+}
+
+void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)
+{
+	for (uint i = 0; i < meshComponents.size(); ++i)
+		meshComponents[i]->GetParent()->SetSeenLastFrame(seenLastFrame);
+}
+
+void ModuleRenderer3D::FrustumCulling() const
+{
+	for (uint i = 0; i < meshComponents.size(); ++i)
+		meshComponents[i]->GetParent()->SetSeenLastFrame(false);
+
+	// Static objects (test against Quadtree)
+	std::vector<GameObject*> objects;
+	App->scene->quadtree.CollectIntersections(objects, mainCamera->cameraFrustum);
+
+	for (uint i = 0; i < objects.size(); ++i)
+		objects[i]->SetSeenLastFrame(true);
+
+	// Dynamic objects (test against Frustum)
+	/*
+	for (uint i = 0; i < meshComponents.size(); ++i)
+	{
+		if (!meshComponents[i]->GetParent()->GetIsStatic())
+		{
+			if (mainCamera->cameraFrustum.Contains(meshComponents[i]->GetParent()->boundingBox))
+				meshComponents[i]->GetParent()->SetSeenLastFrame(true);
+		}
+	}
+	*/
 }
 
 // -------------------- COMPONENTS------------------------------COMPONENTS--------------------------------COMPONENTS-------------------- //

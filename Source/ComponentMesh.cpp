@@ -64,5 +64,5 @@ void ComponentMesh::CreateDebugBoundingBox()
 {
 	debugBoundingBox = new PrimitiveCube();
 	debugBoundingBox->SetColor(Green);
-	//debugBoundingBox->SetWireframeMode(true);
+	debugBoundingBox->SetWireframeMode(true);
 }

@@ -17,6 +17,7 @@
 
 struct GameObject;
 struct ComponentMesh;
+struct ComponentCamera;
 
 class ModuleRenderer3D : public Module
 {
@@ -52,6 +53,11 @@ public:
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
 
+	void SetMainCamera(ComponentCamera* mainCamera);
+	// TODO SET FRUSTUM CULLING FOR THE MAIN CAMERA
+	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
+	void FrustumCulling() const;
+
 	// GO' COMPONENTS
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	void EraseComponent(ComponentMesh* toErase);
@@ -62,6 +68,7 @@ public:
 private:
 
 	std::vector<ComponentMesh*> meshComponents;
+	ComponentCamera* mainCamera = nullptr;
 
 public:
 

@@ -43,22 +43,27 @@ public:
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;
 
-	const char* GetName() const;
 	void SetName(char* name);
+	const char* GetName() const;
 
-	bool GetIsStatic() const;
 	void ToggleIsStatic();
+	bool GetIsStatic() const;
+
+	void SetSeenLastFrame(bool seenLastFrame);
+	bool GetSeenLastFrame() const;
 
 	void RecalculateBoundingBox();
 
 private:
 
 	char* name = nullptr;
-	bool isStatic = true;
 	std::vector<Component*> components;
 
 	GameObject* parent = nullptr;
 	std::vector<GameObject*> children;
+
+	bool isStatic = true;
+	bool seenLastFrame = false;
 
 public:
 

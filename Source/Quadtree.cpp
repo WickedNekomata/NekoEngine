@@ -1,4 +1,5 @@
 #include "Quadtree.h"
+#include "GameObject.h"
 
 #define NE 0
 #define NW 1
@@ -102,25 +103,6 @@ void QuadtreeNode::RedistributeChildren()
 	}
 }
 
-template<typename Type>
-void QuadtreeNode::CollectIntersections(std::vector<GameObject*>& gameObjects, Type& primitive)
-{
-	if (primitive.Intersects(boundingBox))
-	{
-		for (std::list<GameObject*>::const_iterator it = objects.begin(); it != objects.end(); ++it)
-		{
-			if (primitive.Intersects((*it)->boundingBox))
-				gameObjects.push_back(*it);
-		}
-
-		if (!IsLeaf())
-		{
-			for (uint i = 0; i < 4; ++i)
-				children[i]->CollectIntersections(gameObjects, primitive);
-		}
-	}
-}
-
 // Quadtree --------------------------------------------------
 Quadtree::Quadtree() {}
 
@@ -144,11 +126,4 @@ void Quadtree::Insert(GameObject* gameObject)
 {
 	if (gameObject->boundingBox.Intersects(root->boundingBox))
 		root->Insert(gameObject);
-}
-
-template<typename Type>
-void Quadtree::CollectIntersections(std::vector<GameObject*>& gameObjects, Type& primitive)
-{
-	if (root != nullptr)
-		root->CollectIntersections(gameObjects, primitive);
 }

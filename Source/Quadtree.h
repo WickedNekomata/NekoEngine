@@ -1,7 +1,7 @@
 #ifndef __QUADTREE_H__
 #define __QUADTREE_H__
 
-#include "GameObject.h"
+#include "Globals.h"
 #include "MathGeoLib/include/Geometry/AABB.h"
 
 #include <vector>
@@ -9,6 +9,8 @@
 
 #define BUCKET_SIZE 1
 #define MAX_SUBDIVISIONS 10
+
+class GameObject;
 
 class QuadtreeNode 
 {
@@ -56,5 +58,31 @@ public:
 
 	QuadtreeNode* root = nullptr;
 };
+
+template<typename Type>
+inline void QuadtreeNode::CollectIntersections(std::vector<GameObject*>& gameObjects, Type& primitive)
+{
+	if (primitive.Intersects(boundingBox))
+	{
+		for (std::list<GameObject*>::const_iterator it = objects.begin(); it != objects.end(); ++it)
+		{
+			if (primitive.Intersects((*it)->boundingBox))
+				gameObjects.push_back(*it);
+		}
+
+		if (!IsLeaf())
+		{
+			for (uint i = 0; i < 4; ++i)
+				children[i]->CollectIntersections(gameObjects, primitive);
+		}
+	}
+}
+
+template<typename Type>
+inline void Quadtree::CollectIntersections(std::vector<GameObject*>& gameObjects, Type& primitive)
+{
+	if (root != nullptr)
+		root->CollectIntersections(gameObjects, primitive);
+}
 
 #endif

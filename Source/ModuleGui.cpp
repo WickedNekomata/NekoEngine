@@ -187,6 +187,19 @@ update_status ModuleGui::Update(float dt)
 
 		bool debugDraw = App->renderer3D->GetDebugDraw();
 		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
+
+		if (debugDraw)
+		{
+			ImGui::SameLine();
+
+			bool drawBoundingBoxes = App->renderer3D->GetDrawBoundingBoxes();
+			if (ImGui::Checkbox("Bounding Boxes", &drawBoundingBoxes)) { App->renderer3D->SetDrawBoundingBoxes(drawBoundingBoxes); }
+
+			ImGui::SameLine();
+
+			bool drawQuadtree = App->scene->GetDrawQuadtree();
+			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->scene->SetDrawQuadtree(drawQuadtree); }
+		}
 	}
 	ImGui::End();
 	*/

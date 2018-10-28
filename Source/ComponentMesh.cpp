@@ -62,6 +62,7 @@ void ComponentMesh::GrowBoundingBox() const
 
 void ComponentMesh::CreateDebugBoundingBox()
 {
+<<<<<<< HEAD
 	debugBoundingBox = new PrimitiveCube(parent->boundingBox.Size());
 	debugBoundingBox->SetColor(Yellow);
 	debugBoundingBox->SetWireframeMode(true);
@@ -71,3 +72,9 @@ void ComponentMesh::OnSave(JSON_Object* file)
 {
 	json_object_set_number(file, "ResourceMesh", 0012013);
 }
+=======
+	debugBoundingBox = new PrimitiveCube();
+	debugBoundingBox->SetColor(Green);
+	//debugBoundingBox->SetWireframeMode(true);
+}
+>>>>>>> 96f955076696980feee1308006e8b0a43962a8d5

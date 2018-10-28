@@ -49,13 +49,15 @@ public:
 	void SetDebugDraw(bool debugDraw);
 	bool GetDebugDraw() const;
 
+	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
+	bool GetDrawBoundingBoxes() const;
+
 	// GO' COMPONENTS
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	void EraseComponent(ComponentMesh* toErase);
 
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void DrawBoundingBox(ComponentMesh* toDraw) const;
-
 
 private:
 
@@ -72,6 +74,7 @@ public:
 
 	bool vsync = false;
 	bool debugDraw = false;
+	bool drawBoundingBoxes = true;
 
 	float fov = 0.0f;
 };

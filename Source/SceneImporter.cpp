@@ -173,7 +173,6 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		go->RecalculateBoundingBox();
 		go->meshRenderer->CreateDebugBoundingBox();
 
-
 		uint ranges[3] = { goMesh->verticesSize, goMesh->indicesSize, goMesh->textureCoordsSize };
 
 		uint size = sizeof(ranges) +

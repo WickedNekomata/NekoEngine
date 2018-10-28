@@ -30,13 +30,18 @@ public:
 	bool GetShowGrid() const;
 	void SetShowGrid(bool showGrid);
 
+	bool GetDrawQuadtree() const;
+	void SetDrawQuadtree(bool drawQuadtree);
+
 	void CreateQuadtree();
+	void CreateRandomGameObject();
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 private:
 
 	PrimitiveGrid* grid = nullptr;
 	bool showGrid = true;
+	bool drawQuadtree = true;
 
 public:
 

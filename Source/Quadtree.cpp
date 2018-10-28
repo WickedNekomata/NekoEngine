@@ -70,6 +70,8 @@ void QuadtreeNode::Subdivide()
 	quarterCenter = { center.x - quarterSize.x, center.y, center.z + quarterSize.z };
 	quarterBoundingBox.SetFromCenterAndSize(quarterCenter, halfSize);
 	children[SW] = new QuadtreeNode(quarterBoundingBox);
+
+	children[NE]->subdivision = children[NW]->subdivision = children[SE]->subdivision = children[SW]->subdivision = subdivision + 1;
 }
 
 void QuadtreeNode::RedistributeChildren()

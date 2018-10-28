@@ -117,17 +117,17 @@ uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType,
 	{
 	case FileType::MeshFile:
 		if (ID > 0)
-			sprintf_s(fileName, "%s_Mesh%u", outputFileName.data(), ID);
+			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Mesh%u", outputFileName.data(), ID);
 		else
-			sprintf_s(fileName, "%s_Mesh", outputFileName.data());
-		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Mesh", outputFileName.data());
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
 		if (ID > 0)
-			sprintf_s(fileName, "%s_Texture%u", outputFileName.data(), ID);
+			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Texture%u", outputFileName.data(), ID);
 		else
-			sprintf_s(fileName, "%s_Texture", outputFileName.data());
-		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Texture", outputFileName.data());
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	}
 
@@ -191,10 +191,10 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(filePath, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(filePath, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
 	}
 
@@ -262,11 +262,11 @@ bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileTyp
 	{
 	case FileType::MeshFile:
 		outputFilePath = "Assets/Meshes/";
-		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileNameWithExtension);
 		break;
 	case FileType::TextureFile:
 		outputFilePath = "Assets/Textures/";
-		sprintf_s(filePath, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileNameWithExtension);
 		break;
 	}
 

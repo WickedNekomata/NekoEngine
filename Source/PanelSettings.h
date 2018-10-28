@@ -9,6 +9,7 @@
 #define SCREEN_MIN_HEIGHT 480
 
 class Module;
+class QuadtreeNode;
 
 class PanelSettings : public Panel
 {
@@ -24,9 +25,6 @@ public:
 private:
 
 	void ApplicationNode() const;
-
-	bool IsActiveNode(Module* module) const;
-
 	void WindowNode() const;
 	void RendererNode() const;
 	void FileSystemNode() const;
@@ -34,7 +32,7 @@ private:
 	void HardwareNode() const;
 	void SceneNode() const;
 
-	void RecursiveDrawQuadtree() const;
+	void RecursiveDrawQuadtreeHierarchy(QuadtreeNode* node) const;
 
 private:
 

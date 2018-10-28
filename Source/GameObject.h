@@ -5,6 +5,7 @@
 #include "ComponentTypes.h"
 
 #include "MathGeoLib/include/Geometry/AABB.h"
+#include "parson/parson.h"
 
 #include <vector>
 
@@ -51,6 +52,8 @@ public:
 
 	void RecalculateBoundingBox();
 
+	void OnSave(JSON_Object* file);
+
 private:
 
 	char* name = nullptr;
@@ -70,6 +73,8 @@ public:
 	ComponentCamera* camera = nullptr;
 
 	math::AABB boundingBox;
+
+	uint UUID = 0;
 };
 
 #endif

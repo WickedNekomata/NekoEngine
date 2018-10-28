@@ -13,6 +13,8 @@
 
 #include <algorithm>
 
+
+#include "PCG/pcg_variants.h"
 GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
@@ -22,6 +24,8 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 		AddComponent(ComponentType::Transform_Component);
 
 	boundingBox.SetNegativeInfinity();
+
+	UUID = pcg32_random_r(&(App->rng));
 }
 
 GameObject::~GameObject()
@@ -222,4 +226,21 @@ void GameObject::RecalculateBoundingBox()
 
 	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecalculateBoundingBox();
+}
+
+void GameObject::OnSave(JSON_Object* file)
+{
+	json_object_set_number(file, "UUID", UUID);
+	json_object_set_number(file, "Parent UUID", parent->UUID);
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		JSON_Value* newValue = json_value_init_object();
+		JSON_Object* objToSerialize = json_value_get_object(newValue);
+
+		std::string s = std::to_string(i);
+		json_object_set_value(file, s.c_str(), newValue);
+		components[i]->OnSave(objToSerialize);
+	}
+	
 }

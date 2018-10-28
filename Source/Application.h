@@ -19,6 +19,8 @@
 
 #include "PerfTimer.h"
 
+#include "PCG/pcg_variants.h"
+
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -68,13 +70,15 @@ public:
 	ModuleInput*		input;
 	ModuleScene*		scene;
 	ModuleRenderer3D*	renderer3D;
-	ModuleCameraEditor*		camera;
+	ModuleCameraEditor*	camera;
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
 	ModuleGOs*			GOs;
 
 	MaterialImporter*	materialImporter;
 	SceneImporter*		sceneImporter;
+
+	pcg32_random_t rng;
 
 private:
 

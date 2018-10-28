@@ -33,3 +33,7 @@ GameObject* Component::GetParent()
 	return parent;
 }
 
+void Component::OnSave(JSON_Object* file)
+{
+}
+

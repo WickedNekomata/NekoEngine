@@ -23,6 +23,8 @@ public:
 
 	void CreateDebugBoundingBox();
 
+	void OnSave(JSON_Object* file);
+
 public:
 
 	Mesh* mesh = nullptr;

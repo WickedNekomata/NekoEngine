@@ -32,11 +32,16 @@ public:
 	GameObject* GetGameObject(uint index) const;
 	uint GetGameObjectsLength() const;
 
+	void MarkSceneToSerialize();
+	void SerializeScene();
+
 private:
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> needToBeDeleted;
 
 	std::vector<Component*> componentsToDelete;
+
+	bool serializeScene = false;
 };
 
 #endif

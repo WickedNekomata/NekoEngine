@@ -131,3 +131,11 @@ bool ComponentCamera::IsPlay() const
 {
 	return play;
 }
+
+void ComponentCamera::OnSave(JSON_Object* file)
+{
+	json_object_set_number(file, "nearPlaneDistance", cameraFrustum.nearPlaneDistance);
+	json_object_set_number(file, "farPlaneDistance", cameraFrustum.farPlaneDistance);
+	json_object_set_number(file, "verticalFov", cameraFrustum.verticalFov);
+	json_object_set_number(file, "horizontalFov", cameraFrustum.horizontalFov);
+}

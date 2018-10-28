@@ -20,6 +20,8 @@ public:
 
 	void OnUniqueEditor();
 
+	void OnSave(JSON_Object* file);
+
 public:
 
 	std::vector<Texture*> textures;

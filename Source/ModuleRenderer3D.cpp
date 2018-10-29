@@ -340,13 +340,14 @@ bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 
 void ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 {
-	if (mainCamera == nullptr)
-		return;
-
-	if (this->mainCamera != nullptr && this->mainCamera != mainCamera)
-		this->mainCamera->SetMainCamera(false);
-
 	this->mainCamera = mainCamera;
+
+	SetMeshComponentsSeenLastFrame(!mainCamera->GetFrustumCulling());
+}
+
+ComponentCamera* ModuleRenderer3D::GetMainCamera() const
+{
+	return mainCamera;
 }
 
 void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)

@@ -3,7 +3,6 @@
 #include "ComponentTransform.h"
 #include "ModuleWindow.h"
 #include "Application.h"
-#include "ModuleRenderer3D.h"
 
 #include "imgui/imgui.h"
 
@@ -78,10 +77,12 @@ void ComponentCamera::UpdateTransform()
 
 void ComponentCamera::OnUniqueEditor()
 {
-	if (ImGui::Checkbox("Main Camera", &mainCamera))
-		App->renderer3D->SetMainCamera(this, mainCamera);
-
-	if (ImGui::Checkbox("Frustum Culling", &frustumCulling)) { SetFrustumCulling(frustumCulling); }
+	ImGui::Checkbox("Main Camera", &mainCamera);
+	if (ImGui::Checkbox("Frustum Culling", &frustumCulling))
+	{
+		if (this == App->renderer3D->GetMainCamera())
+			App->renderer3D->SetMeshComponentsSeenLastFrame(!frustumCulling);
+	}
 
 	ImGui::Text("Field of View");
 	ImGui::SameLine();

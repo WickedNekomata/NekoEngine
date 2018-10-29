@@ -54,6 +54,7 @@ public:
 	bool GetDrawBoundingBoxes() const;
 
 	void SetMainCamera(ComponentCamera* mainCamera);
+	ComponentCamera* GetMainCamera() const;
 	// TODO SET FRUSTUM CULLING FOR THE MAIN CAMERA
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;

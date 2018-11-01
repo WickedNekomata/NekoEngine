@@ -147,17 +147,17 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	//if (mainCamera != nullptr)
-	//{
-		//if (mainCamera->HasFrustumCulling())
-			//FrustumCulling();
+	if (mainCamera != nullptr)
+	{
+		if (mainCamera->HasFrustumCulling())
+			FrustumCulling();
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			//if (meshComponents[i]->GetParent()->GetSeenLastFrame())
+			if (meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);
 		}
-	//}
+	}
 
 	// 2. Debug geometry
 	if (debugDraw)
@@ -463,16 +463,14 @@ void ModuleRenderer3D::FrustumCulling() const
 		objects[i]->SetSeenLastFrame(true);
 
 	// Dynamic objects (test against Frustum)
-	/*
 	for (uint i = 0; i < meshComponents.size(); ++i)
 	{
-		if (!meshComponents[i]->GetParent()->GetIsStatic())
+		if (!meshComponents[i]->GetParent()->IsStatic())
 		{
-			if (mainCamera->cameraFrustum.Contains(meshComponents[i]->GetParent()->boundingBox))
+			if (mainCamera->cameraFrustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
 				meshComponents[i]->GetParent()->SetSeenLastFrame(true);
 		}
 	}
-	*/
 }
 
 

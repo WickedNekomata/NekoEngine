@@ -41,7 +41,7 @@ public:
 
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
-	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, std::string& outputFileName);
+	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, GameObject* transformationGO, std::string& outputFileName);
 
 	bool Load(const char* exportedFileName, Mesh* outputMesh);
 	bool Load(const void* buffer, uint size, Mesh* outputMesh);

@@ -80,7 +80,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		ret = true;
 
 		const aiNode* rootNode = scene->mRootNode;
-		RecursivelyImportNodes(scene, rootNode, App->scene->root, outputFileName);
+		RecursivelyImportNodes(scene, rootNode, App->scene->root, nullptr, outputFileName);
 
 		aiReleaseImport(scene);
 	}
@@ -88,9 +88,23 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	return ret;
 }
 
-void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, std::string& outputFileName)
+void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, GameObject* transformationGO, std::string& outputFileName)
 {
-	GameObject* go = App->GOs->CreateGameObject((char*)node->mName.data, (GameObject*)parentGO);
+	std::string name = node->mName.data;
+
+	bool isTransformation =
+		(name.find("PreRotation") != std::string::npos
+			|| name.find("Rotation") != std::string::npos
+			|| name.find("PostRotation") != std::string::npos
+			|| name.find("Translation") != std::string::npos
+			|| name.find("Scaling") != std::string::npos);
+
+	GameObject* go = transformationGO;
+
+	if (go == nullptr)
+		go = App->GOs->CreateGameObject((char*)name.data(), (GameObject*)parentGO);
+	else if (!isTransformation)
+		go->SetName((char*)name.data());
 
 	// Transform
 	aiVector3D position;
@@ -98,9 +112,22 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	aiQuaternion rotation;
 	node->mTransformation.Decompose(scale, rotation, position);
 
-	go->transform->position = { position.x, position.y, position.z };
-	go->transform->rotation = { rotation.x, rotation.y, rotation.z, rotation.w };
-	go->transform->scale = { scale.x, scale.y, scale.z };
+	math::float3 newPosition = { position.x, position.y, position.z };
+	math::Quat newRotation = { rotation.x, rotation.y, rotation.z, rotation.w };
+	math::float3 newScale = { scale.x, scale.y, scale.z };
+
+	if (transformationGO != nullptr)
+	{
+		go->transform->position = transformationGO->transform->position + newPosition;
+		go->transform->rotation = transformationGO->transform->rotation * newRotation;
+		go->transform->scale = { transformationGO->transform->scale.x * newScale.x, transformationGO->transform->scale.y * newScale.y, transformationGO->transform->scale.z * newScale.z };
+	}
+	else
+	{
+		go->transform->position = newPosition;
+		go->transform->rotation = newRotation;
+		go->transform->scale = newScale;
+	}
 
 	// Meshes
 	if (node->mNumMeshes > 0)
@@ -156,7 +183,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			std::string filePath;
 			if (App->filesystem->ExistsInAssets(textureName.data, FileType::TextureFile, filePath))
 			{
-				std::string outputFileName;			
+				std::string outputFileName;
 				if (App->materialImporter->Import(textureName.data, filePath.data(), outputFileName))
 				{
 					Texture* texture = new Texture();
@@ -165,8 +192,8 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						go->AddComponent(ComponentType::Material_Component);
 						go->materialRenderer->textures.push_back(texture);
 					}
-				}			
-			}		
+				}
+			}
 		}
 
 		goMesh->Init();
@@ -175,9 +202,9 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		uint ranges[3] = { goMesh->verticesSize, goMesh->indicesSize, goMesh->textureCoordsSize };
 
 		uint size = sizeof(ranges) +
-					sizeof(float) * goMesh->verticesSize +
-					sizeof(uint) * goMesh->indicesSize +
-					sizeof(float) * goMesh->textureCoordsSize;
+			sizeof(float) * goMesh->verticesSize +
+			sizeof(uint) * goMesh->indicesSize +
+			sizeof(float) * goMesh->textureCoordsSize;
 
 		char* data = new char[size];
 		char* cursor = data;
@@ -214,7 +241,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
 	{
-		RecursivelyImportNodes(scene, node->mChildren[i], go, outputFileName);
+		if (isTransformation)
+			RecursivelyImportNodes(scene, node->mChildren[i], parentGO, go, outputFileName);
+		else
+			RecursivelyImportNodes(scene, node->mChildren[i], go, nullptr, outputFileName);
 	}
 }
 

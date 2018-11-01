@@ -26,6 +26,7 @@ public:
 
 private:
 
+	virtual void OnInternalSave(JSON_Object* file) = 0;
 	virtual void OnUniqueEditor();
 
 protected:

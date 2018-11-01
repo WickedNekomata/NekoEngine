@@ -13,10 +13,13 @@
 
 ModuleGOs::ModuleGOs(bool start_enabled)
 {
+	nameScene = new char[DEFAULT_BUF_SIZE];
+	strcpy_s(nameScene, DEFAULT_BUF_SIZE, "Main Scene");
 }
 
 ModuleGOs::~ModuleGOs()
 {
+	delete[] nameScene;
 }
 
 bool ModuleGOs::Init(JSON_Object* jObject)
@@ -146,25 +149,22 @@ void ModuleGOs::MarkSceneToSerialize()
 
 void ModuleGOs::SerializeScene()
 {
-	JSON_Value* rootValue = json_value_init_object();
-	JSON_Object* rootObject = json_value_get_object(rootValue);
+	JSON_Value* rootValue = json_value_init_array();
+	JSON_Array* goArray = json_value_get_array(rootValue);
 
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
 		JSON_Value* newValue = json_value_init_object();
 		JSON_Object* objToSerialize = json_value_get_object(newValue);
 
-		std::string s = std::to_string(i);
-		json_object_set_value(rootObject, s.c_str(), newValue);
 		gameObjects[i]->OnSave(objToSerialize);
+		json_array_append_value(goArray, newValue);
 	}
-
+	
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->Save("scene.json", buf, sizeBuf);
+	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
 	delete[] buf;
 	json_value_free(rootValue);
-
-	JSON_Object* file;	
 }

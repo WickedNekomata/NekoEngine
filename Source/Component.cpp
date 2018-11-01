@@ -35,5 +35,7 @@ GameObject* Component::GetParent()
 
 void Component::OnSave(JSON_Object* file)
 {
+	json_object_set_number(file, "Type", type);
+	OnInternalSave(file);
 }
 

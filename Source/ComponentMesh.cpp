@@ -55,7 +55,7 @@ void ComponentMesh::OnUniqueEditor()
 	*/
 }
 
-void ComponentMesh::OnSave(JSON_Object* file)
+void ComponentMesh::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "ResourceMesh", 0012013);
 }

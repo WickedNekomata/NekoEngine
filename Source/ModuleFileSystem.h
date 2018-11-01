@@ -6,7 +6,8 @@
 enum FileType
 {
 	MeshFile,
-	TextureFile
+	TextureFile,
+	SceneFile
 };
 
 class ModuleFileSystem : public Module

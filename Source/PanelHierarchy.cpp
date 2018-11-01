@@ -21,6 +21,15 @@ bool PanelHierarchy::Draw()
 
 	if (ImGui::Begin(name, &enabled, hierarchyFlags))
 	{
+		static char sceneName[INPUT_BUF_SIZE];
+		strcpy_s(sceneName, IM_ARRAYSIZE(sceneName), App->GOs->nameScene);
+		ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+		ImGui::PushItemWidth(100.0f);
+		if (ImGui::InputText("##sceneName", sceneName, IM_ARRAYSIZE(sceneName), inputFlag))
+			strcpy_s(App->GOs->nameScene, DEFAULT_BUF_SIZE, sceneName);
+
+		ImGui::Separator();
+
 		GameObject* root = App->scene->root;
 
 		if (ImGui::BeginPopupContextWindow())

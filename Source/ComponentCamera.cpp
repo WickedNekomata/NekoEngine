@@ -121,7 +121,7 @@ bool ComponentCamera::IsMainCamera() const
 	return mainCamera;
 }
 
-void ComponentCamera::OnSave(JSON_Object* file)
+void ComponentCamera::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "nearPlaneDistance", cameraFrustum.nearPlaneDistance);
 	json_object_set_number(file, "farPlaneDistance", cameraFrustum.farPlaneDistance);

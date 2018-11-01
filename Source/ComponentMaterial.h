@@ -20,7 +20,7 @@ public:
 
 	void OnUniqueEditor();
 
-	void OnSave(JSON_Object* file);
+	void OnInternalSave(JSON_Object* file);
 
 public:
 

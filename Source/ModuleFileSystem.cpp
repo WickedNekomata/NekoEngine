@@ -130,6 +130,9 @@ uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType,
 			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Texture", outputFileName.data());
 		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
 		break;
+	case FileType::SceneFile:
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Scenes/%s.json", outputFileName.data(), FILE_EXTENSION);
+		break;
 	}
 
 	outputFileName = fileName;

@@ -91,7 +91,7 @@ void ComponentMaterial::OnUniqueEditor()
 	*/
 }
 
-void ComponentMaterial::OnSave(JSON_Object* file)
+void ComponentMaterial::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "ResourceMaterial", 0012013);
 }

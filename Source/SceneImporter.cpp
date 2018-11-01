@@ -88,8 +88,19 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	return ret;
 }
 
-void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, std::string& outputFileName)
+void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, std::string& outputFileName, bool fbxNode)
 {
+	std::string name = node->mName.data;
+
+	/*
+	if (name.find("PreRotation") != std::string::npos || name.find("Rotation") != std::string::npos
+		|| name.find("PostRotation") != std::string::npos || name.find("Translation") != std::string::npos
+		|| name.find("Scaling") != std::string::npos)
+	{
+
+	}
+	*/
+
 	GameObject* go = App->GOs->CreateGameObject((char*)node->mName.data, (GameObject*)parentGO);
 
 	// Transform

@@ -155,24 +155,3 @@ void ModuleGOs::SerializeScene()
 
 	JSON_Object* file;	
 }
-
-ComponentCamera* ModuleGOs::GetMainCamera() const
-{
-	ComponentCamera* mainCamera = nullptr;
-
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->camera != nullptr)
-		{
-			if (mainCamera == nullptr)
-				mainCamera = gameObjects[i]->camera;
-			else
-			{
-				CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
-				return nullptr;
-			}
-		}
-	}
-
-	return mainCamera;
-}

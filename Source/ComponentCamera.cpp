@@ -78,27 +78,32 @@ void ComponentCamera::UpdateTransform()
 void ComponentCamera::OnUniqueEditor()
 {
 	ImGui::Checkbox("Main Camera", &mainCamera);
+
+	ImGui::Text("Field of View");
+	ImGui::SameLine();
+
+	float fov = cameraFrustum.verticalFov * RADTODEG;
+	if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
+		SetFOV(fov);
+
 	if (ImGui::Checkbox("Frustum Culling", &frustumCulling))
 	{
 		if (this == App->renderer3D->GetMainCamera())
 			App->renderer3D->SetMeshComponentsSeenLastFrame(!frustumCulling);
 	}
 
-	ImGui::Text("Field of View");
-	ImGui::SameLine();
-	float fov = cameraFrustum.verticalFov * RADTODEG;
-	ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f);
-	SetFOV(fov);
+	if (frustumCulling)
+	{
+		ImGui::Text("Clipping Planes");
 
-	ImGui::Text("Clipping Planes");
+		ImGui::Text("Near");
+		ImGui::SameLine();
+		ImGui::InputFloat("##nearPlane", &cameraFrustum.nearPlaneDistance);
 
-	ImGui::Text("Near");
-	ImGui::SameLine();
-	
-	ImGui::InputFloat("##naerPlane", &cameraFrustum.nearPlaneDistance);
-	ImGui::Text("Far ");
-	ImGui::SameLine();
-	ImGui::InputFloat("##farPlane", &cameraFrustum.farPlaneDistance);
+		ImGui::Text("Far ");
+		ImGui::SameLine();
+		ImGui::InputFloat("##farPlane", &cameraFrustum.farPlaneDistance);
+	}
 }
 
 void ComponentCamera::SetFOV(float fov)
@@ -143,7 +148,7 @@ void ComponentCamera::SetFrustumCulling(bool frustumCulling)
 	this->frustumCulling = frustumCulling;
 }
 
-bool ComponentCamera::GetFrustumCulling() const
+bool ComponentCamera::HasFrustumCulling() const
 {
 	return frustumCulling;
 }
@@ -153,7 +158,7 @@ void ComponentCamera::SetMainCamera(bool mainCamera)
 	this->mainCamera = mainCamera;
 }
 
-bool ComponentCamera::GetMainCamera() const
+bool ComponentCamera::IsMainCamera() const
 {
 	return mainCamera;
 }

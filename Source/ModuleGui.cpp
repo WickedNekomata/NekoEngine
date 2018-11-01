@@ -177,11 +177,7 @@ update_status ModuleGui::Update(float dt)
 		*/
 
 		if (ImGui::Button("Recalculate Main Camera"))
-		{
-			ComponentCamera* mainCamera = App->GOs->GetMainCamera();
-			if (mainCamera != nullptr)
-				App->renderer3D->SetMainCamera(mainCamera);
-		}
+			App->renderer3D->RecalculateMainCamera();
 
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }

@@ -114,7 +114,7 @@ Component* GameObject::AddComponent(ComponentType type)
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
 	case Camera_Component:
-		newComponent = camera = new ComponentCamera(this);
+		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	default:
 		break;
@@ -141,7 +141,10 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	switch (toDelete->GetType())
 	{
 	case ComponentType::Mesh_Component:
-		App->renderer3D->EraseComponent((ComponentMesh*)toDelete);
+		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
+		break;
+	case ComponentType::Camera_Component:
+		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
 		break;
 	}
 
@@ -156,7 +159,10 @@ void GameObject::InternallyDeleteComponents()
 		switch (components[i]->GetType())
 		{
 		case ComponentType::Mesh_Component:
-			App->renderer3D->EraseComponent((ComponentMesh*)components[i]);
+			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
+			break;
+		case ComponentType::Camera_Component:
+			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
 		}		
 		delete components[i];

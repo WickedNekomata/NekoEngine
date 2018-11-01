@@ -30,10 +30,10 @@ public:
 	bool IsPlay() const;
 
 	void SetFrustumCulling(bool frustumCulling);
-	bool GetFrustumCulling() const;
+	bool HasFrustumCulling() const;
 
 	void SetMainCamera(bool mainCamera);
-	bool GetMainCamera() const;
+	bool IsMainCamera() const;
 
 	void OnSave(JSON_Object* file);
 

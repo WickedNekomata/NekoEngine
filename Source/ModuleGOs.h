@@ -37,8 +37,6 @@ public:
 	void MarkSceneToSerialize();
 	void SerializeScene();
 
-	ComponentCamera* GetMainCamera() const;
-
 private:
 
 	std::vector<GameObject*> gameObjects;

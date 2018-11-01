@@ -73,8 +73,7 @@ bool PanelHierarchy::Draw()
 
 void PanelHierarchy::IterateAllChildren(GameObject* root)
 {
-	ImGuiTreeNodeFlags treeNodeFlags = 0;
-	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+	ImGuiTreeNodeFlags treeNodeFlags;
 
 	if (root->HasChildren())
 	{
@@ -87,6 +86,9 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 
 			if (child->HasChildren())
 			{
+				treeNodeFlags = 0;
+				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
 				bool treeNodeOpened = false;
 				if (ImGui::TreeNodeEx(name, treeNodeFlags))
 					treeNodeOpened = true;

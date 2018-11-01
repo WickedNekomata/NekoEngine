@@ -112,6 +112,7 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 void ModuleGOs::ClearScene()
 {
 	App->scene->root->DeleteChildren();
+	App->scene->currentGameObject = nullptr;
 }
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
@@ -133,9 +134,12 @@ GameObject* ModuleGOs::GetGameObjectbyUUID(uint UUID) const
 {
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
-		if (gameObjects[i]->UUID == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) != gameObjectsToDelete.end())
+		if (gameObjects[i]->UUID == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) == gameObjectsToDelete.end())
 			return gameObjects[i];
 	}
+
+	if (UUID == App->scene->root->UUID)
+		return App->scene->root;
 	
 	return nullptr;
 }
@@ -209,7 +213,7 @@ bool ModuleGOs::LoadScene(char* fileName)
 	auxList.reserve(json_array_get_count(gameObjectsArray));
 	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) {
 		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), nullptr);
+		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root);
 		go->OnLoad(gObject);
 		auxList.push_back(go);
 	}
@@ -217,7 +221,10 @@ bool ModuleGOs::LoadScene(char* fileName)
 	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
-		auxList[i]->SetParent(GetGameObjectbyUUID(json_object_get_number(gObject, "Parent UUID")));
+		GameObject* parent = GetGameObjectbyUUID(json_object_get_number(gObject, "Parent UUID"));
+		auxList[i]->GetParent()->EraseChild(auxList[i]);
+		parent->AddChild(auxList[i]);
+		auxList[i]->SetParent(parent);
 	}
 
 	json_value_free(root_value);

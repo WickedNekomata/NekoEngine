@@ -81,7 +81,7 @@ void GameObject::DeleteChild(uint index)
 
 void GameObject::DeleteChildren()
 {
-	for (uint i = 0; i < children.size(); ++i)
+	for (uint i = 0; i < children.size();)
 		children[i]->DeleteMe();
 
 	children.clear();

@@ -59,6 +59,10 @@ void ComponentTransform::OnUniqueEditor()
 
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();
+
+	std::string string;
+	string += std::to_string(GetParent()->GetChildrenLength());
+	ImGui::Text(string.data());
 }
 
 math::float4x4 ComponentTransform::GetMatrix()

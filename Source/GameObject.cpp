@@ -24,6 +24,9 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 
 	boundingBox.SetNegativeInfinity();
 
+	if (isStatic)
+		App->scene->quadtree.Insert(this);
+
 	UUID = pcg32_random_r(&(App->rng));
 }
 
@@ -32,17 +35,17 @@ GameObject::~GameObject()
 	RELEASE_ARRAY(name);
 	InternallyDeleteComponents();
 
-	// Recalculate the quadtree
-	App->scene->quadtree.Clear();
-	App->scene->CreateQuadtree();
-	App->GOs->RecalculateQuadtree();
+	if (isStatic)
+	{
+		// Recreate the quadtree (game object deleted)
+		App->scene->RecreateQuadtree();
+	}
 }
 
 void GameObject::Update() {}
 
 void GameObject::SetParent(GameObject* parent)
 {
-	// WARNING: Reset childrens' transform
 	this->parent = parent;
 }
 
@@ -207,12 +210,8 @@ void GameObject::ToggleIsStatic()
 	if (isStatic)
 		App->scene->quadtree.Insert(this);
 	else
-	{
-		// Recalculate the quadtree
-		App->scene->quadtree.Clear();
-		App->scene->CreateQuadtree();
-		App->GOs->RecalculateQuadtree();
-	}
+		// Recreate the quadtree (static changed)
+		App->scene->RecreateQuadtree();
 }
 
 bool GameObject::IsStatic() const
@@ -236,12 +235,7 @@ void GameObject::RecalculateBoundingBox()
 
 	// Grow bounding box
 	if (meshRenderer != nullptr)
-	{
-		Mesh* mesh = meshRenderer->mesh;
-
-		if (mesh != nullptr)
-			boundingBox.Enclose((const math::float3*)mesh->vertices, mesh->verticesSize);
-	}
+		boundingBox.Enclose((const math::float3*)meshRenderer->mesh->vertices, meshRenderer->mesh->verticesSize);
 
 	// Transform bounding box (calculate OBB)
 	math::OBB obb = boundingBox.Transform(transform->GetGlobalMatrix());
@@ -251,7 +245,8 @@ void GameObject::RecalculateBoundingBox()
 		boundingBox = obb.MinimalEnclosingAABB();
 
 	if (isStatic)
-		App->scene->quadtree.Insert(this); // Since static objects only calculate their bounding box once, this should not happen twice
+		// Recreate the quadtree (bounding box changed)
+		App->scene->RecreateQuadtree();
 
 	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecalculateBoundingBox();
@@ -286,6 +281,5 @@ void GameObject::OnLoad(JSON_Object* file)
 		cObject = json_array_get_object(jsonComponents, i);
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
-	}
-	
+	}	
 }

@@ -22,7 +22,8 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 
 ComponentCamera::~ComponentCamera() 
 {
-	parent->camera = nullptr;
+	if (parent != nullptr) // Editor camera's parent is nullptr
+		parent->camera = nullptr;
 }
 
 void ComponentCamera::UpdateTransform()

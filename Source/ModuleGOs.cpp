@@ -44,7 +44,7 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
+	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
@@ -67,11 +67,13 @@ bool ModuleGOs::CleanUp()
 {
 	ClearScene();
 
-	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
+	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
+	{
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
+	}
 	
 	gameObjectsToDelete.clear();
-
 	gameObjects.clear();
 
 	return true;

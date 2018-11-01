@@ -21,6 +21,8 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
+	void LookAt(math::float3 focus);
+
 public:
 
 	ComponentCamera* camera = nullptr;

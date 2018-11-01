@@ -22,7 +22,7 @@ private:
 	ImGuiTextBuffer buf;
 	ImGuiTextFilter filter;
 	ImVector<int> lineOffsets;
-	bool scrollToBottom = false;
+	bool scrollToBottom = true;
 };
 
 #endif

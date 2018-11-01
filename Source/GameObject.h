@@ -48,7 +48,7 @@ public:
 	const char* GetName() const;
 
 	void ToggleIsStatic();
-	bool GetIsStatic() const;
+	bool IsStatic() const;
 
 	void SetSeenLastFrame(bool seenLastFrame);
 	bool GetSeenLastFrame() const;

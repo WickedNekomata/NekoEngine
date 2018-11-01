@@ -8,7 +8,7 @@
 #include "ModuleFileSystem.h"
 
 #include "parson/parson.h"
-
+#include <list>
 #include <algorithm>
 
 ModuleGOs::ModuleGOs(bool start_enabled)
@@ -46,8 +46,8 @@ update_status ModuleGOs::PostUpdate(float dt)
 {
 	for (uint i = 0; i < needToBeDeleted.size(); ++i)
 	{
-		delete needToBeDeleted[i];
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
+		delete needToBeDeleted[i];
 	}
 
 	needToBeDeleted.clear();
@@ -129,6 +129,15 @@ uint ModuleGOs::GetGameObjectsLength() const
 	return gameObjects.size();
 }
 
+void ModuleGOs::RecalculateQuadtree()
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+	{
+		if (gameObjects[i]->IsStatic())
+			App->scene->quadtree.Insert(gameObjects[i]);
+	}
+}
+
 void ModuleGOs::MarkSceneToSerialize()
 {
 	serializeScene = true;
@@ -154,25 +163,4 @@ void ModuleGOs::SerializeScene()
 	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
 	delete[] buf;
 	json_value_free(rootValue);
-}
-
-ComponentCamera* ModuleGOs::GetMainCamera() const
-{
-	ComponentCamera* mainCamera = nullptr;
-
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->camera != nullptr)
-		{
-			if (mainCamera == nullptr)
-				mainCamera = gameObjects[i]->camera;
-			else
-			{
-				CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
-				return nullptr;
-			}
-		}
-	}
-
-	return mainCamera;
 }

@@ -122,7 +122,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	// Projection Matrix for
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 
-
 	return ret;
 }
 
@@ -152,7 +151,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 	if (mainCamera != nullptr)
 	{
-		if (mainCamera->GetFrustumCulling())
+		if (mainCamera->HasFrustumCulling())
 			FrustumCulling();
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
@@ -176,8 +175,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 		if (drawBoundingBoxes)
 		{
-			for (uint i = 0; i < meshComponents.size(); ++i)
-				DrawBoundingBox(meshComponents[i]);
+			//TODO
+			//for (uint i = 0; i < meshComponents.size(); ++i)
+				//DrawBoundingBox(meshComponents[i]);
 		}
 
 		SetDebugDrawCapabilitiesState(cullFace, lighting, texture2D);
@@ -338,11 +338,96 @@ bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 	return drawBoundingBoxes;
 }
 
-void ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
+ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 {
-	this->mainCamera = mainCamera;
+	ComponentMesh* newComponent = new ComponentMesh(parent);
 
-	SetMeshComponentsSeenLastFrame(!mainCamera->GetFrustumCulling());
+	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), newComponent);
+
+	if (it == meshComponents.end())
+		meshComponents.push_back(newComponent);
+
+	return newComponent;
+}
+
+void ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
+{
+	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), toErase);
+
+	if (it != meshComponents.end())
+		meshComponents.erase(it);
+}
+
+ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
+{
+	ComponentCamera* newComponent = new ComponentCamera(parent);
+
+	std::list<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), newComponent);
+
+	if (it == cameraComponents.end())
+		cameraComponents.push_back(newComponent);
+
+	return newComponent;
+}
+
+void ModuleRenderer3D::EraseCameraComponent(ComponentCamera* toErase)
+{
+	std::list<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
+
+	if (it != cameraComponents.end())
+		cameraComponents.erase(it);
+}
+
+bool ModuleRenderer3D::RecalculateMainCamera()
+{
+	bool ret = false;
+
+	ComponentCamera* mainCamera = nullptr;
+
+	bool multipleMainCameras = false;
+
+	for (std::list<ComponentCamera*>::const_iterator it = cameraComponents.begin(); it != cameraComponents.end(); ++it)
+	{
+		if ((*it)->IsMainCamera())
+		{
+			if (mainCamera == nullptr)
+				mainCamera = *it;
+			else
+			{
+				multipleMainCameras = true;
+				mainCamera = nullptr;
+				break;
+			}
+		}			
+	}
+
+	if (multipleMainCameras)
+	{
+		CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
+	}
+	else if (mainCamera == nullptr)
+	{
+		CONSOLE_LOG("Warning! No Main Camera is defined");
+	}
+
+	ret = SetMainCamera(mainCamera);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
+{
+	bool ret = mainCamera != nullptr;
+
+	if (ret)
+	{
+		this->mainCamera = mainCamera;
+		SetMeshComponentsSeenLastFrame(!mainCamera->HasFrustumCulling());
+	}
+	else
+		CONSOLE_LOG("Main Camera could not be set");
+
+	return ret;
 }
 
 ComponentCamera* ModuleRenderer3D::GetMainCamera() const
@@ -381,27 +466,6 @@ void ModuleRenderer3D::FrustumCulling() const
 	*/
 }
 
-// -------------------- COMPONENTS------------------------------COMPONENTS--------------------------------COMPONENTS-------------------- //
-
-ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
-{
-	ComponentMesh* newComponent;
-
-	newComponent = new ComponentMesh(parent);
-
-	meshComponents.push_back(newComponent);
-
-	return newComponent;
-}
-
-void ModuleRenderer3D::EraseComponent(ComponentMesh* toErase)
-{
-	for (int i = 0; i < meshComponents.size(); ++i)
-	{
-		if (meshComponents[i] == toErase)
-			meshComponents.erase(std::remove(meshComponents.begin(), meshComponents.end(), meshComponents[i]), meshComponents.end());
-	}
-}
 
 void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 {
@@ -456,14 +520,4 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	}
 	
 	glPopMatrix();
-}
-
-void ModuleRenderer3D::DrawBoundingBox(ComponentMesh* toDraw) const
-{
-	if (toDraw->debugBoundingBox != nullptr)
-	{
-		math::float3 position = toDraw->GetParent()->boundingBox.CenterPoint();
-		math::float3 scale = toDraw->GetParent()->boundingBox.Size();
-		toDraw->debugBoundingBox->Render(math::float4x4::FromTRS(position, math::Quat::identity, scale));
-	}
 }

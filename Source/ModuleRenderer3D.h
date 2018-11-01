@@ -53,22 +53,26 @@ public:
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
 
-	void SetMainCamera(ComponentCamera* mainCamera);
+	ComponentMesh* CreateMeshComponent(GameObject* parent);
+	void EraseMeshComponent(ComponentMesh* toErase);
+
+	ComponentCamera* CreateCameraComponent(GameObject* parent);
+	void EraseCameraComponent(ComponentCamera* toErase);
+
+	bool RecalculateMainCamera();
+	bool SetMainCamera(ComponentCamera* mainCamera);
 	ComponentCamera* GetMainCamera() const;
-	// TODO SET FRUSTUM CULLING FOR THE MAIN CAMERA
+
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;
 
-	// GO' COMPONENTS
-	ComponentMesh* CreateMeshComponent(GameObject* parent);
-	void EraseComponent(ComponentMesh* toErase);
-
 	void DrawMesh(ComponentMesh* toDraw) const;
-	void DrawBoundingBox(ComponentMesh* toDraw) const;
 
 private:
 
 	std::vector<ComponentMesh*> meshComponents;
+
+	std::list<ComponentCamera*> cameraComponents;
 	ComponentCamera* mainCamera = nullptr;
 
 public:

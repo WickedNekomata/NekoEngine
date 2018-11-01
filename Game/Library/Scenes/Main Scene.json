@@ -1,0 +1,345 @@
+[
+    {
+        "name": "Api",
+        "UUID": 698401032,
+        "Parent UUID": 3144768865,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 4,
+                "nearPlaneDistance": 0.10000000149011612,
+                "farPlaneDistance": 1000,
+                "verticalFov": 1.0471975803375244,
+                "horizontalFov": 1.2877128124237061
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 5131
+            },
+            {
+                "Type": 3,
+                "ResourceMaterial": 5131
+            }
+        ]
+    },
+    {
+        "name": "fill de Api",
+        "UUID": 2340744531,
+        "Parent UUID": 698401032,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "net de Api1",
+        "UUID": 1398441794,
+        "Parent UUID": 2340744531,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "net de Api2",
+        "UUID": 256218872,
+        "Parent UUID": 2340744531,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Patata",
+        "UUID": 2627337385,
+        "Parent UUID": 3144768865,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "fill de Patata",
+        "UUID": 853744534,
+        "Parent UUID": 2627337385,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "net de Patata",
+        "UUID": 3869817555,
+        "Parent UUID": 853744534,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "RootNode",
+        "UUID": 3354030202,
+        "Parent UUID": 3144768865,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Chimney_$AssimpFbx$_Translation",
+        "UUID": 32338375,
+        "Parent UUID": 3354030202,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": -598.2406005859375,
+                "PosY": 0,
+                "PosZ": 2120.66552734375,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Chimney_$AssimpFbx$_PreRotation",
+        "UUID": 421218981,
+        "Parent UUID": 32338375,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": -0.7071068286895752,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 0.70710670948028564,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Chimney_$AssimpFbx$_Scaling",
+        "UUID": 2152022708,
+        "Parent UUID": 421218981,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 100,
+                "ScaleY": 100,
+                "ScaleZ": 100
+            }
+        ]
+    },
+    {
+        "name": "Chimney",
+        "UUID": 2210024399,
+        "Parent UUID": 2152022708,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 5131
+            }
+        ]
+    },
+    {
+        "name": "Baker_house_$AssimpFbx$_Translation",
+        "UUID": 2107806377,
+        "Parent UUID": 3354030202,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": -598.2406005859375,
+                "PosY": 0,
+                "PosZ": 2120.66552734375,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Baker_house_$AssimpFbx$_PreRotation",
+        "UUID": 1545049688,
+        "Parent UUID": 2107806377,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": -0.70710676908493042,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 0.70710676908493042,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Baker_house_$AssimpFbx$_Scaling",
+        "UUID": 1560790046,
+        "Parent UUID": 1545049688,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 100,
+                "ScaleY": 100,
+                "ScaleZ": 100
+            }
+        ]
+    },
+    {
+        "name": "Baker_house",
+        "UUID": 430227128,
+        "Parent UUID": 1560790046,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 5131
+            }
+        ]
+    }
+] 

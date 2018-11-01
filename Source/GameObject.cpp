@@ -258,6 +258,7 @@ void GameObject::RecalculateBoundingBox()
 
 void GameObject::OnSave(JSON_Object* file)
 {
+	json_object_set_string(file, "name", name);
 	json_object_set_number(file, "UUID", UUID);
 	json_object_set_number(file, "Parent UUID", parent->UUID);
 
@@ -272,4 +273,18 @@ void GameObject::OnSave(JSON_Object* file)
 		json_array_append_value(jsonComponents, newValue);	
 	}
 	json_object_set_value(file, "jsonComponents", arrayValue);
+}
+
+void GameObject::OnLoad(JSON_Object* file)
+{
+	UUID = json_object_get_number(file, "UUID");
+	JSON_Array* jsonComponents = json_object_get_array(file, "jsonComponents");
+	JSON_Object* cObject;
+
+	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
+		cObject = json_array_get_object(jsonComponents, i);
+		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
+		newComponent->OnLoad(cObject);
+	}
+	
 }

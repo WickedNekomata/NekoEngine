@@ -33,12 +33,14 @@ public:
 	void SetComponentToDelete(Component* toDelete);
 
 	GameObject* GetGameObject(uint index) const;
+	GameObject* GetGameObjectbyUUID(uint UUID) const;
 	uint GetGameObjectsLength() const;
 
 	void RecalculateQuadtree();
 
 	void MarkSceneToSerialize();
 	void SerializeScene();
+	bool LoadScene(char* fileName);
 
 private:
 

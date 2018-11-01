@@ -36,6 +36,7 @@ public:
 	bool IsMainCamera() const;
 
 	void OnInternalSave(JSON_Object* file);
+	virtual void OnLoad(JSON_Object* file);
 
 public:
 

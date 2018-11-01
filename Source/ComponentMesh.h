@@ -20,6 +20,7 @@ public:
 	void OnUniqueEditor();
 
 	void OnInternalSave(JSON_Object* file);
+	virtual void OnLoad(JSON_Object* file);
 
 public:
 

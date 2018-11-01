@@ -23,6 +23,7 @@ public:
 	virtual GameObject* GetParent();
 
 	virtual void OnSave(JSON_Object* file);
+	virtual void OnLoad(JSON_Object* file) = 0;
 
 private:
 

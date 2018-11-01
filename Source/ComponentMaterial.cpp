@@ -98,3 +98,8 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "ResourceMaterial", 0012013);
 }
+
+void ComponentMaterial::OnLoad(JSON_Object* file)
+{
+	//LOAD MATERIAL
+}

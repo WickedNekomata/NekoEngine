@@ -102,3 +102,17 @@ void ComponentTransform::OnInternalSave(JSON_Object* file)
 	json_object_set_number(file, "ScaleY", scale.y);
 	json_object_set_number(file, "ScaleZ", scale.z);
 }
+
+void ComponentTransform::OnLoad(JSON_Object* file)
+{
+	position.x = json_object_get_number(file, "PosX");
+	position.y = json_object_get_number(file, "PosY");
+	position.z = json_object_get_number(file, "PosZ");
+	rotation.x = json_object_get_number(file, "RotX");
+	rotation.y = json_object_get_number(file, "RotY");
+	rotation.z = json_object_get_number(file, "RotZ");
+	rotation.w = json_object_get_number(file, "RotW");
+	scale.x = json_object_get_number(file, "ScaleX");
+	scale.y = json_object_get_number(file, "ScaleY");
+	scale.z = json_object_get_number(file, "ScaleZ");
+}

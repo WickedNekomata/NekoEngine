@@ -98,6 +98,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Save Scene")) { showSaveScenePopUp = true; }
+			if (ImGui::MenuItem("Load Scene")) { showLoadScenePopUp = true; }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit"))
 				App->CloseApp();
@@ -134,8 +135,14 @@ update_status ModuleGui::Update(float dt)
 
 	if (showSaveScenePopUp)
 	{
-		ImGui::OpenPopup("SaveScenePopUp");
+		ImGui::OpenPopup("Save Scene as");
 		SaveScenePopUp();
+	}
+
+	if (showLoadScenePopUp)
+	{
+		ImGui::OpenPopup("Load Scene");
+		LoadScenePopUp();
 	}
 	//ImGui::ShowDemoWindow();
 
@@ -280,7 +287,7 @@ void ModuleGui::DockSpace() const
 
 void ModuleGui::SaveScenePopUp()
 {
-	if (ImGui::BeginPopupModal("SaveScenePopUp", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal("Save Scene as", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Current scene will be save to the next directory:");
 		ImGui::Separator();
@@ -297,6 +304,32 @@ void ModuleGui::SaveScenePopUp()
 		ImGui::SetItemDefaultFocus();
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); showSaveScenePopUp = false; }
+		ImGui::EndPopup();
+	}
+}
+
+void ModuleGui::LoadScenePopUp()
+{
+	if (ImGui::BeginPopupModal("Load Scene", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("The scene will be searched in the following directory:");
+		ImGui::Separator();
+
+		ImGui::Text("Assets/Scenes/");
+
+		static char sceneToLoad[INPUT_BUF_SIZE];
+		ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+		ImGui::PushItemWidth(100.0f);
+		ImGui::InputText("##sceneName", sceneToLoad, IM_ARRAYSIZE(sceneToLoad), inputFlag);	
+
+		if (ImGui::Button("Load", ImVec2(120, 0))) {
+			ImGui::CloseCurrentPopup();
+			App->GOs->LoadScene(sceneToLoad);
+			showLoadScenePopUp = false;
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); showLoadScenePopUp = false; }
 		ImGui::EndPopup();
 	}
 }

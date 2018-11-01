@@ -65,9 +65,13 @@ update_status ModuleGOs::PostUpdate(float dt)
 
 bool ModuleGOs::CleanUp()
 {
-	for (uint i = 0; i < gameObjects.size(); ++i)
-		RELEASE(gameObjects[i]);
+	ClearScene();
+
+	for (uint i = 0; i < needToBeDeleted.size(); ++i)
+		RELEASE(needToBeDeleted[i]);
 	
+	needToBeDeleted.clear();
+
 	gameObjects.clear();
 
 	return true;
@@ -105,8 +109,7 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 
 void ModuleGOs::ClearScene()
 {
-	for (uint i = 0; i < gameObjects.size(); ++i)
-			gameObjects[i]->DeleteMe();
+	App->scene->root->DeleteChildren();
 }
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
@@ -122,6 +125,17 @@ void ModuleGOs::SetComponentToDelete(Component* toDelete)
 GameObject* ModuleGOs::GetGameObject(uint index) const
 {
 	return gameObjects[index];
+}
+
+GameObject* ModuleGOs::GetGameObjectbyUUID(uint UUID) const
+{
+	for (int i = 0; i < gameObjects.size(); ++i)
+	{
+		if (gameObjects[i]->UUID == UUID && std::find(needToBeDeleted.begin(), needToBeDeleted.end(), gameObjects[i]) != needToBeDeleted.end())
+			return gameObjects[i];
+	}
+	
+	return nullptr;
 }
 
 uint ModuleGOs::GetGameObjectsLength() const
@@ -163,4 +177,48 @@ void ModuleGOs::SerializeScene()
 	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
 	delete[] buf;
 	json_value_free(rootValue);
+}
+
+bool ModuleGOs::LoadScene(char* fileName)
+{
+	char* buf;
+
+	std::string path("Library/Scenes/");
+	path += fileName;
+	path += ".json";
+	
+	uint size = App->filesystem->Load(path.c_str(), &buf);
+
+	if (size <= 0)
+		return false;
+
+	JSON_Value* root_value;
+	JSON_Array* gameObjectsArray;
+	JSON_Object* gObject;
+
+	/* parsing json and validating output */
+	root_value = json_parse_string(buf);
+	if (json_value_get_type(root_value) != JSONArray) {
+		return false;
+	}
+
+	gameObjectsArray = json_value_get_array(root_value);
+	std::vector<GameObject*>auxList;
+	auxList.reserve(json_array_get_count(gameObjectsArray));
+	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) {
+		gObject = json_array_get_object(gameObjectsArray, i);
+		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), nullptr);
+		go->OnLoad(gObject);
+		auxList.push_back(go);
+	}
+
+	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++)
+	{
+		gObject = json_array_get_object(gameObjectsArray, i);
+		auxList[i]->SetParent(GetGameObjectbyUUID(json_object_get_number(gObject, "Parent UUID")));
+	}
+
+	json_value_free(root_value);
+
+	return true;
 }

@@ -56,6 +56,7 @@ public:
 	void RecalculateBoundingBox();
 
 	void OnSave(JSON_Object* file);
+	void OnLoad(JSON_Object* file);
 
 private:
 

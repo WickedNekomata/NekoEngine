@@ -16,7 +16,7 @@ ComponentMesh::~ComponentMesh()
 	RELEASE(mesh);
 
 	parent->meshRenderer = nullptr;
-	parent->RecalculateBoundingBox();
+	parent->RecursiveRecalculateBoundingBoxes();
 }
 
 void ComponentMesh::Update() {}

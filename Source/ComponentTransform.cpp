@@ -55,7 +55,7 @@ void ComponentTransform::OnUniqueEditor()
 	if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z
 		|| lastRotation.x != rotation.x || lastRotation.y != rotation.y || lastRotation.z != rotation.z || lastRotation.w != rotation.w
 		|| lastScale.x != scale.x || lastScale.y != scale.y || lastScale.z != scale.z)
-		parent->RecalculateBoundingBox();
+		parent->RecursiveRecalculateBoundingBoxes();
 
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();

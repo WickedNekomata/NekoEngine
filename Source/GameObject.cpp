@@ -229,7 +229,7 @@ bool GameObject::GetSeenLastFrame() const
 	return seenLastFrame;
 }
 
-void GameObject::RecalculateBoundingBox()
+void GameObject::RecursiveRecalculateBoundingBoxes()
 {
 	boundingBox.SetNegativeInfinity();
 
@@ -238,7 +238,9 @@ void GameObject::RecalculateBoundingBox()
 		boundingBox.Enclose((const math::float3*)meshRenderer->mesh->vertices, meshRenderer->mesh->verticesSize);
 
 	// Transform bounding box (calculate OBB)
-	math::OBB obb = boundingBox.Transform(transform->GetGlobalMatrix());
+	math::OBB obb;
+	obb.SetFrom(boundingBox);
+	obb.Transform(transform->GetGlobalMatrix());
 
 	// Calculate AABB
 	if (obb.IsFinite())
@@ -249,7 +251,7 @@ void GameObject::RecalculateBoundingBox()
 		App->scene->RecreateQuadtree();
 
 	for (uint i = 0; i < children.size(); ++i)
-		children[i]->RecalculateBoundingBox();
+		children[i]->RecursiveRecalculateBoundingBoxes();
 }
 
 void GameObject::OnSave(JSON_Object* file)

@@ -46,7 +46,7 @@ bool ModuleScene::Start()
 	App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 	std::string outputFile;
-	App->sceneImporter->Import("street.fbx", "Assets/Meshes/", outputFile);
+	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);

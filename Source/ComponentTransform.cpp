@@ -7,17 +7,14 @@
 
 #include <list>
 
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component)
-{
-}
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}
 
 ComponentTransform::~ComponentTransform()
 {
+	parent->transform = nullptr;
 }
 
-void ComponentTransform::Update()
-{
-}
+void ComponentTransform::Update() {}
 
 void ComponentTransform::OnUniqueEditor()
 {

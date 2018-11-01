@@ -7,6 +7,7 @@
 #include "SceneImporter.h"
 #include "ModuleGOs.h"
 #include "GameObject.h"
+#include "DebugDrawer.h"
 
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
@@ -89,16 +90,6 @@ void ModuleScene::SetShowGrid(bool showGrid)
 	this->showGrid = showGrid;
 }
 
-bool ModuleScene::GetDrawQuadtree() const
-{
-	return drawQuadtree;
-}
-
-void ModuleScene::SetDrawQuadtree(bool drawQuadtree)
-{
-	this->drawQuadtree = drawQuadtree;
-}
-
 void ModuleScene::CreateQuadtree()
 {
 	const math::float3 center(0.0f, 5.0f, 0.0f);
@@ -119,28 +110,4 @@ void ModuleScene::CreateRandomStaticGameObject()
 	random->boundingBox.SetFromCenterAndSize(center, size);
 
 	quadtree.Insert(random);
-}
-
-void ModuleScene::RecursiveDrawQuadtree(QuadtreeNode* node) const
-{
-	PrimitiveCube nodeBoundingBox(node->boundingBox.Size());
-	nodeBoundingBox.SetColor(Yellow);
-	nodeBoundingBox.SetWireframeMode(true);
-	math::float3 position = node->boundingBox.CenterPoint();
-	nodeBoundingBox.Render(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
-
-	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
-	{
-		PrimitiveCube objectBoundingBox((*it)->boundingBox.Size());
-		objectBoundingBox.SetColor(Red);
-		objectBoundingBox.SetWireframeMode(true);
-		position = (*it)->boundingBox.CenterPoint();
-		objectBoundingBox.Render(math::float4x4::FromTRS(position, math::Quat::identity, math::float3(1.0f, 1.0f, 1.0f)));
-	}
-
-	if (!node->IsLeaf())
-	{
-		for (uint i = 0; i < 4; ++i)
-			RecursiveDrawQuadtree(node->children[i]);
-	}
 }

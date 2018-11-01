@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __PRIMITIVE_H__
+#define __PRIMITIVE_H__
 
 #include "Color.h"
 
@@ -230,3 +231,5 @@ private:
 
 	math::float3 endPosition = { 0.0f, 0.0f, 0.0f };
 };
+
+#endif

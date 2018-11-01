@@ -70,7 +70,6 @@ void GameObject::EraseChild(GameObject* child)
 	children.erase(std::remove(children.begin(), children.end(), child), children.end());
 }
 
-// EDIT
 void GameObject::DeleteChild(uint index)
 {
 	children[index]->DeleteMe();
@@ -79,7 +78,7 @@ void GameObject::DeleteChild(uint index)
 
 void GameObject::DeleteChildren()
 {
-	for (int i = 0; i < children.size(); ++i)
+	for (uint i = 0; i < children.size(); ++i)
 		children[i]->DeleteMe();
 
 	children.clear();
@@ -136,7 +135,7 @@ void GameObject::MarkToDeleteComponent(uint index)
 
 void GameObject::MarkToDeleteAllComponents()
 {
-	for (int i = 0; i < components.size(); ++i)
+	for (uint i = 0; i < components.size(); ++i)
 		App->GOs->SetComponentToDelete(components[i]);
 }
 
@@ -152,13 +151,13 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	}
 
-	delete toDelete;
+	RELEASE(toDelete);
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 }
 
 void GameObject::InternallyDeleteComponents()
 {
-	for (int i = 0; i < components.size(); ++i)
+	for (int i = components.size() - 1; i >= 0; --i)
 	{   
 		switch (components[i]->GetType())
 		{
@@ -169,8 +168,10 @@ void GameObject::InternallyDeleteComponents()
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
 		}		
-		delete components[i];
+
+		RELEASE(components[i]);
 	}
+
 	components.clear();
 }
 

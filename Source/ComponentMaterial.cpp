@@ -4,17 +4,14 @@
 
 #include "imgui/imgui.h"
 
-ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component)
-{
-}
+ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) {}
 
 ComponentMaterial::~ComponentMaterial()
 {
+	parent->materialRenderer = nullptr;
 }
 
-void ComponentMaterial::Update()
-{
-}
+void ComponentMaterial::Update() {}
 
 void ComponentMaterial::OnUniqueEditor()
 {

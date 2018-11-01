@@ -40,7 +40,6 @@ public:
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
-	void SetDebugDrawCapabilitiesState(bool cullFace, bool lighting, bool texture2D) const;
 	void SetCapabilityState(GLenum capability, bool enable) const;
 	bool GetCapabilityState(GLenum capability) const;
 
@@ -52,6 +51,12 @@ public:
 
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
+
+	void SetDrawMainCameraFrustum(bool drawMainCameraFrustum);
+	bool GetDrawMainCameraFrustum() const;
+
+	void SetDrawQuadtree(bool drawQuadtree);
+	bool GetDrawQuadtree() const;
 
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	void EraseMeshComponent(ComponentMesh* toErase);
@@ -67,6 +72,7 @@ public:
 	void FrustumCulling() const;
 
 	void DrawMesh(ComponentMesh* toDraw) const;
+	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 private:
 
@@ -85,10 +91,11 @@ public:
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 	bool vsync = false;
+
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
-
-	float fov = 0.0f;
+	bool drawMainCameraFrustum = true;
+	bool drawQuadtree = false;
 };
 
 #endif

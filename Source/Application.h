@@ -16,6 +16,7 @@
 #include "ModuleGOs.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
+#include "DebugDrawer.h"
 
 #include "PerfTimer.h"
 
@@ -77,6 +78,8 @@ public:
 
 	MaterialImporter*	materialImporter;
 	SceneImporter*		sceneImporter;
+
+	DebugDrawer*		debugDrawer;
 
 	pcg32_random_t rng;
 

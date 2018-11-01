@@ -41,13 +41,13 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	for (uint i = 0; i < needToBeDeleted.size(); ++i)
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
-		delete needToBeDeleted[i];
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
+		RELEASE(gameObjectsToDelete[i]);
 	}
 
-	needToBeDeleted.clear();
+	gameObjectsToDelete.clear();
 
 	for (uint i = 0; i < componentsToDelete.size(); ++i)
 		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
@@ -63,8 +63,12 @@ update_status ModuleGOs::PostUpdate(float dt)
 bool ModuleGOs::CleanUp()
 {
 	for (uint i = 0; i < gameObjects.size(); ++i)
-		RELEASE(gameObjects[i]);
-	
+	{
+		GameObject* aux = gameObjects[i];
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
+		RELEASE(aux);
+	}
+
 	gameObjects.clear();
 
 	return true;
@@ -108,7 +112,7 @@ void ModuleGOs::ClearScene()
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
 {
-	needToBeDeleted.push_back(toDelete);
+	gameObjectsToDelete.push_back(toDelete);
 }
 
 void ModuleGOs::SetComponentToDelete(Component* toDelete)

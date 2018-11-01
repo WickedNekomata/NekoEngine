@@ -243,14 +243,17 @@ void GameObject::OnSave(JSON_Object* file)
 	json_object_set_number(file, "UUID", UUID);
 	json_object_set_number(file, "Parent UUID", parent->UUID);
 
+	JSON_Value* arrayValue = json_value_init_array();
+	JSON_Array* jsonComponents = json_value_get_array(arrayValue);
 	for (int i = 0; i < components.size(); ++i)
 	{
 		JSON_Value* newValue = json_value_init_object();
 		JSON_Object* objToSerialize = json_value_get_object(newValue);
 
-		std::string s = std::to_string(i);
-		json_object_set_value(file, s.c_str(), newValue);
 		components[i]->OnSave(objToSerialize);
+		json_array_append_value(jsonComponents, newValue);	
 	}
+
+	json_object_set_value(file, "jsonComponents", arrayValue);
 	
 }

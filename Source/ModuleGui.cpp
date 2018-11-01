@@ -289,9 +289,11 @@ void ModuleGui::SaveScenePopUp()
 		ImGui::Text("Current scene will be save to the next directory:");
 		ImGui::Separator();
 
-		ImGui::Text("Assets/Scenes/Scene.neko_scene");
-		ImGui::Button("Explorer");
+		ImGui::Text("Assets/Scenes/");
 
+		ImGui::PushItemWidth(100.0f);
+		ImGui::InputText("##sceneName", App->GOs->nameScene, DEFAULT_BUF_SIZE);
+		
 		if (ImGui::Button("Save", ImVec2(120, 0))) {
 			ImGui::CloseCurrentPopup(); App->GOs->MarkSceneToSerialize();
 			showSaveScenePopUp = false;

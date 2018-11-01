@@ -89,7 +89,7 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 	return matrix * GetMatrix();
 }
 
-void ComponentTransform::OnSave(JSON_Object* file)
+void ComponentTransform::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "PosX", position.x);
 	json_object_set_number(file, "PosY", position.y);

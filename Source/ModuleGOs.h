@@ -47,6 +47,10 @@ private:
 	std::vector<Component*> componentsToDelete;
 
 	bool serializeScene = false;
+
+public:
+
+	char* nameScene;
 };
 
 #endif

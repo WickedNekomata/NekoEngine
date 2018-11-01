@@ -25,7 +25,7 @@ public:
 	math::float4x4 GetMatrix();
 	math::float4x4 GetGlobalMatrix();
 
-	virtual void OnSave(JSON_Object* file);
+	virtual void OnInternalSave(JSON_Object* file);
 
 
 public:

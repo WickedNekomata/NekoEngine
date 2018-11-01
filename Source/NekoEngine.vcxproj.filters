@@ -561,6 +561,9 @@
     <ClInclude Include="DebugDrawer.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="PanelAssets.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -778,6 +781,9 @@
     </ClCompile>
     <ClCompile Include="DebugDrawer.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelAssets.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

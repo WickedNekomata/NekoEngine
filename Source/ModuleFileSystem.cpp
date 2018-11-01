@@ -15,6 +15,9 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
+	AddPath("Assets/Meshes/", "Meshes");
+	AddPath("Assets/Textures/", "Textures");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
@@ -89,6 +92,11 @@ const char* ModuleFileSystem::GetReadPaths() const
 const char* ModuleFileSystem::GetWritePath() const 
 {
 	return PHYSFS_getWriteDir();
+}
+
+const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
+{
+	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
 bool ModuleFileSystem::CreateDir(const char* dirName) const
@@ -226,7 +234,7 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 			if (size > 0)
 			{
 				*buffer = new char[size];
-				objCount = PHYSFS_read(filehandle, *buffer, 1, size);
+				objCount = PHYSFS_readBytes(filehandle, *buffer, size);
 			
 				if (objCount == size)
 				{
@@ -277,6 +285,11 @@ bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileTyp
 	ret = Exists(filePath);
 
 	return ret;
+}
+
+bool ModuleFileSystem::IsDirectory(const char* file) const
+{
+	return PHYSFS_isDirectory(file);
 }
 
 // TODO CHECK NEW ALWAYS DELETED

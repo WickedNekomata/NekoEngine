@@ -9,6 +9,7 @@
 #include "PanelConsole.h"
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
+#include "PanelAssets.h"
 #include "ComponentCamera.h"
 
 #include "imgui/imgui.h"
@@ -31,12 +32,14 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
 	panelHierarchy = new PanelHierarchy("Hierarchy");
+	panelAssets = new PanelAssets("Assets");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
 	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
 	panels.push_back(panelHierarchy);
+	panels.push_back(panelAssets);
 
 	return true;
 }
@@ -81,6 +84,7 @@ update_status ModuleGui::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN) { panelAssets->OnOff(); }
 	
 	// Begin dock space
 	DockSpace();
@@ -111,6 +115,7 @@ update_status ModuleGui::Update(float dt)
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
+			if (ImGui::MenuItem("Assets", "CTRL+A")) { panelAssets->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -244,6 +249,8 @@ bool ModuleGui::CleanUp()
 	panelAbout = nullptr;
 	panelConsole = nullptr;
 	panelSettings = nullptr;
+	panelHierarchy = nullptr;
+	panelAssets = nullptr;
 
 	CONSOLE_LOG("Cleaning up ImGui");
 

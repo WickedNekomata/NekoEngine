@@ -154,7 +154,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			if (meshComponents[i]->GetParent()->GetSeenLastFrame())
+			//if (meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);
 		}
 	//}

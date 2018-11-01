@@ -9,6 +9,7 @@
 #include "PanelConsole.h"
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
+#include "ComponentCamera.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -137,7 +138,7 @@ update_status ModuleGui::Update(float dt)
 		SaveScenePopUp();
 	}
 	//ImGui::ShowDemoWindow();
-	/*
+
 	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
 	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
 	ImGuiWindowFlags flags = 0;
@@ -149,7 +150,7 @@ update_status ModuleGui::Update(float dt)
 	flags |= ImGuiWindowFlags_NoScrollWithMouse;
 
 	static bool open = true;
-	if (ImGui::Begin("subMenu", &open))
+	if (ImGui::Begin("##subMenu", &open))
 	{
 		/*
 		if (App->camera->IsPlay())
@@ -174,7 +175,14 @@ update_status ModuleGui::Update(float dt)
 
 		ImGui::SameLine();
 		*/
-	/*
+
+		if (ImGui::Button("Recalculate Main Camera"))
+		{
+			ComponentCamera* mainCamera = App->GOs->GetMainCamera();
+			if (mainCamera != nullptr)
+				App->renderer3D->SetMainCamera(mainCamera);
+		}
+
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
 
@@ -202,7 +210,7 @@ update_status ModuleGui::Update(float dt)
 		}
 	}
 	ImGui::End();
-	*/
+
 	// End dock space
 	ImGui::End();
 

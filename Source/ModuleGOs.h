@@ -7,6 +7,7 @@
 
 struct GameObject;
 struct Component;
+struct ComponentCamera;
 
 class ModuleGOs : public Module
 {
@@ -35,6 +36,8 @@ public:
 
 	void MarkSceneToSerialize();
 	void SerializeScene();
+
+	ComponentCamera* GetMainCamera() const;
 
 private:
 

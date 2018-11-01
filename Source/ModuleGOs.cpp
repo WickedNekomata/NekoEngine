@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Component.h"
+#include "ComponentCamera.h"
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
@@ -153,4 +154,25 @@ void ModuleGOs::SerializeScene()
 	json_value_free(rootValue);
 
 	JSON_Object* file;	
+}
+
+ComponentCamera* ModuleGOs::GetMainCamera() const
+{
+	ComponentCamera* mainCamera = nullptr;
+
+	for (uint i = 0; i < gameObjects.size(); ++i)
+	{
+		if (gameObjects[i]->camera != nullptr)
+		{
+			if (mainCamera == nullptr)
+				mainCamera = gameObjects[i]->camera;
+			else
+			{
+				CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
+				return nullptr;
+			}
+		}
+	}
+
+	return mainCamera;
 }

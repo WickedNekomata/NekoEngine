@@ -53,7 +53,7 @@ public:
 	void SetSeenLastFrame(bool seenLastFrame);
 	bool GetSeenLastFrame() const;
 
-	void RecalculateBoundingBox();
+	void RecursiveRecalculateBoundingBoxes();
 
 	void OnSave(JSON_Object* file);
 	void OnLoad(JSON_Object* file);

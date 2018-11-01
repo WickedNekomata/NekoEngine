@@ -329,6 +329,7 @@ void ModuleGui::LoadScenePopUp()
 
 		if (ImGui::Button("Load", ImVec2(120, 0))) {
 			ImGui::CloseCurrentPopup();
+			App->GOs->ClearScene();
 			App->GOs->LoadScene(sceneToLoad);
 			showLoadScenePopUp = false;
 		}

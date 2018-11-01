@@ -36,17 +36,17 @@ bool ModuleScene::Start()
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr);
-	child = App->GOs->CreateGameObject("Api", root);
-	GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
-	App->GOs->CreateGameObject("net de Api1", fillGuillem);
-	App->GOs->CreateGameObject("net de Api2", fillGuillem);
-	child = App->GOs->CreateGameObject("Patata", root);
-	fillGuillem = App->GOs->CreateGameObject("fill de Patata", child);
+	//child = App->GOs->CreateGameObject("Api", root);
+	//GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
+	//App->GOs->CreateGameObject("net de Api1", fillGuillem);
+	//App->GOs->CreateGameObject("net de Api2", fillGuillem);
+	//child = App->GOs->CreateGameObject("Patata", root);
+	//fillGuillem = App->GOs->CreateGameObject("fill de Patata", child);
 
-	App->GOs->CreateGameObject("net de Patata", fillGuillem);
+	//App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 	std::string outputFile;
-	App->sceneImporter->Import("BakerHouse.fbx", "Assets/Meshes/", outputFile);
+	//App->sceneImporter->Import("BakerHouse.fbx", "Assets/Meshes/", outputFile);
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);

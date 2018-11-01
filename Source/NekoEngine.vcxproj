@@ -209,6 +209,7 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCameraEditor.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCameraEditor.cpp" />

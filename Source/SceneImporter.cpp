@@ -130,7 +130,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 
 	// Meshes
-	if (node->mNumMeshes > 0)
+	if (!isTransformation && node->mNumMeshes > 0)
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
 

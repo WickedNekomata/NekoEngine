@@ -28,6 +28,8 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 
+	const char** GetFilesFromDir(const char* dir) const;
+
 	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID = 0) const;
 	uint Save(const char* filePath, char* buffer, uint size, bool append = false) const;
 
@@ -36,6 +38,7 @@ public:
 
 	bool Exists(const char* filePath) const;
 	bool ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const;
+	bool IsDirectory(const char* file) const;
 
 	const char* GetFileNameFromPath(const char* path) const;
 };

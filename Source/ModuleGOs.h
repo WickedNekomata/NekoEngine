@@ -45,7 +45,7 @@ public:
 private:
 
 	std::vector<GameObject*> gameObjects;
-	std::vector<GameObject*> needToBeDeleted;
+	std::vector<GameObject*> gameObjectsToDelete;
 	std::vector<Component*> componentsToDelete;
 
 	bool serializeScene = false;

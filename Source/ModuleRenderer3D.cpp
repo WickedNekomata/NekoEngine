@@ -1,8 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "Primitive.h"
-#include "Color.h"
+#include "DebugDrawer.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -44,7 +43,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		// TODO: load this variables from .json (and save them when the app is closed)
 		SetVSync(json_object_get_boolean(jObject, "vSync"));
 		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
-		//SetFOV(MAX_FOV);
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -149,38 +147,36 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	// 1. Level geometry
 	App->scene->Draw();
 
-	if (mainCamera != nullptr)
-	{
-		if (mainCamera->HasFrustumCulling())
-			FrustumCulling();
+	//if (mainCamera != nullptr)
+	//{
+		//if (mainCamera->HasFrustumCulling())
+			//FrustumCulling();
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			if (meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);
 		}
-	}
+	//}
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
-		bool cullFace = GetCapabilityState(GL_CULL_FACE);
-		bool lighting = GetCapabilityState(GL_LIGHTING);
-		bool texture2D = GetCapabilityState(GL_TEXTURE_2D);
-
-		SetDebugDrawCapabilitiesState(false, false, false);
-
-		if (App->scene->GetDrawQuadtree())
-			App->scene->RecursiveDrawQuadtree(App->scene->quadtree.root);
+		App->debugDrawer->StartDebugDraw();
 
 		if (drawBoundingBoxes)
 		{
-			//TODO
-			//for (uint i = 0; i < meshComponents.size(); ++i)
-				//DrawBoundingBox(meshComponents[i]);
+			for (uint i = 0; i < meshComponents.size(); ++i)
+				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, Yellow);
 		}
 
-		SetDebugDrawCapabilitiesState(cullFace, lighting, texture2D);
+		if (drawMainCameraFrustum && mainCamera != nullptr)
+			App->debugDrawer->DebugDraw(mainCamera->cameraFrustum, Grey);
+
+		if (drawQuadtree)
+			RecursiveDrawQuadtree(App->scene->quadtree.root);
+
+		App->debugDrawer->EndDebugDraw();
 	}
 
 	// 3. Editor
@@ -266,13 +262,6 @@ bool ModuleRenderer3D::GetVSync() const
 	return vsync;
 }
 
-void ModuleRenderer3D::SetDebugDrawCapabilitiesState(bool cullFace, bool lighting, bool texture2D) const
-{
-	SetCapabilityState(GL_CULL_FACE, cullFace);
-	SetCapabilityState(GL_LIGHTING, lighting);
-	SetCapabilityState(GL_TEXTURE_2D, texture2D);
-}
-
 void ModuleRenderer3D::SetCapabilityState(GLenum capability, bool enable) const
 {
 	if (GetCapabilityState(capability))
@@ -336,6 +325,26 @@ void ModuleRenderer3D::SetDrawBoundingBoxes(bool drawBoundingBoxes)
 bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 {
 	return drawBoundingBoxes;
+}
+
+void ModuleRenderer3D::SetDrawMainCameraFrustum(bool drawMainCameraFrustum)
+{
+	this->drawMainCameraFrustum = drawMainCameraFrustum;
+}
+
+bool ModuleRenderer3D::GetDrawMainCameraFrustum() const
+{
+	return drawMainCameraFrustum;
+}
+
+void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)
+{
+	this->drawQuadtree = drawQuadtree;
+}
+
+bool ModuleRenderer3D::GetDrawQuadtree() const
+{
+	return drawQuadtree;
 }
 
 ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
@@ -520,4 +529,18 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	}
 	
 	glPopMatrix();
+}
+
+void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
+{
+	App->debugDrawer->DebugDraw(node->boundingBox, Green);
+
+	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
+		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkGreen);
+
+	if (!node->IsLeaf())
+	{
+		for (uint i = 0; i < 4; ++i)
+			RecursiveDrawQuadtree(node->children[i]);
+	}
 }

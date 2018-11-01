@@ -208,8 +208,13 @@ update_status ModuleGui::Update(float dt)
 
 			ImGui::SameLine();
 
-			bool drawQuadtree = App->scene->GetDrawQuadtree();
-			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->scene->SetDrawQuadtree(drawQuadtree); }
+			bool drawMainCameraFrustum = App->renderer3D->GetDrawMainCameraFrustum();
+			if (ImGui::Checkbox("Main Camera Frustum", &drawMainCameraFrustum)) { App->renderer3D->SetDrawMainCameraFrustum(drawMainCameraFrustum); }
+
+			ImGui::SameLine();
+
+			bool drawQuadtree = App->renderer3D->GetDrawQuadtree();
+			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->renderer3D->SetDrawQuadtree(drawQuadtree); }
 		}
 	}
 	ImGui::End();

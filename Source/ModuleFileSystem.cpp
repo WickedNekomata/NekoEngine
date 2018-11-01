@@ -24,6 +24,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 		CreateDir("Library/Meshes");
 		CreateDir("Library/Materials");
 		CreateDir("Library/Animation");
+		CreateDir("Library/Scenes");
 
 		AddPath("./Library/", "Library");
 	}

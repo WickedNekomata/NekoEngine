@@ -25,8 +25,12 @@ struct Color
 };
 
 extern Color Red;
+extern Color DarkRed;
 extern Color Green;
+extern Color DarkGreen;
 extern Color Blue;
+extern Color DarkBlue;
 extern Color Black;
 extern Color White;
+extern Color Grey;
 extern Color Yellow;

@@ -1,8 +1,9 @@
 #include "Globals.h"
-#include "glew/include/GL/glew.h"
 #include "Primitive.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+
+#include "glew/include/GL/glew.h"
 
 #include "MathGeoLib/include/Math/TransformOps.h"
 #include "MathGeoLib/include/Math/MathConstants.h"

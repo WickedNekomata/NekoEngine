@@ -44,13 +44,13 @@ update_status ModuleGOs::Update(float dt)
 
 update_status ModuleGOs::PostUpdate(float dt)
 {
-	for (uint i = 0; i < needToBeDeleted.size(); ++i)
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
-		delete needToBeDeleted[i];
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
+		RELEASE(gameObjectsToDelete[i]);
 	}
 
-	needToBeDeleted.clear();
+	gameObjectsToDelete.clear();
 
 	for (uint i = 0; i < componentsToDelete.size(); ++i)
 		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
@@ -67,10 +67,10 @@ bool ModuleGOs::CleanUp()
 {
 	ClearScene();
 
-	for (uint i = 0; i < needToBeDeleted.size(); ++i)
-		RELEASE(needToBeDeleted[i]);
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
+		RELEASE(gameObjectsToDelete[i]);
 	
-	needToBeDeleted.clear();
+	gameObjectsToDelete.clear();
 
 	gameObjects.clear();
 
@@ -114,7 +114,7 @@ void ModuleGOs::ClearScene()
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
 {
-	needToBeDeleted.push_back(toDelete);
+	gameObjectsToDelete.push_back(toDelete);
 }
 
 void ModuleGOs::SetComponentToDelete(Component* toDelete)
@@ -131,7 +131,7 @@ GameObject* ModuleGOs::GetGameObjectbyUUID(uint UUID) const
 {
 	for (int i = 0; i < gameObjects.size(); ++i)
 	{
-		if (gameObjects[i]->UUID == UUID && std::find(needToBeDeleted.begin(), needToBeDeleted.end(), gameObjects[i]) != needToBeDeleted.end())
+		if (gameObjects[i]->UUID == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) != gameObjectsToDelete.end())
 			return gameObjects[i];
 	}
 	

@@ -14,11 +14,12 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 ComponentMesh::~ComponentMesh()
 {
 	RELEASE(mesh);
+
+	parent->meshRenderer = nullptr;
+	parent->RecalculateBoundingBox();
 }
 
-void ComponentMesh::Update()
-{
-}
+void ComponentMesh::Update() {}
 
 void ComponentMesh::OnUniqueEditor()
 {

@@ -14,6 +14,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	GOs = new ModuleGOs();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
+	debugDrawer = new DebugDrawer();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

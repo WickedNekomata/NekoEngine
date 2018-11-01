@@ -20,7 +20,10 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);	
 }
 
-ComponentCamera::~ComponentCamera() {}
+ComponentCamera::~ComponentCamera() 
+{
+	parent->camera = nullptr;
+}
 
 void ComponentCamera::UpdateTransform()
 {
@@ -28,51 +31,6 @@ void ComponentCamera::UpdateTransform()
 	cameraFrustum.pos = matrix.TranslatePart();
 	cameraFrustum.front = matrix.WorldZ();
 	cameraFrustum.up = matrix.WorldY();
-
-	// REMOVE THIS ASAP
-#pragma region  DEBUGDRAWFRUSTUM
-
-	math::float3 corners[8];
-	cameraFrustum.GetCornerPoints(corners);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glBegin(GL_QUADS);
-
-	glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy, sz);
-	glVertex3fv((GLfloat*)&corners[5]); //glVertex3f( sx, -sy, sz);
-	glVertex3fv((GLfloat*)&corners[7]); //glVertex3f( sx,  sy, sz);
-	glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx,  sy, sz);
-
-	glVertex3fv((GLfloat*)&corners[4]); //glVertex3f( sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx,  sy, -sz);
-	glVertex3fv((GLfloat*)&corners[6]); //glVertex3f( sx,  sy, -sz);
-
-	glVertex3fv((GLfloat*)&corners[5]); //glVertex3f(sx, -sy,  sz);
-	glVertex3fv((GLfloat*)&corners[4]); //glVertex3f(sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[6]); //glVertex3f(sx,  sy, -sz);
-	glVertex3fv((GLfloat*)&corners[7]); //glVertex3f(sx,  sy,  sz);
-
-	glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy,  sz);
-	glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx,  sy,  sz);
-	glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx,  sy, -sz);
-
-	glVertex3fv((GLfloat*)&corners[3]); //glVertex3f(-sx, sy,  sz);
-	glVertex3fv((GLfloat*)&corners[7]); //glVertex3f( sx, sy,  sz);
-	glVertex3fv((GLfloat*)&corners[6]); //glVertex3f( sx, sy, -sz);
-	glVertex3fv((GLfloat*)&corners[2]); //glVertex3f(-sx, sy, -sz);
-
-	glVertex3fv((GLfloat*)&corners[0]); //glVertex3f(-sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[4]); //glVertex3f( sx, -sy, -sz);
-	glVertex3fv((GLfloat*)&corners[5]); //glVertex3f( sx, -sy,  sz);
-	glVertex3fv((GLfloat*)&corners[1]); //glVertex3f(-sx, -sy,  sz);
-
-	glEnd();
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-#pragma endregion
 }
 
 void ComponentCamera::OnUniqueEditor()

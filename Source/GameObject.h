@@ -37,6 +37,7 @@ public:
 
 	Component* AddComponent(ComponentType type);
 	void MarkToDeleteComponent(uint index);
+	void MarkToDeleteComponentByValue(Component* component);
 	void MarkToDeleteAllComponents();
 	void InternallyDeleteComponent(Component* index);
 	void InternallyDeleteComponents();

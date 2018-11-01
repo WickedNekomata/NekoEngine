@@ -1,6 +1,8 @@
 #include "Component.h"
 #include "GameObject.h"
 
+#include "imgui/imgui.h"
+
 Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
 {
 }
@@ -16,7 +18,8 @@ void Component::Update()
 
 void Component::OnEditor()
 {
-
+	if (ImGui::Button("Delete"))
+		GetParent()->MarkToDeleteComponentByValue(this);
 
 	OnUniqueEditor();
 }

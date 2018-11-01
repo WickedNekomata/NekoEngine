@@ -136,6 +136,11 @@ void GameObject::MarkToDeleteComponent(uint index)
 	App->GOs->SetComponentToDelete(components[index]);
 }
 
+void GameObject::MarkToDeleteComponentByValue(Component* component)
+{
+	App->GOs->SetComponentToDelete(component);
+}
+
 void GameObject::MarkToDeleteAllComponents()
 {
 	for (uint i = 0; i < components.size(); ++i)
@@ -148,9 +153,11 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	{
 	case ComponentType::Mesh_Component:
 		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
+		meshRenderer = nullptr;
 		break;
 	case ComponentType::Camera_Component:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
+		materialRenderer = nullptr;
 		break;
 	}
 

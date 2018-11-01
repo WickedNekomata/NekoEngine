@@ -25,14 +25,18 @@ bool PanelHierarchy::Draw()
 
 		if (ImGui::BeginPopupContextWindow())
 		{
-			if (ImGui::Selectable("Create object")) {
-				App->GOs->CreateGameObject("patata", root);
+			if (ImGui::Selectable("Create Empty")) 
+			{
+				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::TreeNodeEx(root->GetName()))
+		char name[DEFAULT_BUF_SIZE];
+		sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", root->GetName(), root->UUID);
+
+		if (ImGui::TreeNodeEx(name))
 		{
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -69,10 +73,13 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 		{
 			GameObject* child = root->GetChild(i);
 
+			char name[DEFAULT_BUF_SIZE];
+			sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", child->GetName(), child->UUID);
+
 			if (child->HasChildren())
 			{
 				bool treeNodeOpened = false;
-				if (ImGui::TreeNodeEx(child->GetName(), treeNodeFlags))
+				if (ImGui::TreeNodeEx(name, treeNodeFlags))
 					treeNodeOpened = true;
 
 				SetGameObjectDragAndDrop(child);
@@ -81,7 +88,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 					App->scene->currentGameObject = child;
 
-				if (treeNodeOpened) {
+				if (treeNodeOpened) 
+				{
 					IterateAllChildren(child);
 					ImGui::TreePop();
 				}
@@ -91,7 +99,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-				ImGui::TreeNodeEx(child->GetName(), treeNodeFlags);
+				ImGui::TreeNodeEx(name, treeNodeFlags);
 				ImGui::TreePop();
 
 				SetGameObjectDragAndDrop(child);
@@ -108,12 +116,13 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::Selectable("Create object")) {
-			// TODO: Create a gameobject with the name of the parent + a number
-			App->GOs->CreateGameObject("aaa", child);
+		if (ImGui::Selectable("Create Empty")) 
+		{
+			App->GOs->CreateGameObject("GameObject", child);
 			ImGui::CloseCurrentPopup();
 		}
-		if (ImGui::Selectable("Delete")) {
+		if (ImGui::Selectable("Delete")) 
+		{
 			if (child == App->scene->currentGameObject)
 				App->scene->currentGameObject = nullptr;
 			App->GOs->DeleteGameObject(child);

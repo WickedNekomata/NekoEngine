@@ -19,16 +19,11 @@ public:
 
 	void OnUniqueEditor();
 
-	void GrowBoundingBox() const;
-
-	void CreateDebugBoundingBox();
-
 	void OnSave(JSON_Object* file);
 
 public:
 
 	Mesh* mesh = nullptr;
-	PrimitiveCube* debugBoundingBox = nullptr;
 };
 
 #endif

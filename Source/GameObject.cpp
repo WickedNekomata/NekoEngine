@@ -10,11 +10,10 @@
 #include "ModuleScene.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
+#include "PCG/pcg_variants.h"
 
 #include <algorithm>
 
-
-#include "PCG/pcg_variants.h"
 GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
@@ -32,6 +31,11 @@ GameObject::~GameObject()
 {
 	RELEASE_ARRAY(name);
 	InternallyDeleteComponents();
+
+	// Recalculate the quadtree
+	App->scene->quadtree.Clear();
+	App->scene->CreateQuadtree();
+	App->GOs->RecalculateQuadtree();
 }
 
 void GameObject::Update() {}
@@ -206,10 +210,11 @@ void GameObject::ToggleIsStatic()
 		// Recalculate the quadtree
 		App->scene->quadtree.Clear();
 		App->scene->CreateQuadtree();
+		App->GOs->RecalculateQuadtree();
 	}
 }
 
-bool GameObject::GetIsStatic() const
+bool GameObject::IsStatic() const
 {
 	return isStatic;
 }
@@ -228,17 +233,24 @@ void GameObject::RecalculateBoundingBox()
 {
 	boundingBox.SetNegativeInfinity();
 
+	// Grow bounding box
 	if (meshRenderer != nullptr)
-		meshRenderer->GrowBoundingBox();
+	{
+		Mesh* mesh = meshRenderer->mesh;
 
+		if (mesh != nullptr)
+			boundingBox.Enclose((const math::float3*)mesh->vertices, mesh->verticesSize);
+	}
+
+	// Transform bounding box (calculate OBB)
 	math::OBB obb = boundingBox.Transform(transform->GetGlobalMatrix());
 
+	// Calculate AABB
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
 
 	if (isStatic)
-		// Since static objects only calculate their bounding box once, this should not happen twice
-		App->scene->quadtree.Insert(this);
+		App->scene->quadtree.Insert(this); // Since static objects only calculate their bounding box once, this should not happen twice
 
 	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecalculateBoundingBox();
@@ -258,5 +270,4 @@ void GameObject::OnSave(JSON_Object* file)
 		json_object_set_value(file, s.c_str(), newValue);
 		components[i]->OnSave(objToSerialize);
 	}
-	
 }

@@ -4,6 +4,7 @@
 #include "Module.h"
 
 #include <vector>
+#include <list>
 
 struct GameObject;
 struct Component;
@@ -34,6 +35,8 @@ public:
 	GameObject* GetGameObject(uint index) const;
 	uint GetGameObjectsLength() const;
 
+	void RecalculateQuadtree();
+
 	void MarkSceneToSerialize();
 	void SerializeScene();
 
@@ -41,7 +44,6 @@ private:
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> needToBeDeleted;
-
 	std::vector<Component*> componentsToDelete;
 
 	bool serializeScene = false;

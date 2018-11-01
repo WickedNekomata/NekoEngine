@@ -67,7 +67,6 @@ public:
 	void FrustumCulling() const;
 
 	void DrawMesh(ComponentMesh* toDraw) const;
-	void DrawBoundingBox(ComponentMesh* toDraw) const;
 
 private:
 

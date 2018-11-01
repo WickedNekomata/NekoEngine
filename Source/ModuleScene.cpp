@@ -7,8 +7,11 @@
 #include "SceneImporter.h"
 #include "ModuleGOs.h"
 #include "GameObject.h"
+
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
+
+#include <list>
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -63,6 +66,8 @@ bool ModuleScene::CleanUp()
 {
 	bool ret = true;
 
+	quadtree.Clear();
+
 	RELEASE(grid);
 
 	return ret;
@@ -104,7 +109,7 @@ void ModuleScene::CreateQuadtree()
 	quadtree.SetBoundary(boundary);
 }
 
-void ModuleScene::CreateRandomGameObject()
+void ModuleScene::CreateRandomStaticGameObject()
 {
 	GameObject* random = App->GOs->CreateGameObject("Random", root);
 	random->transform->position = math::float3(rand() % (50 + 50 + 1) - 50, rand() % 10, rand() % (50 + 50 + 1) - 50);
@@ -112,9 +117,6 @@ void ModuleScene::CreateRandomGameObject()
 	const math::float3 center(random->transform->position.x, random->transform->position.y, random->transform->position.z);
 	const math::float3 size(2.0f, 2.0f, 2.0f);
 	random->boundingBox.SetFromCenterAndSize(center, size);
-
-	random->AddComponent(ComponentType::Mesh_Component);
-	random->meshRenderer->CreateDebugBoundingBox();
 
 	quadtree.Insert(random);
 }

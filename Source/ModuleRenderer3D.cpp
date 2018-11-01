@@ -175,8 +175,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 		if (drawBoundingBoxes)
 		{
-			for (uint i = 0; i < meshComponents.size(); ++i)
-				DrawBoundingBox(meshComponents[i]);
+			//TODO
+			//for (uint i = 0; i < meshComponents.size(); ++i)
+				//DrawBoundingBox(meshComponents[i]);
 		}
 
 		SetDebugDrawCapabilitiesState(cullFace, lighting, texture2D);
@@ -519,14 +520,4 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	}
 	
 	glPopMatrix();
-}
-
-void ModuleRenderer3D::DrawBoundingBox(ComponentMesh* toDraw) const
-{
-	if (toDraw->debugBoundingBox != nullptr)
-	{
-		math::float3 position = toDraw->GetParent()->boundingBox.CenterPoint();
-		math::float3 scale = toDraw->GetParent()->boundingBox.Size();
-		toDraw->debugBoundingBox->Render(math::float4x4::FromTRS(position, math::Quat::identity, scale));
-	}
 }

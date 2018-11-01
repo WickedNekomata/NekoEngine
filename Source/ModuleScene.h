@@ -34,7 +34,7 @@ public:
 	void SetDrawQuadtree(bool drawQuadtree);
 
 	void CreateQuadtree();
-	void CreateRandomGameObject();
+	void CreateRandomStaticGameObject();
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 private:

@@ -14,7 +14,6 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 ComponentMesh::~ComponentMesh()
 {
 	RELEASE(mesh);
-	RELEASE(debugBoundingBox);
 }
 
 void ComponentMesh::Update()
@@ -53,18 +52,6 @@ void ComponentMesh::OnUniqueEditor()
 		}
 	}
 	*/
-}
-
-void ComponentMesh::GrowBoundingBox() const
-{
-	parent->boundingBox.Enclose((const math::float3*)mesh->vertices, mesh->verticesSize);
-}
-
-void ComponentMesh::CreateDebugBoundingBox()
-{
-	debugBoundingBox = new PrimitiveCube();
-	debugBoundingBox->SetColor(Green);
-	debugBoundingBox->SetWireframeMode(true);
 }
 
 void ComponentMesh::OnSave(JSON_Object* file)

@@ -42,7 +42,7 @@ bool PanelInspector::Draw()
 			ImGui::PopItemWidth();
 
 			ImGui::SameLine(0.0f, 30.f);
-			bool isStatic = currObject->GetIsStatic();
+			bool isStatic = currObject->IsStatic();
 			if (ImGui::Checkbox("##static", &isStatic)) { currObject->ToggleIsStatic(); }
 			ImGui::SameLine();
 			ImGui::Text("Static");

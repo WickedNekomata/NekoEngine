@@ -8,7 +8,7 @@
 #include "ModuleFileSystem.h"
 
 #include "parson/parson.h"
-
+#include <list>
 #include <algorithm>
 
 ModuleGOs::ModuleGOs(bool start_enabled)
@@ -43,8 +43,8 @@ update_status ModuleGOs::PostUpdate(float dt)
 {
 	for (uint i = 0; i < needToBeDeleted.size(); ++i)
 	{
-		delete needToBeDeleted[i];
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), needToBeDeleted[i]), gameObjects.end());
+		delete needToBeDeleted[i];
 	}
 
 	needToBeDeleted.clear();
@@ -124,6 +124,15 @@ GameObject* ModuleGOs::GetGameObject(uint index) const
 uint ModuleGOs::GetGameObjectsLength() const
 {
 	return gameObjects.size();
+}
+
+void ModuleGOs::RecalculateQuadtree()
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+	{
+		if (gameObjects[i]->IsStatic())
+			App->scene->quadtree.Insert(gameObjects[i]);
+	}
 }
 
 void ModuleGOs::MarkSceneToSerialize()

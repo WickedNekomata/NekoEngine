@@ -306,7 +306,7 @@ void PanelSettings::HardwareNode() const
 void PanelSettings::SceneNode() const
 {
 	ImGui::Text("Quadtree");
-	if (ImGui::Button("Create Random Game Object")) { App->scene->CreateRandomGameObject(); }
+	if (ImGui::Button("Create Random Game Object")) { App->scene->CreateRandomStaticGameObject(); }
 
 	ImGui::Separator();
 

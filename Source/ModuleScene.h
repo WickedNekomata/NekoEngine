@@ -30,6 +30,7 @@ public:
 	bool GetShowGrid() const;
 	void SetShowGrid(bool showGrid);
 
+	void RecreateQuadtree();
 	void CreateQuadtree();
 	void CreateRandomStaticGameObject();
 

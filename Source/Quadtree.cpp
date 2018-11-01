@@ -29,9 +29,9 @@ bool QuadtreeNode::IsLeaf() const
 
 void QuadtreeNode::Insert(GameObject* gameObject)
 {
-	if (objects.size() == BUCKET_SIZE)
+	if (objects.size() >= BUCKET_SIZE)
 	{
-		if (IsLeaf())
+		if (IsLeaf() && subdivision < MAX_SUBDIVISIONS)
 			Subdivide();
 
 		objects.push_back(gameObject);
@@ -97,9 +97,20 @@ void QuadtreeNode::RedistributeChildren()
 			children[lastIntersection]->Insert(*it);
 			it = objects.erase(it);
 		}
-		else
-			// Any time an object straddles the boundary between two quads, it needs to be stored at the parent level
+		else if (intersections == 4)
+		{
+			// Any time an object straddles the boundary between all 4 quads, it needs to be stored at the parent level
 			++it;
+		}
+		else
+		{
+			for (uint i = 0; i < 4; ++i)
+			{
+				if ((*it)->boundingBox.Intersects(children[i]->boundingBox))
+					children[i]->Insert(*it);
+			}
+			it = objects.erase(it);
+		}
 	}
 }
 

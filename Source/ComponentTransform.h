@@ -21,6 +21,8 @@ public:
 
 	void Update();
 
+	void OnEditor();
+
 	void OnUniqueEditor();
 
 	math::float4x4 GetMatrix();

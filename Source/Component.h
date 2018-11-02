@@ -25,11 +25,11 @@ public:
 	GameObject* GetParent() const;
 
 	virtual void OnSave(JSON_Object* file);
-	virtual void OnLoad(JSON_Object* file) = 0;
+	virtual void OnLoad(JSON_Object* file) {};
 
 private:
 
-	virtual void OnInternalSave(JSON_Object* file) = 0;
+	virtual void OnInternalSave(JSON_Object* file) {};
 	virtual void OnUniqueEditor();
 
 protected:

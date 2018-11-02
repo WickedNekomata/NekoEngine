@@ -207,8 +207,8 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	}
 
-	RELEASE(toDelete);
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+	RELEASE(toDelete);
 }
 
 void GameObject::InternallyDeleteComponents()
@@ -244,6 +244,22 @@ uint GameObject::GetComponenetsLength() const
 Component* GameObject::GetComponent(uint index) const
 {
 	return components[index];
+}
+
+// Get the index of the component from the gameobject's components vector. If the component can not be found returns -1
+int GameObject::GetComponentIndexOnComponents(Component * component) const
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+			return i;
+	}
+	return -1;
+}
+
+void GameObject::SwapComponents(Component* firstComponent, Component* secondComponent)
+{
+	std::swap(components[GetComponentIndexOnComponents(firstComponent)], components[GetComponentIndexOnComponents(secondComponent)]);
 }
 
 void GameObject::SetName(char* name)

@@ -17,7 +17,7 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	cameraFrustum.nearPlaneDistance = 0.1f;
 	cameraFrustum.farPlaneDistance = 1000.0f;
 	cameraFrustum.verticalFov = 60.0f * DEGTORAD;
-	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);	
+	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);
 }
 
 ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentType::Camera_Component)

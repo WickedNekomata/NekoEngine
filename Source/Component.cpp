@@ -1,9 +1,14 @@
 #include "Component.h"
 #include "GameObject.h"
 
+#include "Application.h"
 #include "imgui/imgui.h"
+#include "PCG/pcg_variants.h"
 
-Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type) {}
+Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type) {
+	if (parent != nullptr)
+		UUID = pcg32_random_r(&(App->rng));
+}
 
 Component::~Component() {}
 
@@ -11,7 +16,31 @@ void Component::Update() {}
 
 void Component::OnEditor()
 {
-	if (ImGui::Button("Delete"))
+	char itemName[DEFAULT_BUF_SIZE];
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Move##%u",UUID);
+
+	ImGui::Button(itemName);
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		Component* thisComponent = this;
+		ImGui::SetDragDropPayload("COMPONENTS_INSPECTOR", &thisComponent, sizeof(Component));
+		ImGui::EndDragDropSource();
+	}
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMPONENTS_INSPECTOR"))
+		{
+			Component* payload_n = *(Component**)payload->Data;
+			GetParent()->SwapComponents(this, payload_n);
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
+
+	ImGui::SameLine();
+	if (ImGui::Button(itemName))
 		GetParent()->MarkToDeleteComponentByValue(this);
 
 	OnUniqueEditor();

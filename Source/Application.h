@@ -107,7 +107,7 @@ public:
 	DebugDrawer*		debugDrawer;
 	Raycaster*			raycaster;
 
-	pcg32_random_t rng;
+	pcg32_random_t		rng;
 
 private:
 

@@ -5,10 +5,10 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
-
 #include <list>
 
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {
+}
 
 ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::Transform_Component)
 {
@@ -23,6 +23,12 @@ ComponentTransform::~ComponentTransform()
 }
 
 void ComponentTransform::Update() {}
+
+// Redefined cause there is no way that a transform component could be erased or moved.
+void ComponentTransform::OnEditor()
+{
+	OnUniqueEditor();
+}
 
 void ComponentTransform::OnUniqueEditor()
 {

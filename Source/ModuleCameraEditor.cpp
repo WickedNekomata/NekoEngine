@@ -22,7 +22,6 @@
 ModuleCameraEditor::ModuleCameraEditor(bool start_enabled) : Module(start_enabled)
 {
 	name = "Camera3D";
-
 	camera = new ComponentCamera(nullptr);
 }
 

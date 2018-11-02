@@ -47,6 +47,8 @@ public:
 	bool HasComponents() const;
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;
+	int GetComponentIndexOnComponents(Component* component) const;
+	void SwapComponents(Component* firstComponent, Component* secondComponent);
 
 	void SetName(char* name);
 	const char* GetName() const;

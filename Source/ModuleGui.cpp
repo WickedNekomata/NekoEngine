@@ -240,7 +240,10 @@ update_status ModuleGui::Update()
 		ImGui::SameLine();
 
 		// Step button
-		ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)); ImGui::SameLine();
+		ImGui::PushID("tick");
+		if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)))
+			App->Tick();
+		ImGui::PopID();
 
 		// Game time scale slider
 		ImGui::PushItemWidth(100);

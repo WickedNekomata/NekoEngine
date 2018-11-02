@@ -20,8 +20,7 @@ ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 	game = true;
 }
 
-ModuleScene::~ModuleScene()
-{}
+ModuleScene::~ModuleScene() {}
 
 bool ModuleScene::Init(JSON_Object* jObject)
 {
@@ -55,8 +54,6 @@ bool ModuleScene::Start()
 	//App->materialImporter->Import("Baker_house.png", "Assets/", outputFile);
 	//Texture* texture = new Texture();
 	//App->materialImporter->Load(outputFile.data(), texture);
-
-
 
 	return ret;
 }

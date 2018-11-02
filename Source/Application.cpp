@@ -179,7 +179,6 @@ void Application::PrepareUpdate()
 		break;
 
 	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_PAUSE:
 
 		engineState = engine_states::ENGINE_PAUSE;
 		break;
@@ -193,8 +192,16 @@ void Application::PrepareUpdate()
 		engineState = engine_states::ENGINE_EDITOR;
 		break;
 
-	case engine_states::ENGINE_PLAY:
-	case engine_states::ENGINE_EDITOR:
+	case engine_states::ENGINE_WANTS_TICK:
+
+		engineState = engine_states::ENGINE_TICK;
+		break;
+
+	case engine_states::ENGINE_TICK:
+
+		engineState = engine_states::ENGINE_WANTS_PAUSE;
+		break;
+
 	default:
 		break;
 	}
@@ -387,9 +394,6 @@ void Application::Play()
 		engineState = engine_states::ENGINE_WANTS_PLAY;
 		break;
 
-	case engine_states::ENGINE_WANTS_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
@@ -411,10 +415,6 @@ void Application::Pause()
 		engineState = engine_states::ENGINE_PLAY;
 		break;
 
-	case engine_states::ENGINE_EDITOR:
-	case engine_states::ENGINE_WANTS_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
@@ -426,13 +426,16 @@ void Application::Tick()
 	{
 	case engine_states::ENGINE_PLAY:
 
-		// 1. Stop
-		// 2. Tick (step 1 frame)
-
+		// Stop and tick (step 1 frame)
+		engineState = engine_states::ENGINE_WANTS_TICK;
 		break;
 
-	case engine_states::ENGINE_EDITOR:
 	case engine_states::ENGINE_PAUSE:
+
+		// Tick (step 1 frame)
+		engineState = engine_states::ENGINE_TICK;
+		break;
+
 	default:
 		break;
 	}

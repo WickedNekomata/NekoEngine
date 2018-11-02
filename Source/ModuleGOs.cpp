@@ -11,8 +11,10 @@
 #include <list>
 #include <algorithm>
 
-ModuleGOs::ModuleGOs(bool start_enabled)
+ModuleGOs::ModuleGOs(bool start_enabled) : Module(start_enabled)
 {
+	name = "GameObjects";
+
 	nameScene = new char[DEFAULT_BUF_SIZE];
 	strcpy_s(nameScene, DEFAULT_BUF_SIZE, "Main Scene");
 }
@@ -77,6 +79,18 @@ bool ModuleGOs::CleanUp()
 	gameObjects.clear();
 
 	return true;
+}
+
+void ModuleGOs::OnGameMode()
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+		gameObjects[i]->OnGameMode();
+}
+
+void ModuleGOs::OnEditorMode()
+{
+	for (uint i = 0; i < gameObjects.size(); ++i)
+		gameObjects[i]->OnEditorMode();
 }
 
 GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)

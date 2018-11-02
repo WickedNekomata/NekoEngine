@@ -191,7 +191,7 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
-			glGenerateMipmap(GL_TEXTURE_2D);			
+			glGenerateMipmap(GL_TEXTURE_2D);
 
 			outputTexture->id = texName;
 			outputTexture->width = imageInfo.Width;
@@ -199,6 +199,8 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 
 			CONSOLE_LOG("MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 			ret = true;
+
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
 			CONSOLE_LOG("MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));

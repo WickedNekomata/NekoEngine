@@ -19,8 +19,11 @@ public:
 
 	void OnUniqueEditor();
 
-	void OnInternalSave(JSON_Object* file);
+	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
+
+	void OnGameMode();
+	void OnEditorMode();
 
 public:
 

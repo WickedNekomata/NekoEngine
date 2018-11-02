@@ -14,6 +14,7 @@
 #include "ModuleGui.h"
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
+#include "ModuleTimeManager.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
@@ -24,6 +25,13 @@
 
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
+
+enum engine_states
+{
+	ENGINE_PLAY = 1, // Game
+	ENGINE_PAUSE, // Game
+	ENGINE_EDITOR
+};
 
 class Application
 {
@@ -53,6 +61,15 @@ public:
 	void AddMsToTrack(float ms);
 	std::vector<float> GetMsTrack() const;
 
+	void Play();
+	void Pause();
+	void Tick();
+
+	engine_states GetEngineState() const;
+	bool IsPlay() const;
+	bool IsPause() const;
+	bool IsEditor() const;
+
 	void SaveState() const;
 	void LoadState() const;
 
@@ -75,6 +92,7 @@ public:
 	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
 	ModuleGOs*			GOs;
+	ModuleTimeManager*	timeManager;
 
 	MaterialImporter*	materialImporter;
 	SceneImporter*		sceneImporter;
@@ -104,6 +122,8 @@ private:
 
 	mutable bool		save = false;
 	mutable bool		load = false;
+
+	engine_states engineState = engine_states::ENGINE_EDITOR;
 };
 
 extern Application* App;

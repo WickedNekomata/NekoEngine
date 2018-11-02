@@ -35,8 +35,11 @@ public:
 	void SetMainCamera(bool mainCamera);
 	bool IsMainCamera() const;
 
-	void OnInternalSave(JSON_Object* file);
+	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
+
+	void OnGameMode();
+	void OnEditorMode();
 
 public:
 

@@ -25,6 +25,9 @@ public:
 	virtual void OnSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file) = 0;
 
+	virtual void OnGameMode() = 0;
+	virtual void OnEditorMode() = 0;
+
 private:
 
 	virtual void OnInternalSave(JSON_Object* file) = 0;
@@ -36,6 +39,7 @@ protected:
 	GameObject* parent = nullptr;
 
 public:
+
 	uint UUID = 0;
 };
 

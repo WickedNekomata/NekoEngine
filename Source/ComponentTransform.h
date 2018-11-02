@@ -28,6 +28,9 @@ public:
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
 
+	void OnGameMode();
+	void OnEditorMode();
+
 public:
 
 	math::float3 position = math::float3::zero;

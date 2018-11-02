@@ -59,6 +59,9 @@ public:
 	void OnSave(JSON_Object* file);
 	void OnLoad(JSON_Object* file);
 
+	void OnGameMode();
+	void OnEditorMode();
+
 private:
 
 	char* name = nullptr;

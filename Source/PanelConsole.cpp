@@ -35,7 +35,8 @@ bool PanelConsole::Draw()
 
 		ImGuiWindowFlags scrollFlags = 0;
 		scrollFlags |= ImGuiWindowFlags_HorizontalScrollbar;
-		
+		scrollFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+
 		if (ImGui::BeginChild("scroll", ImVec2(0, 0), false, scrollFlags))
 		{
 			// Display logs
@@ -65,10 +66,11 @@ bool PanelConsole::Draw()
 			else
 				// Print text
 				ImGui::TextUnformatted(buf.begin());
-
-			if (scrollToBottom)
-				ImGui::SetScrollHere(1.0f);
 		}
+
+		if (scrollToBottom)
+			ImGui::SetScrollHereY(1.0f);
+
 		ImGui::EndChild();
 	}
 	ImGui::End();

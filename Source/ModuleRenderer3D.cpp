@@ -117,8 +117,11 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	// Projection Matrix for
+	// Projection Matrix
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+
+	// Editor camera
+	currentCamera = App->camera->camera;
 
 	return ret;
 }
@@ -130,10 +133,10 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	//glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->camera->GetOpenGLViewMatrix());
+	glLoadMatrixf(currentCamera->GetOpenGLViewMatrix());
 
 	// Light 0 on cam pos
-	lights[0].SetPos(App->camera->camera->cameraFrustum.pos.x, App->camera->camera->cameraFrustum.pos.y, App->camera->camera->cameraFrustum.pos.z);
+	lights[0].SetPos(currentCamera->cameraFrustum.pos.x, currentCamera->cameraFrustum.pos.y, currentCamera->cameraFrustum.pos.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -170,8 +173,11 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, Yellow);
 		}
 
-		if (drawMainCameraFrustum && mainCamera != nullptr)
-			App->debugDrawer->DebugDraw(mainCamera->cameraFrustum, Grey);
+		if (drawCamerasFrustum)
+		{
+			for (uint i = 0; i < cameraComponents.size(); ++i)
+				App->debugDrawer->DebugDraw(cameraComponents[i]->cameraFrustum, Grey);
+		}
 
 		if (drawQuadtree)
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
@@ -211,6 +217,17 @@ void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 {
 	SetVSync(json_object_get_boolean(jObject, "vSync"));
+}
+
+void ModuleRenderer3D::OnGameMode()
+{
+	if (RecalculateMainCamera())
+		currentCamera = mainCamera;
+}
+
+void ModuleRenderer3D::OnEditorMode()
+{
+	currentCamera = App->camera->camera;
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -327,14 +344,14 @@ bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 	return drawBoundingBoxes;
 }
 
-void ModuleRenderer3D::SetDrawMainCameraFrustum(bool drawMainCameraFrustum)
+void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
 {
-	this->drawMainCameraFrustum = drawMainCameraFrustum;
+	this->drawCamerasFrustum = drawCamerasFrustum;
 }
 
-bool ModuleRenderer3D::GetDrawMainCameraFrustum() const
+bool ModuleRenderer3D::GetDrawCamerasFrustum() const
 {
-	return drawMainCameraFrustum;
+	return drawCamerasFrustum;
 }
 
 void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)
@@ -371,7 +388,7 @@ ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
 {
 	ComponentCamera* newComponent = new ComponentCamera(parent);
 
-	std::list<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), newComponent);
+	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), newComponent);
 
 	if (it == cameraComponents.end())
 		cameraComponents.push_back(newComponent);
@@ -381,7 +398,7 @@ ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
 
 void ModuleRenderer3D::EraseCameraComponent(ComponentCamera* toErase)
 {
-	std::list<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
+	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
 
 	if (it != cameraComponents.end())
 		cameraComponents.erase(it);
@@ -395,12 +412,12 @@ bool ModuleRenderer3D::RecalculateMainCamera()
 
 	bool multipleMainCameras = false;
 
-	for (std::list<ComponentCamera*>::const_iterator it = cameraComponents.begin(); it != cameraComponents.end(); ++it)
+	for (uint i = 0; i < cameraComponents.size(); ++i)
 	{
-		if ((*it)->IsMainCamera())
+		if (cameraComponents[i]->IsMainCamera())
 		{
 			if (mainCamera == nullptr)
-				mainCamera = *it;
+				mainCamera = cameraComponents[i];
 			else
 			{
 				multipleMainCameras = true;

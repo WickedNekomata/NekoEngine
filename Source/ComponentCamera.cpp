@@ -142,3 +142,13 @@ void ComponentCamera::OnLoad(JSON_Object* file)
 	cameraFrustum.verticalFov = json_object_get_number(file, "verticalFov");
 	cameraFrustum.horizontalFov = json_object_get_number(file, "horizontalFov");
 }
+
+void ComponentCamera::OnGameMode()
+{
+
+}
+
+void ComponentCamera::OnEditorMode()
+{
+
+}

@@ -64,6 +64,11 @@ bool ModuleGui::Start()
 
 	// Setup style
 	ImGui::StyleColorsLight();
+
+	std::string outputFileName;
+	timeButtonTex = new Texture();
+	App->materialImporter->Import("timeButton.png", "UI/", outputFileName);
+	App->materialImporter->Load(outputFileName.data(), timeButtonTex);
 	
 	return ret;
 }
@@ -149,14 +154,13 @@ update_status ModuleGui::Update(float dt)
 		ImGui::OpenPopup("Load Scene");
 		LoadScenePopUp();
 	}
-	//ImGui::ShowDemoWindow();
 
 	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
 	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	flags |= ImGuiWindowFlags_NoTitleBar;
-	flags |= ImGuiWindowFlags_NoResize;
+	//flags |= ImGuiWindowFlags_NoResize;
 	//flags |= ImGuiWindowFlags_NoMove;
 	flags |= ImGuiWindowFlags_NoScrollbar;
 	flags |= ImGuiWindowFlags_NoScrollWithMouse;
@@ -188,8 +192,55 @@ update_status ModuleGui::Update(float dt)
 		ImGui::SameLine();
 		*/
 
-		if (ImGui::Button("Recalculate Main Camera"))
-			App->renderer3D->RecalculateMainCamera();
+		float timeButtonScale = 0.05f;
+		ImVec2 timeButtonSize(timeButtonTex->width * 0.2f * timeButtonScale, timeButtonTex->height * 1.0f * timeButtonScale);
+
+		// Play button
+		if (App->IsPlay())
+		{
+			ImGui::PushID("play");
+			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.4f, 0.0f), ImVec2(0.6f, 1.0f));
+
+			if (ImGui::IsItemClicked(0))
+				App->Play();
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopID();
+		}
+		else
+		{
+			if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.4f, 0.0f), ImVec2(0.6f, 1.0f)))
+				App->Play();
+		}
+		ImGui::SameLine();
+
+		// Pause button
+		if (App->IsPause())
+		{
+			ImGui::PushID("pause");
+			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+			ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.0f, 0.0f), ImVec2(0.2f, 1.0f));
+
+			if (ImGui::IsItemClicked(0))
+				App->Pause();
+
+			ImGui::PopStyleColor(3);
+			ImGui::PopID();
+		}
+		else
+		{
+			if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.0f, 0.0f), ImVec2(0.2f, 1.0f)))
+				App->Pause();
+		}
+		ImGui::SameLine();
+
+		// Step button
+		ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)); ImGui::SameLine();
 
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
@@ -213,8 +264,8 @@ update_status ModuleGui::Update(float dt)
 
 			ImGui::SameLine();
 
-			bool drawMainCameraFrustum = App->renderer3D->GetDrawMainCameraFrustum();
-			if (ImGui::Checkbox("Main Camera Frustum", &drawMainCameraFrustum)) { App->renderer3D->SetDrawMainCameraFrustum(drawMainCameraFrustum); }
+			bool drawCamerasFrustum = App->renderer3D->GetDrawCamerasFrustum();
+			if (ImGui::Checkbox("Cameras Frustum", &drawCamerasFrustum)) { App->renderer3D->SetDrawCamerasFrustum(drawCamerasFrustum); }
 
 			ImGui::SameLine();
 
@@ -251,6 +302,8 @@ bool ModuleGui::CleanUp()
 	panelSettings = nullptr;
 	panelHierarchy = nullptr;
 	panelAssets = nullptr;
+
+	RELEASE(timeButtonTex);
 
 	CONSOLE_LOG("Cleaning up ImGui");
 

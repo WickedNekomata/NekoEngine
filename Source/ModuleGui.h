@@ -13,6 +13,8 @@ struct PanelSettings;
 struct PanelHierarchy;
 struct PanelAssets;
 
+struct Texture;
+
 class ModuleGui : public Module
 {
 public:
@@ -55,6 +57,8 @@ private:
 
 	bool showSaveScenePopUp = false;
 	bool showLoadScenePopUp = false;
+
+	Texture* timeButtonTex = nullptr;
 };
 
 #endif

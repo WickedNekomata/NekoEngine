@@ -54,6 +54,10 @@ public:
 
 	virtual void LoadStatus(const JSON_Object*) {};
 
+	virtual void OnGameMode() {};
+
+	virtual void OnEditorMode() {};
+
 	inline char* GetName() const { return name; }
 
 	bool IsActive() const { return enabled; }

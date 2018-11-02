@@ -12,14 +12,19 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	gui = new ModuleGui();
 	filesystem = new ModuleFileSystem();
 	GOs = new ModuleGOs();
+	timeManager = new ModuleTimeManager();
+
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
+
 	debugDrawer = new DebugDrawer();
 	raycaster = new Raycaster();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
+
+	AddModule(timeManager);
 
 	// Main Modules
 	AddModule(GOs);
@@ -324,6 +329,100 @@ void Application::AddMsToTrack(float ms)
 std::vector<float> Application::GetMsTrack() const 
 {
 	return msTrack;
+}
+
+
+void Application::Play()
+{
+	switch (engineState)
+	{
+	case engine_states::ENGINE_EDITOR:
+
+		// Save the scene and enter game mode
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+			(*item)->OnGameMode();
+
+		engineState = engine_states::ENGINE_PLAY;
+		break;
+
+	case engine_states::ENGINE_PAUSE:
+
+		// Play again
+		engineState = engine_states::ENGINE_PLAY;
+		break;
+
+	case engine_states::ENGINE_PLAY:
+
+		// Load the scene and enter editor mode
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+			(*item)->OnEditorMode();
+
+		engineState = engine_states::ENGINE_EDITOR;
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Application::Pause()
+{
+	switch (engineState)
+	{
+	case engine_states::ENGINE_PLAY:
+
+		// Pause
+		engineState = engine_states::ENGINE_PAUSE;
+		break;
+
+	case engine_states::ENGINE_PAUSE:
+
+		// Play again
+		engineState = engine_states::ENGINE_PLAY;
+		break;
+
+	case engine_states::ENGINE_EDITOR:
+	default:
+		break;
+	}
+}
+
+void Application::Tick()
+{
+	switch (engineState)
+	{
+	case engine_states::ENGINE_PLAY:
+
+		// 1. Stop
+		// 2. Tick (step 1 frame)
+
+		break;
+
+	case engine_states::ENGINE_EDITOR:
+	case engine_states::ENGINE_PAUSE:
+	default:
+		break;
+	}
+}
+
+engine_states Application::GetEngineState() const
+{
+	return engineState;
+}
+
+bool Application::IsPlay() const
+{
+	return engineState == engine_states::ENGINE_PLAY;
+}
+
+bool Application::IsPause() const
+{
+	return engineState == engine_states::ENGINE_PAUSE;
+}
+
+bool Application::IsEditor() const
+{
+	return engineState == engine_states::ENGINE_EDITOR;
 }
 
 void Application::SaveState() const

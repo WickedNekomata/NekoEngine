@@ -34,6 +34,9 @@ public:
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
 
+	void OnGameMode();
+	void OnEditorMode();
+
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
 
@@ -52,8 +55,8 @@ public:
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
 
-	void SetDrawMainCameraFrustum(bool drawMainCameraFrustum);
-	bool GetDrawMainCameraFrustum() const;
+	void SetDrawCamerasFrustum(bool drawCamerasFrustum);
+	bool GetDrawCamerasFrustum() const;
 
 	void SetDrawQuadtree(bool drawQuadtree);
 	bool GetDrawQuadtree() const;
@@ -78,8 +81,9 @@ private:
 
 	std::vector<ComponentMesh*> meshComponents;
 
-	std::list<ComponentCamera*> cameraComponents;
+	std::vector<ComponentCamera*> cameraComponents;
 	ComponentCamera* mainCamera = nullptr;
+	ComponentCamera* currentCamera = nullptr;
 
 public:
 
@@ -94,7 +98,7 @@ public:
 
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
-	bool drawMainCameraFrustum = true;
+	bool drawCamerasFrustum = true;
 	bool drawQuadtree = false;
 };
 

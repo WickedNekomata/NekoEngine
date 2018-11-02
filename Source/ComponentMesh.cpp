@@ -64,3 +64,13 @@ void ComponentMesh::OnLoad(JSON_Object* file)
 {
 	// LOAD MESH
 }
+
+void ComponentMesh::OnGameMode()
+{
+
+}
+
+void ComponentMesh::OnEditorMode()
+{
+
+}

@@ -24,6 +24,9 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void OnGameMode();
+	void OnEditorMode();
+
 	GameObject* CreateGameObject(char* name, GameObject* parent);
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);

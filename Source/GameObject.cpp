@@ -292,3 +292,15 @@ void GameObject::OnLoad(JSON_Object* file)
 		newComponent->OnLoad(cObject);
 	}	
 }
+
+void GameObject::OnGameMode()
+{
+	for (uint i = 0; i < components.size(); ++i)
+		components[i]->OnGameMode();
+}
+
+void GameObject::OnEditorMode()
+{
+	for (uint i = 0; i < components.size(); ++i)
+		components[i]->OnEditorMode();
+}

@@ -18,6 +18,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
 	AddPath("Assets/Meshes/", "Meshes");
 	AddPath("Assets/Textures/", "Textures");
+	AddPath("Assets/UI/", "UI");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());

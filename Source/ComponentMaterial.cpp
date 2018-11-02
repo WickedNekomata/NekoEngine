@@ -100,3 +100,13 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 {
 	//LOAD MATERIAL
 }
+
+void ComponentMaterial::OnGameMode()
+{
+
+}
+
+void ComponentMaterial::OnEditorMode()
+{
+
+}

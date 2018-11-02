@@ -121,3 +121,13 @@ void ComponentTransform::OnLoad(JSON_Object* file)
 	scale.y = json_object_get_number(file, "ScaleY");
 	scale.z = json_object_get_number(file, "ScaleZ");
 }
+
+void ComponentTransform::OnGameMode()
+{
+
+}
+
+void ComponentTransform::OnEditorMode()
+{
+
+}

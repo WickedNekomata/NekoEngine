@@ -17,6 +17,7 @@
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
 	name = "Scene";
+	game = true;
 }
 
 ModuleScene::~ModuleScene()

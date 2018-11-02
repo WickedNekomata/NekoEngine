@@ -31,6 +31,7 @@ private:
 	void InputNode() const;
 	void HardwareNode() const;
 	void SceneNode() const;
+	void TimeManagerNode() const;
 
 	void RecursiveDrawQuadtreeHierarchy(QuadtreeNode* node) const;
 

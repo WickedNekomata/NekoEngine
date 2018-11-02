@@ -107,7 +107,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->PreUpdate(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->PreUpdate(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->PreUpdate(dt);
+		}
 		++item;
 	}
 
@@ -115,7 +120,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->Update(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->Update(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->Update(dt);
+		}
 		++item;
 	}
 
@@ -123,7 +133,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->PostUpdate(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->PostUpdate(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->PostUpdate(dt);
+		}
 		++item;
 	}
 
@@ -371,6 +386,7 @@ void Application::Pause()
 	case engine_states::ENGINE_PLAY:
 
 		// Pause
+		dt = 0.0f;
 		engineState = engine_states::ENGINE_PAUSE;
 		break;
 

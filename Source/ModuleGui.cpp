@@ -11,6 +11,7 @@
 #include "PanelHierarchy.h"
 #include "PanelAssets.h"
 #include "ComponentCamera.h"
+#include "ModuleTimeManager.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -241,6 +242,13 @@ update_status ModuleGui::Update(float dt)
 
 		// Step button
 		ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)); ImGui::SameLine();
+
+		// Game time scale slider
+		ImGui::PushItemWidth(100);
+		float timeScale = App->timeManager->GetTimeScale();
+		if (ImGui::SliderFloat("Game Time Scale", &timeScale, 0.0f, MAX_TIME_SCALE)) { App->timeManager->SetTimeScale(timeScale); }
+
+		// -----
 
 		bool showGrid = App->scene->GetShowGrid();
 		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }

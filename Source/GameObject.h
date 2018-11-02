@@ -62,17 +62,6 @@ public:
 	void OnGameMode();
 	void OnEditorMode();
 
-private:
-
-	char* name = nullptr;
-	std::vector<Component*> components;
-
-	GameObject* parent = nullptr;
-	std::vector<GameObject*> children;
-
-	bool isStatic = true;
-	bool seenLastFrame = false;
-
 public:
 
 	bool enabled = true;
@@ -85,6 +74,21 @@ public:
 	math::AABB boundingBox;
 
 	uint UUID = 0;
+
+private:
+
+	char* name = nullptr;
+	std::vector<Component*> components;
+
+	GameObject* parent = nullptr;
+	std::vector<GameObject*> children;
+
+	bool isStatic = true;
+	bool seenLastFrame = false;
+
+	// OnGameMode / OnEditorMode
+
+
 };
 
 #endif

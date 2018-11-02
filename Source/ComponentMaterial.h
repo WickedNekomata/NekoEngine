@@ -14,6 +14,7 @@ class ComponentMaterial : public Component
 public:
 
 	ComponentMaterial(GameObject* parent);
+	ComponentMaterial(const ComponentMaterial& componentMaterial);
 	~ComponentMaterial();
 
 	void Update();
@@ -22,9 +23,6 @@ public:
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
-
-	void OnGameMode();
-	void OnEditorMode();
 
 public:
 

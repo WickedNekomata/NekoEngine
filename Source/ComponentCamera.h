@@ -13,6 +13,7 @@ class ComponentCamera : public Component
 public:
 
 	ComponentCamera(GameObject* parent);
+	ComponentCamera(const ComponentCamera& componentCamera);
 	~ComponentCamera();
 
 	void UpdateTransform();
@@ -38,9 +39,6 @@ public:
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
-
-	void OnGameMode();
-	void OnEditorMode();
 
 public:
 

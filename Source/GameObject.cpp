@@ -30,6 +30,47 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 	UUID = pcg32_random_r(&(App->rng));
 }
 
+GameObject::GameObject(const GameObject& gameObject)
+{
+	transform = new ComponentTransform(*gameObject.transform);
+	transform->SetParent(this);
+	components.push_back(transform);
+
+	if (gameObject.materialRenderer != nullptr)
+	{
+		materialRenderer = new ComponentMaterial(*gameObject.materialRenderer);
+		materialRenderer->SetParent(this);
+		components.push_back(materialRenderer);
+	}
+
+	if (gameObject.meshRenderer != nullptr)
+	{
+		meshRenderer = new ComponentMesh(*gameObject.meshRenderer);
+		meshRenderer->SetParent(this);
+		components.push_back(meshRenderer);
+	}
+
+	if (gameObject.camera != nullptr)
+	{
+		camera = new ComponentCamera(*gameObject.camera);
+		camera->SetParent(this);
+		components.push_back(camera);
+	}
+
+	boundingBox = gameObject.boundingBox;
+
+	name = new char[DEFAULT_BUF_SIZE];
+	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
+
+	parentUUID = gameObject.parent->UUID;
+
+	isActive = gameObject.isActive;
+	isStatic = gameObject.isStatic;
+	seenLastFrame = gameObject.seenLastFrame;
+
+	UUID = gameObject.UUID;
+}
+
 GameObject::~GameObject()
 {
 	RELEASE_ARRAY(name);
@@ -52,6 +93,11 @@ void GameObject::SetParent(GameObject* parent)
 GameObject* GameObject::GetParent()
 {
 	return parent;
+}
+
+uint GameObject::GetParentUUID() const
+{
+	return parentUUID;
 }
 
 void GameObject::DeleteMe()
@@ -210,6 +256,21 @@ const char* GameObject::GetName() const
 	return name;
 }
 
+uint GameObject::GetUUID() const
+{
+	return UUID;
+}
+
+void GameObject::ToggleIsActive()
+{
+	isActive = !isActive;
+}
+
+bool GameObject::IsActive() const
+{
+	return isActive;
+}
+
 void GameObject::ToggleIsStatic()
 {
 	isStatic = !isStatic;
@@ -291,16 +352,4 @@ void GameObject::OnLoad(JSON_Object* file)
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
 	}	
-}
-
-void GameObject::OnGameMode()
-{
-	for (uint i = 0; i < components.size(); ++i)
-		components[i]->OnGameMode();
-}
-
-void GameObject::OnEditorMode()
-{
-	for (uint i = 0; i < components.size(); ++i)
-		components[i]->OnEditorMode();
 }

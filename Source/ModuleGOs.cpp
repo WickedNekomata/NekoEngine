@@ -76,22 +76,63 @@ bool ModuleGOs::CleanUp()
 		RELEASE(gameObjectsToDelete[i]);
 	}
 	
+	componentsToDelete.clear();
 	gameObjectsToDelete.clear();
 	gameObjects.clear();
+
+
+	for (int i = tmpGameObjects.size() - 1; i >= 0; --i)
+	{
+		tmpGameObjects.erase(std::remove(tmpGameObjects.begin(), tmpGameObjects.end(), tmpGameObjects[i]), tmpGameObjects.end());
+		RELEASE(tmpGameObjects[i]);
+	}
+	tmpGameObjects.clear();
 
 	return true;
 }
 
 void ModuleGOs::OnGameMode()
 {
+	// Save scene in memory
+
+	// 1. Copy game objects to a temporary gameObjects vector
+	tmpGameObjects.clear();
+
 	for (uint i = 0; i < gameObjects.size(); ++i)
-		gameObjects[i]->OnGameMode();
+	{
+		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
+		tmpGameObjects.push_back(tmpGameObject);
+	}
 }
 
 void ModuleGOs::OnEditorMode()
 {
+	// Load scene from memory
+
+	// 1. Clear game objects
+	ClearScene();
+
+	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
+	{
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
+		RELEASE(gameObjectsToDelete[i]);
+	}
+
+	componentsToDelete.clear();
+	gameObjectsToDelete.clear();
+	gameObjects.clear();
+
+	// 2. Copy temporary game objects to the real gameObjects vector
+	for (uint i = 0; i < tmpGameObjects.size(); ++i)
+		gameObjects.push_back(tmpGameObjects[i]);
+
+	// 3. Match correct parent and children of the game objects
 	for (uint i = 0; i < gameObjects.size(); ++i)
-		gameObjects[i]->OnEditorMode();
+	{
+		GameObject* parent = GetGameObjectByUUID(gameObjects[i]->GetParentUUID());
+		parent->AddChild(gameObjects[i]);
+		gameObjects[i]->SetParent(parent);
+	}
 }
 
 GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)
@@ -145,15 +186,15 @@ GameObject* ModuleGOs::GetGameObject(uint index) const
 	return gameObjects[index];
 }
 
-GameObject* ModuleGOs::GetGameObjectbyUUID(uint UUID) const
+GameObject* ModuleGOs::GetGameObjectByUUID(uint UUID) const
 {
-	for (int i = 0; i < gameObjects.size(); ++i)
+	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
-		if (gameObjects[i]->UUID == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) == gameObjectsToDelete.end())
+		if (gameObjects[i]->GetUUID() == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) == gameObjectsToDelete.end())
 			return gameObjects[i];
 	}
 
-	if (UUID == App->scene->root->UUID)
+	if (UUID == App->scene->root->GetUUID())
 		return App->scene->root;
 	
 	return nullptr;
@@ -236,7 +277,7 @@ bool ModuleGOs::LoadScene(char* fileName)
 	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* parent = GetGameObjectbyUUID(json_object_get_number(gObject, "Parent UUID"));
+		GameObject* parent = GetGameObjectByUUID(json_object_get_number(gObject, "Parent UUID"));
 		auxList[i]->GetParent()->EraseChild(auxList[i]);
 		parent->AddChild(auxList[i]);
 		auxList[i]->SetParent(parent);

@@ -3,18 +3,11 @@
 
 #include "imgui/imgui.h"
 
-Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
-{
-}
+Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type) {}
 
-Component::~Component()
-{
-}
+Component::~Component() {}
 
-void Component::Update()
-{
-
-}
+void Component::Update() {}
 
 void Component::OnEditor()
 {
@@ -26,12 +19,17 @@ void Component::OnEditor()
 
 void Component::OnUniqueEditor() {}
 
-ComponentType Component::GetType()
+ComponentType Component::GetType() const
 {
 	return type;
 }
 
-GameObject* Component::GetParent()
+void Component::SetParent(GameObject* parent)
+{
+	this->parent = parent;
+}
+
+GameObject* Component::GetParent() const
 {
 	return parent;
 }
@@ -41,4 +39,3 @@ void Component::OnSave(JSON_Object* file)
 	json_object_set_number(file, "Type", type);
 	OnInternalSave(file);
 }
-

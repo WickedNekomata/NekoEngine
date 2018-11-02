@@ -6,6 +6,11 @@
 
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) {}
 
+ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
+{
+	textures = componentMaterial.textures;
+}
+
 ComponentMaterial::~ComponentMaterial()
 {
 	parent->materialRenderer = nullptr;
@@ -99,14 +104,4 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 void ComponentMaterial::OnLoad(JSON_Object* file)
 {
 	//LOAD MATERIAL
-}
-
-void ComponentMaterial::OnGameMode()
-{
-
-}
-
-void ComponentMaterial::OnEditorMode()
-{
-
 }

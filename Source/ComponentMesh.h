@@ -13,6 +13,7 @@ class ComponentMesh : public Component
 public:
 
 	ComponentMesh(GameObject* parent);
+	ComponentMesh(const ComponentMesh& componentMesh);
 	~ComponentMesh();
 
 	void Update();
@@ -21,9 +22,6 @@ public:
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
-
-	void OnGameMode();
-	void OnEditorMode();
 
 public:
 

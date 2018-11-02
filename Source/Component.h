@@ -19,14 +19,13 @@ public:
 
 	virtual void OnEditor();
 
-	virtual ComponentType GetType();
-	virtual GameObject* GetParent();
+	ComponentType GetType() const;
+
+	void SetParent(GameObject* parent);
+	GameObject* GetParent() const;
 
 	virtual void OnSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file) = 0;
-
-	virtual void OnGameMode() = 0;
-	virtual void OnEditorMode() = 0;
 
 private:
 

@@ -27,23 +27,25 @@ bool PanelInspector::Draw()
 	{
 		if (App->scene->currentGameObject != nullptr)
 		{
-			GameObject* currObject = App->scene->currentGameObject;
+			GameObject* gameObject = App->scene->currentGameObject;
 
-			ImGui::Checkbox("##Enabled", &currObject->enabled);
+			bool isActive = gameObject->IsActive();
+			if (ImGui::Checkbox("##Active", &isActive)) { gameObject->ToggleIsActive(); }
 
 			ImGui::SameLine();
 			static char objName[INPUT_BUF_SIZE];
-			if (currObject->GetName() != nullptr)
-				strcpy_s(objName, IM_ARRAYSIZE(objName), currObject->GetName());
+			if (gameObject->GetName() != nullptr)
+				strcpy_s(objName, IM_ARRAYSIZE(objName), gameObject->GetName());
+
 			ImGui::PushItemWidth(100);
 			ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
-				currObject->SetName(objName);
+				gameObject->SetName(objName);
 			ImGui::PopItemWidth();
 
 			ImGui::SameLine(0.0f, 30.f);
-			bool isStatic = currObject->IsStatic();
-			if (ImGui::Checkbox("##static", &isStatic)) { currObject->ToggleIsStatic(); }
+			bool isStatic = gameObject->IsStatic();
+			if (ImGui::Checkbox("##static", &isStatic)) { gameObject->ToggleIsStatic(); }
 			ImGui::SameLine();
 			ImGui::Text("Static");
 
@@ -64,30 +66,30 @@ bool PanelInspector::Draw()
 			ImGui::Combo("##layer", &currentLayer, layers, IM_ARRAYSIZE(layers));
 			ImGui::PopItemWidth();
 
-			for (int i = 0; i < currObject->GetComponenetsLength(); ++i)
+			for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 			{
 				ImGui::Separator();
-				currObject->GetComponent(i)->OnEditor();
+				gameObject->GetComponent(i)->OnEditor();
 			}
 			ImGui::Separator();
 			ImGui::Button("Add Component");
 			if (ImGui::BeginPopupContextItem((const char*)0, 0))
 			{
-				if (currObject->meshRenderer == nullptr) {
+				if (gameObject->meshRenderer == nullptr) {
 					if (ImGui::Selectable("Mesh")) {
-						currObject->AddComponent(ComponentType::Mesh_Component);
+						gameObject->AddComponent(ComponentType::Mesh_Component);
 						ImGui::CloseCurrentPopup();
 					}
 				}
-				if (currObject->materialRenderer == nullptr) {
+				if (gameObject->materialRenderer == nullptr) {
 					if (ImGui::Selectable("Material")) {
-						currObject->AddComponent(ComponentType::Material_Component);
+						gameObject->AddComponent(ComponentType::Material_Component);
 						ImGui::CloseCurrentPopup();
 					}
 				}
-				if (currObject->camera == nullptr)
+				if (gameObject->camera == nullptr)
 					if (ImGui::Selectable("Camera")) {
-						currObject->AddComponent(ComponentType::Camera_Component);
+						gameObject->AddComponent(ComponentType::Camera_Component);
 						ImGui::CloseCurrentPopup();
 					}
 				ImGui::EndPopup();

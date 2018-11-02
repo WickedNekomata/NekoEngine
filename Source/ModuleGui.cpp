@@ -23,8 +23,7 @@ ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 	name = "GUI";
 }
 
-ModuleGui::~ModuleGui()
-{}
+ModuleGui::~ModuleGui() {}
 
 bool ModuleGui::Init(JSON_Object* jObject)
 {
@@ -74,7 +73,7 @@ bool ModuleGui::Start()
 	return ret;
 }
 
-update_status ModuleGui::PreUpdate(float dt) 
+update_status ModuleGui::PreUpdate() 
 {
 	// Start the frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -84,7 +83,7 @@ update_status ModuleGui::PreUpdate(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleGui::Update(float dt)
+update_status ModuleGui::Update()
 {
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
@@ -197,7 +196,7 @@ update_status ModuleGui::Update(float dt)
 		ImVec2 timeButtonSize(timeButtonTex->width * 0.2f * timeButtonScale, timeButtonTex->height * 1.0f * timeButtonScale);
 
 		// Play button
-		if (App->IsPlay())
+		if (App->IsPlay() || App->IsPause())
 		{
 			ImGui::PushID("play");
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
@@ -289,11 +288,6 @@ update_status ModuleGui::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleGui::PostUpdate(float dt) 
-{
-	return UPDATE_CONTINUE;
-}
-
 bool ModuleGui::CleanUp()
 {
 	bool ret = true;
@@ -320,6 +314,18 @@ bool ModuleGui::CleanUp()
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleGui::SaveStatus(JSON_Object* jObject) const
+{
+	for (int i = 0; i < panels.size(); ++i)
+		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());
+}
+
+void ModuleGui::LoadStatus(const JSON_Object* jObject)
+{
+	for (int i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
 }
 
 void ModuleGui::Draw() const 
@@ -406,18 +412,6 @@ void ModuleGui::LoadScenePopUp()
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); showLoadScenePopUp = false; }
 		ImGui::EndPopup();
 	}
-}
-
-void ModuleGui::SaveStatus(JSON_Object* jObject) const
-{
-	for (int i = 0; i < panels.size(); ++i)
-		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());	
-}
-
-void ModuleGui::LoadStatus(const JSON_Object* jObject)
-{
-	for (int i = 0; i < panels.size(); ++i)
-		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
 }
 
 void ModuleGui::LogConsole(const char* log) const

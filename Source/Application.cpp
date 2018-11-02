@@ -108,12 +108,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->PreUpdate(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->PreUpdate(dt);
-		}
+			ret = (*item)->PreUpdate();
 		++item;
 	}
 
@@ -121,12 +116,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->Update(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->Update(dt);
-		}
+			ret = (*item)->Update();
 		++item;
 	}
 
@@ -134,12 +124,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->PostUpdate(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->PostUpdate(dt);
-		}
+			ret = (*item)->PostUpdate();
 		++item;
 	}
 
@@ -196,8 +181,6 @@ void Application::PrepareUpdate()
 	case engine_states::ENGINE_WANTS_PAUSE:
 	case engine_states::ENGINE_PAUSE:
 
-		dt = 0.0;
-
 		engineState = engine_states::ENGINE_PAUSE;
 		break;
 
@@ -215,6 +198,8 @@ void Application::PrepareUpdate()
 	default:
 		break;
 	}
+
+	timeManager->PrepareUpdate();
 }
 
 void Application::FinishUpdate()
@@ -378,6 +363,11 @@ void Application::AddMsToTrack(float ms)
 std::vector<float> Application::GetMsTrack() const 
 {
 	return msTrack;
+}
+
+float Application::GetDt() const
+{
+	return dt;
 }
 
 void Application::Play()

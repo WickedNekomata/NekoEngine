@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "Raycaster.h"
+#include "ModuleTimeManager.h"
 
 #include "MathGeoLib/include/Math/MathAll.h"
 
@@ -33,6 +34,7 @@ ModuleCameraEditor::~ModuleCameraEditor()
 
 bool ModuleCameraEditor::Init(JSON_Object* jObject)
 {
+	// TODO: Save camera properties like speed in config file
 	return true;
 }
 
@@ -43,10 +45,11 @@ bool ModuleCameraEditor::Start()
 	CONSOLE_LOG("Setting up the camera");
 
 	camera->cameraFrustum.pos = { 0.0f,1.0f,-5.0f };
+
 	return ret;
 }
 
-update_status ModuleCameraEditor::Update(float dt)
+update_status ModuleCameraEditor::Update()
 {
 	math::float3 offsetPosition = math::float3::zero;
 
@@ -64,17 +67,17 @@ update_status ModuleCameraEditor::Update(float dt)
 		offsetPosition -= camera->cameraFrustum.up;
 
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEEDSHIFT * dt);
+		camera->cameraFrustum.Translate(offsetPosition * MOVSPEEDSHIFT * App->timeManager->GetDt());
 	else
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEED * dt);
+		camera->cameraFrustum.Translate(offsetPosition * MOVSPEED * App->timeManager->GetDt());
 
 	int motionX = App->input->GetMouseXMotion();
 	int motionY = App->input->GetMouseYMotion();
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT && (motionX != 0 || motionY != 0))
 	{
-		math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * dt);
-		math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * dt);
+		math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
+		math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
 
 		math::Quat endRotation = rotationX * rotationY;
 
@@ -87,7 +90,7 @@ update_status ModuleCameraEditor::Update(float dt)
 	{
 		float zoomSpeed = CAMERAZOOMSPEED;
 		math::float3 offsetPosition = math::float3::zero;
-		offsetPosition += camera->cameraFrustum.front * (float)mouseWheel * zoomSpeed * dt;
+		offsetPosition += camera->cameraFrustum.front * (float)mouseWheel * zoomSpeed * App->timeManager->GetDt();
 		camera->cameraFrustum.Translate(offsetPosition);
 	}
 

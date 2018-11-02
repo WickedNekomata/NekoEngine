@@ -18,7 +18,7 @@ public:
 
 	bool Init(JSON_Object* jObject);
 	bool Start();
-	update_status Update(float dt);
+	update_status Update();
 	bool CleanUp();
 
 	void LookAt(math::float3 focus);

@@ -28,7 +28,9 @@ ModuleInput::~ModuleInput()
 bool ModuleInput::Init(JSON_Object* jObject)
 {
 	CONSOLE_LOG("Init SDL input event system");
+
 	bool ret = true;
+
 	SDL_Init(0);
 
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
@@ -40,7 +42,7 @@ bool ModuleInput::Init(JSON_Object* jObject)
 	return ret;
 }
 
-update_status ModuleInput::PreUpdate(float dt)
+update_status ModuleInput::PreUpdate()
 {
 	SDL_PumpEvents();
 

@@ -17,11 +17,7 @@ public:
 	ModuleGOs(bool start_enabled = true);
 	~ModuleGOs();
 
-	bool Init(JSON_Object* jObject);
-	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	update_status PostUpdate();
 	bool CleanUp();
 
 	void OnGameMode();

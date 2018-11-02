@@ -12,26 +12,29 @@ public:
 	ModuleTimeManager(bool start_enabled = true);
 	~ModuleTimeManager();
 
-	update_status Update(float dt);
+	void PrepareUpdate();
 
 	void SetTimeScale(float timeScale);
 	float GetTimeScale() const;
 
 	float GetTime() const;
 	float GetDt() const;
+
 	int GetFrameCount() const;
-	float GetRealTimeSinceStartup() const;
-	float GetRealTimeDeltaTime() const;
+	float GetRealTime() const;
+	float GetRealDt() const;
 
 private:
 
-	float timeScale = 1.0f; // Scale at which time is passing (Game Clock)
-	float time = 0.0f; // Seconds since game start (Game Clock)
-	float dt = 0.0f; // Last frame time expressed in seconds (Game Clock)
+	// Game Clock
+	float timeScale = 1.0f; // Scale at which time is passing
+	float time = 0.0f; // Seconds since game start
+	float dt = 0.0f; // Last frame time expressed in seconds
 	
-	int frameCount = 0; // App graphics frames since game start (Real Time Clock)
-	float realTimeSinceStartup = 0.0f; // Seconds since game start (Real Time Clock)
-	float realTimeDeltaTime = 0.0f; // Last frame time expressed in seconds (Real Time Clock)
+	// Real Time Clock
+	int frameCount = 0; // App graphics frames since game start
+	float realTime = 0.0f; // Seconds since game start
+	float realDt = 0.0f; // Last frame time expressed in seconds
 };
 
 #endif

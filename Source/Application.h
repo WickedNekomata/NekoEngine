@@ -68,6 +68,8 @@ public:
 	void AddMsToTrack(float ms);
 	std::vector<float> GetMsTrack() const;
 
+	float GetDt() const;
+
 	void Play();
 	void Pause();
 	void Tick();

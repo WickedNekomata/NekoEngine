@@ -79,6 +79,9 @@
     <Filter Include="Sources\Modules\GO&amp;Components\Components">
       <UniqueIdentifier>{c42249c4-6e3d-4654-81b0-f0920e0e4e88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Importers">
+      <UniqueIdentifier>{39b667be-548e-4ab2-90a2-0a559f808c36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -534,15 +537,6 @@
     <ClInclude Include="ComponentTypes.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialImporter.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneImporter.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="Importer.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentTransform.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
@@ -569,6 +563,15 @@
     </ClInclude>
     <ClInclude Include="ModuleTimeManager.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -761,15 +764,6 @@
     <ClCompile Include="ComponentMaterial.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
-    <ClCompile Include="SceneImporter.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialImporter.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Importer.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="ComponentTransform.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
@@ -796,6 +790,12 @@
     </ClCompile>
     <ClCompile Include="ModuleTimeManager.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,33 +9,37 @@ ModuleTimeManager::ModuleTimeManager(bool start_enabled) : Module(start_enabled)
 
 ModuleTimeManager::~ModuleTimeManager() {}
 
-update_status ModuleTimeManager::Update(float dt)
+void ModuleTimeManager::PrepareUpdate()
 {
 	frameCount++;
-	realTimeSinceStartup += dt * MSTOSECONDS;
-	realTimeDeltaTime = dt * MSTOSECONDS;
-	this->dt = dt * timeScale * MSTOSECONDS;
+
+	// Dt
+	realDt = App->GetDt();
+	dt = realDt * timeScale;
+
+	// Time
+	realTime += realDt;
 
 	switch (App->GetEngineState())
 	{
-	case engine_states::ENGINE_EDITOR:
-
-		time = 0.0f;
-
+	case engine_states::ENGINE_PLAY:
+		time += dt;
 		break;
 
-	case engine_states::ENGINE_PLAY:
-
-		time += dt * MSTOSECONDS;
-
+	case engine_states::ENGINE_EDITOR:
+		time = 0.0f;
 		break;
 
 	case engine_states::ENGINE_PAUSE:
+		dt = 0.0f;
+		break;
+
+	case engine_states::ENGINE_WANTS_PLAY:
+	case engine_states::ENGINE_WANTS_PAUSE:
+	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
-
-	return UPDATE_CONTINUE;
 }
 
 void ModuleTimeManager::SetTimeScale(float timeScale)
@@ -66,12 +70,12 @@ int ModuleTimeManager::GetFrameCount() const
 	return frameCount;
 }
 
-float ModuleTimeManager::GetRealTimeSinceStartup() const
+float ModuleTimeManager::GetRealTime() const
 {
-	return realTimeSinceStartup;
+	return realTime;
 }
 
-float ModuleTimeManager::GetRealTimeDeltaTime() const
+float ModuleTimeManager::GetRealDt() const
 {
-	return realTimeDeltaTime;
+	return realDt;
 }

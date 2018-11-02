@@ -14,6 +14,9 @@ public:
 	bool Init(JSON_Object* jObject);
 	bool CleanUp();
 
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
+
 	void SetTitle(const char* title);
 
 	void SetWindowBrightness(float brightness) const;
@@ -38,9 +41,6 @@ public:
 	bool GetResizableWindow() const;
 	void SetBorderlessWindow(bool borderless);
 	bool GetBorderlessWindow() const;
-
-	void SaveStatus(JSON_Object*) const;
-	void LoadStatus(const JSON_Object*);
 
 public:
 	

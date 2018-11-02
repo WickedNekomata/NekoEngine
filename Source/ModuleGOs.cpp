@@ -25,27 +25,7 @@ ModuleGOs::~ModuleGOs()
 	delete[] nameScene;
 }
 
-bool ModuleGOs::Init(JSON_Object* jObject)
-{
-	return true;
-}
-
-bool ModuleGOs::Start()
-{
-	return true;
-}
-
-update_status ModuleGOs::PreUpdate(float dt)
-{
-	return UPDATE_CONTINUE;
-}
-
-update_status ModuleGOs::Update(float dt)
-{
-	return UPDATE_CONTINUE;
-}
-
-update_status ModuleGOs::PostUpdate(float dt)
+update_status ModuleGOs::PostUpdate()
 {
 	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
 	{
@@ -93,6 +73,7 @@ bool ModuleGOs::CleanUp()
 
 void ModuleGOs::OnGameMode()
 {
+	/*
 	// Save scene in memory
 
 	// 1. Copy game objects to a temporary gameObjects vector
@@ -103,10 +84,12 @@ void ModuleGOs::OnGameMode()
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
 		tmpGameObjects.push_back(tmpGameObject);
 	}
+	*/
 }
 
 void ModuleGOs::OnEditorMode()
 {
+	/*
 	// Load scene from memory
 
 	// 1. Clear game objects
@@ -133,6 +116,7 @@ void ModuleGOs::OnEditorMode()
 		parent->AddChild(gameObjects[i]);
 		gameObjects[i]->SetParent(parent);
 	}
+	*/
 }
 
 GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)

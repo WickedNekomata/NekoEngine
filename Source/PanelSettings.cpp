@@ -314,7 +314,9 @@ void PanelSettings::SceneNode() const
 	ImGui::Text("Quadtree");
 	if (ImGui::Button("Create Random Game Object")) { App->scene->CreateRandomStaticGameObject(); }
 
+	ImGui::Spacing();
 	ImGui::Separator();
+	ImGui::Spacing();
 
 	if (ImGui::TreeNodeEx("Root Node (Subdivision 0)"))
 	{
@@ -330,7 +332,7 @@ void PanelSettings::SceneNode() const
 
 void PanelSettings::TimeManagerNode() const
 {
-	ImGui::Text("GAME CLOCK");
+	ImGui::Text("Game Clock");
 	ImGui::Spacing();
 
 	ImGui::Text("Game time scale:");
@@ -339,22 +341,24 @@ void PanelSettings::TimeManagerNode() const
 	ImGui::Text("Time since game start (seconds):");
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetTime());
 
-	ImGui::Text("Game time dt (seconds):");
+	ImGui::Text("Dt (seconds):");
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetDt());
 
+	ImGui::Spacing();
 	ImGui::Separator();
+	ImGui::Spacing();
 
-	ImGui::Text("REAL TIME CLOCK");
+	ImGui::Text("Real Time Clock");
 	ImGui::Spacing();
 
 	ImGui::Text("Frame count:");
 	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->timeManager->GetFrameCount());
 
-	ImGui::Text("Real time since startup (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTimeSinceStartup());
+	ImGui::Text("Real time since game start (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTime());
 
-	ImGui::Text("Real time dt (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTimeDeltaTime());
+	ImGui::Text("Real dt (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealDt());
 }
 
 void PanelSettings::AddInput(const char* input)

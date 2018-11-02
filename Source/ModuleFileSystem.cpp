@@ -36,24 +36,14 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	CreateDir("Settings");
 }
 
-ModuleFileSystem::~ModuleFileSystem() 
-{}
-
-bool ModuleFileSystem::Init(JSON_Object* jObject)
-{
-	CONSOLE_LOG("Loading File System");
-
-	return true;
-}
+ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::CleanUp()
 {
-	bool ret = true;
-
 	CONSOLE_LOG("Freeing File System subsystem");
 	PHYSFS_deinit();
 
-	return ret;
+	return true;
 }
 
 bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)

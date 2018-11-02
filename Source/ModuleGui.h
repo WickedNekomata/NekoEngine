@@ -24,18 +24,20 @@ public:
 
 	bool Init(JSON_Object* jObject);
 	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	update_status PreUpdate();
+	update_status Update();
 	bool CleanUp();
+
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
 
 	void Draw() const;
 	void DockSpace() const;
 	void SaveScenePopUp();
 	void LoadScenePopUp();
 
-	void SaveStatus(JSON_Object*) const;
-	void LoadStatus(const JSON_Object*);
+	void ShowAllWindows();
+	void HideAllWindows();
 
 	void LogConsole(const char* log) const;
 	void AddInput(uint key, uint state) const;

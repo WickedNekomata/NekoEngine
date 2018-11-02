@@ -15,9 +15,7 @@ class ModuleFileSystem : public Module
 public:
 
 	ModuleFileSystem(bool start_enabled = true);
-	virtual ~ModuleFileSystem();
-
-	bool Init(JSON_Object* jObject);
+	~ModuleFileSystem();
 
 	bool CleanUp();
 

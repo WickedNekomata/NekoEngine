@@ -27,8 +27,8 @@ public:
 	~ModuleRenderer3D();
 
 	bool Init(JSON_Object* jObject);
-	update_status PreUpdate(float dt);
-	update_status PostUpdate(float dt);
+	update_status PreUpdate();
+	update_status PostUpdate();
 	bool CleanUp();
 
 	void SaveStatus(JSON_Object*) const;

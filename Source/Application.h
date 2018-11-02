@@ -34,6 +34,8 @@ enum engine_states
 	ENGINE_WANTS_PLAY,
 	ENGINE_PAUSE,
 	ENGINE_WANTS_PAUSE,
+	ENGINE_TICK,
+	ENGINE_WANTS_TICK,
 
 	// Editor
 	ENGINE_EDITOR,
@@ -67,6 +69,8 @@ public:
 	std::vector<float> GetFramerateTrack() const;
 	void AddMsToTrack(float ms);
 	std::vector<float> GetMsTrack() const;
+
+	float GetDt() const;
 
 	void Play();
 	void Pause();

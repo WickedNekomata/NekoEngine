@@ -108,12 +108,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->PreUpdate(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->PreUpdate(dt);
-		}
+			ret = (*item)->PreUpdate();
 		++item;
 	}
 
@@ -121,12 +116,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->Update(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->Update(dt);
-		}
+			ret = (*item)->Update();
 		++item;
 	}
 
@@ -134,12 +124,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-		{
-			if ((*item)->IsGame())
-				ret = (*item)->PostUpdate(dt * App->timeManager->GetTimeScale());
-			else
-				ret = (*item)->PostUpdate(dt);
-		}
+			ret = (*item)->PostUpdate();
 		++item;
 	}
 
@@ -194,9 +179,6 @@ void Application::PrepareUpdate()
 		break;
 
 	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_PAUSE:
-
-		dt = 0.0;
 
 		engineState = engine_states::ENGINE_PAUSE;
 		break;
@@ -210,11 +192,21 @@ void Application::PrepareUpdate()
 		engineState = engine_states::ENGINE_EDITOR;
 		break;
 
-	case engine_states::ENGINE_PLAY:
-	case engine_states::ENGINE_EDITOR:
+	case engine_states::ENGINE_WANTS_TICK:
+
+		engineState = engine_states::ENGINE_TICK;
+		break;
+
+	case engine_states::ENGINE_TICK:
+
+		engineState = engine_states::ENGINE_WANTS_PAUSE;
+		break;
+
 	default:
 		break;
 	}
+
+	timeManager->PrepareUpdate();
 }
 
 void Application::FinishUpdate()
@@ -380,6 +372,11 @@ std::vector<float> Application::GetMsTrack() const
 	return msTrack;
 }
 
+float Application::GetDt() const
+{
+	return dt;
+}
+
 void Application::Play()
 {
 	switch (engineState)
@@ -397,9 +394,6 @@ void Application::Play()
 		engineState = engine_states::ENGINE_WANTS_PLAY;
 		break;
 
-	case engine_states::ENGINE_WANTS_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
@@ -421,10 +415,6 @@ void Application::Pause()
 		engineState = engine_states::ENGINE_PLAY;
 		break;
 
-	case engine_states::ENGINE_EDITOR:
-	case engine_states::ENGINE_WANTS_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
@@ -436,13 +426,16 @@ void Application::Tick()
 	{
 	case engine_states::ENGINE_PLAY:
 
-		// 1. Stop
-		// 2. Tick (step 1 frame)
-
+		// Stop and tick (step 1 frame)
+		engineState = engine_states::ENGINE_WANTS_TICK;
 		break;
 
-	case engine_states::ENGINE_EDITOR:
 	case engine_states::ENGINE_PAUSE:
+
+		// Tick (step 1 frame)
+		engineState = engine_states::ENGINE_TICK;
+		break;
+
 	default:
 		break;
 	}

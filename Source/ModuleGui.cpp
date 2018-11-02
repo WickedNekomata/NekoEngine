@@ -23,8 +23,7 @@ ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 	name = "GUI";
 }
 
-ModuleGui::~ModuleGui()
-{}
+ModuleGui::~ModuleGui() {}
 
 bool ModuleGui::Init(JSON_Object* jObject)
 {
@@ -77,7 +76,7 @@ bool ModuleGui::Start()
 	return ret;
 }
 
-update_status ModuleGui::PreUpdate(float dt) 
+update_status ModuleGui::PreUpdate() 
 {
 	// Start the frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -87,7 +86,7 @@ update_status ModuleGui::PreUpdate(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleGui::Update(float dt)
+update_status ModuleGui::Update()
 {
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
@@ -121,6 +120,8 @@ update_status ModuleGui::Update(float dt)
 		}
 		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Show All Windows")) { ShowAllWindows(); }
+			if (ImGui::MenuItem("Hide All Windows")) { HideAllWindows(); }
 			if (ImGui::MenuItem("Inspector", "CTRL+I")) { panelInspector->OnOff(); }
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
@@ -197,7 +198,7 @@ update_status ModuleGui::Update(float dt)
 		ImVec2 timeButtonSize(timeButtonTex->width * 0.2f * timeButtonScale, timeButtonTex->height * 1.0f * timeButtonScale);
 		
 		// Play button
-		if (App->IsPlay())
+		if (App->IsPlay() || App->IsPause())
 		{
 			ImGui::PushID("play");
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
@@ -241,7 +242,10 @@ update_status ModuleGui::Update(float dt)
 		ImGui::SameLine();
 
 		// Step button
-		ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)); ImGui::SameLine();
+		ImGui::PushID("tick");
+		if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)))
+			App->Tick();
+		ImGui::PopID();
 
 		// Game time scale slider
 		ImGui::PushItemWidth(100);
@@ -289,11 +293,6 @@ update_status ModuleGui::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleGui::PostUpdate(float dt) 
-{
-	return UPDATE_CONTINUE;
-}
-
 bool ModuleGui::CleanUp()
 {
 	bool ret = true;
@@ -320,6 +319,18 @@ bool ModuleGui::CleanUp()
 	ImGui::DestroyContext();
 
 	return ret;
+}
+
+void ModuleGui::SaveStatus(JSON_Object* jObject) const
+{
+	for (int i = 0; i < panels.size(); ++i)
+		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());
+}
+
+void ModuleGui::LoadStatus(const JSON_Object* jObject)
+{
+	for (int i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
 }
 
 void ModuleGui::Draw() const 
@@ -430,16 +441,16 @@ void ModuleGui::LoadScenePopUp()
 	}
 }
 
-void ModuleGui::SaveStatus(JSON_Object* jObject) const
+void ModuleGui::ShowAllWindows()
 {
-	for (int i = 0; i < panels.size(); ++i)
-		json_object_set_boolean(jObject, panels[i]->GetName(), panels[i]->IsEnabled());	
+	for (uint i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(true);
 }
 
-void ModuleGui::LoadStatus(const JSON_Object* jObject)
+void ModuleGui::HideAllWindows()
 {
-	for (int i = 0; i < panels.size(); ++i)
-		panels[i]->SetOnOff(json_object_get_boolean(jObject, panels[i]->GetName()));
+	for (uint i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(false);
 }
 
 void ModuleGui::LogConsole(const char* log) const

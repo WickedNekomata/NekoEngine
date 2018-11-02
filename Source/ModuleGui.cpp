@@ -41,6 +41,8 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelHierarchy);
 	panels.push_back(panelAssets);
 
+	LoadStatus(jObject);
+
 	return true;
 }
 
@@ -57,6 +59,7 @@ bool ModuleGui::Start()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+	io.IniFilename = nullptr;
 	io.ConfigResizeWindowsFromEdges = true;
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);	
@@ -69,7 +72,7 @@ bool ModuleGui::Start()
 	timeButtonTex = new Texture();
 	App->materialImporter->Import("timeButton.png", "UI/", outputFileName);
 	App->materialImporter->Load(outputFileName.data(), timeButtonTex);
-	
+
 	return ret;
 }
 
@@ -103,7 +106,8 @@ update_status ModuleGui::Update(float dt)
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Open In Explorer")) { OpenInExplorer(); }
-			if (ImGui::MenuItem("Save")) { App->SaveState(); }
+			if (ImGui::MenuItem("Save")) { 
+				App->SaveState(); }
 			if (ImGui::MenuItem("Load")) { App->LoadState(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Save Scene")) { showSaveScenePopUp = true; }
@@ -157,13 +161,9 @@ update_status ModuleGui::Update(float dt)
 
 	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
 	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
-	ImGuiWindowFlags flags = 0;
-	flags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	flags |= ImGuiWindowFlags_NoTitleBar;
-	//flags |= ImGuiWindowFlags_NoResize;
-	//flags |= ImGuiWindowFlags_NoMove;
-	flags |= ImGuiWindowFlags_NoScrollbar;
-	flags |= ImGuiWindowFlags_NoScrollWithMouse;
+	ImGuiWindowFlags window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 	static bool open = true;
 	if (ImGui::Begin("##subMenu", &open))
@@ -194,7 +194,7 @@ update_status ModuleGui::Update(float dt)
 
 		float timeButtonScale = 0.05f;
 		ImVec2 timeButtonSize(timeButtonTex->width * 0.2f * timeButtonScale, timeButtonTex->height * 1.0f * timeButtonScale);
-
+		
 		// Play button
 		if (App->IsPlay())
 		{
@@ -344,6 +344,28 @@ void ModuleGui::DockSpace() const
 	static bool p_open = true;
 	ImGui::Begin("DockSpace Demo", &p_open, window_flags);
 	ImGui::PopStyleVar(3);
+	
+	if (ImGui::DockBuilderGetNode(ImGui::GetID("MyDockspace")) == NULL)
+	{		
+		ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::DockBuilderRemoveNode(dockspace_id); // Clear out existing layout
+		ImGui::DockBuilderAddNode(dockspace_id, viewport->Size); // Add empty node
+
+		ImGuiID dock_main_id = dockspace_id; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
+		ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.10f, NULL, &dock_main_id);
+		ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
+		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
+		ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.30f, NULL, &dock_main_id);	
+
+		ImGui::DockBuilderDockWindow("##subMenu", dock_id_up);
+		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
+		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
+		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
+
+		ImGui::DockBuilderFinish(dockspace_id);
+	}
 
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruDockspace;
@@ -435,5 +457,10 @@ void ModuleGui::AddInput(uint key, uint state) const
 
 bool ModuleGui::IsMouseHoveringAnyWindow()
 {
-	return ImGui::IsMouseHoveringAnyWindow();
+	return ImGui::IsMouseHoveringAnyWindow() || ImGui::IsAnyItemHovered();
+}
+
+bool ModuleGui::IsAnyItemFocused()
+{
+	return ImGui::IsAnyItemFocused();
 }

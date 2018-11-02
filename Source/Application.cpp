@@ -248,7 +248,7 @@ void Application::Save() const
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	filesystem->Save("config.json", buf, sizeBuf);
+	filesystem->Save("Assets/config.json", buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 

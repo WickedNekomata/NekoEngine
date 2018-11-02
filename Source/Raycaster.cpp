@@ -44,7 +44,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		localSpaceSegment.Transform(hits[i]->transform->GetGlobalMatrix().Inverted());
 
 		currentMesh = hits[i]->meshRenderer->mesh;
-		for (uint j = 0; j < currentMesh->indicesSize;)
+		for (uint j = 0u; j < currentMesh->indicesSize;)
 		{
 			tri.a = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
 			tri.b = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);

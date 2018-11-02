@@ -564,8 +564,8 @@
     <ClInclude Include="PanelAssets.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleTimeManager.h">
-      <Filter>Sources\Modules</Filter>
+    <ClInclude Include="Raycaster.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -788,8 +788,8 @@
     <ClCompile Include="PanelAssets.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleTimeManager.cpp">
-      <Filter>Sources\Modules</Filter>
+    <ClCompile Include="Raycaster.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

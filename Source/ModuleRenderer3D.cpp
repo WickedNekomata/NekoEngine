@@ -233,7 +233,7 @@ void ModuleRenderer3D::OnEditorMode()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-
+	App->camera->camera->SetAspectRatio((float)width / (float)height);
 	CalculateProjectionMatrix();
 }
 

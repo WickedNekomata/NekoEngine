@@ -22,6 +22,7 @@ public:
 	void SetFOV(float fov);
 	void SetNearPlaneDistance(float nearPlane);
 	void SetFarPlaneDistance(float farPlane);
+	void SetAspectRatio(float aspectRatio);
 
 	float* GetOpenGLViewMatrix();
 	float* GetOpenGLProjectionMatrix();

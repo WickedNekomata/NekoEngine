@@ -36,6 +36,7 @@ bool ModuleWindow::Init(JSON_Object* jObject)
 		resizable = json_object_get_boolean(jObject, "resizable");
 		borderless = json_object_get_boolean(jObject, "borderless");
 		fullDesktop = json_object_get_boolean(jObject, "fullDesktop");
+		UpdateWindowSize();
 
 		// Create window
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;

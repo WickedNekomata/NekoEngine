@@ -18,6 +18,7 @@
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
+#include "Raycaster.h"
 
 #include "PerfTimer.h"
 
@@ -98,6 +99,7 @@ public:
 	SceneImporter*		sceneImporter;
 
 	DebugDrawer*		debugDrawer;
+	Raycaster*			raycaster;
 
 	pcg32_random_t rng;
 

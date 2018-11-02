@@ -379,3 +379,8 @@ void ModuleGui::AddInput(uint key, uint state) const
 		panelSettings->AddInput(input);
 	}
 }
+
+bool ModuleGui::IsMouseHoveringAnyWindow()
+{
+	return ImGui::IsMouseHoveringAnyWindow();
+}

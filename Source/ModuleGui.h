@@ -38,6 +38,8 @@ public:
 	void LogConsole(const char* log) const;
 	void AddInput(uint key, uint state) const;
 
+	bool IsMouseHoveringAnyWindow();
+
 public:
 
 	PanelInspector* panelInspector = nullptr;

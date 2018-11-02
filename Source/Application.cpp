@@ -15,6 +15,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 	debugDrawer = new DebugDrawer();
+	raycaster = new Raycaster();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

@@ -81,6 +81,11 @@ void ComponentCamera::SetFarPlaneDistance(float farPlane)
 	cameraFrustum.farPlaneDistance = farPlane;
 }
 
+void ComponentCamera::SetAspectRatio(float aspectRatio)
+{
+	cameraFrustum.horizontalFov = 2.f * atanf(tanf(cameraFrustum.verticalFov * 0.5f) * aspectRatio);
+}
+
 float* ComponentCamera::GetOpenGLViewMatrix()
 {
 	return ((math::float4x4)cameraFrustum.ViewMatrix()).Transposed().ptr();

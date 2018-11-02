@@ -5,8 +5,10 @@
 #include "ComponentCamera.h"
 #include "ModuleInput.h"
 
+#include "ModuleGui.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Raycaster.h"
 
 #include "MathGeoLib/include/Math/MathAll.h"
 
@@ -96,6 +98,17 @@ update_status ModuleCameraEditor::Update(float dt)
 		App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT && 
 		App->scene->currentGameObject != nullptr)
 	{ }
+
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow())
+	{
+		float distance;
+		math::float3 hitPoint;
+		GameObject* hitGO = nullptr;
+		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGO);
+		App->scene->currentGameObject = hitGO;
+	}
+
 	return UPDATE_CONTINUE;
 }
 

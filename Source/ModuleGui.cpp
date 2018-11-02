@@ -120,6 +120,8 @@ update_status ModuleGui::Update()
 		}
 		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Show All Windows")) { ShowAllWindows(); }
+			if (ImGui::MenuItem("Hide All Windows")) { HideAllWindows(); }
 			if (ImGui::MenuItem("Inspector", "CTRL+I")) { panelInspector->OnOff(); }
 			if (ImGui::MenuItem("Settings", "CTRL+S")) { panelSettings->OnOff(); }
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
@@ -437,6 +439,18 @@ void ModuleGui::LoadScenePopUp()
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); showLoadScenePopUp = false; }
 		ImGui::EndPopup();
 	}
+}
+
+void ModuleGui::ShowAllWindows()
+{
+	for (uint i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(true);
+}
+
+void ModuleGui::HideAllWindows()
+{
+	for (uint i = 0; i < panels.size(); ++i)
+		panels[i]->SetOnOff(false);
 }
 
 void ModuleGui::LogConsole(const char* log) const

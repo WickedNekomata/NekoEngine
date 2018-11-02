@@ -36,6 +36,9 @@ public:
 	void SaveScenePopUp();
 	void LoadScenePopUp();
 
+	void ShowAllWindows();
+	void HideAllWindows();
+
 	void LogConsole(const char* log) const;
 	void AddInput(uint key, uint state) const;
 

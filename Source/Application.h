@@ -29,9 +29,15 @@
 
 enum engine_states
 {
-	ENGINE_PLAY = 1, // Game
-	ENGINE_PAUSE, // Game
-	ENGINE_EDITOR
+	// Game
+	ENGINE_PLAY = 1,
+	ENGINE_WANTS_PLAY,
+	ENGINE_PAUSE,
+	ENGINE_WANTS_PAUSE,
+
+	// Editor
+	ENGINE_EDITOR,
+	ENGINE_WANTS_EDITOR
 };
 
 class Application

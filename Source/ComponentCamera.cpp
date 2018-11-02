@@ -20,6 +20,15 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);	
 }
 
+ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentType::Camera_Component)
+{
+	cameraFrustum = componentCamera.cameraFrustum;
+
+	play = componentCamera.play;
+	frustumCulling = componentCamera.frustumCulling;
+	mainCamera = componentCamera.mainCamera;
+}
+
 ComponentCamera::~ComponentCamera() 
 {
 	if (parent != nullptr) // Editor camera's parent is nullptr
@@ -141,14 +150,4 @@ void ComponentCamera::OnLoad(JSON_Object* file)
 	cameraFrustum.farPlaneDistance = json_object_get_number(file, "farPlaneDistance");
 	cameraFrustum.verticalFov = json_object_get_number(file, "verticalFov");
 	cameraFrustum.horizontalFov = json_object_get_number(file, "horizontalFov");
-}
-
-void ComponentCamera::OnGameMode()
-{
-
-}
-
-void ComponentCamera::OnEditorMode()
-{
-
 }

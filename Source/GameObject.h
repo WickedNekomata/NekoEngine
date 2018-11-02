@@ -20,12 +20,15 @@ class GameObject
 public:
 
 	GameObject(char* name, GameObject* parent);
+	GameObject(const GameObject& gameObject);
 	virtual ~GameObject();
 
 	void Update();
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent();
+	uint GetParentUUID() const;
+
 	void DeleteMe();
 	void AddChild(GameObject* children);
 	void EraseChild(GameObject* child);
@@ -48,6 +51,11 @@ public:
 	void SetName(char* name);
 	const char* GetName() const;
 
+	uint GetUUID() const;
+
+	void ToggleIsActive();
+	bool IsActive() const;
+
 	void ToggleIsStatic();
 	bool IsStatic() const;
 
@@ -59,23 +67,7 @@ public:
 	void OnSave(JSON_Object* file);
 	void OnLoad(JSON_Object* file);
 
-	void OnGameMode();
-	void OnEditorMode();
-
-private:
-
-	char* name = nullptr;
-	std::vector<Component*> components;
-
-	GameObject* parent = nullptr;
-	std::vector<GameObject*> children;
-
-	bool isStatic = true;
-	bool seenLastFrame = false;
-
 public:
-
-	bool enabled = true;
 
 	ComponentTransform* transform = nullptr;
 	ComponentMaterial* materialRenderer = nullptr;
@@ -84,7 +76,21 @@ public:
 
 	math::AABB boundingBox;
 
+private:
+
+	char* name = nullptr;
 	uint UUID = 0;
+
+	std::vector<Component*> components;
+
+	GameObject* parent = nullptr;
+	uint parentUUID = 0;
+
+	std::vector<GameObject*> children;
+
+	bool isActive = true;
+	bool isStatic = true;
+	bool seenLastFrame = false;
 };
 
 #endif

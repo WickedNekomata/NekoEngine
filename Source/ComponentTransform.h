@@ -16,6 +16,7 @@ class ComponentTransform : public Component
 public:
 
 	ComponentTransform(GameObject* parent);
+	ComponentTransform(const ComponentTransform& componentTransform);
 	~ComponentTransform();
 
 	void Update();
@@ -27,9 +28,6 @@ public:
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
-
-	void OnGameMode();
-	void OnEditorMode();
 
 public:
 

@@ -41,7 +41,7 @@ bool PanelHierarchy::Draw()
 		}
 
 		char name[DEFAULT_BUF_SIZE];
-		sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", root->GetName(), root->UUID);
+		sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", root->GetName(), root->GetUUID());
 
 		if (ImGui::TreeNodeEx(name))
 		{
@@ -80,7 +80,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			GameObject* child = root->GetChild(i);
 
 			char name[DEFAULT_BUF_SIZE];
-			sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", child->GetName(), child->UUID);
+			sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", child->GetName(), child->GetUUID());
 
 			if (child->HasChildren())
 			{

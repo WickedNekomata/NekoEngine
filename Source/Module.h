@@ -64,9 +64,15 @@ public:
 
 	void SetActive(bool enable) { this->enabled = enable; }
 
+	bool IsGame() const { return game; }
+
+	void SetGame(bool game) { this->game = game; }
+
 protected:
 
 	char* name = "NoName";
+
+	bool game = false;
 
 private:
 

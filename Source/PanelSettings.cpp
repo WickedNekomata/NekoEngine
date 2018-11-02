@@ -66,6 +66,12 @@ bool PanelSettings::Draw()
 				SceneNode();
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNode("Time Manager"))
+		{
+			if (App->timeManager->IsActive())
+				TimeManagerNode();
+			ImGui::TreePop();
+		}
 	}
 	ImGui::End();
 
@@ -320,6 +326,35 @@ void PanelSettings::SceneNode() const
 		RecursiveDrawQuadtreeHierarchy(root);
 		ImGui::TreePop();
 	}
+}
+
+void PanelSettings::TimeManagerNode() const
+{
+	ImGui::Text("GAME CLOCK");
+	ImGui::Spacing();
+
+	ImGui::Text("Game time scale:");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetTimeScale());
+
+	ImGui::Text("Time since game start (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetTime());
+
+	ImGui::Text("Game time dt (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetDt());
+
+	ImGui::Separator();
+
+	ImGui::Text("REAL TIME CLOCK");
+	ImGui::Spacing();
+
+	ImGui::Text("Frame count:");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->timeManager->GetFrameCount());
+
+	ImGui::Text("Real time since startup (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTimeSinceStartup());
+
+	ImGui::Text("Real time dt (seconds):");
+	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTimeDeltaTime());
 }
 
 void PanelSettings::AddInput(const char* input)

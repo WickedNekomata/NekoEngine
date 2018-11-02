@@ -11,6 +11,11 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 	mesh = new Mesh();
 }
 
+ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::Mesh_Component)
+{
+	mesh = componentMesh.mesh;
+}
+
 ComponentMesh::~ComponentMesh()
 {
 	RELEASE(mesh);
@@ -63,14 +68,4 @@ void ComponentMesh::OnInternalSave(JSON_Object* file)
 void ComponentMesh::OnLoad(JSON_Object* file)
 {
 	// LOAD MESH
-}
-
-void ComponentMesh::OnGameMode()
-{
-
-}
-
-void ComponentMesh::OnEditorMode()
-{
-
 }

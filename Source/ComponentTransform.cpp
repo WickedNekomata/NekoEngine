@@ -4,10 +4,18 @@
 #include "ComponentCamera.h"
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 #include <list>
 
 ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}
+
+ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::Transform_Component)
+{
+	position = componentTransform.position;
+	rotation = componentTransform.rotation;
+	scale = componentTransform.scale;
+}
 
 ComponentTransform::~ComponentTransform()
 {
@@ -18,6 +26,11 @@ void ComponentTransform::Update() {}
 
 void ComponentTransform::OnUniqueEditor()
 {
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool seenLastFrame = parent->GetSeenLastFrame();
+	ImGui::Checkbox("Seen last frame", &seenLastFrame);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	math::float3 lastPosition = position;
@@ -120,14 +133,4 @@ void ComponentTransform::OnLoad(JSON_Object* file)
 	scale.x = json_object_get_number(file, "ScaleX");
 	scale.y = json_object_get_number(file, "ScaleY");
 	scale.z = json_object_get_number(file, "ScaleZ");
-}
-
-void ComponentTransform::OnGameMode()
-{
-
-}
-
-void ComponentTransform::OnEditorMode()
-{
-
 }

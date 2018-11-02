@@ -36,7 +36,7 @@ public:
 	void SetComponentToDelete(Component* toDelete);
 
 	GameObject* GetGameObject(uint index) const;
-	GameObject* GetGameObjectbyUUID(uint UUID) const;
+	GameObject* GetGameObjectByUUID(uint UUID) const;
 	uint GetGameObjectsLength() const;
 
 	void RecalculateQuadtree();
@@ -45,17 +45,20 @@ public:
 	void SerializeScene();
 	bool LoadScene(char* fileName);
 
+public:
+
+	char* nameScene = nullptr;
+
 private:
+
+	bool serializeScene = false;
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> gameObjectsToDelete;
 	std::vector<Component*> componentsToDelete;
 
-	bool serializeScene = false;
-
-public:
-
-	char* nameScene;
+	// OnGameMode / OnEditorMode
+	std::vector<GameObject*> tmpGameObjects;
 };
 
 #endif

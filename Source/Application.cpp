@@ -108,7 +108,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->PreUpdate(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->PreUpdate(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->PreUpdate(dt);
+		}
 		++item;
 	}
 
@@ -116,7 +121,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->Update(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->Update(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->Update(dt);
+		}
 		++item;
 	}
 
@@ -124,7 +134,12 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		if ((*item)->IsActive())
-			ret = (*item)->PostUpdate(dt);
+		{
+			if ((*item)->IsGame())
+				ret = (*item)->PostUpdate(dt * App->timeManager->GetTimeScale());
+			else
+				ret = (*item)->PostUpdate(dt);
+		}
 		++item;
 	}
 
@@ -166,6 +181,40 @@ void Application::LogGui(const char* log) const
 void Application::PrepareUpdate()
 {
 	perfTimer.Start();
+
+	switch (engineState)
+	{
+	case engine_states::ENGINE_WANTS_PLAY:
+
+		// Save the scene and enter game mode
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+			(*item)->OnGameMode();
+
+		engineState = engine_states::ENGINE_PLAY;
+		break;
+
+	case engine_states::ENGINE_WANTS_PAUSE:
+	case engine_states::ENGINE_PAUSE:
+
+		dt = 0.0;
+
+		engineState = engine_states::ENGINE_PAUSE;
+		break;
+
+	case engine_states::ENGINE_WANTS_EDITOR:
+
+		// Load the scene and enter editor mode
+		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
+			(*item)->OnEditorMode();
+
+		engineState = engine_states::ENGINE_EDITOR;
+		break;
+
+	case engine_states::ENGINE_PLAY:
+	case engine_states::ENGINE_EDITOR:
+	default:
+		break;
+	}
 }
 
 void Application::FinishUpdate()
@@ -331,35 +380,26 @@ std::vector<float> Application::GetMsTrack() const
 	return msTrack;
 }
 
-
 void Application::Play()
 {
 	switch (engineState)
 	{
-	case engine_states::ENGINE_EDITOR:
-
-		// Save the scene and enter game mode
-		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-			(*item)->OnGameMode();
-
-		engineState = engine_states::ENGINE_PLAY;
-		break;
-
+	case engine_states::ENGINE_PLAY:
 	case engine_states::ENGINE_PAUSE:
 
-		// Play again
-		engineState = engine_states::ENGINE_PLAY;
+		// Enter editor mode
+		engineState = engine_states::ENGINE_WANTS_EDITOR;
 		break;
 
-	case engine_states::ENGINE_PLAY:
+	case engine_states::ENGINE_EDITOR:
 
-		// Load the scene and enter editor mode
-		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-			(*item)->OnEditorMode();
-
-		engineState = engine_states::ENGINE_EDITOR;
+		// Enter play mode
+		engineState = engine_states::ENGINE_WANTS_PLAY;
 		break;
 
+	case engine_states::ENGINE_WANTS_PLAY:
+	case engine_states::ENGINE_WANTS_PAUSE:
+	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}
@@ -372,7 +412,7 @@ void Application::Pause()
 	case engine_states::ENGINE_PLAY:
 
 		// Pause
-		engineState = engine_states::ENGINE_PAUSE;
+		engineState = engine_states::ENGINE_WANTS_PAUSE;
 		break;
 
 	case engine_states::ENGINE_PAUSE:
@@ -382,6 +422,9 @@ void Application::Pause()
 		break;
 
 	case engine_states::ENGINE_EDITOR:
+	case engine_states::ENGINE_WANTS_PLAY:
+	case engine_states::ENGINE_WANTS_PAUSE:
+	case engine_states::ENGINE_WANTS_EDITOR:
 	default:
 		break;
 	}

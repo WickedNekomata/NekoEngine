@@ -40,6 +40,7 @@ public:
 	void AddInput(uint key, uint state) const;
 
 	bool IsMouseHoveringAnyWindow();
+	bool IsAnyItemFocused();
 
 public:
 

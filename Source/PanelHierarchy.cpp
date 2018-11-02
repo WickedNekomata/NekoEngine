@@ -12,14 +12,12 @@ PanelHierarchy::~PanelHierarchy() {}
 
 bool PanelHierarchy::Draw()
 {
-	ImGui::SetNextWindowPos({ 0,(float)App->window->GetWindowHeight() - 200 }, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({ (float)App->window->GetWindowWidth() - 300,200 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags hierarchyFlags = 0;
 	hierarchyFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	hierarchyFlags |= ImGuiWindowFlags_NoSavedSettings;
 	hierarchyFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled, hierarchyFlags))
+	if (ImGui::Begin(name, &enabled))
 	{
 		static char sceneName[INPUT_BUF_SIZE];
 		strcpy_s(sceneName, IM_ARRAYSIZE(sceneName), App->GOs->nameScene);

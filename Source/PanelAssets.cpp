@@ -18,7 +18,7 @@ bool PanelAssets::Draw()
 	assetsFlags |= ImGuiWindowFlags_NoSavedSettings;
 	assetsFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled, assetsFlags))
+	if (ImGui::Begin(name, &enabled))
 	{
 		if (ImGui::TreeNodeEx("Assets"))
 		{

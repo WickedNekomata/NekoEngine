@@ -13,14 +13,12 @@ PanelConsole::~PanelConsole()
 
 bool PanelConsole::Draw()
 {
-	ImGui::SetNextWindowPos({ 0,(float)App->window->GetWindowHeight() - 200 }, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({ (float)App->window->GetWindowWidth() - 300,200 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags consoleFlags = 0;
 	consoleFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 	consoleFlags |= ImGuiWindowFlags_NoSavedSettings;
 	consoleFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled, consoleFlags))
+	if (ImGui::Begin(name, &enabled))
 	{
 		if (ImGui::SmallButton("Clear"))
 		{

@@ -49,7 +49,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 			tri.a = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
 			tri.b = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
 			tri.c = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
-
+			App->camera->tris.push_back(tri);
 			float distance;
 			math::float3 hitPoint;
 			if (localSpaceSegment.Intersects(tri, &distance, &hitPoint))

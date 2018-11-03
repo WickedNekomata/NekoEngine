@@ -78,7 +78,7 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
 	// TODO: delete this, it is just for debug purposes...
-	position.x += App->timeManager->GetDt();
+	//position.x += App->timeManager->GetDt();
 
 	if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z
 		|| lastRotation.x != rotation.x || lastRotation.y != rotation.y || lastRotation.z != rotation.z || lastRotation.w != rotation.w

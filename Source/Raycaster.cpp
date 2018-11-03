@@ -44,12 +44,12 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		localSpaceSegment.Transform(hits[i]->transform->GetGlobalMatrix().Inverted());
 
 		currentMesh = hits[i]->meshRenderer->mesh;
-		for (uint j = 0u; j < currentMesh->indicesSize;)
+		for (int j = 0; j < currentMesh->indicesSize;)
 		{
-			tri.a = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
-			tri.b = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
-			tri.c = math::float3(currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]], currentMesh->vertices[currentMesh->indices[j++]]);
-			App->camera->tris.push_back(tri);
+			tri.a = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
+			tri.b = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
+			tri.c = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
+
 			float distance;
 			math::float3 hitPoint;
 			if (localSpaceSegment.Intersects(tri, &distance, &hitPoint))

@@ -111,19 +111,6 @@ update_status ModuleCameraEditor::Update()
 		App->scene->currentGameObject = hitGO;
 	}
 
-	for (int i = 0; i < tris.size(); ++i)
-	{
-		glDisable(GL_CULL_FACE);
-		glBegin(GL_TRIANGLES);
-		glVertex3f(tris[i].a.x, tris[i].a.y, tris[i].a.z);
-		glVertex3f(tris[i].b.x, tris[i].b.y, tris[i].b.z);
-		glVertex3f(tris[i].c.x, tris[i].c.y, tris[i].c.z);
-
-		glEnd();
-
-
-	}
-
 	return UPDATE_CONTINUE;
 }
 

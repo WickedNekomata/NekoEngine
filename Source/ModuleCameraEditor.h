@@ -7,7 +7,6 @@
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 
-#include "MathGeoLib/include/Geometry/Triangle.h"
 struct ComponentCamera;
 
 class ModuleCameraEditor : public Module
@@ -27,7 +26,6 @@ public:
 public:
 
 	ComponentCamera* camera = nullptr;
-	std::vector<math::Triangle> tris;
 };
 
 #endif

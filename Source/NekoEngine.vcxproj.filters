@@ -573,8 +573,9 @@
     <ClInclude Include="SceneImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="GameMode.h">
-      <Filter>Sources\Modules</Filter>
+      <Filter>Sources\Modules\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -800,6 +801,7 @@
     <ClCompile Include="SceneImporter.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">

@@ -68,9 +68,12 @@ bool PanelInspector::Draw()
 			for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 			{
 				ImGui::Separator();
+				DragnDropSeparatorTarget(gameObject->GetComponent(i));
 				gameObject->GetComponent(i)->OnEditor();
 			}
 			ImGui::Separator();
+			DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
+
 			ImGui::Button("Add Component");
 			if (ImGui::BeginPopupContextItem((const char*)0, 0))
 			{
@@ -98,6 +101,19 @@ bool PanelInspector::Draw()
 	ImGui::End();
 
 	return true;
+}
+
+void PanelInspector::DragnDropSeparatorTarget(Component* target)
+{
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMPONENTS_INSPECTOR"))
+		{
+			Component* payload_n = *(Component**)payload->Data;
+			target->GetParent()->ReorderComponents(payload_n, target);
+		}
+		ImGui::EndDragDropTarget();
+	}
 }
 
 #endif // GAME

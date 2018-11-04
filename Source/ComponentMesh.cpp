@@ -28,7 +28,27 @@ void ComponentMesh::Update() {}
 
 void ComponentMesh::OnUniqueEditor()
 {
-	ImGui::Text("Mesh");
+	ImGui::Text("Mesh:");
+
+	ImGui::SameLine();
+
+	ImGui::ColorButton("##currentMesh", ImVec4(0.0f,0.0f,0.0f,0.213f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreview, ImVec2(16, 16));
+	
+	if (ImGui::IsItemHovered())
+	{ 
+		ImGui::BeginTooltip();
+		ImGui::Text("ID: 1231");
+		ImGui::EndTooltip();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+		{
+			
+		}
+		ImGui::EndDragDropTarget();
+	}
 
 	// https://github.com/ocornut/imgui/issues/1566
 

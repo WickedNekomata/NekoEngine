@@ -1,5 +1,6 @@
 #include "PanelDebugDraw.h"
 
+#ifndef GAMEMODE
 #include "Application.h"
 
 #include "ImGui/imgui.h"
@@ -50,3 +51,5 @@ bool PanelDebugDraw::Draw()
 
 	return true;
 }
+
+#endif

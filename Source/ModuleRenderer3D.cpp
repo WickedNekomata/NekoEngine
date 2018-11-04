@@ -157,6 +157,11 @@ update_status ModuleRenderer3D::PostUpdate()
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
+		for (uint i = 0; i < cameraComponents.size(); ++i)
+		{
+			cameraComponents[i]->UpdateTransform();
+		}
+
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			if (meshComponents[i]->GetParent()->GetSeenLastFrame())

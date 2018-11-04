@@ -83,7 +83,8 @@ GameObject::~GameObject()
 	}
 }
 
-void GameObject::Update() {}
+void GameObject::Update() {
+}
 
 void GameObject::SetParent(GameObject* parent)
 {

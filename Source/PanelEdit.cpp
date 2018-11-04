@@ -1,5 +1,6 @@
 #include "PanelEdit.h"
 
+#ifndef GAMEMODE
 #include "Application.h"
 #include "ModuleGui.h"
 
@@ -198,3 +199,5 @@ bool PanelEdit::Draw()
 
 	return true;
 }
+
+#endif

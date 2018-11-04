@@ -3,6 +3,8 @@
 
 #include "Panel.h"
 
+#ifndef GAMEMODE
+
 class PanelEdit : public Panel
 {
 public:
@@ -12,5 +14,7 @@ public:
 
 	bool Draw();
 };
+
+#endif
 
 #endif

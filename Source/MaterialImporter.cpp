@@ -104,7 +104,8 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			{
 				if (App->filesystem->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
 				{
-					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFileName);
+					// TODO CHECK CRASH
+					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFileName);
 					ret = true;
 				}
 				else

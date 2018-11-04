@@ -94,10 +94,12 @@ void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
 {
 	this->currentGameObject = currentGameObject;
 
+#ifndef GAMEMODE
 	if (currentGameObject != nullptr)
 		App->camera->SetReference(currentGameObject->transform->position);
 	else
 		App->camera->SetReference(math::float3(0.0f, 0.0f, 0.0f));
+#endif
 }
 
 GameObject* ModuleScene::GetCurrentGameObject() const

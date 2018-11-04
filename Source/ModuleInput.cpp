@@ -57,12 +57,16 @@ update_status ModuleInput::PreUpdate()
 			if (keyboard[i] == KEY_IDLE)
 			{
 				keyboard[i] = KEY_DOWN;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_DOWN);
+#endif
 			}
 			else
 			{
 				keyboard[i] = KEY_REPEAT;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_REPEAT);
+#endif
 			}
 		}
 		else
@@ -70,7 +74,9 @@ update_status ModuleInput::PreUpdate()
 			if (keyboard[i] == KEY_REPEAT || keyboard[i] == KEY_DOWN)
 			{
 				keyboard[i] = KEY_UP;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_UP);
+#endif
 			}
 			else
 				keyboard[i] = KEY_IDLE;
@@ -91,12 +97,16 @@ update_status ModuleInput::PreUpdate()
 			if (mouse_buttons[i] == KEY_IDLE)
 			{
 				mouse_buttons[i] = KEY_DOWN;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_DOWN);
+#endif
 			}
 			else
 			{
 				mouse_buttons[i] = KEY_REPEAT;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_REPEAT);
+#endif
 			}
 		}
 		else
@@ -104,7 +114,9 @@ update_status ModuleInput::PreUpdate()
 			if (mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN)
 			{
 				mouse_buttons[i] = KEY_UP;
+#ifndef GAMEMODE
 				App->gui->AddInput(i, KEY_UP);
+#endif
 			}
 			else
 				mouse_buttons[i] = KEY_IDLE;

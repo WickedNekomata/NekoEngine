@@ -64,13 +64,11 @@ bool ModuleScene::Start()
 	//Texture* texture = new Texture();
 	//App->materialImporter->Load(outputFile.data(), texture);
 
-
 	return ret;
 }
 
 update_status ModuleScene::Update()
 {
-	//ImGuizmo::Enable(true);
 	if (currentGameObject != nullptr)
 		OnCurrentGameObjectGizmos();
 
@@ -110,14 +108,10 @@ GameObject* ModuleScene::GetCurrentGameObject() const
 void ModuleScene::OnCurrentGameObjectGizmos() const
 {
 	ImGuizmo::Enable(true);
+
 	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-
-	//, projMatrix, ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, matrix);
-
-	//ImGuizmo::SetRect(0,0, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
-
-	ImGuizmo::Enable(true);
 	if (ImGuizmo::IsUsing())
 	{
 		switch (currentImGuizmoOperation)
@@ -130,14 +124,15 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 			break;
 		}
 	}
-	ImGuizmo::SetRect(ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
+
+	//ImGuizmo::SetRect(ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
 
 	ImGuizmo::Manipulate(
-		App->camera->camera->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
+		App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
 		currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
 	);
 
-	ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
+	//ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 
 	//ImGuizmo::DrawCube(App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 }

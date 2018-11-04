@@ -24,7 +24,6 @@ ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Compo
 {
 	cameraFrustum = componentCamera.cameraFrustum;
 
-	play = componentCamera.play;
 	frustumCulling = componentCamera.frustumCulling;
 	mainCamera = componentCamera.mainCamera;
 }
@@ -104,17 +103,6 @@ float* ComponentCamera::GetOpenGLViewMatrix()
 float* ComponentCamera::GetOpenGLProjectionMatrix()
 {
 	return cameraFrustum.ProjectionMatrix().Transposed().ptr();
-}
-
-void ComponentCamera::SetPlay(bool play)
-{
-	this->play = play;
-	// TODO
-}
-
-bool ComponentCamera::IsPlay() const
-{
-	return play;
 }
 
 void ComponentCamera::SetFrustumCulling(bool frustumCulling)

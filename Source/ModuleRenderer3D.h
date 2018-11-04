@@ -72,6 +72,7 @@ public:
 	bool RecalculateMainCamera();
 	bool SetMainCamera(ComponentCamera* mainCamera);
 	ComponentCamera* GetMainCamera() const;
+	ComponentCamera* GetCurrentCamera() const;
 
 	bool SetMainCameraAsCurrentCamera();
 

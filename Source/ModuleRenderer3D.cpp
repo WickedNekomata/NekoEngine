@@ -475,6 +475,10 @@ bool ModuleRenderer3D::SetMainCameraAsCurrentCamera()
 	return currentCamera == mainCamera;
 }
 
+ComponentCamera* ModuleRenderer3D::GetCurrentCamera() const
+{
+	return currentCamera;
+}
 
 void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)
 {

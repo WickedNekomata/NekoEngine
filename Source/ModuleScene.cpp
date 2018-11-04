@@ -8,8 +8,8 @@
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "DebugDrawer.h"
-
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
 #include <list>
@@ -67,8 +67,12 @@ bool ModuleScene::Start()
 	return ret;
 }
 
-update_status ModuleScene::Update(float dt)
+update_status ModuleScene::Update()
 {
+	//ImGuizmo::Enable(true);
+	if (App->scene->currentGameObject != nullptr)
+		App->scene->OnCurrentGameObjectGizmos();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -85,6 +89,54 @@ void ModuleScene::Draw() const
 {
 	if (showGrid)
 		grid->Render();
+}
+
+void ModuleScene::OnCurrentGameObjectGizmos() const
+{
+	ImGuizmo::Manipulate(
+		App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
+		currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
+	);
+
+
+
+	if (ImGuizmo::IsUsing())
+	{
+		switch (currentImGuizmoOperation)
+		{
+		case ImGuizmo::OPERATION::BOUNDS:
+			break;
+		case ImGuizmo::OPERATION::TRANSLATE:
+			break;
+		case ImGuizmo::OPERATION::ROTATE:
+			break;
+		case ImGuizmo::OPERATION::SCALE:
+			break;
+		}
+	}
+
+	//ImGui::ImGuiIO& io = ImGui::GetIO();
+	//ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+}
+
+void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)
+{
+	currentImGuizmoOperation = operation;
+}
+
+ImGuizmo::OPERATION ModuleScene::GetImGuizmoOperation() const
+{
+	return currentImGuizmoOperation;
+}
+
+void ModuleScene::SetImGuizmoMode(ImGuizmo::MODE mode)
+{
+	currentImGuizmoMode = mode;
+}
+
+ImGuizmo::MODE ModuleScene::GetImGuizmoMode() const
+{
+	return currentImGuizmoMode;
 }
 
 bool ModuleScene::GetShowGrid() const

@@ -28,9 +28,6 @@ public:
 	float* GetOpenGLViewMatrix();
 	float* GetOpenGLProjectionMatrix();
 
-	void SetPlay(bool play);
-	bool IsPlay() const;
-
 	void SetFrustumCulling(bool frustumCulling);
 	bool HasFrustumCulling() const;
 
@@ -46,7 +43,6 @@ public:
 
 private:
 
-	bool play = false;
 	bool frustumCulling = true;
 	bool mainCamera = false;
 };

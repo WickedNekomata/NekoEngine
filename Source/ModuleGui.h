@@ -9,13 +9,15 @@
 
 #include <vector>
 
-struct Panel;
-struct PanelInspector;
-struct PanelAbout;
-struct PanelConsole;
-struct PanelSettings;
-struct PanelHierarchy;
-struct PanelAssets;
+class Panel;
+class PanelInspector;
+class PanelAbout;
+class PanelConsole;
+class PanelSettings;
+class PanelHierarchy;
+class PanelAssets;
+class PanelDebugDraw;
+class PanelEdit;
 
 struct Texture;
 
@@ -51,12 +53,17 @@ public:
 
 public:
 
-	PanelInspector* panelInspector = nullptr;
-	PanelAbout* panelAbout = nullptr;
-	PanelConsole* panelConsole = nullptr;
-	PanelSettings* panelSettings = nullptr;
-	PanelHierarchy* panelHierarchy = nullptr;
-	PanelAssets* panelAssets = nullptr;
+	PanelInspector*	panelInspector = nullptr;
+	PanelAbout*		panelAbout = nullptr;
+	PanelConsole*	panelConsole = nullptr;
+	PanelSettings*	panelSettings = nullptr;
+	PanelHierarchy*	panelHierarchy = nullptr;
+	PanelAssets*	panelAssets = nullptr;
+	PanelDebugDraw* panelDebugDraw = nullptr;
+	PanelEdit*		panelEdit = nullptr;
+
+	Texture* timeTex = nullptr;
+	Texture* gizmosTex = nullptr;
 
 private:
 
@@ -64,8 +71,6 @@ private:
 
 	bool showSaveScenePopUp = false;
 	bool showLoadScenePopUp = false;
-
-	Texture* timeButtonTex = nullptr;
 };
 
 #endif

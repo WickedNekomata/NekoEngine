@@ -17,10 +17,8 @@ bool PanelHierarchy::Draw()
 {
 	ImGuiWindowFlags hierarchyFlags = 0;
 	hierarchyFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	hierarchyFlags |= ImGuiWindowFlags_NoSavedSettings;
-	hierarchyFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled))
+	if (ImGui::Begin(name, &enabled, hierarchyFlags))
 	{
 		static char sceneName[INPUT_BUF_SIZE];
 		strcpy_s(sceneName, IM_ARRAYSIZE(sceneName), App->GOs->nameScene);

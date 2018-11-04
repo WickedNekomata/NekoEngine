@@ -21,10 +21,8 @@ bool PanelInspector::Draw()
 {
 	ImGuiWindowFlags inspectorFlags = 0;
 	inspectorFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	inspectorFlags |= ImGuiWindowFlags_NoSavedSettings;
-	inspectorFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
-	
-	if (ImGui::Begin(name, &enabled))
+
+	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
 		if (App->scene->currentGameObject != nullptr)
 		{

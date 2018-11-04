@@ -20,11 +20,8 @@ PanelSettings::~PanelSettings() {}
 
 bool PanelSettings::Draw()
 {
-	ImGui::SetNextWindowPos({ 20,80 }, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({ 400,400 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags settingsFlags = 0;
 	settingsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	settingsFlags |= ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin(name, &enabled, settingsFlags))
 	{

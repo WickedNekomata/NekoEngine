@@ -19,10 +19,8 @@ bool PanelConsole::Draw()
 {
 	ImGuiWindowFlags consoleFlags = 0;
 	consoleFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	consoleFlags |= ImGuiWindowFlags_NoSavedSettings;
-	consoleFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled))
+	if (ImGui::Begin(name, &enabled, consoleFlags))
 	{
 		if (ImGui::SmallButton("Clear"))
 		{

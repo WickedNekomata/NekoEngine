@@ -15,7 +15,6 @@ void ModuleTimeManager::PrepareUpdate()
 
 	// Dt
 	realDt = App->GetDt();
-	dt = realDt * timeScale;
 
 	// Time
 	realTime += realDt;
@@ -23,6 +22,7 @@ void ModuleTimeManager::PrepareUpdate()
 	switch (App->GetEngineState())
 	{
 	case engine_states::ENGINE_PLAY:
+		dt = realDt * timeScale;
 		time += dt;
 		break;
 

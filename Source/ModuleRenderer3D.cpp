@@ -151,9 +151,9 @@ update_status ModuleRenderer3D::PostUpdate()
 	// 1. Level geometry
 	App->scene->Draw();
 
-	if (mainCamera != nullptr)
+	if (currentCamera != nullptr)
 	{
-		if (mainCamera->HasFrustumCulling())
+		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
@@ -163,8 +163,8 @@ update_status ModuleRenderer3D::PostUpdate()
 		}
 	}
 
-	// 2. Debug geometry
 #ifndef GAMEMODE
+	// 2. Debug geometry
 	if (debugDraw)
 	{
 		App->debugDrawer->StartDebugDraw();
@@ -189,7 +189,6 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	// 3. Editor
 	App->gui->Draw();
-
 #endif // GAME
 
 	// 4. Swap buffers
@@ -223,17 +222,17 @@ void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 	SetVSync(json_object_get_boolean(jObject, "vSync"));
 }
 
-void ModuleRenderer3D::OnGameMode()
+bool ModuleRenderer3D::OnGameMode()
 {
-	if (RecalculateMainCamera())
-		currentCamera = mainCamera;
+	return SetCurrentCamera();
 }
 
-void ModuleRenderer3D::OnEditorMode()
+bool ModuleRenderer3D::OnEditorMode()
 {
 #ifndef GAMEMODE
 	currentCamera = App->camera->camera;
-#endif // !GAME
+#endif // GAME
+	return true;
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -452,12 +451,24 @@ bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 	bool ret = mainCamera != nullptr;
 
 	if (ret)
-	{
 		this->mainCamera = mainCamera;
-		SetMeshComponentsSeenLastFrame(!mainCamera->HasFrustumCulling());
-	}
 	else
 		CONSOLE_LOG("Main Camera could not be set");
+
+	return ret;
+}
+
+bool ModuleRenderer3D::SetCurrentCamera()
+{
+	bool ret = RecalculateMainCamera();
+
+	if (ret)
+	{
+		currentCamera = mainCamera;
+		SetMeshComponentsSeenLastFrame(!currentCamera->HasFrustumCulling());
+	}
+	else
+		CONSOLE_LOG("Current Camera could not be set");
 
 	return ret;
 }
@@ -465,14 +476,6 @@ bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 ComponentCamera* ModuleRenderer3D::GetMainCamera() const
 {
 	return mainCamera;
-}
-
-bool ModuleRenderer3D::SetMainCameraAsCurrentCamera()
-{
-	if (mainCamera != nullptr)
-		currentCamera = mainCamera;
-
-	return currentCamera == mainCamera;
 }
 
 ComponentCamera* ModuleRenderer3D::GetCurrentCamera() const
@@ -493,7 +496,7 @@ void ModuleRenderer3D::FrustumCulling() const
 
 	// Static objects (test against Quadtree)
 	std::vector<GameObject*> objects;
-	App->scene->quadtree.CollectIntersections(objects, mainCamera->frustum);
+	App->scene->quadtree.CollectIntersections(objects, currentCamera->frustum);
 
 	for (uint i = 0; i < objects.size(); ++i)
 		objects[i]->SetSeenLastFrame(true);
@@ -503,7 +506,7 @@ void ModuleRenderer3D::FrustumCulling() const
 	{
 		if (!meshComponents[i]->GetParent()->IsStatic())
 		{
-			if (mainCamera->frustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
+			if (currentCamera->frustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
 				meshComponents[i]->GetParent()->SetSeenLastFrame(true);
 		}
 	}

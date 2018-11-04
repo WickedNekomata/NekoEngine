@@ -71,7 +71,7 @@ bool ModuleGOs::CleanUp()
 	return true;
 }
 
-void ModuleGOs::OnGameMode()
+bool ModuleGOs::OnGameMode()
 {
 	/*
 	// Save scene in memory
@@ -85,9 +85,11 @@ void ModuleGOs::OnGameMode()
 		tmpGameObjects.push_back(tmpGameObject);
 	}
 	*/
+
+	return true;
 }
 
-void ModuleGOs::OnEditorMode()
+bool ModuleGOs::OnEditorMode()
 {
 	/*
 	// Load scene from memory
@@ -117,6 +119,8 @@ void ModuleGOs::OnEditorMode()
 		gameObjects[i]->SetParent(parent);
 	}
 	*/
+
+	return true;
 }
 
 GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)

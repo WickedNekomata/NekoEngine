@@ -54,9 +54,9 @@ public:
 
 	virtual void LoadStatus(const JSON_Object*) {};
 
-	virtual void OnGameMode() {};
+	virtual bool OnGameMode() { return true; };
 
-	virtual void OnEditorMode() {};
+	virtual bool OnEditorMode() { return true; };
 
 	inline char* GetName() const { return name; }
 

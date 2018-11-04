@@ -44,7 +44,7 @@ public:
 private:
 
 	bool frustumCulling = true;
-	bool mainCamera = false;
+	bool mainCamera = true;
 };
 
 #endif

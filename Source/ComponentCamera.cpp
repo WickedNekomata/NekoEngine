@@ -53,11 +53,7 @@ void ComponentCamera::OnUniqueEditor()
 	if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
 		SetFOV(fov);
 
-	if (ImGui::Checkbox("Frustum Culling", &frustumCulling))
-	{
-		if (this == App->renderer3D->GetMainCamera())
-			App->renderer3D->SetMeshComponentsSeenLastFrame(!frustumCulling);
-	}
+	if (ImGui::Checkbox("Frustum Culling", &frustumCulling));
 
 	if (frustumCulling)
 	{
@@ -71,7 +67,6 @@ void ComponentCamera::OnUniqueEditor()
 		ImGui::SameLine();
 		ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
 	}
-	
 }
 
 void ComponentCamera::SetFOV(float fov)

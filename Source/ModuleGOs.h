@@ -20,8 +20,8 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	void OnGameMode();
-	void OnEditorMode();
+	bool OnGameMode();
+	bool OnEditorMode();
 
 	GameObject* CreateGameObject(char* name, GameObject* parent);
 	void DeleteGameObject(const char* name);

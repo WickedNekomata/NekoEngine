@@ -174,28 +174,48 @@ void Application::PrepareUpdate()
 	switch (engineState)
 	{
 	case engine_states::ENGINE_WANTS_PLAY:
+	{
+		bool ret = true;
 
 		// Save the scene and enter game mode
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-			(*item)->OnGameMode();
+		{
+			if (!(*item)->OnGameMode())
+			{
+				engineState = engine_states::ENGINE_EDITOR;
+				ret = false;
+				break;
+			}
+		}
 
-		engineState = engine_states::ENGINE_PLAY;
+		if (ret)
+			engineState = engine_states::ENGINE_PLAY;
 		break;
-
+	}
 	case engine_states::ENGINE_WANTS_PAUSE:
 
 		engineState = engine_states::ENGINE_PAUSE;
 		break;
 
 	case engine_states::ENGINE_WANTS_EDITOR:
+	{
+		bool ret = true;
 
 		// Load the scene and enter editor mode
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-			(*item)->OnEditorMode();
+		{
+			if (!(*item)->OnEditorMode())
+			{
+				engineState = engine_states::ENGINE_PLAY;
+				ret = false;
+				break;
+			}
+		}
 
-		engineState = engine_states::ENGINE_EDITOR;
+		if (ret)
+			engineState = engine_states::ENGINE_EDITOR;
 		break;
-
+	}
 	case engine_states::ENGINE_WANTS_STEP:
 
 		engineState = engine_states::ENGINE_STEP;
@@ -252,7 +272,7 @@ void Application::Load()
 		window->SetTitle(GetAppName());
 		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
 		SetCapFrames(json_object_get_boolean(modulejObject, "Cap Frames"));
-		SetMaxFramerate(json_object_get_boolean(modulejObject, "Max FPS"));
+		SetMaxFramerate(json_object_get_number(modulejObject, "Max FPS"));
 
 		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
 		{

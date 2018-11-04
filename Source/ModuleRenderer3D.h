@@ -36,8 +36,8 @@ public:
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
 
-	void OnGameMode();
-	void OnEditorMode();
+	bool OnGameMode();
+	bool OnEditorMode();
 
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
@@ -71,10 +71,9 @@ public:
 
 	bool RecalculateMainCamera();
 	bool SetMainCamera(ComponentCamera* mainCamera);
+	bool SetCurrentCamera();
 	ComponentCamera* GetMainCamera() const;
 	ComponentCamera* GetCurrentCamera() const;
-
-	bool SetMainCameraAsCurrentCamera();
 
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;

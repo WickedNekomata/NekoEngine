@@ -73,7 +73,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-				if (App->scene->GetCurrentGameObject == child)
+				if (App->scene->GetCurrentGameObject() == child)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 				bool treeNodeOpened = false;

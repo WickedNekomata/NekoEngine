@@ -25,6 +25,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
+
 	void SetReference(const math::float3& reference);
 	void SetReferenceRadius(float referenceRadius);
 
@@ -38,6 +41,10 @@ public:
 private:
 
 	math::float3 reference = { 0.0f,0.0f,0.0f };
+
+	float movementSpeed = 0.0f;
+	float rotationSpeed = 0.0f;
+	float zoomSpeed = 0.0f;
 	float referenceRadius = 0.0f;
 };
 

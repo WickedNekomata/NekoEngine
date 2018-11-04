@@ -18,14 +18,9 @@
 
 // Reference: https://learnopengl.com/Getting-started/Camera
 
-#define MOVEMENT_SPEED 5.0f
-#define ROTATION_SPEED 10.0f
-#define ZOOM_SPEED 10.0f
-#define DEFAULT_RADIUS 10.0f
-
 ModuleCameraEditor::ModuleCameraEditor(bool start_enabled) : Module(start_enabled)
 {
-	name = "Camera3D";
+	name = "CameraEditor";
 	camera = new ComponentCamera(nullptr);
 }
 
@@ -36,7 +31,8 @@ ModuleCameraEditor::~ModuleCameraEditor()
 
 bool ModuleCameraEditor::Init(JSON_Object* jObject)
 {
-	// TODO: Save camera properties like speed in config file
+	LoadStatus(jObject);
+
 	return true;
 }
 
@@ -47,7 +43,6 @@ bool ModuleCameraEditor::Start()
 	CONSOLE_LOG("Setting up the camera");
 
 	camera->frustum.pos = { 0.0f,1.0f,-5.0f };
-	referenceRadius = DEFAULT_RADIUS;
 
 	return ret;
 }
@@ -73,7 +68,7 @@ update_status ModuleCameraEditor::Update()
 		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
 			offsetPosition += camera->frustum.up;
 
-		float cameraMovementSpeed = MOVEMENT_SPEED * App->timeManager->GetRealDt();
+		float cameraMovementSpeed = movementSpeed * App->timeManager->GetRealDt();
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
 			cameraMovementSpeed *= 2.0f; // double speed
@@ -86,7 +81,7 @@ update_status ModuleCameraEditor::Update()
 
 		if (dx != 0 || dy != 0)
 		{
-			float cameraRotationSpeed = ROTATION_SPEED * App->timeManager->GetRealDt();
+			float cameraRotationSpeed = rotationSpeed * App->timeManager->GetRealDt();
 
 			LookAround(camera->frustum.pos, (float)dy * cameraRotationSpeed, (float)dx * cameraRotationSpeed);
 		}
@@ -96,7 +91,7 @@ update_status ModuleCameraEditor::Update()
 	int mouseWheel = App->input->GetMouseZ();
 	if (mouseWheel != 0)
 	{
-		float cameraZoomSpeed = ZOOM_SPEED * App->timeManager->GetRealDt();
+		float cameraZoomSpeed = zoomSpeed * App->timeManager->GetRealDt();
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
 			cameraZoomSpeed *= 0.5f; // half speed
@@ -118,19 +113,20 @@ update_status ModuleCameraEditor::Update()
 
 		if (dx != 0 || dy != 0)
 		{
-			float cameraRotationSpeed = ROTATION_SPEED * App->timeManager->GetRealDt();
+			float cameraRotationSpeed = rotationSpeed * App->timeManager->GetRealDt();
 
 			LookAround(reference, (float)dy * cameraRotationSpeed, (float)dx * cameraRotationSpeed);
 		}
 	}
 
+	// Select game object
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow())
 	{
 		float distance;
 		math::float3 hitPoint;
-		GameObject* hitGO = nullptr;
-		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGO);
-		App->scene->SetCurrentGameObject(hitGO);
+		GameObject* hitGameObject = nullptr;
+		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGameObject);
+		App->scene->SetCurrentGameObject(hitGameObject);
 	}
 
 	return UPDATE_CONTINUE;
@@ -141,6 +137,22 @@ bool ModuleCameraEditor::CleanUp()
 	CONSOLE_LOG("Cleaning camera");
 
 	return true;
+}
+
+void ModuleCameraEditor::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_number(jObject, "movementSpeed", movementSpeed);
+	json_object_set_number(jObject, "rotationSpeed", rotationSpeed);
+	json_object_set_number(jObject, "zoomSpeed", zoomSpeed);
+	json_object_set_number(jObject, "referenceRadius", referenceRadius);
+}
+
+void ModuleCameraEditor::LoadStatus(const JSON_Object* jObject)
+{
+	movementSpeed = json_object_get_number(jObject, "movementSpeed");
+	rotationSpeed = json_object_get_number(jObject, "rotationSpeed");
+	zoomSpeed = json_object_get_number(jObject, "zoomSpeed");
+	referenceRadius = json_object_get_number(jObject, "referenceRadius");
 }
 
 void ModuleCameraEditor::SetReference(const math::float3& reference)

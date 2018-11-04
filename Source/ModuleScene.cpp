@@ -51,10 +51,9 @@ bool ModuleScene::Start()
 	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 #else
 	App->GOs->LoadScene("GameReady");
-	App->renderer3D->RecalculateMainCamera();
-	App->renderer3D->SetMainCameraAsCurrentCamera();
+	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
-#endif// !GAME
+#endif// GAME
 
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);

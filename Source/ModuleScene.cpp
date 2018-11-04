@@ -46,7 +46,7 @@ bool ModuleScene::Start()
 	// Load Baker House last mesh
 #ifndef GAMEMODE
 	std::string outputFile;
-	App->sceneImporter->Import("BakerHouse.fbx", "Assets/Meshes/", outputFile);
+	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 #else
 	App->GOs->LoadScene("GameReady");
 	App->renderer3D->RecalculateMainCamera();
@@ -88,6 +88,21 @@ void ModuleScene::Draw() const
 {
 	if (showGrid)
 		grid->Render();
+}
+
+void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
+{
+	this->currentGameObject = currentGameObject;
+
+	if (currentGameObject != nullptr)
+		App->camera->SetReference(currentGameObject->transform->position);
+	else
+		App->camera->SetReference(math::float3(0.0f, 0.0f, 0.0f));
+}
+
+GameObject* ModuleScene::GetCurrentGameObject() const
+{
+	return currentGameObject;
 }
 
 void ModuleScene::OnCurrentGameObjectGizmos() const

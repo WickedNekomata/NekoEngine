@@ -29,6 +29,9 @@ public:
 
 	void Draw() const;
 
+	void SetCurrentGameObject(GameObject* currentGameObject);
+	GameObject* GetCurrentGameObject() const;
+
 	// ImGuizmo
 	void OnCurrentGameObjectGizmos() const;
 
@@ -50,6 +53,8 @@ private:
 	PrimitiveGrid* grid = nullptr;
 	bool showGrid = true;
 
+	GameObject* currentGameObject = nullptr;
+
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
 
@@ -57,7 +62,6 @@ public:
 
 	GameObject* child = nullptr;
 	GameObject* root = nullptr;
-	GameObject* currentGameObject = nullptr;
 
 	Quadtree quadtree;
 };

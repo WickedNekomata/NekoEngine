@@ -49,7 +49,6 @@ void ComponentTransform::OnUniqueEditor()
 		scale = math::float3::one;
 	}
 
-
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Position");

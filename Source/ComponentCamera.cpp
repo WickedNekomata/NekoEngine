@@ -8,21 +8,21 @@
 
 ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentType::Camera_Component)
 {
-	cameraFrustum.type = math::FrustumType::PerspectiveFrustum;
+	frustum.type = math::FrustumType::PerspectiveFrustum;
 
-	cameraFrustum.pos = math::float3::zero;
-	cameraFrustum.front = math::float3::unitZ;
-	cameraFrustum.up = math::float3::unitY;
+	frustum.pos = math::float3::zero;
+	frustum.front = math::float3::unitZ;
+	frustum.up = math::float3::unitY;
 
-	cameraFrustum.nearPlaneDistance = 0.1f;
-	cameraFrustum.farPlaneDistance = 1000.0f;
-	cameraFrustum.verticalFov = 60.0f * DEGTORAD;
-	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * 1.3f);
+	frustum.nearPlaneDistance = 0.1f;
+	frustum.farPlaneDistance = 1000.0f;
+	frustum.verticalFov = 60.0f * DEGTORAD;
+	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
 }
 
 ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentType::Camera_Component)
 {
-	cameraFrustum = componentCamera.cameraFrustum;
+	frustum = componentCamera.frustum;
 
 	frustumCulling = componentCamera.frustumCulling;
 	mainCamera = componentCamera.mainCamera;
@@ -37,9 +37,9 @@ ComponentCamera::~ComponentCamera()
 void ComponentCamera::UpdateTransform()
 {
 	math::float4x4 matrix = parent->transform->GetGlobalMatrix();
-	cameraFrustum.pos = matrix.TranslatePart();
-	cameraFrustum.front = matrix.WorldZ();
-	cameraFrustum.up = matrix.WorldY();
+	frustum.pos = matrix.TranslatePart();
+	frustum.front = matrix.WorldZ();
+	frustum.up = matrix.WorldY();
 }
 
 void ComponentCamera::OnUniqueEditor()
@@ -49,7 +49,7 @@ void ComponentCamera::OnUniqueEditor()
 	ImGui::Text("Field of View");
 	ImGui::SameLine();
 
-	float fov = cameraFrustum.verticalFov * RADTODEG;
+	float fov = frustum.verticalFov * RADTODEG;
 	if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
 		SetFOV(fov);
 
@@ -65,44 +65,44 @@ void ComponentCamera::OnUniqueEditor()
 
 		ImGui::Text("Near");
 		ImGui::SameLine();
-		ImGui::InputFloat("##nearPlane", &cameraFrustum.nearPlaneDistance);
+		ImGui::InputFloat("##nearPlane", &frustum.nearPlaneDistance);
 
 		ImGui::Text("Far ");
 		ImGui::SameLine();
-		ImGui::InputFloat("##farPlane", &cameraFrustum.farPlaneDistance);
+		ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
 	}
 	
 }
 
 void ComponentCamera::SetFOV(float fov)
 {
-	cameraFrustum.verticalFov = fov * DEGTORAD;
-	cameraFrustum.horizontalFov = 2.0f * atanf(tanf(cameraFrustum.verticalFov / 2.0f) * App->window->GetWindowWidth() / App->window->GetWindowHeight());
+	frustum.verticalFov = fov * DEGTORAD;
+	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * App->window->GetWindowWidth() / App->window->GetWindowHeight());
 }
 
 void ComponentCamera::SetNearPlaneDistance(float nearPlane)
 {
-	cameraFrustum.nearPlaneDistance = nearPlane;
+	frustum.nearPlaneDistance = nearPlane;
 }
 
 void ComponentCamera::SetFarPlaneDistance(float farPlane)
 {
-	cameraFrustum.farPlaneDistance = farPlane;
+	frustum.farPlaneDistance = farPlane;
 }
 
 void ComponentCamera::SetAspectRatio(float aspectRatio)
 {
-	cameraFrustum.horizontalFov = 2.f * atanf(tanf(cameraFrustum.verticalFov * 0.5f) * aspectRatio);
+	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspectRatio);
 }
 
 float* ComponentCamera::GetOpenGLViewMatrix()
 {
-	return ((math::float4x4)cameraFrustum.ViewMatrix()).Transposed().ptr();
+	return ((math::float4x4)frustum.ViewMatrix()).Transposed().ptr();
 }
 
 float* ComponentCamera::GetOpenGLProjectionMatrix()
 {
-	return cameraFrustum.ProjectionMatrix().Transposed().ptr();
+	return frustum.ProjectionMatrix().Transposed().ptr();
 }
 
 void ComponentCamera::SetFrustumCulling(bool frustumCulling)
@@ -127,20 +127,20 @@ bool ComponentCamera::IsMainCamera() const
 
 void ComponentCamera::OnInternalSave(JSON_Object* file)
 {
-	json_object_set_number(file, "nearPlaneDistance", cameraFrustum.nearPlaneDistance);
-	json_object_set_number(file, "farPlaneDistance", cameraFrustum.farPlaneDistance);
-	json_object_set_number(file, "verticalFov", cameraFrustum.verticalFov);
-	json_object_set_number(file, "horizontalFov", cameraFrustum.horizontalFov);
+	json_object_set_number(file, "nearPlaneDistance", frustum.nearPlaneDistance);
+	json_object_set_number(file, "farPlaneDistance", frustum.farPlaneDistance);
+	json_object_set_number(file, "verticalFov", frustum.verticalFov);
+	json_object_set_number(file, "horizontalFov", frustum.horizontalFov);
 	json_object_set_boolean(file, "isMainCamera", mainCamera);
 	json_object_set_boolean(file, "isFrustumCulling", frustumCulling);
 }
 
 void ComponentCamera::OnLoad(JSON_Object* file)
 {
-	cameraFrustum.nearPlaneDistance = json_object_get_number(file, "nearPlaneDistance");
-	cameraFrustum.farPlaneDistance = json_object_get_number(file, "farPlaneDistance");
-	cameraFrustum.verticalFov = json_object_get_number(file, "verticalFov");
-	cameraFrustum.horizontalFov = json_object_get_number(file, "horizontalFov");
+	frustum.nearPlaneDistance = json_object_get_number(file, "nearPlaneDistance");
+	frustum.farPlaneDistance = json_object_get_number(file, "farPlaneDistance");
+	frustum.verticalFov = json_object_get_number(file, "verticalFov");
+	frustum.horizontalFov = json_object_get_number(file, "horizontalFov");
 
 	mainCamera = json_object_get_boolean(file, "isMainCamera");
 	frustumCulling = json_object_get_boolean(file, "isFrustumCulling");

@@ -137,7 +137,7 @@ update_status ModuleRenderer3D::PreUpdate()
 	glLoadMatrixf(currentCamera->GetOpenGLViewMatrix());
 
 	// Light 0 on cam pos
-	lights[0].SetPos(currentCamera->cameraFrustum.pos.x, currentCamera->cameraFrustum.pos.y, currentCamera->cameraFrustum.pos.z);
+	lights[0].SetPos(currentCamera->frustum.pos.x, currentCamera->frustum.pos.y, currentCamera->frustum.pos.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
@@ -178,7 +178,7 @@ update_status ModuleRenderer3D::PostUpdate()
 		if (drawCamerasFrustum)
 		{
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->cameraFrustum, Grey);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, Grey);
 		}
 
 		if (drawQuadtree)
@@ -493,7 +493,7 @@ void ModuleRenderer3D::FrustumCulling() const
 
 	// Static objects (test against Quadtree)
 	std::vector<GameObject*> objects;
-	App->scene->quadtree.CollectIntersections(objects, mainCamera->cameraFrustum);
+	App->scene->quadtree.CollectIntersections(objects, mainCamera->frustum);
 
 	for (uint i = 0; i < objects.size(); ++i)
 		objects[i]->SetSeenLastFrame(true);
@@ -503,7 +503,7 @@ void ModuleRenderer3D::FrustumCulling() const
 	{
 		if (!meshComponents[i]->GetParent()->IsStatic())
 		{
-			if (mainCamera->cameraFrustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
+			if (mainCamera->frustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
 				meshComponents[i]->GetParent()->SetSeenLastFrame(true);
 		}
 	}

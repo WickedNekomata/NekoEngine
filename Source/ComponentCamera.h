@@ -39,7 +39,7 @@ public:
 
 public:
 
-	math::Frustum cameraFrustum;
+	math::Frustum frustum;
 
 private:
 

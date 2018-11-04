@@ -5,7 +5,8 @@
 #include "imgui/imgui.h"
 #include "PCG/pcg_variants.h"
 
-Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type) {
+Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
+{
 	if (parent != nullptr)
 		UUID = pcg32_random_r(&(App->rng));
 }
@@ -17,7 +18,7 @@ void Component::Update() {}
 void Component::OnEditor()
 {
 	char itemName[DEFAULT_BUF_SIZE];
-	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Move##%u",UUID);
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Move##%u", UUID);
 
 	ImGui::Button(itemName);
 

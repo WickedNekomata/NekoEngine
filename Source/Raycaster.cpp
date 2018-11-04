@@ -32,7 +32,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 	float normalized_x = -(1.0f - (float(posX) * 2.0f) / winWidth);
 	float normalized_y = 1.0f - (float(posY) * 2.0f) / winHeight;
 
-	math::LineSegment raycast = App->camera->camera->cameraFrustum.UnProjectLineSegment(normalized_x, normalized_y);
+	math::LineSegment raycast = App->camera->camera->frustum.UnProjectLineSegment(normalized_x, normalized_y);
 	
 	std::vector<GameObject*> hits;
 	App->scene->quadtree.CollectIntersections(hits, raycast);

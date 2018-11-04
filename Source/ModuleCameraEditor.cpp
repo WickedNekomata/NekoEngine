@@ -18,10 +18,10 @@
 
 // Reference: https://learnopengl.com/Getting-started/Camera
 
-#define MOVSPEED 5.0f
-#define MOVSPEEDSHIFT 10.0f
-#define ROTATIONSPEED 10.0f
-#define CAMERAZOOMSPEED 10.0f;
+#define MOVEMENT_SPEED 5.0f
+#define ROTATION_SPEED 10.0f
+#define ZOOM_SPEED 10.0f
+#define DEFAULT_RADIUS 10.0f
 
 ModuleCameraEditor::ModuleCameraEditor(bool start_enabled) : Module(start_enabled)
 {
@@ -46,63 +46,83 @@ bool ModuleCameraEditor::Start()
 
 	CONSOLE_LOG("Setting up the camera");
 
-	camera->cameraFrustum.pos = { 0.0f,1.0f,-5.0f };
+	camera->frustum.pos = { 0.0f,1.0f,-5.0f };
+	referenceRadius = DEFAULT_RADIUS;
 
 	return ret;
 }
 
 update_status ModuleCameraEditor::Update()
 {
-	math::float3 offsetPosition = math::float3::zero;
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-		offsetPosition += camera->cameraFrustum.front;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-		offsetPosition -= camera->cameraFrustum.front;
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		offsetPosition -= camera->cameraFrustum.WorldRight();
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		offsetPosition += camera->cameraFrustum.WorldRight();
-	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
-		offsetPosition += camera->cameraFrustum.up;
-	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
-		offsetPosition -= camera->cameraFrustum.up;
-
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEEDSHIFT * App->timeManager->GetDt());
-	else
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEED * App->timeManager->GetDt());
-
-	int motionX = App->input->GetMouseXMotion();
-	int motionY = App->input->GetMouseYMotion();
-
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT && (motionX != 0 || motionY != 0))
+	// Free movement and rotation
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
-		math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
+		// Move
+		math::float3 offsetPosition(math::float3::zero);
 
-		math::Quat endRotation = rotationX * rotationY;
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+			offsetPosition += camera->frustum.front;
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+			offsetPosition -= camera->frustum.front;
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+			offsetPosition -= camera->frustum.WorldRight();
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+			offsetPosition += camera->frustum.WorldRight();
+		if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT)
+			offsetPosition -= camera->frustum.up;
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT)
+			offsetPosition += camera->frustum.up;
 
-		camera->cameraFrustum.front = endRotation * camera->cameraFrustum.front;
-		camera->cameraFrustum.up = endRotation * camera->cameraFrustum.up;
+		float cameraMovementSpeed = MOVEMENT_SPEED * App->timeManager->GetRealDt();
+
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+			cameraMovementSpeed *= 2.0f; // double speed
+
+		camera->frustum.Translate(offsetPosition * cameraMovementSpeed);
+
+		// Rotate (Look Around camera position)
+		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
+		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
+
+		if (dx != 0 || dy != 0)
+		{
+			float cameraRotationSpeed = ROTATION_SPEED * App->timeManager->GetRealDt();
+
+			LookAround(camera->frustum.pos, (float)dy * cameraRotationSpeed, (float)dx * cameraRotationSpeed);
+		}
 	}
 
+	// Zoom
 	int mouseWheel = App->input->GetMouseZ();
 	if (mouseWheel != 0)
 	{
-		float zoomSpeed = CAMERAZOOMSPEED;
-		math::float3 offsetPosition = math::float3::zero;
-		offsetPosition += camera->cameraFrustum.front * (float)mouseWheel * zoomSpeed * App->timeManager->GetDt();
-		camera->cameraFrustum.Translate(offsetPosition);
+		float cameraZoomSpeed = ZOOM_SPEED * App->timeManager->GetRealDt();
+
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
+			cameraZoomSpeed *= 0.5f; // half speed
+
+		math::float3 offsetPosition = camera->frustum.front * (float)mouseWheel * cameraZoomSpeed;
+		camera->frustum.Translate(offsetPosition);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && App->scene->currentGameObject != nullptr)
-		LookAt(App->scene->currentGameObject->transform->position);
+	// Look At reference
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+		LookAt(reference, referenceRadius);
 
-	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT &&
-		App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT && 
-		App->scene->currentGameObject != nullptr)
-	{ }
+	// Look Around reference
+	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) &&
+		App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	{
+		int dx = -App->input->GetMouseXMotion(); // Affects the Yaw
+		int dy = -App->input->GetMouseYMotion(); // Affects the Pitch
+
+		if (dx != 0 || dy != 0)
+		{
+			float cameraRotationSpeed = ROTATION_SPEED * App->timeManager->GetRealDt();
+
+			LookAround(reference, (float)dy * cameraRotationSpeed, (float)dx * cameraRotationSpeed);
+		}
+	}
 
 
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow())
@@ -111,7 +131,7 @@ update_status ModuleCameraEditor::Update()
 		math::float3 hitPoint;
 		GameObject* hitGO = nullptr;
 		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGO);
-		App->scene->currentGameObject = hitGO;
+		App->scene->SetCurrentGameObject(hitGO);
 	}
 
 	return UPDATE_CONTINUE;
@@ -119,44 +139,59 @@ update_status ModuleCameraEditor::Update()
 
 bool ModuleCameraEditor::CleanUp()
 {
-	bool ret = true;
-
 	CONSOLE_LOG("Cleaning camera");
 
-	return ret;
+	return true;
 }
 
-void ModuleCameraEditor::LookAt(math::float3 focus)
+void ModuleCameraEditor::SetReference(const math::float3& reference)
 {
-	math::float3 direction = (camera->cameraFrustum.pos - focus).Normalized();
-	
-	float targetOrientation =  math::Atan2(direction.x, direction.z);
-	float currentOrientation = math::Atan2(camera->cameraFrustum.front.x, camera->cameraFrustum.front.z);
-	float angleToRotate = targetOrientation - currentOrientation;
+	this->reference = reference;
+}
 
-	math::Quat rotation;
-	rotation.SetFromAxisAngle(math::float3::unitY, angleToRotate);
-	
-	camera->cameraFrustum.front = rotation * camera->cameraFrustum.front;
-	camera->cameraFrustum.up = rotation * camera->cameraFrustum.up;
-	
-	rotation.SetFromAxisAngle(math::float3::unitY, 405.0f);
+void ModuleCameraEditor::SetReferenceRadius(float referenceRadius)
+{
+	this->referenceRadius = referenceRadius;
+}
 
-	camera->cameraFrustum.front = rotation * camera->cameraFrustum.front;
-	camera->cameraFrustum.up = rotation * camera->cameraFrustum.up;
+void ModuleCameraEditor::LookAt(const math::float3& reference, float radius) const
+{
+	math::float3 Z = -(camera->frustum.pos - reference).Normalized(); // Direction the camera is looking at (reverse direction of what the camera is targeting)
+	math::float3 X = math::Cross(math::float3(0.0f, 1.0f, 0.0f), Z).Normalized(); // X is perpendicular to vectors Y and Z
+	math::float3 Y = math::Cross(Z, X); // Y is perpendicular to vectors Z and X
+
+	camera->frustum.front = Z;
+	camera->frustum.up = Y;
+
+	if (radius != 0.0f)
+	{
+		float distance = (camera->frustum.pos - reference).Length();
+		distance -= radius;
+
+		camera->frustum.Translate(camera->frustum.front * distance);
+	}
+}
+
+void ModuleCameraEditor::LookAround(const math::float3& reference, float pitch, float yaw) const
+{
+	math::Quat rotationX = math::Quat::RotateAxisAngle({ 0.0f,1.0f,0.0f }, yaw * DEGTORAD);
+	math::Quat rotationY = math::Quat::RotateAxisAngle(camera->frustum.WorldRight(), pitch * DEGTORAD);
+	math::Quat finalRotation = rotationX * rotationY;
+
+	camera->frustum.up = finalRotation * camera->frustum.up;
+	camera->frustum.front = finalRotation * camera->frustum.front;
+
 	/*
-	math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * dt);
-	math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * dt);
+	// Cap
+	if (Y.y < 0.0f)
+	{
+		Z = math::float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+		Y = math::Cross(Z, X);
+	}
+	*/
 
-	math::Quat endRotation = rotationX * rotationY;
-
-	camera->cameraFrustum.front = endRotation * camera->cameraFrustum.front;
-	camera->cameraFrustum.up = endRotation * camera->cameraFrustum.up;
-
-	float my_orientation = Mathf.Rad2Deg * Mathf.Atan2(transform.forward.x, transform.forward.z);
-		float target_orientation = Mathf.Rad2Deg * Mathf.Atan2(move.target.transform.forward.x, move.target.transform.forward.z);
-		float diff = Mathf.DeltaAngle(my_orientation, target_orientation); // wrap around PI
-		*/
+	float distance = (camera->frustum.pos - reference).Length();
+	camera->frustum.pos = reference + (-camera->frustum.front * distance);
 }
 
 #endif // GAME

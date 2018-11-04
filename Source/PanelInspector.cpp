@@ -24,10 +24,10 @@ bool PanelInspector::Draw()
 
 	if (ImGui::Begin(name, &enabled, inspectorFlags))
 	{
-		if (App->scene->currentGameObject != nullptr)
-		{
-			GameObject* gameObject = App->scene->currentGameObject;
+		GameObject* gameObject = App->scene->GetCurrentGameObject();
 
+		if (gameObject != nullptr)
+		{
 			bool isActive = gameObject->IsActive();
 			if (ImGui::Checkbox("##Active", &isActive)) { gameObject->ToggleIsActive(); }
 

@@ -25,11 +25,20 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	void LookAt(math::float3 focus);
+	void SetReference(const math::float3& reference);
+	void SetReferenceRadius(float referenceRadius);
+
+	void LookAt(const math::float3& reference, float radius) const;
+	void LookAround(const math::float3& reference, float pitch, float yaw) const;
 
 public:
 
 	ComponentCamera* camera = nullptr;
+
+private:
+
+	math::float3 reference = { 0.0f,0.0f,0.0f };
+	float referenceRadius = 0.0f;
 };
 
 #endif

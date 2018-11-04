@@ -152,7 +152,7 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 void ModuleGOs::ClearScene()
 {
 	App->scene->root->DeleteChildren();
-	App->scene->currentGameObject = nullptr;
+	App->scene->SetCurrentGameObject(nullptr);
 }
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)

@@ -65,14 +65,14 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 			GameObject* child = root->GetChild(i);
 
 			char name[DEFAULT_BUF_SIZE];
-			sprintf_s(name, DEFAULT_BUF_SIZE, "%s ##%u", child->GetName(), child->GetUUID());
+			sprintf_s(name, DEFAULT_BUF_SIZE, "%s##%u", child->GetName(), child->GetUUID());
 
 			if (child->HasChildren())
 			{
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-				if (App->scene->currentGameObject == child)
+				if (App->scene->GetCurrentGameObject == child)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 				bool treeNodeOpened = false;
@@ -83,7 +83,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->currentGameObject = child;
+					App->scene->SetCurrentGameObject(child);
 
 				if (treeNodeOpened) 
 				{
@@ -96,7 +96,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-				if (App->scene->currentGameObject == child)
+				if (App->scene->GetCurrentGameObject() == child)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 				ImGui::TreeNodeEx(name, treeNodeFlags);
@@ -106,7 +106,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->currentGameObject = child;
+					App->scene->SetCurrentGameObject(child);
 			}
 		}
 	}
@@ -123,8 +123,8 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 		}
 		if (ImGui::Selectable("Delete")) 
 		{
-			if (child == App->scene->currentGameObject)
-				App->scene->currentGameObject = nullptr;
+			if (App->scene->GetCurrentGameObject() == child)
+				App->scene->SetCurrentGameObject(nullptr);
 			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();
 		}

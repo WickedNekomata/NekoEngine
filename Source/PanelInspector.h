@@ -7,6 +7,8 @@
 
 #include "Panel.h"
 
+struct Component;
+
 class PanelInspector : public Panel
 {
 public:
@@ -15,6 +17,8 @@ public:
 	~PanelInspector();
 
 	bool Draw();
+
+	void DragnDropSeparatorTarget(Component* target);
 };
 
 #endif

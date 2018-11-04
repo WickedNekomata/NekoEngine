@@ -262,6 +262,13 @@ void GameObject::SwapComponents(Component* firstComponent, Component* secondComp
 	std::swap(components[GetComponentIndexOnComponents(firstComponent)], components[GetComponentIndexOnComponents(secondComponent)]);
 }
 
+void GameObject::ReorderComponents(Component* source, Component* target)
+{
+	int index = GetComponentIndexOnComponents(target);
+	components.erase(std::remove(components.begin(), components.end(), source), components.end());
+	components.insert(components.begin() + index, source);
+}
+
 void GameObject::SetName(char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);

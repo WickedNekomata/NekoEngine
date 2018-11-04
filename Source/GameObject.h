@@ -49,6 +49,7 @@ public:
 	Component* GetComponent(uint index) const;
 	int GetComponentIndexOnComponents(Component* component) const;
 	void SwapComponents(Component* firstComponent, Component* secondComponent);
+	void ReorderComponents(Component* source, Component* target);
 
 	void SetName(char* name);
 	const char* GetName() const;

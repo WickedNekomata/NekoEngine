@@ -39,9 +39,19 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::Checkbox("Seen last frame", &seenLastFrame);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
+	math::float3 lastPosition = position;
+	math::Quat lastRotation = rotation;
+	math::float3 lastScale = scale;
+	if (ImGui::Button("Reset"))
+	{
+		position = math::float3::zero;
+		rotation = math::Quat::identity;
+		scale = math::float3::one;
+	}
+
+
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
-	math::float3 lastPosition = position;
 	ImGui::Text("Position");
 
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
@@ -51,7 +61,6 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
-	math::Quat lastRotation = rotation;
 	ImGui::Text("Rotation");
 	math::float3 axis;
 	float angle;
@@ -67,7 +76,6 @@ void ComponentTransform::OnUniqueEditor()
 	axis *= DEGTORAD;
 	rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
 
-	math::float3 lastScale = scale;
 	ImGui::Text("Scale");
 
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);

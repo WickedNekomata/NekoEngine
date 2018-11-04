@@ -23,6 +23,8 @@ private:
 	void IterateAllChildren(GameObject* root);
 	void AtGameObjectPopUp(GameObject* child);
 	void SetGameObjectDragAndDrop(GameObject* SourceTarget);
+	void SetGameObjectDragAndDropSource(GameObject* source);
+	void SetGameObjectDragAndDropTarget(GameObject* target);
 };
 
 #endif

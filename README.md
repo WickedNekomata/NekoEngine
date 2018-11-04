@@ -41,6 +41,7 @@ The code is written in C++.
 	- Assimp 4.1
 	- DevIL 1.8
 	- ImGui 1.65
+	- ImGuizmo 1.0
 	- MathGeoLib 1.5
 	- PCG Random Number Generator 0.94
 	- Parson

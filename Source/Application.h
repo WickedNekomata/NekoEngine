@@ -36,8 +36,8 @@ enum engine_states
 	ENGINE_WANTS_PLAY,
 	ENGINE_PAUSE,
 	ENGINE_WANTS_PAUSE,
-	ENGINE_TICK,
-	ENGINE_WANTS_TICK,
+	ENGINE_STEP,
+	ENGINE_WANTS_STEP,
 
 	// Editor
 	ENGINE_EDITOR,
@@ -76,11 +76,12 @@ public:
 
 	void Play();
 	void Pause();
-	void Tick();
+	void Step();
 
 	engine_states GetEngineState() const;
 	bool IsPlay() const;
 	bool IsPause() const;
+	bool IsStep() const;
 	bool IsEditor() const;
 
 	void SaveState() const;

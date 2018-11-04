@@ -67,6 +67,9 @@ bool PanelAbout::Draw()
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
 
+		if (ImGui::Button("ImGuizmo")) { OpenInBrowser("https://github.com/CedricGuillemet/ImGuizmo"); }
+		ImGui::SameLine(); ImGui::TextWrapped("1.0");
+
 		if (ImGui::Button("MathGeoLib")) { OpenInBrowser("https://github.com/juj/MathGeoLib"); }
 		ImGui::SameLine(); ImGui::TextWrapped("1.5");
 

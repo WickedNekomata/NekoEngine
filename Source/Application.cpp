@@ -196,12 +196,12 @@ void Application::PrepareUpdate()
 		engineState = engine_states::ENGINE_EDITOR;
 		break;
 
-	case engine_states::ENGINE_WANTS_TICK:
+	case engine_states::ENGINE_WANTS_STEP:
 
-		engineState = engine_states::ENGINE_TICK;
+		engineState = engine_states::ENGINE_STEP;
 		break;
 
-	case engine_states::ENGINE_TICK:
+	case engine_states::ENGINE_STEP:
 
 		engineState = engine_states::ENGINE_WANTS_PAUSE;
 		break;
@@ -424,20 +424,20 @@ void Application::Pause()
 	}
 }
 
-void Application::Tick()
+void Application::Step()
 {
 	switch (engineState)
 	{
 	case engine_states::ENGINE_PLAY:
 
 		// Stop and tick (step 1 frame)
-		engineState = engine_states::ENGINE_WANTS_TICK;
+		engineState = engine_states::ENGINE_WANTS_STEP;
 		break;
 
 	case engine_states::ENGINE_PAUSE:
 
 		// Tick (step 1 frame)
-		engineState = engine_states::ENGINE_TICK;
+		engineState = engine_states::ENGINE_STEP;
 		break;
 
 	default:
@@ -458,6 +458,11 @@ bool Application::IsPlay() const
 bool Application::IsPause() const
 {
 	return engineState == engine_states::ENGINE_PAUSE;
+}
+
+bool Application::IsStep() const
+{
+	return engineState == engine_states::ENGINE_STEP;
 }
 
 bool Application::IsEditor() const

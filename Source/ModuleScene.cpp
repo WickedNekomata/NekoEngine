@@ -32,7 +32,6 @@ bool ModuleScene::Init(JSON_Object* jObject)
 bool ModuleScene::Start()
 {
 	bool ret = true;
-
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr);
@@ -70,8 +69,8 @@ bool ModuleScene::Start()
 update_status ModuleScene::Update()
 {
 	//ImGuizmo::Enable(true);
-	if (App->scene->currentGameObject != nullptr)
-		App->scene->OnCurrentGameObjectGizmos();
+	if (currentGameObject != nullptr)
+		OnCurrentGameObjectGizmos();
 
 	return UPDATE_CONTINUE;
 }
@@ -104,8 +103,6 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 	{
 		switch (currentImGuizmoOperation)
 		{
-		case ImGuizmo::OPERATION::BOUNDS:
-			break;
 		case ImGuizmo::OPERATION::TRANSLATE:
 			break;
 		case ImGuizmo::OPERATION::ROTATE:

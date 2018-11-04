@@ -1,5 +1,7 @@
 #include "Panel.h"
 
+#ifndef GAMEMODE
+
 Panel::Panel(char* name) : name(name) {}
 
 Panel::~Panel() {}
@@ -13,3 +15,5 @@ bool Panel::IsEnabled() const
 {
 	return enabled;
 }
+
+#endif

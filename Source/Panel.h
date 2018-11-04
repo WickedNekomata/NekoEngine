@@ -1,6 +1,10 @@
 #ifndef __PANEL_H__
 #define __PANEL_H__
 
+#include "GameMode.h"
+
+#ifndef GAMEMODE
+
 #define YELLOW { 239, 201, 0, 255 }
 #define WHITE { 255, 255, 255, 255 }
 
@@ -26,3 +30,4 @@ protected:
 
 #endif
 
+#endif // GAME

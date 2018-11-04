@@ -1,4 +1,7 @@
 #include "PanelAbout.h"
+
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "Globals.h"
 
@@ -94,3 +97,5 @@ bool PanelAbout::Draw()
 
 	return true;
 }
+
+#endif // GAME

@@ -1,6 +1,8 @@
 #ifndef __MODULE_RENDERER_3D_H__
 #define __MODULE_RENDERER_3D_H__
 
+#include "GameMode.h"
+
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
@@ -70,6 +72,8 @@ public:
 	bool RecalculateMainCamera();
 	bool SetMainCamera(ComponentCamera* mainCamera);
 	ComponentCamera* GetMainCamera() const;
+
+	bool SetMainCameraAsCurrentCamera();
 
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;

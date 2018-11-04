@@ -45,8 +45,16 @@ bool ModuleScene::Start()
 
 	//App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
+#ifndef GAMEMODE
 	std::string outputFile;
 	App->sceneImporter->Import("BakerHouse.fbx", "Assets/Meshes/", outputFile);
+#else
+	App->GOs->LoadScene("GameReady");
+	App->renderer3D->RecalculateMainCamera();
+	App->renderer3D->SetMainCameraAsCurrentCamera();
+	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+#endif// !GAME
+
 	//Mesh* mesh = new Mesh();
 	//App->sceneImporter->Load(outputFile.data(), mesh);
 
@@ -54,6 +62,7 @@ bool ModuleScene::Start()
 	//App->materialImporter->Import("Baker_house.png", "Assets/", outputFile);
 	//Texture* texture = new Texture();
 	//App->materialImporter->Load(outputFile.data(), texture);
+
 
 	return ret;
 }

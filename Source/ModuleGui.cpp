@@ -1,6 +1,9 @@
+#include "ModuleGui.h"
+
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "Globals.h"
-#include "ModuleGui.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "Panel.h"
@@ -483,3 +486,6 @@ bool ModuleGui::IsAnyItemFocused()
 {
 	return ImGui::IsAnyItemFocused();
 }
+
+
+#endif // GAME

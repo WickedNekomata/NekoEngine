@@ -1,5 +1,7 @@
 #include "PanelSettings.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "GameObject.h"
@@ -425,3 +427,5 @@ void PanelSettings::RecursiveDrawQuadtreeHierarchy(QuadtreeNode* node) const
 		}
 	}
 }
+
+#endif // GAME

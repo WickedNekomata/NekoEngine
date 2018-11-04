@@ -72,6 +72,7 @@ void ComponentCamera::OnUniqueEditor()
 		ImGui::SameLine();
 		ImGui::InputFloat("##farPlane", &cameraFrustum.farPlaneDistance);
 	}
+	
 }
 
 void ComponentCamera::SetFOV(float fov)
@@ -142,6 +143,8 @@ void ComponentCamera::OnInternalSave(JSON_Object* file)
 	json_object_set_number(file, "farPlaneDistance", cameraFrustum.farPlaneDistance);
 	json_object_set_number(file, "verticalFov", cameraFrustum.verticalFov);
 	json_object_set_number(file, "horizontalFov", cameraFrustum.horizontalFov);
+	json_object_set_boolean(file, "isMainCamera", mainCamera);
+	json_object_set_boolean(file, "isFrustumCulling", frustumCulling);
 }
 
 void ComponentCamera::OnLoad(JSON_Object* file)
@@ -150,4 +153,7 @@ void ComponentCamera::OnLoad(JSON_Object* file)
 	cameraFrustum.farPlaneDistance = json_object_get_number(file, "farPlaneDistance");
 	cameraFrustum.verticalFov = json_object_get_number(file, "verticalFov");
 	cameraFrustum.horizontalFov = json_object_get_number(file, "horizontalFov");
+
+	mainCamera = json_object_get_boolean(file, "isMainCamera");
+	frustumCulling = json_object_get_boolean(file, "isFrustumCulling");
 }

@@ -1,6 +1,10 @@
 #ifndef __MODULE_CAMERA_EDITOR_H__
 #define __MODULE_CAMERA_EDITOR_H__
 
+#include "GameMode.h"
+
+#ifndef GAMEMODE
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -29,3 +33,5 @@ public:
 };
 
 #endif
+
+#endif // GAME

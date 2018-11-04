@@ -1,5 +1,7 @@
 #include "PanelAssets.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleFileSystem.h"
 
@@ -67,3 +69,5 @@ void PanelAssets::RecursiveDrawDir(const char* dir)
 		}
 	}
 }
+
+#endif // GAME

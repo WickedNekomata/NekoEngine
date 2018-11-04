@@ -1,4 +1,8 @@
 #include "PanelConsole.h"
+
+#ifndef GAMEMODE
+
+
 #include "Application.h"
 #include "ModuleWindow.h"
 
@@ -94,3 +98,5 @@ void PanelConsole::Clear()
 	buf.clear();
 	lineOffsets.clear();
 }
+
+#endif // GAME

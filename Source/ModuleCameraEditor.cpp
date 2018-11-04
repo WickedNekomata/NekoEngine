@@ -1,6 +1,9 @@
+#include "ModuleCameraEditor.h"
+
+#ifndef GAMEMODE
+
 #include "Globals.h"
 #include "Application.h"
-#include "ModuleCameraEditor.h"
 
 #include "ComponentCamera.h"
 #include "ModuleInput.h"
@@ -155,3 +158,5 @@ void ModuleCameraEditor::LookAt(math::float3 focus)
 		float diff = Mathf.DeltaAngle(my_orientation, target_orientation); // wrap around PI
 		*/
 }
+
+#endif // GAME

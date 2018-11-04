@@ -8,33 +8,35 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	input = new ModuleInput();
 	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
-	camera = new ModuleCameraEditor();
-	gui = new ModuleGui();
+
 	filesystem = new ModuleFileSystem();
 	GOs = new ModuleGOs();
 	timeManager = new ModuleTimeManager();
 
+	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
-
-	debugDrawer = new DebugDrawer();
+#ifndef GAMEMODE
 	raycaster = new Raycaster();
+	camera = new ModuleCameraEditor();
+	gui = new ModuleGui();
+	
+#endif // GAME
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 
-	AddModule(timeManager);
+#ifndef GAMEMODE
+	AddModule(camera);
+	AddModule(gui);
+#endif // GAME
 
-	// Main Modules
+	AddModule(timeManager);
 	AddModule(GOs);
 	AddModule(filesystem);
 	AddModule(window);
-	AddModule(camera);
 	AddModule(input);
-	AddModule(gui);
-	
-	// Scenes
 	AddModule(scene);
 
 	// Renderer last!
@@ -159,8 +161,10 @@ void Application::CloseApp()
 
 void Application::LogGui(const char* log) const
 {
+#ifndef GAMEMODE
 	if (gui != nullptr)
 		gui->LogConsole(log);
+#endif
 }
 
 void Application::PrepareUpdate()

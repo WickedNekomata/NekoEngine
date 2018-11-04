@@ -1,3 +1,5 @@
+#include "GameMode.h"
+
 #ifndef __MATERIAL_IMPORTER_H__
 #define __MATERIAL_IMPORTER_H__
 

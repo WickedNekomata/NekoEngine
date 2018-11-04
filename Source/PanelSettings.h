@@ -1,12 +1,16 @@
 #ifndef __PANEL_SETTINGS_H__
 #define __PANEL_SETTINGS_H__
 
-#include "Panel.h"
+#include "GameMode.h"
+
+#ifndef GAMEMODE
 
 #include "ImGui/imgui.h"
 
 #define SCREEN_MIN_WIDTH 640
 #define SCREEN_MIN_HEIGHT 480
+
+#include "Panel.h"
 
 class Module;
 class QuadtreeNode;
@@ -42,4 +46,6 @@ private:
 };
 
 #endif
+
+#endif // GAME
 

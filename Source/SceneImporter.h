@@ -1,3 +1,5 @@
+#include "GameMode.h"
+
 #ifndef __SCENE_IMPORTER_H__
 #define __SCENE_IMPORTER_H__
 
@@ -11,8 +13,8 @@ struct Mesh
 {
 	// Unique vertices
 	float* vertices = nullptr;
-	uint verticesID = 0;
 	uint verticesSize = 0;
+	uint verticesID = 0;
 
 	// Indices
 	uint* indices = nullptr;

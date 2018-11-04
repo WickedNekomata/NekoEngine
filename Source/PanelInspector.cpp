@@ -1,5 +1,7 @@
 #include "PanelInspector.h"
 
+#ifndef GAMEMODE
+
 #include "Globals.h"
 
 #include "Application.h"
@@ -97,3 +99,5 @@ bool PanelInspector::Draw()
 
 	return true;
 }
+
+#endif // GAME

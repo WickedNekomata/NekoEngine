@@ -9,6 +9,8 @@
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "GameMode.h"
+
 #define MAX_KEYS 300
 
 ModuleInput::ModuleInput(bool start_enabled) : Module(start_enabled)
@@ -96,8 +98,9 @@ update_status ModuleInput::PreUpdate()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+#ifndef GAMEMODE	
 		ImGui_ImplSDL2_ProcessEvent(&event);
-
+#endif
 		switch (event.type)
 		{
 		case SDL_MOUSEWHEEL:

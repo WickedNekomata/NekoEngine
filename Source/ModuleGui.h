@@ -1,6 +1,10 @@
 #ifndef __MODULE_GUI_H__
 #define __MODULE_GUI_H__
 
+#include "GameMode.h"
+
+#ifndef GAMEMODE
+
 #include "Module.h"
 
 #include <vector>
@@ -70,3 +74,5 @@ private:
 };
 
 #endif
+
+#endif // GAME

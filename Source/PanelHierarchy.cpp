@@ -1,4 +1,7 @@
 #include "PanelHierarchy.h"
+
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "GameObject.h"
 #include "ModuleScene.h"
@@ -166,3 +169,5 @@ void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* SourceTarget)
 		ImGui::EndDragDropTarget();
 	}
 }
+
+#endif // GAME

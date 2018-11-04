@@ -1,5 +1,7 @@
 #include "Raycaster.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleCameraEditor.h"
 #include "ComponentCamera.h"
@@ -64,3 +66,5 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		}
 	}
 }
+
+#endif

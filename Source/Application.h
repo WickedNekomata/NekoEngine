@@ -1,6 +1,8 @@
 #ifndef __APPLICATION_H_
 #define __APPLICATION_H_
 
+#include "GameMode.h"
+
 #include <list>
 #include <vector>
 
@@ -95,21 +97,25 @@ private:
 
 public:
 
+	MaterialImporter*	materialImporter;
+	SceneImporter*		sceneImporter;
+#ifndef GAMEMODE
+	
+	ModuleCameraEditor*	camera;
+	ModuleGui*			gui;
+
+	Raycaster*			raycaster;
+#endif // GAME
+
 	ModuleWindow*		window;
 	ModuleInput*		input;
 	ModuleScene*		scene;
 	ModuleRenderer3D*	renderer3D;
-	ModuleCameraEditor*	camera;
-	ModuleGui*			gui;
 	ModuleFileSystem*	filesystem;
 	ModuleGOs*			GOs;
 	ModuleTimeManager*	timeManager;
 
-	MaterialImporter*	materialImporter;
-	SceneImporter*		sceneImporter;
-
 	DebugDrawer*		debugDrawer;
-	Raycaster*			raycaster;
 
 	pcg32_random_t		rng;
 

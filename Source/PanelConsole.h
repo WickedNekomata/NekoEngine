@@ -1,6 +1,10 @@
 #ifndef __PANEL_CONSOLE_H__
 #define __PANEL_CONSOLE_H__
 
+#include "GameMode.h"
+
+#ifndef GAMEMODE
+
 #include "Panel.h"
 
 #include "ImGui/imgui.h"
@@ -26,3 +30,5 @@ private:
 };
 
 #endif
+
+#endif // GAME

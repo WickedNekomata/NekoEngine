@@ -116,11 +116,13 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	// Projection Matrix
-	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+	// Projection Matrix	
 
+#ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
+	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+#endif // GAME
 
 	return ret;
 }
@@ -162,6 +164,7 @@ update_status ModuleRenderer3D::PostUpdate()
 	}
 
 	// 2. Debug geometry
+#ifndef GAMEMODE
 	if (debugDraw)
 	{
 		App->debugDrawer->StartDebugDraw();
@@ -186,6 +189,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	// 3. Editor
 	App->gui->Draw();
+
+#endif // GAME
 
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
@@ -226,13 +231,15 @@ void ModuleRenderer3D::OnGameMode()
 
 void ModuleRenderer3D::OnEditorMode()
 {
+#ifndef GAMEMODE
 	currentCamera = App->camera->camera;
+#endif // !GAME
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-	App->camera->camera->SetAspectRatio((float)width / (float)height);
+	currentCamera->SetAspectRatio((float)width / (float)height);
 	CalculateProjectionMatrix();
 }
 
@@ -241,7 +248,7 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glLoadMatrixf(App->camera->camera->GetOpenGLProjectionMatrix());
+	glLoadMatrixf(currentCamera->GetOpenGLProjectionMatrix());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -458,6 +465,14 @@ bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 ComponentCamera* ModuleRenderer3D::GetMainCamera() const
 {
 	return mainCamera;
+}
+
+bool ModuleRenderer3D::SetMainCameraAsCurrentCamera()
+{
+	if (mainCamera != nullptr)
+		currentCamera = mainCamera;
+
+	return currentCamera == mainCamera;
 }
 
 ComponentCamera* ModuleRenderer3D::GetCurrentCamera() const

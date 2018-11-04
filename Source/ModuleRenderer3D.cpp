@@ -460,6 +460,11 @@ ComponentCamera* ModuleRenderer3D::GetMainCamera() const
 	return mainCamera;
 }
 
+ComponentCamera* ModuleRenderer3D::GetCurrentCamera() const
+{
+	return currentCamera;
+}
+
 void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)
 {
 	for (uint i = 0; i < meshComponents.size(); ++i)

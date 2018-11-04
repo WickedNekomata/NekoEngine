@@ -18,6 +18,8 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_internal.h"
 
+#include "ImGuizmo/ImGuizmo.h"
+
 ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 {
 	name = "GUI";
@@ -68,6 +70,8 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
+	ImGuizmo::Enable(true);
+
 	std::string outputFileName;
 	timeButtonTex = new Texture();
 	App->materialImporter->Import("timeButton.png", "UI/", outputFileName);
@@ -82,6 +86,8 @@ update_status ModuleGui::PreUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
+
+	ImGuizmo::BeginFrame();
 
 	return UPDATE_CONTINUE;
 }

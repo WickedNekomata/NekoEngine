@@ -3,6 +3,8 @@
 #include "ModuleGui.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleTimeManager.h"
+
 #include "Panel.h"
 #include "PanelInspector.h"
 #include "PanelAbout.h"
@@ -10,8 +12,8 @@
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
 #include "PanelAssets.h"
-#include "ComponentCamera.h"
-#include "ModuleTimeManager.h"
+#include "PanelDebugDraw.h"
+#include "PanelEdit.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -31,17 +33,21 @@ bool ModuleGui::Init(JSON_Object* jObject)
 {
 	panelInspector = new PanelInspector("Inspector");
 	panelAbout = new PanelAbout("About");
-	panelConsole = new PanelConsole("Console");
 	panelSettings = new PanelSettings("Settings");
 	panelHierarchy = new PanelHierarchy("Hierarchy");
+	panelConsole = new PanelConsole("Console");
 	panelAssets = new PanelAssets("Assets");
+	panelEdit = new PanelEdit("Edit");
+	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
-	panels.push_back(panelConsole);
 	panels.push_back(panelSettings);
 	panels.push_back(panelHierarchy);
+	panels.push_back(panelConsole);
 	panels.push_back(panelAssets);
+	panels.push_back(panelEdit);
+	panels.push_back(panelDebugDraw);
 
 	LoadStatus(jObject);
 
@@ -70,12 +76,15 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	ImGuizmo::Enable(true);
-
+	// Load textures
 	std::string outputFileName;
-	timeButtonTex = new Texture();
-	App->materialImporter->Import("timeButton.png", "UI/", outputFileName);
-	App->materialImporter->Load(outputFileName.data(), timeButtonTex);
+	timeTex = new Texture();
+	App->materialImporter->Import("time.png", "UI/", outputFileName);
+	App->materialImporter->Load(outputFileName.data(), timeTex);
+
+	gizmosTex = new Texture();
+	App->materialImporter->Import("gizmos.png", "UI/", outputFileName);
+	App->materialImporter->Load(outputFileName.data(), gizmosTex);
 
 	return ret;
 }
@@ -94,21 +103,19 @@ update_status ModuleGui::PreUpdate()
 
 update_status ModuleGui::Update()
 {
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN) { panelAssets->OnOff(); }
-	
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { panelDebugDraw->OnOff(); }
+
 	// Begin dock space
 	DockSpace();
 
-	ImVec2 mainMenuBarSize(0.0f, 0.0f);
-
 	if (ImGui::BeginMainMenuBar())
 	{
-		mainMenuBarSize = ImGui::GetWindowSize();
-
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Open In Explorer")) { OpenInExplorer(); }
@@ -124,6 +131,12 @@ update_status ModuleGui::Update()
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Edit", "CTRL+E")) { panelEdit->OnOff(); }
+
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Window"))
 		{
 			if (ImGui::MenuItem("Show All Windows")) { ShowAllWindows(); }
@@ -133,6 +146,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Console", "CTRL+C")) { panelConsole->OnOff(); }
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "CTRL+A")) { panelAssets->OnOff(); }
+			if (ImGui::MenuItem("Debug Draw", "CTRL+D")) { panelDebugDraw->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -167,132 +181,6 @@ update_status ModuleGui::Update()
 		LoadScenePopUp();
 	}
 
-	//ImGui::SetNextWindowPos({ 0, mainMenuBarSize.y });
-	//ImGui::SetNextWindowSize({ mainMenuBarSize.x, mainMenuBarSize.y });
-	ImGuiWindowFlags window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-	static bool open = true;
-	if (ImGui::Begin("##subMenu", &open))
-	{
-		/*
-		if (App->camera->IsPlay())
-		{
-			ImGui::PushID("play");
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::Button("PLAY");
-
-			if (ImGui::IsItemClicked(0))
-				App->camera->SetPlay(false);
-
-			ImGui::PopStyleColor(3);
-			ImGui::PopID();
-		}
-		else
-		{
-			if (ImGui::Button("PLAY"))
-				App->camera->SetPlay(true);
-		}
-
-		ImGui::SameLine();
-		*/
-
-		float timeButtonScale = 0.05f;
-		ImVec2 timeButtonSize(timeButtonTex->width * 0.2f * timeButtonScale, timeButtonTex->height * 1.0f * timeButtonScale);
-		
-		// Play button
-		if (App->IsPlay() || App->IsPause())
-		{
-			ImGui::PushID("play");
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.4f, 0.0f), ImVec2(0.6f, 1.0f));
-
-			if (ImGui::IsItemClicked(0))
-				App->Play();
-
-			ImGui::PopStyleColor(3);
-			ImGui::PopID();
-		}
-		else
-		{
-			if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.4f, 0.0f), ImVec2(0.6f, 1.0f)))
-				App->Play();
-		}
-		ImGui::SameLine();
-
-		// Pause button
-		if (App->IsPause())
-		{
-			ImGui::PushID("pause");
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.0f, 0.0f), ImVec2(0.2f, 1.0f));
-
-			if (ImGui::IsItemClicked(0))
-				App->Pause();
-
-			ImGui::PopStyleColor(3);
-			ImGui::PopID();
-		}
-		else
-		{
-			if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.0f, 0.0f), ImVec2(0.2f, 1.0f)))
-				App->Pause();
-		}
-		ImGui::SameLine();
-
-		// Step button
-		ImGui::PushID("tick");
-		if (ImGui::ImageButton((ImTextureID)timeButtonTex->id, timeButtonSize, ImVec2(0.6f, 0.0f), ImVec2(0.8f, 1.0f)))
-			App->Tick();
-		ImGui::PopID();
-
-		// Game time scale slider
-		ImGui::PushItemWidth(100);
-		float timeScale = App->timeManager->GetTimeScale();
-		if (ImGui::SliderFloat("Game Time Scale", &timeScale, 0.0f, MAX_TIME_SCALE)) { App->timeManager->SetTimeScale(timeScale); }
-
-		// -----
-
-		bool showGrid = App->scene->GetShowGrid();
-		if (ImGui::Checkbox("Grid", &showGrid)) { App->scene->SetShowGrid(showGrid); }
-
-		ImGui::SameLine();
-
-		bool wireframeMode = App->renderer3D->IsWireframeMode();
-		if (ImGui::Checkbox("Wireframe", &wireframeMode)) { App->renderer3D->SetWireframeMode(wireframeMode); }
-
-		ImGui::SameLine();
-
-		bool debugDraw = App->renderer3D->GetDebugDraw();
-		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
-
-		if (debugDraw)
-		{
-			ImGui::SameLine();
-
-			bool drawBoundingBoxes = App->renderer3D->GetDrawBoundingBoxes();
-			if (ImGui::Checkbox("Bounding Boxes", &drawBoundingBoxes)) { App->renderer3D->SetDrawBoundingBoxes(drawBoundingBoxes); }
-
-			ImGui::SameLine();
-
-			bool drawCamerasFrustum = App->renderer3D->GetDrawCamerasFrustum();
-			if (ImGui::Checkbox("Cameras Frustum", &drawCamerasFrustum)) { App->renderer3D->SetDrawCamerasFrustum(drawCamerasFrustum); }
-
-			ImGui::SameLine();
-
-			bool drawQuadtree = App->renderer3D->GetDrawQuadtree();
-			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->renderer3D->SetDrawQuadtree(drawQuadtree); }
-		}
-	}
-	ImGui::End();
-
 	// End dock space
 	ImGui::End();
 
@@ -301,22 +189,20 @@ update_status ModuleGui::Update()
 
 bool ModuleGui::CleanUp()
 {
-	bool ret = true;
-
 	for (uint i = 0; i < panels.size(); ++i)
-	{
-		if (panels[i] != nullptr)
-			delete panels[i];
-	}
+		RELEASE(panels[i]);
 
 	panelInspector = nullptr;
 	panelAbout = nullptr;
-	panelConsole = nullptr;
 	panelSettings = nullptr;
 	panelHierarchy = nullptr;
+	panelConsole = nullptr;
 	panelAssets = nullptr;
+	panelEdit = nullptr;
+	panelDebugDraw = nullptr;
 
-	RELEASE(timeButtonTex);
+	RELEASE(timeTex);
+	RELEASE(gizmosTex);
 
 	CONSOLE_LOG("Cleaning up ImGui");
 
@@ -324,7 +210,7 @@ bool ModuleGui::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
-	return ret;
+	return true;
 }
 
 void ModuleGui::SaveStatus(JSON_Object* jObject) const
@@ -382,8 +268,9 @@ void ModuleGui::DockSpace() const
 		ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
 		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
 		ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.30f, NULL, &dock_main_id);	
-
-		ImGui::DockBuilderDockWindow("##subMenu", dock_id_up);
+				
+		ImGui::DockBuilderDockWindow(panelDebugDraw->GetName(), dock_id_up);
+		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);

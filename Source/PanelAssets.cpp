@@ -11,14 +11,10 @@ PanelAssets::~PanelAssets() {}
 
 bool PanelAssets::Draw()
 {
-	ImGui::SetNextWindowPos({ (float)App->window->GetWindowWidth() - 300,50 }, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize({ 300,(float)App->window->GetWindowHeight() - 50 }, ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags assetsFlags = 0;
 	assetsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-	assetsFlags |= ImGuiWindowFlags_NoSavedSettings;
-	assetsFlags |= ImGuiWindowFlags_AlwaysHorizontalScrollbar;
 
-	if (ImGui::Begin(name, &enabled))
+	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
 		if (ImGui::TreeNodeEx("Assets"))
 		{

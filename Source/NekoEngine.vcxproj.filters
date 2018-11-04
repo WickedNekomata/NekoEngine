@@ -579,6 +579,12 @@
     <ClInclude Include="ImGuizmo\ImGuizmo.h">
       <Filter>Sources\3rd Party\ImGuizmo</Filter>
     </ClInclude>
+    <ClInclude Include="PanelDebugDraw.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelEdit.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -805,6 +811,12 @@
     </ClCompile>
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
       <Filter>Sources\3rd Party\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelDebugDraw.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelEdit.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

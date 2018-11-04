@@ -79,15 +79,11 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	// Load textures
+	// Load atlas texture
 	std::string outputFileName;
-	timeTex = new Texture();
-	App->materialImporter->Import("time.png", "UI/", outputFileName);
-	App->materialImporter->Load(outputFileName.data(), timeTex);
-
-	gizmosTex = new Texture();
-	App->materialImporter->Import("gizmos.png", "UI/", outputFileName);
-	App->materialImporter->Load(outputFileName.data(), gizmosTex);
+	atlas = new Texture();
+	App->materialImporter->Import("atlas.png", "UI/", outputFileName);
+	App->materialImporter->Load(outputFileName.data(), atlas);
 
 	return ret;
 }
@@ -204,8 +200,7 @@ bool ModuleGui::CleanUp()
 	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
 
-	RELEASE(timeTex);
-	RELEASE(gizmosTex);
+	RELEASE(atlas);
 
 	CONSOLE_LOG("Cleaning up ImGui");
 
@@ -267,10 +262,10 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderAddNode(dockspace_id, viewport->Size); // Add empty node
 
 		ImGuiID dock_main_id = dockspace_id; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
-		ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.12f, NULL, &dock_main_id);
-		ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
-		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
-		ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.30f, NULL, &dock_main_id);	
+		ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.1f, NULL, &dock_main_id);
+		ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.2f, NULL, &dock_main_id);
+		ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, NULL, &dock_main_id);
+		ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.3f, NULL, &dock_main_id);	
 				
 		ImGui::DockBuilderDockWindow(panelDebugDraw->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);

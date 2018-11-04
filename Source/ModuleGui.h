@@ -62,8 +62,7 @@ public:
 	PanelDebugDraw* panelDebugDraw = nullptr;
 	PanelEdit*		panelEdit = nullptr;
 
-	Texture* timeTex = nullptr;
-	Texture* gizmosTex = nullptr;
+	Texture* atlas = nullptr;
 
 private:
 

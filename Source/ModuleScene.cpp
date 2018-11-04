@@ -34,7 +34,6 @@ bool ModuleScene::Init(JSON_Object* jObject)
 bool ModuleScene::Start()
 {
 	bool ret = true;
-
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr);
@@ -108,8 +107,6 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 	{
 		switch (currentImGuizmoOperation)
 		{
-		case ImGuizmo::OPERATION::BOUNDS:
-			break;
 		case ImGuizmo::OPERATION::TRANSLATE:
 			break;
 		case ImGuizmo::OPERATION::ROTATE:

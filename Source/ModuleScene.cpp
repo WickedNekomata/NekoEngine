@@ -12,6 +12,8 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
+#include "imgui/imgui.h"
+
 #include <list>
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
@@ -107,13 +109,15 @@ GameObject* ModuleScene::GetCurrentGameObject() const
 
 void ModuleScene::OnCurrentGameObjectGizmos() const
 {
-	ImGuizmo::Manipulate(
-		App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
-		currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
-	);
+	ImGuizmo::Enable(true);
+	ImGuiIO& io = ImGui::GetIO();
 
 
+	//, projMatrix, ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, matrix);
 
+	//ImGuizmo::SetRect(0,0, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
+
+	ImGuizmo::Enable(true);
 	if (ImGuizmo::IsUsing())
 	{
 		switch (currentImGuizmoOperation)
@@ -126,9 +130,16 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 			break;
 		}
 	}
+	ImGuizmo::SetRect(ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
 
-	//ImGui::ImGuiIO& io = ImGui::GetIO();
-	//ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuizmo::Manipulate(
+		App->camera->camera->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
+		currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
+	);
+
+	ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
+
+	//ImGuizmo::DrawCube(App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

@@ -34,6 +34,7 @@ public:
 	GameObject* GetGameObject(uint index) const;
 	GameObject* GetGameObjectByUUID(uint UUID) const;
 	uint GetGameObjectsLength() const;
+	void ReorderGameObjects(GameObject* source, GameObject* target);
 
 	void RecalculateQuadtree();
 

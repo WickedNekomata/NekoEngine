@@ -61,6 +61,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 		{
 			// TODO ADD DRAG AND DROP DUMMY
 			//ImGui::Dummy(); // DRAG AND DROP
+			// ReorderGameObject method at gos
 
 			GameObject* child = root->GetChild(i);
 
@@ -132,13 +133,13 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 	}
 }
 
-void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* sourceTarget)
+void PanelHierarchy::SetGameObjectDragAndDrop(GameObject* sourceTarget) const
 {
 	SetGameObjectDragAndDropSource(sourceTarget);
 	SetGameObjectDragAndDropTarget(sourceTarget);
 }
 
-void PanelHierarchy::SetGameObjectDragAndDropSource(GameObject* source)
+void PanelHierarchy::SetGameObjectDragAndDropSource(GameObject* source) const
 {
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 	{
@@ -147,7 +148,7 @@ void PanelHierarchy::SetGameObjectDragAndDropSource(GameObject* source)
 	}
 }
 
-void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target)
+void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target) const
 {
 	if (ImGui::BeginDragDropTarget())
 	{

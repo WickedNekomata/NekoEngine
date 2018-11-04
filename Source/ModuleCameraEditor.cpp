@@ -124,7 +124,6 @@ update_status ModuleCameraEditor::Update()
 		}
 	}
 
-
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow())
 	{
 		float distance;

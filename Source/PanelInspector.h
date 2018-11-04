@@ -7,7 +7,7 @@
 
 #include "Panel.h"
 
-struct Component;
+class Component;
 
 class PanelInspector : public Panel
 {

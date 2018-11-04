@@ -188,9 +188,28 @@ GameObject* ModuleGOs::GetGameObjectByUUID(uint UUID) const
 	return nullptr;
 }
 
-uint ModuleGOs::GetGameObjectsLength() const
+void ModuleGOs::GetGameObjects(std::vector<GameObject*>& gameObjects) const
 {
-	return gameObjects.size();
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+		gameObjects.push_back(this->gameObjects[i]);
+}
+
+void ModuleGOs::GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const
+{
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		if (this->gameObjects[i]->IsStatic())
+			gameObjects.push_back(this->gameObjects[i]);
+	}
+}
+
+void ModuleGOs::GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const
+{
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		if (!this->gameObjects[i]->IsStatic())
+			gameObjects.push_back(this->gameObjects[i]);
+	}
 }
 
 void ModuleGOs::ReorderGameObjects(GameObject* source, GameObject* target)
@@ -198,21 +217,12 @@ void ModuleGOs::ReorderGameObjects(GameObject* source, GameObject* target)
 	int index = 0;
 	for (index = 0; index < gameObjects.size(); ++index)
 	{
-		if (gameObjects[index] == target);
-		break;
+		if (gameObjects[index] == target)
+			break;
 	}
 
 	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), source), gameObjects.end());
 	gameObjects.insert(gameObjects.begin() + index, source);
-}
-
-void ModuleGOs::RecalculateQuadtree()
-{
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->IsStatic())
-			App->scene->quadtree.Insert(gameObjects[i]);
-	}
 }
 
 void ModuleGOs::MarkSceneToSerialize()

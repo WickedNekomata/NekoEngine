@@ -13,13 +13,13 @@
 #include "SDL\include\SDL_opengl.h"
 #include "SDL/include/SDL_video.h"
 
-#include <map>
+#include <vector>
 
 #define MAX_LIGHTS 8
 
-struct GameObject;
-struct ComponentMesh;
-struct ComponentCamera;
+class GameObject;
+class ComponentMesh;
+class ComponentCamera;
 
 class ModuleRenderer3D : public Module
 {

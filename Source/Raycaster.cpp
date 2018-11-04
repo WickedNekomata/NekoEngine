@@ -34,8 +34,19 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 
 	math::LineSegment raycast = App->camera->camera->frustum.UnProjectLineSegment(normalized_x, normalized_y);
 	
+	// Static objects
 	std::vector<GameObject*> hits;
 	App->scene->quadtree.CollectIntersections(hits, raycast);
+
+	// Dynamic objects
+	std::vector<GameObject*> dynamicGameObjects;
+	App->GOs->GetDynamicGameObjects(dynamicGameObjects);
+
+	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
+	{
+		if (raycast.Intersects(dynamicGameObjects[i]->boundingBox))
+			hits.push_back(dynamicGameObjects[i]);
+	}
 
 	Mesh* currentMesh = nullptr;
 

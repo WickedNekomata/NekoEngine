@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleGOs.h"
 #include "DebugDrawer.h"
 
 #include "GameObject.h"
@@ -491,27 +492,32 @@ void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)
 
 void ModuleRenderer3D::FrustumCulling() const
 {
-	for (uint i = 0; i < meshComponents.size(); ++i)
-		meshComponents[i]->GetParent()->SetSeenLastFrame(false);
+	std::vector<GameObject*> gameObjects;
+	App->GOs->GetGameObjects(gameObjects);
 
-	// Static objects (test against Quadtree)
-	std::vector<GameObject*> objects;
-	App->scene->quadtree.CollectIntersections(objects, currentCamera->frustum);
+	for (uint i = 0; i < gameObjects.size(); ++i)
+		gameObjects[i]->SetSeenLastFrame(false);
 
-	for (uint i = 0; i < objects.size(); ++i)
-		objects[i]->SetSeenLastFrame(true);
+	// Static objects
+	std::vector<GameObject*> seen;
+	App->scene->quadtree.CollectIntersections(seen, currentCamera->frustum);
 
-	// Dynamic objects (test against Frustum)
-	for (uint i = 0; i < meshComponents.size(); ++i)
+	// Dynamic objects
+	std::vector<GameObject*> dynamicGameObjects;
+	App->GOs->GetDynamicGameObjects(dynamicGameObjects);
+
+	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
 	{
-		if (!meshComponents[i]->GetParent()->IsStatic())
+		if (dynamicGameObjects[i]->boundingBox.IsFinite())
 		{
-			if (currentCamera->frustum.Intersects(meshComponents[i]->GetParent()->boundingBox))
-				meshComponents[i]->GetParent()->SetSeenLastFrame(true);
+			if (currentCamera->frustum.Intersects(dynamicGameObjects[i]->boundingBox))
+				seen.push_back(dynamicGameObjects[i]);
 		}
 	}
-}
 
+	for (uint i = 0; i < seen.size(); ++i)
+		seen[i]->SetSeenLastFrame(true);
+}
 
 void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 {

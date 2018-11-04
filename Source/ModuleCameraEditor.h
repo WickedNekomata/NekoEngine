@@ -11,7 +11,7 @@
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 
-struct ComponentCamera;
+class ComponentCamera;
 
 class ModuleCameraEditor : public Module
 {

@@ -46,6 +46,7 @@ public:
 
 	void RecreateQuadtree();
 	void CreateQuadtree();
+	void RecalculateQuadtree();
 	void CreateRandomStaticGameObject();
 
 private:

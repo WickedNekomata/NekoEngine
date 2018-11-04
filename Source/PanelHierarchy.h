@@ -7,7 +7,7 @@
 
 #include "Panel.h"
 
-struct GameObject;
+class GameObject;
 
 class PanelHierarchy : public Panel
 {

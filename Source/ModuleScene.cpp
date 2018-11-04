@@ -15,6 +15,7 @@
 #include "imgui/imgui.h"
 
 #include <list>
+#include <vector>
 
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
@@ -177,7 +178,7 @@ void ModuleScene::RecreateQuadtree()
 	CreateQuadtree();
 
 	// Fill the quadtree with static game objects
-	App->GOs->RecalculateQuadtree();
+	RecalculateQuadtree();
 }
 
 void ModuleScene::CreateQuadtree()
@@ -188,6 +189,15 @@ void ModuleScene::CreateQuadtree()
 	boundary.SetFromCenterAndSize(center, size);
 
 	quadtree.SetBoundary(boundary);
+}
+
+void ModuleScene::RecalculateQuadtree()
+{
+	std::vector<GameObject*> staticGameObjects;
+	App->GOs->GetStaticGameObjects(staticGameObjects);
+
+	for (uint i = 0; i < staticGameObjects.size(); ++i)
+		App->scene->quadtree.Insert(staticGameObjects[i]);
 }
 
 void ModuleScene::CreateRandomStaticGameObject()

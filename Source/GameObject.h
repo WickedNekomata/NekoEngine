@@ -9,11 +9,11 @@
 
 #include <vector>
 
-struct Component;
-struct ComponentTransform;
-struct ComponentMaterial;
-struct ComponentMesh;
-struct ComponentCamera;
+class Component;
+class ComponentTransform;
+class ComponentMaterial;
+class ComponentMesh;
+class ComponentCamera;
 
 class GameObject
 {

@@ -1,12 +1,12 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
-struct GameObject;
-
 #include "ComponentTypes.h"
 #include "parson/parson.h"
 
 #include "Globals.h"
+
+class GameObject;
 
 class Component
 {

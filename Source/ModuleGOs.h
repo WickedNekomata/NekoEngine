@@ -6,9 +6,9 @@
 #include <vector>
 #include <list>
 
-struct GameObject;
-struct Component;
-struct ComponentCamera;
+class GameObject;
+class Component;
+class ComponentCamera;
 
 class ModuleGOs : public Module
 {
@@ -33,10 +33,11 @@ public:
 
 	GameObject* GetGameObject(uint index) const;
 	GameObject* GetGameObjectByUUID(uint UUID) const;
-	uint GetGameObjectsLength() const;
-	void ReorderGameObjects(GameObject* source, GameObject* target);
+	void GetGameObjects(std::vector<GameObject*>& gameObjects) const;
+	void GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const;
+	void GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const;
 
-	void RecalculateQuadtree();
+	void ReorderGameObjects(GameObject* source, GameObject* target);
 
 	void MarkSceneToSerialize();
 	void SerializeScene();

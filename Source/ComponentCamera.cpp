@@ -15,7 +15,7 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	frustum.up = math::float3::unitY;
 
 	frustum.nearPlaneDistance = 0.1f;
-	frustum.farPlaneDistance = 1000.0f;
+	frustum.farPlaneDistance = 500.0f;
 	frustum.verticalFov = 60.0f * DEGTORAD;
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
 }

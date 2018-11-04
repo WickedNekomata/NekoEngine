@@ -69,17 +69,17 @@ update_status ModuleCameraEditor::Update()
 		offsetPosition -= camera->cameraFrustum.up;
 
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEEDSHIFT * App->timeManager->GetDt());
+		camera->cameraFrustum.Translate(offsetPosition * MOVSPEEDSHIFT * App->timeManager->GetRealDt());
 	else
-		camera->cameraFrustum.Translate(offsetPosition * MOVSPEED * App->timeManager->GetDt());
+		camera->cameraFrustum.Translate(offsetPosition * MOVSPEED * App->timeManager->GetRealDt());
 
 	int motionX = App->input->GetMouseXMotion();
 	int motionY = App->input->GetMouseYMotion();
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT && (motionX != 0 || motionY != 0))
 	{
-		math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
-		math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * App->timeManager->GetDt());
+		math::Quat rotationX = math::Quat::RotateAxisAngle({ 0,1,0 }, -motionX * DEGTORAD * ROTATIONSPEED * App->timeManager->GetRealDt());
+		math::Quat rotationY = math::Quat::RotateAxisAngle(camera->cameraFrustum.WorldRight(), -motionY * DEGTORAD * ROTATIONSPEED * App->timeManager->GetRealDt());
 
 		math::Quat endRotation = rotationX * rotationY;
 
@@ -92,7 +92,7 @@ update_status ModuleCameraEditor::Update()
 	{
 		float zoomSpeed = CAMERAZOOMSPEED;
 		math::float3 offsetPosition = math::float3::zero;
-		offsetPosition += camera->cameraFrustum.front * (float)mouseWheel * zoomSpeed * App->timeManager->GetDt();
+		offsetPosition += camera->cameraFrustum.front * (float)mouseWheel * zoomSpeed * App->timeManager->GetRealDt();
 		camera->cameraFrustum.Translate(offsetPosition);
 	}
 
@@ -111,7 +111,7 @@ update_status ModuleCameraEditor::Update()
 		math::float3 hitPoint;
 		GameObject* hitGO = nullptr;
 		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGO);
-		App->scene->currentGameObject = hitGO;
+		//App->scene->currentGameObject = hitGO;
 	}
 
 	return UPDATE_CONTINUE;

@@ -189,6 +189,19 @@ uint ModuleGOs::GetGameObjectsLength() const
 	return gameObjects.size();
 }
 
+void ModuleGOs::ReorderGameObjects(GameObject* source, GameObject* target)
+{
+	int index = 0;
+	for (index = 0; index < gameObjects.size(); ++index)
+	{
+		if (gameObjects[index] == target);
+		break;
+	}
+
+	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), source), gameObjects.end());
+	gameObjects.insert(gameObjects.begin() + index, source);
+}
+
 void ModuleGOs::RecalculateQuadtree()
 {
 	for (uint i = 0; i < gameObjects.size(); ++i)

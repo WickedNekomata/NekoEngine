@@ -285,8 +285,6 @@ void ModuleGui::DockSpace() const
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruDockspace;
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-	ImGui::ShowDemoWindow();
 }
 
 void ModuleGui::SaveScenePopUp()

@@ -22,8 +22,8 @@ void ModuleTimeManager::PrepareUpdate()
 	switch (App->GetEngineState())
 	{
 	case engine_states::ENGINE_PLAY:
+		time += realDt;
 		dt = realDt * timeScale;
-		time += dt;
 		break;
 
 	case engine_states::ENGINE_EDITOR:

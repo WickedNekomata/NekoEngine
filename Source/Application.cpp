@@ -16,6 +16,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
+	res = new ResourceManager();
 #ifndef GAMEMODE
 	raycaster = new Raycaster();
 	camera = new ModuleCameraEditor();
@@ -150,6 +151,8 @@ bool Application::CleanUp()
 
 	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend() && ret; ++item)
 		ret = (*item)->CleanUp();
+
+	assert(res->SomethingOnMemory() == false && "Memory still allocated on vram. Code better!");
 
 	return ret;
 }

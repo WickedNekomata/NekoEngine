@@ -21,6 +21,7 @@
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "ResourceManager.h"
 
 #include "PerfTimer.h"
 
@@ -98,6 +99,7 @@ private:
 
 public:
 
+	ResourceManager*	res;
 	MaterialImporter*	materialImporter;
 	SceneImporter*		sceneImporter;
 #ifndef GAMEMODE

@@ -85,6 +85,12 @@
     <Filter Include="Sources\3rd Party\ImGuizmo">
       <UniqueIdentifier>{1d32019c-6428-43b9-a182-1ace2999ee87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Resources">
+      <UniqueIdentifier>{79fba5a2-289a-45ee-ac31-a6a3701b89b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Resources\Types">
+      <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -585,6 +591,22 @@
     <ClInclude Include="PanelEdit.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="GameMode.h" />
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTypes.h">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMesh.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMaterial.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -817,6 +839,18 @@
     </ClCompile>
     <ClCompile Include="PanelEdit.cpp">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMesh.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

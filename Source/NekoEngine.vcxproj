@@ -248,6 +248,11 @@
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ResourceMaterial.h" />
+    <ClInclude Include="ResourceMesh.h" />
+    <ClInclude Include="ResourceTypes.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCameraEditor.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -331,6 +336,10 @@
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourceMaterial.cpp" />
+    <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCameraEditor.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />

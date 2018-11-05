@@ -17,6 +17,7 @@
 #include "PanelAssets.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
+#include "PanelImportPreferences.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -42,6 +43,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelAssets = new PanelAssets("Assets");
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
+	panelImportPreferences = new PanelImportPreferences("Import Preferences");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -51,6 +53,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelAssets);
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
+	panels.push_back(panelImportPreferences);
 
 	LoadStatus(jObject);
 
@@ -103,6 +106,8 @@ update_status ModuleGui::PreUpdate()
 update_status ModuleGui::Update()
 {
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
+	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) { panelImportPreferences->OnOff(); }
+	
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
@@ -133,6 +138,7 @@ update_status ModuleGui::Update()
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Edit", "CTRL+E")) { panelEdit->OnOff(); }
+			if (ImGui::MenuItem("Import Preferences", "CTRL+P")) { panelImportPreferences->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -199,6 +205,7 @@ bool ModuleGui::CleanUp()
 	panelAssets = nullptr;
 	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
+	panelImportPreferences = nullptr;
 
 	RELEASE(atlas);
 
@@ -286,7 +293,7 @@ void ModuleGui::SaveScenePopUp()
 {
 	if (ImGui::BeginPopupModal("Save Scene as", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::Text("Current scene will be save to the next directory:");
+		ImGui::Text("Scene will be saved to the following directory:");
 		ImGui::Separator();
 
 		ImGui::Text("Assets/Scenes/");

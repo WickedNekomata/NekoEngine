@@ -36,7 +36,7 @@ bool PanelInspector::Draw()
 			if (gameObject->GetName() != nullptr)
 				strcpy_s(objName, IM_ARRAYSIZE(objName), gameObject->GetName());
 
-			ImGui::PushItemWidth(100);
+			ImGui::PushItemWidth(100.0f);
 			ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 			if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
 				gameObject->SetName(objName);
@@ -52,7 +52,7 @@ bool PanelInspector::Draw()
 			ImGui::SameLine();
 			const char* tags[] = { "Untagged", "Player" };
 			static int currentTag = 0;
-			ImGui::PushItemWidth(75);
+			ImGui::PushItemWidth(75.0f);
 			ImGui::Combo("##tag", &currentTag, tags, IM_ARRAYSIZE(tags));
 			ImGui::PopItemWidth();
 
@@ -61,7 +61,7 @@ bool PanelInspector::Draw()
 			ImGui::SameLine();
 			const char* layers[] = { "Default", "Collider", "PostProcessing" };
 			static int currentLayer = 0;
-			ImGui::PushItemWidth(75);
+			ImGui::PushItemWidth(75.0f);
 			ImGui::Combo("##layer", &currentLayer, layers, IM_ARRAYSIZE(layers));
 			ImGui::PopItemWidth();
 

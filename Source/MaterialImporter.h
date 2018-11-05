@@ -29,7 +29,18 @@ public:
 	
 	bool LoadCheckers(Texture* textureResource);
 
+	bool IsAnisotropySupported() const;
+	float GetLargestSupportedAnisotropy() const;
+
 	uint GetDevILVersion() const;
+
+private:
+
+	bool isAnisotropySupported = false;
+	float largestSupportedAnisotropy = 0.0f;
+
+	// Default import values
+
 };
 
 #endif

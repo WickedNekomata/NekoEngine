@@ -33,6 +33,13 @@ MaterialImporter::MaterialImporter()
 		ilutInit();
 		ilutRenderer(ILUT_OPENGL); // Tell DevIL that we're using OpenGL for our rendering
 	}
+
+	// Anisotropic filtering
+	if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
+	{
+		isAnisotropySupported = true;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
+	}
 }
 
 MaterialImporter::~MaterialImporter() {}
@@ -176,6 +183,10 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 			// Bind the texture
 			glBindTexture(GL_TEXTURE_2D, texName);
 
+			// TODO: CHECK IF THIS WORKS
+			// http://openil.sourceforge.net/tuts/tut_8/index.htm
+			//iluAlienify();
+
 			// Set texture clamping method
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -184,16 +195,15 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
-			{
-				GLfloat largest_supported_anisotropy;
-				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
-			}
+			// Anisotropic filtering
+			// TODO: set this with the selected settings for the texture
+			if (isAnisotropySupported)
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largestSupportedAnisotropy);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
+			// TODO: If mipmaps, then:
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			outputTexture->id = texName;
@@ -263,6 +273,16 @@ bool MaterialImporter::LoadCheckers(Texture* outputTexture)
 	ret = true;
 
 	return ret;
+}
+
+bool MaterialImporter::IsAnisotropySupported() const
+{
+	return isAnisotropySupported;
+}
+
+float MaterialImporter::GetLargestSupportedAnisotropy() const
+{
+	return largestSupportedAnisotropy;
 }
 
 uint MaterialImporter::GetDevILVersion() const

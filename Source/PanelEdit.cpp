@@ -191,7 +191,7 @@ bool PanelEdit::Draw()
 		ImGui::SameLine();
 
 		// Game time scale slider
-		ImGui::PushItemWidth(100);
+		ImGui::PushItemWidth(100.0f);
 		float timeScale = App->timeManager->GetTimeScale();
 		if (ImGui::SliderFloat("Game Time Scale", &timeScale, 0.0f, MAX_TIME_SCALE)) { App->timeManager->SetTimeScale(timeScale); }
 	}

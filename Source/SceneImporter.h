@@ -51,6 +51,9 @@ public:
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;
 	uint GetAssimpRevisionVersion() const;
+
+	// Default import values
+
 };
 
 #endif

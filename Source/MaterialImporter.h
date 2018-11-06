@@ -14,17 +14,6 @@ struct Texture
 	uint height = 0;
 };
 
-/*
-struct MaterialImportSettings
-{
-	int compression = IL_DXT5;
-
-	int wrapS = GL_REPEAT;
-	int wrapS = GL_REPEAT;
-	int minFilter = GL_LINEAR_MIPMAP_LINEAR;
-	int magFilter = GL_LINEAR;
-};
-*/
 class MaterialImporter : public Importer
 {
 public:

@@ -119,6 +119,20 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	return ResourceType::No_Type_Resource;
 }
 
+void ModuleResourceManager::AddImportSettings(ImportSettings* importSettings)
+{
+	if (std::find(this->importSettings.begin(), this->importSettings.end(), importSettings) == this->importSettings.end())
+		this->importSettings.push_back(importSettings);
+}
+
+void ModuleResourceManager::EraseImportSettings(ImportSettings* importSettings)
+{
+	std::vector<ImportSettings*>::const_iterator it = std::find(this->importSettings.begin(), this->importSettings.end(), importSettings);
+	
+	if (it != this->importSettings.end())
+		this->importSettings.erase(it);
+}
+
 // Get resource associated to the uuid.
 const Resource* ModuleResourceManager::GetResource(uint uuid) const
 {

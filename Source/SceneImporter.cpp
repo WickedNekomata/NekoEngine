@@ -281,7 +281,7 @@ void SceneImporter::GenerateMeta(Resource* resource)
 	JSON_Value* newValue = json_value_init_object();
 	JSON_Object* objModule = json_value_get_object(newValue);
 	json_object_set_value(rootObject, "Scene Importer", newValue);
-	
+	/*
 	json_object_set_number(objModule, "Configuration", defaultImportSettings.configuration);
 	json_object_set_number(objModule, "Calculate Tangent Space", defaultImportSettings.calcTangentSpace);
 	json_object_set_number(objModule, "Generate Normals", defaultImportSettings.genNormals);
@@ -299,7 +299,7 @@ void SceneImporter::GenerateMeta(Resource* resource)
 	json_object_set_number(objModule, "Find Instances", defaultImportSettings.findInstances);
 	json_object_set_number(objModule, "Validate Data Structure", defaultImportSettings.validateDataStructure);
 	json_object_set_number(objModule, "Optimize Meshes", defaultImportSettings.optimizeMeshes);
-
+	*/
 	char path[DEFAULT_BUF_SIZE];
 	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
 

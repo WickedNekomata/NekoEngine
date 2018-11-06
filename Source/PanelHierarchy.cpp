@@ -73,7 +73,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-				if (App->scene->GetCurrentGameObject() == child)
+				if (App->scene->selectedObject == child)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 				bool treeNodeOpened = false;
@@ -84,7 +84,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->SetCurrentGameObject(child);
+					App->scene->selectedObject = child;
 
 				if (treeNodeOpened) 
 				{
@@ -97,7 +97,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				treeNodeFlags = 0;
 				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-				if (App->scene->GetCurrentGameObject() == child)
+				if (App->scene->selectedObject == child)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 				ImGui::TreeNodeEx(name, treeNodeFlags);
@@ -107,7 +107,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->SetCurrentGameObject(child);
+					App->scene->selectedObject = child;
 			}
 		}
 	}
@@ -124,8 +124,8 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 		}
 		if (ImGui::Selectable("Delete")) 
 		{
-			if (App->scene->GetCurrentGameObject() == child)
-				App->scene->SetCurrentGameObject(nullptr);
+			if (App->scene->selectedObject == child)
+				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();
 		}

@@ -3,6 +3,7 @@
 
 #include "Module.h"
 
+#include "CurrentSelection.h"
 #include "Quadtree.h"
 
 #include "glew\include\GL\glew.h"
@@ -29,9 +30,6 @@ public:
 
 	void Draw() const;
 
-	void SetCurrentGameObject(GameObject* currentGameObject);
-	GameObject* GetCurrentGameObject() const;
-
 	// ImGuizmo
 	void OnCurrentGameObjectGizmos() const;
 
@@ -54,12 +52,12 @@ private:
 	PrimitiveGrid* grid = nullptr;
 	bool showGrid = true;
 
-	GameObject* currentGameObject = nullptr;
-
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
 
 public:
+
+	CurrentSelection selectedObject;
 
 	GameObject* child = nullptr;
 	GameObject* root = nullptr;

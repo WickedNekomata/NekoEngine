@@ -69,8 +69,8 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
-	if (currentGameObject != nullptr)
-		OnCurrentGameObjectGizmos();
+	//if (selectedObject != nullptr)
+		//OnCurrentGameObjectGizmos();
 
 	return UPDATE_CONTINUE;
 }
@@ -90,9 +90,10 @@ void ModuleScene::Draw() const
 		grid->Render();
 }
 
+/*
 void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
 {
-	this->currentGameObject = currentGameObject;
+	//this->currentGameObject = currentGameObject;
 
 #ifndef GAMEMODE
 	if (currentGameObject != nullptr)
@@ -101,11 +102,7 @@ void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
 		App->camera->SetReference(math::float3(0.0f, 0.0f, 0.0f));
 #endif
 }
-
-GameObject* ModuleScene::GetCurrentGameObject() const
-{
-	return currentGameObject;
-}
+*/
 
 void ModuleScene::OnCurrentGameObjectGizmos() const
 {
@@ -129,10 +126,10 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 
 	//ImGuizmo::SetRect(ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
 
-	ImGuizmo::Manipulate(
-		App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
-		currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
-	);
+	//ImGuizmo::Manipulate(
+		//App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
+		//currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
+	//);
 
 	//ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 

@@ -135,9 +135,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	if (!isTransformation && node->mNumMeshes > 0)
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
+		
 
 		go->AddComponent(ComponentType::Mesh_Component);
-		Mesh* goMesh = go->meshRenderer->mesh;
+		Mesh* goMesh = new Mesh();
 
 		// Unique vertices
 		goMesh->verticesSize = nodeMesh->mNumVertices;

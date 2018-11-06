@@ -3,28 +3,46 @@
 #include "SceneImporter.h"
 #include "Primitive.h"
 #include "ComponentTransform.h"
+#include "Application.h"
+#include "Resource.h"
+#include "ResourceManager.h"
 
 #include "imgui/imgui.h"
 
 ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentType::Mesh_Component)
 {
-	mesh = new Mesh();
 }
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::Mesh_Component)
 {
-	mesh = componentMesh.mesh;
+	res = componentMesh.res;
 }
 
 ComponentMesh::~ComponentMesh()
 {
-	RELEASE(mesh);
-
 	parent->meshRenderer = nullptr;
 	parent->RecursiveRecalculateBoundingBoxes();
+
+	SetResource(0);
 }
 
 void ComponentMesh::Update() {}
+
+void ComponentMesh::SetResource(uint res_uuid)
+{
+	if (res != 0) {
+		Resource* resData = App->res->Get(res);
+		resData->UnloadMemory();
+	}
+
+	if (res_uuid != 0) {
+		Resource* resData = App->res->Get(res_uuid);
+		assert(resData != nullptr && "uuid not associated with any resource");
+		resData->LoadToMemory();
+	}
+
+	res = res_uuid;
+}
 
 void ComponentMesh::OnUniqueEditor()
 {
@@ -49,43 +67,14 @@ void ComponentMesh::OnUniqueEditor()
 		}
 		ImGui::EndDragDropTarget();
 	}
-
-	// https://github.com/ocornut/imgui/issues/1566
-
-	/*
-	if (ImGui::CollapsingHeader("Geometry", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		uint numMeshes = App->renderer3D->GetNumMeshes();
-		ImGui::Text("Meshes: %i", numMeshes);
-
-		for (int i = 0; i < numMeshes; ++i)
-		{
-			ImGui::Separator();
-			Mesh* mesh = App->renderer3D->GetMeshAt(i);
-			ImGui::TextColored(WHITE, "Mesh %i: %s", i + 1, mesh->name);
-			ImGui::Separator();
-
-			ImGui::Text("Vertices: %i", mesh->verticesSize);
-			ImGui::Text("Vertices ID: %i", mesh->verticesID);
-
-			ImGui::Text("Indices: %i", mesh->indicesSize);
-			ImGui::Text("Indices ID: %i", mesh->indicesID);
-
-			ImGui::Text("Texture Coords: %i", mesh->verticesSize);
-			ImGui::Text("Texture Coords ID: %i", mesh->textureCoordsID);
-
-			ImGui::Text("Triangles: %i", mesh->indicesSize / 3);
-		}
-	}
-	*/
 }
 
 void ComponentMesh::OnInternalSave(JSON_Object* file)
 {
-	json_object_set_number(file, "ResourceMesh", 0012013);
+	json_object_set_number(file, "ResourceMesh", res);
 }
 
 void ComponentMesh::OnLoad(JSON_Object* file)
 {
-	// LOAD MESH
+	res = json_object_get_number(file, "ResourceMesh");
 }

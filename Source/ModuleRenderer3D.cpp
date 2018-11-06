@@ -10,6 +10,9 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 
+#include "ResourceMesh.h"
+#include "ResourceMaterial.h"
+
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew/libx86/glew32.lib")
@@ -526,11 +529,15 @@ void ModuleRenderer3D::FrustumCulling() const
 
 void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 {
+	if (toDraw->res == 0)
+		return;
+
 	glPushMatrix();
 	math::float4x4 matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	glMultMatrixf(matrix.Transposed().ptr());
 	
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
+	ResourceMesh* res = (ResourceMesh*)App->res->Get(toDraw->res);
 
 	if (materialRenderer != nullptr)
 	{
@@ -542,7 +549,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 			glBindTexture(GL_TEXTURE_2D, materialRenderer->textures[i]->id);
 
-			glBindBuffer(GL_ARRAY_BUFFER, toDraw->mesh->textureCoordsID);
+			glBindBuffer(GL_ARRAY_BUFFER, res->textureCoordsID);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 		}
 	}
@@ -551,11 +558,11 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glBindBuffer(GL_ARRAY_BUFFER, toDraw->mesh->verticesID);
+	glBindBuffer(GL_ARRAY_BUFFER, res->verticesID);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, toDraw->mesh->indicesID);
-	glDrawElements(GL_TRIANGLES, toDraw->mesh->indicesSize, GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->indicesID);
+	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

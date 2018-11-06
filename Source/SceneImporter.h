@@ -18,26 +18,7 @@
 
 #include <vector>
 
-struct Mesh
-{
-	// Unique vertices
-	float* vertices = nullptr;
-	uint verticesSize = 0;
-	uint verticesID = 0;
-
-	// Indices
-	uint* indices = nullptr;
-	uint indicesID = 0;
-	uint indicesSize = 0;
-
-	// Texture Coords
-	float* textureCoords = nullptr;
-	uint textureCoordsID = 0;
-	uint textureCoordsSize = 0;
-
-	void Init();
-	~Mesh();
-};
+struct ResourceMesh;
 
 struct ModelImportSettings
 {
@@ -63,8 +44,8 @@ public:
 
 	void GenerateMeta(Resource* resource);
 
-	bool Load(const char* exportedFileName, Mesh* outputMesh);
-	bool Load(const void* buffer, uint size, Mesh* outputMesh);
+	bool Load(const char* exportedFileName, ResourceMesh* outputMesh);
+	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);
 
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;

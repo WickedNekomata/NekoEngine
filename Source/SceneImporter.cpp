@@ -144,22 +144,32 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	if (!isTransformation && node->mNumMeshes > 0)
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
-		
 
 		go->AddComponent(ComponentType::Mesh_Component);
-		Mesh* goMesh = new Mesh();
+
+		float* vertices = nullptr;
+		uint verticesSize = 0;
+		uint verticesID = 0;
+
+		uint* indices = nullptr;
+		uint indicesID = 0;
+		uint indicesSize = 0;
+
+		float* textureCoords = nullptr;
+		uint textureCoordsID = 0;
+		uint textureCoordsSize = 0;
 
 		// Unique vertices
-		goMesh->verticesSize = nodeMesh->mNumVertices;
-		goMesh->vertices = new float[goMesh->verticesSize * 3];
-		memcpy(goMesh->vertices, (float*)nodeMesh->mVertices, sizeof(float) * goMesh->verticesSize * 3);
+		verticesSize = nodeMesh->mNumVertices;
+		vertices = new float[verticesSize * 3];
+		memcpy(vertices, (float*)nodeMesh->mVertices, sizeof(float) * verticesSize * 3);
 
 		// Indices
 		if (nodeMesh->HasFaces())
 		{
 			uint facesSize = nodeMesh->mNumFaces;
-			goMesh->indicesSize = facesSize * 3;
-			goMesh->indices = new uint[goMesh->indicesSize];
+			indicesSize = facesSize * 3;
+			indices = new uint[indicesSize];
 
 			for (uint j = 0; j < facesSize; ++j)
 			{
@@ -168,7 +178,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 					CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
 				}
 				else
-					memcpy(&goMesh->indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
+					memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
 			}
 		}
 
@@ -176,13 +186,13 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		// TODO: multitexturing
 		if (nodeMesh->HasTextureCoords(0))
 		{
-			goMesh->textureCoordsSize = goMesh->verticesSize * 2;
-			goMesh->textureCoords = new float[goMesh->textureCoordsSize];
+			textureCoordsSize = verticesSize * 2;
+			textureCoords = new float[textureCoordsSize];
 
-			for (uint j = 0; j < goMesh->verticesSize; ++j)
+			for (uint j = 0; j < verticesSize; ++j)
 			{
-				memcpy(&goMesh->textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
-				memcpy(&goMesh->textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
+				memcpy(&textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
+				memcpy(&textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
 			}
 		}
 
@@ -208,15 +218,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 		}
 
-		goMesh->Init();
-		go->RecursiveRecalculateBoundingBoxes();
-
-		uint ranges[3] = { goMesh->verticesSize, goMesh->indicesSize, goMesh->textureCoordsSize };
+		uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
 
 		uint size = sizeof(ranges) +
-			sizeof(float) * goMesh->verticesSize +
-			sizeof(uint) * goMesh->indicesSize +
-			sizeof(float) * goMesh->textureCoordsSize;
+			sizeof(float) * verticesSize +
+			sizeof(uint) * indicesSize +
+			sizeof(float) * textureCoordsSize;
 
 		char* data = new char[size];
 		char* cursor = data;
@@ -228,20 +235,20 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		cursor += bytes;
 
 		// 3. Store vertices
-		bytes = sizeof(float) * goMesh->verticesSize;
-		memcpy(cursor, goMesh->vertices, bytes);
+		bytes = sizeof(float) * verticesSize;
+		memcpy(cursor, vertices, bytes);
 
 		cursor += bytes;
 
 		// 4. Store indices
-		bytes = sizeof(uint) * goMesh->indicesSize;
-		memcpy(cursor, goMesh->indices, bytes);
+		bytes = sizeof(uint) * indicesSize;
+		memcpy(cursor, indices, bytes);
 
 		cursor += bytes;
 
 		// 5. Store texture coords
-		bytes = sizeof(float) * goMesh->textureCoordsSize;
-		memcpy(cursor, goMesh->textureCoords, bytes);
+		bytes = sizeof(float) * textureCoordsSize;
+		memcpy(cursor, textureCoords, bytes);
 
 		if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName, node->mMeshes[0]) > 0)
 		{
@@ -309,7 +316,7 @@ void SceneImporter::GenerateMeta(Resource* resource)
 	json_value_free(rootValue);
 }
 
-bool SceneImporter::Load(const char* exportedFileName, Mesh* outputMesh)
+bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
 {
 	bool ret = false;
 
@@ -327,7 +334,7 @@ bool SceneImporter::Load(const char* exportedFileName, Mesh* outputMesh)
 	return ret;
 }
 
-bool SceneImporter::Load(const void* buffer, uint size, Mesh* outputMesh)
+bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh)
 {
 	bool ret = false;
 
@@ -397,37 +404,4 @@ uint SceneImporter::GetAssimpMinorVersion() const
 uint SceneImporter::GetAssimpRevisionVersion() const
 {
 	return aiGetVersionRevision();
-}
-
-// Mesh --------------------------------------------------
-void Mesh::Init()
-{
-	// Generate vertices buffer
-	glGenBuffers(1, (GLuint*)&verticesID);
-	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Generate indices buffer
-	glGenBuffers(1, (GLuint*)&indicesID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Generate texture coords
-	glGenBuffers(1, (GLuint*)&textureCoordsID);
-	glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-Mesh::~Mesh()
-{
-	glDeleteBuffers(1, (GLuint*)&verticesID);
-	glDeleteBuffers(1, (GLuint*)&indicesID);
-	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
-
-	RELEASE_ARRAY(vertices);
-	RELEASE_ARRAY(indices);
-	RELEASE_ARRAY(textureCoords);
 }

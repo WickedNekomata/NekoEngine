@@ -4,6 +4,8 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ResourceMesh.h"
+#include "ResourceManager.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
@@ -326,9 +328,10 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	boundingBox.SetNegativeInfinity();
 
 	// Grow bounding box
-	if (meshRenderer != nullptr)
-		boundingBox.Enclose((const math::float3*)meshRenderer->mesh->vertices, meshRenderer->mesh->verticesSize);
-
+	if (meshRenderer != nullptr && meshRenderer->res != 0) {
+		ResourceMesh* meshRes = (ResourceMesh*)App->res->Get(meshRenderer->res);
+		boundingBox.Enclose((const math::float3*)meshRes->vertices, meshRes->verticesSize);
+	}
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);

@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ResourceManager.h"
+#include "ResourceMesh.h"
 
 #include "MathGeoLib/include/Geometry/Triangle.h"
 #include "MathGeoLib/include/Geometry/LineSegment.h"
@@ -48,20 +50,18 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 			hits.push_back(dynamicGameObjects[i]);
 	}
 
-	Mesh* currentMesh = nullptr;
-
 	for (int i = 0; i < hits.size(); ++i)
 	{
 		math::Triangle tri;
 		math::LineSegment localSpaceSegment(raycast);
 		localSpaceSegment.Transform(hits[i]->transform->GetGlobalMatrix().Inverted());
 
-		currentMesh = hits[i]->meshRenderer->mesh;
-		for (int j = 0; j < currentMesh->indicesSize;)
+		ResourceMesh* resMesh = (ResourceMesh*)App->res->Get(hits[i]->meshRenderer->res);
+		for (int j = 0; j < resMesh->indicesSize;)
 		{
-			tri.a = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
-			tri.b = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
-			tri.c = math::float3(currentMesh->vertices[currentMesh->indices[j] * 3], currentMesh->vertices[currentMesh->indices[j] * 3 + 1], currentMesh->vertices[currentMesh->indices[j] * 3 + 2]);  j++;
+			tri.a = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.b = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.c = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
 
 			float distance;
 			math::float3 hitPoint;

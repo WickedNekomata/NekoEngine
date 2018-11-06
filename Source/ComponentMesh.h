@@ -18,6 +18,8 @@ public:
 
 	void Update();
 
+	void SetResource(uint res_uuid);
+
 	void OnUniqueEditor();
 
 	virtual void OnInternalSave(JSON_Object* file);
@@ -25,7 +27,7 @@ public:
 
 public:
 
-	Mesh* mesh = nullptr;
+	uint res = 0;
 };
 
 #endif

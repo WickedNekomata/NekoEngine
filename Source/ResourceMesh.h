@@ -17,7 +17,7 @@ private:
 	virtual bool LoadInMemory();
 	virtual bool UnloadFromMemory();
 
-private:
+public:
 
 	float* vertices = nullptr;
 	uint verticesSize = 0;

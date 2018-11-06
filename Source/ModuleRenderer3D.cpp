@@ -135,10 +135,10 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 update_status ModuleRenderer3D::PreUpdate()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
+	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(currentCamera->GetOpenGLViewMatrix());
+	glLoadMatrixf(currentCamera->GetOpenGLViewMatrix().ptr());
 
 	// Light 0 on cam pos
 	lights[0].SetPos(currentCamera->frustum.pos.x, currentCamera->frustum.pos.y, currentCamera->frustum.pos.z);
@@ -256,7 +256,7 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glLoadMatrixf(currentCamera->GetOpenGLProjectionMatrix());
+	glLoadMatrixf(currentCamera->GetOpenGLProjectionMatrix().ptr());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

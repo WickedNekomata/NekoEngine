@@ -25,8 +25,8 @@ public:
 
 	void OnUniqueEditor();
 
-	math::float4x4 GetMatrix();
-	math::float4x4 GetGlobalMatrix();
+	math::float4x4& GetMatrix() const;
+	math::float4x4& GetGlobalMatrix() const;
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);

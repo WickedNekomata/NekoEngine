@@ -31,7 +31,7 @@ public:
 	void Draw() const;
 
 	// ImGuizmo
-	void OnCurrentGameObjectGizmos() const;
+	void OnGizmos(GameObject* gameObject) const;
 
 	void SetImGuizmoOperation(ImGuizmo::OPERATION operation);
 	ImGuizmo::OPERATION GetImGuizmoOperation() const;

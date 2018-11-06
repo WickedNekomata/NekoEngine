@@ -69,8 +69,11 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
-	//if (selectedObject != nullptr)
-		//OnCurrentGameObjectGizmos();
+	if (selectedObject == CurrentSelection::SelectedType::gameObject)
+	{
+		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
+		OnGizmos(currentGameObject);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -104,12 +107,13 @@ void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
 }
 */
 
-void ModuleScene::OnCurrentGameObjectGizmos() const
+void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
 	ImGuizmo::Enable(true);
 
 	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	ImGuizmo::SetRect(0.0f, 0.0f, io.DisplaySize.x, io.DisplaySize.y);
 
 	if (ImGuizmo::IsUsing())
 	{
@@ -124,12 +128,17 @@ void ModuleScene::OnCurrentGameObjectGizmos() const
 		}
 	}
 
-	//ImGuizmo::SetRect(ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y, ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
+	ComponentCamera* cam = App->renderer3D->GetCurrentCamera();
 
-	//ImGuizmo::Manipulate(
-		//App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(),
-		//currentImGuizmoOperation, currentImGuizmoMode, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr()
-	//);
+	math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
+	math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
+	math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
+	transformMatrix = transformMatrix.Transposed();
+
+	ImGuizmo::Manipulate(
+		viewMatrix.ptr(), projectionMatrix.ptr(),
+		currentImGuizmoOperation, currentImGuizmoMode, transformMatrix.ptr()
+	);
 
 	//ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 

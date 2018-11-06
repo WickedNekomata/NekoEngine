@@ -25,8 +25,8 @@ public:
 	void SetFarPlaneDistance(float farPlane);
 	void SetAspectRatio(float aspectRatio);
 
-	float* GetOpenGLViewMatrix();
-	float* GetOpenGLProjectionMatrix();
+	math::float4x4& GetOpenGLViewMatrix() const;
+	math::float4x4& GetOpenGLProjectionMatrix() const;
 
 	void SetFrustumCulling(bool frustumCulling);
 	bool HasFrustumCulling() const;

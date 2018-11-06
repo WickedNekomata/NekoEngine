@@ -90,14 +90,16 @@ void ComponentCamera::SetAspectRatio(float aspectRatio)
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * aspectRatio);
 }
 
-float* ComponentCamera::GetOpenGLViewMatrix()
+math::float4x4& ComponentCamera::GetOpenGLViewMatrix() const
 {
-	return ((math::float4x4)frustum.ViewMatrix()).Transposed().ptr();
+	math::float4x4 matrix = frustum.ViewMatrix();
+	return matrix.Transposed();
 }
 
-float* ComponentCamera::GetOpenGLProjectionMatrix()
+math::float4x4& ComponentCamera::GetOpenGLProjectionMatrix() const
 {
-	return frustum.ProjectionMatrix().Transposed().ptr();
+	math::float4x4 matrix = frustum.ProjectionMatrix();
+	return matrix.Transposed();
 }
 
 void ComponentCamera::SetFrustumCulling(bool frustumCulling)

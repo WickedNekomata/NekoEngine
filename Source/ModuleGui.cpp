@@ -100,6 +100,9 @@ update_status ModuleGui::PreUpdate()
 
 	ImGuizmo::BeginFrame();
 
+	// Begin dock space
+	DockSpace();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -114,9 +117,6 @@ update_status ModuleGui::Update()
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN) { panelAssets->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { panelDebugDraw->OnOff(); }
-
-	// Begin dock space
-	DockSpace();
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -186,6 +186,11 @@ update_status ModuleGui::Update()
 		LoadScenePopUp();
 	}
 
+	return UPDATE_CONTINUE;
+}
+
+update_status ModuleGui::PostUpdate()
+{
 	// End dock space
 	ImGui::End();
 

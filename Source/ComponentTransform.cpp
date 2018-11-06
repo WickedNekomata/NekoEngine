@@ -97,12 +97,13 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::Text(string.data());
 }
 
-math::float4x4 ComponentTransform::GetMatrix()
+math::float4x4& ComponentTransform::GetMatrix() const
 {
-	return math::float4x4::FromTRS(position, rotation, scale);
+	math::float4x4 matrix = math::float4x4::FromTRS(position, rotation, scale);
+	return matrix;
 }
 
-math::float4x4 ComponentTransform::GetGlobalMatrix()
+math::float4x4& ComponentTransform::GetGlobalMatrix() const
 {
 	std::list<GameObject*> aux_list;
 
@@ -114,12 +115,18 @@ math::float4x4 ComponentTransform::GetGlobalMatrix()
 		globalParent = globalParent->GetParent();
 	}
 	
-	math::float4x4 matrix = math::float4x4::identity;
+	math::float4x4 globalMatrix = math::float4x4::identity;
 
 	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
-		matrix = matrix * (*it)->transform->GetMatrix();
+	{
+		math::float4x4 parentMatrix = (*it)->transform->GetMatrix();
+		globalMatrix = globalMatrix * parentMatrix;
+	}
 
-	return matrix * GetMatrix();
+	math::float4x4 localMatrix = GetMatrix();
+	globalMatrix = globalMatrix * localMatrix;
+
+	return globalMatrix;
 }
 
 void ComponentTransform::OnInternalSave(JSON_Object* file)

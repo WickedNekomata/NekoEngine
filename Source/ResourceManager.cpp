@@ -16,11 +16,11 @@ ResourceManager::~ResourceManager()
 }
 
 // Returns the uuid associated to the resource of the file. In case of error returns 0.
-uint ResourceManager::Find(const char* file_in_assets) const
+uint ResourceManager::Find(const char* fileInAssets) const
 {
 	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetExportedFile(), file_in_assets) == 0)
+		if (strcmp(it->second->GetExportedFile(), fileInAssets) == 0)
 			return it->first;
 	}
 
@@ -28,30 +28,66 @@ uint ResourceManager::Find(const char* file_in_assets) const
 }
 
 // Import file into a resource. In case of error returns 0.
-uint ResourceManager::ImportFile(const char* new_file_in_assets)
+uint ResourceManager::ImportFile(const char* newFileInAssets)
 {
 	uint ret = 0;
-	bool import_ok = false;
-	std::string written_file;
 
-	// import resource (assimp, etc)
+	bool imported = false;
+	std::string outputFileName;
 
-	/*
-	if (import_ok) { // If export was successful, create a new resource
-		Resource* res = CreateNewResource(type);
-		res->file = new_file_in_assets;
-		res->exported_file = written_file;
-		ret = res->uid;
+	std::string extension;
+	App->filesystem->GetExtension(newFileInAssets, extension);
+	ResourceType type = GetResourceTypeByExtension(extension.data());
+
+	switch (type)
+	{
+	case ResourceType::Mesh_Resource:
+		imported = App->sceneImporter->Import(nullptr, newFileInAssets, outputFileName);
+		break;
+	case ResourceType::Material_Resource:
+		imported = App->materialImporter->Import(nullptr, newFileInAssets, outputFileName);
+		break;
+	case ResourceType::No_Type_Resource:
+	default:
+		break;
 	}
-	*/
+
+	if (imported)
+	{
+		Resource* resource = CreateNewResource(type);
+		resource->file = newFileInAssets;
+		resource->exportedFileName = outputFileName;
+		ret = resource->GetUUID();
+
+		// Generate the meta
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
+			App->sceneImporter->GenerateMeta(resource);
+			break;
+		case ResourceType::Material_Resource:
+			App->materialImporter->GenerateMeta(resource);
+			break;
+		}
+	}
 
 	return ret;
 }
 
-// Get resource associated to the uuid.
-Resource* const ResourceManager::Get(uint uuid)
+ResourceType ResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+	if (strcmp(extension, "fbx") || strcmp(extension, "obj"))
+		return ResourceType::Mesh_Resource;
+	else if (strcmp(extension, "dds") || strcmp(extension, "png") || strcmp(extension, "jpg"))
+		return ResourceType::Material_Resource;
+
+	return ResourceType::No_Type_Resource;
+}
+
+// Get resource associated to the uuid.
+const Resource* ResourceManager::GetResource(uint uuid) const
+{
+	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
 	if (it != resources.end())
 		return it->second;
@@ -63,7 +99,7 @@ Resource* const ResourceManager::Get(uint uuid)
 // In case of uuid set to 0, a random uuid will be generated.
 Resource* ResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
 {
-	assert(type != ResourceType::No_type_resource && "Invalid resource type");
+	assert(type != ResourceType::No_Type_Resource && "Invalid resource type");
 
 	Resource* resource = nullptr;
 

@@ -14,6 +14,17 @@ struct Texture
 	uint height = 0;
 };
 
+/*
+struct MaterialImportSettings
+{
+	int compression = IL_DXT5;
+
+	int wrapS = GL_REPEAT;
+	int wrapS = GL_REPEAT;
+	int minFilter = GL_LINEAR_MIPMAP_LINEAR;
+	int magFilter = GL_LINEAR;
+};
+*/
 class MaterialImporter : public Importer
 {
 public:
@@ -23,6 +34,8 @@ public:
 
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
+
+	void GenerateMeta(Resource* resource);
 	
 	bool Load(const char* exportedFileName, Texture* outputTexture);
 	bool Load(const void* buffer, uint size, Texture* outputTexture);
@@ -39,8 +52,7 @@ private:
 	bool isAnisotropySupported = false;
 	float largestSupportedAnisotropy = 0.0f;
 
-	// Default import values
-
+	//MaterialImportSettings defaultImportSettings;
 };
 
 #endif

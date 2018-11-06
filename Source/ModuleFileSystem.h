@@ -38,7 +38,9 @@ public:
 	bool ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const;
 	bool IsDirectory(const char* file) const;
 
-	const char* GetFileNameFromPath(const char* path) const;
+	void GetFileName(const char* file, std::string& fileName) const;
+	void GetExtension(const char* file, std::string& extension) const;
+	void GetPath(const char* file, std::string& path) const;
 };
 
 #endif

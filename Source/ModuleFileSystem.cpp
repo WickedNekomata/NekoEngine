@@ -145,7 +145,8 @@ uint ModuleFileSystem::Save(const char* filePath, char* buffer, uint size, bool 
 {
 	uint objCount = 0;
 
-	const char* fileName = GetFileNameFromPath(filePath);
+	std::string fileName;
+	GetFileName(filePath, fileName);
 
 	bool exists = Exists(filePath);
 
@@ -165,22 +166,22 @@ uint ModuleFileSystem::Save(const char* filePath, char* buffer, uint size, bool 
 			{
 				if (append)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName);
+					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
 				}
 				else
-					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName, objCount);
+					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
 			}			
 			else
-				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName, objCount);
+				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 		if (PHYSFS_close(filehandle) == 0)
-			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 	return objCount;
 }
@@ -210,7 +211,8 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 {
 	uint objCount = 0;
 
-	const char* fileName = GetFileNameFromPath(filePath);
+	std::string fileName;
+	GetFileName(filePath, fileName);
 
 	bool exists = Exists(filePath);
 
@@ -229,23 +231,23 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 			
 				if (objCount == size)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName);
+					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName.data());
 				}
 				else
 				{
 					RELEASE(buffer);
-					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 				}
 
 				if (PHYSFS_close(filehandle) == 0)
-					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName, PHYSFS_getLastError());
+					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 			}
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName, PHYSFS_getLastError());
+			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName);
+		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
 
 	return objCount;
 }
@@ -283,17 +285,21 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 	return PHYSFS_isDirectory(file);
 }
 
-// TODO CHECK NEW ALWAYS DELETED
-const char* ModuleFileSystem::GetFileNameFromPath(const char* path) const
+void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) const
 {
-	std::string newPath = path;
-	std::string name = newPath;
-	name = name.substr(name.find_last_of("\\") + 1, name.size());
-	name = name.substr(name.find_last_of("//") + 1, name.size());
-	name = name.substr(0, name.find_last_of("."));
+	fileName = file;
+	fileName = fileName.substr(fileName.find_last_of("\\") + 1, fileName.size());
+	fileName = fileName.substr(fileName.find_last_of("//") + 1, fileName.size());
+}
 
-	const char* result = new char[name.size() + 1];
-	strcpy_s((char*)result, name.size() + 1, name.data());
+void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const
+{
+	extension = file;
+	extension = extension.substr(extension.find_last_of("."));
+}
 
-	return result;
+void ModuleFileSystem::GetPath(const char* file, std::string& path) const
+{
+	path = file;
+	path = path.substr(0, path.find_last_of("\\") + 1);
 }

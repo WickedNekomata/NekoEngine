@@ -16,9 +16,11 @@ public:
 	ResourceManager();
 	~ResourceManager();
 
-	uint Find(const char* file_in_assets) const;
-	uint ImportFile(const char* new_file_in_assets);
-	Resource* const Get(uint uid);
+	uint Find(const char* fileInAssets) const;
+	uint ImportFile(const char* newFileInAssets);
+	ResourceType GetResourceTypeByExtension(const char* extension);
+
+	const Resource* GetResource(uint uid) const;
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);	bool DestroyResource(uint uuid);	void DestroyResources();
 
 	bool SomethingOnMemory() const;

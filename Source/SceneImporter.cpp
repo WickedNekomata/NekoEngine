@@ -9,14 +9,8 @@
 #include "ComponentMaterial.h"
 #include "ComponentTypes.h"
 #include "MaterialImporter.h"
-
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/scene.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
-#include "Assimp/include/version.h"
-
-#pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
+#include "Resource.h"
+#include "ResourceMesh.h"
 
 void myCallback(const char* msg, char* userData)
 {
@@ -42,22 +36,33 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 	if (importPath == nullptr)
 		return ret;
 
-	char importFilePath[DEFAULT_BUF_SIZE];
-	strcpy_s(importFilePath, strlen(importPath) + 1, importPath);
+	std::string name;
+
+	char fullImportPath[DEFAULT_BUF_SIZE];
+	strcpy_s(fullImportPath, strlen(importPath) + 1, importPath);
+
 	if (importFileName != nullptr)
-		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFileName) + 1, importFileName);
-	outputFileName = App->filesystem->GetFileNameFromPath(importFilePath);
+	{
+		name = importFileName;
+
+		// Build the import path
+		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
+	}
+	else
+		App->filesystem->GetFileName(importFileName, name);
+
+	outputFileName = name.data();
 
 	char* buffer;
-	uint size = App->filesystem->Load(importFilePath, &buffer);
+	uint size = App->filesystem->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded mesh(es) %s (original format)", importFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded model %s (original format)", name.data());
 		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load mesh(es) %s (original format)", importFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load model %s (original format)", name.data());
 
 	return ret;
 }
@@ -92,6 +97,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 
 void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, GameObject* transformationGO, std::string& outputFileName)
 {
+	/*
 	std::string name = node->mName.data;
 
 	bool isTransformation =
@@ -130,6 +136,9 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		go->transform->rotation = newRotation;
 		go->transform->scale = newScale;
 	}
+	*/
+	bool isTransformation = false;
+	GameObject* go = new GameObject("Name", (GameObject*)parentGO);
 
 	// Meshes
 	if (!isTransformation && node->mNumMeshes > 0)
@@ -244,11 +253,60 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
 	{
-		if (isTransformation)
-			RecursivelyImportNodes(scene, node->mChildren[i], parentGO, go, outputFileName);
-		else
+		//if (isTransformation)
+			//RecursivelyImportNodes(scene, node->mChildren[i], parentGO, go, outputFileName);
+		//else
 			RecursivelyImportNodes(scene, node->mChildren[i], go, nullptr, outputFileName);
 	}
+}
+
+void SceneImporter::GenerateMeta(Resource* resource)
+{
+	ResourceMesh* resourceMesh = (ResourceMesh*)resource;
+
+	JSON_Value* rootValue = json_value_init_object();
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	// Fill the JSON with data
+	json_object_set_number(rootObject, "UUID", resourceMesh->GetUUID());
+	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
+
+	JSON_Value* newValue = json_value_init_object();
+	JSON_Object* objModule = json_value_get_object(newValue);
+	json_object_set_value(rootObject, "Scene Importer", newValue);
+	
+	json_object_set_number(objModule, "Configuration", defaultImportSettings.configuration);
+	json_object_set_number(objModule, "Calculate Tangent Space", defaultImportSettings.calcTangentSpace);
+	json_object_set_number(objModule, "Generate Normals", defaultImportSettings.genNormals);
+	json_object_set_number(objModule, "Generate Smooth Normals", defaultImportSettings.genSmoothNormals);
+	json_object_set_number(objModule, "Join Identical Vertices", defaultImportSettings.joinIdenticalVertices);
+	json_object_set_number(objModule, "Triangulate", defaultImportSettings.triangulate);
+	json_object_set_number(objModule, "Generate UV Coordinates", defaultImportSettings.genUVCoords);
+	json_object_set_number(objModule, "Sort By Primitive Type", defaultImportSettings.sortByPType);
+	json_object_set_number(objModule, "Improve Cache Locality", defaultImportSettings.improveCacheLocality);
+	json_object_set_number(objModule, "Limit Bone Weights", defaultImportSettings.limitBoneWeights);
+	json_object_set_number(objModule, "Remove Redundant Materials", defaultImportSettings.removeRedundantMaterials);
+	json_object_set_number(objModule, "Split Large Meshes", defaultImportSettings.splitLargeMeshes);
+	json_object_set_number(objModule, "Find Degenerates", defaultImportSettings.findDegenerates);
+	json_object_set_number(objModule, "Find Invalid Data", defaultImportSettings.findInvalidData);
+	json_object_set_number(objModule, "Find Instances", defaultImportSettings.findInstances);
+	json_object_set_number(objModule, "Validate Data Structure", defaultImportSettings.validateDataStructure);
+	json_object_set_number(objModule, "Optimize Meshes", defaultImportSettings.optimizeMeshes);
+
+	char path[DEFAULT_BUF_SIZE];
+	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
+
+	// Build the path
+	static const char extension[] = ".meta";
+	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	char* buf = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
+	App->filesystem->Save(path, buf, sizeBuf);
+	delete[] buf;
+	json_value_free(rootValue);
 }
 
 bool SceneImporter::Load(const char* exportedFileName, Mesh* outputMesh)
@@ -259,12 +317,12 @@ bool SceneImporter::Load(const char* exportedFileName, Mesh* outputMesh)
 	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded mesh %s (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded mesh %s (own format)", exportedFileName);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load mesh %s (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load mesh %s (own format)", exportedFileName);
 
 	return ret;
 }

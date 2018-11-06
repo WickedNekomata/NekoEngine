@@ -28,8 +28,13 @@ public:
 	uint ImportFile(const char* newFileInAssets);
 	ResourceType GetResourceTypeByExtension(const char* extension);
 
-	const Resource* GetResource(uint uid) const;
-	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);	bool DestroyResource(uint uuid);	void DestroyResources();
+	const Resource* GetResource(uint uuid) const;
+	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
+	int SetAsUsed(uint uuid) const;
+	int SetAsUnused(uint uuid) const;
+
+	bool DestroyResource(uint uuid);
+	void DestroyResources();
 
 	bool SomethingOnMemory() const;
 

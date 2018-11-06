@@ -85,6 +85,8 @@ public:
 	bool IsStep() const;
 	bool IsEditor() const;
 
+	uint GenerateRandomNumber() const;
+
 	void SaveState() const;
 	void LoadState() const;
 

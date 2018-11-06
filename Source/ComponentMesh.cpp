@@ -30,18 +30,11 @@ void ComponentMesh::Update() {}
 
 void ComponentMesh::SetResource(uint res_uuid)
 {
-	if (res != 0) 
-	{
-		Resource* resData = (Resource*)App->res->GetResource(res);
-		resData->UnloadMemory();
-	}
+	if (res != 0)
+		App->res->SetAsUnused(res);
 
-	if (res_uuid != 0) 
-	{
-		Resource* resData = (Resource*)App->res->GetResource(res_uuid);
-		assert(resData != nullptr && "uuid not associated with any resource");
-		resData->LoadToMemory();
-	}
+	if (res_uuid != 0)
+		App->res->SetAsUsed(res_uuid);
 
 	res = res_uuid;
 }

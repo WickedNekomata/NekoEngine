@@ -12,7 +12,6 @@
 #include "ModuleScene.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
-#include "PCG/pcg_variants.h"
 
 #include <algorithm>
 
@@ -29,7 +28,7 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 	if (isStatic)
 		App->scene->quadtree.Insert(this);
 
-	UUID = pcg32_random_r(&(App->rng));
+	UUID = App->GenerateRandomNumber();
 }
 
 GameObject::GameObject(const GameObject& gameObject)
@@ -328,10 +327,12 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	boundingBox.SetNegativeInfinity();
 
 	// Grow bounding box
-	if (meshRenderer != nullptr && meshRenderer->res != 0) {
-		ResourceMesh* meshRes = (ResourceMesh*)App->res->GetResource(meshRenderer->res);
+	if (meshRenderer != nullptr && meshRenderer->res != 0) 
+	{
+		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
 		boundingBox.Enclose((const math::float3*)meshRes->vertices, meshRes->verticesSize);
 	}
+
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);

@@ -18,7 +18,9 @@ public:
 
 	bool Draw();
 
+	void ShowGameObjectInspector();
 	void DragnDropSeparatorTarget(Component* target);
+	void ShowMetaInspector();
 };
 
 #endif

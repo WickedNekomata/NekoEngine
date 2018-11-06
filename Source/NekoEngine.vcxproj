@@ -154,6 +154,7 @@
     <ClInclude Include="ComponentMesh.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
+    <ClInclude Include="CurrentSelection.h" />
     <ClInclude Include="DebugDrawer.h" />
     <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp" />
     <ClInclude Include="DevIL\include\devil_internal_exports.h" />

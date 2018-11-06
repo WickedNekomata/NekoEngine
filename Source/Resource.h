@@ -7,6 +7,8 @@
 
 #include <string>
 
+struct ImportSettings {};
+
 class Resource
 {
 public:

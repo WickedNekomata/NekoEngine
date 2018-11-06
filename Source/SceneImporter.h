@@ -41,27 +41,7 @@ struct Mesh
 
 struct ModelImportSettings
 {
-	math::float3 scale = math::float3::one;
-	bool useFileScale = true;
-
-	// Post Process
-	int configuration = aiProcessPreset_TargetRealtime_MaxQuality;
-	bool calcTangentSpace = true;
-	bool genNormals = false;
-	bool genSmoothNormals = true;
-	bool joinIdenticalVertices = true;
-	bool triangulate = true;
-	bool genUVCoords = true;
-	bool sortByPType = true;
-	bool improveCacheLocality = true;
-	bool limitBoneWeights = true;
-	bool removeRedundantMaterials = true;
-	bool splitLargeMeshes = true;
-	bool findDegenerates = true;
-	bool findInvalidData = true;
-	bool findInstances = true;
-	bool validateDataStructure = true;
-	bool optimizeMeshes = true;
+	
 };
 
 struct aiScene;

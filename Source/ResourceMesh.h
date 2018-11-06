@@ -3,6 +3,33 @@
 
 #include "Resource.h"
 
+#include "MathGeoLib/include/Math/float3.h"
+
+struct MeshImportSettings : public ImportSettings
+{
+	math::float3 scale = math::float3::one;
+	bool useFileScale = true;
+
+	// Post Process
+	int configuration = 0;
+	bool calcTangentSpace = true;
+	bool genNormals = false;
+	bool genSmoothNormals = true;
+	bool joinIdenticalVertices = true;
+	bool triangulate = true;
+	bool genUVCoords = true;
+	bool sortByPType = true;
+	bool improveCacheLocality = true;
+	bool limitBoneWeights = true;
+	bool removeRedundantMaterials = true;
+	bool splitLargeMeshes = true;
+	bool findDegenerates = true;
+	bool findInvalidData = true;
+	bool findInstances = true;
+	bool validateDataStructure = true;
+	bool optimizeMeshes = true;
+};
+
 class ResourceMesh : public Resource
 {
 public:
@@ -30,7 +57,8 @@ public:
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 	uint textureCoordsSize = 0;
-};
 
+	MeshImportSettings* importSettings = nullptr;
+};
 
 #endif

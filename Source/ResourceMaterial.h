@@ -3,6 +3,16 @@
 
 #include "Resource.h"
 
+struct MaterialImportSettings : public ImportSettings
+{
+	int compression = 0;
+
+	int wrapS = 0;
+	int wrapT = 0;
+	int minFilter = 0;
+	int magFilter = 0;
+};
+
 class ResourceMaterial : public Resource
 {
 public:
@@ -22,6 +32,8 @@ private:
 	uint id = 0;
 	uint width = 0;
 	uint height = 0;
+
+	MaterialImportSettings* importSettings = nullptr;
 };
 
 

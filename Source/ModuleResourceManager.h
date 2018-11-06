@@ -7,9 +7,11 @@
 #include "ResourceTypes.h"
 
 #include <map>
+#include <vector>
 
 #define MAX_ASSETS_CHECK_TIME 2.0f
 
+struct ImportSettings;
 class Resource;
 
 class ModuleResourceManager : public Module
@@ -28,6 +30,9 @@ public:
 	uint ImportFile(const char* newFileInAssets);
 	ResourceType GetResourceTypeByExtension(const char* extension);
 
+	void AddImportSettings(ImportSettings* importSettings);
+	void EraseImportSettings(ImportSettings* importSettings);
+
 	const Resource* GetResource(uint uuid) const;
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
 	int SetAsUsed(uint uuid) const;
@@ -41,6 +46,7 @@ public:
 private:
 
 	std::map<uint, Resource*> resources;
+	std::vector<ImportSettings*> importSettings;
 
 	float assetsCheckTime = 1.0f;
 	float timer = 0.0f;

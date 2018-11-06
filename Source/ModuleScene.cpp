@@ -111,9 +111,8 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
 	ImGuizmo::Enable(true);
 
-	ImGuiIO& io = ImGui::GetIO();
-
-	ImGuizmo::SetRect(0.0f, 0.0f, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuiViewport* vport = ImGui::GetMainViewport();
+	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
 
 	if (ImGuizmo::IsUsing())
 	{
@@ -128,8 +127,6 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		}
 	}
 
-	ComponentCamera* cam = App->renderer3D->GetCurrentCamera();
-
 	math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
 	math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
 	math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
@@ -139,10 +136,6 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		viewMatrix.ptr(), projectionMatrix.ptr(),
 		currentImGuizmoOperation, currentImGuizmoMode, transformMatrix.ptr()
 	);
-
-	//ImGuizmo::Manipulate(math::float4x4::identity.ptr(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
-
-	//ImGuizmo::DrawCube(App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix(), App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix(), currentGameObject->transform->GetGlobalMatrix().Transposed().ptr());
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

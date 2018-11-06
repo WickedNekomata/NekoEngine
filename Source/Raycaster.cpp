@@ -9,7 +9,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
-#include "ResourceManager.h"
+#include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 
 #include "MathGeoLib/include/Geometry/Triangle.h"
@@ -56,7 +56,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		math::LineSegment localSpaceSegment(raycast);
 		localSpaceSegment.Transform(hits[i]->transform->GetGlobalMatrix().Inverted());
 
-		ResourceMesh* resMesh = (ResourceMesh*)App->res->Get(hits[i]->meshRenderer->res);
+		const ResourceMesh* resMesh = (const ResourceMesh*)App->res->GetResource(hits[i]->meshRenderer->res);
 		for (int j = 0; j < resMesh->indicesSize;)
 		{
 			tri.a = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;

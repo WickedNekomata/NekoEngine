@@ -29,7 +29,7 @@ public:
 	ResourceType GetResourceTypeByExtension(const char* extension);
 
 	const Resource* GetResource(uint uuid) const;
-	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);	int SetAsUsed(uint uuid);	int SetAsUnused(uint uuid);	bool DestroyResource(uint uuid);	void DestroyResources();
+	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);	int SetAsUsed(uint uuid) const;	int SetAsUnused(uint uuid) const;	bool DestroyResource(uint uuid);	void DestroyResources();
 
 	bool SomethingOnMemory() const;
 

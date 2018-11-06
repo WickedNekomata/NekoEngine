@@ -159,20 +159,20 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 }
 
 // Load resource to memory and return number of references. In case of error returns -1.
-int ModuleResourceManager::SetAsUsed(uint uuid)
+int ModuleResourceManager::SetAsUsed(uint uuid) const
 {
-	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
 	if (it == resources.end())
 		return -1;
 
-	return it->second->LoadToMemory();;
+	return it->second->LoadToMemory();
 }
 
 // Unload resource from memory and return number of references. In case of error returns -1.
-int ModuleResourceManager::SetAsUnused(uint uuid)
+int ModuleResourceManager::SetAsUnused(uint uuid) const
 {
-	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
 	if (it == resources.end())
 		return -1;

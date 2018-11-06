@@ -15,7 +15,7 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::Mesh_Component)
 {
-	res = componentMesh.res;
+	SetResource(componentMesh.res);
 }
 
 ComponentMesh::~ComponentMesh()
@@ -76,5 +76,5 @@ void ComponentMesh::OnInternalSave(JSON_Object* file)
 
 void ComponentMesh::OnLoad(JSON_Object* file)
 {
-	res = json_object_get_number(file, "ResourceMesh");
+	SetResource(json_object_get_number(file, "ResourceMesh"));
 }

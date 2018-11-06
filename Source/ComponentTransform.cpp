@@ -129,6 +129,30 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 	return globalMatrix;
 }
 
+void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
+{
+	GameObject* globalParent = this->GetParent()->GetParent();
+
+	while (globalParent->GetParent() != nullptr)
+	{
+		globalMatrix = globalParent->transform->GetMatrix() * globalMatrix;
+		globalParent = globalParent->GetParent();
+	}
+
+	globalMatrix.Decompose(position, rotation, scale);
+}
+
+void ComponentTransform::SetMatrixFromLocal(math::float4x4& localMatrix)
+{
+	math::float3 newPos;
+	math::Quat newRotation;
+	math::float3 newScale;
+	localMatrix.Decompose(newPos, newRotation, newScale);
+	position = newPos;
+	rotation = newRotation;
+	scale = newScale;
+}
+
 void ComponentTransform::OnInternalSave(JSON_Object* file)
 {
 	json_object_set_number(file, "PosX", position.x);

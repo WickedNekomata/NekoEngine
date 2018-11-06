@@ -136,6 +136,8 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		viewMatrix.ptr(), projectionMatrix.ptr(),
 		currentImGuizmoOperation, currentImGuizmoMode, transformMatrix.ptr()
 	);
+
+	gameObject->transform->SetMatrixFromGlobal(transformMatrix.Transposed());
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "Globals.h"
+#include "ResourceMaterial.h"
 
 #include "DevIL/include/il.h"
 #include "DevIL/include/ilu.h"
@@ -52,7 +53,6 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 		return ret;
 
 	std::string name;
-	std::string path;
 
 	char fullImportPath[DEFAULT_BUF_SIZE];
 	strcpy_s(fullImportPath, strlen(importPath) + 1, importPath);
@@ -60,16 +60,14 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	if (importFileName != nullptr)
 	{
 		name = importFileName;
-		path = importPath;
 
 		// Build the import path
 		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
 	}
 	else
-	{
-		App->filesystem->GetFileName(importFileName, name);
-		App->filesystem->GetPath(importPath, path);
-	}
+		App->filesystem->GetFileName(importPath, name);
+
+	outputFileName = name.data();
 
 	char* buffer;
 	uint size = App->filesystem->Load(fullImportPath, &buffer);
@@ -149,7 +147,38 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 
 void MaterialImporter::GenerateMeta(Resource* resource)
 {
+	ResourceMaterial* resourceMaterial = (ResourceMaterial*)resource;
 
+	JSON_Value* rootValue = json_value_init_object();
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	// Fill the JSON with data
+	json_object_set_number(rootObject, "UUID", resourceMaterial->GetUUID());
+	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
+
+	JSON_Value* newValue = json_value_init_object();
+	JSON_Object* objModule = json_value_get_object(newValue);
+	json_object_set_value(rootObject, "Material Importer", newValue);
+
+	std::string name;
+	name.append("Assets/");
+	name.append(resource->file.data());
+	name.append(".meta");
+	/*
+	char path[DEFAULT_BUF_SIZE];
+	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
+
+	// Build the path
+	static const char extension[] = ".meta";
+	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
+	*/
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	char* buf = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
+	App->filesystem->Save(name.data(), buf, sizeBuf);
+	delete[] buf;
+	json_value_free(rootValue);
 }
 
 bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture)

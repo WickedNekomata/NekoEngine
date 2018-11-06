@@ -17,11 +17,11 @@
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
 #include "ModuleTimeManager.h"
+#include "ModuleResourceManager.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
-#include "ResourceManager.h"
 
 #include "PerfTimer.h"
 
@@ -99,28 +99,28 @@ private:
 
 public:
 
-	ResourceManager*	res;
-	MaterialImporter*	materialImporter;
-	SceneImporter*		sceneImporter;
+	ModuleResourceManager*	res;
+	MaterialImporter*		materialImporter;
+	SceneImporter*			sceneImporter;
 #ifndef GAMEMODE
 	
-	ModuleCameraEditor*	camera;
-	ModuleGui*			gui;
+	ModuleCameraEditor*		camera;
+	ModuleGui*				gui;
 
-	Raycaster*			raycaster;
+	Raycaster*				raycaster;
 #endif // GAME
 
-	ModuleWindow*		window;
-	ModuleInput*		input;
-	ModuleScene*		scene;
-	ModuleRenderer3D*	renderer3D;
-	ModuleFileSystem*	filesystem;
-	ModuleGOs*			GOs;
-	ModuleTimeManager*	timeManager;
+	ModuleWindow*			window;
+	ModuleInput*			input;
+	ModuleScene*			scene;
+	ModuleRenderer3D*		renderer3D;
+	ModuleFileSystem*		filesystem;
+	ModuleGOs*				GOs;
+	ModuleTimeManager*		timeManager;
 
-	DebugDrawer*		debugDrawer;
+	DebugDrawer*			debugDrawer;
 
-	pcg32_random_t		rng;
+	pcg32_random_t			rng;
 
 private:
 

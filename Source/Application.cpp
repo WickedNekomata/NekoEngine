@@ -16,7 +16,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
-	res = new ResourceManager();
+	res = new ModuleResourceManager();
 #ifndef GAMEMODE
 	raycaster = new Raycaster();
 	camera = new ModuleCameraEditor();
@@ -34,6 +34,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 #endif // GAME
 
 	AddModule(timeManager);
+	AddModule(res);
 	AddModule(GOs);
 	AddModule(filesystem);
 	AddModule(window);
@@ -59,7 +60,7 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	uint size = App->filesystem->Load("config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -151,8 +152,6 @@ bool Application::CleanUp()
 
 	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend() && ret; ++item)
 		ret = (*item)->CleanUp();
-
-	assert(res->SomethingOnMemory() == false && "Memory still allocated on vram. Code better!");
 
 	return ret;
 }
@@ -262,7 +261,7 @@ void Application::Load()
 {
 	// Read config file
 	char* buf;
-	uint size = App->filesystem->Load("Assets/config.json", &buf);
+	uint size = App->filesystem->Load("config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -316,7 +315,7 @@ void Application::Save() const
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	filesystem->Save("Assets/config.json", buf, sizeBuf);
+	filesystem->Save("config.json", buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 

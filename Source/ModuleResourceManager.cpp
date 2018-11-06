@@ -1,4 +1,4 @@
-#include "ResourceManager.h"
+#include "ModuleResourceManager.h"
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
@@ -7,16 +7,48 @@
 
 #include <assert.h> 
 
-ResourceManager::ResourceManager()
+ModuleResourceManager::ModuleResourceManager() {}
+
+ModuleResourceManager::~ModuleResourceManager() {}
+
+update_status ModuleResourceManager::Update()
 {
+	timer += App->timeManager->GetRealDt();
+
+	if (timer >= assetsCheckTime)
+	{
+		std::string newFileInAssets;
+		//if (App->filesystem->RecursiveFindNewFileInAssets("Assets", newFileInAssets))
+			//ImportFile(newFileInAssets.data());
+
+		timer = 0.0f;
+	}
+
+	return UPDATE_CONTINUE;
 }
 
-ResourceManager::~ResourceManager()
+bool ModuleResourceManager::CleanUp()
 {
+	assert(SomethingOnMemory() == false && "Memory still allocated on vram. Code better!");
+
+	return true;
+}
+
+void ModuleResourceManager::SetAssetsCheckTime(float assetsCheckTime)
+{
+	this->assetsCheckTime = assetsCheckTime;
+
+	if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
+		this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
+}
+
+float ModuleResourceManager::GetAssetsCheckTime() const
+{
+	return assetsCheckTime;
 }
 
 // Returns the uuid associated to the resource of the file. In case of error returns 0.
-uint ResourceManager::Find(const char* fileInAssets) const
+uint ModuleResourceManager::Find(const char* fileInAssets) const
 {
 	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 	{
@@ -28,7 +60,7 @@ uint ResourceManager::Find(const char* fileInAssets) const
 }
 
 // Import file into a resource. In case of error returns 0.
-uint ResourceManager::ImportFile(const char* newFileInAssets)
+uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 {
 	uint ret = 0;
 
@@ -74,18 +106,21 @@ uint ResourceManager::ImportFile(const char* newFileInAssets)
 	return ret;
 }
 
-ResourceType ResourceManager::GetResourceTypeByExtension(const char* extension)
+ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	if (strcmp(extension, "fbx") || strcmp(extension, "obj"))
+	if (strcmp(extension, ".fbx") == 0 || strcmp(extension, ".FBX") == 0
+		|| strcmp(extension, ".obj") == 0 || strcmp(extension, ".OBJ") == 0)
 		return ResourceType::Mesh_Resource;
-	else if (strcmp(extension, "dds") || strcmp(extension, "png") || strcmp(extension, "jpg"))
+	else if (strcmp(extension, ".dds") == 0 || strcmp(extension, ".DDS")
+		|| strcmp(extension, ".png") == 0 || strcmp(extension, ".PNG") == 0
+		|| strcmp(extension, ".jpg") == 0 || strcmp(extension, ".JPG") == 0)
 		return ResourceType::Material_Resource;
 
 	return ResourceType::No_Type_Resource;
 }
 
 // Get resource associated to the uuid.
-const Resource* ResourceManager::GetResource(uint uuid) const
+const Resource* ModuleResourceManager::GetResource(uint uuid) const
 {
 	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
@@ -97,7 +132,7 @@ const Resource* ResourceManager::GetResource(uint uuid) const
 
 // First argument defines the kind of resource to create. Second argument is used to force and set the uuid.
 // In case of uuid set to 0, a random uuid will be generated.
-Resource* ResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
+Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
 {
 	assert(type != ResourceType::No_Type_Resource && "Invalid resource type");
 
@@ -124,7 +159,7 @@ Resource* ResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
 }
 
 // Returns true if resource associated to the uuid can be found and deleted. Returns false in case of error.
-bool ResourceManager::DestroyResource(uint uuid)
+bool ModuleResourceManager::DestroyResource(uint uuid)
 {
 	std::map<uint, Resource*>::iterator it = resources.find(uuid);
 
@@ -137,7 +172,7 @@ bool ResourceManager::DestroyResource(uint uuid)
 }
 
 // Deletes all resources.
-void ResourceManager::DestroyResources()
+void ModuleResourceManager::DestroyResources()
 {
 	for (std::map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
 		delete it->second;
@@ -145,7 +180,7 @@ void ResourceManager::DestroyResources()
 	resources.clear();
 }
 
-bool ResourceManager::SomethingOnMemory() const
+bool ModuleResourceManager::SomethingOnMemory() const
 {
 	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 	{

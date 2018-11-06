@@ -49,7 +49,7 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
 	}
 	else
-		App->filesystem->GetFileName(importFileName, name);
+		App->filesystem->GetFileName(importPath, name);
 
 	outputFileName = name.data();
 

@@ -251,7 +251,7 @@
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ModuleResourceManager.h" />
     <ClInclude Include="ResourceMaterial.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="ResourceTypes.h" />
@@ -340,7 +340,7 @@
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ModuleResourceManager.cpp" />
     <ClCompile Include="ResourceMaterial.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="SceneImporter.cpp" />

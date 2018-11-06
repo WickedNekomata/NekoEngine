@@ -16,9 +16,9 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
 	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
-	AddPath("Assets/Meshes/", "Meshes");
-	AddPath("Assets/Textures/", "Textures");
-	AddPath("Assets/UI/", "UI");
+	AddPath("./Assets/Meshes/", "Meshes");
+	AddPath("./Assets/Textures/", "Textures");
+	AddPath("./Assets/UI/", "UI");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
@@ -252,12 +252,17 @@ uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
 	return objCount;
 }
 
+bool ModuleFileSystem::IsDirectory(const char* file) const
+{
+	return PHYSFS_isDirectory(file);
+}
+
 bool ModuleFileSystem::Exists(const char* filePath) const
 {
 	return PHYSFS_exists(filePath);
 }
 
-bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const
+bool ModuleFileSystem::ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const
 {
 	uint ret = 0;
 
@@ -267,11 +272,11 @@ bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileTyp
 	{
 	case FileType::MeshFile:
 		outputFilePath = "Assets/Meshes/";
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
 		break;
 	case FileType::TextureFile:
 		outputFilePath = "Assets/Textures/";
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileNameWithExtension);
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
 		break;
 	}
 
@@ -280,9 +285,43 @@ bool ModuleFileSystem::ExistsInAssets(const char* fileNameWithExtension, FileTyp
 	return ret;
 }
 
-bool ModuleFileSystem::IsDirectory(const char* file) const
+bool ModuleFileSystem::RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const
 {
-	return PHYSFS_isDirectory(file);
+	bool ret = false;
+
+	newFileInAssets.append(dir);
+	newFileInAssets.append("/");
+
+	const char** files = App->filesystem->GetFilesFromDir(dir);
+	const char** it;
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		if (App->filesystem->IsDirectory(*it))
+			ret = RecursiveFindNewFileInAssets(*it, newFileInAssets);
+		else
+		{
+			// Search for the meta associated to the file
+			char metaFile[DEFAULT_BUF_SIZE];
+			strcpy_s(metaFile, strlen(*it) + 1, *it);
+
+			static const char extension[] = ".meta";
+			strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
+
+			// If the meta doesn't exist, then the file is new
+			if (!Exists(metaFile))
+			{
+				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s", *it, newFileInAssets.data());
+				newFileInAssets.append(*it);
+				ret = true;
+			}
+		}
+
+		if (ret)
+			break;
+	}
+
+	return ret;
 }
 
 void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) const
@@ -290,6 +329,7 @@ void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) cons
 	fileName = file;
 	fileName = fileName.substr(fileName.find_last_of("\\") + 1, fileName.size());
 	fileName = fileName.substr(fileName.find_last_of("//") + 1, fileName.size());
+	fileName = fileName.substr(0, fileName.find_last_of("."));
 }
 
 void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const
@@ -302,4 +342,5 @@ void ModuleFileSystem::GetPath(const char* file, std::string& path) const
 {
 	path = file;
 	path = path.substr(0, path.find_last_of("\\") + 1);
+	path = path.substr(0, path.find_last_of("//") + 1);
 }

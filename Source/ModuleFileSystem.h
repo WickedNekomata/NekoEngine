@@ -34,9 +34,11 @@ public:
 	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;
 	uint Load(const char* filePath, char** buffer) const;
 
-	bool Exists(const char* filePath) const;
-	bool ExistsInAssets(const char* fileNameWithExtension, FileType fileType, std::string& outputFilePath) const;
 	bool IsDirectory(const char* file) const;
+	bool Exists(const char* filePath) const;
+	bool ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const;
+
+	bool RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const;
 
 	void GetFileName(const char* file, std::string& fileName) const;
 	void GetExtension(const char* file, std::string& extension) const;

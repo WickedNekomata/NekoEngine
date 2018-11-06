@@ -16,7 +16,7 @@ public:
 
 	bool Draw();
 
-	void RecursiveDrawDir(const char* dir);
+	void RecursiveDrawDir(const char* dir) const;
 };
 
 #endif

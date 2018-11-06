@@ -4,6 +4,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ModuleResourceManager.h"
 
 #include "ImGui/imgui.h"
 
@@ -18,6 +19,11 @@ bool PanelAssets::Draw()
 
 	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
+		// Game time scale slider
+		ImGui::PushItemWidth(100.0f);
+		float checkTime = App->res->GetAssetsCheckTime();
+		if (ImGui::SliderFloat("Check Time", &checkTime, 0.0f, MAX_ASSETS_CHECK_TIME)) { App->res->SetAssetsCheckTime(checkTime); }
+
 		if (ImGui::TreeNodeEx("Assets"))
 		{
 			RecursiveDrawDir("Assets");
@@ -29,7 +35,7 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(const char* dir)
+void PanelAssets::RecursiveDrawDir(const char* dir) const
 {
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;

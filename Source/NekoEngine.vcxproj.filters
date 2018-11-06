@@ -595,9 +595,6 @@
     <ClInclude Include="PanelImportPreferences.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Sources\Modules\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Sources\Modules\Resources</Filter>
     </ClInclude>
@@ -612,6 +609,9 @@
     </ClInclude>
     <ClInclude Include="CurrentSelection.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleResourceManager.h">
+      <Filter>Sources\Modules\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -849,9 +849,6 @@
     <ClCompile Include="PanelImportPreferences.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Sources\Modules\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.cpp">
       <Filter>Sources\Modules\Resources</Filter>
     </ClCompile>
@@ -860,6 +857,9 @@
     </ClCompile>
     <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleResourceManager.cpp">
+      <Filter>Sources\Modules\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

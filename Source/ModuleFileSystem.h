@@ -35,7 +35,7 @@ public:
 	uint Load(const char* filePath, char** buffer) const;
 
 	bool IsDirectory(const char* file) const;
-	bool Exists(const char* filePath) const;
+	bool Exists(const char* file) const;
 	bool ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const;
 
 	bool RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const;

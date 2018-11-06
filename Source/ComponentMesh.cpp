@@ -5,7 +5,7 @@
 #include "ComponentTransform.h"
 #include "Application.h"
 #include "Resource.h"
-#include "ResourceManager.h"
+#include "ModuleResourceManager.h"
 
 #include "imgui/imgui.h"
 
@@ -30,13 +30,15 @@ void ComponentMesh::Update() {}
 
 void ComponentMesh::SetResource(uint res_uuid)
 {
-	if (res != 0) {
-		Resource* resData = App->res->Get(res);
+	if (res != 0) 
+	{
+		Resource* resData = (Resource*)App->res->GetResource(res);
 		resData->UnloadMemory();
 	}
 
-	if (res_uuid != 0) {
-		Resource* resData = App->res->Get(res_uuid);
+	if (res_uuid != 0) 
+	{
+		Resource* resData = (Resource*)App->res->GetResource(res_uuid);
 		assert(resData != nullptr && "uuid not associated with any resource");
 		resData->LoadToMemory();
 	}

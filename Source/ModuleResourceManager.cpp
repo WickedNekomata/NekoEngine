@@ -18,8 +18,8 @@ update_status ModuleResourceManager::Update()
 	if (timer >= assetsCheckTime)
 	{
 		std::string newFileInAssets;
-		//if (App->filesystem->RecursiveFindNewFileInAssets("Assets", newFileInAssets))
-			//ImportFile(newFileInAssets.data());
+		if (App->filesystem->RecursiveFindNewFileInAssets("Assets", newFileInAssets))
+			ImportFile(newFileInAssets.data());
 
 		timer = 0.0f;
 	}

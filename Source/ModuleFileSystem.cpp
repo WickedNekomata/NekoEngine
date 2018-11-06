@@ -257,9 +257,9 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 	return PHYSFS_isDirectory(file);
 }
 
-bool ModuleFileSystem::Exists(const char* filePath) const
+bool ModuleFileSystem::Exists(const char* file) const
 {
-	return PHYSFS_exists(filePath);
+	return PHYSFS_exists(file);
 }
 
 bool ModuleFileSystem::ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const
@@ -298,19 +298,37 @@ bool ModuleFileSystem::RecursiveFindNewFileInAssets(const char* dir, std::string
 	for (it = files; *it != nullptr; ++it)
 	{
 		if (App->filesystem->IsDirectory(*it))
+		{
 			ret = RecursiveFindNewFileInAssets(*it, newFileInAssets);
+
+			if (!ret)
+			{
+				uint found = newFileInAssets.rfind(*it);
+				if (found != std::string::npos)
+					newFileInAssets = newFileInAssets.substr(0, found);
+			}
+		}
 		else
 		{
+			// Ignore metas
+			std::string extension;
+			GetExtension(*it, extension);
+
+			if (strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+				continue;
+
 			// Search for the meta associated to the file
 			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(*it) + 1, *it);
+			strcpy_s(metaFile, strlen(newFileInAssets.data()) + 1, newFileInAssets.data()); // path
 
-			static const char extension[] = ".meta";
-			strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
+			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
 
-			// If the meta doesn't exist, then the file is new
+			extension = ".meta";
+			strcat_s(metaFile, strlen(metaFile) + strlen(extension.data()) + 1, extension.data()); // extension
+
 			if (!Exists(metaFile))
 			{
+				// If there is no meta, then the file is new
 				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s", *it, newFileInAssets.data());
 				newFileInAssets.append(*it);
 				ret = true;
@@ -327,20 +345,38 @@ bool ModuleFileSystem::RecursiveFindNewFileInAssets(const char* dir, std::string
 void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) const
 {
 	fileName = file;
-	fileName = fileName.substr(fileName.find_last_of("\\") + 1, fileName.size());
-	fileName = fileName.substr(fileName.find_last_of("//") + 1, fileName.size());
-	fileName = fileName.substr(0, fileName.find_last_of("."));
+
+	uint found = fileName.find_last_of("\\");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	found = fileName.find_last_of("//");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	found = fileName.find_last_of(".");
+	if (found != std::string::npos)
+		fileName = fileName.substr(0, found);
 }
 
 void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const
 {
 	extension = file;
-	extension = extension.substr(extension.find_last_of("."));
+
+	uint found = extension.find_last_of(".");
+	if (found != std::string::npos)
+		extension = extension.substr(found);
 }
 
 void ModuleFileSystem::GetPath(const char* file, std::string& path) const
 {
 	path = file;
-	path = path.substr(0, path.find_last_of("\\") + 1);
-	path = path.substr(0, path.find_last_of("//") + 1);
+
+	uint found = path.find_last_of("\\");
+	if (found != std::string::npos)
+		path = path.substr(0, found + 1);
+
+	found = path.find_last_of("//");
+	if (found != std::string::npos)
+		path = path.substr(0, found + 1);
 }

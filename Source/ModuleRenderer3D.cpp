@@ -537,7 +537,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glMultMatrixf(matrix.Transposed().ptr());
 	
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
-	ResourceMesh* res = (ResourceMesh*)App->res->Get(toDraw->res);
+	ResourceMesh* res = (ResourceMesh*)App->res->GetResource(toDraw->res);
 
 	if (materialRenderer != nullptr)
 	{

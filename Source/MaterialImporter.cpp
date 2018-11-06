@@ -160,23 +160,22 @@ void MaterialImporter::GenerateMeta(Resource* resource)
 	JSON_Object* objModule = json_value_get_object(newValue);
 	json_object_set_value(rootObject, "Material Importer", newValue);
 
-	std::string name;
-	name.append("Assets/");
-	name.append(resource->file.data());
-	name.append(".meta");
-	/*
+
+
 	char path[DEFAULT_BUF_SIZE];
 	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
 
 	// Build the path
 	static const char extension[] = ".meta";
 	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
-	*/
+
+
+
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->Save(name.data(), buf, sizeBuf);
+	App->filesystem->Save(path, buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 }

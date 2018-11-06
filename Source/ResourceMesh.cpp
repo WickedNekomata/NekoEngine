@@ -1,4 +1,5 @@
 #include "ResourceMesh.h"
+#include "Application.h"
 
 #include "glew/include/GL/glew.h"
 
@@ -16,6 +17,8 @@ void ResourceMesh::OnUniqueEditor()
 
 bool ResourceMesh::LoadInMemory()
 {
+	App->sceneImporter->Load(exportedFileName.data(), this);
+
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 3, vertices, GL_STATIC_DRAW);

@@ -69,6 +69,9 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		currentImGuizmoMode = ImGuizmo::MODE::LOCAL;
+
 	if (selectedObject == CurrentSelection::SelectedType::gameObject)
 	{
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
@@ -113,19 +116,6 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 
 	ImGuiViewport* vport = ImGui::GetMainViewport();
 	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
-
-	if (ImGuizmo::IsUsing())
-	{
-		switch (currentImGuizmoOperation)
-		{
-		case ImGuizmo::OPERATION::TRANSLATE:
-			break;
-		case ImGuizmo::OPERATION::ROTATE:
-			break;
-		case ImGuizmo::OPERATION::SCALE:
-			break;
-		}
-	}
 
 	math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
 	math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();

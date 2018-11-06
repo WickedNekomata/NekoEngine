@@ -144,13 +144,7 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 
 void ComponentTransform::SetMatrixFromLocal(math::float4x4& localMatrix)
 {
-	math::float3 newPos;
-	math::Quat newRotation;
-	math::float3 newScale;
-	localMatrix.Decompose(newPos, newRotation, newScale);
-	position = newPos;
-	rotation = newRotation;
-	scale = newScale;
+	localMatrix.Decompose(position, rotation, scale);
 }
 
 void ComponentTransform::OnInternalSave(JSON_Object* file)

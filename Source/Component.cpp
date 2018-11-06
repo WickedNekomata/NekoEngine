@@ -3,12 +3,11 @@
 
 #include "Application.h"
 #include "imgui/imgui.h"
-#include "PCG/pcg_variants.h"
 
 Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
 {
 	if (parent != nullptr)
-		UUID = pcg32_random_r(&(App->rng));
+		UUID = App->GenerateRandomNumber();
 }
 
 Component::~Component() {}

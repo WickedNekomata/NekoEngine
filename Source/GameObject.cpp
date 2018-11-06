@@ -12,7 +12,6 @@
 #include "ModuleScene.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
-#include "PCG/pcg_variants.h"
 
 #include <algorithm>
 
@@ -29,7 +28,7 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 	if (isStatic)
 		App->scene->quadtree.Insert(this);
 
-	UUID = pcg32_random_r(&(App->rng));
+	UUID = App->GenerateRandomNumber();
 }
 
 GameObject::GameObject(const GameObject& gameObject)

@@ -492,6 +492,11 @@ bool Application::IsEditor() const
 	return engineState == engine_states::ENGINE_EDITOR;
 }
 
+uint Application::GenerateRandomNumber() const
+{
+	return pcg32_random_r(&(App->rng));
+}
+
 void Application::SaveState() const
 {
 	save = true;

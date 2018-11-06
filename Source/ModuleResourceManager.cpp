@@ -140,7 +140,7 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 
 	uint uuid = force_uuid;
 	if (uuid <= 0)
-		uuid = pcg32_random_r(&(App->rng));
+		uuid = App->GenerateRandomNumber();
 
 	switch (type)
 	{

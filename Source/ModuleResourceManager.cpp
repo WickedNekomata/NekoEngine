@@ -158,6 +158,28 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 	return resource;
 }
 
+// Load resource to memory and return number of references. In case of error returns -1.
+int ModuleResourceManager::SetAsUsed(uint uuid)
+{
+	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+
+	if (it == resources.end())
+		return -1;
+
+	return it->second->LoadToMemory();;
+}
+
+// Unload resource from memory and return number of references. In case of error returns -1.
+int ModuleResourceManager::SetAsUnused(uint uuid)
+{
+	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+
+	if (it == resources.end())
+		return -1;
+
+	return it->second->UnloadMemory();
+}
+
 // Returns true if resource associated to the uuid can be found and deleted. Returns false in case of error.
 bool ModuleResourceManager::DestroyResource(uint uuid)
 {
@@ -180,6 +202,7 @@ void ModuleResourceManager::DestroyResources()
 	resources.clear();
 }
 
+// Returns true if someone is still referencing to any resource.
 bool ModuleResourceManager::SomethingOnMemory() const
 {
 	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)

@@ -31,12 +31,15 @@ private:
 	virtual bool LoadInMemory() = 0;
 	virtual bool UnloadFromMemory() = 0;
 
+public:
+
+	std::string file;
+	std::string exportedFileName;
+
 protected:
 
 	uint UUID;
 	ResourceType type;
-	std::string file = nullptr;
-	std::string exported_file = nullptr;
 	uint count = 0u;
 };
 

@@ -54,7 +54,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir)
 				RecursiveDrawDir(*it);
 				ImGui::TreePop();
 			}
-		}		
+		}
 		else
 		{
 			treeNodeFlags = 0;

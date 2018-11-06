@@ -51,22 +51,38 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	if (importPath == nullptr)
 		return ret;
 
-	char importFilePath[DEFAULT_BUF_SIZE];
-	strcpy_s(importFilePath, strlen(importPath) + 1, importPath);
+	std::string name;
+	std::string path;
+
+	char fullImportPath[DEFAULT_BUF_SIZE];
+	strcpy_s(fullImportPath, strlen(importPath) + 1, importPath);
+
 	if (importFileName != nullptr)
-		strcat_s(importFilePath, strlen(importFilePath) + strlen(importFileName) + 1, importFileName);
-	outputFileName = App->filesystem->GetFileNameFromPath(importFilePath);
+	{
+		name = importFileName;
+		path = importPath;
+
+		// Build the import path
+		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
+	}
+	else
+	{
+		App->filesystem->GetFileName(importFileName, name);
+		App->filesystem->GetPath(importPath, path);
+	}
 
 	char* buffer;
-	uint size = App->filesystem->Load(importFilePath, &buffer);
+	uint size = App->filesystem->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (original format)", importFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (original format)", name.data());
+
+		outputFileName = name.data();
 		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (original format)", importFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (original format)", name.data());
 
 	return ret;
 }
@@ -113,6 +129,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 				{
 					// TODO CHECK CRASH
 					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFileName);
+
 					ret = true;
 				}
 				else
@@ -128,6 +145,11 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		CONSOLE_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
 	return ret;
+}
+
+void MaterialImporter::GenerateMeta(Resource* resource)
+{
+
 }
 
 bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture)

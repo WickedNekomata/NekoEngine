@@ -15,13 +15,16 @@
 
 #include <algorithm>
 
-GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
+GameObject::GameObject(const char* name, GameObject* parent) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 
 	if (parent != nullptr)
+	{
+		parent->AddChild(this);
 		AddComponent(ComponentType::Transform_Component);
+	}
 
 	boundingBox.SetNegativeInfinity();
 
@@ -271,7 +274,7 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
-void GameObject::SetName(char* name)
+void GameObject::SetName(const char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 }

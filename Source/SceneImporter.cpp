@@ -12,6 +12,12 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 
+#define T_PRE_ROT "PreRotation"
+#define T_ROT "Rotation"
+#define T_POST_ROT "PostRotation"
+#define T_TRANSLATION "Translation"
+#define T_SCALING "Scaling"
+
 void myCallback(const char* msg, char* userData)
 {
 	CONSOLE_LOG("%s", msg);
@@ -87,32 +93,42 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		ret = true;
 
 		const aiNode* rootNode = scene->mRootNode;
-		RecursivelyImportNodes(scene, rootNode, App->scene->root, nullptr, outputFileName);
+		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
 
+		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);
+
+		// Serialize
+			// Mesh 1: UUID
+			// Mesh 2: UUID
+		// -> New Asset Scene (Prefab)
+
+		// outputFileName = UUID Prefab
 	}
 
 	return ret;
 }
 
-void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, GameObject* transformationGO, std::string& outputFileName)
+void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation)
 {
-	/*
 	std::string name = node->mName.data;
 
+	// A game object is a transformation if its name contains a transformation
 	bool isTransformation =
-		(name.find("PreRotation") != std::string::npos
-			|| name.find("Rotation") != std::string::npos
-			|| name.find("PostRotation") != std::string::npos
-			|| name.find("Translation") != std::string::npos
-			|| name.find("Scaling") != std::string::npos);
+		(name.find(T_PRE_ROT) != std::string::npos
+			|| name.find(T_ROT) != std::string::npos
+			|| name.find(T_POST_ROT) != std::string::npos
+			|| name.find(T_TRANSLATION) != std::string::npos
+			|| name.find(T_SCALING) != std::string::npos);
 
-	GameObject* go = transformationGO;
+	GameObject* gameObject = (GameObject*)transformation;
 
-	if (go == nullptr)
-		go = App->GOs->CreateGameObject((char*)name.data(), (GameObject*)parentGO);
+	// If the previous game object wasn't a transformation or the game object is the first being imported, then create a new game object
+	if (gameObject == nullptr)
+		gameObject = App->GOs->CreateGameObject(name.data(), (GameObject*)parent);
+	// If the current game object is not a transformation but the previous one was, then update its name
 	else if (!isTransformation)
-		go->SetName((char*)name.data());
+		gameObject->SetName(name.data());
 
 	// Transform
 	aiVector3D position;
@@ -124,28 +140,26 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	math::Quat newRotation = { rotation.x, rotation.y, rotation.z, rotation.w };
 	math::float3 newScale = { scale.x, scale.y, scale.z };
 
-	if (transformationGO != nullptr)
+	if (transformation != nullptr)
 	{
-		go->transform->position = transformationGO->transform->position + newPosition;
-		go->transform->rotation = transformationGO->transform->rotation * newRotation;
-		go->transform->scale = { transformationGO->transform->scale.x * newScale.x, transformationGO->transform->scale.y * newScale.y, transformationGO->transform->scale.z * newScale.z };
+		gameObject->transform->position = transformation->transform->position + newPosition;
+		gameObject->transform->rotation = transformation->transform->rotation * newRotation;
+		gameObject->transform->scale = { transformation->transform->scale.x * newScale.x, transformation->transform->scale.y * newScale.y, transformation->transform->scale.z * newScale.z };
 	}
 	else
 	{
-		go->transform->position = newPosition;
-		go->transform->rotation = newRotation;
-		go->transform->scale = newScale;
+		gameObject->transform->position = newPosition;
+		gameObject->transform->rotation = newRotation;
+		gameObject->transform->scale = newScale;
 	}
-	*/
-	bool isTransformation = false;
-	GameObject* go = new GameObject("Name", (GameObject*)parentGO);
 
 	// Meshes
-	if (!isTransformation && node->mNumMeshes > 0)
+	if (!isTransformation && node->mNumMeshes > 0) // Transformations don't contain meshes
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
 
-		go->AddComponent(ComponentType::Mesh_Component);
+		gameObject->AddComponent(ComponentType::Mesh_Component);
+		gameObject->meshRenderer->res = App->GenerateRandomNumber();
 
 		float* vertices = nullptr;
 		uint verticesSize = 0;
@@ -197,6 +211,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		}
 
 		// Material
+		/*
 		if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr) // TODO CHECK IF NULL
 		{
 			aiString textureName;
@@ -211,12 +226,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 					Texture* texture = new Texture();
 					if (App->materialImporter->Load(outputFileName.data(), texture))
 					{
-						go->AddComponent(ComponentType::Material_Component);
-						go->materialRenderer->textures.push_back(texture);
+						gameObject->AddComponent(ComponentType::Material_Component);
+						gameObject->materialRenderer->textures.push_back(texture);
 					}
 				}
 			}
-		}
+		}*/
 
 		uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
 
@@ -250,20 +265,24 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		bytes = sizeof(float) * textureCoordsSize;
 		memcpy(cursor, textureCoords, bytes);
 
-		if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName, node->mMeshes[0]) > 0)
+		std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
+
+		if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
 		{
-			CONSOLE_LOG("SCENE IMPORTER: Successfully saved mesh %s to own format", go->GetName());
+			CONSOLE_LOG("SCENE IMPORTER: Successfully saved mesh %s to own format", gameObject->GetName());
 		}
 		else
-			CONSOLE_LOG("SCENE IMPORTER: Could not save mesh %s to own format", go->GetName());
+			CONSOLE_LOG("SCENE IMPORTER: Could not save mesh %s to own format", gameObject->GetName());
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
 	{
-		//if (isTransformation)
-			//RecursivelyImportNodes(scene, node->mChildren[i], parentGO, go, outputFileName);
-		//else
-			RecursivelyImportNodes(scene, node->mChildren[i], go, nullptr, outputFileName);
+		// If the current game object is a transformation, keep its parent and pass it as the new transformation for the next game object
+		if (isTransformation)
+			RecursivelyImportNodes(scene, node->mChildren[i], parent, gameObject);
+		// Else, the current game object becomes the new parent for the next game object
+		else
+			RecursivelyImportNodes(scene, node->mChildren[i], gameObject, nullptr);
 	}
 }
 

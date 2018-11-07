@@ -45,8 +45,6 @@ enum update_status
 	UPDATE_ERROR
 };
 
-#define FILE_EXTENSION "neko"
-
 #define MAX_BUF_SIZE 4096
 #define DEFAULT_BUF_SIZE 256
 #define INPUT_BUF_SIZE 128

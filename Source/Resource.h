@@ -26,7 +26,7 @@ public:
 	uint UnloadMemory();
 	uint CountReferences() const;
 
-	void SetImportSettings(const ImportSettings* settings);
+	void SetImportSettings(ImportSettings* settings);
 
 private:
 

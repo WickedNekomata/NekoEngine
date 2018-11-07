@@ -123,12 +123,9 @@ bool ModuleGOs::OnEditorMode()
 	return true;
 }
 
-GameObject* ModuleGOs::CreateGameObject(char* name, GameObject* parent)
+GameObject* ModuleGOs::CreateGameObject(const char* name, GameObject* parent)
 {
 	GameObject* newGameObject = new GameObject(name, parent);
-
-	if (parent != nullptr)
-		parent->AddChild(newGameObject);
 
 	gameObjects.push_back(newGameObject);
 

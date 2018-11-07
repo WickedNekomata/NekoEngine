@@ -28,7 +28,7 @@ public:
 
 	const char** GetFilesFromDir(const char* dir) const;
 
-	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID = 0) const;
+	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName) const;
 	uint Save(const char* filePath, char* buffer, uint size, bool append = false) const;
 
 	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;

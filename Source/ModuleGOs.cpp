@@ -1,5 +1,6 @@
 #include "ModuleGOs.h"
 
+#include "Globals.h"
 #include "GameObject.h"
 #include "Component.h"
 #include "ComponentCamera.h"
@@ -280,26 +281,27 @@ void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 
 bool ModuleGOs::LoadScene(const char* fileName)
 {
-	char* buf;
-
-	std::string path("Library/Scenes/");
-	path += fileName;
-	path += ".json";
-	
-	uint size = App->filesystem->Load(path.c_str(), &buf);
-
-	if (size <= 0)
+	char* buffer;
+	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	if (size > 0)
+	{
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s' (own format)", fileName);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s' (own format)", fileName);
 		return false;
+	}
 
 	JSON_Value* root_value;
 	JSON_Array* gameObjectsArray;
 	JSON_Object* gObject;
 
 	/* parsing json and validating output */
-	root_value = json_parse_string(buf);
-	if (json_value_get_type(root_value) != JSONArray) {
+	root_value = json_parse_string(buffer);
+	if (json_value_get_type(root_value) != JSONArray)
 		return false;
-	}
 
 	gameObjectsArray = json_value_get_array(root_value);
 	std::vector<GameObject*>auxList;

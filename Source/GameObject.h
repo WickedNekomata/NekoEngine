@@ -29,6 +29,7 @@ public:
 	GameObject* GetParent();
 	uint GetParentUUID() const;
 
+	void DestroyChildren();
 	void DeleteMe();
 	void AddChild(GameObject* children);
 	void EraseChild(GameObject* child);

@@ -94,13 +94,18 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 
 		// 1. Import the scene
 		const aiNode* rootNode = scene->mRootNode;
-		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
+
+		GameObject* dummy = new GameObject("Dummy", nullptr);
+		GameObject* rootGameObject = new GameObject(rootNode->mName.data, dummy); // Root game object will never be a transformation
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
-		App->GOs->SerializeFromNode(rootGameObject, outputFileName);
+		App->GOs->SerializeFromNode(dummy, outputFileName);
+
+		dummy->DestroyChildren();
+		RELEASE(dummy);
 	}
 
 	return ret;
@@ -128,7 +133,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		gameObject = (GameObject*)transformation;
 	// If the previous game object wasn't a transformation, create a new game object
 	else
-		gameObject = App->GOs->CreateGameObject(name.data(), (GameObject*)parent);
+		gameObject = new GameObject(name.data(), (GameObject*)parent);
 	
 	// If the current game object is not a transformation, update its name (just in case the previous one was)
 	if (!isTransformation)

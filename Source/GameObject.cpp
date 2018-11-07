@@ -87,8 +87,7 @@ GameObject::~GameObject()
 	}
 }
 
-void GameObject::Update() {
-}
+void GameObject::Update() {}
 
 void GameObject::SetParent(GameObject* parent)
 {
@@ -103,6 +102,16 @@ GameObject* GameObject::GetParent()
 uint GameObject::GetParentUUID() const
 {
 	return parentUUID;
+}
+
+void GameObject::DestroyChildren()
+{
+	for (uint i = 0; i < children.size(); ++i)
+	{
+		children[i]->DestroyChildren();
+		RELEASE(children[i]);
+	}
+
 }
 
 void GameObject::DeleteMe()

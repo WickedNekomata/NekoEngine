@@ -32,6 +32,8 @@ public:
 
 	void AddImportSettings(ImportSettings* importSettings);
 	void EraseImportSettings(ImportSettings* importSettings);
+	bool DestroyImportSettings(ImportSettings* setting);
+	void DestroyAllImportSettings();
 
 	const Resource* GetResource(uint uuid) const;
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
@@ -46,7 +48,7 @@ public:
 private:
 
 	std::map<uint, Resource*> resources;
-	std::vector<ImportSettings*> importSettings;
+	std::vector<ImportSettings*> importsSettings;
 
 	float assetsCheckTime = 1.0f;
 	float timer = 0.0f;

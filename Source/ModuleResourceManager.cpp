@@ -31,6 +31,10 @@ bool ModuleResourceManager::CleanUp()
 {
 	assert(SomethingOnMemory() == false && "Memory still allocated on vram. Code better!");
 
+	DestroyResources();
+
+	DestroyAllImportSettings();
+
 	return true;
 }
 
@@ -93,17 +97,22 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 		resource->file = newFileInAssets;
 		resource->exportedFileName = outputFileName;
 		ret = resource->GetUUID();
+		ImportSettings* settings;
 
 		// Generate the meta
 		switch (type)
 		{
 		case ResourceType::Mesh_Resource:
 			App->sceneImporter->GenerateMeta(resource);
+			settings = new MeshImportSettings();	
 			break;
 		case ResourceType::Material_Resource:
 			App->materialImporter->GenerateMeta(resource);
+			settings = new MaterialImportSettings();
 			break;
 		}
+		resource->SetImportSettings(settings);
+		AddImportSettings(settings);
 	}
 
 	return ret;
@@ -124,16 +133,34 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 
 void ModuleResourceManager::AddImportSettings(ImportSettings* importSettings)
 {
-	if (std::find(this->importSettings.begin(), this->importSettings.end(), importSettings) == this->importSettings.end())
-		this->importSettings.push_back(importSettings);
+	assert(std::find(this->importsSettings.begin(), this->importsSettings.end(), importSettings) != this->importsSettings.end() && "Setting already created. Code Better!");
+		this->importsSettings.push_back(importSettings);
 }
 
 void ModuleResourceManager::EraseImportSettings(ImportSettings* importSettings)
 {
-	std::vector<ImportSettings*>::const_iterator it = std::find(this->importSettings.begin(), this->importSettings.end(), importSettings);
+	std::vector<ImportSettings*>::const_iterator it = std::find(this->importsSettings.begin(), this->importsSettings.end(), importSettings);
 	
-	if (it != this->importSettings.end())
-		this->importSettings.erase(it);
+	if (it != this->importsSettings.end())
+		this->importsSettings.erase(it);
+}
+
+bool ModuleResourceManager::DestroyImportSettings(ImportSettings* setting)
+{
+	std::vector<ImportSettings*>::const_iterator it = std::find(this->importsSettings.begin(), this->importsSettings.end(), setting);
+	
+	if (it != importsSettings.end())
+		delete *it; return true;
+	
+	return false;
+}
+
+void ModuleResourceManager::DestroyAllImportSettings()
+{
+	for (uint i = 0; i < importsSettings.size(); ++i)
+		delete importsSettings[i];
+
+	importsSettings.clear();
 }
 
 // Get resource associated to the uuid.

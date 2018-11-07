@@ -129,9 +129,9 @@ bool ModuleGOs::OnEditorMode()
 	return true;
 }
 
-GameObject* ModuleGOs::CreateGameObject(const char* name, GameObject* parent)
+GameObject* ModuleGOs::CreateGameObject(const char* name, GameObject* parent, bool disableTransform)
 {
-	GameObject* newGameObject = new GameObject(name, parent);
+	GameObject* newGameObject = new GameObject(name, parent, disableTransform);
 
 	gameObjects.push_back(newGameObject);
 
@@ -307,7 +307,7 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	auxList.reserve(json_array_get_count(gameObjectsArray));
 	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) {
 		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root);
+		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root, true);
 		go->OnLoad(gObject);
 		auxList.push_back(go);
 	}

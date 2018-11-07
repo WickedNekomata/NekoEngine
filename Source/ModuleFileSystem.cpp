@@ -12,9 +12,9 @@
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 
-#define EXTENSION_MESH "nekoMesh"
-#define EXTENSION_TEXTURE "nekoDDS"
-#define EXTENSION_SCENE "nekoScene"
+#define EXTENSION_MESH ".nekoMesh"
+#define EXTENSION_TEXTURE ".nekoDDS"
+#define EXTENSION_SCENE ".nekoScene"
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
@@ -25,15 +25,16 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
 
-	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
-	AddPath("./Assets/Meshes/", "Meshes");
-	AddPath("./Assets/Textures/", "Textures");
-	AddPath("./Assets/UI/", "UI");
-
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
 	CreateDir(DIR_ASSETS_SCENES);
+
+	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
+	AddPath("./Assets/Meshes/", "Meshes");
+	AddPath("./Assets/Textures/", "Textures");
+	AddPath("./Assets/UI/", "UI");
+	AddPath("./Assets/Scenes/", "Scenes");
 
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -126,13 +127,13 @@ uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType,
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MESHES, outputFileName.data(), EXTENSION_MESH);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MESHES, outputFileName.data(), EXTENSION_MESH);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, outputFileName.data(), EXTENSION_TEXTURE);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MATERIALS, outputFileName.data(), EXTENSION_TEXTURE);
 		break;
 	case FileType::SceneFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_ASSETS_SCENES, outputFileName.data(), EXTENSION_SCENE);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_ASSETS_SCENES, outputFileName.data(), EXTENSION_SCENE);
 		break;
 	}
 
@@ -195,13 +196,13 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MESHES, fileName, EXTENSION_MESH);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MESHES, fileName, EXTENSION_MESH);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, fileName, EXTENSION_TEXTURE);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MATERIALS, fileName, EXTENSION_TEXTURE);
 		break;
 	case FileType::SceneFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_ASSETS_SCENES, fileName, EXTENSION_SCENE);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_ASSETS_SCENES, fileName, EXTENSION_SCENE);
 		break;
 	}
 
@@ -313,11 +314,12 @@ bool ModuleFileSystem::RecursiveFindNewFileInAssets(const char* dir, std::string
 		}
 		else
 		{
-			// Ignore metas
+			// Ignore scenes and metas
 			std::string extension;
 			GetExtension(*it, extension);
 
-			if (strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
+				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
 				continue;
 
 			// Search for the meta associated to the file

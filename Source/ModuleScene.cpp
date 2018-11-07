@@ -49,8 +49,7 @@ bool ModuleScene::Start()
 	// Load Baker House last mesh
 #ifndef GAMEMODE
 	//std::string outputFile;
-	std::string output;
-	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", output);
+	//App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 #else
 	App->GOs->LoadScene("GameReady");
 	App->renderer3D->SetCurrentCamera();

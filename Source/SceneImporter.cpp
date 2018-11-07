@@ -92,20 +92,15 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	{
 		ret = true;
 
+		// 1. Import the scene
 		const aiNode* rootNode = scene->mRootNode;
 		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);
 
-		// Serialize
-			// Mesh 1: UUID
-			// Mesh 2: UUID
-		// -> New Asset Scene (Prefab)
-
+		// 2. Serialize the imported scene
 		App->GOs->SerializeFromNode(rootGameObject, outputFileName);
-
-		// outputFileName = UUID Prefab
 	}
 
 	return ret;

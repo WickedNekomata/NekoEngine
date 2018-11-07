@@ -67,7 +67,10 @@ inline void QuadtreeNode::CollectIntersections(std::vector<GameObject*>& gameObj
 		for (std::list<GameObject*>::const_iterator it = objects.begin(); it != objects.end(); ++it)
 		{
 			if (primitive.Intersects((*it)->boundingBox))
-				gameObjects.push_back(*it);
+			{
+				if (std::find(gameObjects.begin(), gameObjects.end(), *it) == gameObjects.end())
+					gameObjects.push_back(*it);
+			}
 		}
 
 		if (!IsLeaf())

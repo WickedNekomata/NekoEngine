@@ -40,7 +40,7 @@ public:
 
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
-	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parentGO, GameObject* transformationGO, std::string& outputFileName);
+	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, GameObject* transformation, std::string& outputFileName);
 
 	void GenerateMeta(Resource* resource);
 

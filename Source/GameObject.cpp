@@ -21,7 +21,10 @@ GameObject::GameObject(char* name, GameObject* parent) : parent(parent)
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 
 	if (parent != nullptr)
+	{
+		parent->AddChild(this);
 		AddComponent(ComponentType::Transform_Component);
+	}
 
 	boundingBox.SetNegativeInfinity();
 

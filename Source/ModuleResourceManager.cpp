@@ -86,6 +86,9 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 
 	if (imported)
 	{
+		// 1. Generate a meta for the Prefab
+		// 2. Generate (loop) a resource for each mesh
+
 		Resource* resource = CreateNewResource(type);
 		resource->file = newFileInAssets;
 		resource->exportedFileName = outputFileName;

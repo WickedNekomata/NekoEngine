@@ -7,6 +7,11 @@
 
 #pragma comment(lib, "physfs/libx86/physfs.lib")
 
+#define DIR_LIBRARY "Library"
+#define DIR_LIBRARY_MESHES "Library/Meshes"
+#define DIR_LIBRARY_MATERIALS "Library/Materials"
+#define DIR_LIBRARY_SCENES "Library/Scenes"
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
@@ -15,6 +20,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+
 	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
 	AddPath("./Assets/Meshes/", "Meshes");
 	AddPath("./Assets/Textures/", "Textures");
@@ -23,17 +29,17 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
-	if (CreateDir("Library"))
+	if (CreateDir(DIR_LIBRARY))
 	{
-		CreateDir("Library/Meshes");
-		CreateDir("Library/Materials");
-		CreateDir("Library/Animation");
-		CreateDir("Library/Scenes");
-
 		AddPath("./Library/", "Library");
+
+		CreateDir(DIR_LIBRARY_MESHES);
+		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_SCENES);
 	}
 	
-	CreateDir("Settings");
+	// TODO
+	//CreateDir("Settings");
 }
 
 ModuleFileSystem::~ModuleFileSystem() {}

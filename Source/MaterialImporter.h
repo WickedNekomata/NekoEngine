@@ -24,7 +24,7 @@ public:
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
 
-	void GenerateMeta(Resource* resource);
+	void GenerateMeta(Resource* textureResource);
 	
 	bool Load(const char* exportedFileName, Texture* outputTexture);
 	bool Load(const void* buffer, uint size, Texture* outputTexture);
@@ -40,8 +40,6 @@ private:
 
 	bool isAnisotropySupported = false;
 	float largestSupportedAnisotropy = 0.0f;
-
-	//MaterialImportSettings defaultImportSettings;
 };
 
 #endif

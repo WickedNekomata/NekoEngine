@@ -14,6 +14,8 @@
 #pragma comment (lib, "DevIL/libx86/ILU.lib")
 #pragma comment (lib, "DevIL/libx86/ILUT.lib")
 
+// Reference: https://open.gl/textures
+
 MaterialImporter::MaterialImporter()
 {
 	// Check versions
@@ -145,31 +147,35 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-void MaterialImporter::GenerateMeta(Resource* resource)
+void MaterialImporter::GenerateMeta(Resource* materialResource)
 {
-	ResourceMaterial* resourceMaterial = (ResourceMaterial*)resource;
+	Resource* resource = materialResource;
 
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	// Fill the JSON with data
-	json_object_set_number(rootObject, "UUID", resourceMaterial->GetUUID());
 	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
+	json_object_set_number(rootObject, "UUID", resource->GetUUID());
 
 	JSON_Value* newValue = json_value_init_object();
 	JSON_Object* objModule = json_value_get_object(newValue);
-	json_object_set_value(rootObject, "Material Importer", newValue);
+	json_object_set_value(rootObject, "Scene Importer", newValue);
 
+	const MaterialImportSettings* settings = (const MaterialImportSettings*)resource->GetImportSettings();
+	
+	json_object_set_number(objModule, "Compression", settings->compression);
+	json_object_set_number(objModule, "Wrap S", settings->wrapS);
+	json_object_set_number(objModule, "Wrap T", settings->wrapT);
+	json_object_set_number(objModule, "Min Filter", settings->minFilter);
+	json_object_set_number(objModule, "Mag Filter", settings->magFilter);
 
-
+	// Build the path
 	char path[DEFAULT_BUF_SIZE];
 	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
 
-	// Build the path
 	static const char extension[] = ".meta";
 	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
-
-
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);

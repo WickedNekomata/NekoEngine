@@ -18,8 +18,6 @@ public:
 
 	virtual bool Import(const char* importFile, const char* importPath, std::string& outputFileName) = 0;
 	virtual bool Import(const void* buffer, uint size, std::string& outputFileName) = 0;
-
-	virtual void GenerateMeta(Resource* resource) = 0;
 };
 
 #endif

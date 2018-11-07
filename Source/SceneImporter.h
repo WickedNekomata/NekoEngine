@@ -8,22 +8,7 @@
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/Quat.h"
 
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/scene.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
-#include "Assimp/include/version.h"
-
-#pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
-
 #include <list>
-
-struct ResourceMesh;
-
-struct ModelImportSettings
-{
-	
-};
 
 struct aiScene;
 struct aiNode;
@@ -42,8 +27,8 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFileName);
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation);
 
-	void GenerateMeta(Resource* resource);
-	bool GetMeshesUUIDsFromJson(char* fileName, std::list<uint>& uuids);
+	void GenerateMeta(std::list<Resource*>& meshResources) const;
+	bool GetMeshesUUIDsFromJson(const char* fileName, std::list<uint>& UUIDs) const;
 
 	bool Load(const char* exportedFileName, ResourceMesh* outputMesh);
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);

@@ -27,6 +27,7 @@ public:
 	uint CountReferences() const;
 
 	void SetImportSettings(ImportSettings* settings);
+	const ImportSettings* GetImportSettings() const;
 
 private:
 

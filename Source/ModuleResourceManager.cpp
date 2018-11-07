@@ -90,29 +90,62 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 
 	if (imported)
 	{
-		// 1. Generate a meta for the Prefab
-		// 2. Generate (loop) a resource for each mesh
+		std::list<Resource*> resources;
 
-		Resource* resource = CreateNewResource(type);
-		resource->file = newFileInAssets;
-		resource->exportedFileName = outputFileName;
-		ret = resource->GetUUID();
-		ImportSettings* settings;
+		if (type == ResourceType::Mesh_Resource)
+		{
+			// Create a new resource for each mesh
+			std::list<uint> meshesUUIDs;
+			App->sceneImporter->GetMeshesUUIDsFromJson(outputFileName.data(), meshesUUIDs);
 
-		// Generate the meta
+			for (std::list<uint>::const_iterator it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
+			{
+				Resource* resource = CreateNewResource(type, *it);
+				resource->file = newFileInAssets;
+				resource->exportedFileName = outputFileName;
+				resources.push_back(resource);
+			}
+		}
+		else
+		{
+			Resource* resource = CreateNewResource(type);
+			resource->file = newFileInAssets;
+			resource->exportedFileName = outputFileName;
+			resources.push_back(resource);
+		}
+
+		ret = resources.front()->GetUUID();
+
+		// Generate a meta for the file
+		ImportSettings* settings = nullptr;
+
 		switch (type)
 		{
 		case ResourceType::Mesh_Resource:
-			App->sceneImporter->GenerateMeta(resource);
-			settings = new MeshImportSettings();	
+
+			// Set the import settings
+			settings = new MeshImportSettings();
+			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+				(*it)->SetImportSettings(settings);
+			//AddImportSettings(settings);
+
+			App->sceneImporter->GenerateMeta(resources);
+
 			break;
+
 		case ResourceType::Material_Resource:
-			App->materialImporter->GenerateMeta(resource);
+
+			// Set the import settings
 			settings = new MaterialImportSettings();
+			resources.front()->SetImportSettings(settings);
+			AddImportSettings(settings);
+
+			App->materialImporter->GenerateMeta(resources.front());
+
 			break;
 		}
-		resource->SetImportSettings(settings);
-		AddImportSettings(settings);
+
+		resources.clear();
 	}
 
 	return ret;

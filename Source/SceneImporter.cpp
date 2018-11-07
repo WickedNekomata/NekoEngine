@@ -92,20 +92,15 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	{
 		ret = true;
 
+		// 1. Import the scene
 		const aiNode* rootNode = scene->mRootNode;
 		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);
 
-		// Serialize
-			// Mesh 1: UUID
-			// Mesh 2: UUID
-		// -> New Asset Scene (Prefab)
-
+		// 2. Serialize the imported scene
 		App->GOs->SerializeFromNode(rootGameObject, outputFileName);
-
-		// outputFileName = UUID Prefab
 	}
 
 	return ret;
@@ -123,13 +118,20 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			|| name.find(T_TRANSLATION) != std::string::npos
 			|| name.find(T_SCALING) != std::string::npos);
 
-	GameObject* gameObject = (GameObject*)transformation;
+	GameObject* gameObject = nullptr;
 
-	// If the previous game object wasn't a transformation or the game object is the first being imported, then create a new game object
-	if (gameObject == nullptr)
+	// If the node is the first node, then the game object is the parent
+	if (node == scene->mRootNode)
+		gameObject = (GameObject*)parent;
+	// If the previous game object was a transformation, keep the transformation
+	else if (transformation != nullptr)
+		gameObject = (GameObject*)transformation;
+	// If the previous game object wasn't a transformation, create a new game object
+	else
 		gameObject = App->GOs->CreateGameObject(name.data(), (GameObject*)parent);
-	// If the current game object is not a transformation but the previous one was, then update its name
-	else if (!isTransformation)
+	
+	// If the current game object is not a transformation, update its name (just in case the previous one was)
+	if (!isTransformation)
 		gameObject->SetName(name.data());
 
 	// Transform

@@ -26,6 +26,8 @@ public:
 	uint UnloadMemory();
 	uint CountReferences() const;
 
+	void SetImportSettings(const ImportSettings* settings);
+
 private:
 
 	virtual void OnUniqueEditor() = 0;
@@ -42,6 +44,7 @@ protected:
 
 	uint UUID;
 	ResourceType type;
+	ImportSettings* settings = nullptr;
 	uint count = 0u;
 };
 

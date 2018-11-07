@@ -65,3 +65,8 @@ uint Resource::CountReferences() const
 {
 	return count;
 }
+
+void Resource::SetImportSettings(const ImportSettings* settings)
+{
+	this->settings = settings;
+}

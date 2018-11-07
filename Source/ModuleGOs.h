@@ -23,7 +23,7 @@ public:
 	bool OnGameMode();
 	bool OnEditorMode();
 
-	GameObject* CreateGameObject(const char* name, GameObject* parent);
+	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
 	void ClearScene();

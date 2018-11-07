@@ -19,7 +19,7 @@ class GameObject
 {
 public:
 
-	GameObject(const char* name, GameObject* parent);
+	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
 	GameObject(const GameObject& gameObject);
 	virtual ~GameObject();
 

@@ -15,7 +15,7 @@
 
 #include <algorithm>
 
-GameObject::GameObject(const char* name, GameObject* parent) : parent(parent)
+GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
@@ -23,7 +23,8 @@ GameObject::GameObject(const char* name, GameObject* parent) : parent(parent)
 	if (parent != nullptr)
 	{
 		parent->AddChild(this);
-		AddComponent(ComponentType::Transform_Component);
+		if (!disableTransform)
+			AddComponent(ComponentType::Transform_Component);
 	}
 
 	boundingBox.SetNegativeInfinity();
@@ -387,6 +388,8 @@ void GameObject::OnLoad(JSON_Object* file)
 	JSON_Array* jsonComponents = json_object_get_array(file, "jsonComponents");
 	JSON_Object* cObject;
 
+	MarkToDeleteAllComponents();
+	
 	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
 		cObject = json_array_get_object(jsonComponents, i);
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));

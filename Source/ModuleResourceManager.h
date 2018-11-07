@@ -20,6 +20,7 @@ public:
 
 	ModuleResourceManager();
 	~ModuleResourceManager();
+	bool Start();
 	update_status Update();
 	bool CleanUp();
 

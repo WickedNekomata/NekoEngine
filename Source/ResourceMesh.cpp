@@ -17,7 +17,7 @@ void ResourceMesh::OnUniqueEditor()
 
 bool ResourceMesh::LoadInMemory()
 {
-	App->sceneImporter->Load(exportedFileName.data(), this);
+	App->sceneImporter->Load(std::to_string(UUID).data(), this);
 
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);

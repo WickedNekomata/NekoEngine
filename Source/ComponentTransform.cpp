@@ -84,11 +84,12 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
+	/*
 	if (lastPosition.x != position.x || lastPosition.y != position.y || lastPosition.z != position.z
 		|| lastRotation.x != rotation.x || lastRotation.y != rotation.y || lastRotation.z != rotation.z || lastRotation.w != rotation.w
 		|| lastScale.x != scale.x || lastScale.y != scale.y || lastScale.z != scale.z)
 		parent->RecursiveRecalculateBoundingBoxes();
-
+		*/
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();
 
@@ -135,7 +136,8 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 
 	while (globalParent->GetParent() != nullptr)
 	{
-		globalMatrix = globalParent->transform->GetMatrix() * globalMatrix;
+		math::float4x4 parentMatrix = globalParent->transform->GetMatrix();
+		globalMatrix = parentMatrix * globalMatrix;
 		globalParent = globalParent->GetParent();
 	}
 

@@ -48,8 +48,8 @@ bool ModuleScene::Start()
 	//App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 #ifndef GAMEMODE
-	//std::string outputFile;
-	//App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
+	std::string outputFile;
+	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 #else
 	App->GOs->LoadScene("GameReady");
 	App->renderer3D->SetCurrentCamera();
@@ -127,7 +127,11 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		currentImGuizmoOperation, currentImGuizmoMode, transformMatrix.ptr()
 	);
 
-	gameObject->transform->SetMatrixFromGlobal(transformMatrix.Transposed());
+	if (ImGuizmo::IsUsing())
+	{
+		transformMatrix = transformMatrix.Transposed();
+		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
+	}
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

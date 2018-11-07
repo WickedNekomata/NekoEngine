@@ -95,6 +95,34 @@ bool PanelEdit::Draw()
 				ImGui::SetTooltip("Scale Tool");
 			ImGui::PopID();
 		}
+		ImGui::SameLine();
+
+		// Local Mode button
+		if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::LOCAL)
+		{
+			ImGui::PushID("localHovered");
+			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f)))
+				App->scene->SetImGuizmoMode(ImGuizmo::MODE::WORLD);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Tool Mode");
+			ImGui::PopID();
+
+			ImGui::SameLine();
+			ImGui::Text("Local");
+		}
+		// World Mode button
+		else if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::WORLD)
+		{
+			ImGui::PushID("worldHovered");
+			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f)))
+				App->scene->SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Tool Mode");
+			ImGui::PopID();
+
+			ImGui::SameLine();
+			ImGui::Text("World");
+		}
 
 		// 2. Time Management
 

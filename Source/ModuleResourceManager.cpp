@@ -127,7 +127,7 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 			settings = new MeshImportSettings();
 			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 				(*it)->SetImportSettings(settings);
-			//AddImportSettings(settings);
+			AddImportSettings(settings);
 
 			App->sceneImporter->GenerateMeta(resources);
 
@@ -166,8 +166,8 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 
 void ModuleResourceManager::AddImportSettings(ImportSettings* importSettings)
 {
-	assert(std::find(this->importsSettings.begin(), this->importsSettings.end(), importSettings) != this->importsSettings.end() && "Setting already created. Code Better!");
-		this->importsSettings.push_back(importSettings);
+	assert(std::find(importsSettings.begin(), importsSettings.end(), importSettings) == importsSettings.end() && "Setting already created. Code Better!");
+	importsSettings.push_back(importSettings);
 }
 
 void ModuleResourceManager::EraseImportSettings(ImportSettings* importSettings)

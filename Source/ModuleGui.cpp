@@ -303,7 +303,7 @@ void ModuleGui::SaveScenePopUp()
 
 		ImGui::Text("Assets/Scenes/");
 
-		ImGui::PushItemWidth(100.0f);
+		ImGui::PushItemWidth(200.0f);
 		ImGui::InputText("##sceneName", (char*)App->GOs->nameScene, DEFAULT_BUF_SIZE);
 		
 		if (ImGui::Button("Save", ImVec2(120, 0))) {

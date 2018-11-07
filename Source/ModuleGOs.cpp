@@ -315,9 +315,11 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
 		GameObject* parent = GetGameObjectByUUID(json_object_get_number(gObject, "Parent UUID"));
-		auxList[i]->GetParent()->EraseChild(auxList[i]);
-		parent->AddChild(auxList[i]);
-		auxList[i]->SetParent(parent);
+		if (parent != nullptr) {
+			auxList[i]->GetParent()->EraseChild(auxList[i]);
+			parent->AddChild(auxList[i]);
+			auxList[i]->SetParent(parent);
+		}
 	}
 
 	json_value_free(root_value);

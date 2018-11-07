@@ -63,12 +63,12 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 	uint size = App->filesystem->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded model %s (original format)", name.data());
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", name.data());
 		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load model %s (original format)", name.data());
+		CONSOLE_LOG("SCENE IMPORTER: Could not load Model '%s'", name.data());
 
 	return ret;
 }
@@ -93,7 +93,8 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		ret = true;
 
 		const aiNode* rootNode = scene->mRootNode;
-		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
+		outputFileName = rootNode->mName.data;
+		const GameObject* rootGameObject = App->GOs->CreateGameObject(outputFileName.data(), App->scene->root); // Root game object will never be a transformation
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);
@@ -102,6 +103,8 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 			// Mesh 1: UUID
 			// Mesh 2: UUID
 		// -> New Asset Scene (Prefab)
+
+		App->GOs->SerializeFromNode(rootGameObject, outputFileName);
 
 		// outputFileName = UUID Prefab
 	}
@@ -269,10 +272,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 		if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
 		{
-			CONSOLE_LOG("SCENE IMPORTER: Successfully saved mesh %s to own format", gameObject->GetName());
+			CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 		}
 		else
-			CONSOLE_LOG("SCENE IMPORTER: Could not save mesh %s to own format", gameObject->GetName());
+			CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
@@ -343,12 +346,12 @@ bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
 	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded mesh %s (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFileName);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load mesh %s (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFileName);
 
 	return ret;
 }

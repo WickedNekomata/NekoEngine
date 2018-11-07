@@ -10,10 +10,11 @@
 #define DIR_LIBRARY "Library"
 #define DIR_LIBRARY_MESHES "Library/Meshes"
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
-#define DIR_LIBRARY_SCENES "Library/Scenes"
+#define DIR_ASSETS_SCENES "Assets/Scenes"
 
 #define EXTENSION_MESH "nekoMesh"
 #define EXTENSION_TEXTURE "nekoDDS"
+#define EXTENSION_SCENE "nekoScene"
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
@@ -23,6 +24,8 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+
+	CreateDir(DIR_ASSETS_SCENES);
 
 	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
 	AddPath("./Assets/Meshes/", "Meshes");
@@ -38,7 +41,6 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
-		CreateDir(DIR_LIBRARY_SCENES);
 	}
 	
 	// TODO
@@ -130,7 +132,7 @@ uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType,
 		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, outputFileName.data(), EXTENSION_TEXTURE);
 		break;
 	case FileType::SceneFile:
-		//sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Scenes/%s.json", outputFileName.data(), FILE_EXTENSION);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_ASSETS_SCENES, outputFileName.data(), EXTENSION_SCENE);
 		break;
 	}
 
@@ -197,6 +199,9 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 		break;
 	case FileType::TextureFile:
 		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, fileName, EXTENSION_TEXTURE);
+		break;
+	case FileType::SceneFile:
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_ASSETS_SCENES, fileName, EXTENSION_SCENE);
 		break;
 	}
 

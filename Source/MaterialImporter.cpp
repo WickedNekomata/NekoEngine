@@ -73,14 +73,14 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	uint size = App->filesystem->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (original format)", name.data());
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", name.data());
 
 		outputFileName = name.data();
 		ret = Import(buffer, size, outputFileName);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (original format)", name.data());
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", name.data());
 
 	return ret;
 }
@@ -126,12 +126,12 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 				if (App->filesystem->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
 				{
 					// TODO CHECK CRASH
-					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved texture %s to own format", outputFileName);
+					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFileName);
 
 					ret = true;
 				}
 				else
-					CONSOLE_LOG("MATERIAL IMPORTER: Could not save texture %s to own format", outputFileName);
+					CONSOLE_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFileName);
 			}
 
 			RELEASE_ARRAY(data);
@@ -188,12 +188,12 @@ bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture
 	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded texture %s (own format)", exportedFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFileName);
 		ret = Load(buffer, size, outputTexture);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load texture %s (own format)", exportedFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFileName);
 
 	return ret;
 }

@@ -19,7 +19,7 @@ class GameObject
 {
 public:
 
-	GameObject(char* name, GameObject* parent);
+	GameObject(const char* name, GameObject* parent);
 	GameObject(const GameObject& gameObject);
 	virtual ~GameObject();
 
@@ -51,7 +51,7 @@ public:
 	void SwapComponents(Component* firstComponent, Component* secondComponent);
 	void ReorderComponents(Component* source, Component* target);
 
-	void SetName(char* name);
+	void SetName(const char* name);
 	const char* GetName() const;
 
 	uint GetUUID() const;

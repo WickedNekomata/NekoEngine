@@ -12,6 +12,9 @@
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_LIBRARY_SCENES "Library/Scenes"
 
+#define EXTENSION_MESH "nekoMesh"
+#define EXTENSION_TEXTURE "nekoDDS"
+
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
@@ -112,37 +115,26 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName, uint ID) const
+uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName) const
 {
 	uint ret = 0;
 
-	char filePath[DEFAULT_BUF_SIZE];
-	char fileName[DEFAULT_BUF_SIZE];
+	char path[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		if (ID > 0)
-			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Mesh%u", outputFileName.data(), ID);
-		else
-			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Mesh", outputFileName.data());
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MESHES, outputFileName.data(), EXTENSION_MESH);
 		break;
 	case FileType::TextureFile:
-		if (ID > 0)
-			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Texture%u", outputFileName.data(), ID);
-		else
-			sprintf_s(fileName, DEFAULT_BUF_SIZE, "%s_Texture", outputFileName.data());
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, outputFileName.data(), EXTENSION_TEXTURE);
 		break;
 	case FileType::SceneFile:
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Scenes/%s.json", outputFileName.data(), FILE_EXTENSION);
+		//sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Scenes/%s.json", outputFileName.data(), FILE_EXTENSION);
 		break;
 	}
 
-	outputFileName = fileName;
-
-	ret = Save(filePath, buffer, size);
+	ret = Save(path, buffer, size);
 
 	return ret;
 }
@@ -196,19 +188,19 @@ uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, File
 {
 	uint ret = 0;
 
-	char filePath[DEFAULT_BUF_SIZE];
+	char path[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Meshes/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MESHES, fileName, EXTENSION_MESH);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "Library/Materials/%s.%s", fileName, FILE_EXTENSION);
+		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s.%s", DIR_LIBRARY_MATERIALS, fileName, EXTENSION_TEXTURE);
 		break;
 	}
 
-	ret = Load(filePath, buffer);
+	ret = Load(path, buffer);
 	
 	return ret;
 }

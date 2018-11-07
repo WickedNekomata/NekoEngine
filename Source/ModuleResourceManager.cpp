@@ -11,6 +11,15 @@ ModuleResourceManager::ModuleResourceManager() {}
 
 ModuleResourceManager::~ModuleResourceManager() {}
 
+bool ModuleResourceManager::Start()
+{
+	std::string newFileInAssets;
+	if (App->filesystem->RecursiveFindNewFileInAssets("Assets", newFileInAssets))
+		ImportFile(newFileInAssets.data());
+
+	return true;
+}
+
 update_status ModuleResourceManager::Update()
 {
 	timer += App->timeManager->GetRealDt();

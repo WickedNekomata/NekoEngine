@@ -387,12 +387,14 @@ void GameObject::OnLoad(JSON_Object* file)
 
 void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
 {
-	JSON_Value* newValue = json_value_init_object();
-	JSON_Object* objToSerialize = json_value_get_object(newValue);
+	if (parent != nullptr) {
+		JSON_Value* newValue = json_value_init_object();
+		JSON_Object* objToSerialize = json_value_get_object(newValue);
 
-	OnSave(objToSerialize);
+		OnSave(objToSerialize);
 
-	json_array_append_value(goArray, newValue);
+		json_array_append_value(goArray, newValue);
+	}
 
 	for (int i = 0; i < children.size(); ++i)
 		children[i]->RecursiveSerialitzation(goArray);	

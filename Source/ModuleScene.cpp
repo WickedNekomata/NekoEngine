@@ -48,8 +48,8 @@ bool ModuleScene::Start()
 	//App->GOs->CreateGameObject("net de Patata", fillGuillem);
 	// Load Baker House last mesh
 #ifndef GAMEMODE
-	std::string outputFile;
-	App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
+	//std::string outputFile;
+	//App->sceneImporter->Import("cube.fbx", "Assets/Meshes/", outputFile);
 #else
 	App->GOs->LoadScene("GameReady");
 	App->renderer3D->SetCurrentCamera();

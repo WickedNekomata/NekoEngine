@@ -34,17 +34,17 @@ bool PanelHierarchy::Draw()
 		// DRAGNDROP FOR ROOT AT SEPARATOR
 		SetGameObjectDragAndDropTarget(App->scene->root);
 
-		IterateAllChildren(root);
-
 		if (ImGui::BeginPopupContextWindow())
 		{
-			if (ImGui::Selectable("Create Empty")) 
+			if (ImGui::Selectable("Create Empty"))
 			{
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
 		}
+
+		IterateAllChildren(root);		
 	}
 	ImGui::End();
 
@@ -104,10 +104,12 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				ImGui::TreePop();
 
 				SetGameObjectDragAndDrop(child);
+				
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					App->scene->selectedObject = child;
+					
 			}
 		}
 	}

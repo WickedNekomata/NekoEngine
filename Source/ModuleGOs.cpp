@@ -41,7 +41,7 @@ update_status ModuleGOs::PostUpdate()
 	componentsToDelete.clear();
 
 	if (serializeScene)
-		SerializeScene(); serializeScene = false;
+		SerializeFromNode(App->scene->root); serializeScene = false;
 
 	return UPDATE_CONTINUE;
 }
@@ -230,6 +230,7 @@ void ModuleGOs::MarkSceneToSerialize()
 	serializeScene = true;
 }
 
+/*
 void ModuleGOs::SerializeScene()
 {
 	JSON_Value* rootValue = json_value_init_array();
@@ -244,6 +245,22 @@ void ModuleGOs::SerializeScene()
 		json_array_append_value(goArray, newValue);
 	}
 	
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	char* buf = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
+	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
+	delete[] buf;
+	json_value_free(rootValue);
+}
+*/
+
+void ModuleGOs::SerializeFromNode(GameObject* node)
+{
+	JSON_Value* rootValue = json_value_init_array();
+	JSON_Array* goArray = json_value_get_array(rootValue);
+
+	node->RecursiveSerialitzation(goArray);
+
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);

@@ -40,7 +40,7 @@ public:
 	void ReorderGameObjects(GameObject* source, GameObject* target);
 
 	void MarkSceneToSerialize();
-	void SerializeScene();
+	void SerializeFromNode(GameObject* node);
 	bool LoadScene(char* fileName);
 
 public:

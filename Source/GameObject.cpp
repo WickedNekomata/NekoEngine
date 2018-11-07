@@ -350,7 +350,7 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		children[i]->RecursiveRecalculateBoundingBoxes();
 }
 
-void GameObject::OnSave(JSON_Object* file)
+void GameObject::OnSave(JSON_Object* file) const
 {
 	json_object_set_string(file, "name", name);
 	json_object_set_number(file, "UUID", UUID);
@@ -380,4 +380,17 @@ void GameObject::OnLoad(JSON_Object* file)
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
 	}	
+}
+
+void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
+{
+	JSON_Value* newValue = json_value_init_object();
+	JSON_Object* objToSerialize = json_value_get_object(newValue);
+
+	OnSave(objToSerialize);
+
+	json_array_append_value(goArray, newValue);
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->RecursiveSerialitzation(goArray);	
 }

@@ -67,8 +67,9 @@ public:
 
 	void RecursiveRecalculateBoundingBoxes();
 
-	void OnSave(JSON_Object* file);
+	void OnSave(JSON_Object* file) const;
 	void OnLoad(JSON_Object* file);
+	void RecursiveSerialitzation(JSON_Array* goArray) const;
 
 public:
 

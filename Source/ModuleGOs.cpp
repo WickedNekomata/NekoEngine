@@ -286,7 +286,6 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	if (size > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s' (own format)", fileName);
-		RELEASE_ARRAY(buffer);
 	}
 	else
 	{
@@ -324,6 +323,7 @@ bool ModuleGOs::LoadScene(const char* fileName)
 		}
 	}
 
+	RELEASE_ARRAY(buffer);
 	json_value_free(root_value);
 
 	return true;

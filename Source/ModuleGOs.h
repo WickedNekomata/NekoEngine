@@ -40,12 +40,12 @@ public:
 	void ReorderGameObjects(GameObject* source, GameObject* target);
 
 	void MarkSceneToSerialize();
-	void SerializeFromNode(GameObject* node);
-	bool LoadScene(char* fileName);
+	void SerializeFromNode(const GameObject* node, std::string& outputFileName);
+	bool LoadScene(const char* fileName);
 
 public:
 
-	char* nameScene = nullptr;
+	const char* nameScene = nullptr;
 
 private:
 

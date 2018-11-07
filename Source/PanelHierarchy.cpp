@@ -25,7 +25,7 @@ bool PanelHierarchy::Draw()
 		ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 		ImGui::PushItemWidth(100.0f);
 		if (ImGui::InputText("##sceneName", sceneName, IM_ARRAYSIZE(sceneName), inputFlag))
-			strcpy_s(App->GOs->nameScene, DEFAULT_BUF_SIZE, sceneName);
+			strcpy_s((char*)App->GOs->nameScene, DEFAULT_BUF_SIZE, sceneName);
 
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(ImGui::GetWindowSize().x, 2.0f));

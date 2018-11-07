@@ -17,7 +17,7 @@ ModuleGOs::ModuleGOs(bool start_enabled) : Module(start_enabled)
 	game = true;
 
 	nameScene = new char[DEFAULT_BUF_SIZE];
-	strcpy_s(nameScene, DEFAULT_BUF_SIZE, "Main Scene");
+	strcpy_s((char*)nameScene, DEFAULT_BUF_SIZE, "Main Scene");
 }
 
 ModuleGOs::~ModuleGOs()
@@ -41,7 +41,12 @@ update_status ModuleGOs::PostUpdate()
 	componentsToDelete.clear();
 
 	if (serializeScene)
-		SerializeFromNode(App->scene->root); serializeScene = false;
+	{
+		std::string outputFileName = nameScene;
+		SerializeFromNode(App->scene->root, outputFileName);
+	}
+
+	serializeScene = false;
 
 	return UPDATE_CONTINUE;
 }
@@ -251,7 +256,7 @@ void ModuleGOs::SerializeScene()
 }
 */
 
-void ModuleGOs::SerializeFromNode(GameObject* node)
+void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFileName)
 {
 	JSON_Value* rootValue = json_value_init_array();
 	JSON_Array* goArray = json_value_get_array(rootValue);
@@ -261,12 +266,19 @@ void ModuleGOs::SerializeFromNode(GameObject* node)
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
+
+	if (App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName) > 0)
+	{
+		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s' (own format)", outputFileName.data());
+	}
+	else
+		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s' (own format)", outputFileName.data());
+
 	delete[] buf;
 	json_value_free(rootValue);
 }
 
-bool ModuleGOs::LoadScene(char* fileName)
+bool ModuleGOs::LoadScene(const char* fileName)
 {
 	char* buf;
 

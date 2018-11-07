@@ -344,6 +344,50 @@ void SceneImporter::GenerateMeta(Resource* resource)
 	json_value_free(rootValue);
 }
 
+bool SceneImporter::GetMeshesUUIDsFromJson(char* fileName, std::list<uint>& uuids)
+{
+	char* buffer;
+	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	if (size > 0)
+	{
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s' (own format)", fileName);
+	}
+	else
+	{
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s' (own format)", fileName);
+		return false;
+	}
+
+	JSON_Value* root_value;
+	JSON_Array* gameObjectsArray;
+	JSON_Object* gObject;
+
+	/* parsing json and validating output */
+	root_value = json_parse_string(buffer);
+	if (json_value_get_type(root_value) != JSONArray)
+		return false;
+
+	gameObjectsArray = json_value_get_array(root_value);
+
+	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) {
+		gObject = json_array_get_object(gameObjectsArray, i);
+
+		JSON_Array* jsonComponents = json_object_get_array(gObject, "jsonComponents");
+		JSON_Object* cObject;
+
+		for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
+			cObject = json_array_get_object(jsonComponents, i);
+			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::Mesh_Component)
+				uuids.push_back(json_object_get_number(cObject, "ResourceMesh"));
+		}
+	}
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(root_value);
+
+	return true;
+}
+
 bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
 {
 	bool ret = false;

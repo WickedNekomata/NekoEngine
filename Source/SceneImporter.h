@@ -16,7 +16,7 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
 
-#include <vector>
+#include <list>
 
 struct ResourceMesh;
 
@@ -43,6 +43,7 @@ public:
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation);
 
 	void GenerateMeta(Resource* resource);
+	bool GetMeshesUUIDsFromJson(char* fileName, std::list<uint>& uuids);
 
 	bool Load(const char* exportedFileName, ResourceMesh* outputMesh);
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);
@@ -50,11 +51,6 @@ public:
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;
 	uint GetAssimpRevisionVersion() const;
-
-public:
-
-	// Default import values
-	ModelImportSettings defaultImportSettings;
 };
 
 #endif

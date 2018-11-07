@@ -93,8 +93,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		ret = true;
 
 		const aiNode* rootNode = scene->mRootNode;
-		outputFileName = rootNode->mName.data;
-		const GameObject* rootGameObject = App->GOs->CreateGameObject(outputFileName.data(), App->scene->root); // Root game object will never be a transformation
+		const GameObject* rootGameObject = App->GOs->CreateGameObject(rootNode->mName.data, App->scene->root); // Root game object will never be a transformation
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr);
 		aiReleaseImport(scene);

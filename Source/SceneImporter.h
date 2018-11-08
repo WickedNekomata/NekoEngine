@@ -16,6 +16,8 @@ struct aiNode;
 class GameObject;
 class ResourceMesh;
 
+struct MeshImportSettings;
+
 class SceneImporter : public Importer
 {
 public:
@@ -23,12 +25,13 @@ public:
 	SceneImporter();
 	~SceneImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
-	bool Import(const void* buffer, uint size, std::string& outputFileName);
+	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings);
+	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation);
 
 	void GenerateMeta(std::list<Resource*>& meshResources) const;
-	bool GetMeshesUUIDsFromJson(const char* fileName, std::list<uint>& UUIDs) const;
+	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
+	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;
 
 	bool Load(const char* exportedFileName, ResourceMesh* outputMesh);
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);

@@ -42,6 +42,7 @@ public:
 	void MarkSceneToSerialize();
 	void SerializeFromNode(const GameObject* node, std::string& outputFileName);
 	bool LoadScene(const char* fileName);
+	bool GetMeshResourcesFromScene(const char* fileName, std::list<uint>& UUIDs) const;
 
 public:
 

@@ -1,9 +1,9 @@
-#ifndef __RESOURCE_MATERIAL_H__
-#define __RESOURCE_MATERIAL_H__
+#ifndef __RESOURCE_TEXTURE_H__
+#define __RESOURCE_TEXTURE_H__
 
 #include "Resource.h"
 
-struct MaterialImportSettings : public ImportSettings
+struct TextureImportSettings : public ImportSettings
 {
 	int compression = 0;
 
@@ -13,12 +13,12 @@ struct MaterialImportSettings : public ImportSettings
 	int magFilter = 0;
 };
 
-class ResourceMaterial : public Resource
+class ResourceTexture : public Resource
 {
 public:
 
-	ResourceMaterial(ResourceType type, uint uuid);
-	virtual ~ResourceMaterial();
+	ResourceTexture(ResourceType type, uint uuid);
+	virtual ~ResourceTexture();
 
 private:
 
@@ -33,7 +33,7 @@ private:
 	uint width = 0;
 	uint height = 0;
 
-	MaterialImportSettings* importSettings = nullptr;
+	TextureImportSettings* importSettings = nullptr;
 };
 
 

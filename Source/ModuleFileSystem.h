@@ -38,8 +38,6 @@ public:
 	bool Exists(const char* file) const;
 	bool ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const;
 
-	bool RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const;
-
 	void GetFileName(const char* file, std::string& fileName) const;
 	void GetExtension(const char* file, std::string& extension) const;
 	void GetPath(const char* file, std::string& path) const;

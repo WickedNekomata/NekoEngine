@@ -27,6 +27,8 @@ public:
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
 
+	bool RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const;
+
 	uint Find(const char* fileInAssets) const;
 	uint ImportFile(const char* newFileInAssets);
 	ResourceType GetResourceTypeByExtension(const char* extension);

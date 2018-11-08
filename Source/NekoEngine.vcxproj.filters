@@ -604,14 +604,14 @@
     <ClInclude Include="ResourceMesh.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceMaterial.h">
-      <Filter>Sources\Modules\Resources\Types</Filter>
-    </ClInclude>
     <ClInclude Include="CurrentSelection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="ModuleResourceManager.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTexture.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -852,14 +852,14 @@
     <ClCompile Include="Resource.cpp">
       <Filter>Sources\Modules\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceMaterial.cpp">
-      <Filter>Sources\Modules\Resources\Types</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="ModuleResourceManager.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

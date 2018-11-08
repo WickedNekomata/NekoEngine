@@ -7,6 +7,8 @@
 
 #include <vector>
 
+struct TextureImportSettings;
+
 struct Texture
 {
 	uint id = 0;
@@ -21,10 +23,12 @@ public:
 	MaterialImporter();
 	~MaterialImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName);
-	bool Import(const void* buffer, uint size, std::string& outputFileName);
+	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings);
+	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
 
 	void GenerateMeta(Resource* textureResource);
+	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
+	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
 	bool Load(const char* exportedFileName, Texture* outputTexture);
 	bool Load(const void* buffer, uint size, Texture* outputTexture);

@@ -12,10 +12,6 @@
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 
-#define EXTENSION_MESH ".nekoMesh"
-#define EXTENSION_TEXTURE ".nekoDDS"
-#define EXTENSION_SCENE ".nekoScene"
-
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
@@ -282,67 +278,13 @@ bool ModuleFileSystem::ExistsInAssets(const char* fileName, FileType fileType, s
 		outputFilePath = "Assets/Textures/";
 		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
 		break;
+	case FileType::SceneFile:
+		outputFilePath = "Assets/Scenes/";
+		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
+		break;
 	}
 
 	ret = Exists(filePath);
-
-	return ret;
-}
-
-bool ModuleFileSystem::RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const
-{
-	bool ret = false;
-
-	newFileInAssets.append(dir);
-	newFileInAssets.append("/");
-
-	const char** files = App->filesystem->GetFilesFromDir(dir);
-	const char** it;
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		if (App->filesystem->IsDirectory(*it))
-		{
-			ret = RecursiveFindNewFileInAssets(*it, newFileInAssets);
-
-			if (!ret)
-			{
-				uint found = newFileInAssets.rfind(*it);
-				if (found != std::string::npos)
-					newFileInAssets = newFileInAssets.substr(0, found);
-			}
-		}
-		else
-		{
-			// Ignore scenes and metas
-			std::string extension;
-			GetExtension(*it, extension);
-
-			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
-				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
-				continue;
-
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(newFileInAssets.data()) + 1, newFileInAssets.data()); // path
-
-			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-
-			extension = ".meta";
-			strcat_s(metaFile, strlen(metaFile) + strlen(extension.data()) + 1, extension.data()); // extension
-
-			if (!Exists(metaFile))
-			{
-				// If there is no meta, then the file is new
-				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s", *it, newFileInAssets.data());
-				newFileInAssets.append(*it);
-				ret = true;
-			}
-		}
-
-		if (ret)
-			break;
-	}
 
 	return ret;
 }

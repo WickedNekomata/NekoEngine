@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "Globals.h"
-#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 #include "DevIL/include/il.h"
 #include "DevIL/include/ilu.h"
@@ -47,7 +47,7 @@ MaterialImporter::MaterialImporter()
 
 MaterialImporter::~MaterialImporter() {}
 
-bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName)
+bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings)
 {
 	bool ret = false;
 
@@ -78,7 +78,7 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", name.data());
 
 		outputFileName = name.data();
-		ret = Import(buffer, size, outputFileName);
+		ret = Import(buffer, size, outputFileName, importSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
@@ -87,7 +87,7 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName)
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings)
 {
 	bool ret = false;
 
@@ -158,23 +158,23 @@ void MaterialImporter::GenerateMeta(Resource* materialResource)
 	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
 	json_object_set_number(rootObject, "UUID", resource->GetUUID());
 
-	JSON_Value* newValue = json_value_init_object();
-	JSON_Object* objModule = json_value_get_object(newValue);
-	json_object_set_value(rootObject, "Scene Importer", newValue);
+	JSON_Value* materialImporterValue = json_value_init_object();
+	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
+	json_object_set_value(rootObject, "Material Importer", materialImporterValue);
 
-	const MaterialImportSettings* settings = (const MaterialImportSettings*)resource->GetImportSettings();
+	const TextureImportSettings* settings = (const TextureImportSettings*)resource->GetImportSettings();
 	
-	json_object_set_number(objModule, "Compression", settings->compression);
-	json_object_set_number(objModule, "Wrap S", settings->wrapS);
-	json_object_set_number(objModule, "Wrap T", settings->wrapT);
-	json_object_set_number(objModule, "Min Filter", settings->minFilter);
-	json_object_set_number(objModule, "Mag Filter", settings->magFilter);
+	json_object_set_number(materialImporterObject, "Compression", settings->compression);
+	json_object_set_number(materialImporterObject, "Wrap S", settings->wrapS);
+	json_object_set_number(materialImporterObject, "Wrap T", settings->wrapT);
+	json_object_set_number(materialImporterObject, "Min Filter", settings->minFilter);
+	json_object_set_number(materialImporterObject, "Mag Filter", settings->magFilter);
 
 	// Build the path
 	char path[DEFAULT_BUF_SIZE];
 	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
 
-	static const char extension[] = ".meta";
+	const char extension[] = ".meta";
 	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
 
 	// Create the JSON
@@ -184,6 +184,63 @@ void MaterialImporter::GenerateMeta(Resource* materialResource)
 	App->filesystem->Save(path, buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
+}
+
+bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
+{
+	char* buffer;
+	uint size = App->filesystem->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	UUID = json_object_get_number(rootObject, "UUID");
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const
+{
+	if (textureImportSettings == nullptr)
+		return false;
+
+	char* buffer;
+	uint size = App->filesystem->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	textureImportSettings->compression = json_object_get_number(rootObject, "Compression");
+	textureImportSettings->wrapS = json_object_get_number(rootObject, "Wrap S");
+	textureImportSettings->wrapT = json_object_get_number(rootObject, "Wrap T");
+	textureImportSettings->minFilter = json_object_get_number(rootObject, "Min Filter");
+	textureImportSettings->magFilter = json_object_get_number(rootObject, "Mag Filter");
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(rootValue);
+
+	return true;
 }
 
 bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture)

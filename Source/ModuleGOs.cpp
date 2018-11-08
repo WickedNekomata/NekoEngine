@@ -270,10 +270,10 @@ void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 
 	if (App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName) > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s' (own format)", outputFileName.data());
+		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFileName.data());
 	}
 	else
-		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s' (own format)", outputFileName.data());
+		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s'", outputFileName.data());
 
 	delete[] buf;
 	json_value_free(rootValue);
@@ -285,11 +285,11 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s' (own format)", fileName);
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s' (own format)", fileName);
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", fileName);
 		return false;
 	}
 
@@ -305,7 +305,8 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	gameObjectsArray = json_value_get_array(root_value);
 	std::vector<GameObject*>auxList;
 	auxList.reserve(json_array_get_count(gameObjectsArray));
-	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) {
+	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) 
+	{
 		gObject = json_array_get_object(gameObjectsArray, i);
 		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root, true);
 		go->OnLoad(gObject);
@@ -320,6 +321,52 @@ bool ModuleGOs::LoadScene(const char* fileName)
 			auxList[i]->GetParent()->EraseChild(auxList[i]);
 			parent->AddChild(auxList[i]);
 			auxList[i]->SetParent(parent);
+		}
+	}
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(root_value);
+
+	return true;
+}
+
+bool ModuleGOs::GetMeshResourcesFromScene(const char* fileName, std::list<uint>& UUIDs) const
+{
+	char* buffer;
+	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	if (size > 0)
+	{
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);
+	}
+	else
+	{
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", fileName);
+		return false;
+	}
+
+	JSON_Value* root_value;
+	JSON_Array* gameObjectsArray;
+	JSON_Object* gObject;
+
+	/* parsing json and validating output */
+	root_value = json_parse_string(buffer);
+	if (json_value_get_type(root_value) != JSONArray)
+		return false;
+
+	gameObjectsArray = json_value_get_array(root_value);
+
+	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) 
+	{
+		gObject = json_array_get_object(gameObjectsArray, i);
+
+		JSON_Array* jsonComponents = json_object_get_array(gObject, "jsonComponents");
+		JSON_Object* cObject;
+
+		for (int i = 0; i < json_array_get_count(jsonComponents); i++) 
+		{
+			cObject = json_array_get_object(jsonComponents, i);
+			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::Mesh_Component)
+				UUIDs.push_back(json_object_get_number(cObject, "ResourceMesh"));
 		}
 	}
 

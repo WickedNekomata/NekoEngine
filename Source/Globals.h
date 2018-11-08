@@ -48,3 +48,7 @@ enum update_status
 #define MAX_BUF_SIZE 4096
 #define DEFAULT_BUF_SIZE 256
 #define INPUT_BUF_SIZE 128
+
+#define EXTENSION_MESH ".nekoMesh"
+#define EXTENSION_TEXTURE ".nekoDDS"
+#define EXTENSION_SCENE ".nekoScene"

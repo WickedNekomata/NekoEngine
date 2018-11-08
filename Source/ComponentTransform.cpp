@@ -132,14 +132,27 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 {
+	std::list<GameObject*> aux_list;
+
 	GameObject* globalParent = this->GetParent()->GetParent();
 
 	while (globalParent->GetParent() != nullptr)
 	{
-		math::float4x4 parentMatrix = globalParent->transform->GetMatrix();
-		globalMatrix = parentMatrix * globalMatrix;
+		//if (globalParent->GetParent()->GetParent() != nullptr)
+			aux_list.push_back(globalParent);
 		globalParent = globalParent->GetParent();
 	}
+
+	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
+	{
+		math::float4x4 parentMatrix = (*it)->transform->GetGlobalMatrix();
+		parentMatrix = parentMatrix.Inverted();
+		globalMatrix = parentMatrix * globalMatrix;
+	}
+
+	math::float4x4 myMatrix = GetGlobalMatrix();
+	myMatrix = myMatrix.Inverted();
+	globalMatrix = myMatrix * globalMatrix;
 
 	globalMatrix.Decompose(position, rotation, scale);
 }

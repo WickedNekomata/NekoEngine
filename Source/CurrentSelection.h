@@ -3,9 +3,9 @@
 class GameObject;
 class ImportSettings;
 
-#define DESTROYANDSET(x) \
-App->scene->selectedObject.DestroyImportSettings();\
-App->scene->selectedObject = x \
+// Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
+#define DESTROYANDSET(x) App->scene->selectedObject.DestroyImportSettings();App->scene->selectedObject = x
+
 
 struct CurrentSelection
 {

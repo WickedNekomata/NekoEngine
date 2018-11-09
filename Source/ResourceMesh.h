@@ -3,8 +3,6 @@
 
 #include "Resource.h"
 
-struct MeshImportSettings;
-
 class ResourceMesh : public Resource
 {
 public:
@@ -32,8 +30,6 @@ public:
 	float* textureCoords = nullptr;
 	uint textureCoordsID = 0;
 	uint textureCoordsSize = 0;
-
-	MeshImportSettings* importSettings = nullptr;
 };
 
 #endif

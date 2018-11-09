@@ -37,10 +37,10 @@ public:
 	MaterialImporter();
 	~MaterialImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings);
-	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
+	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const;
+	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
 
-	void GenerateMeta(Resource* resource);
+	void GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	

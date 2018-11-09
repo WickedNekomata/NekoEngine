@@ -258,13 +258,9 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 				resources.push_back(resource);
 			}
 
-			// Set the import settings to the resources
-			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-				(*it)->SetImportSettings(importSettings);
-
 			// If the file has no meta associated, generate a new meta
 			if (!existsMeta)
-				App->sceneImporter->GenerateMeta(resources);
+				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings);
 		}
 		break;
 		case ResourceType::Texture_Resource:
@@ -275,12 +271,9 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 			resource->exportedFileName = outputFileName;
 			resources.push_back(resource);
 
-			// Set the import settings to the resource
-			resources.front()->SetImportSettings(importSettings);
-
 			// If the file has no meta associated, generate a new meta
 			if (!existsMeta)
-				App->materialImporter->GenerateMeta(resources.front());
+				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings);
 		}
 		break;
 		}

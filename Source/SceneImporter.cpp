@@ -43,7 +43,7 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings)
+bool SceneImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -81,7 +81,7 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings)
+bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -164,7 +164,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	return ret;
 }
 
-void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation)
+void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation) const
 {
 	std::string name = node->mName.data;
 
@@ -348,7 +348,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
+void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const
 {
 	if (resources.empty())
 		return;
@@ -370,8 +370,6 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
 	JSON_Value* sceneImporterValue = json_value_init_object();
 	JSON_Object* sceneImporterObject = json_value_get_object(sceneImporterValue);
 	json_object_set_value(rootObject, "Scene Importer", sceneImporterValue);
-
-	const MeshImportSettings* meshImportSettings = (const MeshImportSettings*)meshResource->GetImportSettings();
 
 	JSON_Value* scaleArrayValue = json_value_init_array();
 	JSON_Array* scaleArray = json_value_get_array(scaleArrayValue);

@@ -3,8 +3,6 @@
 
 #include "Resource.h"
 
-struct TextureImportSettings;
-
 class ResourceTexture : public Resource
 {
 public:
@@ -24,8 +22,6 @@ private:
 	uint id = 0;
 	uint width = 0;
 	uint height = 0;
-
-	TextureImportSettings* importSettings = nullptr;
 };
 
 #endif

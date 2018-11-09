@@ -73,9 +73,6 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 		}
 		else
 		{
-			treeNodeFlags = 0;
-			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-
 			std::string extension;
 			App->filesystem->GetExtension(*it, extension);
 
@@ -85,22 +82,36 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
 				continue;
 
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
-			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-			const char metaExtension[] = ".meta";
-			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
-
-			// TODO GUILLEM
-			MeshImportSettings* currentSettings = new MeshImportSettings();
-			App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
-			DESTROYANDSET(currentSettings);
-
+			treeNodeFlags = 0;
+			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;			
+			if (App->scene->selectedObject == CurrentSelection::SelectedType::importSettings)
+			{
+				MeshImportSettings* currentSettings = (MeshImportSettings*)(App->scene->selectedObject.Get());
+				// TODO: get file name and compare. if equals set next treenode as selected :)
+			}
 			ImGui::TreeNodeEx(*it, treeNodeFlags);
+
+			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				OpenSettingsAtClick(it, currentFile);
+
 			ImGui::TreePop();
 		}
 	}
+}
+
+void PanelAssets::OpenSettingsAtClick(const char** it, std::string currentFile) const
+{
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
+	strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
+	const char metaExtension[] = ".meta";
+	strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+
+	// TODO GUILLEM
+	MeshImportSettings* currentSettings = new MeshImportSettings();
+	App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
+	DESTROYANDSET(currentSettings);
 }
 
 #endif // GAME

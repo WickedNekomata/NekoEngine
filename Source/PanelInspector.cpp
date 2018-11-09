@@ -30,9 +30,12 @@ bool PanelInspector::Draw()
 
 		ShowGameObjectInspector();
 
-	//case CurrentSelection::SelectedType::meta:
+		break;
+	case CurrentSelection::SelectedType::importSettings:
 
-		//break;
+		ImGui::Text("Import settings here");
+
+		break;
 	}
 		
 	ImGui::End();

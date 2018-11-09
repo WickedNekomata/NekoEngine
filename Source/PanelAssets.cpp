@@ -5,6 +5,8 @@
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
+#include "ResourceMesh.h"
+#include "ModuleScene.h"
 
 #include "ImGui/imgui.h"
 
@@ -77,7 +79,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			std::string extension;
 			App->filesystem->GetExtension(*it, extension);
 
-			// Ignore assets that generate scenes and metas
+			// Ignore assets that generate scenes and metas. Define this
 			if (strcmp(extension.data(), ".fbx") == 0 || strcmp(extension.data(), ".FBX") == 0
 				|| strcmp(extension.data(), ".obj") == 0 || strcmp(extension.data(), ".OBJ") == 0
 				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
@@ -91,6 +93,9 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
 
 			// TODO GUILLEM
+			MeshImportSettings* currentSettings = new MeshImportSettings();
+			App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
+			DESTROYANDSET(currentSettings);
 
 			ImGui::TreeNodeEx(*it, treeNodeFlags);
 			ImGui::TreePop();

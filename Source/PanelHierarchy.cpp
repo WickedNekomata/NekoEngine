@@ -84,7 +84,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->selectedObject = child;
+					DESTROYANDSET(child);
 
 				if (treeNodeOpened) 
 				{
@@ -108,7 +108,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					App->scene->selectedObject = child;
+					DESTROYANDSET(child);
 					
 			}
 		}

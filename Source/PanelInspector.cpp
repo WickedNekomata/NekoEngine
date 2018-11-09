@@ -30,9 +30,9 @@ bool PanelInspector::Draw()
 
 		ShowGameObjectInspector();
 
-	case CurrentSelection::SelectedType::meta:
+	//case CurrentSelection::SelectedType::meta:
 
-		break;
+		//break;
 	}
 		
 	ImGui::End();

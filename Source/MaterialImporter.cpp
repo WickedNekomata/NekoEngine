@@ -112,7 +112,28 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		ILubyte* data = nullptr;
 
 		// Pick a specific DXT compression use
-		ilSetInteger(IL_DXTC_FORMAT, textureImportSettings->compression);
+		int compression = 0;
+
+		switch (textureImportSettings->compression)
+		{
+		case TextureImportSettings::TextureCompression::DXT1:
+			compression = IL_DXT1;
+			break;
+		case TextureImportSettings::TextureCompression::DXT2:
+			compression = IL_DXT2;
+			break;
+		case TextureImportSettings::TextureCompression::DXT3:
+			compression = IL_DXT3;
+			break;
+		case TextureImportSettings::TextureCompression::DXT4:
+			compression = IL_DXT4;
+			break;
+		case TextureImportSettings::TextureCompression::DXT5:
+			compression = IL_DXT5;
+			break;
+		}
+
+		ilSetInteger(IL_DXTC_FORMAT, compression);
 
 		// Get the size of the data buffer
 		size = ilSaveL(IL_DDS, NULL, 0);
@@ -159,7 +180,7 @@ void MaterialImporter::GenerateMeta(Resource* resource)
 
 	// Fill the JSON with data
 	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
-	json_object_set_number(rootObject, "UUID", resource->GetUUID());
+	json_object_set_boolean(rootObject, "UUID", resource->GetUUID());
 
 	JSON_Value* materialImporterValue = json_value_init_object();
 	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
@@ -167,11 +188,12 @@ void MaterialImporter::GenerateMeta(Resource* resource)
 
 	const TextureImportSettings* textureImportSettings = (const TextureImportSettings*)resource->GetImportSettings();
 	
-	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
-	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
-	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
-	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
-	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
+	json_object_set_boolean(materialImporterObject, "Compression", textureImportSettings->compression);
+	json_object_set_boolean(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
+	json_object_set_boolean(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
+	json_object_set_boolean(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
+	json_object_set_boolean(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
+	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
 
 	// Build the path
 	char path[DEFAULT_BUF_SIZE];
@@ -209,7 +231,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	UUID = json_object_get_number(rootObject, "UUID");
+	UUID = json_object_get_boolean(rootObject, "UUID");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
@@ -242,6 +264,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)json_object_get_boolean(rootObject, "Wrap T");
 	textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Min Filter");
 	textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Mag Filter");
+	textureImportSettings->anisotropy = json_object_get_number(rootObject, "Anisotropy");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
@@ -309,24 +332,115 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 			// http://openil.sourceforge.net/tuts/tut_8/index.htm
 			//iluAlienify();
 
-			// Set texture clamping method
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureImportSettings->wrapS);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureImportSettings->wrapT);
+			// Set texture wrap mode
+			int wrap = 0;
 
-			// Set texture interpolation method (Mipmap for the highest visual quality)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textureImportSettings->minFilter);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textureImportSettings->magFilter);
+			switch (textureImportSettings->wrapS)
+			{
+			case TextureImportSettings::TextureWrapMode::REPEAT:
+				wrap = GL_REPEAT;
+				break;
+			case TextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+				wrap = GL_MIRRORED_REPEAT;
+				break;
+			case TextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+				wrap = GL_CLAMP_TO_EDGE;
+				break;
+			case TextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+				wrap = GL_CLAMP_TO_BORDER;
+				break;
+			}
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+
+			switch (textureImportSettings->wrapT)
+			{
+			case TextureImportSettings::TextureWrapMode::REPEAT:
+				wrap = GL_REPEAT;
+				break;
+			case TextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+				wrap = GL_MIRRORED_REPEAT;
+				break;
+			case TextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+				wrap = GL_CLAMP_TO_EDGE;
+				break;
+			case TextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+				wrap = GL_CLAMP_TO_BORDER;
+				break;
+			}
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+
+			// Set texture filter mode (Mipmap for the highest visual quality)
+			int filter = 0;
+			bool mipmap = false;
+
+			switch (textureImportSettings->minFilter)
+			{
+			case TextureImportSettings::TextureFilterMode::NEAREST:
+				filter = GL_NEAREST;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR:
+				filter = GL_LINEAR;
+				break;
+			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+				filter = GL_NEAREST_MIPMAP_NEAREST;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+				filter = GL_LINEAR_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+				filter = GL_NEAREST_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+				filter = GL_LINEAR_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			}
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+
+			switch (textureImportSettings->magFilter)
+			{
+			case TextureImportSettings::TextureFilterMode::NEAREST:
+				filter = GL_NEAREST;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR:
+				filter = GL_LINEAR;
+				break;
+			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+				filter = GL_NEAREST_MIPMAP_NEAREST;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+				filter = GL_LINEAR_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+				filter = GL_NEAREST_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+				filter = GL_LINEAR_MIPMAP_LINEAR;
+				mipmap = true;
+				break;
+			}
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
 			// Anisotropic filtering
 			// TODO: set this with the selected settings for the texture
 			if (isAnisotropySupported)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largestSupportedAnisotropy);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, textureImportSettings->anisotropy);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
-			// TODO: If mipmaps, then:
-			glGenerateMipmap(GL_TEXTURE_2D);
+			if (mipmap)
+				glGenerateMipmap(GL_TEXTURE_2D);
 
 			outputTexture->id = texName;
 			outputTexture->width = imageInfo.Width;

@@ -1,12 +1,11 @@
-#include "Globals.h"
 #include "Primitive.h"
+
 #include "Application.h"
+#include "Globals.h"
 #include "ModuleRenderer3D.h"
 
+#include "MathGeoLib/include/Math/Quat.h"
 #include "glew/include/GL/glew.h"
-
-#include "MathGeoLib/include/Math/TransformOps.h"
-#include "MathGeoLib/include/Math/MathConstants.h"
 
 Primitive::Primitive(PrimitiveTypes type) : type(type) {}
 

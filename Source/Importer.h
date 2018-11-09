@@ -7,9 +7,7 @@
 
 #include <string>
 
-class Resource;
-
-struct ImportSettings;
+struct ImportSettings {};
 
 class Importer
 {

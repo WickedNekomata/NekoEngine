@@ -364,7 +364,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
 	JSON_Value* meshesArrayValue = json_value_init_array();
 	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
 	for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		json_array_append_number(meshesArray, (*it)->GetUUID());
+		json_array_append_boolean(meshesArray, (*it)->GetUUID());
 	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
 
 	JSON_Value* sceneImporterValue = json_value_init_object();
@@ -381,23 +381,23 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
 	json_object_set_value(sceneImporterObject, "Scale", scaleArrayValue);
 
 	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
-	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
-	json_object_set_number(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
-	json_object_set_number(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
-	json_object_set_number(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
-	json_object_set_number(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
-	json_object_set_number(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
-	json_object_set_number(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
-	json_object_set_number(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
-	json_object_set_number(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
-	json_object_set_number(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
-	json_object_set_number(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
-	json_object_set_number(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
-	json_object_set_number(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
-	json_object_set_number(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
-	json_object_set_number(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
-	json_object_set_number(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
-	json_object_set_number(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
+	json_object_set_boolean(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
+	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
+	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
+	json_object_set_boolean(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
+	json_object_set_boolean(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
+	json_object_set_boolean(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
+	json_object_set_boolean(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
+	json_object_set_boolean(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
+	json_object_set_boolean(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
+	json_object_set_boolean(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
+	json_object_set_boolean(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
+	json_object_set_boolean(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
+	json_object_set_boolean(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
+	json_object_set_boolean(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
+	json_object_set_boolean(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
+	json_object_set_boolean(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
+	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
 
 	// Build the path
 	char path[DEFAULT_BUF_SIZE];
@@ -473,24 +473,24 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	meshImportSettings->scale.y = json_array_get_number(meshesArray, 1);
 	meshImportSettings->scale.z = json_array_get_number(meshesArray, 2);
 
-	meshImportSettings->useFileScale = json_object_get_number(sceneImporterObject, "Use File Scale");
+	meshImportSettings->useFileScale = json_object_get_boolean(sceneImporterObject, "Use File Scale");
 	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)json_object_get_boolean(sceneImporterObject, "Post Process Configuration");
-	meshImportSettings->calcTangentSpace = json_object_get_number(sceneImporterObject, "Calculate Tangent Space");
-	meshImportSettings->genNormals = json_object_get_number(sceneImporterObject, "Generate Normals");
-	meshImportSettings->genSmoothNormals = json_object_get_number(sceneImporterObject, "Generate Smooth Normals");
-	meshImportSettings->joinIdenticalVertices = json_object_get_number(sceneImporterObject, "Join Identical Vertices");
-	meshImportSettings->triangulate = json_object_get_number(sceneImporterObject, "Triangulate");
-	meshImportSettings->genUVCoords = json_object_get_number(sceneImporterObject, "Generate UV Coordinates");
-	meshImportSettings->sortByPType = json_object_get_number(sceneImporterObject, "Sort By Primitive Type");
-	meshImportSettings->improveCacheLocality = json_object_get_number(sceneImporterObject, "Improve Cache Locality");
-	meshImportSettings->limitBoneWeights = json_object_get_number(sceneImporterObject, "Limit Bone Weights");
-	meshImportSettings->removeRedundantMaterials = json_object_get_number(sceneImporterObject, "Remove Redundant Materials");
-	meshImportSettings->splitLargeMeshes = json_object_get_number(sceneImporterObject, "Split Large Meshes");
-	meshImportSettings->findDegenerates = json_object_get_number(sceneImporterObject, "Find Degenerates");
-	meshImportSettings->findInvalidData = json_object_get_number(sceneImporterObject, "Find Invalid Data");
-	meshImportSettings->findInstances = json_object_get_number(sceneImporterObject, "Find Instances");
-	meshImportSettings->validateDataStructure = json_object_get_number(sceneImporterObject, "Validate Data Structure");
-	meshImportSettings->optimizeMeshes = json_object_get_number(sceneImporterObject, "Optimize Meshes");
+	meshImportSettings->calcTangentSpace = json_object_get_boolean(sceneImporterObject, "Calculate Tangent Space");
+	meshImportSettings->genNormals = json_object_get_boolean(sceneImporterObject, "Generate Normals");
+	meshImportSettings->genSmoothNormals = json_object_get_boolean(sceneImporterObject, "Generate Smooth Normals");
+	meshImportSettings->joinIdenticalVertices = json_object_get_boolean(sceneImporterObject, "Join Identical Vertices");
+	meshImportSettings->triangulate = json_object_get_boolean(sceneImporterObject, "Triangulate");
+	meshImportSettings->genUVCoords = json_object_get_boolean(sceneImporterObject, "Generate UV Coordinates");
+	meshImportSettings->sortByPType = json_object_get_boolean(sceneImporterObject, "Sort By Primitive Type");
+	meshImportSettings->improveCacheLocality = json_object_get_boolean(sceneImporterObject, "Improve Cache Locality");
+	meshImportSettings->limitBoneWeights = json_object_get_boolean(sceneImporterObject, "Limit Bone Weights");
+	meshImportSettings->removeRedundantMaterials = json_object_get_boolean(sceneImporterObject, "Remove Redundant Materials");
+	meshImportSettings->splitLargeMeshes = json_object_get_boolean(sceneImporterObject, "Split Large Meshes");
+	meshImportSettings->findDegenerates = json_object_get_boolean(sceneImporterObject, "Find Degenerates");
+	meshImportSettings->findInvalidData = json_object_get_boolean(sceneImporterObject, "Find Invalid Data");
+	meshImportSettings->findInstances = json_object_get_boolean(sceneImporterObject, "Find Instances");
+	meshImportSettings->validateDataStructure = json_object_get_boolean(sceneImporterObject, "Validate Data Structure");
+	meshImportSettings->optimizeMeshes = json_object_get_boolean(sceneImporterObject, "Optimize Meshes");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);

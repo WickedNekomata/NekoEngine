@@ -2,6 +2,7 @@
 #define __PRIMITIVE_H__
 
 #include "Color.h"
+#include "Globals.h"
 
 #include "MathGeoLib/include/Math/float2.h"
 #include "MathGeoLib/include/Math/float3.h"

@@ -1,12 +1,10 @@
-#include "GameMode.h"
-
 #ifndef __SCENE_IMPORTER_H__
 #define __SCENE_IMPORTER_H__
 
 #include "Importer.h"
+#include "GameMode.h"
 
 #include "MathGeoLib/include/Math/float3.h"
-#include "MathGeoLib/include/Math/Quat.h"
 
 #include <list>
 
@@ -14,9 +12,34 @@ struct aiScene;
 struct aiNode;
 
 class GameObject;
+class Resource;
 class ResourceMesh;
 
-struct MeshImportSettings;
+struct MeshImportSettings : public ImportSettings
+{
+	math::float3 scale = math::float3::one;
+	bool useFileScale = true;
+
+	enum MeshPostProcessConfiguration { TARGET_REALTIME_FAST, TARGET_REALTIME_QUALITY, TARGET_REALTIME_MAX_QUALITY, CUSTOM };
+	MeshPostProcessConfiguration postProcessConfiguration = TARGET_REALTIME_MAX_QUALITY;
+
+	bool calcTangentSpace = true;
+	bool genNormals = false;
+	bool genSmoothNormals = true;
+	bool joinIdenticalVertices = true;
+	bool triangulate = true;
+	bool genUVCoords = true;
+	bool sortByPType = true;
+	bool improveCacheLocality = true;
+	bool limitBoneWeights = true;
+	bool removeRedundantMaterials = true;
+	bool splitLargeMeshes = true;
+	bool findDegenerates = true;
+	bool findInvalidData = true;
+	bool findInstances = true;
+	bool validateDataStructure = true;
+	bool optimizeMeshes = true;
+};
 
 class SceneImporter : public Importer
 {

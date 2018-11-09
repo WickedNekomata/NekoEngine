@@ -1,14 +1,27 @@
-#include "GameMode.h"
-
 #ifndef __MATERIAL_IMPORTER_H__
 #define __MATERIAL_IMPORTER_H__
 
 #include "Importer.h"
+#include "GameMode.h"
 
-#include <vector>
-
-struct TextureImportSettings;
+class Resource;
 class ResourceTexture;
+
+struct TextureImportSettings : public ImportSettings
+{
+	enum TextureCompression { DXT1, DXT2, DXT3, DXT4, DXT5 };
+	TextureCompression compression = DXT1;
+
+	enum TextureWrapMode { REPEAT, MIRRORED_REPEAT, CLAMP_TO_EDGE, CLAMP_TO_BORDER };
+	TextureWrapMode wrapS = REPEAT;
+	TextureWrapMode wrapT = REPEAT;
+
+	enum TextureFilterMode { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR };
+	TextureFilterMode minFilter = LINEAR_MIPMAP_LINEAR;
+	TextureFilterMode magFilter = LINEAR;
+
+	float anisotropy = 1.0f;
+};
 
 struct Texture
 {

@@ -127,7 +127,7 @@ update_status ModuleCameraEditor::Update()
 		GameObject* hitGameObject = nullptr;
 		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGameObject);
 		if (hitGameObject != nullptr)
-			App->scene->selectedObject = hitGameObject;
+			DESTROYANDSET(hitGameObject);
 	}
 
 	return UPDATE_CONTINUE;

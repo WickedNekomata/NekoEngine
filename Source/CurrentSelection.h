@@ -1,10 +1,15 @@
 #include <assert.h>
 
 class GameObject;
+class ImportSettings;
+
+#define DESTROYANDSET(x) \
+App->scene->selectedObject.DestroyImportSettings();\
+App->scene->selectedObject = x \
 
 struct CurrentSelection
 {
-	enum class SelectedType { null, gameObject, meta };
+	enum class SelectedType { null, gameObject, importSettings };
 
 private:
 	void* cur = nullptr;
@@ -34,6 +39,8 @@ public:
 		return type == rhs;
 	}
 
+	//-----------// GAMEOBJECTS //----------//
+
 	CurrentSelection& operator=(GameObject* newSelection)
 	{
 		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
@@ -45,6 +52,30 @@ public:
 	bool operator==(const GameObject* rhs)
 	{
 		return cur == rhs;
+	}
+
+	//-----------// IMPORT SETTINGS //----------//
+
+	CurrentSelection& operator=(ImportSettings* newSelection)
+	{
+		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
+		cur = (void*)newSelection;
+		type = SelectedType::importSettings;
+		return *this;
+	}
+
+	bool operator==(const ImportSettings* rhs)
+	{
+		return cur == rhs;
+	}
+
+	bool DestroyImportSettings()
+	{
+		if (type != SelectedType::importSettings)
+			return false;
+		delete cur;
+		cur = nullptr;
+		type = SelectedType::null;
 	}
 
 	// Add operators in case of new kinds of selection :)

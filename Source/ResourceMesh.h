@@ -10,8 +10,9 @@ struct MeshImportSettings : public ImportSettings
 	math::float3 scale = math::float3::one;
 	bool useFileScale = true;
 
-	// Post Process
-	int configuration = aiProcessPreset_TargetRealtime_MaxQuality;
+	enum MeshPostProcessConfiguration { TARGET_REALTIME_FAST, TARGET_REALTIME_QUALITY, TARGET_REALTIME_MAX_QUALITY, CUSTOM };
+	MeshPostProcessConfiguration postProcessConfiguration = TARGET_REALTIME_MAX_QUALITY;
+	
 	bool calcTangentSpace = true;
 	bool genNormals = false;
 	bool genSmoothNormals = true;

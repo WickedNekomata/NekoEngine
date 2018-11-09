@@ -150,7 +150,7 @@ void PanelImportPreferences::TextureNode() const
 
 	ImGui::Text("Filter Mode");
 	const char* filter[] = { "Nearest", "Linear", 
-		"Nearest Mipmap Nearest", "Linear Mipmap Nearest", "Nearest Mipmap Linear", "Linear Mipmap Nearest" };
+		"Nearest Mipmap Nearest", "Linear Mipmap Nearest", "Nearest Mipmap Linear", "Linear Mipmap Linear" };
 	static int currentMinFilter = 0;
 	static int currentMagFilter = 0;
 	ImGui::Combo("Min Filter", &currentMinFilter, filter, IM_ARRAYSIZE(filter));

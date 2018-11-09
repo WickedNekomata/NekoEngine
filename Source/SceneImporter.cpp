@@ -88,11 +88,56 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
 		return ret;
 
+	MeshImportSettings* meshImportSettings = (MeshImportSettings*)importSettings;
+	//TODO FILE SCALE
 	uint postProcessingFlags = 0;
-	postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
-	postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+
+	switch (meshImportSettings->postProcessConfiguration)
+	{
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_FAST:
+		postProcessingFlags |= aiProcessPreset_TargetRealtime_Fast;
+		break;
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_QUALITY:
+		postProcessingFlags |= aiProcessPreset_TargetRealtime_Quality;
+		break;
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_MAX_QUALITY:
+		postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
+		break;
+	case MeshImportSettings::MeshPostProcessConfiguration::CUSTOM:
+		if (meshImportSettings->calcTangentSpace)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_CalcTangentSpace;
+		if (meshImportSettings->genNormals)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenNormals;
+		else if (meshImportSettings->genSmoothNormals)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+		if (meshImportSettings->joinIdenticalVertices)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+		if (meshImportSettings->triangulate)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+		if (meshImportSettings->genUVCoords)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenUVCoords;
+		if (meshImportSettings->sortByPType)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_SortByPType;
+		if (meshImportSettings->improveCacheLocality)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_ImproveCacheLocality;
+		if (meshImportSettings->limitBoneWeights)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_LimitBoneWeights;
+		if (meshImportSettings->removeRedundantMaterials)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_RemoveRedundantMaterials;
+		if (meshImportSettings->splitLargeMeshes)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_SplitLargeMeshes;
+		if (meshImportSettings->findDegenerates)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindDegenerates;
+		if (meshImportSettings->findInvalidData)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindInvalidData;
+		if (meshImportSettings->findInstances)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindInstances;
+		if (meshImportSettings->validateDataStructure)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_ValidateDataStructure;
+		if (meshImportSettings->optimizeMeshes)
+			postProcessingFlags |= aiPostProcessSteps::aiProcess_OptimizeMeshes;
+		break;
+	}
 
 	const aiScene* scene = aiImportFileFromMemory((const char*)buffer, size, postProcessingFlags, nullptr);
 
@@ -336,7 +381,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
 	json_object_set_value(sceneImporterObject, "Scale", scaleArrayValue);
 
 	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
-	json_object_set_number(sceneImporterObject, "Configuration", meshImportSettings->configuration);
+	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
 	json_object_set_number(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
 	json_object_set_number(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
 	json_object_set_number(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
@@ -429,7 +474,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	meshImportSettings->scale.z = json_array_get_number(meshesArray, 2);
 
 	meshImportSettings->useFileScale = json_object_get_number(sceneImporterObject, "Use File Scale");
-	meshImportSettings->configuration = json_object_get_number(sceneImporterObject, "Configuration");
+	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)json_object_get_boolean(sceneImporterObject, "Post Process Configuration");
 	meshImportSettings->calcTangentSpace = json_object_get_number(sceneImporterObject, "Calculate Tangent Space");
 	meshImportSettings->genNormals = json_object_get_number(sceneImporterObject, "Generate Normals");
 	meshImportSettings->genSmoothNormals = json_object_get_number(sceneImporterObject, "Generate Smooth Normals");

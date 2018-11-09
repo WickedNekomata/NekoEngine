@@ -7,6 +7,8 @@
 
 #include "Panel.h"
 
+#include <string>
+
 class PanelAssets : public Panel
 {
 public:

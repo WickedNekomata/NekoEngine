@@ -237,11 +237,11 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	textureImportSettings->compression = json_object_get_number(rootObject, "Compression");
-	textureImportSettings->wrapS = json_object_get_number(rootObject, "Wrap S");
-	textureImportSettings->wrapT = json_object_get_number(rootObject, "Wrap T");
-	textureImportSettings->minFilter = json_object_get_number(rootObject, "Min Filter");
-	textureImportSettings->magFilter = json_object_get_number(rootObject, "Mag Filter");
+	textureImportSettings->compression = (TextureImportSettings::TextureCompression)json_object_get_boolean(rootObject, "Compression");
+	textureImportSettings->wrapS = (TextureImportSettings::TextureWrapMode)json_object_get_boolean(rootObject, "Wrap S");
+	textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)json_object_get_boolean(rootObject, "Wrap T");
+	textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Min Filter");
+	textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Mag Filter");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);

@@ -26,7 +26,8 @@ bool PanelAssets::Draw()
 
 		if (ImGui::TreeNodeEx("Assets"))
 		{
-			RecursiveDrawDir("Assets");
+			std::string currentFile;
+			RecursiveDrawDir("Assets", currentFile);
 			ImGui::TreePop();
 		}
 	}

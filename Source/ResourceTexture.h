@@ -5,14 +5,16 @@
 
 struct TextureImportSettings : public ImportSettings
 {
-	/*
-	int compression = IL_DXT5;
+	enum TextureCompression { DXT1, DXT2, DXT3, DXT4, DXT5 };
+	TextureCompression compression = DXT1;
 
-	int wrapS = GL_REPEAT;
-	int wrapT = GL_REPEAT;
-	int minFilter = GL_LINEAR_MIPMAP_LINEAR;
-	int magFilter = GL_LINEAR;
-	*/
+	enum TextureWrapMode { REPEAT, MIRRORED_REPEAT, CLAMP_TO_EDGE, CLAMP_TO_BORDER };
+	TextureWrapMode wrapS = REPEAT;
+	TextureWrapMode wrapT = REPEAT;
+
+	enum TextureFilterMode { NEAREST, LINEAR, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR };
+	TextureFilterMode minFilter = LINEAR_MIPMAP_LINEAR;
+	TextureFilterMode magFilter = LINEAR;
 };
 
 class ResourceTexture : public Resource

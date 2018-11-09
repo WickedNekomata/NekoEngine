@@ -20,7 +20,9 @@ public:
 
 	void ShowGameObjectInspector();
 	void DragnDropSeparatorTarget(Component* target);
-	void ShowMetaInspector();
+
+	void ShowMeshImportSettingsInspector();
+	void ShowTextureImportSettingsInspector();
 };
 
 #endif

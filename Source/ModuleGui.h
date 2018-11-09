@@ -18,7 +18,6 @@ class PanelHierarchy;
 class PanelAssets;
 class PanelDebugDraw;
 class PanelEdit;
-class PanelImportPreferences;
 
 struct Texture;
 
@@ -55,15 +54,14 @@ public:
 
 public:
 
-	PanelInspector*			panelInspector = nullptr;
-	PanelAbout*				panelAbout = nullptr;
-	PanelConsole*			panelConsole = nullptr;
-	PanelSettings*			panelSettings = nullptr;
-	PanelHierarchy*			panelHierarchy = nullptr;
-	PanelAssets*			panelAssets = nullptr;
-	PanelDebugDraw*			panelDebugDraw = nullptr;
-	PanelEdit*				panelEdit = nullptr;
-	PanelImportPreferences* panelImportPreferences = nullptr;
+	PanelInspector*		panelInspector = nullptr;
+	PanelAbout*			panelAbout = nullptr;
+	PanelConsole*		panelConsole = nullptr;
+	PanelSettings*		panelSettings = nullptr;
+	PanelHierarchy*		panelHierarchy = nullptr;
+	PanelAssets*		panelAssets = nullptr;
+	PanelDebugDraw*		panelDebugDraw = nullptr;
+	PanelEdit*			panelEdit = nullptr;
 
 	Texture* atlas = nullptr;
 

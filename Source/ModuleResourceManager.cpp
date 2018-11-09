@@ -291,7 +291,7 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	if (strcmp(extension, ".fbx") == 0 || strcmp(extension, ".FBX") == 0
 		|| strcmp(extension, ".obj") == 0 || strcmp(extension, ".OBJ") == 0)
 		return ResourceType::Mesh_Resource;
-	else if (strcmp(extension, ".dds") == 0 || strcmp(extension, ".DDS")
+	else if (strcmp(extension, ".dds") == 0 || strcmp(extension, ".DDS") == 0
 		|| strcmp(extension, ".png") == 0 || strcmp(extension, ".PNG") == 0
 		|| strcmp(extension, ".jpg") == 0 || strcmp(extension, ".JPG") == 0)
 		return ResourceType::Texture_Resource;

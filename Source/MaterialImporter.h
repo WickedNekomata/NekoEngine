@@ -21,6 +21,14 @@ struct TextureImportSettings : public ImportSettings
 	TextureFilterMode magFilter = LINEAR;
 
 	float anisotropy = 1.0f;
+
+	bool UseMipmap() const
+	{
+		return minFilter == NEAREST_MIPMAP_NEAREST || magFilter == NEAREST_MIPMAP_NEAREST
+			|| minFilter == LINEAR_MIPMAP_NEAREST || magFilter == LINEAR_MIPMAP_NEAREST
+			|| minFilter == NEAREST_MIPMAP_LINEAR || magFilter == NEAREST_MIPMAP_LINEAR
+			|| minFilter == LINEAR_MIPMAP_LINEAR || magFilter == LINEAR_MIPMAP_LINEAR;
+	}
 };
 
 struct Texture

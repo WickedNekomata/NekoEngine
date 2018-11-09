@@ -31,7 +31,7 @@ public:
 
 	uint Find(const char* fileInAssets) const;
 	uint ImportFile(const char* newFileInAssets);
-	ResourceType GetResourceTypeByExtension(const char* extension);
+	static ResourceType GetResourceTypeByExtension(const char* extension);
 
 	const Resource* GetResource(uint uuid) const;
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);

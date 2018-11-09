@@ -16,7 +16,7 @@ public:
 
 	bool Draw();
 
-	void RecursiveDrawDir(const char* dir) const;
+	void RecursiveDrawDir(const char* dir, std::string& currentFile) const;
 };
 
 #endif

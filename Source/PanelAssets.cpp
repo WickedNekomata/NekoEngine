@@ -35,10 +35,13 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(const char* dir) const
+void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) const
 {
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+	currentFile.append(dir);
+	currentFile.append("/");
 
 	const char** files = App->filesystem->GetFilesFromDir(dir);
 	const char** it;
@@ -57,7 +60,11 @@ void PanelAssets::RecursiveDrawDir(const char* dir) const
 
 			if (treeNodeOpened)
 			{
-				RecursiveDrawDir(*it);
+				RecursiveDrawDir(*it, currentFile);
+				uint found = currentFile.rfind(*it);
+				if (found != std::string::npos)
+					currentFile = currentFile.substr(0, found);
+
 				ImGui::TreePop();
 			}
 		}
@@ -65,6 +72,24 @@ void PanelAssets::RecursiveDrawDir(const char* dir) const
 		{
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+
+			std::string extension;
+			App->filesystem->GetExtension(*it, extension);
+
+			// Ignore assets that generate scenes and metas
+			if (strcmp(extension.data(), ".fbx") == 0 || strcmp(extension.data(), ".FBX") == 0
+				|| strcmp(extension.data(), ".obj") == 0 || strcmp(extension.data(), ".OBJ") == 0
+				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+				continue;
+
+			// Search for the meta associated to the file
+			char metaFile[DEFAULT_BUF_SIZE];
+			strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
+			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
+			const char metaExtension[] = ".meta";
+			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+
+			// TODO GUILLEM
 
 			ImGui::TreeNodeEx(*it, treeNodeFlags);
 			ImGui::TreePop();

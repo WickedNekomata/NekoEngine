@@ -29,7 +29,7 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation);
 
-	void GenerateMeta(std::list<Resource*>& meshResources) const;
+	void GenerateMeta(std::list<Resource*>& resources) const;
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;
 

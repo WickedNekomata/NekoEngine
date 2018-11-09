@@ -186,30 +186,52 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 	App->filesystem->GetExtension(newFileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
+	// Initialize the import settings to the default import settings
+	ImportSettings* importSettings = nullptr;
+
+	switch (type)
+	{
+	case ResourceType::Mesh_Resource:
+		importSettings = new MeshImportSettings();
+		break;
+	case ResourceType::Texture_Resource:
+		importSettings = new TextureImportSettings();
+		break;
+	case ResourceType::No_Type_Resource:
+	default:
+		break;
+	}
+
 	// Search for the meta associated to the file
 	char metaFile[DEFAULT_BUF_SIZE];
 	strcpy_s(metaFile, strlen(newFileInAssets) + 1, newFileInAssets); // file
 	const char metaExtension[] = ".meta";
 	strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
 
-	// If the file has no meta associated, use the default import settings
-	if (!App->filesystem->Exists(metaFile))
+	// If the file has a meta associated, use the import settings from the meta
+	if (App->filesystem->Exists(metaFile))
 	{
-
-	}
-	// Else, use the import settings from the meta
-	else
-	{
-
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
+			App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, (MeshImportSettings*)importSettings);
+			break;
+		case ResourceType::Texture_Resource:
+			App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
+			break;
+		case ResourceType::No_Type_Resource:
+		default:
+			break;
+		}
 	}
 
 	switch (type)
 	{
 	case ResourceType::Mesh_Resource:
-		imported = App->sceneImporter->Import(nullptr, newFileInAssets, outputFileName, nullptr);
+		imported = App->sceneImporter->Import(nullptr, newFileInAssets, outputFileName, importSettings);
 		break;
 	case ResourceType::Texture_Resource:
-		imported = App->materialImporter->Import(nullptr, newFileInAssets, outputFileName, nullptr);
+		imported = App->materialImporter->Import(nullptr, newFileInAssets, outputFileName, importSettings);
 		break;
 	case ResourceType::No_Type_Resource:
 	default:

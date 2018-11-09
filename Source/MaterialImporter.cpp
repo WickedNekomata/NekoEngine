@@ -51,7 +51,7 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 {
 	bool ret = false;
 
-	if (importPath == nullptr)
+	if (importPath == nullptr || importSettings == nullptr)
 		return ret;
 
 	std::string name;
@@ -91,8 +91,10 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 {
 	bool ret = false;
 
-	if (buffer == nullptr || size <= 0)
+	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
 		return ret;
+
+	TextureImportSettings* textureImportSettings = (TextureImportSettings*)importSettings;
 
 	// Generate the image name
 	uint imageName = 0;
@@ -110,7 +112,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		ILubyte* data = nullptr;
 
 		// Pick a specific DXT compression use
-		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+		ilSetInteger(IL_DXTC_FORMAT, textureImportSettings->compression);
 
 		// Get the size of the data buffer
 		size = ilSaveL(IL_DDS, NULL, 0);
@@ -147,9 +149,10 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-void MaterialImporter::GenerateMeta(Resource* materialResource)
+void MaterialImporter::GenerateMeta(Resource* resource)
 {
-	Resource* resource = materialResource;
+	if (resource == nullptr)
+		return;
 
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
@@ -162,13 +165,13 @@ void MaterialImporter::GenerateMeta(Resource* materialResource)
 	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
 	json_object_set_value(rootObject, "Material Importer", materialImporterValue);
 
-	const TextureImportSettings* settings = (const TextureImportSettings*)resource->GetImportSettings();
+	const TextureImportSettings* textureImportSettings = (const TextureImportSettings*)resource->GetImportSettings();
 	
-	json_object_set_number(materialImporterObject, "Compression", settings->compression);
-	json_object_set_number(materialImporterObject, "Wrap S", settings->wrapS);
-	json_object_set_number(materialImporterObject, "Wrap T", settings->wrapT);
-	json_object_set_number(materialImporterObject, "Min Filter", settings->minFilter);
-	json_object_set_number(materialImporterObject, "Mag Filter", settings->magFilter);
+	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
+	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
+	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
+	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
+	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
 
 	// Build the path
 	char path[DEFAULT_BUF_SIZE];
@@ -188,6 +191,9 @@ void MaterialImporter::GenerateMeta(Resource* materialResource)
 
 bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
 {
+	if (metaFile == nullptr)
+		return false;
+
 	char* buffer;
 	uint size = App->filesystem->Load(metaFile, &buffer);
 	if (size > 0)
@@ -213,7 +219,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 
 bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const
 {
-	if (textureImportSettings == nullptr)
+	if (metaFile == nullptr || textureImportSettings == nullptr)
 		return false;
 
 	char* buffer;
@@ -243,16 +249,19 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	return true;
 }
 
-bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture)
+bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture, const TextureImportSettings* textureImportSettings)
 {
 	bool ret = false;
+
+	if (exportedFileName == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
+		return ret;
 
 	char* buffer;
 	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFileName);
-		ret = Load(buffer, size, outputTexture);
+		ret = Load(buffer, size, outputTexture, textureImportSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
@@ -261,11 +270,11 @@ bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture
 	return ret;
 }
 
-bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTexture)
+bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTexture, const TextureImportSettings* textureImportSettings)
 {
 	bool ret = false;
 
-	if (buffer == nullptr ||size <= 0 || outputTexture == nullptr)
+	if (buffer == nullptr ||size <= 0 || outputTexture == nullptr || textureImportSettings == nullptr)
 		return ret;
 
 	// Generate the image name
@@ -301,12 +310,12 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 			//iluAlienify();
 
 			// Set texture clamping method
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureImportSettings->wrapS);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureImportSettings->wrapT);
 
 			// Set texture interpolation method (Mipmap for the highest visual quality)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textureImportSettings->minFilter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textureImportSettings->magFilter);
 
 			// Anisotropic filtering
 			// TODO: set this with the selected settings for the texture
@@ -343,6 +352,9 @@ bool MaterialImporter::Load(const void* buffer, uint size, Texture* outputTextur
 bool MaterialImporter::LoadCheckers(Texture* outputTexture)
 {
 	bool ret = false;
+
+	if (outputTexture == nullptr)
+		return ret;
 
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 

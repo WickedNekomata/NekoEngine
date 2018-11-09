@@ -7,6 +7,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleTimeManager.h"
+#include "ResourceTexture.h"
 
 #include "Panel.h"
 #include "PanelInspector.h"
@@ -85,8 +86,10 @@ bool ModuleGui::Start()
 	// Load atlas texture
 	std::string outputFileName;
 	atlas = new Texture();
-	App->materialImporter->Import("atlas.png", "UI/", outputFileName, nullptr);
-	App->materialImporter->Load(outputFileName.data(), atlas);
+	TextureImportSettings* importSettings = new TextureImportSettings();
+	App->materialImporter->Import("atlas.png", "UI/", outputFileName, importSettings);
+	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
+	RELEASE(importSettings);
 
 	return ret;
 }

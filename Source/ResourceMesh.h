@@ -11,7 +11,7 @@ struct MeshImportSettings : public ImportSettings
 	bool useFileScale = true;
 
 	// Post Process
-	int configuration = 0;
+	int configuration = aiProcessPreset_TargetRealtime_MaxQuality;
 	bool calcTangentSpace = true;
 	bool genNormals = false;
 	bool genSmoothNormals = true;

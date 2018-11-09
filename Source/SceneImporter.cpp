@@ -47,7 +47,7 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 {
 	bool ret = false;
 
-	if (importPath == nullptr)
+	if (importPath == nullptr || importSettings == nullptr)
 		return ret;
 
 	std::string name;
@@ -85,7 +85,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 {
 	bool ret = false;
 
-	if (buffer == nullptr || size <= 0)
+	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
 		return ret;
 
 	uint postProcessingFlags = 0;
@@ -303,9 +303,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-void SceneImporter::GenerateMeta(std::list<Resource*>& meshResources) const
+void SceneImporter::GenerateMeta(std::list<Resource*>& resources) const
 {
-	Resource* resource = meshResources.front();
+	if (resources.empty())
+		return;
+
+	ResourceMesh* meshResource = (ResourceMesh*)resources.front();
 
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
@@ -315,7 +318,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& meshResources) const
 
 	JSON_Value* meshesArrayValue = json_value_init_array();
 	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
-	for (std::list<Resource*>::const_iterator it = meshResources.begin(); it != meshResources.end(); ++it)
+	for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 		json_array_append_number(meshesArray, (*it)->GetUUID());
 	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
 
@@ -323,37 +326,37 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& meshResources) const
 	JSON_Object* sceneImporterObject = json_value_get_object(sceneImporterValue);
 	json_object_set_value(rootObject, "Scene Importer", sceneImporterValue);
 
-	const MeshImportSettings* settings = (const MeshImportSettings*)resource->GetImportSettings();
+	const MeshImportSettings* meshImportSettings = (const MeshImportSettings*)meshResource->GetImportSettings();
 
 	JSON_Value* scaleArrayValue = json_value_init_array();
 	JSON_Array* scaleArray = json_value_get_array(scaleArrayValue);
-	json_array_append_number(scaleArray, settings->scale.x);
-	json_array_append_number(scaleArray, settings->scale.y);
-	json_array_append_number(scaleArray, settings->scale.z);
+	json_array_append_number(scaleArray, meshImportSettings->scale.x);
+	json_array_append_number(scaleArray, meshImportSettings->scale.y);
+	json_array_append_number(scaleArray, meshImportSettings->scale.z);
 	json_object_set_value(sceneImporterObject, "Scale", scaleArrayValue);
 
-	json_object_set_boolean(sceneImporterObject, "Use File Scale", settings->useFileScale);
-	json_object_set_number(sceneImporterObject, "Configuration", settings->configuration);
-	json_object_set_number(sceneImporterObject, "Calculate Tangent Space", settings->calcTangentSpace);
-	json_object_set_number(sceneImporterObject, "Generate Normals", settings->genNormals);
-	json_object_set_number(sceneImporterObject, "Generate Smooth Normals", settings->genSmoothNormals);
-	json_object_set_number(sceneImporterObject, "Join Identical Vertices", settings->joinIdenticalVertices);
-	json_object_set_number(sceneImporterObject, "Triangulate", settings->triangulate);
-	json_object_set_number(sceneImporterObject, "Generate UV Coordinates", settings->genUVCoords);
-	json_object_set_number(sceneImporterObject, "Sort By Primitive Type", settings->sortByPType);
-	json_object_set_number(sceneImporterObject, "Improve Cache Locality", settings->improveCacheLocality);
-	json_object_set_number(sceneImporterObject, "Limit Bone Weights", settings->limitBoneWeights);
-	json_object_set_number(sceneImporterObject, "Remove Redundant Materials", settings->removeRedundantMaterials);
-	json_object_set_number(sceneImporterObject, "Split Large Meshes", settings->splitLargeMeshes);
-	json_object_set_number(sceneImporterObject, "Find Degenerates", settings->findDegenerates);
-	json_object_set_number(sceneImporterObject, "Find Invalid Data", settings->findInvalidData);
-	json_object_set_number(sceneImporterObject, "Find Instances", settings->findInstances);
-	json_object_set_number(sceneImporterObject, "Validate Data Structure", settings->validateDataStructure);
-	json_object_set_number(sceneImporterObject, "Optimize Meshes", settings->optimizeMeshes);
+	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
+	json_object_set_number(sceneImporterObject, "Configuration", meshImportSettings->configuration);
+	json_object_set_number(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
+	json_object_set_number(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
+	json_object_set_number(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
+	json_object_set_number(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
+	json_object_set_number(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
+	json_object_set_number(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
+	json_object_set_number(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
+	json_object_set_number(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
+	json_object_set_number(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
+	json_object_set_number(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
+	json_object_set_number(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
+	json_object_set_number(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
+	json_object_set_number(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
+	json_object_set_number(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
+	json_object_set_number(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
+	json_object_set_number(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
 
 	// Build the path
 	char path[DEFAULT_BUF_SIZE];
-	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
+	strcpy_s(path, strlen(meshResource->file.data()) + 1, meshResource->file.data());
 
 	static const char extension[] = ".meta";
 	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
@@ -369,6 +372,9 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& meshResources) const
 
 bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
 {
+	if (metaFile == nullptr)
+		return false;
+
 	char* buffer;
 	uint size = App->filesystem->Load(metaFile, &buffer);
 	if (size > 0)
@@ -397,7 +403,7 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 
 bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const
 {
-	if (meshImportSettings == nullptr)
+	if (metaFile == nullptr || meshImportSettings == nullptr)
 		return false;
 
 	char* buffer;
@@ -450,6 +456,9 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
 {
 	bool ret = false;
+
+	if (exportedFileName == nullptr || outputMesh == nullptr)
+		return ret;
 
 	char* buffer;
 	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);

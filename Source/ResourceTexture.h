@@ -5,12 +5,14 @@
 
 struct TextureImportSettings : public ImportSettings
 {
-	int compression = 0;
+	/*
+	int compression = IL_DXT5;
 
-	int wrapS = 0;
-	int wrapT = 0;
-	int minFilter = 0;
-	int magFilter = 0;
+	int wrapS = GL_REPEAT;
+	int wrapT = GL_REPEAT;
+	int minFilter = GL_LINEAR_MIPMAP_LINEAR;
+	int magFilter = GL_LINEAR;
+	*/
 };
 
 class ResourceTexture : public Resource
@@ -35,6 +37,5 @@ private:
 
 	TextureImportSettings* importSettings = nullptr;
 };
-
 
 #endif

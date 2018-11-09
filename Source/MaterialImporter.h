@@ -8,6 +8,7 @@
 #include <vector>
 
 struct TextureImportSettings;
+class ResourceTexture;
 
 struct Texture
 {
@@ -26,12 +27,12 @@ public:
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings);
 	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
 
-	void GenerateMeta(Resource* textureResource);
+	void GenerateMeta(Resource* resource);
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
-	bool Load(const char* exportedFileName, Texture* outputTexture);
-	bool Load(const void* buffer, uint size, Texture* outputTexture);
+	bool Load(const char* exportedFileName, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
+	bool Load(const void* buffer, uint size, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
 	
 	bool LoadCheckers(Texture* textureResource);
 

@@ -45,8 +45,6 @@ bool ModuleResourceManager::CleanUp()
 
 	DestroyResources();
 
-	DestroyAllImportSettings();
-
 	return true;
 }
 
@@ -263,7 +261,6 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 			// Set the import settings to the resources
 			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
 				(*it)->SetImportSettings(importSettings);
-			AddImportSettings(importSettings);
 
 			// If the file has no meta associated, generate a new meta
 			if (!existsMeta)
@@ -280,7 +277,6 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 
 			// Set the import settings to the resource
 			resources.front()->SetImportSettings(importSettings);
-			AddImportSettings(importSettings);
 
 			// If the file has no meta associated, generate a new meta
 			if (!existsMeta)
@@ -290,8 +286,9 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 		}
 
 		ret = resources.front()->GetUUID();
-		resources.clear();
 	}
+
+	RELEASE(importSettings);
 
 	return ret;
 }
@@ -309,39 +306,7 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	return ResourceType::No_Type_Resource;
 }
 
-void ModuleResourceManager::AddImportSettings(ImportSettings* importSettings)
-{
-	assert(std::find(importsSettings.begin(), importsSettings.end(), importSettings) == importsSettings.end() && "Setting already created. Code Better!");
-	importsSettings.push_back(importSettings);
-}
-
-void ModuleResourceManager::EraseImportSettings(ImportSettings* importSettings)
-{
-	std::vector<ImportSettings*>::const_iterator it = std::find(this->importsSettings.begin(), this->importsSettings.end(), importSettings);
-	
-	if (it != this->importsSettings.end())
-		this->importsSettings.erase(it);
-}
-
-bool ModuleResourceManager::DestroyImportSettings(ImportSettings* setting)
-{
-	std::vector<ImportSettings*>::const_iterator it = std::find(this->importsSettings.begin(), this->importsSettings.end(), setting);
-	
-	if (it != importsSettings.end())
-		delete *it; return true;
-	
-	return false;
-}
-
-void ModuleResourceManager::DestroyAllImportSettings()
-{
-	for (uint i = 0; i < importsSettings.size(); ++i)
-		delete importsSettings[i];
-
-	importsSettings.clear();
-}
-
-// Get resource associated to the uuid.
+// Get the resource associated to the UUID
 const Resource* ModuleResourceManager::GetResource(uint uuid) const
 {
 	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);

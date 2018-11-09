@@ -33,11 +33,6 @@ public:
 	uint ImportFile(const char* newFileInAssets);
 	ResourceType GetResourceTypeByExtension(const char* extension);
 
-	void AddImportSettings(ImportSettings* importSettings);
-	void EraseImportSettings(ImportSettings* importSettings);
-	bool DestroyImportSettings(ImportSettings* setting);
-	void DestroyAllImportSettings();
-
 	const Resource* GetResource(uint uuid) const;
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
 	int SetAsUsed(uint uuid) const;

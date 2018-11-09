@@ -162,7 +162,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 	return ret;
 }
 
-// Returns the uuid associated to the resource of the file. In case of error returns 0.
+// Returns the UUID associated to the resource of the file. In case of error, it returns 0
 uint ModuleResourceManager::Find(const char* fileInAssets) const
 {
 	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
@@ -174,7 +174,7 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 	return 0;
 }
 
-// Import file into a resource. In case of error returns 0.
+// Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 {
 	uint ret = 0;
@@ -198,7 +198,6 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 		importSettings = new TextureImportSettings();
 		break;
 	case ResourceType::No_Type_Resource:
-	default:
 		break;
 	}
 
@@ -209,8 +208,12 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 	strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
 
 	// If the file has a meta associated, use the import settings from the meta
+	bool existsMeta = false;
+
 	if (App->filesystem->Exists(metaFile))
 	{
+		existsMeta = true;
+
 		switch (type)
 		{
 		case ResourceType::Mesh_Resource:
@@ -220,11 +223,11 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 			App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
 			break;
 		case ResourceType::No_Type_Resource:
-		default:
 			break;
 		}
 	}
 
+	// Import the file using the import settings
 	switch (type)
 	{
 	case ResourceType::Mesh_Resource:
@@ -234,7 +237,6 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 		imported = App->materialImporter->Import(nullptr, newFileInAssets, outputFileName, importSettings);
 		break;
 	case ResourceType::No_Type_Resource:
-	default:
 		break;
 	}
 
@@ -242,7 +244,9 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 	{
 		std::list<Resource*> resources;
 
-		if (type == ResourceType::Mesh_Resource)
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
 		{
 			// Create a new resource for each mesh
 			std::list<uint> meshesUUIDs;
@@ -255,46 +259,37 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 				resource->exportedFileName = outputFileName;
 				resources.push_back(resource);
 			}
+
+			// Set the import settings to the resources
+			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+				(*it)->SetImportSettings(importSettings);
+			AddImportSettings(importSettings);
+
+			// If the file has no meta associated, generate a new meta
+			if (!existsMeta)
+				App->sceneImporter->GenerateMeta(resources);
 		}
-		else
+		break;
+		case ResourceType::Texture_Resource:
 		{
+			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type);
 			resource->file = newFileInAssets;
 			resource->exportedFileName = outputFileName;
 			resources.push_back(resource);
+
+			// Set the import settings to the resource
+			resources.front()->SetImportSettings(importSettings);
+			AddImportSettings(importSettings);
+
+			// If the file has no meta associated, generate a new meta
+			if (!existsMeta)
+				App->materialImporter->GenerateMeta(resources.front());
+		}
+		break;
 		}
 
 		ret = resources.front()->GetUUID();
-
-		// Generate a meta for the file
-		ImportSettings* settings = nullptr;
-
-		switch (type)
-		{
-		case ResourceType::Mesh_Resource:
-
-			// Set the import settings
-			settings = new MeshImportSettings();
-			for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-				(*it)->SetImportSettings(settings);
-			AddImportSettings(settings);
-
-			App->sceneImporter->GenerateMeta(resources);
-
-			break;
-
-		case ResourceType::Texture_Resource:
-
-			// Set the import settings
-			settings = new TextureImportSettings();
-			resources.front()->SetImportSettings(settings);
-			AddImportSettings(settings);
-
-			App->materialImporter->GenerateMeta(resources.front());
-
-			break;
-		}
-
 		resources.clear();
 	}
 

@@ -27,10 +27,13 @@ public:
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
 
+	void RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path);
 	bool RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const;
 
 	uint Find(const char* fileInAssets) const;
-	uint ImportFile(const char* newFileInAssets);
+
+	uint ImportFile(const char* fileInAssets, const char* metaFile = nullptr, bool import = true);
+
 	static ResourceType GetResourceTypeByExtension(const char* extension);
 
 	const Resource* GetResource(uint uuid) const;

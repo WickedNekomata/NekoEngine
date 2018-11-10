@@ -613,6 +613,9 @@
     <ClInclude Include="PanelResources.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="System Events.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">

@@ -5,6 +5,7 @@
 
 #include <list>
 #include <vector>
+#include <queue>
 
 #include "Globals.h"
 #include "Module.h"
@@ -22,6 +23,7 @@
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "System Events.h"
 
 #include "PerfTimer.h"
 
@@ -90,6 +92,8 @@ public:
 	void SaveState() const;
 	void LoadState() const;
 
+	void PushSystemEvent(System_Event event);
+
 private:
 
 	void AddModule(Module* mod);
@@ -98,6 +102,8 @@ private:
 
 	void Load();
 	void Save() const;
+
+	void PopEvents();
 
 public:
 
@@ -137,6 +143,7 @@ private:
 	std::vector<float>	msTrack;
 
 	std::list<Module*>	list_modules;
+	std::queue<System_Event> systemEvents;
 
 	const char*			appName = nullptr;
 	const char*			organizationName = nullptr;

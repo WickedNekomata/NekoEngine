@@ -263,7 +263,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 // Returns the UUID associated to the resource of the file. In case of error, it returns 0
 uint ModuleResourceManager::Find(const char* fileInAssets) const
 {
-	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetExportedFile(), fileInAssets) == 0)
 			return it->first;
@@ -273,6 +273,7 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 }
 
 // Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
+
 uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, bool import)
 {
 	uint ret = 0;
@@ -350,7 +351,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			std::list<uint> meshesUUIDs;
 			App->GOs->GetMeshResourcesFromScene(outputFileName.data(), meshesUUIDs);
 
-			for (std::list<uint>::const_iterator it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
+			for (auto it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
 			{
 				Resource* resource = CreateNewResource(type, *it);
 				resource->file = fileInAssets;
@@ -403,7 +404,7 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 // Get the resource associated to the UUID
 const Resource* ModuleResourceManager::GetResource(uint uuid) const
 {
-	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
+	auto it = resources.find(uuid);
 
 	if (it != resources.end())
 		return it->second;
@@ -442,7 +443,7 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 // Load resource to memory and return number of references. In case of error returns -1.
 int ModuleResourceManager::SetAsUsed(uint uuid) const
 {
-	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
+	auto it = resources.find(uuid);
 
 	if (it == resources.end())
 		return -1;
@@ -453,7 +454,7 @@ int ModuleResourceManager::SetAsUsed(uint uuid) const
 // Unload resource from memory and return number of references. In case of error returns -1.
 int ModuleResourceManager::SetAsUnused(uint uuid) const
 {
-	std::map<uint, Resource*>::const_iterator it = resources.find(uuid);
+	auto it = resources.find(uuid);
 
 	if (it == resources.end())
 		return -1;
@@ -464,7 +465,7 @@ int ModuleResourceManager::SetAsUnused(uint uuid) const
 // Returns true if resource associated to the uuid can be found and deleted. Returns false in case of error.
 bool ModuleResourceManager::DestroyResource(uint uuid)
 {
-	std::map<uint, Resource*>::iterator it = resources.find(uuid);
+	auto it = resources.find(uuid);
 
 	if (it == resources.end())
 		return false;
@@ -477,7 +478,7 @@ bool ModuleResourceManager::DestroyResource(uint uuid)
 // Deletes all resources.
 void ModuleResourceManager::DestroyResources()
 {
-	for (std::map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	for (auto it = resources.begin(); it != resources.end(); ++it)
 		delete it->second;
 
 	resources.clear();
@@ -486,7 +487,7 @@ void ModuleResourceManager::DestroyResources()
 // Returns true if someone is still referencing to any resource.
 bool ModuleResourceManager::SomethingOnMemory() const
 {
-	for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (it->second->CountReferences() > 0)
 			return true;

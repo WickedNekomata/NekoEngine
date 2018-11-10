@@ -295,10 +295,11 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 		}*/
 
+		// Vertices + Indices + Texture Coords
 		uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
 
 		uint size = sizeof(ranges) +
-			sizeof(float) * verticesSize +
+			sizeof(float) * verticesSize * 3 +
 			sizeof(uint) * indicesSize +
 			sizeof(float) * textureCoordsSize;
 
@@ -311,19 +312,19 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 		cursor += bytes;
 
-		// 3. Store vertices
-		bytes = sizeof(float) * verticesSize;
+		// 2. Store vertices
+		bytes = sizeof(float) * verticesSize * 3;
 		memcpy(cursor, vertices, bytes);
 
 		cursor += bytes;
 
-		// 4. Store indices
+		// 3. Store indices
 		bytes = sizeof(uint) * indicesSize;
 		memcpy(cursor, indices, bytes);
 
 		cursor += bytes;
 
-		// 5. Store texture coords
+		// 4. Store texture coords
 		bytes = sizeof(float) * textureCoordsSize;
 		memcpy(cursor, textureCoords, bytes);
 
@@ -526,27 +527,22 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	char* cursor = (char*)buffer;
 
-	// Mesh Name + Vertices + Indices + Texture Coords + Texture Name
+	// Vertices + Indices + Texture Coords
 	uint ranges[3];
+
+	// 1. Load ranges
 	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
 
 	cursor += bytes;
 
-	//uint meshNameSize = ranges[0];
 	outputMesh->verticesSize = ranges[0];
 	outputMesh->indicesSize = ranges[1];
 	outputMesh->textureCoordsSize = ranges[2];
-	//uint textureNameSize = ranges[4];
-
-	// 1. Load mesh name
-	//bytes = sizeof(char) * meshNameSize;
-	//outputMesh->name = new char[meshNameSize];
-	//memcpy((char*)outputMesh->name, cursor, bytes);
 
 	// 2. Load vertices
-	bytes = sizeof(float) * outputMesh->verticesSize;
-	outputMesh->vertices = new float[outputMesh->verticesSize];
+	bytes = sizeof(float) * outputMesh->verticesSize * 3;
+	outputMesh->vertices = new float[outputMesh->verticesSize * 3];
 	memcpy(outputMesh->vertices, cursor, bytes);
 
 	cursor += bytes;
@@ -562,11 +558,6 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	bytes = sizeof(float) * outputMesh->textureCoordsSize;
 	outputMesh->textureCoords = new float[outputMesh->textureCoordsSize];
 	memcpy(outputMesh->textureCoords, cursor, bytes);
-
-	// 5. Load texture name
-	//bytes = sizeof(char) * textureNameSize;
-	//const char* textureName = new char[textureNameSize];
-	//memcpy((char*)textureName, cursor, bytes);
 
 	// TODO: find the texture associated with the material 0 of the mesh
 

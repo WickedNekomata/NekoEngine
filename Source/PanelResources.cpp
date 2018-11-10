@@ -1,4 +1,4 @@
-#include "PanelAssets.h"
+#include "PanelResources.h"
 
 #ifndef GAMEMODE
 
@@ -10,26 +10,21 @@
 
 #include "ImGui/imgui.h"
 
-PanelAssets::PanelAssets(char* name) : Panel(name) {}
+PanelResources::PanelResources(char* name) : Panel(name) {}
 
-PanelAssets::~PanelAssets() {}
+PanelResources::~PanelResources() {}
 
-bool PanelAssets::Draw()
+bool PanelResources::Draw()
 {
 	ImGuiWindowFlags assetsFlags = 0;
 	assetsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
 	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
-		// Game time scale slider
-		ImGui::PushItemWidth(100.0f);
-		float checkTime = App->res->GetAssetsCheckTime();
-		if (ImGui::SliderFloat("Check Time", &checkTime, 0.0f, MAX_ASSETS_CHECK_TIME)) { App->res->SetAssetsCheckTime(checkTime); }
-
-		if (ImGui::TreeNodeEx("Assets"))
+		if (ImGui::TreeNodeEx("Library"))
 		{
 			std::string currentFile;
-			RecursiveDrawDir("Assets", currentFile);
+			RecursiveDrawDir("Library", currentFile);
 			ImGui::TreePop();
 		}
 	}
@@ -38,7 +33,7 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) const
+void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile) const
 {
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
@@ -83,7 +78,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				continue;
 
 			treeNodeFlags = 0;
-			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;			
+			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 			/*
 			if (App->scene->selectedObject == CurrentSelection::SelectedType::meshImportSettings
 				|| App->scene->selectedObject == CurrentSelection::SelectedType::textureImportSettings)
@@ -127,7 +122,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 					DESTROYANDSET(currentSettings);
 					break;
 				}
-				}		
+				}
 			}
 			ImGui::TreePop();
 		}

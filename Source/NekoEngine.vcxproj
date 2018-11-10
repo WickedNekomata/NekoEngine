@@ -246,6 +246,7 @@
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
+    <ClInclude Include="PanelResources.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
@@ -334,6 +335,7 @@
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
+    <ClCompile Include="PanelResources.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />

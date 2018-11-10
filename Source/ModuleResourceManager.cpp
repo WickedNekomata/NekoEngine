@@ -15,10 +15,9 @@ ModuleResourceManager::~ModuleResourceManager() {}
 
 bool ModuleResourceManager::Start()
 {
-	// Create the Library directory
-	std::string newFileInAssets;
-	if (RecursiveFindNewFileInAssets("Assets", newFileInAssets))
-		ImportFile(newFileInAssets.data());
+	// Create the resources
+	std::string path;
+	RecursiveCreateResourcesFromFilesInAssets("Assets", path);
 
 	return true;
 }
@@ -26,7 +25,7 @@ bool ModuleResourceManager::Start()
 update_status ModuleResourceManager::Update()
 {
 	timer += App->timeManager->GetRealDt();
-
+	resources;
 	if (timer >= assetsCheckTime)
 	{
 		std::string newFileInAssets;
@@ -59,6 +58,107 @@ void ModuleResourceManager::SetAssetsCheckTime(float assetsCheckTime)
 float ModuleResourceManager::GetAssetsCheckTime() const
 {
 	return assetsCheckTime;
+}
+
+void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path)
+{
+	path.append(dir);
+	path.append("/");
+
+	const char** files = App->filesystem->GetFilesFromDir(dir);
+	const char** it;
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		if (App->filesystem->IsDirectory(*it))
+		{
+			RecursiveCreateResourcesFromFilesInAssets(*it, path);
+
+			uint found = path.rfind(*it);
+			if (found != std::string::npos)
+				path = path.substr(0, found);
+		}
+		else
+		{
+			std::string extension;
+			App->filesystem->GetExtension(*it, extension);
+
+			// Ignore scenes and metas
+			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
+				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+				continue;
+
+			// Search for the meta associated to the file
+			char metaFile[DEFAULT_BUF_SIZE];
+			strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // path
+			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
+			const char metaExtension[] = ".meta";
+			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+
+			std::string file = path;
+
+			// CASE 1 (file). The file has no meta associated (the file is new)
+			if (!App->filesystem->Exists(metaFile))
+			{
+				// Import the file (using the default import settings)
+				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s that needs to be imported", *it, path.data());
+				file.append(*it);
+				ImportFile(file.data());
+			}
+			else
+			{
+				bool exists = true;
+
+				if (strcmp(extension.data(), EXTENSION_MESH) == 0)
+				{
+					std::list<uint> UUIDs;
+					if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
+					{
+						for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+						{
+							// Build the path
+							char path[DEFAULT_BUF_SIZE];
+							sprintf_s(path, "%u%s", *it, extension);
+
+							exists = App->filesystem->Exists(path);
+
+							if (!exists)
+								break;
+						}
+					}
+				}
+				else if (strcmp(extension.data(), EXTENSION_TEXTURE) == 0)
+				{
+					uint UUID = 0;
+					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
+					{
+						// Build the path
+						char path[DEFAULT_BUF_SIZE];
+						sprintf_s(path, "%u%s", UUID, extension);
+
+						exists = App->filesystem->Exists(path);
+					}
+				}
+
+				// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
+				if (!exists)
+				{
+					// Reimport the file (using the import settings from the meta)
+					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which Library file(s) need(s) to be reimported", *it, path.data());
+					file.append(*it);
+					ImportFile(file.data(), metaFile);
+				}
+				// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
+				else
+				{
+					// Create the resources
+					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be created", *it, path.data());
+					file.append(*it);
+					ImportFile(file.data(), metaFile, false);
+				}
+			}
+		}
+	}
 }
 
 bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const
@@ -173,69 +273,69 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 }
 
 // Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
-uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
+uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, bool import)
 {
 	uint ret = 0;
 
+	if (fileInAssets == nullptr)
+		return ret;
+
 	bool imported = false;
+	ImportSettings* importSettings = nullptr;
 	std::string outputFileName;
 
 	std::string extension;
-	App->filesystem->GetExtension(newFileInAssets, extension);
+	App->filesystem->GetExtension(fileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
-	// Initialize the import settings to the default import settings
-	ImportSettings* importSettings = nullptr;
-
-	switch (type)
+	if (import)
 	{
-	case ResourceType::Mesh_Resource:
-		importSettings = new MeshImportSettings();
-		break;
-	case ResourceType::Texture_Resource:
-		importSettings = new TextureImportSettings();
-		break;
-	case ResourceType::No_Type_Resource:
-		break;
-	}
-
-	// Search for the meta associated to the file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(newFileInAssets) + 1, newFileInAssets); // file
-	const char metaExtension[] = ".meta";
-	strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
-
-	// If the file has a meta associated, use the import settings from the meta
-	bool existsMeta = false;
-
-	if (App->filesystem->Exists(metaFile))
-	{
-		existsMeta = true;
-
+		// Initialize the import settings to the default import settings
 		switch (type)
 		{
 		case ResourceType::Mesh_Resource:
-			App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, (MeshImportSettings*)importSettings);
+			importSettings = new MeshImportSettings();
 			break;
 		case ResourceType::Texture_Resource:
-			App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
+			importSettings = new TextureImportSettings();
+			break;
+		case ResourceType::No_Type_Resource:
+			break;
+		}
+
+		// If the file has a meta associated, use the import settings from the meta
+		if (metaFile != nullptr)
+		{
+			switch (type)
+			{
+			case ResourceType::Mesh_Resource:
+				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, (MeshImportSettings*)importSettings);
+				break;
+			case ResourceType::Texture_Resource:
+				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
+				break;
+			case ResourceType::No_Type_Resource:
+				break;
+			}
+		}
+
+		// Import the file using the import settings
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
+			imported = App->sceneImporter->Import(nullptr, fileInAssets, outputFileName, importSettings);
+			break;
+		case ResourceType::Texture_Resource:
+			imported = App->materialImporter->Import(nullptr, fileInAssets, outputFileName, importSettings);
 			break;
 		case ResourceType::No_Type_Resource:
 			break;
 		}
 	}
-
-	// Import the file using the import settings
-	switch (type)
+	else
 	{
-	case ResourceType::Mesh_Resource:
-		imported = App->sceneImporter->Import(nullptr, newFileInAssets, outputFileName, importSettings);
-		break;
-	case ResourceType::Texture_Resource:
-		imported = App->materialImporter->Import(nullptr, newFileInAssets, outputFileName, importSettings);
-		break;
-	case ResourceType::No_Type_Resource:
-		break;
+		imported = true;
+		App->filesystem->GetFileName(fileInAssets, outputFileName);
 	}
 
 	if (imported)
@@ -253,13 +353,13 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 			for (std::list<uint>::const_iterator it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
 			{
 				Resource* resource = CreateNewResource(type, *it);
-				resource->file = newFileInAssets;
+				resource->file = fileInAssets;
 				resource->exportedFileName = outputFileName;
 				resources.push_back(resource);
 			}
 
 			// If the file has no meta associated, generate a new meta
-			if (!existsMeta)
+			if (metaFile == nullptr)
 				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings);
 		}
 		break;
@@ -267,18 +367,19 @@ uint ModuleResourceManager::ImportFile(const char* newFileInAssets)
 		{
 			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type);
-			resource->file = newFileInAssets;
+			resource->file = fileInAssets;
 			resource->exportedFileName = outputFileName;
 			resources.push_back(resource);
 
 			// If the file has no meta associated, generate a new meta
-			if (!existsMeta)
+			if (metaFile == nullptr)
 				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings);
 		}
 		break;
 		}
 
-		ret = resources.front()->GetUUID();
+		if (resources.size() > 0)
+			ret = resources.front()->GetUUID();
 	}
 
 	RELEASE(importSettings);

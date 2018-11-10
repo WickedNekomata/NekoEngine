@@ -28,7 +28,15 @@ public:
 
 	CurrentSelection& operator=(SelectedType newSelection)
 	{
-		assert(newSelection == SelectedType::null && "Impossible comparasion");
+		assert(newSelection == SelectedType::null && "Invalid operation");
+		type = SelectedType::null;
+		cur = nullptr;
+		return *this;
+	}
+
+	CurrentSelection& operator=(int null)
+	{
+		assert(null == NULL && "Invalid operation");
 		type = SelectedType::null;
 		cur = nullptr;
 		return *this;

@@ -107,7 +107,10 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 
 	PrepareUpdate();
-	
+
+	// Send last frame events
+	PopEvents();
+
 	std::list<Module*>::const_iterator item = list_modules.begin();
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
@@ -322,6 +325,18 @@ void Application::Save() const
 	save = false;
 }
 
+void Application::PopEvents()
+{
+	while (systemEvents.size() > 0)
+	{
+		System_Event poppedEvent = systemEvents.front();
+		for (auto it = list_modules.begin(); it != list_modules.end(); ++it)
+			(*it)->OnSystemEvent(poppedEvent);
+
+		systemEvents.pop();
+	}
+}
+
 void Application::AddModule(Module* mod)
 {
 	list_modules.push_back(mod);
@@ -505,4 +520,8 @@ void Application::SaveState() const
 void Application::LoadState() const
 {
 	load = true;
+}
+
+void Application::PushSystemEvent(System_Event event)
+{
 }

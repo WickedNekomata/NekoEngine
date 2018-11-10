@@ -156,22 +156,13 @@ update_status ModuleInput::PreUpdate()
 			break;
 		}
 		case (SDL_DROPFILE):
-		{
-			std::string droppedFilePath = event.drop.file;
+		{	
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::DropEvent;
+			newEvent.drop.path = event.drop.file;
+			App->PushSystemEvent(newEvent);
 
-			if (droppedFilePath.find(".fbx") != std::string::npos || droppedFilePath.find(".FBX") != std::string::npos
-				|| droppedFilePath.find(".obj") != std::string::npos || droppedFilePath.find(".OBJ") != std::string::npos)
-			{
-				//App->sceneImporter->Import(nullptr, droppedFilePath.data(), nullptr);
-			}
-			else if (droppedFilePath.find(".png") != std::string::npos || droppedFilePath.find(".PNG") != std::string::npos
-				|| droppedFilePath.find(".dds") != std::string::npos || droppedFilePath.find(".DDS") != std::string::npos)
-			{
-
-				//App->materialImporter->Import(nullptr, droppedFilePath.data(), nullptr);
-			}
-
-			SDL_free((char*)droppedFilePath.data());
+			SDL_free((char*)event.drop.file);
 
 			break;
 		}

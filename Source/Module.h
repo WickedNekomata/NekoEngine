@@ -9,6 +9,7 @@
 #include "parson/parson.h"
 
 #include "Globals.h"
+#include "System Events.h"
 
 class Module
 {
@@ -53,6 +54,8 @@ public:
 	virtual void SaveStatus(JSON_Object*) const {};
 
 	virtual void LoadStatus(const JSON_Object*) {};
+
+	virtual void OnSystemEvent(System_Event) {};
 
 	virtual bool OnGameMode() { return true; };
 

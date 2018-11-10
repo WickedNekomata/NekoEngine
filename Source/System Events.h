@@ -1,12 +1,12 @@
 #ifndef __SYSTEM_EVENT_H__
 #define __SYSTEM_EVENT_H__
 
-enum System_Event_Type { DropEvent };
+enum System_Event_Type { InvalidEvent, DropEvent };
 
 struct Drop_Event
 {
 	System_Event_Type type;
-	char* path = nullptr;
+	char* path;
 };
 
 union System_Event

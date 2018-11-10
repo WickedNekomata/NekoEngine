@@ -592,9 +592,6 @@
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
     <ClInclude Include="GameMode.h" />
-    <ClInclude Include="PanelImportPreferences.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Sources\Modules\Resources</Filter>
     </ClInclude>
@@ -847,9 +844,6 @@
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="PanelEdit.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelImportPreferences.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="Resource.cpp">

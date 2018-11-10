@@ -26,9 +26,6 @@ public:
 	uint UnloadMemory();
 	uint CountReferences() const;
 
-	void SetImportSettings(ImportSettings* settings);
-	const ImportSettings* GetImportSettings() const;
-
 private:
 
 	virtual void OnUniqueEditor() = 0;

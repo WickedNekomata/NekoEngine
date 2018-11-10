@@ -21,6 +21,14 @@ struct TextureImportSettings : public ImportSettings
 	TextureFilterMode magFilter = LINEAR;
 
 	float anisotropy = 1.0f;
+
+	bool UseMipmap() const
+	{
+		return minFilter == NEAREST_MIPMAP_NEAREST || magFilter == NEAREST_MIPMAP_NEAREST
+			|| minFilter == LINEAR_MIPMAP_NEAREST || magFilter == LINEAR_MIPMAP_NEAREST
+			|| minFilter == NEAREST_MIPMAP_LINEAR || magFilter == NEAREST_MIPMAP_LINEAR
+			|| minFilter == LINEAR_MIPMAP_LINEAR || magFilter == LINEAR_MIPMAP_LINEAR;
+	}
 };
 
 struct Texture
@@ -37,10 +45,10 @@ public:
 	MaterialImporter();
 	~MaterialImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings);
-	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings);
+	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const;
+	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
 
-	void GenerateMeta(Resource* resource);
+	void GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	

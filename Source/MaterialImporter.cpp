@@ -47,7 +47,7 @@ MaterialImporter::MaterialImporter()
 
 MaterialImporter::~MaterialImporter() {}
 
-bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings)
+bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -87,7 +87,7 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings)
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -170,7 +170,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-void MaterialImporter::GenerateMeta(Resource* resource)
+void MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const
 {
 	if (resource == nullptr)
 		return;
@@ -185,8 +185,6 @@ void MaterialImporter::GenerateMeta(Resource* resource)
 	JSON_Value* materialImporterValue = json_value_init_object();
 	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
 	json_object_set_value(rootObject, "Material Importer", materialImporterValue);
-
-	const TextureImportSettings* textureImportSettings = (const TextureImportSettings*)resource->GetImportSettings();
 	
 	json_object_set_boolean(materialImporterObject, "Compression", textureImportSettings->compression);
 	json_object_set_boolean(materialImporterObject, "Wrap S", textureImportSettings->wrapS);

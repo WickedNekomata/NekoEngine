@@ -1,15 +1,15 @@
 #include <assert.h>
 
 class GameObject;
-class ImportSettings;
+class MeshImportSettings;
+class TextureImportSettings;
 
 // Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
-#define DESTROYANDSET(x) App->scene->selectedObject.DestroyImportSettings();App->scene->selectedObject = x
-
+#define DESTROYANDSET(x) App->scene->selectedObject.DestroyImportSettings(); App->scene->selectedObject = x
 
 struct CurrentSelection
 {
-	enum class SelectedType { null, gameObject, importSettings };
+	enum class SelectedType { null, gameObject, meshImportSettings, textureImportSettings };
 
 private:
 	void* cur = nullptr;
@@ -64,22 +64,35 @@ public:
 
 	//-----------// IMPORT SETTINGS //----------//
 
-	CurrentSelection& operator=(ImportSettings* newSelection)
+	CurrentSelection& operator=(MeshImportSettings* newSelection)
 	{
 		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
 		cur = (void*)newSelection;
-		type = SelectedType::importSettings;
+		type = SelectedType::meshImportSettings;
 		return *this;
 	}
 
-	bool operator==(const ImportSettings* rhs)
+	CurrentSelection& operator=(TextureImportSettings* newSelection)
+	{
+		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
+		cur = (void*)newSelection;
+		type = SelectedType::textureImportSettings;
+		return *this;
+	}
+
+	bool operator==(const MeshImportSettings* rhs)
+	{
+		return cur == rhs;
+	}
+
+	bool operator==(const TextureImportSettings* rhs)
 	{
 		return cur == rhs;
 	}
 
 	bool DestroyImportSettings()
 	{
-		if (type != SelectedType::importSettings)
+		if (type != SelectedType::meshImportSettings || type != SelectedType::textureImportSettings)
 			return false;
 		delete cur;
 		cur = nullptr;

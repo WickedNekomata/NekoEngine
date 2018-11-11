@@ -159,7 +159,24 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Text("File: %s", resourceMesh->file.data());
 	ImGui::Text("Exported file: %s", resourceMesh->exportedFile.data());
 	ImGui::Text("UUID: %u", resourceMesh->GetUUID());
-	ImGui::Text("References: %u", resourceMesh->CountReferences());
+	
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool inMemory = resourceMesh->IsInMemory();
+	ImGui::Checkbox("In memory", &inMemory);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+	if (inMemory)
+		ImGui::Text("References: %u", resourceMesh->CountReferences());
+
+	ImGui::Text("Vertices: %i", resourceMesh->verticesSize);
+	ImGui::Text("Vertices ID: %i", resourceMesh->verticesID);
+
+	ImGui::Text("Indices: %i", resourceMesh->indicesSize);
+	ImGui::Text("Indices ID: %i", resourceMesh->indicesID);
+
+	ImGui::Text("Triangles: %i", resourceMesh->indicesSize / 3);
+
+	ImGui::Text("Texture Coords: %i", resourceMesh->verticesSize);
+	ImGui::Text("Texture Coords ID: %i", resourceMesh->textureCoordsID);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const
@@ -173,11 +190,15 @@ void PanelInspector::ShowTextureResourceInspector() const
 	ImGui::Text("Exported file: %s", resourceTexture->exportedFile.data());
 	ImGui::Text("UUID: %u", resourceTexture->GetUUID());
 
-	//if (ImGui::Checkbox())
-	ImGui::Text("References: %u", resourceTexture->CountReferences());
-	ImGui::Spacing();
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool inMemory = resourceTexture->IsInMemory();
+	ImGui::Checkbox("In memory", &inMemory);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+	if (inMemory)
+		ImGui::Text("References: %u", resourceTexture->CountReferences());
 
-	ImGui::Image((void*)(intptr_t)resourceTexture->GetUUID(), ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Text("ID: %u", resourceTexture->id);
+	ImGui::Image((void*)(intptr_t)resourceTexture->id, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::Text("%u x %u", resourceTexture->width, resourceTexture->height);
 }
 

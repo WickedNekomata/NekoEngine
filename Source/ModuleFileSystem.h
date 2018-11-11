@@ -3,6 +3,11 @@
 
 #include "Module.h"
 
+#define DIR_LIBRARY "Library"
+#define DIR_LIBRARY_MESHES "Library/Meshes"
+#define DIR_LIBRARY_MATERIALS "Library/Materials"
+#define DIR_ASSETS_SCENES "Assets/Scenes"
+
 enum FileType
 {
 	MeshFile,
@@ -36,7 +41,6 @@ public:
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
-	bool ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const;
 
 	void GetFileName(const char* file, std::string& fileName) const;
 	void GetExtension(const char* file, std::string& extension) const;

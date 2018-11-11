@@ -280,7 +280,7 @@ bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 		return false;
 	}
 
-	RELEASE(buf);
+	RELEASE_ARRAY(buf);
 	json_value_free(rootValue);
 
 	return true;

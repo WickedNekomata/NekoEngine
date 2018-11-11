@@ -45,7 +45,7 @@ bool PanelInspector::Draw()
 			ShowTextureImportSettingsInspector();
 			break;
 		}
-	}	
+	}
 	ImGui::End();
 	
 	return true;

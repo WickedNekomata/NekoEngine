@@ -421,7 +421,7 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 		return false;
 	}
 
-	RELEASE(buf);
+	RELEASE_ARRAY(buf);
 	json_value_free(rootValue);
 
 	return true;

@@ -7,11 +7,6 @@
 
 #pragma comment(lib, "physfs/libx86/physfs.lib")
 
-#define DIR_LIBRARY "Library"
-#define DIR_LIBRARY_MESHES "Library/Meshes"
-#define DIR_LIBRARY_MATERIALS "Library/Materials"
-#define DIR_ASSETS_SCENES "Assets/Scenes"
-
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
@@ -262,33 +257,6 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 bool ModuleFileSystem::Exists(const char* file) const
 {
 	return PHYSFS_exists(file);
-}
-
-bool ModuleFileSystem::ExistsInAssets(const char* fileName, FileType fileType, std::string& outputFilePath) const
-{
-	uint ret = 0;
-
-	char filePath[DEFAULT_BUF_SIZE];
-
-	switch (fileType)
-	{
-	case FileType::MeshFile:
-		outputFilePath = "Assets/Meshes/";
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
-		break;
-	case FileType::TextureFile:
-		outputFilePath = "Assets/Textures/";
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
-		break;
-	case FileType::SceneFile:
-		outputFilePath = "Assets/Scenes/";
-		sprintf_s(filePath, DEFAULT_BUF_SIZE, "%s%s", outputFilePath.data(), fileName);
-		break;
-	}
-
-	ret = Exists(filePath);
-
-	return ret;
 }
 
 void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) const

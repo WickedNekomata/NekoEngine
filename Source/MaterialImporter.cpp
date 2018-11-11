@@ -76,8 +76,6 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", name.data());
-
-		outputFileName = name.data();
 		ret = Import(buffer, size, outputFileName, importSettings);
 		RELEASE_ARRAY(buffer);
 	}
@@ -148,6 +146,9 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
+				uint UUID = App->GenerateRandomNumber();
+				outputFileName = std::to_string(UUID);
+
 				if (App->fs->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
 				{
 					// TODO CHECK CRASH

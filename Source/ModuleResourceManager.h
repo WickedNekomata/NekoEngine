@@ -42,7 +42,7 @@ public:
 
 	uint Find(const char* fileInAssets) const;
 
-	uint ImportFile(const char* fileInAssets, const char* metaFile = nullptr, bool import = true);
+	uint ImportFile(const char* fileInAssets, const char* metaFile = nullptr, const char* exportedFile = nullptr);
 
 	static ResourceType GetResourceTypeByExtension(const char* extension);
 

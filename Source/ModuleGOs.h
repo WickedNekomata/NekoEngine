@@ -40,9 +40,9 @@ public:
 	void ReorderGameObjects(GameObject* source, GameObject* target);
 
 	void MarkSceneToSerialize();
-	bool SerializeFromNode(const GameObject* node, std::string& outputFileName);
-	bool LoadScene(const char* fileName);
-	bool GetMeshResourcesFromScene(const char* fileName, std::list<uint>& UUIDs) const;
+	bool SerializeFromNode(const GameObject* node, std::string& outputFile);
+	bool LoadScene(const char* file);
+	bool GetMeshResourcesFromScene(const char* file, std::list<uint>& UUIDs) const;
 
 public:
 

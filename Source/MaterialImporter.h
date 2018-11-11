@@ -49,15 +49,15 @@ public:
 	MaterialImporter();
 	~MaterialImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const;
-	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
+	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const;
+	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const;
 
 	bool GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
 	bool SetTextureImportSettingsToMeta(const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
-	bool Load(const char* exportedFileName, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
+	bool Load(const char* exportedFile, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
 	bool Load(const void* buffer, uint size, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
 	
 	bool LoadCheckers(Texture* textureResource);

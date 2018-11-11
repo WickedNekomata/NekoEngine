@@ -87,7 +87,7 @@ bool ModuleGui::Start()
 	std::string outputFileName;
 	atlas = new Texture();
 	TextureImportSettings* importSettings = new TextureImportSettings();
-	App->materialImporter->Import("atlas.png", "UI/", outputFileName, importSettings);
+	App->materialImporter->Import("UI/atlas.png", outputFileName, importSettings);
 	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
 	RELEASE(importSettings);
 

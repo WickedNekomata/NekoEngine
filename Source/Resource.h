@@ -36,7 +36,7 @@ private:
 public:
 
 	std::string file;
-	std::string exportedFileName;
+	std::string exportedFile;
 
 protected:
 

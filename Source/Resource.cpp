@@ -65,3 +65,8 @@ uint Resource::CountReferences() const
 {
 	return count;
 }
+
+ResourceType Resource::GetType() const
+{
+	return  type;
+}

@@ -14,7 +14,7 @@ App->scene->selectedObject = x; \
 
 struct CurrentSelection
 {
-	enum class SelectedType { null, gameObject, scene, resourceMesh, meshImportSettings, resourceTexture, textureImportSettings };
+	enum class SelectedType { null, gameObject, scene, resource, meshImportSettings, textureImportSettings };
 
 private:
 	void* cur = nullptr;
@@ -86,28 +86,15 @@ public:
 
 	//-----------// RESOURCES //----------//
 
-	CurrentSelection& operator=(const ResourceMesh* newSelection)
+	CurrentSelection& operator=(const Resource* newSelection)
 	{
 		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
 		cur = (void*)newSelection;
-		type = SelectedType::resourceMesh;
+		type = SelectedType::resource;
 		return *this;
 	}
 
-	bool operator==(const ResourceMesh* rhs)
-	{
-		return cur == rhs;
-	}
-
-	CurrentSelection& operator=(const ResourceTexture* newSelection)
-	{
-		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
-		cur = (void*)newSelection;
-		type = SelectedType::resourceTexture;
-		return *this;
-	}
-
-	bool operator==(const ResourceTexture* rhs)
+	bool operator==(const Resource* rhs)
 	{
 		return cur == rhs;
 	}

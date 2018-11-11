@@ -80,6 +80,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 
 			uint res_id = strtoul(*it, NULL, 0);
 			const Resource* res = App->res->GetResource(res_id);
+			
 			if (App->scene->selectedObject != NULL && App->scene->selectedObject == res)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 

@@ -25,6 +25,7 @@ public:
 	uint LoadToMemory();
 	uint UnloadMemory();
 	uint CountReferences() const;
+	ResourceType GetType() const;
 
 private:
 
@@ -42,7 +43,6 @@ protected:
 
 	uint UUID;
 	ResourceType type;
-	ImportSettings* settings = nullptr;
 	uint count = 0u;
 };
 

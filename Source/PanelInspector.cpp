@@ -37,12 +37,14 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::scene:
 			ShowSceneInspector();
 			break;
-		case CurrentSelection::SelectedType::resourceMesh:
-			ShowMeshResourceInspector();
+		case CurrentSelection::SelectedType::resource:
+		{
+			if (((Resource*)App->scene->selectedObject.Get())->GetType() == ResourceType::Mesh_Resource)
+				ShowMeshResourceInspector();
+			else
+				ShowTextureResourceInspector();
 			break;
-		case CurrentSelection::SelectedType::resourceTexture:
-			ShowTextureResourceInspector();
-			break;
+		}
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
 			break;
@@ -177,11 +179,6 @@ void PanelInspector::ShowTextureResourceInspector() const
 
 	ImGui::Image((void*)(intptr_t)resourceTexture->GetUUID(), ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::Text("%u x %u", resourceTexture->width, resourceTexture->height);
-}
-
-void PanelInspector::ShowTextureResourceInspector() const
-{
-
 }
 
 void PanelInspector::ShowMeshImportSettingsInspector()

@@ -257,26 +257,33 @@ void ModuleGOs::SerializeScene()
 }
 */
 
-void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFileName)
+bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFileName)
 {
 	JSON_Value* rootValue = json_value_init_array();
 	JSON_Array* goArray = json_value_get_array(rootValue);
 
 	node->RecursiveSerialitzation(goArray);
 
+	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	if (App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName) > 0)
+	uint size = App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName);
+	if (size > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFileName.data());
 	}
 	else
+	{
 		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s'", outputFileName.data());
+		return false;
+	}
 
-	delete[] buf;
+	RELEASE(buf);
 	json_value_free(rootValue);
+
+	return true;
 }
 
 bool ModuleGOs::LoadScene(const char* fileName)

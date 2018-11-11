@@ -5,11 +5,15 @@ class MeshImportSettings;
 class TextureImportSettings;
 
 // Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
-#define DESTROYANDSET(x) App->scene->selectedObject.DestroyImportSettings(); App->scene->selectedObject = x
+#define DESTROYANDSET(x) \
+{ \
+App->scene->selectedObject.DestroyImportSettings(); \
+App->scene->selectedObject = x; \
+} \
 
 struct CurrentSelection
 {
-	enum class SelectedType { null, gameObject, meshImportSettings, textureImportSettings };
+	enum class SelectedType { null, gameObject, scene, meshImportSettings, textureImportSettings };
 
 private:
 	void* cur = nullptr;
@@ -28,8 +32,8 @@ public:
 
 	CurrentSelection& operator=(SelectedType newSelection)
 	{
-		assert(newSelection == SelectedType::null && "Invalid operation");
-		type = SelectedType::null;
+		assert((newSelection == SelectedType::null || newSelection == SelectedType::scene) && "Invalid operation");
+		type = newSelection;
 		cur = nullptr;
 		return *this;
 	}

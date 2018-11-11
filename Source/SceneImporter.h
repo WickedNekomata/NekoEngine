@@ -17,6 +17,8 @@ class ResourceMesh;
 
 struct MeshImportSettings : public ImportSettings
 {
+	const char* metaFile = nullptr;
+
 	math::float3 scale = math::float3::one;
 	bool useFileScale = true;
 
@@ -39,6 +41,8 @@ struct MeshImportSettings : public ImportSettings
 	bool findInstances = true;
 	bool validateDataStructure = true;
 	bool optimizeMeshes = true;
+
+	~MeshImportSettings() { RELEASE_ARRAY(metaFile); }
 };
 
 class SceneImporter : public Importer
@@ -52,7 +56,8 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation) const;
 
-	void GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const;
+	bool GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const;
+	bool SetMeshImportSettingsToMeta(const MeshImportSettings* meshImportSettings) const;
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;
 

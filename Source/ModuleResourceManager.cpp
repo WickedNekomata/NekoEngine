@@ -7,7 +7,7 @@
 
 #include "Application.h"
 
-#include <assert.h> 
+#include <assert.h>
 
 ModuleResourceManager::ModuleResourceManager() {}
 
@@ -85,7 +85,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 
 			// Ignore scenes and metas
 			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
-				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+				|| IS_META(extension.data()))
 				continue;
 
 			// Search for the meta associated to the file
@@ -191,7 +191,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 
 			// Ignore scenes and metas
 			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
-				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+				|| IS_META(extension.data()))
 				continue;
 
 			// Search for the meta associated to the file
@@ -390,12 +390,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	if (strcmp(extension, ".fbx") == 0 || strcmp(extension, ".FBX") == 0
-		|| strcmp(extension, ".obj") == 0 || strcmp(extension, ".OBJ") == 0)
+	if (IS_MESH_RESOURCE(extension))
 		return ResourceType::Mesh_Resource;
-	else if (strcmp(extension, ".dds") == 0 || strcmp(extension, ".DDS") == 0
-		|| strcmp(extension, ".png") == 0 || strcmp(extension, ".PNG") == 0
-		|| strcmp(extension, ".jpg") == 0 || strcmp(extension, ".JPG") == 0)
+	else if (IS_TEXTURE_RESOURCE(extension))
 		return ResourceType::Texture_Resource;
 
 	return ResourceType::No_Type_Resource;

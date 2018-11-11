@@ -76,10 +76,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
 
-			// Ignore assets that generate scenes and metas. Define this
-			if (strcmp(extension.data(), ".fbx") == 0 || strcmp(extension.data(), ".FBX") == 0
-				|| strcmp(extension.data(), ".obj") == 0 || strcmp(extension.data(), ".OBJ") == 0
-				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+			// Ignore metas
+			if (IS_META(extension.data()))
 				continue;
 
 			treeNodeFlags = 0;
@@ -103,13 +101,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				const char metaExtension[] = ".meta";
 				strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
 
-				ResourceType type;
-				if (strcmp(extension.data(), ".nekoScene") == 0)
-					type = ResourceType::Mesh_Resource;
-				else if (strcmp(extension.data(), ".dds") == 0 || strcmp(extension.data(), ".DDS") == 0
-					|| strcmp(extension.data(), ".png") == 0 || strcmp(extension.data(), ".PNG") == 0
-					|| strcmp(extension.data(), ".jpg") == 0 || strcmp(extension.data(), ".JPG") == 0)
-					type = ResourceType::Texture_Resource;
+				ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
 
 				switch (type)
 				{
@@ -117,6 +109,10 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				{
 					MeshImportSettings* currentSettings = new MeshImportSettings();
 					App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
+
+					currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
+					strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
+
 					DESTROYANDSET(currentSettings);
 					break;
 				}
@@ -124,9 +120,19 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				{
 					TextureImportSettings* currentSettings = new TextureImportSettings();
 					App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, currentSettings);
+
+					currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
+					strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
+
 					DESTROYANDSET(currentSettings);
 					break;
 				}
+				case ResourceType::No_Type_Resource:
+
+					if (strcmp(extension.data(), EXTENSION_SCENE) == 0)
+						DESTROYANDSET(CurrentSelection::SelectedType::scene);
+
+					break;
 				}		
 			}
 			ImGui::TreePop();

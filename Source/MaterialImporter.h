@@ -9,6 +9,8 @@ class ResourceTexture;
 
 struct TextureImportSettings : public ImportSettings
 {
+	const char* metaFile = nullptr;
+
 	enum TextureCompression { DXT1, DXT2, DXT3, DXT4, DXT5 };
 	TextureCompression compression = DXT1;
 
@@ -29,6 +31,8 @@ struct TextureImportSettings : public ImportSettings
 			|| minFilter == NEAREST_MIPMAP_LINEAR || magFilter == NEAREST_MIPMAP_LINEAR
 			|| minFilter == LINEAR_MIPMAP_LINEAR || magFilter == LINEAR_MIPMAP_LINEAR;
 	}
+
+	~TextureImportSettings() { RELEASE_ARRAY(metaFile); }
 };
 
 struct Texture
@@ -48,7 +52,8 @@ public:
 	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const;
 	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
 
-	void GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
+	bool GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
+	bool SetTextureImportSettingsToMeta(const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	

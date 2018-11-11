@@ -170,27 +170,27 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-void MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const
+bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const
 {
 	if (resource == nullptr)
-		return;
+		return false;
 
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	// Fill the JSON with data
 	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
-	json_object_set_boolean(rootObject, "UUID", resource->GetUUID());
+	json_object_set_number(rootObject, "UUID", resource->GetUUID());
 
 	JSON_Value* materialImporterValue = json_value_init_object();
 	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
 	json_object_set_value(rootObject, "Material Importer", materialImporterValue);
 	
-	json_object_set_boolean(materialImporterObject, "Compression", textureImportSettings->compression);
-	json_object_set_boolean(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
-	json_object_set_boolean(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
-	json_object_set_boolean(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
-	json_object_set_boolean(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
+	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
+	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
+	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
+	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
+	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
 	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
 
 	// Build the path
@@ -204,9 +204,74 @@ void MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->fs->Save(path, buf, sizeBuf);
-	delete[] buf;
+	
+	uint size = App->fs->Save(path, buf, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", textureImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", textureImportSettings->metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(buf);
 	json_value_free(rootValue);
+
+	return true;
+}
+
+bool MaterialImporter::SetTextureImportSettingsToMeta(const TextureImportSettings* textureImportSettings) const
+{
+	if (textureImportSettings == nullptr)
+		return false;
+	else if (textureImportSettings->metaFile == nullptr)
+		return false;
+
+	char* buffer;
+	uint size = App->fs->Load(textureImportSettings->metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", textureImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", textureImportSettings->metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Object* materialImporterObject = json_object_get_object(rootObject, "Material Importer");
+
+	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
+	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
+	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
+	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
+	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
+	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
+
+	size = App->fs->Save(textureImportSettings->metaFile, buffer, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", textureImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", textureImportSettings->metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(rootValue);
+
+	return true;
 }
 
 bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
@@ -229,7 +294,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	UUID = json_object_get_boolean(rootObject, "UUID");
+	UUID = json_object_get_number(rootObject, "UUID");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
@@ -257,12 +322,13 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	textureImportSettings->compression = (TextureImportSettings::TextureCompression)json_object_get_boolean(rootObject, "Compression");
-	textureImportSettings->wrapS = (TextureImportSettings::TextureWrapMode)json_object_get_boolean(rootObject, "Wrap S");
-	textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)json_object_get_boolean(rootObject, "Wrap T");
-	textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Min Filter");
-	textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)json_object_get_boolean(rootObject, "Mag Filter");
-	textureImportSettings->anisotropy = json_object_get_number(rootObject, "Anisotropy");
+	JSON_Object* materialImporterObject = json_object_get_object(rootObject, "Material Importer");
+	textureImportSettings->compression = (TextureImportSettings::TextureCompression)(uint)json_object_get_number(materialImporterObject, "Compression");
+	textureImportSettings->wrapS = (TextureImportSettings::TextureWrapMode)(uint)json_object_get_number(materialImporterObject, "Wrap S");
+	textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)(uint)json_object_get_number(materialImporterObject, "Wrap T");
+	textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)(uint)json_object_get_number(materialImporterObject, "Min Filter");
+	textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)(uint)json_object_get_number(materialImporterObject, "Mag Filter");
+	textureImportSettings->anisotropy = json_object_get_number(materialImporterObject, "Anisotropy");
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);

@@ -131,6 +131,12 @@ void PanelInspector::DragnDropSeparatorTarget(Component* target)
 	}
 }
 
+void PanelInspector::ShowSceneInspector()
+{
+	ImGui::Text("Scene");
+
+}
+
 void PanelInspector::ShowMeshImportSettingsInspector()
 {
 	MeshImportSettings* meshImportSettings = (MeshImportSettings*)App->scene->selectedObject.Get();
@@ -156,8 +162,6 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 
 	ImGui::Checkbox("Use File Scale", &meshImportSettings->useFileScale);
 
-	// TODO: if useFileScale, show the scale of the file
-
 	const char* postProcessConfiguration[] = { "Target Realtime Fast", "Target Realtime Quality", "Target Realtime Max Quality", "Custom" };
 	static int currentPostProcessConfiguration = meshImportSettings->postProcessConfiguration;
 	ImGui::PushItemWidth(100.0f);
@@ -165,31 +169,170 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 		meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)currentPostProcessConfiguration;
 	ImGui::PopItemWidth();
 
+	bool calcTangentSpace = meshImportSettings->calcTangentSpace;
+	bool genNormals = meshImportSettings->genNormals;
+	bool genSmoothNormals = meshImportSettings->genSmoothNormals;
+	bool joinIdenticalVertices = meshImportSettings->joinIdenticalVertices;
+	bool triangulate = meshImportSettings->triangulate;
+	bool genUVCoords = meshImportSettings->genUVCoords;
+	bool sortByPType = meshImportSettings->sortByPType;
+	bool improveCacheLocality = meshImportSettings->improveCacheLocality;
+	bool limitBoneWeights = meshImportSettings->limitBoneWeights;
+	bool removeRedundantMaterials = meshImportSettings->removeRedundantMaterials;
+	bool splitLargeMeshes = meshImportSettings->splitLargeMeshes;
+	bool findDegenerates = meshImportSettings->findDegenerates;
+	bool findInvalidData = meshImportSettings->findInvalidData;
+	bool findInstances = meshImportSettings->findInstances;
+	bool validateDataStructure = meshImportSettings->validateDataStructure;
+	bool optimizeMeshes = meshImportSettings->optimizeMeshes;
+
+	switch (currentPostProcessConfiguration)
+	{
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_FAST:
+		calcTangentSpace = true;
+		genNormals = true;
+		genSmoothNormals = false;
+		joinIdenticalVertices = true;
+		triangulate = true;
+		genUVCoords = true;
+		sortByPType = true;
+		improveCacheLocality = false;
+		limitBoneWeights = false;
+		removeRedundantMaterials = false;
+		splitLargeMeshes = false;
+		findDegenerates = false;
+		findInvalidData = false;
+		findInstances = false;
+		validateDataStructure = false;
+		optimizeMeshes = false;
+		break;
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_QUALITY:
+		calcTangentSpace = true;
+		genNormals = false;
+		genSmoothNormals = true;
+		joinIdenticalVertices = true;
+		triangulate = true;
+		genUVCoords = true;
+		sortByPType = true;
+		improveCacheLocality = true;
+		limitBoneWeights = true;
+		removeRedundantMaterials = true;
+		splitLargeMeshes = true;
+		findDegenerates = true;
+		findInvalidData = true;
+		findInstances = false;
+		validateDataStructure = false;
+		optimizeMeshes = false;
+		break;
+	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_MAX_QUALITY:
+		calcTangentSpace = true;
+		genNormals = false;
+		genSmoothNormals = true;
+		joinIdenticalVertices = true;
+		triangulate = true;
+		genUVCoords = true;
+		sortByPType = true;
+		improveCacheLocality = true;
+		limitBoneWeights = true;
+		removeRedundantMaterials = true;
+		splitLargeMeshes = true;
+		findDegenerates = true;
+		findInvalidData = true;
+		findInstances = true;
+		validateDataStructure = true;
+		optimizeMeshes = true;
+		break;
+	}
+
 	if (currentPostProcessConfiguration != MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 
-	ImGui::Checkbox("Calculate Tangent Space", &meshImportSettings->calcTangentSpace);
-	ImGui::Checkbox("Generate Normals", &meshImportSettings->genNormals);
-	
-	if (currentPostProcessConfiguration != MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_FAST)
-		ImGui::Checkbox("Generate Smooth Normals", &meshImportSettings->genSmoothNormals);
-	
-	ImGui::Checkbox("Join Identical Vertices", &meshImportSettings->joinIdenticalVertices);
-	ImGui::Checkbox("Triangulate", &meshImportSettings->triangulate);
-	ImGui::Checkbox("Generate UV Coordinates", &meshImportSettings->genUVCoords);
-	ImGui::Checkbox("Sort By Primitive Type", &meshImportSettings->sortByPType);
-	ImGui::Checkbox("Improve Cache Locality", &meshImportSettings->improveCacheLocality);
-	ImGui::Checkbox("Limit Bone Weights", &meshImportSettings->limitBoneWeights);
-	ImGui::Checkbox("Remove Redundant Materials", &meshImportSettings->removeRedundantMaterials);
-	ImGui::Checkbox("Split Large Meshes", &meshImportSettings->splitLargeMeshes);
-	ImGui::Checkbox("Find Degenerates", &meshImportSettings->findDegenerates);
-	ImGui::Checkbox("Find Invalid Data", &meshImportSettings->findInvalidData);
-	ImGui::Checkbox("Find Instances", &meshImportSettings->findInstances);
-	ImGui::Checkbox("Validate Data Structure", &meshImportSettings->validateDataStructure);
-	ImGui::Checkbox("Optimize Meshes", &meshImportSettings->optimizeMeshes);
+	if (ImGui::Checkbox("Calculate Tangent Space", &calcTangentSpace))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->calcTangentSpace = calcTangentSpace;
+	}
+	if (ImGui::Checkbox("Generate Normals", &genNormals))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->genNormals = genNormals;
+	}
+	if (ImGui::Checkbox("Generate Smooth Normals", &genSmoothNormals))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->genSmoothNormals = genSmoothNormals;
+	}
+	if (ImGui::Checkbox("Join Identical Vertices", &joinIdenticalVertices))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->joinIdenticalVertices = joinIdenticalVertices;
+	}
+	if (ImGui::Checkbox("Triangulate", &triangulate))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->triangulate = triangulate;
+	}
+	if (ImGui::Checkbox("Generate UV Coordinates", &genUVCoords))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->genUVCoords = genUVCoords;
+	}
+	if (ImGui::Checkbox("Sort By Primitive Type", &sortByPType))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->sortByPType = sortByPType;
+	}
+	if (ImGui::Checkbox("Improve Cache Locality", &improveCacheLocality))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->improveCacheLocality = improveCacheLocality;
+	}
+	if (ImGui::Checkbox("Limit Bone Weights", &limitBoneWeights))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->limitBoneWeights = limitBoneWeights;
+	}
+	if (ImGui::Checkbox("Remove Redundant Materials", &removeRedundantMaterials))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->removeRedundantMaterials = removeRedundantMaterials;
+	}
+	if (ImGui::Checkbox("Split Large Meshes", &splitLargeMeshes))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->splitLargeMeshes = splitLargeMeshes;
+	}
+	if (ImGui::Checkbox("Find Degenerates", &findDegenerates))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->findDegenerates = findDegenerates;
+	}
+	if (ImGui::Checkbox("Find Invalid Data", &findInvalidData))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->findInvalidData = findInvalidData;
+	}
+	if (ImGui::Checkbox("Find Instances", &findInstances))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->findInstances = findInstances;
+	}
+	if (ImGui::Checkbox("Validate Data Structure", &validateDataStructure))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->validateDataStructure = validateDataStructure;
+	}
+	if (ImGui::Checkbox("Optimize Meshes", &optimizeMeshes))
+	{
+		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
+			meshImportSettings->optimizeMeshes = optimizeMeshes;
+	}
 
 	if (currentPostProcessConfiguration != MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
+	ImGui::Spacing();
+	if (ImGui::Button("REIMPORT")) { App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings); }
 }
 
 void PanelInspector::ShowTextureImportSettingsInspector()
@@ -239,6 +382,9 @@ void PanelInspector::ShowTextureImportSettingsInspector()
 
 	if (App->materialImporter->IsAnisotropySupported())
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
+
+	ImGui::Spacing();
+	if (ImGui::Button("REIMPORT")) { App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings); }
 }
 
 #endif // GAME

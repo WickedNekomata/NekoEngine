@@ -83,9 +83,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing()) {
+				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					DESTROYANDSET(child);
-				}
 
 				if (treeNodeOpened) 
 				{
@@ -108,10 +107,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				
 				AtGameObjectPopUp(child);
 
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing()) {
-					DESTROYANDSET(child);
-				}
-					
+				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+					DESTROYANDSET(child);				
 			}
 		}
 	}

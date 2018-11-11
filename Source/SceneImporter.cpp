@@ -349,10 +349,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const
+bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const
 {
 	if (resources.empty())
-		return;
+		return false;
 
 	ResourceMesh* meshResource = (ResourceMesh*)resources.front();
 
@@ -365,7 +365,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	JSON_Value* meshesArrayValue = json_value_init_array();
 	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
 	for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		json_array_append_boolean(meshesArray, (*it)->GetUUID());
+		json_array_append_number(meshesArray, (*it)->GetUUID());
 	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
 
 	JSON_Value* sceneImporterValue = json_value_init_object();
@@ -380,7 +380,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	json_object_set_value(sceneImporterObject, "Scale", scaleArrayValue);
 
 	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
-	json_object_set_boolean(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
+	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
 	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
 	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
 	json_object_set_boolean(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
@@ -409,9 +409,91 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->fs->Save(path, buf, sizeBuf);
-	delete[] buf;
+
+	uint size = App->fs->Save(path, buf, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", meshImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", meshImportSettings->metaFile);
+		return false;
+	}
+
+	RELEASE(buf);
 	json_value_free(rootValue);
+
+	return true;
+}
+
+bool SceneImporter::SetMeshImportSettingsToMeta(const MeshImportSettings* meshImportSettings) const
+{
+	if (meshImportSettings == nullptr)
+		return false;
+	else if (meshImportSettings->metaFile == nullptr)
+		return false;
+
+	char* buffer;
+	uint size = App->fs->Load(meshImportSettings->metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", meshImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", meshImportSettings->metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
+
+	JSON_Array* scaleArray = json_object_get_array(rootObject, "Scale");
+	json_array_append_number(scaleArray, meshImportSettings->scale.x);
+	json_array_append_number(scaleArray, meshImportSettings->scale.y);
+	json_array_append_number(scaleArray, meshImportSettings->scale.z);
+
+	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
+	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
+	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
+	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
+	json_object_set_boolean(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
+	json_object_set_boolean(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
+	json_object_set_boolean(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
+	json_object_set_boolean(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
+	json_object_set_boolean(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
+	json_object_set_boolean(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
+	json_object_set_boolean(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
+	json_object_set_boolean(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
+	json_object_set_boolean(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
+	json_object_set_boolean(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
+	json_object_set_boolean(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
+	json_object_set_boolean(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
+	json_object_set_boolean(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
+	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
+
+	size = App->fs->Save(meshImportSettings->metaFile, buffer, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", meshImportSettings->metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", meshImportSettings->metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(rootValue);
+
+	return true;
 }
 
 bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
@@ -465,15 +547,14 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
-
 	JSON_Array* meshesArray = json_object_get_array(rootObject, "Meshes");
 	meshImportSettings->scale.x = json_array_get_number(meshesArray, 0);
 	meshImportSettings->scale.y = json_array_get_number(meshesArray, 1);
 	meshImportSettings->scale.z = json_array_get_number(meshesArray, 2);
 
+	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
 	meshImportSettings->useFileScale = json_object_get_boolean(sceneImporterObject, "Use File Scale");
-	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)json_object_get_boolean(sceneImporterObject, "Post Process Configuration");
+	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)(uint)json_object_get_number(sceneImporterObject, "Post Process Configuration");
 	meshImportSettings->calcTangentSpace = json_object_get_boolean(sceneImporterObject, "Calculate Tangent Space");
 	meshImportSettings->genNormals = json_object_get_boolean(sceneImporterObject, "Generate Normals");
 	meshImportSettings->genSmoothNormals = json_object_get_boolean(sceneImporterObject, "Generate Smooth Normals");

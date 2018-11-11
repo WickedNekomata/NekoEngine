@@ -71,10 +71,8 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
 
-			// Ignore assets that generate scenes and metas. Define this
-			if (strcmp(extension.data(), ".fbx") == 0 || strcmp(extension.data(), ".FBX") == 0
-				|| strcmp(extension.data(), ".obj") == 0 || strcmp(extension.data(), ".OBJ") == 0
-				|| strcmp(extension.data(), ".meta") == 0 || strcmp(extension.data(), ".META") == 0)
+			// Ignore assets that generate scenes and metas
+			if (IS_MESH_RESOURCE(extension.data()) || IS_META(extension.data()))
 				continue;
 
 			treeNodeFlags = 0;

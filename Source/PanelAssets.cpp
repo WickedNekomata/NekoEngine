@@ -136,12 +136,14 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				}		
 			}
 			ImGui::TreePop();
-			SetDragAndDropSource(type, *it, extension.data());
+			std::string fullPath = currentFile.data();
+			fullPath += *it;
+			SetDragAndDropSource(type, fullPath.data(), extension.data());
 		}
 	}
 }
 
-void PanelAssets::SetDragAndDropSource(ResourceType type, const char* file, const char* extension) const
+void PanelAssets::SetDragAndDropSource(ResourceType type, const char* path, const char* extension) const
 {
 	switch (type)
 	{
@@ -150,10 +152,7 @@ void PanelAssets::SetDragAndDropSource(ResourceType type, const char* file, cons
 		if (strcmp(extension, EXTENSION_SCENE) == 0) {
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 			{
-				std::string fileName;
-				App->fs->GetFileName(file, fileName);
-				const char* payload = fileName.c_str();
-				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", payload, sizeof(char) * (strlen(payload) + 1));
+				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", path, sizeof(char) * (strlen(path) + 1));
 				ImGui::EndDragDropSource();
 			}
 		}

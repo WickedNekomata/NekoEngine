@@ -48,12 +48,12 @@ bool PanelHierarchy::Draw()
 		IterateAllChildren(root);		
 	}
 	ImGui::End();
-	ImRect lastWindowRect(ImGui::GetWindowPos(), ImGui::GetWindowSize());
-	if (ImGui::BeginDragDropTargetCustom(lastWindowRect, ImGui::GetID(name)))
+	ImRect rect(ImGui::GetWindowPos(), ImGui::GetWindowSize());
+	if (ImGui::BeginDragDropTargetCustom(rect, ImGui::GetID(name)))
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DROP_PREFAB_TO_GAME"))
 		{
-			const char* payload_n = (const char*)payload->Data;
+			char* payload_n = (char*)payload->Data;
 			App->GOs->LoadScene(payload_n);
 		}
 		ImGui::EndDragDropTarget();
@@ -119,7 +119,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				AtGameObjectPopUp(child);
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					DESTROYANDSET(child);
+					DESTROYANDSET(child);				
 			}
 		}
 	}

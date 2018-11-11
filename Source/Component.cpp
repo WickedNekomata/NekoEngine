@@ -48,6 +48,16 @@ void Component::OnEditor()
 
 void Component::OnUniqueEditor() {}
 
+void Component::ToggleIsActive()
+{
+	isActive = !isActive;
+}
+
+bool Component::IsActive() const
+{
+	return isActive;
+}
+
 ComponentType Component::GetType() const
 {
 	return type;

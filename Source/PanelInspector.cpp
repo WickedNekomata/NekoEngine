@@ -154,6 +154,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 {
 	ImGui::Text("Mesh Resource");
 	ImGui::Separator();
+	ImGui::Spacing();
 
 	const ResourceMesh* resourceMesh = (const ResourceMesh*)App->scene->selectedObject.Get();
 	ImGui::Text("File: %s", resourceMesh->file.data());

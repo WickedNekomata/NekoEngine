@@ -19,6 +19,9 @@ public:
 
 	virtual void OnEditor();
 
+	void ToggleIsActive();
+	bool IsActive() const;
+
 	ComponentType GetType() const;
 
 	void SetParent(GameObject* parent);
@@ -31,6 +34,10 @@ private:
 
 	virtual void OnInternalSave(JSON_Object* file) {};
 	virtual void OnUniqueEditor();
+
+private:
+
+	bool isActive = true;
 
 protected:
 

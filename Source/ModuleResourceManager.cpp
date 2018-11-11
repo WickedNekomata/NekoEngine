@@ -124,7 +124,9 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 						}
 						if (meshes == UUIDs.size())
 						{
-							sprintf_s(exportedFile, "%s/%u%s", DIR_ASSETS_SCENES, *it, EXTENSION_SCENE);
+							std::string exportedFileName;
+							App->fs->GetFileName(*it, exportedFileName);
+							sprintf_s(exportedFile, "%s/%s%s", DIR_ASSETS_SCENES, exportedFileName.data(), EXTENSION_SCENE);
 
 							exists = true;
 						}
@@ -350,7 +352,12 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			{
 				Resource* resource = CreateNewResource(type, *it);
 				resource->file = fileInAssets;
-				resource->exportedFile = outputFile;
+
+				resource->exportedFile = DIR_LIBRARY_MESHES;
+				resource->exportedFile.append("/");
+				resource->exportedFile.append(std::to_string(*it));
+				resource->exportedFile.append(EXTENSION_MESH);
+
 				resources.push_back(resource);
 			}
 

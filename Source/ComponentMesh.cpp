@@ -41,12 +41,26 @@ void ComponentMesh::SetResource(uint res_uuid)
 
 void ComponentMesh::OnUniqueEditor()
 {
-	ImGui::Text("Mesh:");
-
+	bool isActive = IsActive();
+	if (ImGui::Checkbox("##isActive", &isActive)) { ToggleIsActive(); }
 	ImGui::SameLine();
 
-	ImGui::ColorButton("##currentMesh", ImVec4(0.0f,0.0f,0.0f,0.213f), ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreview, ImVec2(16, 16));
-	
+	ImGui::Text("Mesh Renderer");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ImGui::Text("Mesh");
+	ImGui::SameLine();
+
+	std::string fileName;
+	const Resource* resource = App->res->GetResource(res);
+	if (resource != nullptr)
+		App->fs->GetFileName(resource->GetFile(), fileName);
+
+	ImGui::PushID("mesh");
+	ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+	ImGui::PopID();
+
 	if (ImGui::IsItemHovered())
 	{ 
 		ImGui::BeginTooltip();

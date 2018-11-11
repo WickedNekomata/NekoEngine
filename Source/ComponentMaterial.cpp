@@ -12,6 +12,7 @@
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
 {
 	res.reserve(App->renderer3D->GetMaxTextureUnits());
+	res.push_back(0);
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
@@ -42,12 +43,11 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 void ComponentMaterial::OnUniqueEditor()
 {
 	ImGui::Text("Material");
-	ImGui::Separator();
 	ImGui::Spacing();
 
 	for (uint i = 0; i < res.size(); ++i)
 	{
-		ImGui::Text("Texture %i", i);
+		ImGui::Text("Texture %i", i + 1);
 		ImGui::SameLine();
 
 		std::string fileName;
@@ -56,7 +56,7 @@ void ComponentMaterial::OnUniqueEditor()
 			App->fs->GetFileName(resource->GetFile(), fileName);
 
 		ImGui::PushID(i);
-		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::Button(fileName.data(), ImVec2(100.0f, 0.0f));
 		ImGui::PopID();
 
 		if (ImGui::IsItemHovered())
@@ -75,6 +75,9 @@ void ComponentMaterial::OnUniqueEditor()
 			}
 			ImGui::EndDragDropTarget();
 		}
+
+		ImGui::SameLine();
+		ImGui::Button("-"); // TODO erase res
 	}
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())

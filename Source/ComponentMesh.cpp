@@ -42,7 +42,6 @@ void ComponentMesh::SetResource(uint res_uuid)
 void ComponentMesh::OnUniqueEditor()
 {
 	ImGui::Text("Mesh Renderer");
-	ImGui::Separator();
 	ImGui::Spacing();
 
 	ImGui::Text("Mesh");

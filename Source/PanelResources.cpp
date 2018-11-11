@@ -78,13 +78,14 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
+			const Resource* res = App->res->GetResource(strtoul(*it, NULL, 0));
+			if (App->scene->selectedObject == res)
+				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+
 			ImGui::TreeNodeEx(*it, treeNodeFlags);			
 
-			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-			{
-				const Resource* res = App->res->GetResource(strtoul(*it, NULL, 0));
+			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing()) {
 				DESTROYANDSET(res);
-
 			}
 
 			ImGui::TreePop();

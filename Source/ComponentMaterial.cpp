@@ -18,6 +18,11 @@ ComponentMaterial::~ComponentMaterial()
 
 void ComponentMaterial::Update() {}
 
+void ComponentMaterial::SetResource(uint res_uuid)
+{
+	
+}
+
 void ComponentMaterial::OnUniqueEditor()
 {
 	ImGui::Text("Material:");
@@ -38,7 +43,7 @@ void ComponentMaterial::OnUniqueEditor()
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
 		{
-
+			
 		}
 		ImGui::EndDragDropTarget();
 	}

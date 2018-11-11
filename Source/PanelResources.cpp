@@ -91,11 +91,22 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 				DESTROYANDSET(res);
 
 			ImGui::TreePop();
-
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-			{
-				ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
-				ImGui::EndDragDropSource();
+			if (res != nullptr) {
+				if (res->GetType() == ResourceType::Mesh_Resource) {
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+					{
+						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+						ImGui::EndDragDropSource();
+					}
+				}
+				else if (res->GetType() == ResourceType::Texture_Resource)
+				{
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+					{
+						ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+						ImGui::EndDragDropSource();
+					}
+				}
 			}
 		}
 	}

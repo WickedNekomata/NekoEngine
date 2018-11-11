@@ -44,7 +44,7 @@ bool PanelSettings::Draw()
 		}
 		if (ImGui::TreeNode("File System"))
 		{
-			if (App->filesystem->IsActive())
+			if (App->fs->IsActive())
 				FileSystemNode();
 			ImGui::TreePop();
 		}
@@ -243,11 +243,11 @@ void PanelSettings::FileSystemNode() const
 {
 	// Paths
 	ImGui::Text("Base Path:");
-	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetBasePath());
+	ImGui::TextColored(YELLOW, "%s", App->fs->GetBasePath());
 	ImGui::Text("Read Paths:");
-	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetReadPaths());
+	ImGui::TextColored(YELLOW, "%s", App->fs->GetReadPaths());
 	ImGui::Text("Write Path:");
-	ImGui::TextColored(YELLOW, "%s", App->filesystem->GetWritePath());
+	ImGui::TextColored(YELLOW, "%s", App->fs->GetWritePath());
 }
 
 void PanelSettings::InputNode() const

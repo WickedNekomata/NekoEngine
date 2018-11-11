@@ -16,6 +16,7 @@
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
 #include "PanelAssets.h"
+#include "PanelResources.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 
@@ -41,6 +42,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelHierarchy = new PanelHierarchy("Hierarchy");
 	panelConsole = new PanelConsole("Console");
 	panelAssets = new PanelAssets("Assets");
+	panelResources = new PanelResources("Resources");
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 
@@ -50,6 +52,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelHierarchy);
 	panels.push_back(panelConsole);
 	panels.push_back(panelAssets);
+	panels.push_back(panelResources);
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
 
@@ -206,6 +209,7 @@ bool ModuleGui::CleanUp()
 	panelHierarchy = nullptr;
 	panelConsole = nullptr;
 	panelAssets = nullptr;
+	panelResources = nullptr;
 	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
 
@@ -280,8 +284,9 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
-		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(panelResources->GetName(), dock_id_bottom);
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}

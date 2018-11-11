@@ -9,7 +9,7 @@
 #include "parson/parson.h"
 
 #include "Globals.h"
-#include "System Events.h"
+#include "EventSystem.h"
 
 class Module
 {

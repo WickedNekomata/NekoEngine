@@ -164,7 +164,7 @@
     <ClInclude Include="DevIL\include\ilut_config.h" />
     <ClInclude Include="DevIL\include\ilu_region.h" />
     <ClInclude Include="DevIL\include\il_wrap.h" />
-    <ClInclude Include="System Events.h" />
+    <ClInclude Include="EventSystem.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />

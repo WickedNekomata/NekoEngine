@@ -23,7 +23,7 @@
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
-#include "System Events.h"
+#include "EventSystem.h"
 
 #include "PerfTimer.h"
 
@@ -122,7 +122,7 @@ public:
 	ModuleInput*			input;
 	ModuleScene*			scene;
 	ModuleRenderer3D*		renderer3D;
-	ModuleFileSystem*		filesystem;
+	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
 

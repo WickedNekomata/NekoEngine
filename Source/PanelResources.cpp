@@ -41,7 +41,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 	currentFile.append(dir);
 	currentFile.append("/");
 
-	const char** files = App->filesystem->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(dir);
 	const char** it;
 
 	for (it = files; *it != nullptr; ++it)
@@ -51,7 +51,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 		treeNodeFlags = 0;
 		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-		if (App->filesystem->IsDirectory(*it))
+		if (App->fs->IsDirectory(*it))
 		{
 			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
 				treeNodeOpened = true;
@@ -69,7 +69,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 		else
 		{
 			std::string extension;
-			App->filesystem->GetExtension(*it, extension);
+			App->fs->GetExtension(*it, extension);
 
 			// Ignore assets that generate scenes and metas. Define this
 			if (strcmp(extension.data(), ".fbx") == 0 || strcmp(extension.data(), ".FBX") == 0

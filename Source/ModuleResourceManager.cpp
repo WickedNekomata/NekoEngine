@@ -65,12 +65,12 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 	path.append(dir);
 	path.append("/");
 
-	const char** files = App->filesystem->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(dir);
 	const char** it;
 
 	for (it = files; *it != nullptr; ++it)
 	{
-		if (App->filesystem->IsDirectory(*it))
+		if (App->fs->IsDirectory(*it))
 		{
 			RecursiveCreateResourcesFromFilesInAssets(*it, path);
 
@@ -81,7 +81,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 		else
 		{
 			std::string extension;
-			App->filesystem->GetExtension(*it, extension);
+			App->fs->GetExtension(*it, extension);
 
 			// Ignore scenes and metas
 			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
@@ -98,7 +98,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 			std::string file = path;
 
 			// CASE 1 (file). The file has no meta associated (the file is new)
-			if (!App->filesystem->Exists(metaFile))
+			if (!App->fs->Exists(metaFile))
 			{
 				// Import the file (using the default import settings)
 				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s that needs to be imported", *it, path.data());
@@ -120,7 +120,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 							char path[DEFAULT_BUF_SIZE];
 							sprintf_s(path, "%u%s", *it, extension);
 
-							exists = App->filesystem->Exists(path);
+							exists = App->fs->Exists(path);
 
 							if (!exists)
 								break;
@@ -136,7 +136,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 						char path[DEFAULT_BUF_SIZE];
 						sprintf_s(path, "%u%s", UUID, extension);
 
-						exists = App->filesystem->Exists(path);
+						exists = App->fs->Exists(path);
 					}
 				}
 
@@ -168,12 +168,12 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 	newFileInAssets.append(dir);
 	newFileInAssets.append("/");
 
-	const char** files = App->filesystem->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(dir);
 	const char** it;
 
 	for (it = files; *it != nullptr; ++it)
 	{
-		if (App->filesystem->IsDirectory(*it))
+		if (App->fs->IsDirectory(*it))
 		{
 			ret = RecursiveFindNewFileInAssets(*it, newFileInAssets);
 
@@ -187,7 +187,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 		else
 		{
 			std::string extension;
-			App->filesystem->GetExtension(*it, extension);
+			App->fs->GetExtension(*it, extension);
 
 			// Ignore scenes and metas
 			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
@@ -202,7 +202,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
 
 			// If the file has no meta associated, then the file is new
-			if (!App->filesystem->Exists(metaFile))
+			if (!App->fs->Exists(metaFile))
 			{
 				// Import the file
 				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s that needs to be imported", *it, newFileInAssets.data());
@@ -224,7 +224,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 							char path[DEFAULT_BUF_SIZE];
 							sprintf_s(path, "%u%s", *it, extension);
 
-							exists = App->filesystem->Exists(path);
+							exists = App->fs->Exists(path);
 
 							if (!exists)
 								break;
@@ -240,7 +240,7 @@ bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::s
 						char path[DEFAULT_BUF_SIZE];
 						sprintf_s(path, "%u%s", UUID, extension);
 
-						exists = App->filesystem->Exists(path);
+						exists = App->fs->Exists(path);
 					}
 				}
 
@@ -286,7 +286,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	std::string outputFileName;
 
 	std::string extension;
-	App->filesystem->GetExtension(fileInAssets, extension);
+	App->fs->GetExtension(fileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
 	if (import)
@@ -336,7 +336,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	else
 	{
 		imported = true;
-		App->filesystem->GetFileName(fileInAssets, outputFileName);
+		App->fs->GetFileName(fileInAssets, outputFileName);
 	}
 
 	if (imported)

@@ -8,20 +8,20 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	input = new ModuleInput();
 	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
-
-	filesystem = new ModuleFileSystem();
+	fs = new ModuleFileSystem();
 	GOs = new ModuleGOs();
 	timeManager = new ModuleTimeManager();
+	res = new ModuleResourceManager();
 
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
-	res = new ModuleResourceManager();
+
 #ifndef GAMEMODE
-	raycaster = new Raycaster();
 	camera = new ModuleCameraEditor();
-	gui = new ModuleGui();
-	
+	gui = new ModuleGui();	
+
+	raycaster = new Raycaster();
 #endif // GAME
 
 	// The order of calls is very important!
@@ -36,7 +36,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(timeManager);
 	AddModule(res);
 	AddModule(GOs);
-	AddModule(filesystem);
+	AddModule(fs);
 	AddModule(window);
 	AddModule(input);
 	AddModule(scene);
@@ -60,7 +60,7 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	uint size = App->filesystem->Load("config.json", &buf);
+	uint size = fs->Load("config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -264,7 +264,7 @@ void Application::Load()
 {
 	// Read config file
 	char* buf;
-	uint size = App->filesystem->Load("config.json", &buf);
+	uint size = fs->Load("config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -301,8 +301,8 @@ void Application::Save() const
 	JSON_Object* objModule = json_value_get_object(newValue);
 	json_object_set_value(rootObject, "Application", newValue);
 
-	json_object_set_string(objModule, "Title", App->GetAppName());
-	json_object_set_string(objModule, "Organization", App->GetOrganizationName());
+	json_object_set_string(objModule, "Title", GetAppName());
+	json_object_set_string(objModule, "Organization", GetOrganizationName());
 	json_object_set_boolean(objModule, "Cap Frames", GetCapFrames());
 	json_object_set_number(objModule, "Max FPS", GetMaxFramerate());
 
@@ -318,7 +318,7 @@ void Application::Save() const
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	filesystem->Save("config.json", buf, sizeBuf);
+	fs->Save("config.json", buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 

@@ -16,6 +16,7 @@ class PanelConsole;
 class PanelSettings;
 class PanelHierarchy;
 class PanelAssets;
+class PanelResources;
 class PanelDebugDraw;
 class PanelEdit;
 
@@ -60,6 +61,7 @@ public:
 	PanelSettings*		panelSettings = nullptr;
 	PanelHierarchy*		panelHierarchy = nullptr;
 	PanelAssets*		panelAssets = nullptr;
+	PanelResources*		panelResources = nullptr;
 	PanelDebugDraw*		panelDebugDraw = nullptr;
 	PanelEdit*			panelEdit = nullptr;
 

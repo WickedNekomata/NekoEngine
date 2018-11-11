@@ -268,7 +268,7 @@ void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	if (App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName) > 0)
+	if (App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName) > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFileName.data());
 	}
@@ -282,7 +282,7 @@ void ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 bool ModuleGOs::LoadScene(const char* fileName)
 {
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	uint size = App->fs->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);
@@ -333,7 +333,7 @@ bool ModuleGOs::LoadScene(const char* fileName)
 bool ModuleGOs::GetMeshResourcesFromScene(const char* fileName, std::list<uint>& UUIDs) const
 {
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	uint size = App->fs->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);

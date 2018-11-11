@@ -67,12 +67,12 @@ bool MaterialImporter::Import(const char* importFileName, const char* importPath
 		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
 	}
 	else
-		App->filesystem->GetFileName(importPath, name);
+		App->fs->GetFileName(importPath, name);
 
 	outputFileName = name.data();
 
 	char* buffer;
-	uint size = App->filesystem->Load(fullImportPath, &buffer);
+	uint size = App->fs->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", name.data());
@@ -148,7 +148,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				if (App->filesystem->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
+				if (App->fs->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
 				{
 					// TODO CHECK CRASH
 					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFileName);
@@ -204,7 +204,7 @@ void MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->Save(path, buf, sizeBuf);
+	App->fs->Save(path, buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 }
@@ -215,7 +215,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 		return false;
 
 	char* buffer;
-	uint size = App->filesystem->Load(metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
@@ -243,7 +243,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 		return false;
 
 	char* buffer;
-	uint size = App->filesystem->Load(metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
@@ -278,7 +278,7 @@ bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture
 		return ret;
 
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
+	uint size = App->fs->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFileName);

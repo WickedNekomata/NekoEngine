@@ -63,12 +63,12 @@ bool SceneImporter::Import(const char* importFileName, const char* importPath, s
 		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
 	}
 	else
-		App->filesystem->GetFileName(importPath, name);
+		App->fs->GetFileName(importPath, name);
 
 	outputFileName = name.data();
 
 	char* buffer;
-	uint size = App->filesystem->Load(fullImportPath, &buffer);
+	uint size = App->fs->Load(fullImportPath, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", name.data());
@@ -330,7 +330,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 		std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
 
-		if (App->filesystem->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
+		if (App->fs->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
 		{
 			CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 		}
@@ -409,7 +409,7 @@ void SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->Save(path, buf, sizeBuf);
+	App->fs->Save(path, buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 }
@@ -420,7 +420,7 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 		return false;
 
 	char* buffer;
-	uint size = App->filesystem->Load(metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
@@ -451,7 +451,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 		return false;
 
 	char* buffer;
-	uint size = App->filesystem->Load(metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
@@ -505,7 +505,7 @@ bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
 		return ret;
 
 	char* buffer;
-	uint size = App->filesystem->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
+	uint size = App->fs->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFileName);

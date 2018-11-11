@@ -1,5 +1,5 @@
-#ifndef __SYSTEM_EVENT_H__
-#define __SYSTEM_EVENT_H__
+#ifndef __EVENT_SYSTEM_H__
+#define __EVENT_SYSTEM_H__
 
 enum System_Event_Type { InvalidEvent, DropEvent };
 

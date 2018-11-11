@@ -43,45 +43,32 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const
+bool SceneImporter::Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
-	if (importPath == nullptr || importSettings == nullptr)
+	if (importFile == nullptr || importSettings == nullptr)
 		return ret;
 
-	std::string name;
-
-	char fullImportPath[DEFAULT_BUF_SIZE];
-	strcpy_s(fullImportPath, strlen(importPath) + 1, importPath);
-
-	if (importFileName != nullptr)
-	{
-		name = importFileName;
-
-		// Build the import path
-		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
-	}
-	else
-		App->fs->GetFileName(importPath, name);
-
-	outputFileName = name.data();
+	std::string importFileName;
+	App->fs->GetFileName(importFile, importFileName);
+	outputFile = importFileName.data();
 
 	char* buffer;
-	uint size = App->fs->Load(fullImportPath, &buffer);
+	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", name.data());
-		ret = Import(buffer, size, outputFileName, importSettings);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
+		ret = Import(buffer, size, outputFile, importSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Model '%s'", name.data());
+		CONSOLE_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
 
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const
+bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -155,7 +142,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
-		App->GOs->SerializeFromNode(dummy, outputFileName);
+		App->GOs->SerializeFromNode(dummy, outputFile);
 
 		dummy->DestroyChildren();
 		RELEASE(dummy);
@@ -578,23 +565,23 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	return true;
 }
 
-bool SceneImporter::Load(const char* exportedFileName, ResourceMesh* outputMesh)
+bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 {
 	bool ret = false;
 
-	if (exportedFileName == nullptr || outputMesh == nullptr)
+	if (exportedFile == nullptr || outputMesh == nullptr)
 		return ret;
 
 	char* buffer;
-	uint size = App->fs->LoadFromLibrary(exportedFileName, &buffer, FileType::MeshFile);
+	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFileName);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
 
 	return ret;
 }
@@ -642,7 +629,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	// TODO: find the texture associated with the material 0 of the mesh
 
-	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %i vertices, %i indices, %i texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
+	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices, %u indices, %u texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
 	ret = true;
 }
 

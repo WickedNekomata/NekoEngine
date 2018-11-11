@@ -107,6 +107,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 			else
 			{
 				bool exists = true;
+				char exportedFile[DEFAULT_BUF_SIZE];
 
 				if (IS_MESH_RESOURCE(extension.data()))
 				{
@@ -116,14 +117,17 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 						uint meshes = 0;
 						for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
 						{
-							char path[DEFAULT_BUF_SIZE];
-							sprintf_s(path, "%s/%u%s", DIR_LIBRARY_MESHES, *it, EXTENSION_MESH);
+							sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MESHES, *it, EXTENSION_MESH);
 
-							if (App->fs->Exists(path))
+							if (App->fs->Exists(exportedFile))
 								meshes++;
 						}
 						if (meshes == UUIDs.size())
+						{
+							sprintf_s(exportedFile, "%s/%u%s", DIR_ASSETS_SCENES, *it, EXTENSION_SCENE);
+
 							exists = true;
+						}
 					}
 				}
 				else if (IS_TEXTURE_RESOURCE(extension.data()) == 0)
@@ -131,10 +135,9 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 					uint UUID = 0;
 					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
 					{
-						char path[DEFAULT_BUF_SIZE];
-						sprintf_s(path, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);
+						sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);
 
-						exists = App->fs->Exists(path);
+						exists = App->fs->Exists(exportedFile);
 					}
 				}
 
@@ -152,7 +155,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 					// Create the resources
 					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be created", *it, path.data());
 					file.append(*it);
-					ImportFile(file.data(), metaFile, false);
+					ImportFile(file.data(), metaFile, exportedFile);
 				}
 			}
 		}
@@ -271,7 +274,7 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 }
 
 // Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
-uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, bool import)
+uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile)
 {
 	uint ret = 0;
 
@@ -280,13 +283,14 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 	bool imported = false;
 	ImportSettings* importSettings = nullptr;
-	std::string outputFileName;
+	std::string outputFile;
 
 	std::string extension;
 	App->fs->GetExtension(fileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
-	if (import)
+	// If the file has no file(s) in Libray or its import settings have changed, import or reimport the file
+	if (exportedFile == nullptr)
 	{
 		// Initialize the import settings to the default import settings
 		switch (type)
@@ -317,26 +321,17 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		switch (type)
 		{
 		case ResourceType::Mesh_Resource:
-			imported = App->sceneImporter->Import(nullptr, fileInAssets, outputFileName, importSettings);
+			imported = App->sceneImporter->Import(fileInAssets, outputFile, importSettings); // Models' outputFileName is the name of the Scene
 			break;
 		case ResourceType::Texture_Resource:
-			imported = App->materialImporter->Import(nullptr, fileInAssets, outputFileName, importSettings);
+			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
 			break;
 		}
 	}
 	else
 	{
 		imported = true;
-
-		switch (type)
-		{
-		case ResourceType::Mesh_Resource:
-			App->fs->GetFileName(fileInAssets, outputFileName);
-			break;
-		case ResourceType::Texture_Resource:
-			//imported = App->materialImporter->Import(nullptr, fileInAssets, outputFileName, importSettings);
-			break;
-		}
+		outputFile = exportedFile;
 	}
 
 	if (imported)
@@ -349,13 +344,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		{
 			// Create a new resource for each mesh
 			std::list<uint> meshesUUIDs;
-			App->GOs->GetMeshResourcesFromScene(outputFileName.data(), meshesUUIDs);
+			App->GOs->GetMeshResourcesFromScene(outputFile.data(), meshesUUIDs);
 
 			for (auto it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
 			{
 				Resource* resource = CreateNewResource(type, *it);
 				resource->file = fileInAssets;
-				resource->exportedFileName = outputFileName;
+				resource->exportedFile = outputFile;
 				resources.push_back(resource);
 			}
 
@@ -366,12 +361,15 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		case ResourceType::Texture_Resource:
 		{
-			//uint UUID = std::stoul(outputFileName.data());
-
+			std::string outputFileName;
+			App->fs->GetFileName(outputFile.data(), outputFileName);
+			
+			uint UUID = strtoul(outputFileName.data(), NULL, 0);
+			
 			// Create a new resource for the texture
-			Resource* resource = CreateNewResource(type);
+			Resource* resource = CreateNewResource(type, UUID);
 			resource->file = fileInAssets;
-			resource->exportedFileName = outputFileName;
+			resource->exportedFile = outputFile;
 			resources.push_back(resource);
 
 			// If the file has no meta associated, generate a new meta

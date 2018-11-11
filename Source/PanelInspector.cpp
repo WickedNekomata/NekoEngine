@@ -149,8 +149,8 @@ void PanelInspector::ShowResourceInspector() const
 	ImGui::Separator();
 
 	const Resource* res = (const Resource*)App->scene->selectedObject.Get();
-	ImGui::Text("File name: %s", res->exportedFileName.data());
-	ImGui::Text("Path: %s", res->file.data());
+	ImGui::Text("File: %s", res->file.data());
+	ImGui::Text("Exported file: %s", res->exportedFile.data());
 	ImGui::Text("UUID: %u", res->GetUUID());
 	ImGui::Text("References: %u", res->CountReferences());
 }

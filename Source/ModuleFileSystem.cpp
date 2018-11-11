@@ -111,44 +111,48 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName) const
+uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFile) const
 {
 	uint ret = 0;
-
-	char path[DEFAULT_BUF_SIZE];
 
 	switch (fileType)
 	{
 	case FileType::MeshFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MESHES, outputFileName.data(), EXTENSION_MESH);
+		outputFile.insert(0, DIR_LIBRARY_MESHES);
+		outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
+		outputFile.append(EXTENSION_MESH);
 		break;
 	case FileType::TextureFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MATERIALS, outputFileName.data(), EXTENSION_TEXTURE);
+		outputFile.insert(0, DIR_LIBRARY_MATERIALS);
+		outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
+		outputFile.append(EXTENSION_TEXTURE);
 		break;
 	case FileType::SceneFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_ASSETS_SCENES, outputFileName.data(), EXTENSION_SCENE);
+		outputFile.insert(0, DIR_ASSETS_SCENES);
+		outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
+		outputFile.append(EXTENSION_SCENE);
 		break;
 	}
 
-	ret = Save(path, buffer, size);
+	ret = Save(outputFile.data(), buffer, size);
 
 	return ret;
 }
 
-uint ModuleFileSystem::Save(const char* filePath, char* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(filePath, fileName);
+	GetFileName(file, fileName);
 
-	bool exists = Exists(filePath);
+	bool exists = Exists(file);
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
-		filehandle = PHYSFS_openAppend(filePath);
+		filehandle = PHYSFS_openAppend(file);
 	else
-		filehandle = PHYSFS_openWrite(filePath);
+		filehandle = PHYSFS_openWrite(file);
 
 	if (filehandle != nullptr)
 	{
@@ -180,42 +184,18 @@ uint ModuleFileSystem::Save(const char* filePath, char* buffer, uint size, bool 
 	return objCount;
 }
 
-uint ModuleFileSystem::LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const
-{
-	uint ret = 0;
-
-	char path[DEFAULT_BUF_SIZE];
-
-	switch (fileType)
-	{
-	case FileType::MeshFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MESHES, fileName, EXTENSION_MESH);
-		break;
-	case FileType::TextureFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_LIBRARY_MATERIALS, fileName, EXTENSION_TEXTURE);
-		break;
-	case FileType::SceneFile:
-		sprintf_s(path, DEFAULT_BUF_SIZE, "%s/%s%s", DIR_ASSETS_SCENES, fileName, EXTENSION_SCENE);
-		break;
-	}
-
-	ret = Load(path, buffer);
-	
-	return ret;
-}
-
-uint ModuleFileSystem::Load(const char* filePath, char** buffer) const
+uint ModuleFileSystem::Load(const char* file, char** buffer) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(filePath, fileName);
+	GetFileName(file, fileName);
 
-	bool exists = Exists(filePath);
+	bool exists = Exists(file);
 
 	if (exists)
 	{
-		PHYSFS_file* filehandle = PHYSFS_openRead(filePath);
+		PHYSFS_file* filehandle = PHYSFS_openRead(file);
 
 		if (filehandle != nullptr)
 		{

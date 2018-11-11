@@ -33,11 +33,10 @@ public:
 
 	const char** GetFilesFromDir(const char* dir) const;
 
-	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFileName) const;
-	uint Save(const char* filePath, char* buffer, uint size, bool append = false) const;
+	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFile) const;
+	uint Save(const char* file, char* buffer, uint size, bool append = false) const;
 
-	uint LoadFromLibrary(const char* fileName, char** buffer, FileType fileType) const;
-	uint Load(const char* filePath, char** buffer) const;
+	uint Load(const char* file, char** buffer) const;
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;

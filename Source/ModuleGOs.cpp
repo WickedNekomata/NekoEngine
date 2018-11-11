@@ -257,7 +257,7 @@ void ModuleGOs::SerializeScene()
 }
 */
 
-bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFileName)
+bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFile)
 {
 	JSON_Value* rootValue = json_value_init_array();
 	JSON_Array* goArray = json_value_get_array(rootValue);
@@ -269,14 +269,14 @@ bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	uint size = App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFileName);
+	uint size = App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFileName.data());
+		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s'", outputFileName.data());
+		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s'", outputFile.data());
 		return false;
 	}
 
@@ -286,17 +286,17 @@ bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 	return true;
 }
 
-bool ModuleGOs::LoadScene(const char* fileName)
+bool ModuleGOs::LoadScene(const char* file)
 {
 	char* buffer;
-	uint size = App->fs->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", fileName);
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", file);
 		return false;
 	}
 
@@ -337,17 +337,17 @@ bool ModuleGOs::LoadScene(const char* fileName)
 	return true;
 }
 
-bool ModuleGOs::GetMeshResourcesFromScene(const char* fileName, std::list<uint>& UUIDs) const
+bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::list<uint>& UUIDs) const
 {
 	char* buffer;
-	uint size = App->fs->LoadFromLibrary(fileName, &buffer, FileType::SceneFile);
+	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", fileName);
+		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", fileName);
+		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", file);
 		return false;
 	}
 

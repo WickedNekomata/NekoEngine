@@ -52,8 +52,8 @@ public:
 	SceneImporter();
 	~SceneImporter();
 
-	bool Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const;
-	bool Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const;
+	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const;
+	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const;
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation) const;
 
 	bool GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const;
@@ -61,7 +61,7 @@ public:
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;
 
-	bool Load(const char* exportedFileName, ResourceMesh* outputMesh);
+	bool Load(const char* exportedFile, ResourceMesh* outputMesh);
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);
 
 	uint GetAssimpMajorVersion() const;

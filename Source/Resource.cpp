@@ -31,7 +31,7 @@ const char* Resource::GetFile() const
 // Get the exported file of the current resource.
 const char* Resource::GetExportedFile() const
 {
-	return exportedFileName.data();
+	return exportedFile.data();
 }
 
 // Returns true if the current resource is already loaded into vram.

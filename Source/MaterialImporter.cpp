@@ -47,45 +47,32 @@ MaterialImporter::MaterialImporter()
 
 MaterialImporter::~MaterialImporter() {}
 
-bool MaterialImporter::Import(const char* importFileName, const char* importPath, std::string& outputFileName, const ImportSettings* importSettings) const
+bool MaterialImporter::Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
-	if (importPath == nullptr || importSettings == nullptr)
+	if (importFile == nullptr || importSettings == nullptr)
 		return ret;
 
-	std::string name;
-
-	char fullImportPath[DEFAULT_BUF_SIZE];
-	strcpy_s(fullImportPath, strlen(importPath) + 1, importPath);
-
-	if (importFileName != nullptr)
-	{
-		name = importFileName;
-
-		// Build the import path
-		strcat_s(fullImportPath, strlen(fullImportPath) + strlen(importFileName) + 1, importFileName);
-	}
-	else
-		App->fs->GetFileName(importPath, name);
-
-	outputFileName = name.data();
+	std::string importFileName;
+	App->fs->GetFileName(importFile, importFileName);
+	outputFile = importFileName.data();
 
 	char* buffer;
-	uint size = App->fs->Load(fullImportPath, &buffer);
+	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", name.data());
-		ret = Import(buffer, size, outputFileName, importSettings);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
+		ret = Import(buffer, size, outputFile, importSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", name.data());
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", outputFile.data());
 
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFileName, const ImportSettings* importSettings) const
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const
 {
 	bool ret = false;
 
@@ -147,17 +134,15 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
 				uint UUID = App->GenerateRandomNumber();
-				outputFileName = std::to_string(UUID);
+				outputFile = std::to_string(UUID);
 
-				if (App->fs->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFileName) > 0)
+				if (App->fs->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFile) > 0)
 				{
-					// TODO CHECK CRASH
-					//CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFileName);
-
+					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
 					ret = true;
 				}
 				else
-					CONSOLE_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFileName);
+					CONSOLE_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFile.data());
 			}
 
 			RELEASE_ARRAY(data);
@@ -337,23 +322,23 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	return true;
 }
 
-bool MaterialImporter::Load(const char* exportedFileName, Texture* outputTexture, const TextureImportSettings* textureImportSettings)
+bool MaterialImporter::Load(const char* exportedFile, Texture* outputTexture, const TextureImportSettings* textureImportSettings)
 {
 	bool ret = false;
 
-	if (exportedFileName == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
+	if (exportedFile == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
 		return ret;
 
 	char* buffer;
-	uint size = App->fs->LoadFromLibrary(exportedFileName, &buffer, FileType::TextureFile);
+	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
 		ret = Load(buffer, size, outputTexture, textureImportSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFileName);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFile);
 
 	return ret;
 }

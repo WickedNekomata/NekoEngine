@@ -35,7 +35,7 @@ const char* Resource::GetExportedFile() const
 }
 
 // Returns true if the current resource is already loaded into vram.
-bool Resource::IsLoadedToMemory() const
+bool Resource::IsInMemory() const
 {
 	return count > 0;
 }
@@ -43,7 +43,7 @@ bool Resource::IsLoadedToMemory() const
 // Increase number of references and returns it. In case of 0 references also load into memory.
 uint Resource::LoadToMemory()
 {
-	if (!IsLoadedToMemory())
+	if (!IsInMemory())
 		LoadInMemory();
 
 	return count++;

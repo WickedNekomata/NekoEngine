@@ -21,7 +21,7 @@ public:
 	uint GetUUID() const;
 	const char* GetFile() const;
 	const char* GetExportedFile() const;
-	bool IsLoadedToMemory() const;
+	bool IsInMemory() const;
 	uint LoadToMemory();
 	uint UnloadMemory();
 	uint CountReferences() const;

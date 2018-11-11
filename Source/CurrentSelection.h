@@ -52,6 +52,23 @@ public:
 		return type == rhs;
 	}
 
+	bool operator==(int null)
+	{
+		assert(null == NULL && "Invalid comparasion");
+		return cur == nullptr;
+	}
+
+	bool operator!=(const SelectedType rhs)
+	{
+		return type != rhs;
+	}
+
+	bool operator!=(int null)
+	{
+		assert(null == NULL && "Invalid comparasion");
+		return cur != nullptr;
+	}
+
 	//-----------// GAMEOBJECTS //----------//
 
 	CurrentSelection& operator=(GameObject* newSelection)

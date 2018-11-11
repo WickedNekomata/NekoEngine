@@ -78,16 +78,24 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-			const Resource* res = App->res->GetResource(strtoul(*it, NULL, 0));
-			if (App->scene->selectedObject == res)
+			uint res_id = strtoul(*it, NULL, 0);
+			const Resource* res = App->res->GetResource(res_id);
+			if (App->scene->selectedObject != NULL && App->scene->selectedObject == res)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 			ImGui::TreeNodeEx(*it, treeNodeFlags);			
-
-			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+			
+			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				DESTROYANDSET(res);
 
 			ImGui::TreePop();
+
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+			{
+				ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+				ImGui::EndDragDropSource();
+			}
 		}
 	}
 }

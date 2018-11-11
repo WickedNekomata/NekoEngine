@@ -92,6 +92,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			*/
 			ImGui::TreeNodeEx(*it, treeNodeFlags);
 
+			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
+
 			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 			{
 				// Search for the meta associated to the file
@@ -100,8 +102,6 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
 				const char metaExtension[] = ".meta";
 				strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
-
-				ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
 
 				switch (type)
 				{
@@ -129,14 +129,35 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				}
 				case ResourceType::No_Type_Resource:
 
-					if (strcmp(extension.data(), EXTENSION_SCENE) == 0)
+					if (strcmp(extension.data(), EXTENSION_SCENE) == 0) 
 						DESTROYANDSET(CurrentSelection::SelectedType::scene);
 
 					break;
 				}		
 			}
 			ImGui::TreePop();
+			SetDragAndDropSource(type, *it, extension.data());
 		}
+	}
+}
+
+void PanelAssets::SetDragAndDropSource(ResourceType type, const char* file, const char* extension) const
+{
+	switch (type)
+	{
+	case ResourceType::No_Type_Resource:
+
+		if (strcmp(extension, EXTENSION_SCENE) == 0) {
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+			{
+				std::string fileName;
+				App->fs->GetFileName(file, fileName);
+				const char* payload = fileName.c_str();
+				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", payload, sizeof(char) * (strlen(payload) + 1));
+				ImGui::EndDragDropSource();
+			}
+		}
+		break;
 	}
 }
 

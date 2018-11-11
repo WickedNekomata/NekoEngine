@@ -7,6 +7,8 @@
 
 #include "Panel.h"
 
+#include "ResourceTypes.h"
+
 #include <string>
 
 class PanelAssets : public Panel
@@ -19,7 +21,7 @@ public:
 	bool Draw();
 
 	void RecursiveDrawDir(const char* dir, std::string& currentFile) const;
-	void OpenSettingsAtClick(const char** iterator, std::string currentFile) const;
+	void SetDragAndDropSource(ResourceType type, const char* file, const char* extension) const;
 };
 
 #endif

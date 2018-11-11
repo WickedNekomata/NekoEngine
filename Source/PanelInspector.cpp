@@ -12,6 +12,8 @@
 #include "ComponentTransform.h"
 
 #include "Resource.h"
+#include "ResourceMesh.h"
+#include "ResourceTexture.h"
 
 #include "ImGui/imgui.h"
 #include "imgui/imgui_internal.h"
@@ -35,8 +37,11 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::scene:
 			ShowSceneInspector();
 			break;
-		case CurrentSelection::SelectedType::resource:
-			ShowResourceInspector();
+		case CurrentSelection::SelectedType::resourceMesh:
+			ShowMeshResourceInspector();
+			break;
+		case CurrentSelection::SelectedType::resourceTexture:
+			ShowTextureResourceInspector();
 			break;
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
@@ -143,16 +148,40 @@ void PanelInspector::ShowSceneInspector() const
 	ImGui::Text("Scene");
 }
 
-void PanelInspector::ShowResourceInspector() const
+void PanelInspector::ShowMeshResourceInspector() const
 {
-	ImGui::Text("Resource");
+	ImGui::Text("Mesh Resource");
 	ImGui::Separator();
 
-	const Resource* res = (const Resource*)App->scene->selectedObject.Get();
-	ImGui::Text("File: %s", res->file.data());
-	ImGui::Text("Exported file: %s", res->exportedFile.data());
-	ImGui::Text("UUID: %u", res->GetUUID());
-	ImGui::Text("References: %u", res->CountReferences());
+	const ResourceMesh* resourceMesh = (const ResourceMesh*)App->scene->selectedObject.Get();
+	ImGui::Text("File: %s", resourceMesh->file.data());
+	ImGui::Text("Exported file: %s", resourceMesh->exportedFile.data());
+	ImGui::Text("UUID: %u", resourceMesh->GetUUID());
+	ImGui::Text("References: %u", resourceMesh->CountReferences());
+}
+
+void PanelInspector::ShowTextureResourceInspector() const
+{
+	ImGui::Text("Texture Resource");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	const ResourceTexture* resourceTexture = (const ResourceTexture*)App->scene->selectedObject.Get();
+	ImGui::Text("File: %s", resourceTexture->file.data());
+	ImGui::Text("Exported file: %s", resourceTexture->exportedFile.data());
+	ImGui::Text("UUID: %u", resourceTexture->GetUUID());
+
+	//if (ImGui::Checkbox())
+	ImGui::Text("References: %u", resourceTexture->CountReferences());
+	ImGui::Spacing();
+
+	ImGui::Image((void*)(intptr_t)resourceTexture->GetUUID(), ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Text("%u x %u", resourceTexture->width, resourceTexture->height);
+}
+
+void PanelInspector::ShowTextureResourceInspector() const
+{
+
 }
 
 void PanelInspector::ShowMeshImportSettingsInspector()

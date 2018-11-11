@@ -137,9 +137,9 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 		return;
 	}
 
-	math::float4x4 invertedMatrix = parent->GetParent()->transform->GetGlobalMatrix();
-	math::float4x4 inverMatrix = invertedMatrix.Inverted();
-	math::float4x4 newMatrix = inverMatrix * globalMatrix;
+	math::float4x4 newMatrix = parent->GetParent()->transform->GetGlobalMatrix();
+	newMatrix = newMatrix.Inverted();
+	newMatrix = newMatrix * globalMatrix;
 
 	newMatrix.Decompose(position, rotation, scale);
 }

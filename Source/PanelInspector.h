@@ -21,8 +21,8 @@ public:
 	void ShowGameObjectInspector();
 	void DragnDropSeparatorTarget(Component* target);
 
-	void ShowSceneInspector();
-	void ShowResourceInspector();
+	void ShowSceneInspector() const;
+	void ShowResourceInspector() const;
 	void ShowMeshImportSettingsInspector();
 	void ShowTextureImportSettingsInspector();
 };

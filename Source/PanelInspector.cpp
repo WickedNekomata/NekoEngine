@@ -32,6 +32,9 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::gameObject:
 			ShowGameObjectInspector();
 			break;
+		case CurrentSelection::SelectedType::scene:
+			ShowSceneInspector();
+			break;
 		case CurrentSelection::SelectedType::resource:
 			ShowResourceInspector();
 			break;
@@ -118,8 +121,7 @@ void PanelInspector::ShowGameObjectInspector()
 				gameObject->AddComponent(ComponentType::Camera_Component);
 				ImGui::CloseCurrentPopup();
 			}
-		ImGui::EndPopup();
-		
+		ImGui::EndPopup();		
 	}
 }
 
@@ -136,17 +138,16 @@ void PanelInspector::DragnDropSeparatorTarget(Component* target)
 	}
 }
 
-
-void PanelInspector::ShowSceneInspector()
+void PanelInspector::ShowSceneInspector() const
 {
 	ImGui::Text("Scene");
-
 }
 
-void PanelInspector::ShowResourceInspector()
+void PanelInspector::ShowResourceInspector() const
 {
 	ImGui::Text("Resource");
 	ImGui::Separator();
+
 	const Resource* res = (const Resource*)App->scene->selectedObject.Get();
 	ImGui::Text("File name: %s", res->exportedFileName.data());
 	ImGui::Text("Path: %s", res->file.data());

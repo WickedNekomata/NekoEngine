@@ -561,6 +561,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		{
 			const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i]);
 
+			if (texRes == nullptr)
+				continue;
+
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glActiveTexture(GL_TEXTURE0 + i);

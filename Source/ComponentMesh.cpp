@@ -58,7 +58,8 @@ void ComponentMesh::OnUniqueEditor()
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
 		{
-			
+			uint payload_n = *(uint*)payload->Data;
+			SetResource(payload_n);
 		}
 		ImGui::EndDragDropTarget();
 	}

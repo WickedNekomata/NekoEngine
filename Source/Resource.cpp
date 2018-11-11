@@ -52,7 +52,7 @@ uint Resource::LoadToMemory()
 // Decrease number of references and returns it. In case of 0 references also unload from memory.
 uint Resource::UnloadMemory()
 {
-	assert(count <= 0 && "Calls to load and unload of resource not equivalent");
+	assert(count > 0 && "Calls to load and unload of resource not equivalent");
 
 	if (count <= 1)
 		UnloadFromMemory();

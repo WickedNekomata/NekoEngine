@@ -42,6 +42,8 @@ public:
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
 
+	uint GetMaxTextureUnits() const;
+
 	bool SetVSync(bool vsync);
 	bool GetVSync() const;
 
@@ -88,6 +90,8 @@ private:
 	std::vector<ComponentCamera*> cameraComponents;
 	ComponentCamera* mainCamera = nullptr;
 	ComponentCamera* currentCamera = nullptr;
+
+	uint maxTextureUnits = 0;
 
 public:
 

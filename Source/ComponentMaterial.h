@@ -17,7 +17,7 @@ public:
 
 	void Update();
 
-	void SetResource(uint res_uuid);
+	void SetResource(uint res_uuid, uint position);
 
 	void OnUniqueEditor();
 

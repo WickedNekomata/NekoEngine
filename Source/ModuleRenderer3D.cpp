@@ -86,7 +86,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 		// Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.0f);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Check for error
 		error = glGetError();
@@ -118,13 +118,23 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_COLOR_MATERIAL);
-	}
 
-	// Projection Matrix	
+		// Multitexturing
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&maxTextureUnits);
+
+		for (uint i = 0; i < maxTextureUnits; ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glEnable(GL_TEXTURE_2D);
+		}
+
+		glActiveTexture(GL_TEXTURE0);
+	}
 
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
+	// Projection Matrix
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 #endif // GAME
 
@@ -260,6 +270,11 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+uint ModuleRenderer3D::GetMaxTextureUnits() const
+{
+	return maxTextureUnits;
 }
 
 bool ModuleRenderer3D::SetVSync(bool vsync) 

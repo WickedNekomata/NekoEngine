@@ -9,7 +9,10 @@
 
 #include "imgui/imgui.h"
 
-ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) {}
+ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
+{
+	res.reserve(App->renderer3D->GetMaxTextureUnits());
+}
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
 {
@@ -23,9 +26,15 @@ ComponentMaterial::~ComponentMaterial()
 
 void ComponentMaterial::Update() {}
 
-void ComponentMaterial::SetResource(uint res_uuid)
+void ComponentMaterial::SetResource(uint res_uuid, uint position)
 {
-	
+	if (res[position] != 0)
+		App->res->SetAsUnused(res[position]);
+
+	if (res_uuid != 0)
+		App->res->SetAsUsed(res_uuid);
+
+	res[position] = res_uuid;
 }
 
 void ComponentMaterial::OnUniqueEditor()
@@ -38,26 +47,41 @@ void ComponentMaterial::OnUniqueEditor()
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	//if (res.size() < App->renderer3D->get)
-	ImGui::Text("Texture");
-	ImGui::SameLine();
-	const char* name = nullptr;
-	ImGui::Button("##name", ImVec2(150.0f, 0.0f));
-
-	if (ImGui::IsItemHovered())
+	for (uint i = 0; i < res.size(); ++i)
 	{
-		ImGui::BeginTooltip();	
-		ImGui::Text("%u", (res.size() > 0) ? res.front() : 0);
-		ImGui::EndTooltip();
+		ImGui::Text("Texture %i", i);
+		ImGui::SameLine();
+
+		std::string fileName;
+		const Resource* resource = App->res->GetResource(res[i]);
+		if (resource != nullptr)
+			App->fs->GetFileName(resource->GetFile(), fileName);
+
+		ImGui::PushID(i);
+		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", (res.size() > 0) ? res.front() : 0);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			{
+
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 
-	if (ImGui::BeginDragDropTarget())
+	if (res.size() < App->renderer3D->GetMaxTextureUnits())
 	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
-		{
-			
-		}
-		ImGui::EndDragDropTarget();
+		if (ImGui::Button("+"))
+			res.push_back(0);
 	}
 }
 

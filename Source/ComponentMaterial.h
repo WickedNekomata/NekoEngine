@@ -7,8 +7,6 @@
 
 #include <vector>
 
-struct Texture;
-
 class ComponentMaterial : public Component
 {
 public:
@@ -26,7 +24,7 @@ public:
 
 public:
 
-	std::vector<Texture*> textures;
+	std::vector<uint> res;
 };
 
 #endif

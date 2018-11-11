@@ -50,7 +50,7 @@ void ComponentMesh::OnUniqueEditor()
 	if (ImGui::IsItemHovered())
 	{ 
 		ImGui::BeginTooltip();
-		ImGui::Text("ID: 1231");
+		ImGui::Text("%u", res);
 		ImGui::EndTooltip();
 	}
 

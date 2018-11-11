@@ -41,10 +41,6 @@ void ComponentMesh::SetResource(uint res_uuid)
 
 void ComponentMesh::OnUniqueEditor()
 {
-	bool isActive = IsActive();
-	if (ImGui::Checkbox("##isActive", &isActive)) { ToggleIsActive(); }
-	ImGui::SameLine();
-
 	ImGui::Text("Mesh Renderer");
 	ImGui::Separator();
 	ImGui::Spacing();

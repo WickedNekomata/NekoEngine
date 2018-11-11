@@ -177,7 +177,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			//if (meshComponents[i]->GetParent()->GetSeenLastFrame())
+			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);
 		}
 	}
@@ -555,7 +555,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	if (materialRenderer != nullptr)
+	if (materialRenderer != nullptr && materialRenderer->IsActive())
 	{
 		for (int i = 0; i < materialRenderer->res.size(); ++i)
 		{

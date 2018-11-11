@@ -39,10 +39,6 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 
 void ComponentMaterial::OnUniqueEditor()
 {
-	bool isActive = IsActive();
-	if (ImGui::Checkbox("##isActive", &isActive)) { ToggleIsActive(); }
-	ImGui::SameLine();
-
 	ImGui::Text("Material");
 	ImGui::Separator();
 	ImGui::Spacing();

@@ -43,6 +43,10 @@ void Component::OnEditor()
 	if (ImGui::Button(itemName))
 		GetParent()->MarkToDeleteComponentByValue(this);
 
+	bool isActive = IsActive();
+	if (ImGui::Checkbox("##isActive", &isActive)) { ToggleIsActive(); }
+	ImGui::SameLine();
+
 	OnUniqueEditor();
 }
 

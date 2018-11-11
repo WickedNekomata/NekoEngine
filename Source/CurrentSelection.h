@@ -3,6 +3,7 @@
 class GameObject;
 class MeshImportSettings;
 class TextureImportSettings;
+class Resource;
 
 // Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
 #define DESTROYANDSET(x) \
@@ -13,7 +14,7 @@ App->scene->selectedObject = x; \
 
 struct CurrentSelection
 {
-	enum class SelectedType { null, gameObject, scene, meshImportSettings, textureImportSettings };
+	enum class SelectedType { null, gameObject, scene, resource, meshImportSettings, textureImportSettings };
 
 private:
 	void* cur = nullptr;
@@ -62,6 +63,21 @@ public:
 	}
 
 	bool operator==(const GameObject* rhs)
+	{
+		return cur == rhs;
+	}
+
+	//-----------// RESOURCES //----------//
+
+	CurrentSelection& operator=(const Resource* newSelection)
+	{
+		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
+		cur = (void*)newSelection;
+		type = SelectedType::resource;
+		return *this;
+	}
+
+	bool operator==(const Resource* rhs)
 	{
 		return cur == rhs;
 	}

@@ -92,10 +92,6 @@ void ComponentTransform::OnUniqueEditor()
 		*/
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();
-
-	std::string string;
-	string += std::to_string(GetParent()->GetChildrenLength());
-	ImGui::Text(string.data());
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const
@@ -132,29 +128,16 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 {
-	std::list<GameObject*> aux_list;
-
-	GameObject* globalParent = this->GetParent()->GetParent();
-
-	while (globalParent->GetParent() != nullptr)
-	{
-		//if (globalParent->GetParent()->GetParent() != nullptr)
-			aux_list.push_back(globalParent);
-		globalParent = globalParent->GetParent();
+	if (parent->GetParent() == App->scene->root) {
+		globalMatrix.Decompose(position, rotation, scale);
+		return;
 	}
 
-	for (std::list<GameObject*>::const_reverse_iterator it = aux_list.rbegin(); it != aux_list.rend(); it++)
-	{
-		math::float4x4 parentMatrix = (*it)->transform->GetGlobalMatrix();
-		parentMatrix = parentMatrix.Inverted();
-		globalMatrix = parentMatrix * globalMatrix;
-	}
+	math::float4x4 newMatrix = parent->GetParent()->transform->GetGlobalMatrix();
+	newMatrix = newMatrix.Inverted();
+	newMatrix = newMatrix * globalMatrix;
 
-	math::float4x4 myMatrix = GetGlobalMatrix();
-	myMatrix = myMatrix.Inverted();
-	globalMatrix = myMatrix * globalMatrix;
-
-	globalMatrix.Decompose(position, rotation, scale);
+	newMatrix.Decompose(position, rotation, scale);
 }
 
 void ComponentTransform::SetMatrixFromLocal(math::float4x4& localMatrix)

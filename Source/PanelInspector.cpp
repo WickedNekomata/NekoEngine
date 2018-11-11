@@ -11,6 +11,8 @@
 #include "Component.h"
 #include "ComponentTransform.h"
 
+#include "Resource.h"
+
 #include "ImGui/imgui.h"
 #include "imgui/imgui_internal.h"
 
@@ -29,6 +31,9 @@ bool PanelInspector::Draw()
 		{
 		case CurrentSelection::SelectedType::gameObject:
 			ShowGameObjectInspector();
+			break;
+		case CurrentSelection::SelectedType::resource:
+			ShowResourceInspector();
 			break;
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
@@ -131,10 +136,22 @@ void PanelInspector::DragnDropSeparatorTarget(Component* target)
 	}
 }
 
+
 void PanelInspector::ShowSceneInspector()
 {
 	ImGui::Text("Scene");
 
+}
+
+void PanelInspector::ShowResourceInspector()
+{
+	ImGui::Text("Resource");
+	ImGui::Separator();
+	const Resource* res = (const Resource*)App->scene->selectedObject.Get();
+	ImGui::Text("File name: %s", res->exportedFileName.data());
+	ImGui::Text("Path: %s", res->file.data());
+	ImGui::Text("UUID: %u", res->GetUUID());
+	ImGui::Text("References: %u", res->CountReferences());
 }
 
 void PanelInspector::ShowMeshImportSettingsInspector()

@@ -43,22 +43,26 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 
 	const char** files = App->fs->GetFilesFromDir(dir);
 	const char** it;
-
+	
 	for (it = files; *it != nullptr; ++it)
 	{
+		std::string lib("Lib");
+		lib += *it;
+
 		bool treeNodeOpened = false;
 
 		treeNodeFlags = 0;
 		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-		if (App->fs->IsDirectory(*it))
+		
+		if (App->fs->IsDirectory(lib.data()))
 		{
 			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (treeNodeOpened)
 			{
-				RecursiveDrawDir(*it, currentFile);
+				
+				RecursiveDrawDir(lib.data(), currentFile);
 				uint found = currentFile.rfind(*it);
 				if (found != std::string::npos)
 					currentFile = currentFile.substr(0, found);
@@ -71,57 +75,18 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
 
-			// Ignore assets that generate scenes and metas
-			if (IS_MESH_RESOURCE(extension.data()) || IS_META(extension.data()))
-				continue;
-
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-			/*
-			if (App->scene->selectedObject == CurrentSelection::SelectedType::meshImportSettings
-				|| App->scene->selectedObject == CurrentSelection::SelectedType::textureImportSettings)
-			{
-				MeshImportSettings* currentSettings = (MeshImportSettings*)(App->scene->selectedObject.Get());
-				// TODO: get file name and compare. if equals set next treenode as selected :)
-			}
-			*/
-			ImGui::TreeNodeEx(*it, treeNodeFlags);
+
+			const Resource* res = App->res->GetResource(strtoul(*it, NULL, 0));
+			if (App->scene->selectedObject == res)
+				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+
+			ImGui::TreeNodeEx(*it, treeNodeFlags);			
 
 			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-			{
-				// Search for the meta associated to the file
-				char metaFile[DEFAULT_BUF_SIZE];
-				strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
-				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-				const char metaExtension[] = ".meta";
-				strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+				DESTROYANDSET(res);
 
-				ResourceType type;
-				if (strcmp(extension.data(), ".nekoScene") == 0)
-					type = ResourceType::Mesh_Resource;
-				else if (strcmp(extension.data(), ".dds") == 0 || strcmp(extension.data(), ".DDS") == 0
-					|| strcmp(extension.data(), ".png") == 0 || strcmp(extension.data(), ".PNG") == 0
-					|| strcmp(extension.data(), ".jpg") == 0 || strcmp(extension.data(), ".JPG") == 0)
-					type = ResourceType::Texture_Resource;
-
-				switch (type)
-				{
-				case ResourceType::Mesh_Resource:
-				{
-					MeshImportSettings* currentSettings = new MeshImportSettings();
-					App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
-					DESTROYANDSET(currentSettings);
-					break;
-				}
-				case ResourceType::Texture_Resource:
-				{
-					TextureImportSettings* currentSettings = new TextureImportSettings();
-					App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, currentSettings);
-					DESTROYANDSET(currentSettings);
-					break;
-				}
-				}
-			}
 			ImGui::TreePop();
 		}
 	}

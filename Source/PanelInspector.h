@@ -22,7 +22,7 @@ public:
 	void DragnDropSeparatorTarget(Component* target);
 
 	void ShowSceneInspector();
-
+	void ShowResourceInspector();
 	void ShowMeshImportSettingsInspector();
 	void ShowTextureImportSettingsInspector();
 };

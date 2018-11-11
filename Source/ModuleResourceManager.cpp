@@ -15,7 +15,6 @@ ModuleResourceManager::~ModuleResourceManager() {}
 
 bool ModuleResourceManager::Start()
 {
-	// Create the resources
 	std::string path;
 	RecursiveCreateResourcesFromFilesInAssets("Assets", path);
 
@@ -25,7 +24,7 @@ bool ModuleResourceManager::Start()
 update_status ModuleResourceManager::Update()
 {
 	timer += App->timeManager->GetRealDt();
-	resources;
+
 	if (timer >= assetsCheckTime)
 	{
 		std::string newFileInAssets;
@@ -273,7 +272,6 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 }
 
 // Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
-
 uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, bool import)
 {
 	uint ret = 0;

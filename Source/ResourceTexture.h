@@ -17,7 +17,7 @@ private:
 	virtual bool LoadInMemory();
 	virtual bool UnloadFromMemory();
 
-private:
+public:
 
 	uint id = 0;
 	uint width = 0;

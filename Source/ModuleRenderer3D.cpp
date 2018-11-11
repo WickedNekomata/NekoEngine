@@ -542,13 +542,15 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	if (materialRenderer != nullptr)
 	{
-		for (int i = 0; i < materialRenderer->textures.size(); ++i)
+		for (int i = 0; i < materialRenderer->res.size(); ++i)
 		{
+			const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i]);
+
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glActiveTexture(GL_TEXTURE0 + i);
 
-			glBindTexture(GL_TEXTURE_2D, materialRenderer->textures[i]->id);
+			glBindTexture(GL_TEXTURE_2D, texRes->id);
 
 			glBindBuffer(GL_ARRAY_BUFFER, res->textureCoordsID);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
@@ -575,7 +577,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// Disable Multitexturing
 	if (materialRenderer != nullptr)
 	{
-		for (int i = 0; i < materialRenderer->textures.size(); ++i)
+		for (int i = 0; i < materialRenderer->res.size(); ++i)
 		{
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);

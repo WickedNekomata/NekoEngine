@@ -44,6 +44,9 @@ void ComponentCamera::UpdateTransform()
 
 void ComponentCamera::OnUniqueEditor()
 {
+	ImGui::Text("Camera");
+	ImGui::Spacing(); // TODO: what happens if we disable the camera component?
+
 	ImGui::Checkbox("Main Camera", &mainCamera);
 
 	ImGui::Text("Field of View");

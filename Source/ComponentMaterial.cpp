@@ -55,9 +55,9 @@ void ComponentMaterial::OnUniqueEditor()
 		if (resource != nullptr)
 			App->fs->GetFileName(resource->GetFile(), fileName);
 
-		ImGui::PushID(i);
-		ImGui::Button(fileName.data(), ImVec2(100.0f, 0.0f));
-		ImGui::PopID();
+		char itemName[DEFAULT_BUF_SIZE];
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", fileName.data(), i);
+		ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
 
 		if (ImGui::IsItemHovered())
 		{
@@ -75,9 +75,14 @@ void ComponentMaterial::OnUniqueEditor()
 			}
 			ImGui::EndDragDropTarget();
 		}
-
 		ImGui::SameLine();
-		ImGui::Button("-"); // TODO erase res
+
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
+		if (ImGui::Button(itemName))
+		{
+			SetResource(0, i);
+			res.erase(std::remove(res.begin(), res.end(), res[i]));
+		}
 	}
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())

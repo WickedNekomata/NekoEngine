@@ -69,6 +69,7 @@ void ComponentMesh::OnUniqueEditor()
 		{
 			uint payload_n = *(uint*)payload->Data;
 			SetResource(payload_n);
+			parent->RecursiveRecalculateBoundingBoxes(); // TODO: what do we do with bounding boxes?
 		}
 		ImGui::EndDragDropTarget();
 	}

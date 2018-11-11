@@ -21,6 +21,8 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 
 ComponentMaterial::~ComponentMaterial()
 {
+	for (int i = 0; i < res.size(); ++i)
+		SetResource(0, i);
 	parent->materialRenderer = nullptr;
 }
 
@@ -72,7 +74,8 @@ void ComponentMaterial::OnUniqueEditor()
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
 			{
-
+				uint payload_n = *(uint*)payload->Data;
+				SetResource(payload_n, i);
 			}
 			ImGui::EndDragDropTarget();
 		}

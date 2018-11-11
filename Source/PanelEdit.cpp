@@ -3,6 +3,7 @@
 #ifndef GAMEMODE
 #include "Application.h"
 #include "ModuleGui.h"
+#include "ResourceTexture.h"
 
 #include "ImGui/imgui.h"
 
@@ -12,7 +13,7 @@ PanelEdit::~PanelEdit() {}
 
 bool PanelEdit::Draw()
 {
-	Texture* atlas = App->gui->atlas;
+	ResourceTexture* atlas = App->gui->atlas;
 
 	if (atlas == nullptr)
 		return false;

@@ -16,8 +16,6 @@ public:
 	Resource(ResourceType type, uint uuid);
 	virtual ~Resource();
 
-	virtual void OnEditor();
-
 	uint GetUUID() const;
 	const char* GetFile() const;
 	const char* GetExportedFile() const;
@@ -28,8 +26,6 @@ public:
 	ResourceType GetType() const;
 
 private:
-
-	virtual void OnUniqueEditor() = 0;
 
 	virtual bool LoadInMemory() = 0;
 	virtual bool UnloadFromMemory() = 0;

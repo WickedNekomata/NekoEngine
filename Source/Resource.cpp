@@ -2,19 +2,9 @@
 
 #include <assert.h> 
 
-Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid)
-{
-}
+Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) {}
 
-Resource::~Resource()
-{
-}
-
-// Show resource data on inspector.
-void Resource::OnEditor()
-{
-	OnUniqueEditor();
-}
+Resource::~Resource() {}
 
 // Get UUID of the current resource.
 uint Resource::GetUUID() const
@@ -68,5 +58,5 @@ uint Resource::CountReferences() const
 
 ResourceType Resource::GetType() const
 {
-	return  type;
+	return type;
 }

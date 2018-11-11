@@ -83,9 +83,9 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	// Load atlas texture
+	// Load atlas texture // TODO request atlas texture to the resource manager module
 	std::string outputFileName;
-	atlas = new Texture();
+	atlas = new ResourceTexture(ResourceType::Texture_Resource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
 	App->materialImporter->Import("UI/atlas.png", outputFileName, importSettings);
 	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);

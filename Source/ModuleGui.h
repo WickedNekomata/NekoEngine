@@ -7,6 +7,8 @@
 
 #include "Module.h"
 
+#include "ResourceTexture.h"
+
 #include <vector>
 
 class Panel;
@@ -19,8 +21,6 @@ class PanelAssets;
 class PanelResources;
 class PanelDebugDraw;
 class PanelEdit;
-
-struct Texture;
 
 class ModuleGui : public Module
 {
@@ -65,7 +65,7 @@ public:
 	PanelDebugDraw*		panelDebugDraw = nullptr;
 	PanelEdit*			panelEdit = nullptr;
 
-	Texture* atlas = nullptr;
+	ResourceTexture* atlas = nullptr;
 
 private:
 

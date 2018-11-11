@@ -35,13 +35,6 @@ struct TextureImportSettings : public ImportSettings
 	~TextureImportSettings() { RELEASE_ARRAY(metaFile); }
 };
 
-struct Texture
-{
-	uint id = 0;
-	uint width = 0;
-	uint height = 0;
-};
-
 class MaterialImporter : public Importer
 {
 public:
@@ -57,10 +50,10 @@ public:
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
-	bool Load(const char* exportedFile, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
-	bool Load(const void* buffer, uint size, Texture* outputTexture, const TextureImportSettings* textureImportSettings);
+	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings);
+	bool Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings);
 	
-	bool LoadCheckers(Texture* textureResource);
+	bool LoadCheckers(ResourceTexture* textureResource);
 
 	bool IsAnisotropySupported() const;
 	float GetLargestSupportedAnisotropy() const;

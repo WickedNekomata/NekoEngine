@@ -12,8 +12,6 @@ public:
 
 private:
 
-	virtual void OnUniqueEditor();
-
 	virtual bool LoadInMemory();
 	virtual bool UnloadFromMemory();
 

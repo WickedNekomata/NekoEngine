@@ -1,23 +1,19 @@
 #include "ResourceMesh.h"
+
 #include "Application.h"
 
 #include "glew/include/GL/glew.h"
 
-ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid)
-{
-}
+ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid) {}
 
-ResourceMesh::~ResourceMesh()
-{
-}
-
-void ResourceMesh::OnUniqueEditor()
-{
-}
+ResourceMesh::~ResourceMesh() {}
 
 bool ResourceMesh::LoadInMemory()
 {
-	App->sceneImporter->Load(exportedFile.data(), this);
+	bool ret = App->sceneImporter->Load(exportedFile.data(), this);
+
+	if (!ret)
+		return ret;
 
 	glGenBuffers(1, (GLuint*)&verticesID);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesID);
@@ -34,7 +30,7 @@ bool ResourceMesh::LoadInMemory()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize * 2, textureCoords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return true;
+	return ret;
 }
 
 bool ResourceMesh::UnloadFromMemory()

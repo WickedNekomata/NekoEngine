@@ -52,7 +52,10 @@ bool MaterialImporter::Import(const char* importFile, std::string& outputFile, c
 	bool ret = false;
 
 	if (importFile == nullptr || importSettings == nullptr)
+	{
+		assert(importFile != nullptr || importSettings != nullptr);
 		return ret;
+	}
 
 	std::string importFileName;
 	App->fs->GetFileName(importFile, importFileName);
@@ -77,7 +80,10 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	bool ret = false;
 
 	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
+	{
+		assert(buffer != nullptr || size > 0 || importSettings != nullptr);
 		return ret;
+	}
 
 	TextureImportSettings* textureImportSettings = (TextureImportSettings*)importSettings;
 
@@ -158,8 +164,11 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 
 bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const
 {
-	if (resource == nullptr)
+	if (resource == nullptr || textureImportSettings == nullptr)
+	{
+		assert(resource != nullptr || textureImportSettings != nullptr);
 		return false;
+	}
 
 	JSON_Value* rootValue = json_value_init_object();
 	JSON_Object* rootObject = json_value_get_object(rootValue);
@@ -179,26 +188,25 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
 	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
 
-	// Build the path
-	char path[DEFAULT_BUF_SIZE];
-	strcpy_s(path, strlen(resource->file.data()) + 1, resource->file.data());
-
+	// Build the path of the meta file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(resource->file.data()) + 1, resource->file.data());
 	const char extension[] = ".meta";
-	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
+	strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 	
-	uint size = App->fs->Save(path, buf, sizeBuf);
+	uint size = App->fs->Save(metaFile, buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", metaFile);
 		return false;
 	}
 
@@ -208,22 +216,23 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	return true;
 }
 
-bool MaterialImporter::SetTextureImportSettingsToMeta(const TextureImportSettings* textureImportSettings) const
+bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const
 {
-	if (textureImportSettings == nullptr)
+	if (metaFile == nullptr || textureImportSettings == nullptr)
+	{
+		assert(metaFile != nullptr || textureImportSettings != nullptr);
 		return false;
-	else if (textureImportSettings->metaFile == nullptr)
-		return false;
+	}
 
 	char* buffer;
-	uint size = App->fs->Load(textureImportSettings->metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -243,14 +252,14 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const TextureImportSetting
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
 
-	size = App->fs->Save(textureImportSettings->metaFile, buffer, sizeBuf);
+	size = App->fs->Save(metaFile, buffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", textureImportSettings->metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", metaFile);
 		return false;
 	}
 
@@ -263,7 +272,10 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const TextureImportSetting
 bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
 {
 	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
 		return false;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(metaFile, &buffer);
@@ -291,7 +303,10 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const
 {
 	if (metaFile == nullptr || textureImportSettings == nullptr)
+	{
+		assert(metaFile != nullptr || textureImportSettings != nullptr);
 		return false;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(metaFile, &buffer);
@@ -327,7 +342,10 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTex
 	bool ret = false;
 
 	if (exportedFile == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
+	{
+		assert(exportedFile != nullptr || outputTexture != nullptr || textureImportSettings != nullptr);
 		return ret;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(exportedFile, &buffer);
@@ -347,8 +365,11 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 {
 	bool ret = false;
 
-	if (buffer == nullptr ||size <= 0 || outputTexture == nullptr || textureImportSettings == nullptr)
+	if (buffer == nullptr || size <= 0 || outputTexture == nullptr || textureImportSettings == nullptr)
+	{
+		assert(buffer != nullptr || size > 0 || outputTexture != nullptr || textureImportSettings != nullptr);
 		return ret;
+	}
 
 	// Generate the image name
 	uint imageName = 0;
@@ -518,7 +539,10 @@ bool MaterialImporter::LoadCheckers(ResourceTexture* outputTexture)
 	bool ret = false;
 
 	if (outputTexture == nullptr)
+	{
+		assert(outputTexture != nullptr);
 		return ret;
+	}
 
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 

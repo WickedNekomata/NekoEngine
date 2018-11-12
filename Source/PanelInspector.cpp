@@ -398,7 +398,7 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) { App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings); }
+	if (ImGui::Button("REIMPORT")) { App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile, meshImportSettings); }
 }
 
 void PanelInspector::ShowTextureImportSettingsInspector()
@@ -450,7 +450,7 @@ void PanelInspector::ShowTextureImportSettingsInspector()
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) { App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings); }
+	if (ImGui::Button("REIMPORT")) { App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile, textureImportSettings); }
 }
 
 #endif // GAME

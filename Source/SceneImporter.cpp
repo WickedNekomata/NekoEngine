@@ -48,7 +48,10 @@ bool SceneImporter::Import(const char* importFile, std::string& outputFile, cons
 	bool ret = false;
 
 	if (importFile == nullptr || importSettings == nullptr)
+	{
+		assert(importFile != nullptr || importSettings != nullptr);
 		return ret;
+	}
 
 	std::string importFileName;
 	App->fs->GetFileName(importFile, importFileName);
@@ -73,7 +76,10 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	bool ret = false;
 
 	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
+	{
+		assert(buffer != nullptr || size > 0 || importSettings != nullptr);
 		return ret;
+	}
 
 	MeshImportSettings* meshImportSettings = (MeshImportSettings*)importSettings;
 	//TODO FILE SCALE
@@ -343,8 +349,11 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const
 {
-	if (resources.empty())
+	if (resources.empty() || meshImportSettings == nullptr)
+	{
+		assert(!resources.empty() || meshImportSettings != nullptr);
 		return false;
+	}
 
 	ResourceMesh* meshResource = (ResourceMesh*)resources.front();
 
@@ -390,26 +399,25 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	json_object_set_boolean(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
 	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
 
-	// Build the path
-	char path[DEFAULT_BUF_SIZE];
-	strcpy_s(path, strlen(meshResource->file.data()) + 1, meshResource->file.data());
-
+	// Build the path of the meta file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(meshResource->file.data()) + 1, meshResource->file.data());
 	static const char extension[] = ".meta";
-	strcat_s(path, strlen(path) + strlen(extension) + 1, extension);
+	strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	uint size = App->fs->Save(path, buf, sizeBuf);
+	uint size = App->fs->Save(metaFile, buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", metaFile);
 		return false;
 	}
 
@@ -419,22 +427,23 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	return true;
 }
 
-bool SceneImporter::SetMeshImportSettingsToMeta(const MeshImportSettings* meshImportSettings) const
+bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const MeshImportSettings* meshImportSettings) const
 {
-	if (meshImportSettings == nullptr)
+	if (metaFile == nullptr || meshImportSettings == nullptr)
+	{
+		assert(metaFile != nullptr || meshImportSettings != nullptr);
 		return false;
-	else if (meshImportSettings->metaFile == nullptr)
-		return false;
+	}
 
 	char* buffer;
-	uint size = App->fs->Load(meshImportSettings->metaFile, &buffer);
+	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -471,14 +480,14 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const MeshImportSettings* meshIm
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
 
-	size = App->fs->Save(meshImportSettings->metaFile, buffer, sizeBuf);
+	size = App->fs->Save(metaFile, buffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", meshImportSettings->metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", metaFile);
 		return false;
 	}
 
@@ -491,7 +500,10 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const MeshImportSettings* meshIm
 bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
 {
 	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
 		return false;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(metaFile, &buffer);
@@ -522,7 +534,10 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const
 {
 	if (metaFile == nullptr || meshImportSettings == nullptr)
+	{
+		assert(metaFile != nullptr || meshImportSettings != nullptr);
 		return false;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(metaFile, &buffer);
@@ -575,7 +590,10 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 	bool ret = false;
 
 	if (exportedFile == nullptr || outputMesh == nullptr)
+	{
+		assert(exportedFile != nullptr || outputMesh != nullptr);
 		return ret;
+	}
 
 	char* buffer;
 	uint size = App->fs->Load(exportedFile, &buffer);
@@ -594,7 +612,10 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh)
 {
 	if (buffer == nullptr || size <= 0 || outputMesh == nullptr)
+	{
+		assert(buffer != nullptr || size > 0 || outputMesh != nullptr);
 		return false;
+	}
 
 	char* cursor = (char*)buffer;
 

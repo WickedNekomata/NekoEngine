@@ -44,6 +44,27 @@ bool ModuleResourceManager::CleanUp()
 	return true;
 }
 
+void ModuleResourceManager::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::FileDropped:
+
+		std::string extension;
+		App->fs->GetExtension(event.fileDropped.file, extension);
+
+		if (GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
+		{
+			CONSOLE_LOG("FILE SYSTEM: The file '%s' has been dropped and needs to be copied to Assets", event.fileDropped.file);
+
+			std::string outputFile;
+			App->fs->Copy(event.fileDropped.file, DIR_ASSETS, outputFile);
+		}
+		
+		break;
+	}
+}
+
 void ModuleResourceManager::SetAssetsCheckTime(float assetsCheckTime)
 {
 	this->assetsCheckTime = assetsCheckTime;
@@ -279,7 +300,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	uint ret = 0;
 
 	if (fileInAssets == nullptr)
+	{
+		assert(fileInAssets != nullptr);
 		return ret;
+	}
 
 	bool imported = false;
 	ImportSettings* importSettings = nullptr;

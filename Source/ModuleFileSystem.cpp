@@ -1,9 +1,9 @@
-#include "Globals.h"
-#include "Application.h"
 #include "ModuleFileSystem.h"
 
+#include "Application.h"
+#include "Globals.h"
+
 #include "physfs/include/physfs.h"
-#include "SDL/include/SDL.h"
 
 #pragma comment(lib, "physfs/libx86/physfs.lib")
 
@@ -51,6 +51,22 @@ bool ModuleFileSystem::CleanUp()
 	return true;
 }
 
+bool ModuleFileSystem::CreateDir(const char* dirName) const
+{
+	bool ret = true;
+
+	ret = PHYSFS_mkdir(dirName) != 0;
+
+	if (ret)
+	{
+		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
+	}
+	else
+		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
+
+	return ret;
+}
+
 bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 {
 	bool ret = false;
@@ -95,20 +111,45 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-bool ModuleFileSystem::CreateDir(const char* dirName) const
+uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outputFile) const
 {
-	bool ret = true;
+	uint size = 0;
 
-	ret = PHYSFS_mkdir(dirName) != 0;
-
-	if (ret)
+	std::FILE* filehandle;
+	fopen_s(&filehandle, file, "rb");
+	
+	if (filehandle != nullptr)
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
+		fseek(filehandle, 0, SEEK_END);
+		size = ftell(filehandle);
+		rewind(filehandle);
+
+		char* buffer = new char[size];
+		size = fread(buffer, 1, size, filehandle);
+		if (size > 0)
+		{
+			GetFileName(file, outputFile, true);
+			outputFile.insert(0, "/");
+			outputFile.insert(0, dir);
+
+			size = Save(outputFile.data(), buffer, size);
+			if (size > 0)
+			{
+				CONSOLE_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
+			}
+			else
+				CONSOLE_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
+		}
+		else
+			CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'", file);
+
+		RELEASE_ARRAY(buffer);
+		fclose(filehandle);
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
 
-	return ret;
+	return size;
 }
 
 uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFile) const
@@ -239,7 +280,7 @@ bool ModuleFileSystem::Exists(const char* file) const
 	return PHYSFS_exists(file);
 }
 
-void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) const
+void ModuleFileSystem::GetFileName(const char* file, std::string& fileName, bool extension) const
 {
 	fileName = file;
 
@@ -251,9 +292,12 @@ void ModuleFileSystem::GetFileName(const char* file, std::string& fileName) cons
 	if (found != std::string::npos)
 		fileName = fileName.substr(found + 1, fileName.size());
 
-	found = fileName.find_last_of(".");
-	if (found != std::string::npos)
-		fileName = fileName.substr(0, found);
+	if (!extension)
+	{
+		found = fileName.find_last_of(".");
+		if (found != std::string::npos)
+			fileName = fileName.substr(0, found);
+	}
 }
 
 void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const

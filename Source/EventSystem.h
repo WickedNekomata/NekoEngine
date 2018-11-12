@@ -1,18 +1,18 @@
 #ifndef __EVENT_SYSTEM_H__
 #define __EVENT_SYSTEM_H__
 
-enum System_Event_Type { InvalidEvent, DropEvent };
+enum System_Event_Type { NoEvent, FileDropped };
 
-struct Drop_Event
+struct FileDroppedEvent
 {
 	System_Event_Type type;
-	char* path;
+	char* file;
 };
 
 union System_Event
 {
 	System_Event_Type type;      /**< Event type, shared with all events */
-	Drop_Event drop;             /**< Drag and drop event data */
+	FileDroppedEvent fileDropped;             /**< Drag and drop event data */
 
 	/* This is necessary for ABI compatibility between Visual C++ and GCC
 	   Visual C++ will respect the push pack pragma and use 52 bytes for
@@ -25,4 +25,4 @@ union System_Event
 	*/
 };
 
-#endif // !System Event
+#endif

@@ -524,4 +524,5 @@ void Application::LoadState() const
 
 void Application::PushSystemEvent(System_Event event)
 {
+	systemEvents.push(event);
 }

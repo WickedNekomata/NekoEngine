@@ -46,7 +46,7 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const;
 
 	bool GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const;
-	bool SetTextureImportSettingsToMeta(const TextureImportSettings* textureImportSettings) const;
+	bool SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	

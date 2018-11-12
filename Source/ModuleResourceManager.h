@@ -34,6 +34,8 @@ public:
 	update_status Update() override;
 	bool CleanUp();
 
+	void OnSystemEvent(System_Event event);
+
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
 

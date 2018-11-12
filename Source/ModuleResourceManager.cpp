@@ -5,8 +5,6 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 
-#include "Application.h"
-
 #include <assert.h>
 
 ModuleResourceManager::ModuleResourceManager() {}

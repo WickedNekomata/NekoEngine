@@ -56,6 +56,7 @@ public:
 	const char* GetName() const;
 
 	uint GetUUID() const;
+	void ForceUUID(uint uuid);
 
 	void ToggleIsActive();
 	bool IsActive() const;

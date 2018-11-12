@@ -312,7 +312,8 @@ bool ModuleGOs::LoadScene(const char* file)
 	gameObjectsArray = json_value_get_array(root_value);
 	std::vector<GameObject*>auxList;
 	auxList.reserve(json_array_get_count(gameObjectsArray));
-	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) 
+	int sizeOfArray = json_array_get_count(gameObjectsArray);
+	for (int i = 0; i < sizeOfArray; i++)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
 		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root, true);
@@ -320,7 +321,7 @@ bool ModuleGOs::LoadScene(const char* file)
 		auxList.push_back(go);
 	}
 
-	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++)
+	for (int i = 0; i < sizeOfArray; i++)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
 		GameObject* parent = GetGameObjectByUUID(json_object_get_number(gObject, "Parent UUID"));
@@ -330,6 +331,9 @@ bool ModuleGOs::LoadScene(const char* file)
 			auxList[i]->SetParent(parent);
 		}
 	}
+
+	for (int i = 0; i < auxList.size(); ++i)
+		auxList[i]->ForceUUID(App->GenerateRandomNumber());
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(root_value);

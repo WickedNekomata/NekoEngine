@@ -299,6 +299,11 @@ uint GameObject::GetUUID() const
 	return UUID;
 }
 
+void GameObject::ForceUUID(uint uuid)
+{
+	UUID = uuid;
+}
+
 void GameObject::ToggleIsActive()
 {
 	isActive = !isActive;

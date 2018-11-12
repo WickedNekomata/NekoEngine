@@ -21,6 +21,17 @@ strcmp(extension, ".fbx") == 0 || strcmp(extension, ".FBX") == 0 \
 #define IS_META(extension) \
 strcmp(extension, ".meta") == 0 || strcmp(extension, ".META") == 0
 
+#define ASCIIfbx 4610298120
+#define ASCIIFBX 46706688
+#define ASCIIobj 4611198106
+#define ASCIIOBJ 46796674
+#define ASCIIdds 46100100115
+#define ASCIIDDS 46686883
+#define ASCIIpng 46112110103
+#define ASCIIPNG 46807871
+#define ASCIIjpg 46106112103
+#define ASCIIJPG 46748071
+
 struct ImportSettings;
 class Resource;
 

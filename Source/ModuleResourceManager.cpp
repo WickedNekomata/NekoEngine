@@ -17,22 +17,23 @@ ModuleResourceManager::~ModuleResourceManager() {}
 bool ModuleResourceManager::Start()
 {
 	std::string path;
-	RecursiveCreateResourcesFromFilesInAssets("Assets", path);
+	RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path, false);
+
+	assetsCheckTimer.Start();
 
 	return true;
 }
 
 update_status ModuleResourceManager::Update()
 {
-	timer += App->timeManager->GetRealDt();
-
-	if (timer >= assetsCheckTime)
+	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
 	{
-		std::string newFileInAssets;
-		if (RecursiveFindNewFileInAssets("Assets", newFileInAssets))
-			ImportFile(newFileInAssets.data());
+		assetsSearchTimer.Start();
 
-		timer = 0.0f;
+		std::string path;
+		RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path);
+		double i = assetsSearchTimer.ReadMs();
+		assetsCheckTimer.Start();
 	}
 
 	return UPDATE_CONTINUE;
@@ -81,8 +82,14 @@ float ModuleResourceManager::GetAssetsCheckTime() const
 	return assetsCheckTime;
 }
 
-void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path)
+void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path, bool timeSlicing)
 {
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
 	path.append(dir);
 	path.append("/");
 
@@ -91,9 +98,13 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 
 	for (it = files; *it != nullptr; ++it)
 	{
+		//double i = assetsSearchTimer.ReadMs();
+		//if (timeSlicing && assetsSearchTimer.ReadMs() >= MAX_ASSETS_SEARCH_TIME)
+			//return;
+
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveCreateResourcesFromFilesInAssets(*it, path);
+			RecursiveCreateResourcesFromFilesInAssets(*it, path, timeSlicing);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -105,8 +116,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 			App->fs->GetExtension(*it, extension);
 
 			// Ignore scenes and metas
-			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
-				|| IS_META(extension.data()))
+			if (IS_SCENE(extension.data()) || IS_META(extension.data()))
 				continue;
 
 			// Search for the meta associated to the file
@@ -131,7 +141,11 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 				bool exists = true;
 				char exportedFile[DEFAULT_BUF_SIZE];
 
-				if (IS_MESH_RESOURCE(extension.data()))
+				ResourceType type = GetResourceTypeByExtension(extension.data());
+
+				switch (type)
+				{
+				case ResourceType::Mesh_Resource:
 				{
 					std::list<uint> UUIDs;
 					if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
@@ -140,7 +154,6 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 						for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
 						{
 							sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MESHES, *it, EXTENSION_MESH);
-
 							if (App->fs->Exists(exportedFile))
 								meshes++;
 						}
@@ -154,15 +167,18 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 						}
 					}
 				}
-				else if (IS_TEXTURE_RESOURCE(extension.data()) == 0)
+				break;
+
+				case ResourceType::Texture_Resource:
 				{
 					uint UUID = 0;
 					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
 					{
 						sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);
-
 						exists = App->fs->Exists(exportedFile);
 					}
+				}
+				break;
 				}
 
 				// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
@@ -176,113 +192,18 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 				// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
 				else
 				{
-					// Create the resources
-					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be created", *it, path.data());
 					file.append(*it);
-					ImportFile(file.data(), metaFile, exportedFile);
+
+					if (Find(file.data()) == 0)
+					{
+						// Create the resources
+						CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be created", *it, path.data());
+						ImportFile(file.data(), metaFile, exportedFile);
+					}
 				}
 			}
 		}
 	}
-}
-
-bool ModuleResourceManager::RecursiveFindNewFileInAssets(const char* dir, std::string& newFileInAssets) const
-{
-	bool ret = false;
-
-	newFileInAssets.append(dir);
-	newFileInAssets.append("/");
-
-	const char** files = App->fs->GetFilesFromDir(dir);
-	const char** it;
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		if (App->fs->IsDirectory(*it))
-		{
-			ret = RecursiveFindNewFileInAssets(*it, newFileInAssets);
-
-			if (!ret)
-			{
-				uint found = newFileInAssets.rfind(*it);
-				if (found != std::string::npos)
-					newFileInAssets = newFileInAssets.substr(0, found);
-			}
-		}
-		else
-		{
-			std::string extension;
-			App->fs->GetExtension(*it, extension);
-
-			// Ignore scenes and metas
-			if (strcmp(extension.data(), EXTENSION_SCENE) == 0
-				|| IS_META(extension.data()))
-				continue;
-
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(newFileInAssets.data()) + 1, newFileInAssets.data()); // path
-			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-			const char metaExtension[] = ".meta";
-			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
-
-			// If the file has no meta associated, then the file is new
-			if (!App->fs->Exists(metaFile))
-			{
-				// Import the file
-				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s that needs to be imported", *it, newFileInAssets.data());
-				newFileInAssets.append(*it);
-				ret = true;
-			}
-			else
-			{
-				bool exists = true;
-
-				if (strcmp(extension.data(), EXTENSION_MESH) == 0)
-				{
-					std::list<uint> UUIDs;
-					if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
-					{
-						for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
-						{
-							// Build the path
-							char path[DEFAULT_BUF_SIZE];
-							sprintf_s(path, "%u%s", *it, extension);
-
-							exists = App->fs->Exists(path);
-
-							if (!exists)
-								break;
-						}
-					}
-				}
-				else if (strcmp(extension.data(), EXTENSION_TEXTURE) == 0)
-				{
-					uint UUID = 0;
-					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
-					{
-						// Build the path
-						char path[DEFAULT_BUF_SIZE];
-						sprintf_s(path, "%u%s", UUID, extension);
-
-						exists = App->fs->Exists(path);
-					}
-				}
-
-				// If the resource(s) do(es)n't exist, reimport the file
-				if (!exists)
-				{
-					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be reimported", *it, newFileInAssets.data());
-					newFileInAssets.append(*it);
-				}
-			}
-		}
-
-		if (ret)
-			break;
-	}
-
-	return ret;
 }
 
 // Returns the UUID associated to the resource of the file. In case of error, it returns 0
@@ -290,7 +211,7 @@ uint ModuleResourceManager::Find(const char* fileInAssets) const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetExportedFile(), fileInAssets) == 0)
+		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
 			return it->first;
 	}
 

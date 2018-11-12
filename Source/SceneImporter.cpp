@@ -49,7 +49,7 @@ bool SceneImporter::Import(const char* importFile, std::string& outputFile, cons
 
 	if (importFile == nullptr || importSettings == nullptr)
 	{
-		assert(importFile != nullptr || importSettings != nullptr);
+		assert(importFile != nullptr && importSettings != nullptr);
 		return ret;
 	}
 
@@ -77,7 +77,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 
 	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
 	{
-		assert(buffer != nullptr || size > 0 || importSettings != nullptr);
+		assert(buffer != nullptr && size > 0 && importSettings != nullptr);
 		return ret;
 	}
 
@@ -351,7 +351,7 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 {
 	if (resources.empty() || meshImportSettings == nullptr)
 	{
-		assert(!resources.empty() || meshImportSettings != nullptr);
+		assert(!resources.empty() && meshImportSettings != nullptr);
 		return false;
 	}
 
@@ -431,7 +431,7 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 {
 	if (metaFile == nullptr || meshImportSettings == nullptr)
 	{
-		assert(metaFile != nullptr || meshImportSettings != nullptr);
+		assert(metaFile != nullptr && meshImportSettings != nullptr);
 		return false;
 	}
 
@@ -535,7 +535,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 {
 	if (metaFile == nullptr || meshImportSettings == nullptr)
 	{
-		assert(metaFile != nullptr || meshImportSettings != nullptr);
+		assert(metaFile != nullptr && meshImportSettings != nullptr);
 		return false;
 	}
 
@@ -591,7 +591,7 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 
 	if (exportedFile == nullptr || outputMesh == nullptr)
 	{
-		assert(exportedFile != nullptr || outputMesh != nullptr);
+		assert(exportedFile != nullptr && outputMesh != nullptr);
 		return ret;
 	}
 
@@ -613,7 +613,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 {
 	if (buffer == nullptr || size <= 0 || outputMesh == nullptr)
 	{
-		assert(buffer != nullptr || size > 0 || outputMesh != nullptr);
+		assert(buffer != nullptr && size > 0 && outputMesh != nullptr);
 		return false;
 	}
 

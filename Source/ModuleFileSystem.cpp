@@ -115,6 +115,12 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 {
 	uint size = 0;
 
+	if (file == nullptr || dir == nullptr)
+	{
+		assert(file != nullptr && dir != nullptr);
+		return size;
+	}
+
 	std::FILE* filehandle;
 	fopen_s(&filehandle, file, "rb");
 	
@@ -185,7 +191,7 @@ uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool appe
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName);
+	GetFileName(file, fileName, true);
 
 	bool exists = Exists(file);
 
@@ -230,7 +236,7 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName);
+	GetFileName(file, fileName, true);
 
 	bool exists = Exists(file);
 

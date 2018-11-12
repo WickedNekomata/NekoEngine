@@ -53,7 +53,7 @@ bool MaterialImporter::Import(const char* importFile, std::string& outputFile, c
 
 	if (importFile == nullptr || importSettings == nullptr)
 	{
-		assert(importFile != nullptr || importSettings != nullptr);
+		assert(importFile != nullptr && importSettings != nullptr);
 		return ret;
 	}
 
@@ -81,7 +81,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 
 	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
 	{
-		assert(buffer != nullptr || size > 0 || importSettings != nullptr);
+		assert(buffer != nullptr && size > 0 && importSettings != nullptr);
 		return ret;
 	}
 
@@ -166,7 +166,7 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 {
 	if (resource == nullptr || textureImportSettings == nullptr)
 	{
-		assert(resource != nullptr || textureImportSettings != nullptr);
+		assert(resource != nullptr && textureImportSettings != nullptr);
 		return false;
 	}
 
@@ -220,7 +220,7 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 {
 	if (metaFile == nullptr || textureImportSettings == nullptr)
 	{
-		assert(metaFile != nullptr || textureImportSettings != nullptr);
+		assert(metaFile != nullptr && textureImportSettings != nullptr);
 		return false;
 	}
 
@@ -304,7 +304,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 {
 	if (metaFile == nullptr || textureImportSettings == nullptr)
 	{
-		assert(metaFile != nullptr || textureImportSettings != nullptr);
+		assert(metaFile != nullptr && textureImportSettings != nullptr);
 		return false;
 	}
 
@@ -343,7 +343,7 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTex
 
 	if (exportedFile == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
 	{
-		assert(exportedFile != nullptr || outputTexture != nullptr || textureImportSettings != nullptr);
+		assert(exportedFile != nullptr && outputTexture != nullptr && textureImportSettings != nullptr);
 		return ret;
 	}
 
@@ -367,7 +367,7 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 
 	if (buffer == nullptr || size <= 0 || outputTexture == nullptr || textureImportSettings == nullptr)
 	{
-		assert(buffer != nullptr || size > 0 || outputTexture != nullptr || textureImportSettings != nullptr);
+		assert(buffer != nullptr && size > 0 && outputTexture != nullptr && textureImportSettings != nullptr);
 		return ret;
 	}
 

@@ -323,6 +323,11 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		}
 		else
 			CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
+
+		RELEASE_ARRAY(data);
+		RELEASE_ARRAY(vertices);
+		RELEASE_ARRAY(indices);
+		RELEASE_ARRAY(textureCoords);
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
@@ -588,10 +593,8 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 
 bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh)
 {
-	bool ret = false;
-
 	if (buffer == nullptr || size <= 0 || outputMesh == nullptr)
-		return ret;
+		return false;
 
 	char* cursor = (char*)buffer;
 
@@ -630,7 +633,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	// TODO: find the texture associated with the material 0 of the mesh
 
 	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices, %u indices, %u texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
-	ret = true;
+
+	return true;
 }
 
 uint SceneImporter::GetAssimpMajorVersion() const

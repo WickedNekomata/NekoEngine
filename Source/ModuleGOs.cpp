@@ -330,7 +330,6 @@ bool ModuleGOs::LoadScene(const char* file)
 			auxList[i]->SetParent(parent);
 		}
 	}
-
 	RELEASE_ARRAY(buffer);
 	json_value_free(root_value);
 

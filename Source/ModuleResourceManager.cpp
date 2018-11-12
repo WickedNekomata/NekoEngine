@@ -5,12 +5,9 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 
-<<<<<<< HEAD
 #include "Application.h"
 
 #include <sstream>
-=======
->>>>>>> c38f4c6f20767fdf18343dd49d2cf6074dd8ffd6
 #include <assert.h>
 
 ModuleResourceManager::ModuleResourceManager() {}
@@ -401,10 +398,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	int asciiValue;
+	uint32_t asciiValue;
 	std::stringstream ascii;
-	for (char* it = (char*)extension; *it; ++it)
-		ascii << int((*it));	
+	for (const char* it = extension; *it; ++it)
+		ascii << uint32_t((*it));
 	ascii >> asciiValue;
 
 	switch (asciiValue)

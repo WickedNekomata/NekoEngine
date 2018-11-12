@@ -398,10 +398,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	uint32_t asciiValue;
+	uint64_t asciiValue;
 	std::stringstream ascii;
 	for (const char* it = extension; *it; ++it)
-		ascii << uint32_t((*it));
+		ascii << uint16_t((*it));
 	ascii >> asciiValue;
 
 	switch (asciiValue)

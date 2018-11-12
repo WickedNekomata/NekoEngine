@@ -42,7 +42,7 @@ public:
 	ModuleResourceManager();
 	~ModuleResourceManager();
 	bool Start();
-	update_status Update();
+	update_status Update() override;
 	bool CleanUp();
 
 	void SetAssetsCheckTime(float assetsCheckTime);

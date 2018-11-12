@@ -5,9 +5,12 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 
+<<<<<<< HEAD
 #include "Application.h"
 
 #include <sstream>
+=======
+>>>>>>> c38f4c6f20767fdf18343dd49d2cf6074dd8ffd6
 #include <assert.h>
 
 ModuleResourceManager::ModuleResourceManager() {}

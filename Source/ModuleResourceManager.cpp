@@ -7,6 +7,7 @@
 
 #include "Application.h"
 
+#include <sstream>
 #include <assert.h>
 
 ModuleResourceManager::ModuleResourceManager() {}
@@ -397,10 +398,21 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	if (IS_MESH_RESOURCE(extension))
+	int asciiValue;
+	std::stringstream ascii;
+	for (char* it = (char*)extension; *it; ++it)
+		ascii << int((*it));	
+	ascii >> asciiValue;
+
+	switch (asciiValue)
+	{
+	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ:
 		return ResourceType::Mesh_Resource;
-	else if (IS_TEXTURE_RESOURCE(extension))
+		break;
+	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
 		return ResourceType::Texture_Resource;
+		break;
+	}
 
 	return ResourceType::No_Type_Resource;
 }

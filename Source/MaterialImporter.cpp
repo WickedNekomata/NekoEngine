@@ -358,6 +358,7 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 	ilBindImage(imageName);
 
 	// Load the image
+
 	if (ilLoadL(IL_DDS, buffer, size))
 	{
 		ILinfo imageInfo;

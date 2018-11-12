@@ -36,7 +36,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, itemSize), ImVec2(itemSize, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(0.0f, itemSize), ImVec2(itemSize, itemSize * 2.0f));
 
 			ImGui::PopStyleColor(3);
 			ImGui::PopID();
@@ -44,7 +44,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("moveNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, itemSize * 3.0f), ImVec2(itemSize, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(0.0f, itemSize * 3.0f), ImVec2(itemSize, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Move Tool");
@@ -59,7 +59,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, itemSize), ImVec2(itemSize * 2.0f, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize, itemSize), ImVec2(itemSize * 2.0f, itemSize * 2.0f));
 
 			ImGui::PopStyleColor(3);
 			ImGui::PopID();
@@ -67,7 +67,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("rotateNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, itemSize * 3.0f), ImVec2(itemSize * 2.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize, itemSize * 3.0f), ImVec2(itemSize * 2.0f, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Rotate Tool");
@@ -82,7 +82,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, itemSize), ImVec2(itemSize * 3.0f, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize * 2.0f, itemSize), ImVec2(itemSize * 3.0f, itemSize * 2.0f));
 
 			ImGui::PopStyleColor(3);
 			ImGui::PopID();
@@ -90,7 +90,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("scaleNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, itemSize * 3.0f), ImVec2(itemSize * 3.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize * 2.0f, itemSize * 3.0f), ImVec2(itemSize * 3.0f, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Scale Tool");
@@ -102,7 +102,7 @@ bool PanelEdit::Draw()
 		if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::LOCAL)
 		{
 			ImGui::PushID("localHovered");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f)))
+			if (ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f)))
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::WORLD);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Tool Mode");
@@ -115,7 +115,7 @@ bool PanelEdit::Draw()
 		else if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::WORLD)
 		{
 			ImGui::PushID("worldHovered");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)App->gui->atlaas, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f)))
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Tool Mode");

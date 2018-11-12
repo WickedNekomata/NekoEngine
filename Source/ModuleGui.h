@@ -66,13 +66,15 @@ public:
 	PanelEdit*			panelEdit = nullptr;
 
 	ResourceTexture* atlas = nullptr;
-
+	uint atlaas = 0;
 private:
 
 	std::vector<Panel*> panels;
 
 	bool showSaveScenePopUp = false;
 	bool showLoadScenePopUp = false;
+
+	
 };
 
 #endif

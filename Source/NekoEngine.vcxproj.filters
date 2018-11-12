@@ -91,6 +91,9 @@
     <Filter Include="Sources\Modules\Resources\Types">
       <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Data">
+      <UniqueIdentifier>{2d64b961-79af-4551-bc71-150680a138ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -863,6 +866,9 @@
     </ClCompile>
     <ClCompile Include="PanelResources.cpp">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="atlasCarray.h">
+      <Filter>Sources\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

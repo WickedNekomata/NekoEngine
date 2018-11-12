@@ -8,7 +8,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleTimeManager.h"
 #include "ResourceTexture.h"
-
+#include "atlasCarray.h"
 #include "Panel.h"
 #include "PanelInspector.h"
 #include "PanelAbout.h"
@@ -19,6 +19,10 @@
 #include "PanelResources.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
+
+#include "DevIL/include/il.h"
+#include "DevIL/include/ilu.h"
+#include "DevIL/include/ilut.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -85,6 +89,29 @@ bool ModuleGui::Start()
 
 	// Load atlas texture // TODO request atlas texture to the resource manager module
 	std::string outputFileName;
+
+
+	atlaas = 0;
+	glGenTextures(1, &atlaas);
+
+	// Bind the texture
+	glBindTexture(GL_TEXTURE_2D, atlaas);
+
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// Anisotropic filtering
+	// TODO: set this with the selected settings for the texture
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
+		0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, atlasCarray_map);
+
+
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 	atlas = new ResourceTexture(ResourceType::Texture_Resource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
 	App->materialImporter->Import("UI/atlas.png", outputFileName, importSettings);

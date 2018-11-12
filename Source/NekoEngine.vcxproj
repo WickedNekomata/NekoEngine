@@ -284,6 +284,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="atlasCarray.h" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />

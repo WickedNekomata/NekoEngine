@@ -25,13 +25,13 @@ bool PanelAssets::Draw()
 	{
 		// Game time scale slider
 		ImGui::PushItemWidth(100.0f);
-		float checkTime = App->res->GetAssetsCheckTime();
-		if (ImGui::SliderFloat("Check Time", &checkTime, 0.0f, MAX_ASSETS_CHECK_TIME)) { App->res->SetAssetsCheckTime(checkTime); }
+		float checkTime = App->fs->GetAssetsCheckTime();
+		if (ImGui::SliderFloat("Check Time", &checkTime, 0.0f, MAX_ASSETS_CHECK_TIME)) { App->fs->SetAssetsCheckTime(checkTime); }
 
-		if (ImGui::TreeNodeEx("Assets"))
+		if (ImGui::TreeNodeEx(DIR_ASSETS))
 		{
 			std::string currentFile;
-			RecursiveDrawDir("Assets", currentFile);
+			RecursiveDrawDir(DIR_ASSETS, currentFile);
 			ImGui::TreePop();
 		}
 	}
@@ -102,8 +102,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				char metaFile[DEFAULT_BUF_SIZE];
 				strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
 				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-				const char metaExtension[] = ".meta";
-				strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 				switch (type)
 				{

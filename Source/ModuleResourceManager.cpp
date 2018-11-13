@@ -20,14 +20,9 @@ ModuleResourceManager::~ModuleResourceManager() {}
 bool ModuleResourceManager::Start()
 {
 	std::string path;
-	RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path, false);
+	RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path);
 
 	return true;
-}
-
-update_status ModuleResourceManager::Update()
-{
-	return UPDATE_CONTINUE;
 }
 
 bool ModuleResourceManager::CleanUp()
@@ -61,46 +56,71 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	case System_Event_Type::NewFile:
 
 		// Import
+		ImportFile(event.fileEvent.file);
 
 		break;
 
 	case System_Event_Type::FileRemoved:
+	{
+		std::string extension;
+		App->fs->GetExtension(event.fileEvent.file, extension);
 
-		// Remove its meta and entries in Library
-		// Set its resources to invalid
+		// Set its resources to invalid and remove its entries in Library
+		switch (GetResourceTypeByExtension(extension.data()))
+		{
+		case ResourceType::Mesh_Resource:
+		{
+			std::list<uint> UUIDs;
+			App->sceneImporter->GetMeshesUUIDsFromMeta(event.fileEvent.metaFile, UUIDs);
 
+			std::string entry;
+			for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+			{
+				// Invalidate resources
+
+
+				entry = DIR_LIBRARY_MESHES;
+				entry.append("/");
+				entry.append(std::to_string(*it));
+				entry.append(EXTENSION_MESH);
+
+				App->fs->DeleteFileOrDir(entry.data());
+			}
+		}
 		break;
+		case ResourceType::Texture_Resource:
 
-	case System_Event_Type::MetaRemoved:
+			uint UUID;
+			App->materialImporter->GetTextureUUIDFromMeta(event.fileEvent.metaFile, UUID);
 
-		// Reimport
+			// Invalidate resource
 
-		break;
+			std::string entry;
+			entry = DIR_LIBRARY_MATERIALS;
+			entry.append("/");
+			entry.append(std::to_string(UUID));
+			entry.append(EXTENSION_TEXTURE);
+
+			App->fs->DeleteFileOrDir(entry.data());
+
+			break;
+		}
+
+		// Remove its meta
+		App->fs->DeleteFileOrDir(event.fileEvent.metaFile);
+	}
+	break;
 
 	case System_Event_Type::FileOverwritten:
 
 		// Reimport
+		ImportFile(event.fileEvent.file, event.fileEvent.metaFile);
 
 		break;
-
 	}
 }
 
-void ModuleResourceManager::SetAssetsCheckTime(float assetsCheckTime)
-{
-	//this->assetsCheckTime = assetsCheckTime;
-
-	//if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
-		//this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
-}
-
-float ModuleResourceManager::GetAssetsCheckTime() const
-{
-	//return assetsCheckTime;
-	return 0.0f;
-}
-
-void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path, bool timeSlicing)
+void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path)
 {
 	if (dir == nullptr)
 	{
@@ -116,13 +136,9 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 
 	for (it = files; *it != nullptr; ++it)
 	{
-		//double i = assetsSearchTimer.ReadMs();
-		//if (timeSlicing && assetsSearchTimer.ReadMs() >= MAX_ASSETS_SEARCH_TIME)
-			//return;
-
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveCreateResourcesFromFilesInAssets(*it, path, timeSlicing);
+			RecursiveCreateResourcesFromFilesInAssets(*it, path);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -141,8 +157,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 			char metaFile[DEFAULT_BUF_SIZE];
 			strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // path
 			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-			const char metaExtension[] = ".meta";
-			strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 			std::string file = path;
 
@@ -189,7 +204,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 
 				case ResourceType::Texture_Resource:
 				{
-					uint UUID = 0;
+					uint UUID;
 					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
 					{
 						sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);

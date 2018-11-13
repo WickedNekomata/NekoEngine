@@ -52,3 +52,4 @@ enum update_status
 #define EXTENSION_MESH ".nekoMesh"
 #define EXTENSION_TEXTURE ".nekoDDS"
 #define EXTENSION_SCENE ".nekoScene"
+#define EXTENSION_META ".meta"

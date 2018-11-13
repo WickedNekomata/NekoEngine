@@ -9,9 +9,6 @@
 #include <map>
 #include <vector>
 
-#define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
-#define IS_META(extension) strcmp(extension, ".meta") == 0 || strcmp(extension, ".META") == 0
-
 #define ASCIIfbx 4610298120
 #define ASCIIFBX 46706688
 #define ASCIIobj 4611198106
@@ -33,15 +30,11 @@ public:
 	ModuleResourceManager();
 	~ModuleResourceManager();
 	bool Start();
-	update_status Update() override;
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event event);
 
-	void SetAssetsCheckTime(float assetsCheckTime);
-	float GetAssetsCheckTime() const;
-
-	void RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path, bool timeSlicing = true);
+	void RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path);
 
 	uint Find(const char* fileInAssets) const;
 

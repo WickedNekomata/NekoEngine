@@ -195,8 +195,7 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	// Build the path of the meta file
 	char metaFile[DEFAULT_BUF_SIZE];
 	strcpy_s(metaFile, strlen(resource->file.data()) + 1, resource->file.data());
-	const char extension[] = ".meta";
-	strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);

@@ -14,13 +14,21 @@
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 
 #define MAX_ASSETS_CHECK_TIME 2.0f // seconds
-#define MAX_ASSETS_SEARCH_TIME 8.0 // ms
+
+#define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
+#define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
 
 enum FileType
 {
+	NoType,
+
 	MeshFile,
 	TextureFile,
-	SceneFile
+	ResourceFile, // includes MeshFile and TextureFile
+
+	SceneFile,
+
+	MetaFile
 };
 
 class ModuleFileSystem : public Module
@@ -35,13 +43,14 @@ public:
 
 	bool CreateDir(const char* dirName) const;
 	bool AddPath(const char* newDir, const char* mountPoint = nullptr);
+	bool DeleteFileOrDir(const char* path);
 
 	const char* GetBasePath() const;
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files);
+	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files, FileType fileType = FileType::NoType);
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
@@ -59,16 +68,16 @@ public:
 
 	uint Load(const char* file, char** buffer) const;
 
-	void CheckAssetsAgainst(std::map<std::string, uint> newFilesInAssets);
+	void CheckAssets(std::map<std::string, uint> newFilesInAssets);
+	void SetAssetsCheckTime(float assetsCheckTime);
+	float GetAssetsCheckTime() const;
 
 private:
 
-	std::map<std::string, uint> filesInAssets;
+	std::map<std::string, uint> metas;
 
 	float assetsCheckTime = 1.0f; // seconds
 	PerfTimer assetsCheckTimer;
-
-	PerfTimer assetsSearchTimer;
 };
 
 #endif

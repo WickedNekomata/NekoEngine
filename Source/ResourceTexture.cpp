@@ -12,8 +12,7 @@ bool ResourceTexture::LoadInMemory()
 {
 	char metaFile[DEFAULT_BUF_SIZE];
 	strcpy_s(metaFile, strlen(file.data()) + 1, file.data()); // file
-	const char metaExtension[] = ".meta";
-	strcat_s(metaFile, strlen(metaFile) + strlen(metaExtension) + 1, metaExtension); // extension
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 	TextureImportSettings* textureImportSettings = new TextureImportSettings();
 	App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, textureImportSettings);

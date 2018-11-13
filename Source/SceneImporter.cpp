@@ -407,8 +407,7 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	// Build the path of the meta file
 	char metaFile[DEFAULT_BUF_SIZE];
 	strcpy_s(metaFile, strlen(meshResource->file.data()) + 1, meshResource->file.data());
-	static const char extension[] = ".meta";
-	strcat_s(metaFile, strlen(metaFile) + strlen(extension) + 1, extension);
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);

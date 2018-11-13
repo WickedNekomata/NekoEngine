@@ -11,6 +11,8 @@
 #include "ComponentTransform.h"
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
+#include "ModuleScene.h"
+#include "ModuleGOs.h"
 
 #include "MathGeoLib/include/Geometry/Triangle.h"
 #include "MathGeoLib/include/Geometry/LineSegment.h"

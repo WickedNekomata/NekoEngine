@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "GameObject.h"
 #include "ModuleScene.h"
+#include "ModuleGOs.h"
 #include "ImGui/imgui.h"
 #include "imgui/imgui_internal.h"
 

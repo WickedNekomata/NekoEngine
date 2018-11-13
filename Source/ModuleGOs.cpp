@@ -7,6 +7,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ModuleScene.h"
 
 #include "parson/parson.h"
 #include <list>

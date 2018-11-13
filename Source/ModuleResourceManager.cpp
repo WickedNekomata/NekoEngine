@@ -1,5 +1,8 @@
 #include "ModuleResourceManager.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 #include "Application.h"
+#include "ModuleGOs.h"
 #include "ModuleFileSystem.h"
 #include "Resource.h"
 #include "ResourceMesh.h"

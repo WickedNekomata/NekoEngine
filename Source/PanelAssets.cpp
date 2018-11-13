@@ -7,6 +7,8 @@
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 #include "ModuleScene.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 
 #include "ImGui/imgui.h"
 

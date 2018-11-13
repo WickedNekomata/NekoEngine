@@ -2,7 +2,9 @@
 
 #include "MaterialImporter.h"
 #include "Application.h"
+#include "ModuleFileSystem.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleTimeManager.h"
 #include "Globals.h"
 #include "ResourceTexture.h"
 

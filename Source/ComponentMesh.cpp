@@ -6,6 +6,7 @@
 #include "Application.h"
 #include "Resource.h"
 #include "ModuleResourceManager.h"
+#include "ModuleFileSystem.h"
 
 #include "imgui/imgui.h"
 

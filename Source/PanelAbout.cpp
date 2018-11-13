@@ -3,6 +3,8 @@
 #ifndef GAMEMODE
 
 #include "Application.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 #include "Globals.h"
 
 #include <windows.h>

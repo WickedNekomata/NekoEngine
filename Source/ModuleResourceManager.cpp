@@ -19,23 +19,11 @@ bool ModuleResourceManager::Start()
 	std::string path;
 	RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path, false);
 
-	assetsCheckTimer.Start();
-
 	return true;
 }
 
 update_status ModuleResourceManager::Update()
 {
-	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
-	{
-		assetsSearchTimer.Start();
-
-		std::string path;
-		RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path);
-		double i = assetsSearchTimer.ReadMs();
-		assetsCheckTimer.Start();
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -53,33 +41,60 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 	case System_Event_Type::FileDropped:
-
+	{
 		std::string extension;
-		App->fs->GetExtension(event.fileDropped.file, extension);
+		App->fs->GetExtension(event.fileEvent.file, extension);
 
 		if (GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
 		{
-			CONSOLE_LOG("FILE SYSTEM: The file '%s' has been dropped and needs to be copied to Assets", event.fileDropped.file);
+			CONSOLE_LOG("FILE SYSTEM: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
 			std::string outputFile;
-			App->fs->Copy(event.fileDropped.file, DIR_ASSETS, outputFile);
+			App->fs->Copy(event.fileEvent.file, DIR_ASSETS, outputFile);
 		}
-		
+	}
+	break;
+
+	case System_Event_Type::NewFile:
+
+		// Import
+
 		break;
+
+	case System_Event_Type::FileRemoved:
+
+		// Remove its meta and entries in Library
+		// Set its resources to invalid
+
+		break;
+
+	case System_Event_Type::MetaRemoved:
+
+		// Reimport
+
+		break;
+
+	case System_Event_Type::FileOverwritten:
+
+		// Reimport
+
+		break;
+
 	}
 }
 
 void ModuleResourceManager::SetAssetsCheckTime(float assetsCheckTime)
 {
-	this->assetsCheckTime = assetsCheckTime;
+	//this->assetsCheckTime = assetsCheckTime;
 
-	if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
-		this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
+	//if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
+		//this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
 }
 
 float ModuleResourceManager::GetAssetsCheckTime() const
 {
-	return assetsCheckTime;
+	//return assetsCheckTime;
+	return 0.0f;
 }
 
 void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path, bool timeSlicing)

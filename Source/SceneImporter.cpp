@@ -361,7 +361,9 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	// Fill the JSON with data
-	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
+	int lastModTime = App->fs->GetLastModificationTime(resources.front()->file.data());
+	assert(lastModTime != -1);
+	json_object_set_number(rootObject, "Time Created", lastModTime);
 
 	JSON_Value* meshesArrayValue = json_value_init_array();
 	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);

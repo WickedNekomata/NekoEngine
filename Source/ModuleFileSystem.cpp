@@ -85,7 +85,7 @@ update_status ModuleFileSystem::Update()
 
 		std::string path;
 		std::map<std::string, uint> newFilesInAssets;
-		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets, FileType::ResourceFile);
+		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets);
 
 		CheckAssets(newFilesInAssets);
 
@@ -193,7 +193,7 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 	{
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveGetFilesFromDir(*it, path, files);
+			RecursiveGetFilesFromDir(*it, path, files, fileType);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -469,7 +469,7 @@ void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 
 	for (std::map<std::string, uint>::const_iterator it = metas.begin(); it != metas.end(); ++it)
 	{
-		// Each meta is expected to have an associated file in Assets
+		// Each meta is expected to have an associated file in Assets that creates a resource
 
 		// Path of the file in Assets associated to the meta
 		std::string fileInAssets = it->first;
@@ -487,11 +487,20 @@ void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 			newEvent.fileEvent.metaFile = it->first.data();
 			newEvent.type = System_Event_Type::FileRemoved;
 			App->PushSystemEvent(newEvent);
+			// TODO remove the meta from the vector
 		}
-		// CASE 2. Original file has been overwritten
+		// CASE 2. Meta has been removed
+		else if (newFilesInAssets.find(it->first.data()) == newFilesInAssets.end())
+		{
+			System_Event newEvent;
+			newEvent.fileEvent.file = it->first.data();
+			newEvent.type = System_Event_Type::MetaRemoved;
+			App->PushSystemEvent(newEvent);
+			// TODO remove the meta from the vector and then add the new meta when generating the file
+		}
+		// CASE 3. Original file has been overwritten
 		else if (newFilesInAssets.find(fileInAssets.data())->second != it->second)
 		{
-			int i = newFilesInAssets.find(it->first)->second;
 			System_Event newEvent;
 			newEvent.fileEvent.file = fileInAssets.data();
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -502,20 +511,26 @@ void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 
 	for (std::map<std::string, uint>::const_iterator it = newFilesInAssets.begin(); it != newFilesInAssets.end(); ++it)
 	{
-		// Each file in Assets is expected to have an associated meta
+		std::string extension;
+		GetExtension(it->first.data(), extension);
 
-		// Path of the meta associated to the file in Assets
-		std::string meta = it->first;
-		meta.append(EXTENSION_META);
-
-		// CASE 3. A new file has been added
-		// + Meta has been removed
-		if (metas.find(meta.data()) == metas.end())
+		if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
 		{
-			System_Event newEvent;
-			newEvent.fileEvent.file = it->first.data();
-			newEvent.type = System_Event_Type::NewFile;
-			App->PushSystemEvent(newEvent);
+			// Each file in Assets that creates a resource is expected to have an associated meta
+
+			// Path of the meta associated to the file in Assets
+			std::string meta = it->first;
+			meta.append(EXTENSION_META);
+
+			// CASE 4. A new file has been added
+			if (metas.find(meta.data()) == metas.end())
+			{
+				System_Event newEvent;
+				newEvent.fileEvent.file = it->first.data();
+				newEvent.type = System_Event_Type::NewFile;
+				App->PushSystemEvent(newEvent);
+				// TODO add the generated meta to the metas map when the file has been created
+			}
 		}
 	}
 }

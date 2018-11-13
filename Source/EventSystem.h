@@ -1,7 +1,7 @@
 #ifndef __EVENT_SYSTEM_H__
 #define __EVENT_SYSTEM_H__
 
-enum System_Event_Type { NoEvent, FileDropped, NewFile, FileRemoved, FileOverwritten };
+enum System_Event_Type { NoEvent, FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten };
 
 struct FileEvent
 {

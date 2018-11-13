@@ -60,6 +60,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		break;
 
+	case System_Event_Type::MetaRemoved:
+
+		// Import
+		ImportFile(event.fileEvent.file);
+
+		break;
+
 	case System_Event_Type::FileRemoved:
 	{
 		std::string extension;

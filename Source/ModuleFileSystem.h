@@ -69,6 +69,7 @@ public:
 	uint Load(const char* file, char** buffer) const;
 
 	void CheckAssets(std::map<std::string, uint> newFilesInAssets);
+
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
 

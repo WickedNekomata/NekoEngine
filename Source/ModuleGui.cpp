@@ -190,8 +190,6 @@ update_status ModuleGui::Update()
 		LoadScenePopUp();
 	}
 
-	ImGui::ShowDemoWindow();
-
 	return UPDATE_CONTINUE;
 }
 

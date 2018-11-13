@@ -113,12 +113,89 @@ void ComponentMaterial::OnUniqueEditor()
 void ComponentMaterial::OnInternalSave(JSON_Object* file)
 {
 	// TODO
-	json_object_set_number(file, "ResourceMaterial", 0012013);
+	JSON_Value* arrayValue = json_value_init_array();
+	JSON_Array* jsonArray = json_value_get_array(arrayValue);
+	JSON_Value* newValue = json_value_init_object();
+	JSON_Object* vertexColor = json_value_get_object(newValue);
+	json_object_set_number(vertexColor, "R", color[0]);
+	json_object_set_number(vertexColor, "G", color[1]);
+	json_object_set_number(vertexColor, "B", color[2]);
+	json_object_set_number(vertexColor, "A", color[3]);
+	json_object_set_value(file, "VertexColor", arrayValue);
+
+	json_array_append_value(jsonArray, newValue);
+
+	arrayValue = json_value_init_array();
+	jsonArray = json_value_get_array(arrayValue);
+
+	for (int i = 0; i < res.size(); ++i)
+	{
+		JSON_Value* newValue = json_value_init_object();
+		JSON_Object* resource = json_value_get_object(newValue);
+
+		json_object_set_number(resource, "res", res[i].res);
+
+		math::float3 pos; math::Quat rot; math::float3 scale;
+		res[i].matrix.Decompose(pos, rot, scale);
+		json_object_set_number(resource, "posX", pos.x);
+		json_object_set_number(resource, "posY", pos.y);
+		json_object_set_number(resource, "posZ", pos.z);
+
+		json_object_set_number(resource, "rotX",rot.x);
+		json_object_set_number(resource, "rotY",rot.y);
+		json_object_set_number(resource, "rotZ",rot.z);
+		json_object_set_number(resource, "rotW",rot.w);
+
+		json_object_set_number(resource, "scaleX", scale.x);
+		json_object_set_number(resource, "scaleY", scale.y);
+		json_object_set_number(resource, "scaleZ", scale.z);
+
+		json_array_append_value(jsonArray, newValue);
+	}
+	json_object_set_value(file, "TexturesResources", arrayValue);
 }
 
 void ComponentMaterial::OnLoad(JSON_Object* file)
 {
-	// TODO LOAD MATERIAL
+	JSON_Array* jsonArray = json_object_get_array(file, "VertexColor");
+
+	uint arraySize = json_array_get_count(jsonArray);
+
+	for (int i = 0; i < arraySize; i++)
+		color[i] = json_array_get_number(jsonArray, i);
+
+	jsonArray = json_object_get_array(file, "TexturesResources");
+
+	arraySize = json_array_get_count(jsonArray);
+
+	while (res.size() < arraySize)
+	{
+		MaterialResource newRes;
+		res.push_back(newRes);
+	}
+
+	for (int i = 0; i < arraySize; i++) {
+		JSON_Object* rObject = json_array_get_object(jsonArray, i);
+
+		SetResource(json_object_get_number(rObject, "res"), i);
+
+		math::float3 pos; math::Quat rot; math::float3 scale;
+
+		pos.x = json_object_get_number(rObject, "posX");
+		pos.y = json_object_get_number(rObject, "posY");
+		pos.z = json_object_get_number(rObject, "posZ");
+
+		rot.x = json_object_get_number(rObject, "rotX");
+		rot.y = json_object_get_number(rObject, "rotY");
+		rot.z = json_object_get_number(rObject, "rotZ");
+		rot.w = json_object_get_number(rObject, "rotW");
+
+		scale.x = json_object_get_number(rObject, "scaleX");
+		scale.y = json_object_get_number(rObject, "scaleY");
+		scale.z = json_object_get_number(rObject, "scaleZ");
+
+		res[i].matrix.FromTRS(pos, rot, scale);
+	}
 }
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)

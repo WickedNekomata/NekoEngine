@@ -45,6 +45,51 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 ModuleFileSystem::~ModuleFileSystem() {}
 
+bool ModuleFileSystem::Start()
+{
+	std::string path;
+	RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
+
+	// For each meta file, replace its modification time for the one that is stored inside the meta file
+	std::string extension;
+	int lastModTime = 0;
+
+	for (std::map<std::string, uint>::const_iterator it = filesInAssets.begin(); it != filesInAssets.end(); ++it)
+	{
+		GetExtension(it->first.data(), extension);
+
+		if (IS_META(extension.data()))
+		{
+			lastModTime = it->second;
+			Importer::GetLastModificationTimeFromMeta(it->first.data(), lastModTime);
+			assert(lastModTime != -1);
+			filesInAssets[it->first] = lastModTime;
+		}
+	}
+
+	assetsCheckTimer.Start();
+
+	return true;
+}
+
+update_status ModuleFileSystem::Update()
+{
+	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
+	{
+		//assetsSearchTimer.Start();
+
+		std::string path;
+		std::map<std::string, uint> newFilesInAssets;
+		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets);
+
+		CheckAssetsAgainst(newFilesInAssets);
+
+		assetsCheckTimer.Start();
+	}
+
+	return UPDATE_CONTINUE;
+}
+
 bool ModuleFileSystem::CleanUp()
 {
 	CONSOLE_LOG("Freeing File System subsystem");
@@ -111,6 +156,101 @@ const char* ModuleFileSystem::GetWritePath() const
 const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 {
 	return (const char**)PHYSFS_enumerateFiles(dir);
+}
+
+void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	path.append(dir);
+	path.append("/");
+
+	const char** currentFiles = App->fs->GetFilesFromDir(dir);
+	const char** it;
+
+	for (it = currentFiles; *it != nullptr; ++it)
+	{
+		if (App->fs->IsDirectory(*it))
+		{
+			RecursiveGetFilesFromDir(*it, path, files);
+
+			uint found = path.rfind(*it);
+			if (found != std::string::npos)
+				path = path.substr(0, found);
+		}
+		else
+		{
+			//char* file = new char[DEFAULT_BUF_SIZE];
+			//sprintf_s(file, DEFAULT_BUF_SIZE, "%s%s", path.data(), *it);
+			std::string file = path;
+			file.append(*it);
+
+			int lastModTime = GetLastModificationTime(file.data());
+			assert(lastModTime != -1);
+			files[file] = lastModTime;
+		}
+	}
+}
+
+bool ModuleFileSystem::IsDirectory(const char* file) const
+{
+	return PHYSFS_isDirectory(file);
+}
+
+bool ModuleFileSystem::Exists(const char* file) const
+{
+	return PHYSFS_exists(file);
+}
+
+int ModuleFileSystem::GetLastModificationTime(const char* file) const
+{
+	return PHYSFS_getLastModTime(file);
+}
+
+void ModuleFileSystem::GetFileName(const char* file, std::string& fileName, bool extension) const
+{
+	fileName = file;
+
+	uint found = fileName.find_last_of("\\");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	found = fileName.find_last_of("//");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	if (!extension)
+	{
+		found = fileName.find_last_of(".");
+		if (found != std::string::npos)
+			fileName = fileName.substr(0, found);
+	}
+}
+
+void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const
+{
+	extension = file;
+
+	uint found = extension.find_last_of(".");
+	if (found != std::string::npos)
+		extension = extension.substr(found);
+}
+
+void ModuleFileSystem::GetPath(const char* file, std::string& path) const
+{
+	path = file;
+
+	uint found = path.find_last_of("\\");
+	if (found != std::string::npos)
+		path = path.substr(0, found + 1);
+
+	found = path.find_last_of("//");
+	if (found != std::string::npos)
+		path = path.substr(0, found + 1);
 }
 
 uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outputFile) const
@@ -278,54 +418,52 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 	return objCount;
 }
 
-bool ModuleFileSystem::IsDirectory(const char* file) const
+void ModuleFileSystem::CheckAssetsAgainst(std::map<std::string, uint> newFilesInAssets)
 {
-	return PHYSFS_isDirectory(file);
-}
-
-bool ModuleFileSystem::Exists(const char* file) const
-{
-	return PHYSFS_exists(file);
-}
-
-void ModuleFileSystem::GetFileName(const char* file, std::string& fileName, bool extension) const
-{
-	fileName = file;
-
-	uint found = fileName.find_last_of("\\");
-	if (found != std::string::npos)
-		fileName = fileName.substr(found + 1, fileName.size());
-
-	found = fileName.find_last_of("//");
-	if (found != std::string::npos)
-		fileName = fileName.substr(found + 1, fileName.size());
-
-	if (!extension)
+	for (std::map<std::string, uint>::const_iterator it = filesInAssets.begin(); it != filesInAssets.end(); ++it)
 	{
-		found = fileName.find_last_of(".");
-		if (found != std::string::npos)
-			fileName = fileName.substr(0, found);
+		// NOTE: Files in library are not expected to be removed by the user
+
+		if (newFilesInAssets.count(it->first) == 0)
+		{
+			std::string extension;
+			GetExtension(it->first.data(), extension);
+
+			System_Event newEvent;
+			newEvent.fileEvent.file = it->first.data();
+
+			// CASE 1. Meta has been removed
+			if (IS_META(extension.data()))
+				newEvent.type = System_Event_Type::MetaRemoved;
+			// CASE 2. Original file has been removed
+			// + Original file has been renamed from outside the editor (we have no way to detect it)
+			// + Original file has been moved to another folder from outside the editor (we have no way to detect it)
+			else
+				newEvent.type = System_Event_Type::FileRemoved;
+
+			App->PushSystemEvent(newEvent);
+		}
+		// CASE 3. Original file (or meta) has been overwritten
+		else if (newFilesInAssets.find(it->first)->second != it->second)
+		{
+			System_Event newEvent;
+			newEvent.fileEvent.file = it->first.data();
+			newEvent.type = System_Event_Type::FileOverwritten;
+			App->PushSystemEvent(newEvent);
+		}
 	}
-}
 
-void ModuleFileSystem::GetExtension(const char* file, std::string& extension) const
-{
-	extension = file;
+	for (std::map<std::string, uint>::const_iterator it = newFilesInAssets.begin(); it != newFilesInAssets.end(); ++it)
+	{
+		if (filesInAssets.find(it->first) == filesInAssets.end())
+		{
+			// CASE 4. A new file has been added
+			System_Event newEvent;
+			newEvent.fileEvent.file = it->first.data();
+			newEvent.type = System_Event_Type::NewFile;
+			App->PushSystemEvent(newEvent);
+		}
+	}
 
-	uint found = extension.find_last_of(".");
-	if (found != std::string::npos)
-		extension = extension.substr(found);
-}
-
-void ModuleFileSystem::GetPath(const char* file, std::string& path) const
-{
-	path = file;
-
-	uint found = path.find_last_of("\\");
-	if (found != std::string::npos)
-		path = path.substr(0, found + 1);
-
-	found = path.find_last_of("//");
-	if (found != std::string::npos)
-		path = path.substr(0, found + 1);
+	filesInAssets = newFilesInAssets;
 }

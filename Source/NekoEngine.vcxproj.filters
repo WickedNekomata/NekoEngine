@@ -864,6 +864,9 @@
     <ClCompile Include="PanelResources.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">

@@ -176,7 +176,9 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	// Fill the JSON with data
-	json_object_set_number(rootObject, "Time Created", App->timeManager->GetRealTime());
+	int lastModTime = App->fs->GetLastModificationTime(resource->file.data());
+	assert(lastModTime != -1);
+	json_object_set_number(rootObject, "Time Created", lastModTime);
 	json_object_set_number(rootObject, "UUID", resource->GetUUID());
 
 	JSON_Value* materialImporterValue = json_value_init_object();

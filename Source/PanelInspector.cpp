@@ -6,6 +6,8 @@
 
 #include "Application.h"
 #include "ModuleScene.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 
 #include "GameObject.h"
 #include "Component.h"

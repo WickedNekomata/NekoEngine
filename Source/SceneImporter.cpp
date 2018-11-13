@@ -3,6 +3,9 @@
 #include "SceneImporter.h"
 
 #include "Application.h"
+#include "ModuleFileSystem.h"
+#include "ModuleGOs.h"
+#include "ModuleTimeManager.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"

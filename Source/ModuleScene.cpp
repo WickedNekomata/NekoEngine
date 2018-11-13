@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleInput.h"
 #include "Primitive.h"
 #include "SceneImporter.h"
 #include "ModuleGOs.h"

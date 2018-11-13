@@ -8,21 +8,6 @@
 #include <queue>
 
 #include "Globals.h"
-#include "Module.h"
-#include "ModuleWindow.h"
-#include "ModuleInput.h"
-#include "ModuleScene.h"
-#include "ModuleRenderer3D.h"
-#include "ModuleCameraEditor.h"
-#include "ModuleGui.h"
-#include "ModuleFileSystem.h"
-#include "ModuleGOs.h"
-#include "ModuleTimeManager.h"
-#include "ModuleResourceManager.h"
-#include "MaterialImporter.h"
-#include "SceneImporter.h"
-#include "DebugDrawer.h"
-#include "Raycaster.h"
 #include "EventSystem.h"
 
 #include "PerfTimer.h"
@@ -46,6 +31,22 @@ enum engine_states
 	ENGINE_EDITOR,
 	ENGINE_WANTS_EDITOR
 };
+
+struct Module;
+struct ModuleResourceManager;
+struct MaterialImporter;
+struct SceneImporter;
+struct ModuleCameraEditor;
+struct ModuleGui;
+struct Raycaster;
+struct ModuleWindow;
+struct ModuleInput;
+struct ModuleScene;
+struct ModuleRenderer3D;
+struct ModuleFileSystem;
+struct ModuleGOs;
+struct ModuleTimeManager;
+struct DebugDrawer;
 
 class Application
 {

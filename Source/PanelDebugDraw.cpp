@@ -2,6 +2,8 @@
 
 #ifndef GAMEMODE
 #include "Application.h"
+#include "ModuleRenderer3D.h"
+#include "ModuleScene.h"
 
 #include "ImGui/imgui.h"
 

@@ -1,5 +1,6 @@
 #include "Globals.h"
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 #include "ModuleWindow.h"
 
 #include "glew\include\GL\glew.h"

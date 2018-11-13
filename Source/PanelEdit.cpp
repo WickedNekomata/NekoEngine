@@ -2,6 +2,8 @@
 
 #ifndef GAMEMODE
 #include "Application.h"
+#include "ModuleScene.h"
+#include "ModuleTimeManager.h"
 #include "ModuleGui.h"
 #include "ResourceTexture.h"
 

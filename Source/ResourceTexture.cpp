@@ -1,6 +1,8 @@
 #include "ResourceTexture.h"
 
 #include "Application.h"
+#include "MaterialImporter.h"
+#include "glew/include/GL/glew.h"
 
 ResourceTexture::ResourceTexture(ResourceType type, uint uuid) : Resource(type, uuid) {}
 

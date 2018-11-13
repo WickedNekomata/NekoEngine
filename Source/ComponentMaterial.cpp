@@ -1,6 +1,7 @@
 #include "ComponentMaterial.h"
 
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 #include "MaterialImporter.h"
 #include "ModuleResourceManager.h"
 #include "ModuleFileSystem.h"

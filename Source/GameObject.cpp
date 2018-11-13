@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleGOs.h"
 #include "ModuleScene.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"

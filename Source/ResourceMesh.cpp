@@ -1,6 +1,7 @@
 #include "ResourceMesh.h"
 
 #include "Application.h"
+#include "SceneImporter.h"
 
 #include "glew/include/GL/glew.h"
 

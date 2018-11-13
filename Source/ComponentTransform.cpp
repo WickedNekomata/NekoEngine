@@ -4,6 +4,7 @@
 #include "ComponentCamera.h"
 #include "Application.h"
 #include "ModuleTimeManager.h"
+#include "ModuleScene.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"

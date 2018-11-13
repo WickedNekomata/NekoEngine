@@ -20,6 +20,7 @@
 class GameObject;
 class ComponentMesh;
 class ComponentCamera;
+class QuadtreeNode;
 
 class ModuleRenderer3D : public Module
 {

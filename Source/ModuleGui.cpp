@@ -7,6 +7,9 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleTimeManager.h"
+#include "ModuleGOs.h"
+#include "ModuleInput.h"
+#include "MaterialImporter.h"
 #include "ResourceTexture.h"
 
 #include "Panel.h"

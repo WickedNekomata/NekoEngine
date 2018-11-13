@@ -4,7 +4,13 @@
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleFileSystem.h"
+#include "ModuleWindow.h"
+#include "ModuleInput.h"
+#include "ModuleScene.h"
+#include "ModuleTimeManager.h"
 #include "GameObject.h"
+#include "Quadtree.h"
 
 #include "ImGui/imgui.h"
 #include "SDL/include/SDL_cpuinfo.h"

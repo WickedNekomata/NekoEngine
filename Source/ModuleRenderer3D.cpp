@@ -1,6 +1,11 @@
 #include "Globals.h"
 #include "Application.h"
+#include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleScene.h"
+#include "ModuleCameraEditor.h"
+#include "ModuleResourceManager.h"
+#include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "DebugDrawer.h"
 
@@ -10,6 +15,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 
+#include "Quadtree.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 

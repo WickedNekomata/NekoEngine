@@ -46,7 +46,7 @@ void ComponentMaterial::OnUniqueEditor()
 {
 	ImGui::Text("Material");
 	ImGui::Spacing();
-
+	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
 	for (uint i = 0; i < res.size(); ++i)
 	{
 		ImGui::Text("Texture %i", i + 1);
@@ -80,11 +80,9 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::SameLine();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
+		bool minusClicked = false;
 		if (ImGui::Button(itemName))
-		{
-			SetResource(0, i);
-			res.erase(std::remove(res.begin(), res.end(), res[i]));
-		}
+			minusClicked = true;
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Matrix##%i", i);
 		ImGui::Button(itemName);
@@ -94,6 +92,12 @@ void ComponentMaterial::OnUniqueEditor()
 			EditCurrentResMatrixByIndex(i);
 
 			ImGui::EndPopup();
+		}
+
+		if (minusClicked)
+		{
+			SetResource(0, i);
+			res.erase(std::remove(res.begin(), res.end(), res[i]));
 		}
 	}
 

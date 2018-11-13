@@ -13,7 +13,8 @@
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
 {
 	res.reserve(App->renderer3D->GetMaxTextureUnits());
-	res.push_back(0);
+	MaterialResource newRes;
+	res.push_back(newRes);
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
@@ -32,13 +33,13 @@ void ComponentMaterial::Update() {}
 
 void ComponentMaterial::SetResource(uint res_uuid, uint position)
 {
-	if (res[position] != 0)
-		App->res->SetAsUnused(res[position]);
+	if (res[position].res != 0)
+		App->res->SetAsUnused(res[position].res);
 
 	if (res_uuid != 0)
 		App->res->SetAsUsed(res_uuid);
 
-	res[position] = res_uuid;
+	res[position].res = res_uuid;
 }
 
 void ComponentMaterial::OnUniqueEditor()
@@ -52,7 +53,7 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::SameLine();
 
 		std::string fileName;
-		const Resource* resource = App->res->GetResource(res[i]);
+		const Resource* resource = App->res->GetResource(res[i].res);
 		if (resource != nullptr)
 			App->fs->GetFileName(resource->GetFile(), fileName);
 
@@ -63,7 +64,7 @@ void ComponentMaterial::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("%u", (res.size() > 0) ? res.front() : 0);
+			ImGui::Text("%u", (res.size() > 0) ? res.front().res : 0);
 			ImGui::EndTooltip();
 		}
 
@@ -84,12 +85,24 @@ void ComponentMaterial::OnUniqueEditor()
 			SetResource(0, i);
 			res.erase(std::remove(res.begin(), res.end(), res[i]));
 		}
+
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Matrix##%i", i);
+		ImGui::Button(itemName);
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Edit Matrix##%i", i);
+		if (ImGui::BeginPopupContextItem(itemName, 0)) {
+
+			EditCurrentResMatrixByIndex(i);
+
+			ImGui::EndPopup();
+		}
 	}
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())
 	{
-		if (ImGui::Button("+"))
-			res.push_back(0);
+		if (ImGui::Button("+")) {
+			MaterialResource newRes;
+			res.push_back(newRes);
+		}
 	}
 }
 
@@ -102,4 +115,63 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 void ComponentMaterial::OnLoad(JSON_Object* file)
 {
 	// TODO LOAD MATERIAL
+}
+
+void ComponentMaterial::EditCurrentResMatrixByIndex(int i)
+{
+	char itemName[DEFAULT_BUF_SIZE];
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Reset##%i", i);
+	if (ImGui::Button(itemName))
+		res[i].matrix = math::float4x4::identity;
+
+	math::float3 pos = math::float3::zero;
+	math::Quat rot = math::Quat::identity;
+	math::float3 scale = math::float3::one;
+	res[i].matrix.Decompose(pos, rot, scale);
+
+	////////////////////////////
+	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
+	ImGui::Text("Position");
+
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##PosX%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&pos.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##PosY%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&pos.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##PosZ%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&pos.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+
+	ImGui::Text("Rotation");
+	math::float3 axis;
+	float angle;
+	rot.ToAxisAngle(axis, angle);
+	axis *= angle;
+	axis *= RADTODEG;
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##AxisAngleX%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##AxisAngleY%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##AxisAngleZ%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+	axis *= DEGTORAD;
+	rot.SetFromAxisAngle(axis.Normalized(), axis.Length());
+
+	ImGui::Text("Scale");
+
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##ScaleX%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##ScaleY%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##ScaleZ%i", i);
+	ImGui::PushItemWidth(50);
+	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+
+	res[i].matrix = math::float4x4::FromTRS(pos, rot, scale);
 }

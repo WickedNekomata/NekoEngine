@@ -83,15 +83,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				continue;
 
 			treeNodeFlags = 0;
-			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;			
-			/*
-			if (App->scene->selectedObject == CurrentSelection::SelectedType::meshImportSettings
-				|| App->scene->selectedObject == CurrentSelection::SelectedType::textureImportSettings)
-			{
-				MeshImportSettings* currentSettings = (MeshImportSettings*)(App->scene->selectedObject.Get());
-				// TODO: get file name and compare. if equals set next treenode as selected :)
-			}
-			*/
+			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+
 			ImGui::TreeNodeEx(*it, treeNodeFlags);
 
 			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());

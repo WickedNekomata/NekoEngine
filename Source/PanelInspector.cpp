@@ -64,6 +64,12 @@ void PanelInspector::ShowGameObjectInspector()
 {
 	GameObject* gameObject = (GameObject*)App->scene->selectedObject.Get();
 
+	if (gameObject == nullptr)
+	{
+		assert(gameObject != nullptr);
+		return;
+	}
+
 	bool isActive = gameObject->IsActive();
 	if (ImGui::Checkbox("##Active", &isActive)) { gameObject->ToggleIsActive(); }
 

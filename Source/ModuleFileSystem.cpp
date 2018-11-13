@@ -1,6 +1,8 @@
 #include "ModuleFileSystem.h"
 
 #include "Application.h"
+#include "ModuleResourceManager.h"
+#include "Importer.h"
 #include "Globals.h"
 #include "Importer.h"
 #include "ModuleResourceManager.h"

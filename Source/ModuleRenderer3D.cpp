@@ -556,23 +556,30 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glPushMatrix();
 	math::float4x4 matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	glMultMatrixf(matrix.Transposed().ptr());
-	
+
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
 
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
 	if (materialRenderer != nullptr && materialRenderer->IsActive())
 	{
+		glColor4f(materialRenderer->color[0], materialRenderer->color[1],
+			materialRenderer->color[2], materialRenderer->color[3]);
+
 		for (int i = 0; i < materialRenderer->res.size(); ++i)
 		{
-			const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i]);
+			const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
 
 			if (texRes == nullptr)
 				continue;
-
+			
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glActiveTexture(GL_TEXTURE0 + i);
+
+			glMatrixMode(GL_TEXTURE);
+			glPushMatrix();
+			glMultMatrixf(materialRenderer->res[i].matrix.Transposed().ptr());
 
 			glBindTexture(GL_TEXTURE_2D, texRes->id);
 
@@ -609,7 +616,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
-	
+	glColor4f(1.0f, 1.0f, 1.0f, 255.0f);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 }
 

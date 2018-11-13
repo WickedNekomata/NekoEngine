@@ -137,6 +137,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
 		}
 		if (ImGui::Selectable("Delete")) 
 		{
+			// TODO: selectedObject = null if selected = any child of go
 			if (App->scene->selectedObject == child)
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);

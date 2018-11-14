@@ -248,6 +248,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				if (nodeMesh->mFaces[j].mNumIndices != 3)
 				{
 					CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
+					return;
 				}
 				else
 					memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));

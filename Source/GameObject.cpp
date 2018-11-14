@@ -412,6 +412,7 @@ void GameObject::OnLoad(JSON_Object* file)
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
 	}	
+	RecursiveRecalculateBoundingBoxes();
 }
 
 void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const

@@ -194,7 +194,7 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 		scale.y = json_object_get_number(rObject, "scaleY");
 		scale.z = json_object_get_number(rObject, "scaleZ");
 
-		res[i].matrix.FromTRS(pos, rot, scale);
+		res[i].matrix = math::float4x4::FromTRS(pos, rot, scale);
 	}
 }
 

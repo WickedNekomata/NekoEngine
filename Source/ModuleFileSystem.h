@@ -53,6 +53,7 @@ public:
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
+	bool RecursiveExists(const char* fileName, const char* dir, std::string& path);
 
 	int GetLastModificationTime(const char* file) const;
 
@@ -72,10 +73,10 @@ public:
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
 
-	void CheckAssets();
-
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
+
+	void CheckAssets();
 
 private:
 

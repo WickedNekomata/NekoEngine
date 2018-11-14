@@ -204,6 +204,51 @@ bool ModuleFileSystem::Exists(const char* file) const
 	return PHYSFS_exists(file);
 }
 
+bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return false;
+	}
+
+	path.append(dir);
+	path.append("/");
+
+	bool exists = false;
+
+	std::string file = path;
+	file.append(fileName);
+
+	exists = Exists(file.data());
+
+	if (exists)
+	{
+		path.append(fileName);
+		return exists;
+	}
+
+	const char** currentFiles = App->fs->GetFilesFromDir(dir);
+	const char** it;
+
+	for (it = currentFiles; *it != nullptr; ++it)
+	{
+		if (App->fs->IsDirectory(*it))
+		{
+			exists = RecursiveExists(fileName, *it, path);
+
+			if (exists)
+				return exists;
+
+			uint found = path.rfind(*it);
+			if (found != std::string::npos)
+				path = path.substr(0, found);
+		}
+	}
+
+	return exists;
+}
+
 int ModuleFileSystem::GetLastModificationTime(const char* file) const
 {
 	return PHYSFS_getLastModTime(file);
@@ -452,6 +497,19 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 	return ret;
 }
 
+void ModuleFileSystem::SetAssetsCheckTime(float assetsCheckTime)
+{
+	this->assetsCheckTime = assetsCheckTime;
+
+	if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
+		this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
+}
+
+float ModuleFileSystem::GetAssetsCheckTime() const
+{
+	return assetsCheckTime;
+}
+
 void ModuleFileSystem::CheckAssets()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
@@ -519,17 +577,4 @@ void ModuleFileSystem::CheckAssets()
 			}
 		}
 	}
-}
-
-void ModuleFileSystem::SetAssetsCheckTime(float assetsCheckTime)
-{
-	this->assetsCheckTime = assetsCheckTime;
-
-	if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
-		this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
-}
-
-float ModuleFileSystem::GetAssetsCheckTime() const
-{
-	return assetsCheckTime;
 }

@@ -20,7 +20,7 @@ ModuleResourceManager::~ModuleResourceManager() {}
 bool ModuleResourceManager::Start()
 {
 	std::string path;
-	RecursiveCreateResourcesFromFilesInAssets(DIR_ASSETS, path);
+	RecursiveImportFilesInDir(DIR_ASSETS, path);
 
 	return true;
 }
@@ -156,13 +156,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
 		// Reimport
-		ImportFile(fileInAssets.data(), event.fileEvent.metaFile);
+		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
 
 		break;
 	}
 }
 
-void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path)
+void ModuleResourceManager::RecursiveImportFilesInDir(const char* dir, std::string& path)
 {
 	if (dir == nullptr)
 	{
@@ -180,7 +180,7 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 	{
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveCreateResourcesFromFilesInAssets(*it, path);
+			RecursiveImportFilesInDir(*it, path);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -195,105 +195,98 @@ void ModuleResourceManager::RecursiveCreateResourcesFromFilesInAssets(const char
 			if (IS_SCENE(extension.data()) || IS_META(extension.data()))
 				continue;
 
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // path
-			strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-
 			std::string file = path;
-
-			// CASE 1 (file). The file has no meta associated (the file is new)
-			if (!App->fs->Exists(metaFile))
-			{
-				// Import the file (using the default import settings)
-				CONSOLE_LOG("FILE SYSTEM: There is a new file '%s' in %s that needs to be imported", *it, path.data());
-				file.append(*it);
-				ImportFile(file.data());
-			}
-			else
-			{
-				bool exists = true;
-				char exportedFile[DEFAULT_BUF_SIZE];
-
-				ResourceType type = GetResourceTypeByExtension(extension.data());
-
-				switch (type)
-				{
-				case ResourceType::Mesh_Resource:
-				{
-					std::list<uint> UUIDs;
-					if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
-					{
-						uint meshes = 0;
-						for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
-						{
-							sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MESHES, *it, EXTENSION_MESH);
-							if (App->fs->Exists(exportedFile))
-								meshes++;
-						}
-						if (meshes == UUIDs.size())
-						{
-							std::string exportedFileName;
-							App->fs->GetFileName(*it, exportedFileName);
-							sprintf_s(exportedFile, "%s/%s%s", DIR_ASSETS_SCENES, exportedFileName.data(), EXTENSION_SCENE);
-
-							exists = true;
-						}
-					}
-				}
-				break;
-
-				case ResourceType::Texture_Resource:
-				{
-					uint UUID;
-					if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
-					{
-						sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);
-						exists = App->fs->Exists(exportedFile);
-					}
-				}
-				break;
-				}
-
-				// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
-				if (!exists)
-				{
-					// Reimport the file (using the import settings from the meta)
-					CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which Library file(s) need(s) to be reimported", *it, path.data());
-					file.append(*it);
-					ImportFile(file.data(), metaFile);
-				}
-				// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
-				else
-				{
-					file.append(*it);
-
-					if (Find(file.data()) == 0)
-					{
-						// Create the resources
-						CONSOLE_LOG("FILE SYSTEM: There is a file '%s' in %s which resources need to be created", *it, path.data());
-						ImportFile(file.data(), metaFile, exportedFile);
-					}
-				}
-			}
+			file.append(*it);
+			ImportFile(file.data());
 		}
 	}
 }
 
-// Returns the UUID associated to the resource of the file. In case of error, it returns 0
-uint ModuleResourceManager::Find(const char* fileInAssets) const
+uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 {
-	for (auto it = resources.begin(); it != resources.end(); ++it)
+	uint ret = 0;
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(fileInAssets) + 1, fileInAssets); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// CASE 1 (file). The file has no meta associated (the file is new)
+	if (!App->fs->Exists(metaFile))
 	{
-		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
-			return it->first;
+		// Import the file (using the default import settings)
+		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
+		ret = ImportFile(fileInAssets, nullptr, nullptr);
+	}
+	else
+	{
+		bool entries = true;
+		char exportedFile[DEFAULT_BUF_SIZE];
+
+		std::string extension;
+		App->fs->GetExtension(fileInAssets, extension);
+		ResourceType type = GetResourceTypeByExtension(extension.data());
+
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
+		{
+			std::list<uint> UUIDs;
+			if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
+			{
+				uint meshes = 0;
+				for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+				{
+					sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MESHES, *it, EXTENSION_MESH);
+					if (App->fs->Exists(exportedFile))
+						meshes++;
+				}
+				if (meshes == UUIDs.size())
+				{
+					std::string exportedFileName;
+					App->fs->GetFileName(fileInAssets, exportedFileName);
+					sprintf_s(exportedFile, "%s/%s%s", DIR_ASSETS_SCENES, exportedFileName.data(), EXTENSION_SCENE);
+					entries = true;
+				}
+			}
+		}
+		break;
+
+		case ResourceType::Texture_Resource:
+		{
+			uint UUID;
+			if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
+			{
+				sprintf_s(exportedFile, "%s/%u%s", DIR_LIBRARY_MATERIALS, UUID, EXTENSION_TEXTURE);
+				entries = App->fs->Exists(exportedFile);
+			}
+		}
+		break;
+		}
+
+		// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
+		if (!entries)
+		{
+			// Reimport the file (using the import settings from the meta)
+			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
+			ret = ImportFile(fileInAssets, metaFile, nullptr);
+		}
+		// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
+		else
+		{
+			if (Find(fileInAssets) == 0)
+			{
+				// Create the resources
+				CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
+				ret = ImportFile(fileInAssets, metaFile, exportedFile);
+			}
+		}
 	}
 
-	return 0;
+	return ret;
 }
 
-// Imports a file into a resource. If case of success, it returns the UUID of the resource. Otherwise, it returns 0
+// Imports a file into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile)
 {
 	uint ret = 0;
@@ -429,40 +422,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	return ret;
 }
 
-ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
-{
-	uint64_t asciiValue;
-	std::stringstream ascii;
-	for (const char* it = extension; *it; ++it)
-		ascii << uint16_t((*it));
-	ascii >> asciiValue;
-
-	switch (asciiValue)
-	{
-	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ:
-		return ResourceType::Mesh_Resource;
-		break;
-	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
-		return ResourceType::Texture_Resource;
-		break;
-	}
-
-	return ResourceType::No_Type_Resource;
-}
-
-// Get the resource associated to the UUID
-const Resource* ModuleResourceManager::GetResource(uint uuid) const
-{
-	auto it = resources.find(uuid);
-
-	if (it != resources.end())
-		return it->second;
-
-	return nullptr;
-}
-
-// First argument defines the kind of resource to create. Second argument is used to force and set the uuid.
-// In case of uuid set to 0, a random uuid will be generated.
+// First argument defines the kind of resource to create. Second argument is used to force and set the UUID
+// In case of UUID set to 0, a random UUID will be generated
 Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
 {
 	assert(type != ResourceType::No_Type_Resource && "Invalid resource type");
@@ -489,7 +450,52 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 	return resource;
 }
 
-// Load resource to memory and return number of references. In case of error returns -1.
+// Returns the resource associated to the UUID. Otherwise, it returns nullptr
+const Resource* ModuleResourceManager::GetResource(uint uuid) const
+{
+	auto it = resources.find(uuid);
+
+	if (it != resources.end())
+		return it->second;
+
+	return nullptr;
+}
+
+// Returns the resource type that matches the extension
+ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
+{
+	uint64_t asciiValue;
+	std::stringstream ascii;
+	for (const char* it = extension; *it; ++it)
+		ascii << uint16_t((*it));
+	ascii >> asciiValue;
+
+	switch (asciiValue)
+	{
+	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ:
+		return ResourceType::Mesh_Resource;
+		break;
+	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
+		return ResourceType::Texture_Resource;
+		break;
+	}
+
+	return ResourceType::No_Type_Resource;
+}
+
+// Returns the UUID associated to the resource of the file. If error, it returns 0
+uint ModuleResourceManager::Find(const char* fileInAssets) const
+{
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
+			return it->first;
+	}
+
+	return 0;
+}
+
+// Loads the resource to memory and returns the number of references. In case of error, it returns -1
 int ModuleResourceManager::SetAsUsed(uint uuid) const
 {
 	auto it = resources.find(uuid);
@@ -500,7 +506,7 @@ int ModuleResourceManager::SetAsUsed(uint uuid) const
 	return it->second->LoadToMemory();
 }
 
-// Unload resource from memory and return number of references. In case of error returns -1.
+// Unloads the resource from memory and returns the number of references. In case of error, it returns -1.
 int ModuleResourceManager::SetAsUnused(uint uuid) const
 {
 	auto it = resources.find(uuid);
@@ -511,7 +517,7 @@ int ModuleResourceManager::SetAsUnused(uint uuid) const
 	return it->second->UnloadMemory();
 }
 
-// Returns true if resource associated to the uuid can be found and deleted. Returns false in case of error.
+// Returns true if resource associated to the UUID can be found and deleted. In case of error, it returns false
 bool ModuleResourceManager::DestroyResource(uint uuid)
 {
 	auto it = resources.find(uuid);
@@ -524,7 +530,7 @@ bool ModuleResourceManager::DestroyResource(uint uuid)
 	return true;
 }
 
-// Deletes all resources.
+// Deletes all resources
 void ModuleResourceManager::DestroyResources()
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
@@ -533,7 +539,7 @@ void ModuleResourceManager::DestroyResources()
 	resources.clear();
 }
 
-// Returns true if someone is still referencing to any resource.
+// Returns true if someone is still referencing any resource
 bool ModuleResourceManager::SomethingOnMemory() const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)

@@ -34,16 +34,17 @@ public:
 
 	void OnSystemEvent(System_Event event);
 
-	void RecursiveCreateResourcesFromFilesInAssets(const char* dir, std::string& path);
+	void RecursiveImportFilesInDir(const char* dir, std::string& path);
 
-	uint Find(const char* fileInAssets) const;
+	uint ImportFile(const char* fileInAssets);
+	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);
 
-	uint ImportFile(const char* fileInAssets, const char* metaFile = nullptr, const char* exportedFile = nullptr);
-
-	static ResourceType GetResourceTypeByExtension(const char* extension);
+	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
 
 	const Resource* GetResource(uint uuid) const;
-	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
+	static ResourceType GetResourceTypeByExtension(const char* extension);
+	uint Find(const char* fileInAssets) const;
+
 	int SetAsUsed(uint uuid) const;
 	int SetAsUnused(uint uuid) const;
 

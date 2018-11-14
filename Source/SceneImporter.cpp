@@ -6,6 +6,7 @@
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
 #include "ModuleTimeManager.h"
+#include "ModuleResourceManager.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
@@ -256,7 +257,6 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		}
 
 		// Texture coords
-		// TODO: multitexturing
 		if (nodeMesh->HasTextureCoords(0))
 		{
 			textureCoordsSize = verticesSize * 2;
@@ -270,27 +270,28 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		}
 
 		// Material
-		/*
 		if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr) // TODO CHECK IF NULL
 		{
 			aiString textureName;
 			scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 
-			std::string filePath;
-			if (App->filesystem->ExistsInAssets(textureName.data, FileType::TextureFile, filePath))
+			std::string outputFile;
+			std::string file;
+			App->fs->GetFileName(textureName.data, file, true);
+
+			// Check if the texture exists in Assets
+			if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 			{
-				std::string outputFileName;
-				if (App->materialImporter->Import(textureName.data, filePath.data(), outputFileName))
-				{
-					Texture* texture = new Texture();
-					if (App->materialImporter->Load(outputFileName.data(), texture))
-					{
-						gameObject->AddComponent(ComponentType::Material_Component);
-						gameObject->materialRenderer->textures.push_back(texture);
-					}
-				}
+				uint UUID = App->res->Find(outputFile.data());
+
+				// If the texture is not a resource yet, import it
+				if (UUID <= 0)
+					UUID = App->res->ImportFile(outputFile.data());
+
+				gameObject->AddComponent(ComponentType::Material_Component);
+				gameObject->materialRenderer->res[0].res = UUID;
 			}
-		}*/
+		}
 
 		// Vertices + Indices + Texture Coords
 		uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };

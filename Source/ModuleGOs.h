@@ -9,6 +9,7 @@
 class GameObject;
 class Component;
 class ComponentCamera;
+class Resource;
 
 class ModuleGOs : public Module
 {
@@ -43,6 +44,8 @@ public:
 	bool SerializeFromNode(const GameObject* node, std::string& outputFile);
 	bool LoadScene(const char* file);
 	bool GetMeshResourcesFromScene(const char* file, std::list<uint>& UUIDs) const;
+
+	bool InvalidateResource(const Resource* resource);
 
 public:
 

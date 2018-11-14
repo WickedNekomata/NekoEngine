@@ -1,5 +1,8 @@
 #include "Resource.h"
 
+#include "Application.h"
+#include "ModuleGOs.h"
+
 #include <assert.h> 
 
 Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) {}
@@ -59,4 +62,9 @@ uint Resource::CountReferences() const
 ResourceType Resource::GetType() const
 {
 	return type;
+}
+
+void Resource::InvalidateResource()
+{
+	App->GOs->InvalidateResource(this);
 }

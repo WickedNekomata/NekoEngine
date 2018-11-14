@@ -164,7 +164,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings) const
+bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings, std::string& outputMetaFile) const
 {
 	if (resource == nullptr || textureImportSettings == nullptr)
 	{
@@ -193,23 +193,22 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
 
 	// Build the path of the meta file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(resource->file.data()) + 1, resource->file.data());
-	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META);
+	outputMetaFile.append(resource->file.data());
+	outputMetaFile.append(EXTENSION_META);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 	
-	uint size = App->fs->Save(metaFile, buf, sizeBuf);
+	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 

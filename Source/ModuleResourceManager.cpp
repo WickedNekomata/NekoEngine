@@ -54,23 +54,44 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	break;
 
 	case System_Event_Type::NewFile:
+	{
+		CONSOLE_LOG("RESOURCE MANAGER: A new file '%s' has been added", event.fileEvent.file);
 
 		// Import
 		ImportFile(event.fileEvent.file);
-
-		break;
+	}
+	break;
 
 	case System_Event_Type::MetaRemoved:
+	{
+		// Path of the file in Assets associated to the meta
+		std::string fileInAssets = event.fileEvent.metaFile;
+		uint found = fileInAssets.find_last_of(".");
+		if (found != std::string::npos)
+			fileInAssets = fileInAssets.substr(0, found);
+
+		CONSOLE_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
+
+		// Also remove the meta from the metas map
+		App->fs->DeleteMeta(event.fileEvent.metaFile);
 
 		// Import
-		ImportFile(event.fileEvent.file);
-
-		break;
+		ImportFile(fileInAssets.data());
+	}
+	break;
 
 	case System_Event_Type::FileRemoved:
 	{
+		// Path of the file in Assets associated to the meta
+		std::string fileInAssets = event.fileEvent.metaFile;
+		uint found = fileInAssets.find_last_of(".");
+		if (found != std::string::npos)
+			fileInAssets = fileInAssets.substr(0, found);
+
+		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been removed", fileInAssets.data());
+
 		std::string extension;
-		App->fs->GetExtension(event.fileEvent.file, extension);
+		App->fs->GetExtension(fileInAssets.data(), extension);
 
 		// Set its resources to invalid and remove its entries in Library
 		switch (GetResourceTypeByExtension(extension.data()))
@@ -84,8 +105,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
 			{
 				// Invalidate resources
+				Resource* resource = (Resource*)GetResource(*it);
+				resource->InvalidateResource();
 
-
+				// Remove entries in Library
 				entry = DIR_LIBRARY_MESHES;
 				entry.append("/");
 				entry.append(std::to_string(*it));
@@ -96,12 +119,15 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 		break;
 		case ResourceType::Texture_Resource:
-
+		{
 			uint UUID;
 			App->materialImporter->GetTextureUUIDFromMeta(event.fileEvent.metaFile, UUID);
 
-			// Invalidate resource
+			// Invalidate resources
+			Resource* resource = (Resource*)GetResource(UUID);
+			resource->InvalidateResource();
 
+			// Remove entries in Library
 			std::string entry;
 			entry = DIR_LIBRARY_MATERIALS;
 			entry.append("/");
@@ -109,19 +135,28 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			entry.append(EXTENSION_TEXTURE);
 
 			App->fs->DeleteFileOrDir(entry.data());
-
-			break;
+		}
+		break;
 		}
 
-		// Remove its meta
+		// Remove its meta from the metas map before removing it completely
 		App->fs->DeleteFileOrDir(event.fileEvent.metaFile);
+		App->fs->DeleteMeta(event.fileEvent.metaFile);
 	}
 	break;
 
 	case System_Event_Type::FileOverwritten:
 
+		// Path of the file in Assets associated to the meta
+		std::string fileInAssets = event.fileEvent.metaFile;
+		uint found = fileInAssets.find_last_of(".");
+		if (found != std::string::npos)
+			fileInAssets = fileInAssets.substr(0, found);
+
+		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
+
 		// Reimport
-		ImportFile(event.fileEvent.file, event.fileEvent.metaFile);
+		ImportFile(fileInAssets.data(), event.fileEvent.metaFile);
 
 		break;
 	}
@@ -272,6 +307,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	bool imported = false;
 	ImportSettings* importSettings = nullptr;
 	std::string outputFile;
+	std::string outputMetaFile;
 
 	std::string extension;
 	App->fs->GetExtension(fileInAssets, extension);
@@ -349,7 +385,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings);
+				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings, outputMetaFile);
+			else
+				outputMetaFile = metaFile;
 		}
 		break;
 		case ResourceType::Texture_Resource:
@@ -367,9 +405,19 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings);
+				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings, outputMetaFile);
+			else
+				outputMetaFile = metaFile;
 		}
 		break;
+		}
+
+		// Add the meta to the metas map to keep track of it
+		if (!outputMetaFile.empty())
+		{
+			int lastModTime;
+			App->sceneImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
+			App->fs->AddMeta(outputMetaFile.data(), lastModTime);
 		}
 
 		if (resources.size() > 0)

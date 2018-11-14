@@ -3,11 +3,15 @@
 #include "Globals.h"
 #include "GameObject.h"
 #include "Component.h"
+#include "ComponentMesh.h"
+#include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleScene.h"
+
+#include "Resource.h"
 
 #include "parson/parson.h"
 #include <list>
@@ -385,5 +389,40 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::list<uint>& UUI
 	RELEASE_ARRAY(buffer);
 	json_value_free(root_value);
 
+	return true;
+}
+
+bool ModuleGOs::InvalidateResource(const Resource* resource)
+{
+	if (resource == nullptr)
+	{
+		assert(resource != nullptr);
+		return false;
+	}
+
+	ResourceType type = resource->GetType();
+
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		switch (type)
+		{
+		case ResourceType::Mesh_Resource:
+			if (gameObjects[i]->meshRenderer != nullptr && gameObjects[i]->meshRenderer->res == resource->GetUUID())
+				gameObjects[i]->meshRenderer->SetResource(0);
+			break;
+		case ResourceType::Texture_Resource:
+			if (gameObjects[i]->materialRenderer != nullptr)
+			{
+				for (uint j = 0; j < gameObjects[i]->materialRenderer->res.size(); ++j)
+				{
+					if (gameObjects[i]->materialRenderer->res[j].res == resource->GetUUID())
+						gameObjects[i]->materialRenderer->SetResource(0, j);
+				}
+			}
+			break;
+		}
+	}
+
+	assert(resource->CountReferences() <= 0);
 	return true;
 }

@@ -350,7 +350,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings) const
+bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings, std::string& outputMetaFile) const
 {
 	if (resources.empty() || meshImportSettings == nullptr)
 	{
@@ -405,23 +405,22 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
 
 	// Build the path of the meta file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(meshResource->file.data()) + 1, meshResource->file.data());
-	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META);
+	outputMetaFile.append(meshResource->file.data());
+	outputMetaFile.append(EXTENSION_META);
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	uint size = App->fs->Save(metaFile, buf, sizeBuf);
+	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 

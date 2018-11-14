@@ -24,7 +24,6 @@ enum FileType
 
 	MeshFile,
 	TextureFile,
-	ResourceFile, // includes MeshFile and TextureFile
 
 	SceneFile,
 
@@ -50,7 +49,7 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files, FileType fileType = FileType::NoType);
+	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files);
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
@@ -68,7 +67,12 @@ public:
 
 	uint Load(const char* file, char** buffer) const;
 
-	void CheckAssets(std::map<std::string, uint> newFilesInAssets);
+	// ----- Resource Manager -----
+
+	bool AddMeta(const char* metaFile, uint lastModTime);
+	bool DeleteMeta(const char* metaFile);
+
+	void CheckAssets();
 
 	void SetAssetsCheckTime(float assetsCheckTime);
 	float GetAssetsCheckTime() const;
@@ -76,11 +80,10 @@ public:
 private:
 
 	std::map<std::string, uint> metas;
+	std::map<std::string, uint> newFilesInAssets;
 
 	float assetsCheckTime = 1.0f; // seconds
 	PerfTimer assetsCheckTimer;
-
-	PerfTimer assetsSearchTimer;
 };
 
 #endif

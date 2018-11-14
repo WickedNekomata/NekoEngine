@@ -52,27 +52,6 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::Start()
 {
-	// Store all metas found in Assets
-	std::string path;
-	RecursiveGetFilesFromDir(DIR_ASSETS, path, metas, FileType::MetaFile);
-
-	// For each one, replace its modification time for the one written in the meta itself
-	std::string extension;
-	int lastModTime = 0;
-
-	for (std::map<std::string, uint>::const_iterator it = metas.begin(); it != metas.end(); ++it)
-	{
-		GetExtension(it->first.data(), extension);
-
-		if (IS_META(extension.data()))
-		{
-			lastModTime = it->second;
-			Importer::GetLastModificationTimeFromMeta(it->first.data(), lastModTime);
-			assert(lastModTime != -1);
-			metas[it->first] = lastModTime;
-		}
-	}
-
 	assetsCheckTimer.Start();
 
 	return true;
@@ -82,13 +61,14 @@ update_status ModuleFileSystem::Update()
 {
 	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
 	{
-		assetsSearchTimer.Start();
+		// Read the current files in Assets
+		newFilesInAssets.clear();
 
 		std::string path;
-		std::map<std::string, uint> newFilesInAssets;
 		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets);
 
-		CheckAssets(newFilesInAssets);
+		// Check the read files against the metas
+		CheckAssets();
 
 		assetsCheckTimer.Start();
 	}
@@ -127,7 +107,7 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
 	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("File System error while adding a path or zip (%s): %s", newDir, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Error while adding a path or zip (%s): %s", newDir, PHYSFS_getLastError());
 		
 	return ret;
 }
@@ -139,7 +119,7 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path)
 	if (PHYSFS_delete(path) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("File System error while deleting a file or directory (%s): %s", path, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Error while deleting a file or directory (%s): %s", path, PHYSFS_getLastError());
 
 	return ret;
 }
@@ -176,7 +156,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files, FileType fileType)
+void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files)
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -196,7 +176,7 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 	{
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveGetFilesFromDir(*it, path, files, fileType);
+			RecursiveGetFilesFromDir(*it, path, files);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -204,36 +184,6 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 		}
 		else
 		{
-			std::string extension;
-			GetExtension(*it, extension);
-
-			switch (fileType)
-			{
-			case FileType::MeshFile:	
-				if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::Mesh_Resource)
-					continue;
-				break;
-			case FileType::TextureFile:
-				if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::Texture_Resource)
-					continue;
-				break;
-			case FileType::ResourceFile:
-			{
-				ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
-				if (type != ResourceType::Mesh_Resource && type != ResourceType::Texture_Resource)
-					continue;
-			}
-				break;
-			case FileType::SceneFile:
-				if (!IS_SCENE(extension.data()))
-					continue;
-				break;
-			case FileType::MetaFile:
-				if (!IS_META(extension.data()))
-					continue;
-				break;
-			}
-
 			std::string file = path;
 			file.append(*it);
 
@@ -466,7 +416,43 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 	return objCount;
 }
 
-void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
+bool ModuleFileSystem::AddMeta(const char* metaFile, uint lastModTime)
+{
+	if (metaFile == nullptr || lastModTime == -1)
+	{
+		assert(metaFile != nullptr && lastModTime != -1);
+		return false;
+	}
+
+	CONSOLE_LOG("FILE SYSTEM: Successfully added/modified the meta %s in/from the metas map", metaFile);
+	metas[metaFile] = lastModTime;
+
+	return true;
+}
+
+bool ModuleFileSystem::DeleteMeta(const char* metaFile)
+{
+	bool ret = false;
+
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return ret;
+	}
+
+	if (metas.find(metaFile) != metas.end())
+	{
+		CONSOLE_LOG("FILE SYSTEM: Successfully removed the meta %s from the metas map", metaFile);
+		metas.erase(metaFile);
+		ret = true;
+	}
+	else
+		CONSOLE_LOG("FILE SYSTEM: Meta %s was not found in the metas map and therefore could not be removed", metaFile);
+
+	return ret;
+}
+
+void ModuleFileSystem::CheckAssets()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -488,26 +474,22 @@ void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 		if (newFilesInAssets.find(fileInAssets.data()) == newFilesInAssets.end())
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.file = fileInAssets.data();
 			newEvent.fileEvent.metaFile = it->first.data();
 			newEvent.type = System_Event_Type::FileRemoved;
 			App->PushSystemEvent(newEvent);
-			// TODO remove the meta from the vector
 		}
 		// CASE 2. Meta has been removed
 		else if (newFilesInAssets.find(it->first.data()) == newFilesInAssets.end())
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.file = it->first.data();
+			newEvent.fileEvent.metaFile = it->first.data();
 			newEvent.type = System_Event_Type::MetaRemoved;
 			App->PushSystemEvent(newEvent);
-			// TODO remove the meta from the vector and then add the new meta when generating the file
 		}
 		// CASE 3. Original file has been overwritten
 		else if (newFilesInAssets.find(fileInAssets.data())->second != it->second)
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.file = fileInAssets.data();
 			newEvent.fileEvent.metaFile = it->first.data();
 			newEvent.type = System_Event_Type::FileOverwritten;
 			App->PushSystemEvent(newEvent);
@@ -534,7 +516,6 @@ void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 				newEvent.fileEvent.file = it->first.data();
 				newEvent.type = System_Event_Type::NewFile;
 				App->PushSystemEvent(newEvent);
-				// TODO add the generated meta to the metas map when the file has been created
 			}
 		}
 	}

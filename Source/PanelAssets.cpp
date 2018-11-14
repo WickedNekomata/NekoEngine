@@ -11,6 +11,7 @@
 #include "SceneImporter.h"
 
 #include "ImGui/imgui.h"
+#include "Brofiler/Brofiler.h"
 
 PanelAssets::PanelAssets(char* name) : Panel(name) {}
 
@@ -42,6 +43,8 @@ bool PanelAssets::Draw()
 
 void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) const
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 

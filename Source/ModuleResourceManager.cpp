@@ -84,8 +84,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
 			{
 				// Invalidate resources
-
-
 				entry = DIR_LIBRARY_MESHES;
 				entry.append("/");
 				entry.append(std::to_string(*it));

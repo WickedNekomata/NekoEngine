@@ -285,6 +285,17 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
+bool GameObject::EqualsToChildrenOrMe(const void* isEqual) const
+{
+	if (isEqual == this)
+		return true;
+
+	for (int i = 0; i < children.size(); ++i)
+		return children[i]->EqualsToChildrenOrMe(isEqual);
+
+	return false;
+}
+
 void GameObject::SetName(const char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);

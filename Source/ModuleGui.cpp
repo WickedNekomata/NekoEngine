@@ -7,6 +7,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleTimeManager.h"
+#include "ModuleScene.h"
 #include "ModuleGOs.h"
 #include "ModuleInput.h"
 #include "MaterialImporter.h"
@@ -114,6 +115,9 @@ update_status ModuleGui::PreUpdate()
 
 update_status ModuleGui::Update()
 {
+	// Draw Guizmos
+	App->scene->DrawGuizmos();
+
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }

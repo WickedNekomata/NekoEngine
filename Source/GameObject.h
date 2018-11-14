@@ -52,6 +52,8 @@ public:
 	void SwapComponents(Component* firstComponent, Component* secondComponent);
 	void ReorderComponents(Component* source, Component* target);
 
+	bool EqualsToChildrenOrMe(const void* isEqual) const;
+
 	void SetName(const char* name);
 	const char* GetName() const;
 

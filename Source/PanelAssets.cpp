@@ -92,7 +92,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 
 			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
 
-			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 			{
 				// Search for the meta associated to the file
 				char metaFile[DEFAULT_BUF_SIZE];
@@ -135,23 +136,44 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			ImGui::TreePop();
 			std::string fullPath = currentFile.data();
 			fullPath += *it;
-			SetDragAndDropSource(type, fullPath.data(), extension.data());
+			SetDragAndDropSource(type, extension.data(), currentFile.data(), *it);
 		}
 	}
 }
 
-void PanelAssets::SetDragAndDropSource(ResourceType type, const char* path, const char* extension) const
+void PanelAssets::SetDragAndDropSource(ResourceType type, const char* extension, const char* currentFile, const char* directoryPath) const
 {
 	switch (type)
 	{
 	case ResourceType::No_Type_Resource:
 
 		if (strcmp(extension, EXTENSION_SCENE) == 0) {
+
+			std::string fullPath = currentFile;
+			fullPath += directoryPath;
+
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 			{
-				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", path, sizeof(char) * (strlen(path) + 1));
+				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", fullPath.data(), sizeof(char) * (strlen(fullPath.data()) + 1));
 				ImGui::EndDragDropSource();
 			}
+		}
+		break;
+
+	case ResourceType::Texture_Resource:
+	
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(currentFile) + 1, currentFile); // path
+		strcat_s(metaFile, strlen(metaFile) + strlen(directoryPath) + 1, directoryPath); // fileName
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		uint res_id = 0;
+		App->materialImporter->GetTextureUUIDFromMeta(metaFile, res_id);
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+			ImGui::EndDragDropSource();
 		}
 		break;
 	}

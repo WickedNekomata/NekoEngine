@@ -73,12 +73,6 @@ update_status ModuleScene::Update()
 	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 		currentImGuizmoMode = ImGuizmo::MODE::LOCAL;
 
-	if (selectedObject == CurrentSelection::SelectedType::gameObject)
-	{
-		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
-		OnGizmos(currentGameObject);
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -97,19 +91,14 @@ void ModuleScene::Draw() const
 		grid->Render();
 }
 
-/*
-void ModuleScene::SetCurrentGameObject(GameObject* currentGameObject)
+void ModuleScene::DrawGuizmos()
 {
-	//this->currentGameObject = currentGameObject;
-
-#ifndef GAMEMODE
-	if (currentGameObject != nullptr)
-		App->camera->SetReference(currentGameObject->transform->position);
-	else
-		App->camera->SetReference(math::float3(0.0f, 0.0f, 0.0f));
-#endif
+	if (selectedObject == CurrentSelection::SelectedType::gameObject)
+	{
+		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
+		OnGizmos(currentGameObject);
+	}
 }
-*/
 
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
@@ -133,6 +122,8 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		transformMatrix = transformMatrix.Transposed();
 		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 	}
+
+	ImGuizmo::SetRect(0,0,0,0);
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

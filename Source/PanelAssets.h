@@ -21,7 +21,7 @@ public:
 	bool Draw();
 
 	void RecursiveDrawDir(const char* dir, std::string& currentFile) const;
-	void SetDragAndDropSource(ResourceType type, const char* path, const char* extension) const;
+	void SetDragAndDropSource(ResourceType type, const char* extension, const char* currentFile, const char* directoryPath) const;
 };
 
 #endif

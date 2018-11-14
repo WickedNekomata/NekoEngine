@@ -285,6 +285,17 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
+bool GameObject::EqualsToChildrenOrMe(const void* isEqual) const
+{
+	if (isEqual == this)
+		return true;
+
+	for (int i = 0; i < children.size(); ++i)
+		return children[i]->EqualsToChildrenOrMe(isEqual);
+
+	return false;
+}
+
 void GameObject::SetName(const char* name)
 {
 	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
@@ -401,6 +412,7 @@ void GameObject::OnLoad(JSON_Object* file)
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
 	}	
+	RecursiveRecalculateBoundingBoxes();
 }
 
 void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const

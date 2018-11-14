@@ -8,6 +8,7 @@
 #include "ModuleResourceManager.h"
 
 #include "physfs/include/physfs.h"
+#include "Brofiler/Brofiler.h"
 
 #include <assert.h>
 
@@ -81,7 +82,7 @@ update_status ModuleFileSystem::Update()
 {
 	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
 	{
-		//assetsSearchTimer.Start();
+		assetsSearchTimer.Start();
 
 		std::string path;
 		std::map<std::string, uint> newFilesInAssets;
@@ -177,6 +178,8 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 
 void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files, FileType fileType)
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	if (dir == nullptr)
 	{
 		assert(dir != nullptr);
@@ -465,6 +468,8 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 
 void ModuleFileSystem::CheckAssets(std::map<std::string, uint> newFilesInAssets)
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	// NOTE: Files in library are not expected to be removed by the user
 
 	for (std::map<std::string, uint>::const_iterator it = metas.begin(); it != metas.end(); ++it)

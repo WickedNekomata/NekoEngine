@@ -79,6 +79,8 @@ private:
 
 	float assetsCheckTime = 1.0f; // seconds
 	PerfTimer assetsCheckTimer;
+
+	PerfTimer assetsSearchTimer;
 };
 
 #endif

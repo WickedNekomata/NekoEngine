@@ -16,6 +16,7 @@
 #include "Raycaster.h"
 
 #include "parson/parson.h"
+#include "PCG/entropy.h"
 
 Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 {
@@ -72,6 +73,10 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
+
+	uint64_t seeds[2];
+	entropy_getbytes((void*)seeds, sizeof(seeds));
+	pcg32_srandom_r(&rng, seeds[0], seeds[1]);
 
 	// Read config file
 	char* buf;

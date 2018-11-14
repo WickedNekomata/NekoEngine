@@ -20,7 +20,12 @@ ModuleResourceManager::~ModuleResourceManager() {}
 bool ModuleResourceManager::Start()
 {
 	std::string path;
-	RecursiveImportFilesInDir(DIR_ASSETS, path);
+	RecursiveImportFilesFromDir(DIR_ASSETS, path);
+
+	// TODO
+	// Get all the UUIDS from the resources and check them against the entries Library
+	// Remove any entries in Library that are not being used by the resources
+	// TODO REFRESH LIBRARY
 
 	return true;
 }
@@ -74,6 +79,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		// Also remove the meta from the metas map
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
+
+		// We can only get rid of the entries in Library by refreshing it (since we no longer have a meta to retrieve the entries from)
+		// TODO REFRESH LIBRARY
 
 		// Import
 		ImportFile(fileInAssets.data());
@@ -155,6 +163,55 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
+		std::string extension;
+		App->fs->GetExtension(fileInAssets.data(), extension);
+
+		// Set its resources to invalid and remove its entries in Library // TODO CHECK THIS. I THINK I NEED IT BUT IDK
+		switch (GetResourceTypeByExtension(extension.data()))
+		{
+		case ResourceType::Mesh_Resource:
+		{
+			std::list<uint> UUIDs;
+			App->sceneImporter->GetMeshesUUIDsFromMeta(event.fileEvent.metaFile, UUIDs);
+
+			std::string entry;
+			for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+			{
+				// Invalidate resources
+				Resource* resource = (Resource*)GetResource(*it);
+				resource->InvalidateResource();
+
+				// Remove entries in Library
+				entry = DIR_LIBRARY_MESHES;
+				entry.append("/");
+				entry.append(std::to_string(*it));
+				entry.append(EXTENSION_MESH);
+
+				App->fs->DeleteFileOrDir(entry.data());
+			}
+		}
+		break;
+		case ResourceType::Texture_Resource:
+		{
+			uint UUID;
+			App->materialImporter->GetTextureUUIDFromMeta(event.fileEvent.metaFile, UUID);
+
+			// Invalidate resources
+			Resource* resource = (Resource*)GetResource(UUID);
+			resource->InvalidateResource();
+
+			// Remove entries in Library
+			std::string entry;
+			entry = DIR_LIBRARY_MATERIALS;
+			entry.append("/");
+			entry.append(std::to_string(UUID));
+			entry.append(EXTENSION_TEXTURE);
+
+			App->fs->DeleteFileOrDir(entry.data());
+		}
+		break;
+		}
+
 		// Reimport
 		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
 
@@ -162,7 +219,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 }
 
-void ModuleResourceManager::RecursiveImportFilesInDir(const char* dir, std::string& path)
+void ModuleResourceManager::RecursiveImportFilesFromDir(const char* dir, std::string& path)
 {
 	if (dir == nullptr)
 	{
@@ -180,7 +237,7 @@ void ModuleResourceManager::RecursiveImportFilesInDir(const char* dir, std::stri
 	{
 		if (App->fs->IsDirectory(*it))
 		{
-			RecursiveImportFilesInDir(*it, path);
+			RecursiveImportFilesFromDir(*it, path);
 
 			uint found = path.rfind(*it);
 			if (found != std::string::npos)
@@ -380,7 +437,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			if (metaFile == nullptr)
 				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings, outputMetaFile);
 			else
+			{
 				outputMetaFile = metaFile;
+				// TODO UPDATE THE RESOURCES IN THE META + THE LAST TIME THE ASSET WAS MODIFIED
+			}
 		}
 		break;
 		case ResourceType::Texture_Resource:
@@ -400,7 +460,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			if (metaFile == nullptr)
 				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings, outputMetaFile);
 			else
+			{
 				outputMetaFile = metaFile;
+				// TODO UPDATE THE RESOURCES IN THE META + THE LAST TIME THE ASSET WAS MODIFIED
+			}
 		}
 		break;
 		}

@@ -285,11 +285,14 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				uint UUID = App->res->Find(outputFile.data());
 
 				// If the texture is not a resource yet, import it
-				if (UUID <= 0)
-					UUID = App->res->ImportFile(outputFile.data());
+				//if (UUID <= 0)
+					//UUID = App->res->ImportFile(outputFile.data());
 
-				gameObject->AddComponent(ComponentType::Material_Component);
-				gameObject->materialRenderer->res[0].res = UUID;
+				if (UUID > 0)
+				{
+					gameObject->AddComponent(ComponentType::Material_Component);
+					gameObject->materialRenderer->res[0].res = UUID;
+				}
 			}
 		}
 

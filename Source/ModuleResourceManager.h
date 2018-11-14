@@ -34,7 +34,7 @@ public:
 
 	void OnSystemEvent(System_Event event);
 
-	void RecursiveImportFilesInDir(const char* dir, std::string& path);
+	void RecursiveImportFilesFromDir(const char* dir, std::string& path);
 
 	uint ImportFile(const char* fileInAssets);
 	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);

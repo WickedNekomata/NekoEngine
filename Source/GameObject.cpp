@@ -287,13 +287,15 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 
 bool GameObject::EqualsToChildrenOrMe(const void* isEqual) const
 {
+	bool ret = false;
+
 	if (isEqual == this)
-		return true;
+		ret = true;
 
-	for (int i = 0; i < children.size(); ++i)
-		return children[i]->EqualsToChildrenOrMe(isEqual);
+	for (int i = 0; i < children.size() && !ret; ++i)
+		ret = children[i]->EqualsToChildrenOrMe(isEqual);
 
-	return false;
+	return ret;
 }
 
 void GameObject::SetName(const char* name)

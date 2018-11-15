@@ -217,131 +217,140 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
 
-		gameObject->AddComponent(ComponentType::Mesh_Component);
-		gameObject->meshRenderer->res = App->GenerateRandomNumber();
-
-		float* vertices = nullptr;
-		uint verticesSize = 0;
-		uint verticesID = 0;
-
-		uint* indices = nullptr;
-		uint indicesID = 0;
-		uint indicesSize = 0;
-
-		float* textureCoords = nullptr;
-		uint textureCoordsID = 0;
-		uint textureCoordsSize = 0;
-
-		// Unique vertices
-		verticesSize = nodeMesh->mNumVertices;
-		vertices = new float[verticesSize * 3];
-		memcpy(vertices, (float*)nodeMesh->mVertices, sizeof(float) * verticesSize * 3);
-
-		// Indices
-		if (nodeMesh->HasFaces())
+		bool broken = false;
+		for (uint i = 0; i < nodeMesh->mNumFaces; i++)
 		{
-			uint facesSize = nodeMesh->mNumFaces;
-			indicesSize = facesSize * 3;
-			indices = new uint[indicesSize];
-
-			for (uint j = 0; j < facesSize; ++j)
-			{
-				if (nodeMesh->mFaces[j].mNumIndices != 3)
-				{
-					CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
-					return;
-				}
-				else
-					memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
-			}
+			if (nodeMesh->mFaces[i].mNumIndices != 3)
+				broken = true;
 		}
 
-		// Texture coords
-		if (nodeMesh->HasTextureCoords(0))
+		if (!broken)
 		{
-			textureCoordsSize = verticesSize * 2;
-			textureCoords = new float[textureCoordsSize];
+			gameObject->AddComponent(ComponentType::Mesh_Component);
+			gameObject->meshRenderer->res = App->GenerateRandomNumber();
 
-			for (uint j = 0; j < verticesSize; ++j)
+			float* vertices = nullptr;
+			uint verticesSize = 0;
+			uint verticesID = 0;
+
+			uint* indices = nullptr;
+			uint indicesID = 0;
+			uint indicesSize = 0;
+
+			float* textureCoords = nullptr;
+			uint textureCoordsID = 0;
+			uint textureCoordsSize = 0;
+
+			// Unique vertices
+			verticesSize = nodeMesh->mNumVertices;
+			vertices = new float[verticesSize * 3];
+			memcpy(vertices, (float*)nodeMesh->mVertices, sizeof(float) * verticesSize * 3);
+
+			// Indices
+			if (nodeMesh->HasFaces())
 			{
-				memcpy(&textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
-				memcpy(&textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
-			}
-		}
+				uint facesSize = nodeMesh->mNumFaces;
+				indicesSize = facesSize * 3;
+				indices = new uint[indicesSize];
 
-		// Material
-		if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr) // TODO CHECK IF NULL
-		{
-			aiString textureName;
-			scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
-
-			std::string outputFile;
-			std::string file;
-			App->fs->GetFileName(textureName.data, file, true);
-
-			// Check if the texture exists in Assets
-			if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
-			{
-				uint UUID = App->res->Find(outputFile.data());
-
-				// If the texture is not a resource yet, import it
-				//if (UUID <= 0)
-					//UUID = App->res->ImportFile(outputFile.data());
-
-				if (UUID > 0)
+				for (uint j = 0; j < facesSize; ++j)
 				{
-					gameObject->AddComponent(ComponentType::Material_Component);
-					gameObject->materialRenderer->res[0].res = UUID;
+					if (nodeMesh->mFaces[j].mNumIndices != 3)
+					{
+						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
+					}
+					else
+						memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
 				}
 			}
+
+			// Texture coords
+			if (nodeMesh->HasTextureCoords(0))
+			{
+				textureCoordsSize = verticesSize * 2;
+				textureCoords = new float[textureCoordsSize];
+
+				for (uint j = 0; j < verticesSize; ++j)
+				{
+					memcpy(&textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
+					memcpy(&textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
+				}
+			}
+
+			// Material
+			if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr) // TODO CHECK IF NULL
+			{
+				aiString textureName;
+				scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
+
+				std::string outputFile;
+				std::string file;
+				App->fs->GetFileName(textureName.data, file, true);
+
+				// Check if the texture exists in Assets
+				if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
+				{
+					uint UUID = App->res->Find(outputFile.data());
+
+					// If the texture is not a resource yet, import it
+					//if (UUID <= 0)
+						//UUID = App->res->ImportFile(outputFile.data());
+
+					if (UUID > 0)
+					{
+						gameObject->AddComponent(ComponentType::Material_Component);
+						gameObject->materialRenderer->res[0].res = UUID;
+					}
+				}
+			}
+
+			// Vertices + Indices + Texture Coords
+			uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
+
+			uint size = sizeof(ranges) +
+				sizeof(float) * verticesSize * 3 +
+				sizeof(uint) * indicesSize +
+				sizeof(float) * textureCoordsSize;
+
+			char* data = new char[size];
+			char* cursor = data;
+
+			// 1. Store ranges
+			uint bytes = sizeof(ranges);
+			memcpy(cursor, ranges, bytes);
+
+			cursor += bytes;
+
+			// 2. Store vertices
+			bytes = sizeof(float) * verticesSize * 3;
+			memcpy(cursor, vertices, bytes);
+
+			cursor += bytes;
+
+			// 3. Store indices
+			bytes = sizeof(uint) * indicesSize;
+			memcpy(cursor, indices, bytes);
+
+			cursor += bytes;
+
+			// 4. Store texture coords
+			bytes = sizeof(float) * textureCoordsSize;
+			memcpy(cursor, textureCoords, bytes);
+
+			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
+
+			if (App->fs->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
+			{
+				CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
+			}
+			else
+				CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
+
+			RELEASE_ARRAY(data);
+			RELEASE_ARRAY(vertices);
+			RELEASE_ARRAY(indices);
+			RELEASE_ARRAY(textureCoords);
 		}
-
-		// Vertices + Indices + Texture Coords
-		uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
-
-		uint size = sizeof(ranges) +
-			sizeof(float) * verticesSize * 3 +
-			sizeof(uint) * indicesSize +
-			sizeof(float) * textureCoordsSize;
-
-		char* data = new char[size];
-		char* cursor = data;
-
-		// 1. Store ranges
-		uint bytes = sizeof(ranges);
-		memcpy(cursor, ranges, bytes);
-
-		cursor += bytes;
-
-		// 2. Store vertices
-		bytes = sizeof(float) * verticesSize * 3;
-		memcpy(cursor, vertices, bytes);
-
-		cursor += bytes;
-
-		// 3. Store indices
-		bytes = sizeof(uint) * indicesSize;
-		memcpy(cursor, indices, bytes);
-
-		cursor += bytes;
-
-		// 4. Store texture coords
-		bytes = sizeof(float) * textureCoordsSize;
-		memcpy(cursor, textureCoords, bytes);
-
-		std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
-
-		if (App->fs->SaveInLibrary(data, size, FileType::MeshFile, outputFileName) > 0)
-		{
-			CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
-		}
-		else
-			CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
-
-		RELEASE_ARRAY(data);
-		RELEASE_ARRAY(vertices);
-		RELEASE_ARRAY(indices);
-		RELEASE_ARRAY(textureCoords);
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

@@ -73,6 +73,8 @@ update_status ModuleScene::Update()
 	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 		currentImGuizmoMode = ImGuizmo::MODE::LOCAL;
 
+	App->scene->DrawGuizmos();
+
 	return UPDATE_CONTINUE;
 }
 

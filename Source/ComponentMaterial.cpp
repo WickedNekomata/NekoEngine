@@ -177,7 +177,9 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 	for (int i = 0; i < arraySize; i++) {
 		JSON_Object* rObject = json_array_get_object(jsonArray, i);
 
-		SetResource(json_object_get_number(rObject, "res"), i);
+		uint newRes = json_object_get_number(rObject, "res");
+		if (newRes == 0 || App->res->GetResource(newRes) != nullptr)
+			SetResource(newRes, i);
 
 		math::float3 pos; math::Quat rot; math::float3 scale;
 

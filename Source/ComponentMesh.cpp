@@ -83,5 +83,7 @@ void ComponentMesh::OnInternalSave(JSON_Object* file)
 
 void ComponentMesh::OnLoad(JSON_Object* file)
 {
-	SetResource(json_object_get_number(file, "ResourceMesh"));
+	uint newRes = json_object_get_number(file, "ResourceMesh");
+	if (newRes == 0 || App->res->GetResource(newRes) != nullptr)
+		SetResource(newRes);
 }

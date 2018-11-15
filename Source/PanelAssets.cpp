@@ -86,11 +86,17 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 				continue;
 
 			treeNodeFlags = 0;
-			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-
-			ImGui::TreeNodeEx(*it, treeNodeFlags);
 
 			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
+
+			if (type != ResourceType::Mesh_Resource)
+				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+			else
+				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+			bool opened = false;
+			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
+				opened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
@@ -133,7 +139,28 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 					break;
 				}		
 			}
-			ImGui::TreePop();
+			if (opened)
+			{
+				// Search for the meta associated to the file
+				char metaFile[DEFAULT_BUF_SIZE];
+				strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
+				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
+				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+				std::list<uint> uuids;
+				App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, uuids);
+				for (auto uuidsIt = uuids.begin(); uuidsIt != uuids.end(); ++uuidsIt)
+				{
+					ImGui::TreeNodeEx(std::to_string(*uuidsIt).data(), ImGuiTreeNodeFlags_Leaf);
+					ImGui::TreePop();
+
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+					{
+						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &(*uuidsIt), sizeof(uint));
+						ImGui::EndDragDropSource();
+					}
+				}
+				ImGui::TreePop();
+			}
 			std::string fullPath = currentFile.data();
 			fullPath += *it;
 			SetDragAndDropSource(type, extension.data(), currentFile.data(), *it);

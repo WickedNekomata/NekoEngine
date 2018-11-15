@@ -36,8 +36,10 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 	if (res[position].res != 0)
 		App->res->SetAsUnused(res[position].res);
 
-	if (res_uuid != 0)
-		App->res->SetAsUsed(res_uuid);
+	if (res_uuid != 0) {
+		if (App->res->SetAsUsed(res_uuid) == -1)
+			return;
+	}
 
 	res[position].res = res_uuid;
 }

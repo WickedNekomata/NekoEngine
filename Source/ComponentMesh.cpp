@@ -34,8 +34,10 @@ void ComponentMesh::SetResource(uint res_uuid)
 	if (res != 0)
 		App->res->SetAsUnused(res);
 
-	if (res_uuid != 0)
-		App->res->SetAsUsed(res_uuid);
+	if (res_uuid != 0) {
+		if (App->res->SetAsUsed(res_uuid) == -1)
+			return;
+	}
 
 	res = res_uuid;
 }

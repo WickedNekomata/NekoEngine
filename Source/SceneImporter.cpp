@@ -283,11 +283,11 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				aiString textureName;
 				scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 
-				std::string outputFile;
 				std::string file;
 				App->fs->GetFileName(textureName.data, file, true);
 
 				// Check if the texture exists in Assets
+				std::string outputFile = DIR_ASSETS;
 				if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 				{
 					uint UUID = App->res->FindByFile(outputFile.data());

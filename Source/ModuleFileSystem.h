@@ -49,7 +49,7 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files);
+	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles);
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;

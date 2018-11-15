@@ -28,20 +28,12 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	CreateDir(DIR_ASSETS_SCENES);
 
-	// TODO: If the user creates a new folder inside Assets, add the folder as a path!
-	AddPath("./Assets/Meshes/", "Meshes");
-	AddPath("./Assets/Textures/", "Textures");
-	AddPath("./Assets/UI/", "UI");
-	AddPath("./Assets/Scenes/", "Scenes");
-
 	if (CreateDir(DIR_LIBRARY))
 	{
 		AddPath("./Library/", "Library");
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
-		AddPath("./Library/Meshes/", "LibMeshes");
-		AddPath("./Library/Materials/", "LibMaterials");
 	}
 	
 	// TODO
@@ -64,7 +56,7 @@ update_status ModuleFileSystem::Update()
 		// Read the current files in Assets
 		newFilesInAssets.clear();
 
-		std::string path;
+		std::string path = DIR_ASSETS;
 		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets);
 
 		// Check the read files against the metas
@@ -156,7 +148,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& files)
+void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles)
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -166,31 +158,30 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 		return;
 	}
 
-	path.append(dir);
-	path.append("/");
-
-	const char** currentFiles = App->fs->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(path.data());
 	const char** it;
 
-	for (it = currentFiles; *it != nullptr; ++it)
-	{
-		if (App->fs->IsDirectory(*it))
-		{
-			RecursiveGetFilesFromDir(*it, path, files);
+	path.append("/");
 
-			uint found = path.rfind(*it);
-			if (found != std::string::npos)
-				path = path.substr(0, found);
-		}
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
+			RecursiveGetFilesFromDir(*it, path, outputFiles);
 		else
 		{
-			std::string file = path;
-			file.append(*it);
+			std::string extension;
+			App->fs->GetExtension(*it, extension);
 
-			int lastModTime = GetLastModificationTime(file.data());
+			int lastModTime = GetLastModificationTime(path.data());
 			assert(lastModTime != -1);
-			files[file] = lastModTime;
+			outputFiles[path.data()] = lastModTime;
 		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
 	}
 }
 
@@ -212,15 +203,12 @@ bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, st
 		return false;
 	}
 
-	path.append(dir);
 	path.append("/");
-
-	bool exists = false;
 
 	std::string file = path;
 	file.append(fileName);
 
-	exists = Exists(file.data());
+	bool exists = Exists(file.data());
 
 	if (exists)
 	{
@@ -228,22 +216,24 @@ bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, st
 		return exists;
 	}
 
-	const char** currentFiles = App->fs->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(path.data());
 	const char** it;
 
-	for (it = currentFiles; *it != nullptr; ++it)
+	for (it = files; *it != nullptr; ++it)
 	{
-		if (App->fs->IsDirectory(*it))
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
 		{
 			exists = RecursiveExists(fileName, *it, path);
 
 			if (exists)
 				return exists;
-
-			uint found = path.rfind(*it);
-			if (found != std::string::npos)
-				path = path.substr(0, found);
 		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
 	}
 
 	return exists;

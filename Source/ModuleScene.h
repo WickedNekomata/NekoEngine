@@ -29,7 +29,6 @@ public:
 	bool CleanUp();
 
 	void Draw() const;
-	void DrawGuizmos();
 
 	// ImGuizmo
 	void OnGizmos(GameObject* gameObject) const;

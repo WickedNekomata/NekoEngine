@@ -5,6 +5,8 @@
 #include "Application.h"
 #include "GameObject.h"
 #include "ModuleScene.h"
+#include "ModuleInput.h"
+#include "SDL/include/SDL_scancode.h"
 #include "ModuleGOs.h"
 #include "ImGui/imgui.h"
 #include "imgui/imgui_internal.h"
@@ -95,6 +97,12 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
+				if (App->scene->selectedObject == child && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+				{
+					App->scene->selectedObject = CurrentSelection::SelectedType::null;
+					App->GOs->DeleteGameObject(child);
+				}
+
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					DESTROYANDSET(child);
 
@@ -119,6 +127,12 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 				
 				AtGameObjectPopUp(child);
 
+				if (App->scene->selectedObject == child && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+				{
+					App->scene->selectedObject = CurrentSelection::SelectedType::null;
+					App->GOs->DeleteGameObject(child);
+				}
+			
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					DESTROYANDSET(child);				
 			}

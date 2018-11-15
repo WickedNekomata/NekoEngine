@@ -89,10 +89,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		{
 			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
 			{
-				// Invalidate resource
-				it->second->InvalidateResource();
-
-				// Remove entry in Library
 				switch (type)
 				{
 				case ResourceType::Mesh_Resource:
@@ -109,6 +105,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					break;
 				}
 
+				// Invalidate resource
+				DestroyResource(it->first);
+				it = resources.begin();
+
+				// Remove entry in Library
 				App->fs->DeleteFileOrDir(entry.data());
 			}
 		}
@@ -142,10 +143,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		{
 			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
 			{
-				// Invalidate resource
-				it->second->InvalidateResource();
-
-				// Remove entry in Library
 				switch (type)
 				{
 				case ResourceType::Mesh_Resource:
@@ -162,6 +159,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					break;
 				}
 
+				// Invalidate resource
+				DestroyResource(it->first);
+				it = resources.begin();
+
+				// Remove entry in Library
 				App->fs->DeleteFileOrDir(entry.data());
 			}
 		}
@@ -193,10 +195,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		{
 			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
 			{
-				// Invalidate resource
-				it->second->InvalidateResource();
-
-				// Remove entry in Library
 				switch (type)
 				{
 				case ResourceType::Mesh_Resource:
@@ -213,6 +211,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					break;
 				}
 
+				// Invalidate resource
+				DestroyResource(it->first);
+				it = resources.begin();
+
+				// Remove entry in Library
 				App->fs->DeleteFileOrDir(entry.data());
 			}
 		}
@@ -637,7 +640,7 @@ int ModuleResourceManager::SetAsUnused(uint uuid) const
 	return it->second->UnloadMemory();
 }
 
-// Returns true if resource associated to the UUID can be found and deleted. In case of error, it returns false
+// Returns true if the resource associated to the UUID can be found and deleted. In case of error, it returns false
 bool ModuleResourceManager::DestroyResource(uint uuid)
 {
 	auto it = resources.find(uuid);

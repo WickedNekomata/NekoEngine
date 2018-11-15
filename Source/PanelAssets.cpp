@@ -43,6 +43,7 @@ bool PanelAssets::Draw()
 
 void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) const
 {
+	// TODO MODIFY THIS RECURSIVITY
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
 	ImGuiTreeNodeFlags treeNodeFlags = 0;

@@ -7,7 +7,10 @@
 
 Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) {}
 
-Resource::~Resource() {}
+Resource::~Resource() 
+{
+	App->GOs->InvalidateResource(this);
+}
 
 // Get UUID of the current resource.
 uint Resource::GetUUID() const
@@ -62,9 +65,4 @@ uint Resource::CountReferences() const
 ResourceType Resource::GetType() const
 {
 	return type;
-}
-
-void Resource::InvalidateResource()
-{
-	App->GOs->InvalidateResource(this);
 }

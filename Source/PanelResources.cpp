@@ -35,6 +35,7 @@ bool PanelResources::Draw()
 
 void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile) const
 {
+	// TODO MODIFY THIS RECURSIVITY
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 

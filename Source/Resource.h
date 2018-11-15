@@ -25,8 +25,6 @@ public:
 	uint CountReferences() const;
 	ResourceType GetType() const;
 
-	void InvalidateResource();
-
 private:
 
 	virtual bool LoadInMemory() = 0;

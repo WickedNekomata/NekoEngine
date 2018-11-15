@@ -35,6 +35,7 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	void RecursiveImportFilesFromDir(const char* dir, std::string& path);
+	void RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path);
 
 	uint ImportFile(const char* fileInAssets);
 	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);
@@ -43,7 +44,8 @@ public:
 
 	const Resource* GetResource(uint uuid) const;
 	static ResourceType GetResourceTypeByExtension(const char* extension);
-	uint Find(const char* fileInAssets) const;
+	uint FindByFile(const char* fileInAssets) const;
+	uint FindByExportedFile(const char* exportedFile) const;
 
 	int SetAsUsed(uint uuid) const;
 	int SetAsUnused(uint uuid) const;

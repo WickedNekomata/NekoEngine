@@ -257,11 +257,11 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 	size = App->fs->Save(metaFile, buffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its texture import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its mesh texture settings", metaFile);
 		return false;
 	}
 

@@ -19,6 +19,7 @@ public:
 	virtual bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const = 0;
 	virtual bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const = 0;
 
+	static bool SetLastModificationTimeToMeta(const char* metaFile, int& lastModTime);
 	static bool GetLastModificationTimeFromMeta(const char* metaFile, int& lastModTime);
 };
 

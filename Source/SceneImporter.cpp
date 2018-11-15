@@ -282,7 +282,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// Check if the texture exists in Assets
 			if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 			{
-				uint UUID = App->res->Find(outputFile.data());
+				uint UUID = App->res->FindByFile(outputFile.data());
 
 				// If the texture is not a resource yet, import it
 				//if (UUID <= 0)
@@ -491,11 +491,11 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	size = App->fs->Save(metaFile, buffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", metaFile);
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
 		return false;
 	}
 

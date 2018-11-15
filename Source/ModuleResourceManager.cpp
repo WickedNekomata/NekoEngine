@@ -22,10 +22,10 @@ bool ModuleResourceManager::Start()
 	std::string path;
 	RecursiveImportFilesFromDir(DIR_ASSETS, path);
 
-	// TODO
-	// Get all the UUIDS from the resources and check them against the entries Library
+	path.clear();
+
 	// Remove any entries in Library that are not being used by the resources
-	// TODO REFRESH LIBRARY
+	RecursiveDeleteUnusedFilesFromDir(DIR_LIBRARY, path);
 
 	return true;
 }
@@ -81,7 +81,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
 
 		// We can only get rid of the entries in Library by refreshing it (since we no longer have a meta to retrieve the entries from)
-		// TODO REFRESH LIBRARY
+		std::string path;
+		RecursiveDeleteUnusedFilesFromDir(DIR_LIBRARY, path);
 
 		// Import
 		ImportFile(fileInAssets.data());
@@ -219,6 +220,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 }
 
+// Imports all files found in a directory (except scenes and metas)
 void ModuleResourceManager::RecursiveImportFilesFromDir(const char* dir, std::string& path)
 {
 	if (dir == nullptr)
@@ -259,6 +261,51 @@ void ModuleResourceManager::RecursiveImportFilesFromDir(const char* dir, std::st
 	}
 }
 
+// Deletes all files found in a directory (excepte scenes and metas) that are not being used by any resource
+// Normally called to delete unused files in Library
+void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	path.append(dir);
+	path.append("/");
+
+	const char** files = App->fs->GetFilesFromDir(dir);
+	const char** it;
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		if (App->fs->IsDirectory(*it))
+		{
+			RecursiveImportFilesFromDir(*it, path);
+
+			uint found = path.rfind(*it);
+			if (found != std::string::npos)
+				path = path.substr(0, found);
+		}
+		else
+		{
+			std::string extension;
+			App->fs->GetExtension(*it, extension);
+
+			// Ignore scenes and metas
+			if (IS_SCENE(extension.data()) || IS_META(extension.data()))
+				continue;
+
+			std::string file = path;
+			file.append(*it);
+
+			if (FindByExportedFile(file.data()) <= 0)
+				App->fs->DeleteFileOrDir(file.data());
+		}
+	}
+}
+
+// Determines how to import a file and calls ImportFile into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 {
 	uint ret = 0;
@@ -331,7 +378,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 		// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
 		else
 		{
-			if (Find(fileInAssets) == 0)
+			if (FindByFile(fileInAssets) == 0)
 			{
 				// Create the resources
 				CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
@@ -436,10 +483,12 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings, outputMetaFile);
+			// Else, update the last modified time in the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
-				// TODO UPDATE THE RESOURCES IN THE META + THE LAST TIME THE ASSET WAS MODIFIED
+				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
+				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
 		}
 		break;
@@ -459,10 +508,12 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings, outputMetaFile);
+			// Else, update the last modified time in the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
-				// TODO UPDATE THE RESOURCES IN THE META + THE LAST TIME THE ASSET WAS MODIFIED
+				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
+				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
 		}
 		break;
@@ -547,11 +598,23 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 }
 
 // Returns the UUID associated to the resource of the file. If error, it returns 0
-uint ModuleResourceManager::Find(const char* fileInAssets) const
+uint ModuleResourceManager::FindByFile(const char* fileInAssets) const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
+			return it->first;
+	}
+
+	return 0;
+}
+
+// Returns the UUID associated to the resource of the exported file. If error, it returns 0
+uint ModuleResourceManager::FindByExportedFile(const char* exportedFile) const
+{
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)
 			return it->first;
 	}
 

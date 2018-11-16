@@ -1,13 +1,17 @@
 #include "ResourceMesh.h"
 
 #include "Application.h"
+#include "ModuleGOs.h"
 #include "SceneImporter.h"
 
 #include "glew/include/GL/glew.h"
 
 ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid) {}
 
-ResourceMesh::~ResourceMesh() {}
+ResourceMesh::~ResourceMesh() 
+{
+	App->GOs->InvalidateResource(this);
+}
 
 bool ResourceMesh::LoadInMemory()
 {
@@ -36,13 +40,13 @@ bool ResourceMesh::LoadInMemory()
 
 bool ResourceMesh::UnloadFromMemory()
 {
-	glDeleteBuffers(1, (GLuint*)&verticesID);
-	glDeleteBuffers(1, (GLuint*)&indicesID);
-	glDeleteBuffers(1, (GLuint*)&textureCoordsID);
+	//glDeleteBuffers(1, (GLuint*)&verticesID);
+	//glDeleteBuffers(1, (GLuint*)&indicesID);
+	//glDeleteBuffers(1, (GLuint*)&textureCoordsID);
 
-	RELEASE_ARRAY(vertices);
-	RELEASE_ARRAY(indices);
-	RELEASE_ARRAY(textureCoords);
+	//RELEASE_ARRAY(vertices);
+	//RELEASE_ARRAY(indices);
+	//RELEASE_ARRAY(textureCoords);
 
 	return true;
 }

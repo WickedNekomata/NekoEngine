@@ -7,10 +7,7 @@
 
 Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) {}
 
-Resource::~Resource() 
-{
-	App->GOs->InvalidateResource(this);
-}
+Resource::~Resource() {}
 
 // Get UUID of the current resource.
 uint Resource::GetUUID() const

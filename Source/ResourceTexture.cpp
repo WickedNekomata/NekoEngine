@@ -1,12 +1,17 @@
 #include "ResourceTexture.h"
 
 #include "Application.h"
+#include "ModuleGOs.h"
 #include "MaterialImporter.h"
+
 #include "glew/include/GL/glew.h"
 
 ResourceTexture::ResourceTexture(ResourceType type, uint uuid) : Resource(type, uuid) {}
 
-ResourceTexture::~ResourceTexture() {}
+ResourceTexture::~ResourceTexture() 
+{
+	App->GOs->InvalidateResource(this);
+}
 
 bool ResourceTexture::LoadInMemory()
 {
@@ -27,7 +32,7 @@ bool ResourceTexture::LoadInMemory()
 
 bool ResourceTexture::UnloadFromMemory()
 {
-	glDeleteTextures(1, (GLuint*)&id);
+	//glDeleteTextures(1, (GLuint*)&id);
 
 	return true;
 }

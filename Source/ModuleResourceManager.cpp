@@ -717,9 +717,9 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 		std::list<uint> UUIDs;
 		if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
 		{
-			ret = RemoveMeshesLibraryEntries(UUIDs);
+			ret = DestroyResources(UUIDs);
 			if (ret)
-				ret = DestroyResources(UUIDs);
+				ret = RemoveMeshesLibraryEntries(UUIDs);
 		}
 	}
 	break;
@@ -728,9 +728,9 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 		uint UUID;
 		if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
 		{
-			ret = RemoveTextureLibraryEntry(UUID);
+			ret = DestroyResource(UUID);
 			if (ret)
-				ret = DestroyResource(UUID);
+				ret = RemoveTextureLibraryEntry(UUID);
 		}
 	}
 	break;

@@ -31,8 +31,8 @@ bool PanelAssets::Draw()
 
 		if (ImGui::TreeNodeEx(DIR_ASSETS))
 		{
-			std::string currentFile;
-			RecursiveDrawDir(DIR_ASSETS, currentFile);
+			std::string path = DIR_ASSETS;
+			RecursiveDrawDir(DIR_ASSETS, path);
 			ImGui::TreePop();
 		}
 	}
@@ -41,39 +41,41 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) const
+void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 {
-	// TODO MODIFY THIS RECURSIVITY
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
 
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-	currentFile.append(dir);
-	currentFile.append("/");
-
-	const char** files = App->fs->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(path.data());
 	const char** it;
+
+	path.append("/");
 
 	for (it = files; *it != nullptr; ++it)
 	{
+		path.append(*it);
+
 		bool treeNodeOpened = false;
 
 		treeNodeFlags = 0;
 		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-		if (App->fs->IsDirectory(*it))
+		if (App->fs->IsDirectory(path.data()))
 		{
 			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (treeNodeOpened)
 			{
-				RecursiveDrawDir(*it, currentFile);
-				uint found = currentFile.rfind(*it);
-				if (found != std::string::npos)
-					currentFile = currentFile.substr(0, found);
-
+				RecursiveDrawDir(*it, path);
 				ImGui::TreePop();
 			}
 		}
@@ -83,124 +85,135 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& currentFile) co
 			App->fs->GetExtension(*it, extension);
 
 			// Ignore metas
-			if (IS_META(extension.data()))
-				continue;
-
-			treeNodeFlags = 0;
-
-			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
-
-			if (type != ResourceType::Mesh_Resource)
-				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-			else
-				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-			bool opened = false;
-			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
-				opened = true;
-
-			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
-				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+			if (!IS_META(extension.data()))
 			{
-				// Search for the meta associated to the file
-				char metaFile[DEFAULT_BUF_SIZE];
-				strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
-				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+				treeNodeFlags = 0;
 
-				switch (type)
+				ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
+
+				if (type != ResourceType::Mesh_Resource)
+					treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+				else
+					treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+				if (ImGui::TreeNodeEx(*it, treeNodeFlags))
+					treeNodeOpened = true;
+
+				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+					&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				{
-				case ResourceType::Mesh_Resource:
-				{
-					MeshImportSettings* currentSettings = new MeshImportSettings();
-					App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
-
-					currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
-					strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
-
-					DESTROYANDSET(currentSettings);
-					break;
-				}
-				case ResourceType::Texture_Resource:
-				{
-					TextureImportSettings* currentSettings = new TextureImportSettings();
-					App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, currentSettings);
-
-					currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
-					strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
-
-					DESTROYANDSET(currentSettings);
-					break;
-				}
-				case ResourceType::No_Type_Resource:
-
-					if (strcmp(extension.data(), EXTENSION_SCENE) == 0) 
-						DESTROYANDSET(CurrentSelection::SelectedType::scene);
-
-					break;
-				}		
-			}
-			if (opened)
-			{
-				// Search for the meta associated to the file
-				char metaFile[DEFAULT_BUF_SIZE];
-				strcpy_s(metaFile, strlen(currentFile.data()) + 1, currentFile.data()); // path
-				strcat_s(metaFile, strlen(metaFile) + strlen(*it) + 1, *it); // fileName
-				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-				std::list<uint> uuids;
-				App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, uuids);
-				for (auto uuidsIt = uuids.begin(); uuidsIt != uuids.end(); ++uuidsIt)
-				{
-					ImGui::TreeNodeEx(std::to_string(*uuidsIt).data(), ImGuiTreeNodeFlags_Leaf);
-					ImGui::TreePop();
-
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+					// Ignore scenes
+					if (!IS_SCENE(extension.data()))
 					{
-						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &(*uuidsIt), sizeof(uint));
-						ImGui::EndDragDropSource();
+						// Search for the meta associated to the file
+						char metaFile[DEFAULT_BUF_SIZE];
+						strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
+						strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+						switch (type)
+						{
+						case ResourceType::Mesh_Resource:
+						{
+							MeshImportSettings* currentSettings = new MeshImportSettings();
+							App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
+
+							currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
+							strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
+
+							DESTROYANDSET(currentSettings);
+							break;
+						}
+						case ResourceType::Texture_Resource:
+						{
+							TextureImportSettings* currentSettings = new TextureImportSettings();
+							App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, currentSettings);
+
+							currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
+							strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
+
+							DESTROYANDSET(currentSettings);
+							break;
+						}
+						case ResourceType::No_Type_Resource:
+
+							if (strcmp(extension.data(), EXTENSION_SCENE) == 0)
+								DESTROYANDSET(CurrentSelection::SelectedType::scene);
+
+							break;
+						}
 					}
 				}
-				ImGui::TreePop();
+
+				if (treeNodeOpened)
+				{
+					// Ignore scenes
+					if (!IS_SCENE(extension.data()))
+					{
+						// Search for the meta associated to the file
+						char metaFile[DEFAULT_BUF_SIZE];
+						strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
+						strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+						std::list<uint> UUIDs;
+						App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs);
+
+						for (auto it = UUIDs.begin(); it != UUIDs.end(); ++it)
+						{
+							ImGui::TreeNodeEx(std::to_string(*it).data(), ImGuiTreeNodeFlags_Leaf);
+							ImGui::TreePop();
+
+							if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+							{
+								ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &(*it), sizeof(uint));
+								ImGui::EndDragDropSource();
+							}
+						}
+					}
+					ImGui::TreePop();
+				}
+
+				SetDragAndDropSource(path.data());
 			}
-			std::string fullPath = currentFile.data();
-			fullPath += *it;
-			SetDragAndDropSource(type, extension.data(), currentFile.data(), *it);
 		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
 	}
 }
 
-void PanelAssets::SetDragAndDropSource(ResourceType type, const char* extension, const char* currentFile, const char* directoryPath) const
+void PanelAssets::SetDragAndDropSource(const char* file) const
 {
-	switch (type)
+	std::string extension;
+	App->fs->GetExtension(file, extension);
+
+	switch (ModuleResourceManager::GetResourceTypeByExtension(extension.data()))
 	{
 	case ResourceType::No_Type_Resource:
 
-		if (strcmp(extension, EXTENSION_SCENE) == 0) {
-
-			std::string fullPath = currentFile;
-			fullPath += directoryPath;
-
+		if (IS_SCENE(extension.data()))
+		{
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 			{
-				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", fullPath.data(), sizeof(char) * (strlen(fullPath.data()) + 1));
+				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", file, sizeof(char) * (strlen(file) + 1));
 				ImGui::EndDragDropSource();
 			}
 		}
 		break;
 
 	case ResourceType::Texture_Resource:
-	
+
+		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
-		strcpy_s(metaFile, strlen(currentFile) + 1, currentFile); // path
-		strcat_s(metaFile, strlen(metaFile) + strlen(directoryPath) + 1, directoryPath); // fileName
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		uint res_id = 0;
-		App->materialImporter->GetTextureUUIDFromMeta(metaFile, res_id);
+		uint UUID = 0;
+		App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID);
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
-			ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+			ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
 			ImGui::EndDragDropSource();
 		}
 		break;

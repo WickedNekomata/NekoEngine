@@ -9,6 +9,7 @@
 #include "ModuleScene.h"
 
 #include "ImGui/imgui.h"
+#include "Brofiler/Brofiler.h"
 
 PanelResources::PanelResources(char* name) : Panel(name) {}
 
@@ -21,10 +22,10 @@ bool PanelResources::Draw()
 
 	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
-		if (ImGui::TreeNodeEx("Library"))
+		if (ImGui::TreeNodeEx(DIR_LIBRARY))
 		{
-			std::string currentFile;
-			RecursiveDrawDir("Library", currentFile);
+			std::string path = DIR_LIBRARY;
+			RecursiveDrawDir(DIR_LIBRARY, path);
 			ImGui::TreePop();
 		}
 	}
@@ -33,41 +34,41 @@ bool PanelResources::Draw()
 	return true;
 }
 
-void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile) const
+void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
 {
-	// TODO MODIFY THIS RECURSIVITY
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
 	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-	currentFile.append(dir);
-	currentFile.append("/");
-
-	const char** files = App->fs->GetFilesFromDir(dir);
+	const char** files = App->fs->GetFilesFromDir(path.data());
 	const char** it;
+
+	path.append("/");
 	
 	for (it = files; *it != nullptr; ++it)
 	{
-		std::string lib("Lib");
-		lib += *it;
+		path.append(*it);
 
 		bool treeNodeOpened = false;
 
 		treeNodeFlags = 0;
 		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 		
-		if (App->fs->IsDirectory(lib.data()))
+		if (App->fs->IsDirectory(path.data()))
 		{
 			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (treeNodeOpened)
 			{
-				
-				RecursiveDrawDir(lib.data(), currentFile);
-				uint found = currentFile.rfind(*it);
-				if (found != std::string::npos)
-					currentFile = currentFile.substr(0, found);
-
+				RecursiveDrawDir(*it, path);
 				ImGui::TreePop();
 			}
 		}
@@ -79,8 +80,8 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-			uint res_id = strtoul(*it, NULL, 0);
-			const Resource* res = App->res->GetResource(res_id);
+			uint UUID = strtoul(*it, NULL, 0);
+			const Resource* res = App->res->GetResource(UUID);
 			
 			if (App->scene->selectedObject != NULL && App->scene->selectedObject == res)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -92,11 +93,14 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 				DESTROYANDSET(res);
 
 			ImGui::TreePop();
-			if (res != nullptr) {
-				if (res->GetType() == ResourceType::Mesh_Resource) {
+
+			if (res != nullptr) 
+			{
+				if (res->GetType() == ResourceType::Mesh_Resource) 
+				{
 					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 					{
-						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
 						ImGui::EndDragDropSource();
 					}
 				}
@@ -104,12 +108,16 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& currentFile)
 				{
 					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 					{
-						ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &res_id, sizeof(uint));
+						ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
 						ImGui::EndDragDropSource();
 					}
 				}
 			}
 		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
 	}
 }
 

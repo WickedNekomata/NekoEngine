@@ -19,8 +19,7 @@ ModuleResourceManager::~ModuleResourceManager() {}
 
 bool ModuleResourceManager::Start()
 {
-	std::string path;
-	path.append(DIR_ASSETS);
+	std::string path = DIR_ASSETS;
 	RecursiveImportFilesFromDir(DIR_ASSETS, path);
 
 	// Remove any entries in Library that are not being used by the resources

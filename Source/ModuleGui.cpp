@@ -105,9 +105,9 @@ bool ModuleGui::Start()
 
 	// Anisotropic filtering
 	// TODO: set this with the selected settings for the texture
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-		0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, atlasCarray_map);
+	uint8_t data[] = { 'ÿ','ÿ','ÿ' };
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 128, 128,
+		0, 6408, GL_UNSIGNED_BYTE, data);
 
 
 

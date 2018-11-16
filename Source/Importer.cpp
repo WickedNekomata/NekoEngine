@@ -32,9 +32,13 @@ bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModT
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
-	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
 
-	size = App->fs->Save(metaFile, buffer, sizeBuf);
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its last modification time", metaFile);
@@ -45,7 +49,7 @@ bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModT
 		return false;
 	}
 
-	RELEASE_ARRAY(buffer);
+	RELEASE_ARRAY(newBuffer);
 	json_value_free(rootValue);
 
 	return true;

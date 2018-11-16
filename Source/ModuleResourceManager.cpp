@@ -67,6 +67,22 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 	break;
 
+	case System_Event_Type::ReimportFile:
+	{
+		// Path of the file in Assets associated to the meta
+		std::string fileInAssets = event.fileEvent.metaFile;
+		uint found = fileInAssets.find_last_of(".");
+		if (found != std::string::npos)
+			fileInAssets = fileInAssets.substr(0, found);
+
+		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be reimported", fileInAssets.data());
+
+		App->res->DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
+
+		App->res->ImportFile(fileInAssets.data());
+	}
+	break;
+
 	case System_Event_Type::MetaRemoved:
 	{
 		// Path of the file in Assets associated to the meta
@@ -77,41 +93,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		CONSOLE_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
 
-		std::string extension;
-		App->fs->GetExtension(fileInAssets.data(), extension);
-		ResourceType type = GetResourceTypeByExtension(extension.data());
-
-		std::string entry;
-
-		// Set its resources to invalid and remove its entries in Library
-		for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		{
-			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
-			{
-				switch (type)
-				{
-				case ResourceType::Mesh_Resource:
-					entry = DIR_LIBRARY_MESHES;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_MESH);
-					break;
-				case ResourceType::Texture_Resource:
-					entry = DIR_LIBRARY_MATERIALS;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_TEXTURE);
-					break;
-				}
-
-				// Invalidate resource
-				DestroyResource(it->first);
-				it = resources.begin();
-
-				// Remove entry in Library
-				App->fs->DeleteFileOrDir(entry.data());
-			}
-		}
+		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Also remove the meta from the metas map
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
@@ -123,49 +105,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::FileRemoved:
 	{
-		// Path of the file in Assets associated to the meta
-		std::string fileInAssets = event.fileEvent.metaFile;
-		uint found = fileInAssets.find_last_of(".");
-		if (found != std::string::npos)
-			fileInAssets = fileInAssets.substr(0, found);
+		CONSOLE_LOG("RESOURCE MANAGER: The file with the meta '%s' has been removed", event.fileEvent.metaFile);
 
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been removed", fileInAssets.data());
-
-		std::string extension;
-		App->fs->GetExtension(fileInAssets.data(), extension);
-		ResourceType type = GetResourceTypeByExtension(extension.data());
-
-		std::string entry;
-
-		// Set its resources to invalid and remove its entries in Library
-		for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		{
-			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
-			{
-				switch (type)
-				{
-				case ResourceType::Mesh_Resource:
-					entry = DIR_LIBRARY_MESHES;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_MESH);
-					break;
-				case ResourceType::Texture_Resource:
-					entry = DIR_LIBRARY_MATERIALS;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_TEXTURE);
-					break;
-				}
-
-				// Invalidate resource
-				DestroyResource(it->first);
-				it = resources.begin();
-
-				// Remove entry in Library
-				App->fs->DeleteFileOrDir(entry.data());
-			}
-		}
+		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Remove its meta from the metas map before removing it completely
 		App->fs->DeleteFileOrDir(event.fileEvent.metaFile);
@@ -182,42 +124,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			fileInAssets = fileInAssets.substr(0, found);
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
-
-		std::string extension;
-		App->fs->GetExtension(fileInAssets.data(), extension);
-		ResourceType type = GetResourceTypeByExtension(extension.data());
-
-		std::string entry;
-
-		// Set its resources to invalid and remove its entries in Library
-		for (std::map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		{
-			if (strcmp(it->second->GetFile(), fileInAssets.data()) == 0)
-			{
-				switch (type)
-				{
-				case ResourceType::Mesh_Resource:
-					entry = DIR_LIBRARY_MESHES;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_MESH);
-					break;
-				case ResourceType::Texture_Resource:
-					entry = DIR_LIBRARY_MATERIALS;
-					entry.append("/");
-					entry.append(std::to_string(it->first));
-					entry.append(EXTENSION_TEXTURE);
-					break;
-				}
-
-				// Invalidate resource
-				DestroyResource(it->first);
-				it = resources.begin();
-
-				// Remove entry in Library
-				App->fs->DeleteFileOrDir(entry.data());
-			}
-		}
+		
+		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Reimport
 		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
@@ -290,9 +198,24 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, s
 
 			// Ignore scenes and metas
 			// If the file has no associated resource, then it is unused and must be deleted
-			if (!IS_SCENE(extension.data()) && !IS_META(extension.data())
-				&& FindByExportedFile(path.data()) <= 0)
-				App->fs->DeleteFileOrDir(path.data());
+			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
+			{
+				bool resources = false;
+
+				if (strcmp(extension.data(), EXTENSION_MESH))
+				{
+					std::list<uint> UUIDs;
+					resources = FindMeshesByExportedFile(path.data(), UUIDs);
+				}
+				else if (strcmp(extension.data(), EXTENSION_TEXTURE))
+				{
+					uint UUID;
+					resources = FindTextureByExportedFile(path.data(), UUID);
+				}
+
+				if (!resources)
+					App->fs->DeleteFileOrDir(path.data());
+			}
 		}
 
 		uint found = path.rfind(*it);
@@ -320,7 +243,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 	}
 	else
 	{
-		bool entries = true;
+		bool entries = false;
+
 		char exportedFile[DEFAULT_BUF_SIZE];
 
 		std::string extension;
@@ -371,10 +295,28 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
 			ret = ImportFile(fileInAssets, metaFile, nullptr);
 		}
-		// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
 		else
 		{
-			if (FindByFile(fileInAssets) == 0)
+			bool resources = false;
+
+			switch (type)
+			{
+			case ResourceType::Mesh_Resource:
+			{
+				std::list<uint> UUIDs;
+				resources = FindMeshesByFile(fileInAssets, UUIDs);
+			}
+			break;
+			case ResourceType::Texture_Resource:
+			{
+				uint UUID;
+				resources = FindTextureByFile(fileInAssets, UUID);
+			}
+			break;
+			}
+
+			// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
+			if (!resources)
 			{
 				// Create the resources
 				CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
@@ -479,10 +421,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings, outputMetaFile);
-			// Else, update the last modified time in the existing meta
+			// Else, update the UUIDs and the last modified time in the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
+
+				App->sceneImporter->SetMeshUUIDsToMeta(metaFile, meshesUUIDs);
+
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
@@ -504,10 +449,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings, outputMetaFile);
-			// Else, update the last modified time in the existing meta
+			// Else, update the UUIDs and the last modified time in the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
+
+				App->materialImporter->SetTextureUUIDToMeta(metaFile, UUID);
+
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
@@ -596,28 +544,70 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	return ResourceType::No_Type_Resource;
 }
 
-// Returns the UUID associated to the resource of the file. If error, it returns 0
-uint ModuleResourceManager::FindByFile(const char* fileInAssets) const
+// Returns the UUID associated to the resource of the file
+bool ModuleResourceManager::FindTextureByFile(const char* fileInAssets, uint& UUID) const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
-			return it->first;
+		{
+			UUID = it->first;
+			return true;
+		}
 	}
 
-	return 0;
+	return false;
 }
 
-// Returns the UUID associated to the resource of the exported file. If error, it returns 0
-uint ModuleResourceManager::FindByExportedFile(const char* exportedFile) const
+// Returns the UUID associated to the resource of the exported file
+bool ModuleResourceManager::FindTextureByExportedFile(const char* exportedFile, uint& UUID) const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)
-			return it->first;
+		{
+			UUID = it->first;
+			return true;
+		}
 	}
 
-	return 0;
+	return false;
+}
+
+// Returns the UUID(s) associated to the resource(s) of the file
+bool ModuleResourceManager::FindMeshesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const
+{
+	bool ret = false;
+
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
+		{
+			uint UUID = it->first;
+			UUIDs.push_back(UUID);
+			ret = true;
+		}
+	}
+
+	return ret;
+}
+
+// Returns the UUID(s) associated to the resource(s) of the file
+bool ModuleResourceManager::FindMeshesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const
+{
+	bool ret = false;
+
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)
+		{
+			uint UUID = it->first;
+			UUIDs.push_back(UUID);
+			ret = true;
+		}
+	}
+
+	return ret;
 }
 
 // Loads the resource to memory and returns the number of references. In case of error, it returns -1
@@ -632,9 +622,9 @@ int ModuleResourceManager::SetAsUsed(uint uuid) const
 }
 
 // Unloads the resource from memory and returns the number of references. In case of error, it returns -1.
-int ModuleResourceManager::SetAsUnused(uint uuid) const
+int ModuleResourceManager::SetAsUnused(uint UUID) const
 {
-	auto it = resources.find(uuid);
+	auto it = resources.find(UUID);
 
 	if (it == resources.end())
 		return -1;
@@ -643,16 +633,110 @@ int ModuleResourceManager::SetAsUnused(uint uuid) const
 }
 
 // Returns true if the resource associated to the UUID can be found and deleted. In case of error, it returns false
-bool ModuleResourceManager::DestroyResource(uint uuid)
+bool ModuleResourceManager::DestroyResource(uint UUID)
 {
-	auto it = resources.find(uuid);
+	auto it = resources.find(UUID);
 
 	if (it == resources.end())
 		return false;
 	
 	delete it->second;
-	resources.erase(uuid);
+	resources.erase(UUID);
 	return true;
+}
+
+bool ModuleResourceManager::DestroyResources(std::list<uint> UUIDs)
+{
+	for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+	{
+		auto res = resources.find(*it);
+
+		if (res != resources.end())
+		{
+			delete res->second;
+			resources.erase(*it);
+		}
+		else
+			return false;
+	}
+
+	return true;
+}
+
+bool ModuleResourceManager::RemoveTextureLibraryEntry(uint UUID)
+{
+	std::string entry;
+
+	entry = DIR_LIBRARY_MATERIALS;
+	entry.append("/");
+	entry.append(std::to_string(UUID));
+	entry.append(EXTENSION_TEXTURE);
+
+	// Remove entry in Library
+	return App->fs->DeleteFileOrDir(entry.data());
+}
+
+bool ModuleResourceManager::RemoveMeshesLibraryEntries(std::list<uint> UUIDs)
+{
+	bool ret = false;
+
+	std::string entry;
+
+	for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+	{
+		entry = DIR_LIBRARY_MESHES;
+		entry.append("/");
+		entry.append(std::to_string(*it));
+		entry.append(EXTENSION_MESH);
+
+		// Remove entry in Library
+		ret = App->fs->DeleteFileOrDir(entry.data());
+	}
+
+	return ret;
+}
+
+bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* metaFile)
+{
+	bool ret = false;
+
+	// Path of the file in Assets associated to the meta
+	std::string fileInAssets = metaFile;
+	uint found = fileInAssets.find_last_of(".");
+	if (found != std::string::npos)
+		fileInAssets = fileInAssets.substr(0, found);
+
+	std::string extension;
+	App->fs->GetExtension(fileInAssets.data(), extension);
+	ResourceType type = GetResourceTypeByExtension(extension.data());
+
+	switch (type)
+	{
+	case ResourceType::Mesh_Resource:
+	{
+		std::list<uint> UUIDs;
+		if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
+		{
+			ret = RemoveMeshesLibraryEntries(UUIDs);
+			if (ret)
+				ret = DestroyResources(UUIDs);
+		}
+	}
+	break;
+	case ResourceType::Texture_Resource:
+	{
+		uint UUID;
+		if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
+		{
+			ret = RemoveTextureLibraryEntry(UUID);
+			if (ret)
+				ret = DestroyResource(UUID);
+		}
+	}
+	break;
+	}
+
+	return ret;
 }
 
 // Deletes all resources

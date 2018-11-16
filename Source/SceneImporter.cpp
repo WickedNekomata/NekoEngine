@@ -86,7 +86,7 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 	}
 
 	MeshImportSettings* meshImportSettings = (MeshImportSettings*)importSettings;
-	//TODO FILE SCALE
+
 	uint postProcessingFlags = 0;
 
 	switch (meshImportSettings->postProcessConfiguration)
@@ -290,7 +290,9 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				std::string outputFile = DIR_ASSETS;
 				if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 				{
-					uint UUID = App->res->FindByFile(outputFile.data());
+					/*
+					uint UUID;
+					App->res->FindTextureByFile(outputFile.data(), UUID);
 
 					// If the texture is not a resource yet, import it
 					//if (UUID <= 0)
@@ -301,6 +303,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						gameObject->AddComponent(ComponentType::Material_Component);
 						gameObject->materialRenderer->res[0].res = UUID;
 					}
+					*/
 				}
 			}
 
@@ -392,14 +395,6 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	JSON_Object* sceneImporterObject = json_value_get_object(sceneImporterValue);
 	json_object_set_value(rootObject, "Scene Importer", sceneImporterValue);
 
-	JSON_Value* scaleArrayValue = json_value_init_array();
-	JSON_Array* scaleArray = json_value_get_array(scaleArrayValue);
-	json_array_append_number(scaleArray, meshImportSettings->scale.x);
-	json_array_append_number(scaleArray, meshImportSettings->scale.y);
-	json_array_append_number(scaleArray, meshImportSettings->scale.z);
-	json_object_set_value(sceneImporterObject, "Scale", scaleArrayValue);
-
-	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
 	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
 	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
 	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
@@ -444,6 +439,60 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 	return true;
 }
 
+bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint>& UUIDs) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Value* meshesArrayValue = json_value_init_array();
+	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
+	for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+		json_array_append_number(meshesArray, *it);
+	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(newBuffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
 bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const MeshImportSettings* meshImportSettings) const
 {
 	if (metaFile == nullptr || meshImportSettings == nullptr)
@@ -469,12 +518,6 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 
 	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
 
-	JSON_Array* scaleArray = json_object_get_array(rootObject, "Scale");
-	json_array_append_number(scaleArray, meshImportSettings->scale.x);
-	json_array_append_number(scaleArray, meshImportSettings->scale.y);
-	json_array_append_number(scaleArray, meshImportSettings->scale.z);
-
-	json_object_set_boolean(sceneImporterObject, "Use File Scale", meshImportSettings->useFileScale);
 	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
 	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
 	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
@@ -495,9 +538,13 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
-	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
 
-	size = App->fs->Save(metaFile, buffer, sizeBuf);
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
@@ -508,7 +555,7 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 		return false;
 	}
 
-	RELEASE_ARRAY(buffer);
+	RELEASE_ARRAY(newBuffer);
 	json_value_free(rootValue);
 
 	return true;
@@ -571,13 +618,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
-	JSON_Array* meshesArray = json_object_get_array(rootObject, "Meshes");
-	meshImportSettings->scale.x = json_array_get_number(meshesArray, 0);
-	meshImportSettings->scale.y = json_array_get_number(meshesArray, 1);
-	meshImportSettings->scale.z = json_array_get_number(meshesArray, 2);
-
 	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
-	meshImportSettings->useFileScale = json_object_get_boolean(sceneImporterObject, "Use File Scale");
 	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)(uint)json_object_get_number(sceneImporterObject, "Post Process Configuration");
 	meshImportSettings->calcTangentSpace = json_object_get_boolean(sceneImporterObject, "Calculate Tangent Space");
 	meshImportSettings->genNormals = json_object_get_boolean(sceneImporterObject, "Generate Normals");

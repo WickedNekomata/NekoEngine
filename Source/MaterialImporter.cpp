@@ -218,6 +218,56 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 	return true;
 }
 
+bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint& UUID) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	json_object_set_number(rootObject, "UUID", UUID);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(newBuffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
 bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const
 {
 	if (metaFile == nullptr || textureImportSettings == nullptr)
@@ -252,20 +302,24 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 
 	// Create the JSON
 	int sizeBuf = json_serialization_size_pretty(rootValue);
-	json_serialize_to_buffer_pretty(rootValue, buffer, sizeBuf);
 
-	size = App->fs->Save(metaFile, buffer, sizeBuf);
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its texture import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its mesh texture settings", metaFile);
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its texture import settings", metaFile);
 		return false;
 	}
 
-	RELEASE_ARRAY(buffer);
+	RELEASE_ARRAY(newBuffer);
 	json_value_free(rootValue);
 
 	return true;

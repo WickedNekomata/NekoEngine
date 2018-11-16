@@ -83,7 +83,8 @@ update_status ModuleScene::Update()
 			SetImGuizmoMode(ImGuizmo::MODE::WORLD);
 	}
 
-	if (selectedObject == CurrentSelection::SelectedType::gameObject) {
+	if (selectedObject == CurrentSelection::SelectedType::gameObject) 
+	{
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);
 	}
@@ -120,7 +121,6 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 	if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
 		mode = ImGuizmo::MODE::LOCAL;
 
-	ImGuizmo::DrawCube(viewMatrix.ptr(), projectionMatrix.ptr(), transformMatrix.ptr());
 	ImGuizmo::Manipulate(
 		viewMatrix.ptr(), projectionMatrix.ptr(),
 		currentImGuizmoOperation, mode, transformMatrix.ptr()

@@ -6,12 +6,12 @@
 
 #include "Application.h"
 #include "ModuleScene.h"
+#include "ModuleResourceManager.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 
 #include "GameObject.h"
 #include "Component.h"
-#include "ComponentTransform.h"
 
 #include "Resource.h"
 #include "ResourceMesh.h"
@@ -89,23 +89,6 @@ void PanelInspector::ShowGameObjectInspector()
 	if (ImGui::Checkbox("##static", &isStatic)) { gameObject->ToggleIsStatic(); }
 	ImGui::SameLine();
 	ImGui::Text("Static");
-
-	ImGui::Text("Tag");
-	ImGui::SameLine();
-	const char* tags[] = { "Untagged", "Player" };
-	static int currentTag = 0;
-	ImGui::PushItemWidth(75.0f);
-	ImGui::Combo("##tag", &currentTag, tags, IM_ARRAYSIZE(tags));
-	ImGui::PopItemWidth();
-
-	ImGui::SameLine();
-	ImGui::Text("Layer");
-	ImGui::SameLine();
-	const char* layers[] = { "Default", "Collider", "PostProcessing" };
-	static int currentLayer = 0;
-	ImGui::PushItemWidth(75.0f);
-	ImGui::Combo("##layer", &currentLayer, layers, IM_ARRAYSIZE(layers));
-	ImGui::PopItemWidth();
 
 	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 	{
@@ -222,19 +205,6 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 	ImGui::Spacing();
 	ImGui::Text("Import Settings");
 	ImGui::Spacing();
-
-	ImGui::Text("Scale");
-
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
-
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&meshImportSettings->scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&meshImportSettings->scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&meshImportSettings->scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-
-	ImGui::Checkbox("Use File Scale", &meshImportSettings->useFileScale);
 
 	const char* postProcessConfiguration[] = { "Target Realtime Fast", "Target Realtime Quality", "Target Realtime Max Quality", "Custom" };
 	static int currentPostProcessConfiguration = meshImportSettings->postProcessConfiguration;
@@ -406,7 +376,15 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) { App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile, meshImportSettings); }
+	if (ImGui::Button("REIMPORT")) 
+	{ 
+		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile, meshImportSettings);
+
+		System_Event newEvent;
+		newEvent.fileEvent.metaFile = meshImportSettings->metaFile;
+		newEvent.type = System_Event_Type::ReimportFile;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 void PanelInspector::ShowTextureImportSettingsInspector()
@@ -458,7 +436,15 @@ void PanelInspector::ShowTextureImportSettingsInspector()
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) { App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile, textureImportSettings); }
+	if (ImGui::Button("REIMPORT")) 
+	{ 
+		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile, textureImportSettings); 
+		
+		System_Event newEvent;
+		newEvent.fileEvent.metaFile = textureImportSettings->metaFile;
+		newEvent.type = System_Event_Type::ReimportFile;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 #endif // GAME

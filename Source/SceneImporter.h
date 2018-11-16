@@ -19,9 +19,6 @@ struct MeshImportSettings : public ImportSettings
 {
 	const char* metaFile = nullptr;
 
-	math::float3 scale = math::float3::one;
-	bool useFileScale = true;
-
 	enum MeshPostProcessConfiguration { TARGET_REALTIME_FAST, TARGET_REALTIME_QUALITY, TARGET_REALTIME_MAX_QUALITY, CUSTOM };
 	MeshPostProcessConfiguration postProcessConfiguration = TARGET_REALTIME_MAX_QUALITY;
 
@@ -57,6 +54,7 @@ public:
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation) const;
 
 	bool GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings, std::string& outputMetaFile) const;
+	bool SetMeshUUIDsToMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool SetMeshImportSettingsToMeta(const char* metaFile, const MeshImportSettings* meshImportSettings) const;
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;

@@ -8,6 +8,7 @@
 
 #include <map>
 #include <vector>
+#include <list>
 
 // This is the value in memory of each string.
 // https://www.quora.com/How-is-an-integer-value-stored-in-the-memory-in-C
@@ -44,16 +45,25 @@ public:
 
 	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
 
-	const Resource* GetResource(uint uuid) const;
+	const Resource* GetResource(uint UUID) const;
 	static ResourceType GetResourceTypeByExtension(const char* extension);
-	uint FindByFile(const char* fileInAssets) const;
-	uint FindByExportedFile(const char* exportedFile) const;
 
-	int SetAsUsed(uint uuid) const;
-	int SetAsUnused(uint uuid) const;
+	bool FindTextureByFile(const char* fileInAssets, uint& UUID) const;
+	bool FindTextureByExportedFile(const char* exportedFile, uint& UUID) const;
+	bool FindMeshesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
+	bool FindMeshesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
 
-	bool DestroyResource(uint uuid);
+	int SetAsUsed(uint UUID) const;
+	int SetAsUnused(uint UUID) const;
+
+	bool DestroyResource(uint UUID);
+	bool DestroyResources(std::list<uint> UUIDs);
 	void DestroyResources();
+
+	bool RemoveTextureLibraryEntry(uint UUID);
+	bool RemoveMeshesLibraryEntries(std::list<uint> UUIDs);
+
+	bool DestroyResourcesAndRemoveLibraryEntries(const char* metaFile);
 
 	bool SomethingOnMemory() const;
 

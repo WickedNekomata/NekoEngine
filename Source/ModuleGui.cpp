@@ -105,11 +105,10 @@ update_status ModuleGui::PreUpdate()
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 
-	ImGuizmo::BeginFrame();
-
 	// Begin dock space
 	DockSpace();
 
+	ImGuizmo::BeginFrame();
 	return UPDATE_CONTINUE;
 }
 

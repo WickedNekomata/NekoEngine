@@ -40,9 +40,6 @@ void ComponentTransform::OnUniqueEditor()
 	ImGui::Checkbox("Seen last frame", &seenLastFrame);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
-	math::float3 lastPosition = position;
-	math::Quat lastRotation = rotation;
-	math::float3 lastScale = scale;
 	if (ImGui::Button("Reset"))
 	{
 		position = math::float3::zero;
@@ -122,9 +119,8 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 	}
 
 	math::float4x4 localMatrix = GetMatrix();
-	globalMatrix = globalMatrix * localMatrix;
 
-	return globalMatrix;
+	return globalMatrix * localMatrix;
 }
 
 void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)

@@ -104,9 +104,10 @@ bool PanelEdit::Draw()
 		if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::LOCAL)
 		{
 			ImGui::PushID("localHovered");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f))
+				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::WORLD);
-			if (ImGui::IsItemHovered())
+			if (ImGui::IsItemHovered() && App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				ImGui::SetTooltip("Tool Mode");
 			ImGui::PopID();
 
@@ -117,9 +118,10 @@ bool PanelEdit::Draw()
 		else if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::WORLD)
 		{
 			ImGui::PushID("worldHovered");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f))
+				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
-			if (ImGui::IsItemHovered())
+			if (ImGui::IsItemHovered() && App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				ImGui::SetTooltip("Tool Mode");
 			ImGui::PopID();
 

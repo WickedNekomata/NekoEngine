@@ -108,8 +108,6 @@ void ModuleScene::Draw() const
 
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
-	ImGuizmo::Enable(true);
-
 	ImGuiViewport* vport = ImGui::GetMainViewport();
 	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
 
@@ -118,9 +116,14 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 	math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
 	transformMatrix = transformMatrix.Transposed();
 
+	ImGuizmo::MODE mode = currentImGuizmoMode;
+	if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
+		mode = ImGuizmo::MODE::LOCAL;
+
+	ImGuizmo::DrawCube(viewMatrix.ptr(), projectionMatrix.ptr(), transformMatrix.ptr());
 	ImGuizmo::Manipulate(
 		viewMatrix.ptr(), projectionMatrix.ptr(),
-		currentImGuizmoOperation, currentImGuizmoMode, transformMatrix.ptr()
+		currentImGuizmoOperation, mode, transformMatrix.ptr()
 	);
 
 	if (ImGuizmo::IsUsing())
@@ -129,7 +132,7 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 	}
 
-	ImGuizmo::SetRect(0,0,0,0);
+	ImGuizmo::SetRect(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

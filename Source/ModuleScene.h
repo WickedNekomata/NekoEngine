@@ -53,7 +53,7 @@ private:
 	bool showGrid = true;
 
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::LOCAL;
+	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
 
 public:
 

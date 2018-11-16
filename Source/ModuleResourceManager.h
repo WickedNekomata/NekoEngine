@@ -9,16 +9,18 @@
 #include <map>
 #include <vector>
 
-#define ASCIIfbx 4610298120
-#define ASCIIFBX 46706688
-#define ASCIIobj 4611198106
-#define ASCIIOBJ 46796674
-#define ASCIIdds 46100100115
-#define ASCIIDDS 46686883
-#define ASCIIpng 46112110103
-#define ASCIIPNG 46807871
-#define ASCIIjpg 46106112103
-#define ASCIIJPG 46748071
+// This is the value in memory of each string.
+// https://www.quora.com/How-is-an-integer-value-stored-in-the-memory-in-C
+#define ASCIIfbx 2019714606
+#define ASCIIFBX 1480738350
+#define ASCIIobj 1784835886
+#define ASCIIOBJ 1245859630
+#define ASCIIdds 1935959086
+#define ASCIIDDS 1396982830
+#define ASCIIpng 1735290926
+#define ASCIIPNG 1196314670
+#define ASCIIjpg 1735420462
+#define ASCIIJPG 1196444206
 
 struct ImportSettings;
 class Resource;

@@ -575,13 +575,16 @@ const Resource* ModuleResourceManager::GetResource(uint uuid) const
 // Returns the resource type that matches the extension
 ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* extension)
 {
-	uint64_t asciiValue;
-	std::stringstream ascii;
-	for (const char* it = extension; *it; ++it)
-		ascii << uint16_t((*it));
-	ascii >> asciiValue;
+	union
+	{
+		char ext[4];
+		uint32_t asciiValue;
+	} asciiUnion;
 
-	switch (asciiValue)
+	for (int i = 0; i < 4; ++i)
+		asciiUnion.ext[i] = extension[i];
+
+	switch (asciiUnion.asciiValue)
 	{
 	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ:
 		return ResourceType::Mesh_Resource;

@@ -32,7 +32,7 @@ bool ResourceTexture::LoadInMemory()
 
 bool ResourceTexture::UnloadFromMemory()
 {
-	//glDeleteTextures(1, (GLuint*)&id);
+	glDeleteTextures(1, (GLuint*)&id);
 
 	return true;
 }

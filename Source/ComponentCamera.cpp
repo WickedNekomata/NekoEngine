@@ -44,6 +44,7 @@ void ComponentCamera::UpdateTransform()
 
 void ComponentCamera::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Camera");
 	ImGui::Spacing();
 
@@ -70,6 +71,7 @@ void ComponentCamera::OnUniqueEditor()
 		ImGui::SameLine();
 		ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
 	}
+#endif
 }
 
 void ComponentCamera::SetFOV(float fov)

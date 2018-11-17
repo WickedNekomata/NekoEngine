@@ -63,6 +63,7 @@ void ComponentMesh::SetResource(uint res_uuid)
 
 void ComponentMesh::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Mesh Renderer");
 	ImGui::Spacing();
 
@@ -94,6 +95,7 @@ void ComponentMesh::OnUniqueEditor()
 		}
 		ImGui::EndDragDropTarget();
 	}
+#endif
 }
 
 void ComponentMesh::OnInternalSave(JSON_Object* file)

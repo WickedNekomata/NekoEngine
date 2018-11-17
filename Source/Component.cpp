@@ -16,6 +16,7 @@ void Component::Update() {}
 
 void Component::OnEditor()
 {
+#ifndef GAMEMODE
 	char itemName[DEFAULT_BUF_SIZE];
 	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Move##%u", UUID);
 
@@ -50,6 +51,7 @@ void Component::OnEditor()
 	ImGui::SameLine();
 
 	OnUniqueEditor();
+#endif
 }
 
 void Component::OnUniqueEditor() {}

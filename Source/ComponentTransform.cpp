@@ -34,6 +34,8 @@ void ComponentTransform::OnEditor()
 
 void ComponentTransform::OnUniqueEditor()
 {
+#ifndef GAMEMODE
+
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool seenLastFrame = parent->GetSeenLastFrame();
 	ImGui::Checkbox("Seen last frame", &seenLastFrame);
@@ -105,6 +107,8 @@ void ComponentTransform::OnUniqueEditor()
 			App->PushSystemEvent(newEvent);
 		}
 	}
+
+#endif // !GAMEMODE
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const

@@ -61,6 +61,7 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 
 void ComponentMaterial::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Material");
 	ImGui::Spacing();
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
@@ -125,6 +126,7 @@ void ComponentMaterial::OnUniqueEditor()
 			res.push_back(newRes);
 		}
 	}
+#endif
 }
 
 void ComponentMaterial::OnInternalSave(JSON_Object* file)
@@ -219,6 +221,7 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)
 {
+#ifndef GAMEMODE
 	char itemName[DEFAULT_BUF_SIZE];
 	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Reset##%i", i);
 	if (ImGui::Button(itemName))
@@ -274,4 +277,5 @@ void ComponentMaterial::EditCurrentResMatrixByIndex(int i)
 	ImGui::DragScalar(itemName, ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
 	res[i].matrix = math::float4x4::FromTRS(pos, rot, scale);
+#endif
 }

@@ -131,8 +131,6 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 		transformMatrix = transformMatrix.Transposed();
 		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 	}
-
-	//ImGuizmo::SetRect(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)
@@ -205,7 +203,7 @@ void ModuleScene::CreateRandomStaticGameObject()
 	quadtree.Insert(random);
 }
 
-bool ModuleScene::IsImguizmoOver() const
+bool ModuleScene::IsImguizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }

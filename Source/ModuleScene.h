@@ -35,11 +35,15 @@ public:
 	// ImGuizmo
 	void OnGizmos(GameObject* gameObject) const;
 
+#ifndef GAMEMODE
+
 	void SetImGuizmoOperation(ImGuizmo::OPERATION operation);
 	ImGuizmo::OPERATION GetImGuizmoOperation() const;
 
 	void SetImGuizmoMode(ImGuizmo::MODE mode);
 	ImGuizmo::MODE GetImGuizmoMode() const;
+
+#endif
 
 	bool GetShowGrid() const;
 	void SetShowGrid(bool showGrid);
@@ -57,8 +61,12 @@ private:
 	PrimitiveGrid* grid = nullptr;
 	bool showGrid = true;
 
+#ifndef GAMEMODE
+
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
+
+#endif // !GAMEMODE
 
 public:
 

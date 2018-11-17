@@ -69,7 +69,9 @@ Application::~Application()
 	for (std::list<Module*>::const_reverse_iterator item = list_modules.rbegin(); item != list_modules.rend(); ++item)
 		delete *item;
 
+#ifndef GAMEMODE
 	RELEASE(raycaster);
+#endif
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
 	RELEASE(sceneImporter);

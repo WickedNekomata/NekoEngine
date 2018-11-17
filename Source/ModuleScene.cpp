@@ -74,6 +74,7 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
+#ifndef GAMEMODE
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -97,6 +98,8 @@ update_status ModuleScene::Update()
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);
 	}
+
+#endif
 
 	return UPDATE_CONTINUE;
 }
@@ -127,6 +130,8 @@ void ModuleScene::Draw() const
 	if (showGrid)
 		grid->Render();
 }
+
+#ifndef GAMEMODE
 
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
@@ -173,6 +178,8 @@ ImGuizmo::MODE ModuleScene::GetImGuizmoMode() const
 {
 	return currentImGuizmoMode;
 }
+
+#endif
 
 bool ModuleScene::GetShowGrid() const
 {
@@ -224,10 +231,14 @@ void ModuleScene::CreateRandomStaticGameObject()
 	quadtree.Insert(random);
 }
 
+#ifndef GAMEMODE
+
 bool ModuleScene::IsImguizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }
+
+#endif
 
 void ModuleScene::FreeRoot()
 {

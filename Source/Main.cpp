@@ -5,9 +5,9 @@
 #include "SDL\include\SDL.h"
 #include "Brofiler\Brofiler.h"
 
-#pragma comment(lib, "SDL\libx86\SDL2.lib")
-#pragma comment(lib, "SDL\libx86\SDL2main.lib")
-#pragma comment (lib, "Brofiler\ProfilerCore32.lib")
+#pragma comment(lib, "SDL\\libx86\\SDL2.lib")
+#pragma comment(lib, "SDL\\libx86\\SDL2main.lib")
+#pragma comment (lib, "Brofiler\\ProfilerCore32.lib")
 
 enum main_states
 {

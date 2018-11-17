@@ -149,6 +149,7 @@ public:
 		delete cur;
 		cur = nullptr;
 		type = SelectedType::null;
+		return true;
 	}
 
 	// Add operators in case of new kinds of selection :)

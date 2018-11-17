@@ -412,12 +412,30 @@ ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
 	return newComponent;
 }
 
-void ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
+bool ModuleRenderer3D::AddMeshComponent(ComponentMesh* toAdd)
 {
-	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), toErase);
+	bool ret = true;
 
-	if (it != meshComponents.end())
+	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), toAdd);
+	ret = it == meshComponents.end();
+
+	if (ret)
+		meshComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), toErase);
+	ret = it != meshComponents.end();
+
+	if (ret)
 		meshComponents.erase(it);
+
+	return ret;
 }
 
 ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
@@ -432,12 +450,30 @@ ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
 	return newComponent;
 }
 
-void ModuleRenderer3D::EraseCameraComponent(ComponentCamera* toErase)
+bool ModuleRenderer3D::AddCameraComponent(ComponentCamera* toAdd)
 {
-	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
+	bool ret = true;
 
-	if (it != cameraComponents.end())
+	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toAdd);
+	ret = it == cameraComponents.end();
+
+	if (ret)
+		cameraComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::EraseCameraComponent(ComponentCamera* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
+	ret = it != cameraComponents.end();
+
+	if (ret)
 		cameraComponents.erase(it);
+
+	return ret;
 }
 
 bool ModuleRenderer3D::RecalculateMainCamera()
@@ -450,7 +486,7 @@ bool ModuleRenderer3D::RecalculateMainCamera()
 
 	for (uint i = 0; i < cameraComponents.size(); ++i)
 	{
-		if (cameraComponents[i]->IsMainCamera())
+		if (cameraComponents[i]->IsActive() && cameraComponents[i]->IsMainCamera())
 		{
 			if (mainCamera == nullptr)
 				mainCamera = cameraComponents[i];

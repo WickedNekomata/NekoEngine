@@ -61,7 +61,7 @@ bool ModuleGOs::CleanUp()
 {
 	ClearScene();
 
-	for (int i = 0; i < gameObjectsToDelete.size(); ++i)
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
@@ -70,11 +70,10 @@ bool ModuleGOs::CleanUp()
 	componentsToDelete.clear();
 	gameObjectsToDelete.clear();
 
-	for (int i = 0; i < gameObjects.size(); ++i)
+	for (uint i = 0; i < gameObjects.size(); ++i)
 		RELEASE(gameObjects[i]);
 
 	gameObjects.clear();
-
 
 	for (int i = tmpGameObjects.size() - 1; i >= 0; --i)
 	{
@@ -99,7 +98,6 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 bool ModuleGOs::OnGameMode()
 {
-	/*
 	// Save scene in memory
 
 	// 1. Copy game objects to a temporary gameObjects vector
@@ -110,20 +108,18 @@ bool ModuleGOs::OnGameMode()
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
 		tmpGameObjects.push_back(tmpGameObject);
 	}
-	*/
 
 	return true;
 }
 
 bool ModuleGOs::OnEditorMode()
 {
-	/*
 	// Load scene from memory
 
 	// 1. Clear game objects
 	ClearScene();
 
-	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
@@ -133,9 +129,12 @@ bool ModuleGOs::OnEditorMode()
 	gameObjectsToDelete.clear();
 	gameObjects.clear();
 
-	// 2. Copy temporary game objects to the real gameObjects vector
+	// 2. Copy temporary game objects to the real gameObjects vector and activate them
 	for (uint i = 0; i < tmpGameObjects.size(); ++i)
+	{
 		gameObjects.push_back(tmpGameObjects[i]);
+		tmpGameObjects[i]->Activate();
+	}
 
 	// 3. Match correct parent and children of the game objects
 	for (uint i = 0; i < gameObjects.size(); ++i)
@@ -144,7 +143,6 @@ bool ModuleGOs::OnEditorMode()
 		parent->AddChild(gameObjects[i]);
 		gameObjects[i]->SetParent(parent);
 	}
-	*/
 
 	return true;
 }
@@ -163,7 +161,10 @@ void ModuleGOs::DeleteGameObject(const char* name)
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i]->GetName() == name)
+		{
 			gameObjects[i]->DeleteMe();
+			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
+		}
 	}
 }
 
@@ -172,7 +173,10 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		if (gameObjects[i] == toDelete)
+		{
 			gameObjects[i]->DeleteMe();
+			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
+		}
 	}
 }
 

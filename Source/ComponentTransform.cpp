@@ -10,8 +10,7 @@
 #include "imgui\imgui_internal.h"
 #include <list>
 
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {
-}
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}
 
 ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::Transform_Component)
 {
@@ -141,16 +140,16 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 {
-	if (parent->GetParent() == App->scene->root) {
+	if (parent->GetParent() == App->scene->root) 
 		globalMatrix.Decompose(position, rotation, scale);
-		return;
+	else
+	{
+		math::float4x4 newMatrix = parent->GetParent()->transform->GetGlobalMatrix();
+		newMatrix = newMatrix.Inverted();
+		newMatrix = newMatrix * globalMatrix;
+
+		newMatrix.Decompose(position, rotation, scale);
 	}
-
-	math::float4x4 newMatrix = parent->GetParent()->transform->GetGlobalMatrix();
-	newMatrix = newMatrix.Inverted();
-	newMatrix = newMatrix * globalMatrix;
-
-	newMatrix.Decompose(position, rotation, scale);
 
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->camera != nullptr)

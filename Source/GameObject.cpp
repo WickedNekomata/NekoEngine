@@ -24,6 +24,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 	if (parent != nullptr)
 	{
 		parent->AddChild(this);
+
 		if (!disableTransform)
 			AddComponent(ComponentType::Transform_Component);
 	}
@@ -38,6 +39,9 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 
 GameObject::GameObject(const GameObject& gameObject)
 {
+	name = new char[DEFAULT_BUF_SIZE];
+	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
+
 	transform = new ComponentTransform(*gameObject.transform);
 	transform->SetParent(this);
 	components.push_back(transform);
@@ -65,16 +69,27 @@ GameObject::GameObject(const GameObject& gameObject)
 
 	boundingBox = gameObject.boundingBox;
 
-	name = new char[DEFAULT_BUF_SIZE];
-	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
-
-	parentUUID = gameObject.parent->UUID;
-
 	isActive = gameObject.isActive;
 	isStatic = gameObject.isStatic;
 	seenLastFrame = gameObject.seenLastFrame;
 
 	UUID = gameObject.UUID;
+	parentUUID = gameObject.parent->UUID;
+}
+
+void GameObject::Activate() const
+{
+	if (materialRenderer != nullptr)
+		materialRenderer->Activate();
+
+	if (meshRenderer != nullptr)
+	{
+		App->renderer3D->AddMeshComponent(meshRenderer);
+		meshRenderer->Activate();
+	}
+
+	if (camera != nullptr)
+		App->renderer3D->AddCameraComponent(camera);
 }
 
 GameObject::~GameObject()
@@ -130,8 +145,6 @@ void GameObject::DestroyChildren()
 void GameObject::DeleteMe()
 {
 	App->GOs->SetToDelete(this);
-
-	parent->EraseChild(this);
 
 	DeleteChildren();
 }
@@ -453,6 +466,6 @@ void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
 		json_array_append_value(goArray, newValue);
 	}
 
-	for (int i = 0; i < children.size(); ++i)
+	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecursiveSerialitzation(goArray);	
 }

@@ -8,7 +8,7 @@
 #include "Resource.h"
 #include "GameObject.h"
 
-#include "imgui/imgui.h"
+#include "imgui\imgui.h"
 
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
 {

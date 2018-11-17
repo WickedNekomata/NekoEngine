@@ -17,8 +17,8 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 
-#include "ImGui/imgui.h"
-#include "imgui/imgui_internal.h"
+#include "ImGui\imgui.h"
+#include "imgui\imgui_internal.h"
 
 PanelInspector::PanelInspector(char* name) : Panel(name) {}
 

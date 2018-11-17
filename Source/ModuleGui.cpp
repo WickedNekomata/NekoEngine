@@ -24,10 +24,10 @@
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_internal.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_impl_sdl.h"
+#include "imgui\imgui_impl_opengl3.h"
+#include "imgui\imgui_internal.h"
 
 #include "ImGuizmo/ImGuizmo.h"
 

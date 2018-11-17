@@ -4,8 +4,8 @@
 #include "Globals.h"
 #include "ModuleRenderer3D.h"
 
-#include "MathGeoLib/include/Math/Quat.h"
-#include "glew/include/GL/glew.h"
+#include "MathGeoLib\include\Math\Quat.h"
+#include "glew\include\GL\glew.h"
 
 Primitive::Primitive(PrimitiveTypes type) : type(type) {}
 

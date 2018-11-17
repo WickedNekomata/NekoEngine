@@ -9,10 +9,10 @@
 
 #include <windows.h>
 #include "glew\include\GL\glew.h"
-#include "SDL/include/SDL_cpuinfo.h"
-#include "SDL/include/SDL_version.h"
-#include "ImGui/imgui.h"
-#include "physfs/include/physfs.h"
+#include "SDL\include\SDL_cpuinfo.h"
+#include "SDL\include\SDL_version.h"
+#include "ImGui\imgui.h"
+#include "physfs\include\physfs.h"
 
 PanelAbout::PanelAbout(char* name) : Panel(name) {}
 

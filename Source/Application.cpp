@@ -15,8 +15,8 @@
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 
-#include "parson/parson.h"
-#include "PCG/entropy.h"
+#include "parson\parson.h"
+#include "PCG\entropy.h"
 
 Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 {

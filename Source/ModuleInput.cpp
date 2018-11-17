@@ -7,11 +7,11 @@
 #include "MaterialImporter.h"
 #include "ModuleRenderer3D.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_impl_sdl.h"
+#include "imgui\imgui_impl_opengl3.h"
 
-#include "SDL/include/SDL.h"
+#include "SDL\include\SDL.h"
 
 #include "GameMode.h"
 

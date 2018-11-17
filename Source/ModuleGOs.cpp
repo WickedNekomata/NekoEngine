@@ -13,7 +13,7 @@
 
 #include "Resource.h"
 
-#include "parson/parson.h"
+#include "parson\parson.h"
 #include <list>
 #include <algorithm>
 

@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 #include "Application.h"
-#include "imgui/imgui.h"
+#include "imgui\imgui.h"
 
 Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
 {

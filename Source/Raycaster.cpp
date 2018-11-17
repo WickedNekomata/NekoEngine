@@ -14,8 +14,8 @@
 #include "ModuleScene.h"
 #include "ModuleGOs.h"
 
-#include "MathGeoLib/include/Geometry/Triangle.h"
-#include "MathGeoLib/include/Geometry/LineSegment.h"
+#include "MathGeoLib\include\Geometry\Triangle.h"
+#include "MathGeoLib\include\Geometry\LineSegment.h"
 
 Raycaster::Raycaster()
 {

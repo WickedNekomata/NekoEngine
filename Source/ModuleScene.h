@@ -8,10 +8,10 @@
 
 #include "glew\include\GL\glew.h"
 
-#include "MathGeoLib/include/Math/TransformOps.h"
-#include "MathGeoLib/include/Math/MathConstants.h"
+#include "MathGeoLib\include\Math\TransformOps.h"
+#include "MathGeoLib\include\Math\MathConstants.h"
 
-#include "ImGuizmo/ImGuizmo.h"
+#include "ImGuizmo\ImGuizmo.h"
 
 class PrimitiveGrid;
 class GameObject;

@@ -11,7 +11,7 @@
 
 #include "glew\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
-#include "SDL/include/SDL_video.h"
+#include "SDL\include\SDL_video.h"
 
 #include <vector>
 

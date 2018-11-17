@@ -13,7 +13,7 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
-#include "imgui/imgui.h"
+#include "imgui\imgui.h"
 
 #include <list>
 #include <vector>

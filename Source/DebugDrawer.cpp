@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 
-#include "glew/include/GL/glew.h"
+#include "glew\include\GL\glew.h"
 
 DebugDrawer::DebugDrawer() {}
 

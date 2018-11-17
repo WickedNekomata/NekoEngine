@@ -16,13 +16,13 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 
-#include "Assimp/include/cimport.h"
-#include "Assimp/include/scene.h"
-#include "Assimp/include/postprocess.h"
-#include "Assimp/include/cfileio.h"
-#include "Assimp/include/version.h"
+#include "Assimp\include\cimport.h"
+#include "Assimp\include\scene.h"
+#include "Assimp\include\postprocess.h"
+#include "Assimp\include\cfileio.h"
+#include "Assimp\include\version.h"
 
-#pragma comment (lib, "Assimp/libx86/assimp-vc140-mt.lib")
+#pragma comment (lib, "Assimp\libx86\assimp-vc140-mt.lib")
 
 #define T_PRE_ROT "PreRotation"
 #define T_ROT "Rotation"

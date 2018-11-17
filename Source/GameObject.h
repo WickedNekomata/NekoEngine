@@ -22,6 +22,7 @@ public:
 
 	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
 	GameObject(const GameObject& gameObject);
+	void Activate() const;
 	virtual ~GameObject();
 
 	void Update();

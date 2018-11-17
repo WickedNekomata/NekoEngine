@@ -67,10 +67,12 @@ public:
 	bool GetDrawQuadtree() const;
 
 	ComponentMesh* CreateMeshComponent(GameObject* parent);
-	void EraseMeshComponent(ComponentMesh* toErase);
+	bool AddMeshComponent(ComponentMesh* toAdd);
+	bool EraseMeshComponent(ComponentMesh* toErase);
 
 	ComponentCamera* CreateCameraComponent(GameObject* parent);
-	void EraseCameraComponent(ComponentCamera* toErase);
+	bool AddCameraComponent(ComponentCamera* toAdd);
+	bool EraseCameraComponent(ComponentCamera* toErase);
 
 	bool RecalculateMainCamera();
 	bool SetMainCamera(ComponentCamera* mainCamera);

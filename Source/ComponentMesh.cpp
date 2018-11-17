@@ -10,18 +10,24 @@
 
 #include "imgui/imgui.h"
 
-ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentType::Mesh_Component)
-{
-}
+ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentType::Mesh_Component) {}
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::Mesh_Component)
 {
-	SetResource(componentMesh.res);
+	res = componentMesh.res;
+}
+
+void ComponentMesh::Activate()
+{
+	uint newRes = res;
+	res = 0;
+	SetResource(newRes);
 }
 
 ComponentMesh::~ComponentMesh()
 {
 	parent->meshRenderer = nullptr;
+
 	SetResource(0);
 }
 

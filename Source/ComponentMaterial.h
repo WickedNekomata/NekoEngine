@@ -26,6 +26,7 @@ public:
 
 	ComponentMaterial(GameObject* parent);
 	ComponentMaterial(const ComponentMaterial& componentMaterial);
+	void Activate();
 	~ComponentMaterial();
 
 	void Update();

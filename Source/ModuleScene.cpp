@@ -188,8 +188,8 @@ void ModuleScene::RecreateQuadtree()
 
 void ModuleScene::CreateQuadtree()
 {
-	const math::float3 center(0.0f, 5.0f, 0.0f);
-	const math::float3 size(100.0f, 10.0f, 100.0f);
+	const math::float3 center(0.0f, 0.0f, 0.0f);
+	const math::float3 size(200.0f, 100.0f, 200.0f);
 	math::AABB boundary;
 	boundary.SetFromCenterAndSize(center, size);
 

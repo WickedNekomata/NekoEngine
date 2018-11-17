@@ -13,20 +13,35 @@
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
 {
 	res.reserve(App->renderer3D->GetMaxTextureUnits());
-	MaterialResource newRes;
-	res.push_back(newRes);
+
+	MaterialResource texture;
+	res.push_back(texture);
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
 {
 	res = componentMaterial.res;
+
+	for (uint i = 0; i < 4; ++i)
+		color[i] = componentMaterial.color[i];
+}
+
+void ComponentMaterial::Activate()
+{
+	for (uint i = 0; i < res.size(); ++i)
+	{
+		uint newRes = res[i].res;
+		res[i].res = 0;
+		SetResource(newRes, i);
+	}
 }
 
 ComponentMaterial::~ComponentMaterial()
 {
-	for (int i = 0; i < res.size(); ++i)
-		SetResource(0, i);
 	parent->materialRenderer = nullptr;
+
+	for (uint i = 0; i < res.size(); ++i)
+		SetResource(0, i);
 }
 
 void ComponentMaterial::Update() {}

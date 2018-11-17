@@ -127,15 +127,13 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 	// TODO
 	JSON_Value* arrayValue = json_value_init_array();
 	JSON_Array* jsonArray = json_value_get_array(arrayValue);
-	JSON_Value* newValue = json_value_init_object();
-	JSON_Object* vertexColor = json_value_get_object(newValue);
-	json_object_set_number(vertexColor, "R", color[0]);
-	json_object_set_number(vertexColor, "G", color[1]);
-	json_object_set_number(vertexColor, "B", color[2]);
-	json_object_set_number(vertexColor, "A", color[3]);
+	json_array_append_number(jsonArray, color[0]);
+	json_array_append_number(jsonArray, color[1]);
+	json_array_append_number(jsonArray, color[2]);
+	json_array_append_number(jsonArray, color[3]);
 	json_object_set_value(file, "VertexColor", arrayValue);
 
-	json_array_append_value(jsonArray, newValue);
+	json_array_append_value(jsonArray, arrayValue);
 
 	arrayValue = json_value_init_array();
 	jsonArray = json_value_get_array(arrayValue);

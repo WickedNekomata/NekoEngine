@@ -53,6 +53,10 @@
 //       INCLUDE SECTION
 //
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 #ifndef STB_INCLUDE_STB_RECT_PACK_H
 #define STB_INCLUDE_STB_RECT_PACK_H
 
@@ -579,6 +583,8 @@ STBRP_DEF int stbrp_pack_rects(stbrp_context *context, stbrp_rect *rects, int nu
    return all_rects_packed;
 }
 #endif
+
+#endif // !GAMEMODE
 
 /*
 ------------------------------------------------------------------------------

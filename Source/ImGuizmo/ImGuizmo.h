@@ -41,6 +41,11 @@
 // 
 // -------------------------------------------------------------------------------------------
 // Example 
+
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 #if 0
 void EditTransform(const Camera& camera, matrix_t& matrix)
 {
@@ -171,3 +176,5 @@ namespace ImGuizmo
 
 	IMGUI_API void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
 };
+
+#endif // !GAMEMODE

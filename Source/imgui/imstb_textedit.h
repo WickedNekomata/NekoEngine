@@ -271,6 +271,10 @@
 ////
 ////
 
+#include "../GameMode.h"
+
+#ifndef  GAMEMODE
+
 #ifndef INCLUDE_STB_TEXTEDIT_H
 #define INCLUDE_STB_TEXTEDIT_H
 
@@ -1407,3 +1411,5 @@ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ------------------------------------------------------------------------------
 */
+
+#endif // ! GAMEMODE

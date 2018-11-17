@@ -20,6 +20,10 @@
 // On computer platform the GLSL version default to "#version 130". On OpenGL ES 3 platform it defaults to "#version 300 es"
 // Only override if your GL version doesn't handle this GLSL version. See GLSL version table at the top of imgui_impl_opengl3.cpp.
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 // Set default OpenGL loader to be gl3w
 #define IMGUI_IMPL_OPENGL_LOADER_GLEW
 #if !defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)     \
@@ -39,3 +43,5 @@ IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_CreateFontsTexture();
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_DestroyFontsTexture();
 IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_CreateDeviceObjects();
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_DestroyDeviceObjects();
+
+#endif // !GAMODE

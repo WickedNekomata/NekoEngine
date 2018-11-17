@@ -84,13 +84,24 @@ GameObject::~GameObject()
 
 	if (isStatic)
 	{
-		// TODO: QUADTREE crash al tancar el joc
-		// Recreate the quadtree (game object deleted)
-		//App->scene->RecreateQuadtree();
+		// Static game object deleted: recreate quadtree
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
 	}
 }
 
 void GameObject::Update() {}
+
+void GameObject::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::RecalculateBBoxes:
+		RecursiveRecalculateBoundingBoxes();
+		break;
+	}
+}
 
 void GameObject::SetParent(GameObject* parent)
 {
@@ -114,7 +125,6 @@ void GameObject::DestroyChildren()
 		children[i]->DestroyChildren();
 		RELEASE(children[i]);
 	}
-
 }
 
 void GameObject::DeleteMe()
@@ -336,8 +346,12 @@ void GameObject::ToggleIsStatic()
 	if (isStatic)
 		App->scene->quadtree.Insert(this);
 	else
-		// Recreate the quadtree (static changed)
-		App->scene->RecreateQuadtree();
+	{
+		// Game object changed from static to dynamic: recreate quadtree
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 bool GameObject::IsStatic() const
@@ -369,15 +383,12 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);
-	obb.Transform(transform->GetGlobalMatrix());
+	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
+	obb.Transform(transformMatrix);
 
 	// Calculate AABB
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
-
-	if (isStatic)
-		// Recreate the quadtree (bounding box changed)
-		App->scene->RecreateQuadtree();
 
 	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecursiveRecalculateBoundingBoxes();
@@ -414,8 +425,21 @@ void GameObject::OnLoad(JSON_Object* file)
 		cObject = json_array_get_object(jsonComponents, i);
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
-	}	
-	RecursiveRecalculateBoundingBoxes();
+	}
+
+	// Recalculate bounding boxes
+	System_Event newEvent;
+	newEvent.goEvent.gameObject = parent;
+	newEvent.type = System_Event_Type::RecalculateBBoxes;
+	App->PushSystemEvent(newEvent);
+
+	if (isStatic)
+	{
+		// Recreate quadtree
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const

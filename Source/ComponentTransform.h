@@ -28,7 +28,6 @@ public:
 	math::float4x4& GetMatrix() const;
 	math::float4x4& GetGlobalMatrix() const;
 	void SetMatrixFromGlobal(math::float4x4& globalMatrix);
-	void SetMatrixFromLocal(math::float4x4& localMatrix);
 
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);

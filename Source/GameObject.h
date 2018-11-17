@@ -3,6 +3,7 @@
 
 #include "Globals.h"
 #include "ComponentTypes.h"
+#include "EventSystem.h"
 
 #include "MathGeoLib/include/Geometry/AABB.h"
 #include "parson/parson.h"
@@ -24,6 +25,8 @@ public:
 	virtual ~GameObject();
 
 	void Update();
+
+	void OnSystemEvent(System_Event event);
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent();

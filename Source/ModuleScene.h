@@ -28,6 +28,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void OnSystemEvent(System_Event event);
+
 	void Draw() const;
 
 	// ImGuizmo

@@ -70,13 +70,15 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 		SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
 		SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 		SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
-	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN) {
+
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) 
+	{
 		if (currentImGuizmoMode == ImGuizmo::MODE::WORLD)
 			SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
 		else
@@ -99,6 +101,16 @@ bool ModuleScene::CleanUp()
 	RELEASE(grid);
 
 	return ret;
+}
+
+void ModuleScene::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::RecreateQuadtree:
+		RecreateQuadtree();
+		break;
+	}
 }
 
 void ModuleScene::Draw() const

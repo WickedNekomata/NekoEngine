@@ -21,6 +21,8 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	void OnSystemEvent(System_Event event);
+
 	bool OnGameMode();
 	bool OnEditorMode();
 

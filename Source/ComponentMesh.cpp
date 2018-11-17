@@ -22,9 +22,6 @@ ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(com
 ComponentMesh::~ComponentMesh()
 {
 	parent->meshRenderer = nullptr;
-	// TODO: QUADTREE crash al tancar el joc
-	//parent->RecursiveRecalculateBoundingBoxes();
-
 	SetResource(0);
 }
 
@@ -35,12 +32,27 @@ void ComponentMesh::SetResource(uint res_uuid)
 	if (res != 0)
 		App->res->SetAsUnused(res);
 
-	if (res_uuid != 0) {
+	if (res_uuid != 0) 
+	{
 		if (App->res->SetAsUsed(res_uuid) == -1)
 			return;
 	}
 
 	res = res_uuid;
+	
+	// Mesh updated: recalculate bounding boxes
+	System_Event newEvent;
+	newEvent.goEvent.gameObject = parent;
+	newEvent.type = System_Event_Type::RecalculateBBoxes;
+	App->PushSystemEvent(newEvent);
+
+	if (parent->IsStatic())
+	{
+		// Bounding box changed: recreate quadtree
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 void ComponentMesh::OnUniqueEditor()
@@ -73,7 +85,6 @@ void ComponentMesh::OnUniqueEditor()
 		{
 			uint payload_n = *(uint*)payload->Data;
 			SetResource(payload_n);
-			parent->RecursiveRecalculateBoundingBoxes(); // TODO: what do we do with bounding boxes?
 		}
 		ImGui::EndDragDropTarget();
 	}

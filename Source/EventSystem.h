@@ -1,7 +1,15 @@
 #ifndef __EVENT_SYSTEM_H__
 #define __EVENT_SYSTEM_H__
 
-enum System_Event_Type { NoEvent, FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, ReimportFile };
+enum System_Event_Type 
+{ 
+	NoEvent, 
+	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, ReimportFile, // FileEvent
+	RecalculateBBoxes, // GameObjectEvent
+	RecreateQuadtree
+};
+
+class GameObject;
 
 struct FileEvent
 {
@@ -10,10 +18,17 @@ struct FileEvent
 	const char* metaFile;
 };
 
+struct GameObjectEvent
+{
+	System_Event_Type type;
+	GameObject* gameObject;
+};
+
 union System_Event
 {
 	System_Event_Type type;      /**< Event type, shared with all events */
 	FileEvent fileEvent;             /**< Drag and drop event data */
+	GameObjectEvent goEvent;
 
 	/* This is necessary for ABI compatibility between Visual C++ and GCC
 	   Visual C++ will respect the push pack pragma and use 52 bytes for

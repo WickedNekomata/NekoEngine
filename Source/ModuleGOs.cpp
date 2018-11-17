@@ -61,7 +61,7 @@ bool ModuleGOs::CleanUp()
 {
 	ClearScene();
 
-	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
+	for (int i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
@@ -86,6 +86,15 @@ bool ModuleGOs::CleanUp()
 	App->scene->FreeRoot();
 
 	return true;
+}
+
+void ModuleGOs::OnSystemEvent(System_Event event)
+{
+	for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+	{
+		if (event.goEvent.gameObject == *it)
+			(*it)->OnSystemEvent(event);
+	}
 }
 
 bool ModuleGOs::OnGameMode()

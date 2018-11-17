@@ -22,6 +22,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+	AddPath("./Settings/", "Settings");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());

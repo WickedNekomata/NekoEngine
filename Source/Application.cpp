@@ -85,7 +85,7 @@ bool Application::Init()
 
 	// Read config file
 	char* buf;
-	uint size = fs->Load("config.json", &buf);
+	uint size = fs->Load("Settings/config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -289,7 +289,7 @@ void Application::Load()
 {
 	// Read config file
 	char* buf;
-	uint size = fs->Load("config.json", &buf);
+	uint size = fs->Load("Settings/config.json", &buf);
 	if (size > 0)
 	{
 		JSON_Value* rootValue = json_parse_string(buf);
@@ -343,7 +343,7 @@ void Application::Save() const
 	int sizeBuf = json_serialization_size_pretty(rootValue);
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	fs->Save("config.json", buf, sizeBuf);
+	fs->Save("Settings/config.json", buf, sizeBuf);
 	delete[] buf;
 	json_value_free(rootValue);
 

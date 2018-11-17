@@ -613,11 +613,11 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glClientActiveTexture(GL_TEXTURE0 + i);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			glActiveTexture(GL_TEXTURE0 + i);
+			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
 	glColor4f(1.0f, 1.0f, 1.0f, 255.0f);
-	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 }

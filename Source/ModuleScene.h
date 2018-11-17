@@ -46,6 +46,7 @@ public:
 	void CreateQuadtree();
 	void RecalculateQuadtree();
 	void CreateRandomStaticGameObject();
+	bool IsImguizmoValid() const;
 
 private:
 

@@ -166,7 +166,7 @@ update_status ModuleInput::PreUpdate()
 			newEvent.fileEvent.file = event.drop.file;
 			App->PushSystemEvent(newEvent);
 
-			SDL_free((char*)event.drop.file);
+			SDL_free(event.drop.file);
 
 			break;
 		}

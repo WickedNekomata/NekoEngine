@@ -14,7 +14,6 @@ public:
 
 	ComponentMesh(GameObject* parent);
 	ComponentMesh(const ComponentMesh& componentMesh);
-	void Activate();
 	~ComponentMesh();
 
 	void Update();

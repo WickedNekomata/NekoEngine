@@ -79,14 +79,8 @@ GameObject::GameObject(const GameObject& gameObject)
 
 void GameObject::Activate() const
 {
-	if (materialRenderer != nullptr)
-		materialRenderer->Activate();
-
 	if (meshRenderer != nullptr)
-	{
 		App->renderer3D->AddMeshComponent(meshRenderer);
-		meshRenderer->Activate();
-	}
 
 	if (camera != nullptr)
 		App->renderer3D->AddCameraComponent(camera);

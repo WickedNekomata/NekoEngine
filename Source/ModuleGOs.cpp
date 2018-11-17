@@ -59,6 +59,22 @@ update_status ModuleGOs::PostUpdate()
 
 bool ModuleGOs::CleanUp()
 {
+	// Remove hierarchy (game objects) and load hierarchy from temporary game objects
+	DeleteScene();
+
+	for (uint i = 0; i < tmpGameObjects.size(); ++i)
+		gameObjects.push_back(tmpGameObjects[i]);
+
+	tmpGameObjects.clear();
+
+	for (uint i = 0; i < gameObjects.size(); ++i)
+	{
+		GameObject* parent = GetGameObjectByUUID(gameObjects[i]->GetParentUUID());
+		parent->AddChild(gameObjects[i]);
+		gameObjects[i]->SetParent(parent);
+	}
+
+	// Remove hierarchy (temporary game objects)
 	ClearScene();
 
 	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
@@ -66,22 +82,12 @@ bool ModuleGOs::CleanUp()
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
 	}
-	
+
 	componentsToDelete.clear();
 	gameObjectsToDelete.clear();
-
-	for (uint i = 0; i < gameObjects.size(); ++i)
-		RELEASE(gameObjects[i]);
-
 	gameObjects.clear();
 
-	for (int i = tmpGameObjects.size() - 1; i >= 0; --i)
-	{
-		tmpGameObjects.erase(std::remove(tmpGameObjects.begin(), tmpGameObjects.end(), tmpGameObjects[i]), tmpGameObjects.end());
-		RELEASE(tmpGameObjects[i]);
-	}
-	tmpGameObjects.clear();
-
+	// Free the root
 	App->scene->FreeRoot();
 
 	return true;
@@ -101,8 +107,6 @@ bool ModuleGOs::OnGameMode()
 	// Save scene in memory
 
 	// 1. Copy game objects to a temporary gameObjects vector
-	tmpGameObjects.clear();
-
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
@@ -117,17 +121,7 @@ bool ModuleGOs::OnEditorMode()
 	// Load scene from memory
 
 	// 1. Clear game objects
-	ClearScene();
-
-	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
-	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
-		RELEASE(gameObjectsToDelete[i]);
-	}
-
-	componentsToDelete.clear();
-	gameObjectsToDelete.clear();
-	gameObjects.clear();
+	DeleteScene();
 
 	// 2. Copy temporary game objects to the real gameObjects vector and activate them
 	for (uint i = 0; i < tmpGameObjects.size(); ++i)
@@ -135,6 +129,8 @@ bool ModuleGOs::OnEditorMode()
 		gameObjects.push_back(tmpGameObjects[i]);
 		tmpGameObjects[i]->Activate();
 	}
+
+	tmpGameObjects.clear();
 
 	// 3. Match correct parent and children of the game objects
 	for (uint i = 0; i < gameObjects.size(); ++i)
@@ -178,6 +174,21 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
 		}
 	}
+}
+
+void ModuleGOs::DeleteScene()
+{
+	ClearScene();
+
+	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
+	{
+		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
+		RELEASE(gameObjectsToDelete[i]);
+	}
+
+	componentsToDelete.clear();
+	gameObjectsToDelete.clear();
+	gameObjects.clear();
 }
 
 void ModuleGOs::ClearScene()

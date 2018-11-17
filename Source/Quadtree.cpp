@@ -35,7 +35,9 @@ void QuadtreeNode::Insert(GameObject* gameObject)
 			Subdivide();
 
 		objects.push_back(gameObject);
-		RedistributeChildren();
+
+		if (subdivision < MAX_SUBDIVISIONS)
+			RedistributeChildren();
 	}
 	else
 		objects.push_back(gameObject);

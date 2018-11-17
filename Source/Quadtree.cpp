@@ -31,13 +31,15 @@ void QuadtreeNode::Insert(GameObject* gameObject)
 {
 	if (objects.size() >= BUCKET_SIZE)
 	{
-		if (IsLeaf() && subdivision < MAX_SUBDIVISIONS)
-			Subdivide();
-
 		objects.push_back(gameObject);
 
 		if (subdivision < MAX_SUBDIVISIONS)
+		{
+			if (IsLeaf())
+				Subdivide();
+
 			RedistributeChildren();
+		}
 	}
 	else
 		objects.push_back(gameObject);

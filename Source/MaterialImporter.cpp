@@ -40,7 +40,7 @@ MaterialImporter::MaterialImporter()
 	}
 
 	// Anisotropic filtering
-	if (glewIsSupported("GL_EXT_texture_filter_anisotropic"))
+	if (GLEW_EXT_texture_filter_anisotropic)
 	{
 		isAnisotropySupported = true;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
@@ -559,7 +559,6 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
 			// Anisotropic filtering
-			// TODO: set this with the selected settings for the texture
 			if (isAnisotropySupported)
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, textureImportSettings->anisotropy);
 

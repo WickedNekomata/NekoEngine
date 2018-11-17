@@ -183,10 +183,12 @@ void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target) const
 		{
 			GameObject* payload_n = *(GameObject**)payload->Data;
 
+			math::float4x4 globalMatrix = payload_n->transform->GetGlobalMatrix();
 			payload_n->GetParent()->EraseChild(payload_n);
 			target->AddChild(payload_n);
 
 			payload_n->SetParent(target);
+			payload_n->transform->SetMatrixFromGlobal(globalMatrix);
 		}
 		ImGui::EndDragDropTarget();
 	}

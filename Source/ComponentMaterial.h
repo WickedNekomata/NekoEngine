@@ -44,7 +44,7 @@ private:
 public:
 
 	std::vector<MaterialResource> res;
-	float color[4] = { 1.0f,1.0f,1.0f,1.0f };
+	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
 };
 
 #endif

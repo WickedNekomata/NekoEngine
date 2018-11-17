@@ -550,6 +550,8 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 // Returns the UUID associated to the resource of the file
 bool ModuleResourceManager::FindTextureByFile(const char* fileInAssets, uint& UUID) const
 {
+	UUID = 0;
+
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
@@ -565,6 +567,8 @@ bool ModuleResourceManager::FindTextureByFile(const char* fileInAssets, uint& UU
 // Returns the UUID associated to the resource of the exported file
 bool ModuleResourceManager::FindTextureByExportedFile(const char* exportedFile, uint& UUID) const
 {
+	UUID = 0;
+
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
 		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)

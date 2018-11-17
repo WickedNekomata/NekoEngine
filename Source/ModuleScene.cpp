@@ -100,6 +100,8 @@ bool ModuleScene::CleanUp()
 
 	RELEASE(grid);
 
+	DESTROYANDSET(NULL);
+
 	return ret;
 }
 

@@ -129,8 +129,9 @@ public:
 
 	bool DestroyImportSettings()
 	{
-		if (type != SelectedType::meshImportSettings || type != SelectedType::textureImportSettings)
+		if (type != SelectedType::meshImportSettings && type != SelectedType::textureImportSettings)
 			return false;
+
 		switch (type) {
 		case SelectedType::meshImportSettings:
 		{

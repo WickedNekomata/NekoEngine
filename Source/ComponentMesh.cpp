@@ -14,14 +14,7 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::Mesh_Component)
 {
-	res = componentMesh.res;
-}
-
-void ComponentMesh::Activate()
-{
-	uint newRes = res;
-	res = 0;
-	SetResource(newRes);
+	SetResource(componentMesh.res);
 }
 
 ComponentMesh::~ComponentMesh()

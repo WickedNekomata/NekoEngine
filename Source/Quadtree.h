@@ -8,7 +8,7 @@
 #include <list>
 
 #define BUCKET_SIZE 1
-#define MAX_SUBDIVISIONS 10
+#define MAX_SUBDIVISIONS 20
 
 class GameObject;
 

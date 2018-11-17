@@ -116,6 +116,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 						{
 							MeshImportSettings* currentSettings = new MeshImportSettings();
 							App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
+						
+							// Every dynamic allocation here is deleted at currentSettings
 
 							currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
 							strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);
@@ -127,6 +129,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 						{
 							TextureImportSettings* currentSettings = new TextureImportSettings();
 							App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, currentSettings);
+
+							// Every dynamic allocation here is deleted at currentSettings
 
 							currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
 							strcpy_s((char*)currentSettings->metaFile, INPUT_BUF_SIZE, metaFile);

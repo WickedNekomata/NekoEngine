@@ -28,7 +28,7 @@ ModuleGOs::ModuleGOs(bool start_enabled) : Module(start_enabled)
 
 ModuleGOs::~ModuleGOs()
 {
-	delete[] nameScene;
+	RELEASE_ARRAY(nameScene);
 }
 
 update_status ModuleGOs::PostUpdate()
@@ -69,6 +69,10 @@ bool ModuleGOs::CleanUp()
 	
 	componentsToDelete.clear();
 	gameObjectsToDelete.clear();
+
+	for (int i = 0; i < gameObjects.size(); ++i)
+		RELEASE(gameObjects[i]);
+
 	gameObjects.clear();
 
 
@@ -78,6 +82,8 @@ bool ModuleGOs::CleanUp()
 		RELEASE(tmpGameObjects[i]);
 	}
 	tmpGameObjects.clear();
+
+	App->scene->FreeRoot();
 
 	return true;
 }
@@ -164,7 +170,7 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 void ModuleGOs::ClearScene()
 {
 	App->scene->root->DeleteChildren();
-	App->scene->selectedObject = CurrentSelection::SelectedType::null;
+	DESTROYANDSET(NULL);
 }
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
@@ -237,30 +243,6 @@ void ModuleGOs::MarkSceneToSerialize()
 {
 	serializeScene = true;
 }
-
-/*
-void ModuleGOs::SerializeScene()
-{
-	JSON_Value* rootValue = json_value_init_array();
-	JSON_Array* goArray = json_value_get_array(rootValue);
-
-	for (int i = 0; i < gameObjects.size(); ++i)
-	{
-		JSON_Value* newValue = json_value_init_object();
-		JSON_Object* objToSerialize = json_value_get_object(newValue);
-
-		gameObjects[i]->OnSave(objToSerialize);
-		json_array_append_value(goArray, newValue);
-	}
-	
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	App->filesystem->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, std::string(nameScene));
-	delete[] buf;
-	json_value_free(rootValue);
-}
-*/
 
 bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFile)
 {

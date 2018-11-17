@@ -48,6 +48,8 @@ public:
 	void CreateRandomStaticGameObject();
 	bool IsImguizmoValid() const;
 
+	void FreeRoot();
+
 private:
 
 	PrimitiveGrid* grid = nullptr;

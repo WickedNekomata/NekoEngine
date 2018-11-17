@@ -207,3 +207,8 @@ bool ModuleScene::IsImguizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }
+
+void ModuleScene::FreeRoot()
+{
+	RELEASE(root);
+}

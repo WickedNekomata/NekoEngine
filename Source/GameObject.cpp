@@ -84,8 +84,9 @@ GameObject::~GameObject()
 
 	if (isStatic)
 	{
+		// TODO: QUADTREE crash al tancar el joc
 		// Recreate the quadtree (game object deleted)
-		App->scene->RecreateQuadtree();
+		//App->scene->RecreateQuadtree();
 	}
 }
 
@@ -143,7 +144,7 @@ void GameObject::DeleteChild(uint index)
 
 void GameObject::DeleteChildren()
 {
-	for (uint i = 0; i < children.size();)
+	for (uint i = 0; i < children.size(); ++i)
 		children[i]->DeleteMe();
 
 	children.clear();

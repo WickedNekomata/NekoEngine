@@ -1,8 +1,8 @@
 #include <assert.h>
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 
 class GameObject;
-class MeshImportSettings;
-class TextureImportSettings;
 class Resource;
 
 // Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
@@ -131,6 +131,20 @@ public:
 	{
 		if (type != SelectedType::meshImportSettings || type != SelectedType::textureImportSettings)
 			return false;
+		switch (type) {
+		case SelectedType::meshImportSettings:
+		{
+			MeshImportSettings* toRelease = (MeshImportSettings*)cur;
+			RELEASE_ARRAY(toRelease->metaFile);
+			break;
+		}
+		case SelectedType::textureImportSettings:
+		{
+			TextureImportSettings* toRelease = (TextureImportSettings*)cur;
+			RELEASE_ARRAY(toRelease->metaFile);
+			break;
+		}
+		}	
 		delete cur;
 		cur = nullptr;
 		type = SelectedType::null;

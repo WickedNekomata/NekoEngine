@@ -22,7 +22,8 @@ ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(com
 ComponentMesh::~ComponentMesh()
 {
 	parent->meshRenderer = nullptr;
-	parent->RecursiveRecalculateBoundingBoxes();
+	// TODO: QUADTREE crash al tancar el joc
+	//parent->RecursiveRecalculateBoundingBoxes();
 
 	SetResource(0);
 }

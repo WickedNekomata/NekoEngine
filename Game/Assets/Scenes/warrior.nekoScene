@@ -1,8 +1,8 @@
 [
     {
         "name": "RootNode",
-        "UUID": 38315659,
-        "Parent UUID": 2936374382,
+        "UUID": 4040996386,
+        "Parent UUID": 1898422990,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "name": "RPG-Character-Mesh",
-        "UUID": 1259939305,
-        "Parent UUID": 38315659,
+        "UUID": 2509936472,
+        "Parent UUID": 4040996386,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -39,14 +39,14 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2786458621
+                "ResourceMesh": 3880686224
             }
         ]
     },
     {
         "name": "Motion",
-        "UUID": 2874530331,
-        "Parent UUID": 38315659,
+        "UUID": 3809452156,
+        "Parent UUID": 4040996386,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -65,8 +65,8 @@
     },
     {
         "name": "B_Pelvis",
-        "UUID": 3644299528,
-        "Parent UUID": 2874530331,
+        "UUID": 3524584882,
+        "Parent UUID": 3809452156,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -85,8 +85,8 @@
     },
     {
         "name": "B_Spine",
-        "UUID": 2066584384,
-        "Parent UUID": 3644299528,
+        "UUID": 4264728931,
+        "Parent UUID": 3524584882,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -105,8 +105,8 @@
     },
     {
         "name": "B_Spine1",
-        "UUID": 2515819728,
-        "Parent UUID": 2066584384,
+        "UUID": 756456334,
+        "Parent UUID": 4264728931,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -125,8 +125,8 @@
     },
     {
         "name": "B_Spine2",
-        "UUID": 3759837184,
-        "Parent UUID": 2515819728,
+        "UUID": 801577273,
+        "Parent UUID": 756456334,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -145,8 +145,8 @@
     },
     {
         "name": "B_L_Clavicle",
-        "UUID": 2096527948,
-        "Parent UUID": 3759837184,
+        "UUID": 3641475356,
+        "Parent UUID": 801577273,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -165,8 +165,8 @@
     },
     {
         "name": "B_L_UpperArm",
-        "UUID": 346994798,
-        "Parent UUID": 2096527948,
+        "UUID": 1827197531,
+        "Parent UUID": 3641475356,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -185,8 +185,8 @@
     },
     {
         "name": "B_L_Forearm",
-        "UUID": 1619422393,
-        "Parent UUID": 346994798,
+        "UUID": 4025160252,
+        "Parent UUID": 1827197531,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -205,8 +205,8 @@
     },
     {
         "name": "B_L_Hand",
-        "UUID": 1278065029,
-        "Parent UUID": 1619422393,
+        "UUID": 3563859437,
+        "Parent UUID": 4025160252,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -225,8 +225,8 @@
     },
     {
         "name": "B_L_Finger0",
-        "UUID": 131593574,
-        "Parent UUID": 1278065029,
+        "UUID": 2251991468,
+        "Parent UUID": 3563859437,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -245,8 +245,8 @@
     },
     {
         "name": "B_L_Finger01",
-        "UUID": 3903277085,
-        "Parent UUID": 131593574,
+        "UUID": 2677043245,
+        "Parent UUID": 2251991468,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -265,8 +265,8 @@
     },
     {
         "name": "B_L_Finger02",
-        "UUID": 1617018410,
-        "Parent UUID": 3903277085,
+        "UUID": 869029808,
+        "Parent UUID": 2677043245,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -285,8 +285,8 @@
     },
     {
         "name": "B_L_Finger1",
-        "UUID": 627420203,
-        "Parent UUID": 1278065029,
+        "UUID": 4094944805,
+        "Parent UUID": 3563859437,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -305,8 +305,8 @@
     },
     {
         "name": "B_L_Finger11",
-        "UUID": 3311627107,
-        "Parent UUID": 627420203,
+        "UUID": 1096960587,
+        "Parent UUID": 4094944805,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -325,8 +325,8 @@
     },
     {
         "name": "B_L_Finger12",
-        "UUID": 3218911011,
-        "Parent UUID": 3311627107,
+        "UUID": 3970779680,
+        "Parent UUID": 1096960587,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -345,8 +345,8 @@
     },
     {
         "name": "B_L_Finger2",
-        "UUID": 1297251908,
-        "Parent UUID": 1278065029,
+        "UUID": 569207823,
+        "Parent UUID": 3563859437,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -365,8 +365,8 @@
     },
     {
         "name": "B_L_Finger21",
-        "UUID": 1472554543,
-        "Parent UUID": 1297251908,
+        "UUID": 3281586905,
+        "Parent UUID": 569207823,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -385,8 +385,8 @@
     },
     {
         "name": "B_L_Finger22",
-        "UUID": 4078713796,
-        "Parent UUID": 1472554543,
+        "UUID": 1289284366,
+        "Parent UUID": 3281586905,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -405,8 +405,8 @@
     },
     {
         "name": "B_L_Finger3",
-        "UUID": 2400555898,
-        "Parent UUID": 1278065029,
+        "UUID": 1253394409,
+        "Parent UUID": 3563859437,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -425,8 +425,8 @@
     },
     {
         "name": "B_L_Finger31",
-        "UUID": 242890511,
-        "Parent UUID": 2400555898,
+        "UUID": 1221226150,
+        "Parent UUID": 1253394409,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -445,8 +445,8 @@
     },
     {
         "name": "B_L_Finger32",
-        "UUID": 2419348313,
-        "Parent UUID": 242890511,
+        "UUID": 1558876730,
+        "Parent UUID": 1221226150,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -465,8 +465,8 @@
     },
     {
         "name": "B_L_Finger4",
-        "UUID": 3007962369,
-        "Parent UUID": 1278065029,
+        "UUID": 2453521646,
+        "Parent UUID": 3563859437,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -485,8 +485,8 @@
     },
     {
         "name": "B_L_Finger41",
-        "UUID": 3325865304,
-        "Parent UUID": 3007962369,
+        "UUID": 1681520232,
+        "Parent UUID": 2453521646,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -505,8 +505,8 @@
     },
     {
         "name": "B_L_Finger42",
-        "UUID": 359669095,
-        "Parent UUID": 3325865304,
+        "UUID": 2584765600,
+        "Parent UUID": 1681520232,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -525,8 +525,8 @@
     },
     {
         "name": "B_R_Clavicle",
-        "UUID": 3761055339,
-        "Parent UUID": 3759837184,
+        "UUID": 1107623308,
+        "Parent UUID": 801577273,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -545,8 +545,8 @@
     },
     {
         "name": "B_R_UpperArm",
-        "UUID": 655760653,
-        "Parent UUID": 3761055339,
+        "UUID": 1890198867,
+        "Parent UUID": 1107623308,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -565,8 +565,8 @@
     },
     {
         "name": "B_R_Forearm",
-        "UUID": 2903550519,
-        "Parent UUID": 655760653,
+        "UUID": 1765405270,
+        "Parent UUID": 1890198867,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -585,8 +585,8 @@
     },
     {
         "name": "B_R_Hand",
-        "UUID": 526177104,
-        "Parent UUID": 2903550519,
+        "UUID": 1485154145,
+        "Parent UUID": 1765405270,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -605,8 +605,8 @@
     },
     {
         "name": "B_R_Finger0",
-        "UUID": 1739268456,
-        "Parent UUID": 526177104,
+        "UUID": 283072675,
+        "Parent UUID": 1485154145,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -625,8 +625,8 @@
     },
     {
         "name": "B_R_Finger01",
-        "UUID": 1094369573,
-        "Parent UUID": 1739268456,
+        "UUID": 1329861323,
+        "Parent UUID": 283072675,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -645,8 +645,8 @@
     },
     {
         "name": "B_R_Finger02",
-        "UUID": 3141494281,
-        "Parent UUID": 1094369573,
+        "UUID": 3334488313,
+        "Parent UUID": 1329861323,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -665,8 +665,8 @@
     },
     {
         "name": "B_R_Finger1",
-        "UUID": 1952977627,
-        "Parent UUID": 526177104,
+        "UUID": 3613202347,
+        "Parent UUID": 1485154145,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -685,8 +685,8 @@
     },
     {
         "name": "B_R_Finger11",
-        "UUID": 3127478716,
-        "Parent UUID": 1952977627,
+        "UUID": 4285153543,
+        "Parent UUID": 3613202347,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -705,8 +705,8 @@
     },
     {
         "name": "B_R_Finger12",
-        "UUID": 2833087492,
-        "Parent UUID": 3127478716,
+        "UUID": 1235393917,
+        "Parent UUID": 4285153543,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -725,8 +725,8 @@
     },
     {
         "name": "B_R_Finger2",
-        "UUID": 2620144735,
-        "Parent UUID": 526177104,
+        "UUID": 3320826604,
+        "Parent UUID": 1485154145,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -745,8 +745,8 @@
     },
     {
         "name": "B_R_Finger21",
-        "UUID": 1225292555,
-        "Parent UUID": 2620144735,
+        "UUID": 489243356,
+        "Parent UUID": 3320826604,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -765,8 +765,8 @@
     },
     {
         "name": "B_R_Finger22",
-        "UUID": 872094755,
-        "Parent UUID": 1225292555,
+        "UUID": 1815184967,
+        "Parent UUID": 489243356,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -785,8 +785,8 @@
     },
     {
         "name": "B_R_Finger3",
-        "UUID": 1287589827,
-        "Parent UUID": 526177104,
+        "UUID": 739291862,
+        "Parent UUID": 1485154145,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -805,8 +805,8 @@
     },
     {
         "name": "B_R_Finger31",
-        "UUID": 1670820105,
-        "Parent UUID": 1287589827,
+        "UUID": 3460982150,
+        "Parent UUID": 739291862,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -825,8 +825,8 @@
     },
     {
         "name": "B_R_Finger32",
-        "UUID": 127049028,
-        "Parent UUID": 1670820105,
+        "UUID": 3593624714,
+        "Parent UUID": 3460982150,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -845,8 +845,8 @@
     },
     {
         "name": "B_R_Finger4",
-        "UUID": 2111558943,
-        "Parent UUID": 526177104,
+        "UUID": 691409194,
+        "Parent UUID": 1485154145,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -865,8 +865,8 @@
     },
     {
         "name": "B_R_Finger41",
-        "UUID": 3822365433,
-        "Parent UUID": 2111558943,
+        "UUID": 1509744020,
+        "Parent UUID": 691409194,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -885,8 +885,8 @@
     },
     {
         "name": "B_R_Finger42",
-        "UUID": 3689704373,
-        "Parent UUID": 3822365433,
+        "UUID": 1571269396,
+        "Parent UUID": 1509744020,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -905,8 +905,8 @@
     },
     {
         "name": "B_Neck",
-        "UUID": 3090968734,
-        "Parent UUID": 3759837184,
+        "UUID": 2081174115,
+        "Parent UUID": 801577273,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -925,8 +925,8 @@
     },
     {
         "name": "B_Head",
-        "UUID": 2226214956,
-        "Parent UUID": 3090968734,
+        "UUID": 2002258727,
+        "Parent UUID": 2081174115,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -945,8 +945,8 @@
     },
     {
         "name": "B_L_Thigh",
-        "UUID": 1610871553,
-        "Parent UUID": 3644299528,
+        "UUID": 3308378106,
+        "Parent UUID": 3524584882,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -965,8 +965,8 @@
     },
     {
         "name": "B_L_Calf",
-        "UUID": 1310859190,
-        "Parent UUID": 1610871553,
+        "UUID": 4092212319,
+        "Parent UUID": 3308378106,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -985,8 +985,8 @@
     },
     {
         "name": "B_L_Foot",
-        "UUID": 1063573032,
-        "Parent UUID": 1310859190,
+        "UUID": 2438262574,
+        "Parent UUID": 4092212319,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1005,8 +1005,8 @@
     },
     {
         "name": "B_L_Toe0",
-        "UUID": 3500076757,
-        "Parent UUID": 1063573032,
+        "UUID": 2457972616,
+        "Parent UUID": 2438262574,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1025,8 +1025,8 @@
     },
     {
         "name": "B_R_Thigh",
-        "UUID": 156812374,
-        "Parent UUID": 3644299528,
+        "UUID": 1468429637,
+        "Parent UUID": 3524584882,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1045,8 +1045,8 @@
     },
     {
         "name": "B_R_Calf",
-        "UUID": 2183840152,
-        "Parent UUID": 156812374,
+        "UUID": 653110692,
+        "Parent UUID": 1468429637,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1065,8 +1065,8 @@
     },
     {
         "name": "B_R_Foot",
-        "UUID": 2459330830,
-        "Parent UUID": 2183840152,
+        "UUID": 1450312162,
+        "Parent UUID": 653110692,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1085,8 +1085,8 @@
     },
     {
         "name": "B_R_Toe0",
-        "UUID": 3368578865,
-        "Parent UUID": 2459330830,
+        "UUID": 56879590,
+        "Parent UUID": 1450312162,
         "jsonComponents": [
             {
                 "Type": 1,

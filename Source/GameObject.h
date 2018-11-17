@@ -79,6 +79,8 @@ public:
 	void OnLoad(JSON_Object* file);
 	void RecursiveSerialitzation(JSON_Array* goArray) const;
 
+	void RecursiveForceAllResources(uint forceRes);
+
 public:
 
 	ComponentTransform* transform = nullptr;

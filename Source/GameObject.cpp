@@ -469,3 +469,17 @@ void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
 	for (uint i = 0; i < children.size(); ++i)
 		children[i]->RecursiveSerialitzation(goArray);	
 }
+
+void GameObject::RecursiveForceAllResources(uint forceRes)
+{
+	if (materialRenderer != nullptr)
+	{
+		for (int i = 0; i < materialRenderer->res.size(); ++i)
+			materialRenderer->res[i].res = forceRes;
+	}
+	if (meshRenderer != nullptr)
+		meshRenderer->res = forceRes;
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->RecursiveForceAllResources(forceRes);
+}

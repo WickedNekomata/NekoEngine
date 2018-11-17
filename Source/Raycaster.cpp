@@ -60,6 +60,9 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 
 		const ResourceMesh* resMesh = (const ResourceMesh*)App->res->GetResource(hits[i]->meshRenderer->res);
 
+		if (resMesh == nullptr)
+			return;
+
 		for (int j = 0; j < resMesh->indicesSize;)
 		{
 			tri.a = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;

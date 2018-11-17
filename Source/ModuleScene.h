@@ -52,7 +52,7 @@ public:
 	void CreateQuadtree();
 	void RecalculateQuadtree();
 	void CreateRandomStaticGameObject();
-	bool IsImguizmoValid() const;
+	bool IsGizmoValid() const;
 
 	void FreeRoot();
 

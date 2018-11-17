@@ -1,8 +1,12 @@
-#include <assert.h>
+#include "Application.h"
+#include "ModuleCameraEditor.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 
-class GameObject;
+#include <assert.h>
+
 class Resource;
 
 // Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
@@ -54,7 +58,7 @@ public:
 
 	bool operator==(int null)
 	{
-		assert(null == NULL && "Invalid comparasion");
+		assert(null == NULL && "Invalid comparison");
 		return cur == nullptr;
 	}
 
@@ -65,7 +69,7 @@ public:
 
 	bool operator!=(int null)
 	{
-		assert(null == NULL && "Invalid comparasion");
+		assert(null == NULL && "Invalid comparison");
 		return cur != nullptr;
 	}
 
@@ -76,6 +80,10 @@ public:
 		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
 		cur = (void*)newSelection;
 		type = SelectedType::gameObject;
+
+		// New game object selected. Update the camera reference
+		App->camera->SetReference(newSelection->transform->position);
+
 		return *this;
 	}
 
@@ -145,7 +153,7 @@ public:
 			RELEASE_ARRAY(toRelease->metaFile);
 			break;
 		}
-		}	
+		}
 		delete cur;
 		cur = nullptr;
 		type = SelectedType::null;

@@ -148,27 +148,40 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Spacing();
 
 	const ResourceMesh* resourceMesh = (const ResourceMesh*)App->scene->selectedObject.Get();
-	ImGui::Text("File: %s", resourceMesh->file.data());
-	ImGui::Text("Exported file: %s", resourceMesh->exportedFile.data());
-	ImGui::Text("UUID: %u", resourceMesh->GetUUID());
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", resourceMesh->file.data());
+	ImGui::Text("Exported file:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", resourceMesh->exportedFile.data());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUUID());
 	
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceMesh->IsInMemory();
 	ImGui::Checkbox("In memory", &inMemory);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 	if (inMemory)
-		ImGui::Text("References: %u", resourceMesh->CountReferences());
+	{
+		ImGui::Text("References:"); ImGui::SameLine();
+		ImGui::TextColored(BLUE, "%u", resourceMesh->CountReferences());
+	}
 
-	ImGui::Text("Vertices: %i", resourceMesh->verticesSize);
-	ImGui::Text("Vertices ID: %i", resourceMesh->verticesID);
+	ImGui::Text("Vertices:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::Text("Vertices ID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesID);
 
-	ImGui::Text("Indices: %i", resourceMesh->indicesSize);
-	ImGui::Text("Indices ID: %i", resourceMesh->indicesID);
+	ImGui::Text("Indices:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
+	ImGui::Text("Indices ID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesID);
 
-	ImGui::Text("Triangles: %i", resourceMesh->indicesSize / 3);
+	ImGui::Text("Triangles:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
 
-	ImGui::Text("Texture Coords: %i", resourceMesh->verticesSize);
-	ImGui::Text("Texture Coords ID: %i", resourceMesh->textureCoordsID);
+	ImGui::Text("Texture Coords:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::Text("Texture Coords ID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->textureCoordsID);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const
@@ -178,20 +191,27 @@ void PanelInspector::ShowTextureResourceInspector() const
 	ImGui::Spacing();
 
 	const ResourceTexture* resourceTexture = (const ResourceTexture*)App->scene->selectedObject.Get();
-	ImGui::Text("File: %s", resourceTexture->file.data());
-	ImGui::Text("Exported file: %s", resourceTexture->exportedFile.data());
-	ImGui::Text("UUID: %u", resourceTexture->GetUUID());
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", resourceTexture->file.data());
+	ImGui::Text("Exported file:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", resourceTexture->exportedFile.data());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceTexture->GetUUID());
 
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceTexture->IsInMemory();
 	ImGui::Checkbox("In memory", &inMemory);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 	if (inMemory)
-		ImGui::Text("References: %u", resourceTexture->CountReferences());
+	{
+		ImGui::Text("References:");
+		ImGui::TextColored(BLUE, "%u", resourceTexture->CountReferences());
+	}
 
-	ImGui::Text("ID: %u", resourceTexture->id);
+	ImGui::Text("ID:");
+	ImGui::TextColored(BLUE, "%u", resourceTexture->id);
 	ImGui::Image((void*)(intptr_t)resourceTexture->id, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::Text("%u x %u", resourceTexture->width, resourceTexture->height);
+	ImGui::TextColored(BLUE, "%u x %u", resourceTexture->width, resourceTexture->height);
 }
 
 void PanelInspector::ShowMeshImportSettingsInspector()
@@ -430,7 +450,7 @@ void PanelInspector::ShowTextureImportSettingsInspector()
 	ImGui::PopItemWidth();
 
 	if (textureImportSettings->UseMipmap())
-		ImGui::TextColored(YELLOW, "Mip Maps will be generated");
+		ImGui::TextColored(BLUE, "Mip Maps will be generated");
 
 	if (App->materialImporter->IsAnisotropySupported())
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());

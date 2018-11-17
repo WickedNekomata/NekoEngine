@@ -123,14 +123,19 @@ update_status ModuleCameraEditor::Update()
 	}
 
 	// Select game object
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow() && !App->scene->IsImguizmoValid())
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow() && !App->scene->IsGizmoValid())
 	{
 		float distance;
 		math::float3 hitPoint;
 		GameObject* hitGameObject = nullptr;
+
 		App->raycaster->ScreenPointToRay(App->input->GetMouseX(), App->input->GetMouseY(), distance, hitPoint, &hitGameObject);
 		if (hitGameObject != nullptr)
+		{
 			DESTROYANDSET(hitGameObject);
+		}
+		else
+			DESTROYANDSET(NULL);
 	}
 
 	return UPDATE_CONTINUE;

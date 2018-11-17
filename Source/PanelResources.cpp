@@ -8,8 +8,8 @@
 #include "ResourceMesh.h"
 #include "ModuleScene.h"
 
-#include "ImGui/imgui.h"
-#include "Brofiler/Brofiler.h"
+#include "ImGui\imgui.h"
+#include "Brofiler\Brofiler.h"
 
 PanelResources::PanelResources(char* name) : Panel(name) {}
 

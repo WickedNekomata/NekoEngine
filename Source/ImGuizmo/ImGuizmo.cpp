@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 #include "..\imgui\imgui.h"
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -1982,3 +1986,4 @@ namespace ImGuizmo
    }
 };
 
+#endif // !GAMEMODE

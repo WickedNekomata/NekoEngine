@@ -14,10 +14,10 @@
 #include "Raycaster.h"
 #include "ModuleTimeManager.h"
 #include "ModuleScene.h"
-#include "SDL/include/SDL_scancode.h"
-#include "SDL/include/SDL_mouse.h"
+#include "SDL\include\SDL_scancode.h"
+#include "SDL\include\SDL_mouse.h"
 
-#include "MathGeoLib/include/Math/MathAll.h"
+#include "MathGeoLib\include\Math\MathAll.h"
 
 // Reference: https://learnopengl.com/Getting-started/Camera
 

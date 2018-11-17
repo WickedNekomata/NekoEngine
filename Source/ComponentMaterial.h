@@ -6,8 +6,8 @@
 #include "Globals.h"
 
 #include <vector>
-#include "MathGeoLib/include/Math/Quat.h"
-#include "MathGeoLib/include/Math/float4x4.h"
+#include "MathGeoLib\include\Math\Quat.h"
+#include "MathGeoLib\include\Math\float4x4.h"
 
 struct MaterialResource
 {

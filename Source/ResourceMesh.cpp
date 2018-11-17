@@ -4,7 +4,7 @@
 #include "ModuleGOs.h"
 #include "SceneImporter.h"
 
-#include "glew/include/GL/glew.h"
+#include "glew\include\GL\glew.h"
 
 ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid) {}
 

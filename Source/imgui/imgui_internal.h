@@ -8,6 +8,10 @@
 
 #pragma once
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 #ifndef IMGUI_VERSION
 #error Must include imgui.h before imgui_internal.h
 #endif
@@ -1606,3 +1610,5 @@ IMGUI_API void              ImFontAtlasBuildMultiplyRectAlpha8(const unsigned ch
 #ifdef _MSC_VER
 #pragma warning (pop)
 #endif
+
+#endif // !GAMEMODE

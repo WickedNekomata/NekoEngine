@@ -15,6 +15,10 @@
 // If you are new to dear imgui, read examples/README.txt and read the documentation at the top of imgui.cpp.
 // https://github.com/ocornut/imgui
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 struct SDL_Window;
 typedef union SDL_Event SDL_Event;
 
@@ -23,3 +27,5 @@ IMGUI_IMPL_API bool     ImGui_ImplSDL2_InitForVulkan(SDL_Window* window);
 IMGUI_IMPL_API void     ImGui_ImplSDL2_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplSDL2_NewFrame(SDL_Window* window);
 IMGUI_IMPL_API bool     ImGui_ImplSDL2_ProcessEvent(SDL_Event* event);
+
+#endif // !GAMEMODE

@@ -4,7 +4,7 @@
 #include "ModuleWindow.h"
 #include "Application.h"
 
-#include "imgui/imgui.h"
+#include "imgui\imgui.h"
 
 ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentType::Camera_Component)
 {

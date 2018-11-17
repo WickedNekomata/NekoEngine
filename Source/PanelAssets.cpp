@@ -10,8 +10,8 @@
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 
-#include "ImGui/imgui.h"
-#include "Brofiler/Brofiler.h"
+#include "ImGui\imgui.h"
+#include "Brofiler\Brofiler.h"
 
 PanelAssets::PanelAssets(char* name) : Panel(name) {}
 

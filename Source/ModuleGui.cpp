@@ -24,10 +24,10 @@
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_internal.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_impl_sdl.h"
+#include "imgui\imgui_impl_opengl3.h"
+#include "imgui\imgui_internal.h"
 
 #include "ImGuizmo/ImGuizmo.h"
 
@@ -91,7 +91,7 @@ bool ModuleGui::Start()
 	std::string outputFileName;
 	atlas = new ResourceTexture(ResourceType::Texture_Resource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
-	App->materialImporter->Import("UI/atlas.png", outputFileName, importSettings);
+	App->materialImporter->Import("Settings/atlas.png", outputFileName, importSettings);
 	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
 	RELEASE(importSettings);
 

@@ -7,7 +7,7 @@
 #include "ModuleGui.h"
 #include "ResourceTexture.h"
 
-#include "ImGui/imgui.h"
+#include "ImGui\imgui.h"
 
 PanelEdit::PanelEdit(char* name) : Panel(name) {}
 

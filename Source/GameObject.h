@@ -5,8 +5,8 @@
 #include "ComponentTypes.h"
 #include "EventSystem.h"
 
-#include "MathGeoLib/include/Geometry/AABB.h"
-#include "parson/parson.h"
+#include "MathGeoLib\include\Geometry\AABB.h"
+#include "parson\parson.h"
 
 #include <vector>
 

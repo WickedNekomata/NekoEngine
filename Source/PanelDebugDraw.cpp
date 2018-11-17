@@ -5,7 +5,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleScene.h"
 
-#include "ImGui/imgui.h"
+#include "ImGui\imgui.h"
 
 PanelDebugDraw::PanelDebugDraw(char* name) : Panel(name) {}
 

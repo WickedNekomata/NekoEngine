@@ -35,6 +35,10 @@
 //  2017-08-25: Inputs: MousePos set to -FLT_MAX,-FLT_MAX when mouse is unavailable/missing (instead of -1,-1).
 //  2016-10-15: Misc: Added a void* user_data parameter to Clipboard function handlers.
 
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 
@@ -571,3 +575,5 @@ static void ImGui_ImplSDL2_InitPlatformInterface(SDL_Window* window, void* sdl_g
 static void ImGui_ImplSDL2_ShutdownPlatformInterface()
 {
 }
+
+#endif // !GAMODE

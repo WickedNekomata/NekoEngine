@@ -2,7 +2,7 @@
 #define __COMPONENT_H__
 
 #include "ComponentTypes.h"
-#include "parson/parson.h"
+#include "parson\parson.h"
 
 #include "Globals.h"
 

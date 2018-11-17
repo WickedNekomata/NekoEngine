@@ -6,8 +6,8 @@
 #include "ModuleTimeManager.h"
 #include "ModuleScene.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_internal.h"
 #include <list>
 
 ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}

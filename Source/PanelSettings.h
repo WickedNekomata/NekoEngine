@@ -5,7 +5,7 @@
 
 #ifndef GAMEMODE
 
-#include "ImGui/imgui.h"
+#include "ImGui\imgui.h"
 
 #define SCREEN_MIN_WIDTH 640
 #define SCREEN_MIN_HEIGHT 480

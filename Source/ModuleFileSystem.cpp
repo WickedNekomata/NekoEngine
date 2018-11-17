@@ -7,12 +7,12 @@
 #include "Importer.h"
 #include "ModuleResourceManager.h"
 
-#include "physfs/include/physfs.h"
-#include "Brofiler/Brofiler.h"
+#include "physfs\include\physfs.h"
+#include "Brofiler\Brofiler.h"
 
 #include <assert.h>
 
-#pragma comment(lib, "physfs/libx86/physfs.lib")
+#pragma comment(lib, "physfs\libx86\physfs.lib")
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
@@ -22,6 +22,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 	AddPath(".");
 	AddPath("./Assets/", "Assets");
+	AddPath("./Settings/", "Settings");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());

@@ -8,6 +8,11 @@
 
 #pragma once
 
+
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
+
 // Configuration file (edit imconfig.h or define IMGUI_USER_CONFIG to set your own filename)
 #ifdef IMGUI_USER_CONFIG
 #include IMGUI_USER_CONFIG
@@ -196,6 +201,7 @@ namespace ImGui
     IMGUI_API const char*   GetVersion();                               // get the compiled version string e.g. "1.23"
 
     // Styles
+	IMGUI_API void          StyleColorsCustom(ImGuiStyle* dst = NULL);
     IMGUI_API void          StyleColorsDark(ImGuiStyle* dst = NULL);    // new, recommended style (default)
     IMGUI_API void          StyleColorsClassic(ImGuiStyle* dst = NULL); // classic imgui style
     IMGUI_API void          StyleColorsLight(ImGuiStyle* dst = NULL);   // best used with borders and a custom, thicker font
@@ -2210,3 +2216,5 @@ struct ImGuiViewport
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
 #include "imgui_user.h"
 #endif
+
+#endif // !GAMEMODE

@@ -6,7 +6,7 @@
 #ifndef __MODULE_H__
 #define __MODULE_H__
 
-#include "parson/parson.h"
+#include "parson\parson.h"
 
 #include "Globals.h"
 #include "EventSystem.h"

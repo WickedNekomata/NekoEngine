@@ -18,6 +18,10 @@
 #include <list>
 #include <vector>
 
+#define QUADTREE_SIZE_X 200.0f
+#define QUADTREE_SIZE_Y 100.0f
+#define QUADTREE_SIZE_Z 200.0f
+
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
 	name = "Scene";
@@ -70,12 +74,15 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-		SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
-	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
-		SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
-		SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+			SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
+		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+			SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) 
 	{
@@ -189,7 +196,7 @@ void ModuleScene::RecreateQuadtree()
 void ModuleScene::CreateQuadtree()
 {
 	const math::float3 center(0.0f, 0.0f, 0.0f);
-	const math::float3 size(200.0f, 100.0f, 200.0f);
+	const math::float3 size(QUADTREE_SIZE_X, QUADTREE_SIZE_Y, QUADTREE_SIZE_Z);
 	math::AABB boundary;
 	boundary.SetFromCenterAndSize(center, size);
 

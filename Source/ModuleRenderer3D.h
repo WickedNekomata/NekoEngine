@@ -110,7 +110,7 @@ public:
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
 	bool drawCamerasFrustum = true;
-	bool drawQuadtree = true;
+	bool drawQuadtree = false;
 };
 
 #endif

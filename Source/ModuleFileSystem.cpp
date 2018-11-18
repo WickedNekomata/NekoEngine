@@ -40,12 +40,6 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 ModuleFileSystem::~ModuleFileSystem() {}
 
-bool ModuleFileSystem::Start()
-{
-	std::string path = DIR_ASSETS;
-	RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
-}
-
 bool ModuleFileSystem::CleanUp()
 {
 	CONSOLE_LOG("Freeing File System subsystem");
@@ -481,11 +475,6 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 		CONSOLE_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
 
 	return ret;
-}
-
-std::map<std::string, uint> ModuleFileSystem::GetFilesInAssets() const
-{
-	return filesInAssets;
 }
 
 void ModuleFileSystem::CheckAssets()

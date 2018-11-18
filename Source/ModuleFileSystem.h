@@ -34,7 +34,6 @@ public:
 
 	ModuleFileSystem(bool start_enabled = true);
 	~ModuleFileSystem();
-	bool Start();
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event event);
@@ -71,8 +70,6 @@ public:
 
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
-
-	std::map<std::string, uint> GetFilesInAssets() const;
 
 	void CheckAssets();
 

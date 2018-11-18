@@ -80,6 +80,11 @@ void ComponentCamera::SetFOV(float fov)
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * App->window->GetWindowWidth() / App->window->GetWindowHeight());
 }
 
+float ComponentCamera::GetFOV() const
+{
+	return frustum.verticalFov * RADTODEG;
+}
+
 void ComponentCamera::SetNearPlaneDistance(float nearPlane)
 {
 	frustum.nearPlaneDistance = nearPlane;

@@ -155,8 +155,11 @@ update_status ModuleInput::PreUpdate()
 
 		case SDL_WINDOWEVENT:
 		{
-			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-				App->renderer3D->OnResize(event.window.data1, event.window.data2);
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+				App->window->SetWindowWidth(event.window.data1);
+				App->window->SetWindowHeight(event.window.data2);
+				App->window->UpdateWindowSize();
+			}
 			break;
 		}
 		case (SDL_DROPFILE):

@@ -44,6 +44,9 @@ public:
 	void RecursiveImportFilesFromDir(const char* dir, std::string& path);
 	void RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path) const;
 
+	void RecursiveImportFilesFromLibrary(const char* dir, std::string& path);
+	void ImportFileFromLibrary(const char* fileInLibrary);
+
 	uint ImportFile(const char* fileInAssets);
 	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);
 

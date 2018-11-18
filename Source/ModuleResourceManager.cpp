@@ -32,6 +32,9 @@ bool ModuleResourceManager::Start()
 	path.clear();
 	path.append(DIR_LIBRARY);
 	RecursiveDeleteUnusedFilesFromDir(DIR_LIBRARY, path);
+#else
+	std::string path = DIR_LIBRARY;
+	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
 #endif
 	return true;
 }
@@ -227,6 +230,63 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, s
 		uint found = path.rfind(*it);
 		if (found != std::string::npos)
 			path = path.substr(0, found);
+	}
+}
+
+void ModuleResourceManager::RecursiveImportFilesFromLibrary(const char* dir, std::string& path)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** it;
+
+	path.append("/");
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
+			RecursiveImportFilesFromLibrary(*it, path);
+		else
+			ImportFileFromLibrary(path.data());
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+	}
+}
+
+void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
+{
+	std::string extension;
+	App->fs->GetExtension(fileInLibrary, extension);
+
+	if (strcmp(extension.data(), EXTENSION_MESH) == 0)
+	{
+		std::string outputFileName;
+		App->fs->GetFileName(fileInLibrary, outputFileName);
+
+		uint UUID = strtoul(outputFileName.data(), NULL, 0);
+
+		// Create a new resource for the mesh
+		Resource* resource = CreateNewResource(ResourceType::Mesh_Resource, UUID);
+		resource->exportedFile = fileInLibrary;
+	}
+	else if (strcmp(extension.data(), EXTENSION_TEXTURE) == 0)
+	{
+		std::string outputFileName;
+		App->fs->GetFileName(fileInLibrary, outputFileName);
+
+		uint UUID = strtoul(outputFileName.data(), NULL, 0);
+
+		// Create a new resource for the texture
+		Resource* resource = CreateNewResource(ResourceType::Texture_Resource, UUID);
+		resource->exportedFile = fileInLibrary;
 	}
 }
 

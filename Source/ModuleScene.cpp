@@ -45,7 +45,7 @@ bool ModuleScene::Start()
 	root = new GameObject("Root", nullptr);
 
 #ifdef GAMEMODE
-	App->GOs->LoadScene("Settings/GameReady.nekoscene");
+	App->GOs->LoadScene("Settings/GameReady.nekoScene");
 	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 #endif// GAME

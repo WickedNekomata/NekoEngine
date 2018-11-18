@@ -12,7 +12,26 @@ The code is written in C++.
 
 - GitHub repository: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
 
-### Controls
+### Features
+- Gameobjects' hierarchy can be modified using drag and drop at panel hierarchy. User can also create/delete gameobject using right button to any gameobject at hierarchy and
+  delete them using delete button from keyboard.
+- User can create/swap/reorder components for gameobjects at inspector using the button "Add component" and drag and drop.
+- The entire assets folder is shown at assets panel. If any asset is removed/moved/renamed from windows (offline mode), assets panel would show everything correctly.
+- If any assets is modified in mode offline (example using photoshop), the asset would be reimported.
+- User can drag and drop any texture to a material component using drag and drop. For fbx, dae and obj, user can "open" them to see its' associated resources and drag and drop
+  them to a mesh component.
+- User can drag and drop any resource from library to an equivalent component.
+- User can select any Texture or fbx (and equivalent) and see the current import settings at inspector, change them and reimport it.
+- For every new fbx/dae/obj at assets, a new scene would be generated. Using drag and drop with the scene in assets panel to hierachy panel the scene would be loaded.
+- User is able to save the current scene or load any new scene at Menu->file->Save Scene/Load Scene.
+- User can add Camera component to any gameobject and set any camera as main camera. If more than one camera is set as main, user would not be able to enter play mode.
+- At debug draw panel user can change the current debug options for quadtree and bounding boxes.
+- At edit panel user is able to swap guizmo mode (shortcut: 1,2,3), enter playmode and/or change playmode's delta time.
+
+If something is not working as expected, please, revise console panel to understand what is happening.
+If, after that, you assume the engine is running an error, revise issues or set a new one (we would be very grateful).
+
+New features will be added soon in future releases. :)
 
 #### Camera
 - Mouse Hold Right:
@@ -30,6 +49,20 @@ The code is written in C++.
 	- I: open/close Inspector panel
 	- S: open/close Settings panel
 	- C: open/close Console panel
+	- H: open/close Hierarchy panel
+	- A: open/close Assets panel
+	- D: open/close DebugDraw panel
+
+#### Other
+- Swap Imguizmo mode:
+	- 1: Translate mode
+	- 2: Rotate Mode
+	- 3: Scale Mode
+	- 4: World/local mode
+
+## GAME EXE
+Executing Game.exe you will execute a build generated with the engine. The current scene for the game.exe is stored at Settings.
+Please, do not remove the scene's associated assets from assets folder or the scene from settings.
 
 ### Tools used to develop the engine
 
@@ -50,17 +83,8 @@ The code is written in C++.
 
 ### Innovations
 
-- File System (PHYSFS): used with the file 'config.json', to read and write.
-- Multitexturing: you can add multiple textures to a single mesh by enabling the
-multitexturing option in the Material section of the Inspector panel. To add a new
-texture to a texture unit, first select the texture unit in which you want to add the 
-texture and then drag and drop the texture. All the textures used by the texture
-units will be blended together. (Use the example texture from the Textures folder
-too see how a texture with alpha is blended. Be creative!)
-
-## Assets
-
-Both the Scarfy model and the tree model belong to the 3D artist [Mateo Costa](https://www.artstation.com/mateocosta).
+- Uvs Matrix: You can modify uvs transform for each texture on a gameobject.
+- Docking and Viewports: ImGui docking & viewports beta has been implemented to the engine.
 
 ## License
 

@@ -22,6 +22,7 @@ void ModuleTimeManager::PrepareUpdate()
 	switch (App->GetEngineState())
 	{
 	case engine_states::ENGINE_PLAY:
+	case engine_states::ENGINE_WANTS_PAUSE:
 		time += realDt;
 		dt = realDt * timeScale;
 		break;
@@ -32,12 +33,6 @@ void ModuleTimeManager::PrepareUpdate()
 
 	case engine_states::ENGINE_PAUSE:
 		dt = 0.0f;
-		break;
-
-	case engine_states::ENGINE_WANTS_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
-	case engine_states::ENGINE_WANTS_EDITOR:
-	default:
 		break;
 	}
 }

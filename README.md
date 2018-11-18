@@ -24,20 +24,26 @@ The code is written in C++.
 - If more than one camera is set as main, play mode cannot be entered.
 
 #### Resource Manager
-- The entire Assets folder is shown in real-time at the Assets panel. 
+
+Assets panel:
+- The entire Assets folder is shown in real-time at the Assets panel.
 - If any file (asset or meta) is removed/moved/renamed/changed from OS (offline mode), click the 'Refresh' button to update the affected resources.
 - Dropped files will be imported.
 - When importing a model, if it has a texture, the engine will search for it in the Assets folder. If it exists, it will be assigned to the model.
 
-- Drag and drop any texture to a material component. 
+- Drag and drop any texture to a material component.
 - For models (fbx, dae and obj), open them to see its associated resources and drag and drop them to a mesh component.
+
+- Select any texture or model and see its current import settings at Inspector. Change them and reimport the asset.
+
+Library panel:
 - Drag and drop any resource from the Library panel to an equivalent component.
 
-- Select any texture or model and see the current import settings at Inspector, change them and reimport the asset.
+- Select any resource and see its information at Inspector.
 
 #### Scene Serialization
 - Each new model in Assets generates a scene. To load the scene, drag and drop it from the Assets panel to the Hierarchy.
-- Save the current scene or load any new scene from Menu->File->Save Scene/Load Scene.
+- Save the current scene or load a scene from Menu->File->Save Scene/Load Scene.
 
 #### Options
 - At Debug Draw panel, change the current debug draw options.
@@ -47,7 +53,9 @@ The code is written in C++.
 - When leaving Play mode and entering Editor mode, the scene is loaded from memory.
 
 #### Other
-- At Settings panel, Scene section, 
+- At Settings panel, Scene section, check the quadtree structure. For debug purposes, random static game objects can be created (they will be automatically added to the quadtree).
+- At Settings panel, Time Manager section, check the values of the game clock and the real time clock.
+
 
 If something is not working as expected, please, revise console panel to understand what is happening.
 If, after that, you assume the engine is running an error, revise issues or send a new one (we would be very grateful).

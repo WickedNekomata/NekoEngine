@@ -34,7 +34,7 @@ class ModuleResourceManager : public Module
 {
 public:
 
-	ModuleResourceManager();
+	ModuleResourceManager(bool start_enabled = true);
 	~ModuleResourceManager();
 	bool Start();
 	bool CleanUp();

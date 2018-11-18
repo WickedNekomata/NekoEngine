@@ -175,7 +175,7 @@ void ModuleResourceManager::RecursiveImportFilesFromDir(const char* dir, std::st
 
 // Deletes all files found in a directory (excepte scenes and metas) that are not being used by any resource
 // Normally called to delete unused files in Library
-void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path)
+void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path) const
 {
 	if (dir == nullptr)
 	{

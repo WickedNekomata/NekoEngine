@@ -142,7 +142,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles)
+void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -188,7 +188,7 @@ bool ModuleFileSystem::Exists(const char* file) const
 	return PHYSFS_exists(file);
 }
 
-bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path)
+bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
 {
 	if (dir == nullptr)
 	{
@@ -480,7 +480,7 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 	return ret;
 }
 
-void ModuleFileSystem::CheckAssets()
+void ModuleFileSystem::CheckAssets() const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 

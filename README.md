@@ -24,16 +24,15 @@ The code is written in C++.
 - If more than one camera is set as main, play mode cannot be entered.
 
 #### Resource Manager
-
 Assets panel:
 - The entire Assets folder is shown in real-time at the Assets panel.
 - If any file (asset or meta) is removed/moved/renamed/changed from OS (offline mode), click the 'Refresh' button to update the affected resources.
 - Dropped files will be imported.
 - When importing a model, if it has a texture, the engine will search for it in the Assets folder. If it exists, it will be assigned to the model.
 
-IMPORTANT: After drag and drop any OS file into the engine or edit something at assets, push REIMPORT button at Assets panel.
-If the button is not clicked, assets will show the new files but any resource will be generated, so them would not work properly and
-work as invalid resources. Sorry for the inconvenience!
+**IMPORTANT: after dropping any file into the engine or changing something in the Assets folder from outside the engine, push REFRESH button at Assets panel.
+If the button is not clicked when one of this situations happens, the Assets panel will show the new files but resources will not be updated, so they will not work properly (invalid resource). 
+Sorry for the inconvenience!**
 
 - Drag and drop any texture to a material component.
 - For models (fbx, dae and obj), open them to see its associated resources and drag and drop them to a mesh component.

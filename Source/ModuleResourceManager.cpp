@@ -15,7 +15,10 @@
 #include <sstream>
 #include <assert.h>
 
-ModuleResourceManager::ModuleResourceManager() {}
+ModuleResourceManager::ModuleResourceManager(bool start_enabled) : Module(start_enabled)
+{
+	name = "ResourceManager";
+}
 
 ModuleResourceManager::~ModuleResourceManager() {}
 

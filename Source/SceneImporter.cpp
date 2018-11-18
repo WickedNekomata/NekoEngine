@@ -340,6 +340,8 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				bytes = sizeof(float) * textureCoordsSize;
 				memcpy(cursor, textureCoords, bytes);
 			}
+			else
+				int a = 0;
 
 			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
 
@@ -705,9 +707,11 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	cursor += bytes;
 
 	// 4. Load texture coords
-	bytes = sizeof(float) * outputMesh->textureCoordsSize;
-	outputMesh->textureCoords = new float[outputMesh->textureCoordsSize];
-	memcpy(outputMesh->textureCoords, cursor, bytes);
+	if (outputMesh->textureCoordsSize > 0) {
+		bytes = sizeof(float) * outputMesh->textureCoordsSize;
+		outputMesh->textureCoords = new float[outputMesh->textureCoordsSize];
+		memcpy(outputMesh->textureCoords, cursor, bytes);
+	}
 
 	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices, %u indices, %u texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
 

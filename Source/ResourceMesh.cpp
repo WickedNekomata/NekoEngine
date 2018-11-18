@@ -17,7 +17,7 @@ bool ResourceMesh::LoadInMemory()
 {
 	bool ret = App->sceneImporter->Load(exportedFile.data(), this);
 
-	if (!ret || verticesSize <= 0)
+	if (!ret)
 		return ret;
 
 	glGenBuffers(1, (GLuint*)&verticesID);
@@ -40,9 +40,6 @@ bool ResourceMesh::LoadInMemory()
 
 bool ResourceMesh::UnloadFromMemory()
 {
-	if (verticesSize <= 0)
-		return true;
-
 	glDeleteBuffers(1, (GLuint*)&verticesID);
 	glDeleteBuffers(1, (GLuint*)&indicesID);
 	glDeleteBuffers(1, (GLuint*)&textureCoordsID);

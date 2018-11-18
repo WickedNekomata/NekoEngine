@@ -19,6 +19,8 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 
+#include "Brofiler\Brofiler.h"
+
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew\\libx86\\glew32.lib")
@@ -168,6 +170,8 @@ update_status ModuleRenderer3D::PreUpdate()
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	// 1. Level geometry
 	App->scene->Draw();
 

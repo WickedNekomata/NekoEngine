@@ -73,10 +73,6 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 	{
 		for (int i = 0; i < root->GetChildrenLength(); ++i)
 		{
-			// TODO ADD DRAG AND DROP DUMMY
-			//ImGui::Dummy(); // DRAG AND DROP
-			// ReorderGameObject method at gos
-
 			GameObject* child = root->GetChild(i);
 
 			char name[DEFAULT_BUF_SIZE];

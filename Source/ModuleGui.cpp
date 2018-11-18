@@ -29,7 +29,8 @@
 #include "imgui\imgui_impl_opengl3.h"
 #include "imgui\imgui_internal.h"
 
-#include "ImGuizmo/ImGuizmo.h"
+#include "Brofiler\Brofiler.h"
+#include "ImGuizmo\ImGuizmo.h"
 
 ModuleGui::ModuleGui(bool start_enabled) : Module(start_enabled)
 {
@@ -87,7 +88,7 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	// Load atlas texture // TODO request atlas texture to the resource manager module
+	// Load atlas texture
 	std::string outputFileName;
 	atlas = new ResourceTexture(ResourceType::Texture_Resource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
@@ -115,6 +116,8 @@ update_status ModuleGui::PreUpdate()
 
 update_status ModuleGui::Update()
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }

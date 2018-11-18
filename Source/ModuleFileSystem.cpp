@@ -49,6 +49,8 @@ bool ModuleFileSystem::Start()
 
 update_status ModuleFileSystem::Update()
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
 	{
 		// Read the current files in Assets
@@ -149,7 +151,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles)
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-
+	// TODO: IMPLEMENT THIS FUNCTION WITHOUT USING ANY STRINGS
 	if (dir == nullptr)
 	{
 		assert(dir != nullptr);
@@ -173,7 +175,6 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 			App->fs->GetExtension(*it, extension);
 
 			int lastModTime = GetLastModificationTime(path.data());
-			assert(lastModTime != -1);
 			outputFiles[path.data()] = lastModTime;
 		}
 
@@ -451,13 +452,13 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 
 bool ModuleFileSystem::AddMeta(const char* metaFile, uint lastModTime)
 {
-	if (metaFile == nullptr || lastModTime == -1)
+	if (metaFile == nullptr)
 	{
-		assert(metaFile != nullptr && lastModTime != -1);
+		assert(metaFile != nullptr);
 		return false;
 	}
 
-	CONSOLE_LOG("FILE SYSTEM: Successfully added/modified the meta %s in/from the metas map", metaFile);
+	CONSOLE_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
 	metas[metaFile] = lastModTime;
 
 	return true;
@@ -475,12 +476,12 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 	if (metas.find(metaFile) != metas.end())
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully removed the meta %s from the metas map", metaFile);
+		CONSOLE_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
 		metas.erase(metaFile);
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Meta %s was not found in the metas map and therefore could not be removed", metaFile);
+		CONSOLE_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
 
 	return ret;
 }

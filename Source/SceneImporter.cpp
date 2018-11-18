@@ -279,7 +279,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 
 			// Material
-			if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr) // TODO CHECK IF NULL
+			if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr)
 			{
 				aiString textureName;
 				scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
@@ -379,7 +379,6 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImpo
 
 	// Fill the JSON with data
 	int lastModTime = App->fs->GetLastModificationTime(resources.front()->file.data());
-	assert(lastModTime != -1);
 	json_object_set_number(rootObject, "Time Created", lastModTime);
 
 	JSON_Value* meshesArrayValue = json_value_init_array();
@@ -705,8 +704,6 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	bytes = sizeof(float) * outputMesh->textureCoordsSize;
 	outputMesh->textureCoords = new float[outputMesh->textureCoordsSize];
 	memcpy(outputMesh->textureCoords, cursor, bytes);
-
-	// TODO: find the texture associated with the material 0 of the mesh
 
 	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices, %u indices, %u texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
 

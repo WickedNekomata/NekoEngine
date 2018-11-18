@@ -14,6 +14,8 @@
 #include "Resource.h"
 
 #include "parson\parson.h"
+#include "Brofiler\Brofiler.h"
+
 #include <list>
 #include <algorithm>
 
@@ -33,6 +35,8 @@ ModuleGOs::~ModuleGOs()
 
 update_status ModuleGOs::PostUpdate()
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
@@ -178,7 +182,9 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 
 void ModuleGOs::DeleteScene()
 {
+	CONSOLE_LOG("Game Objects in the hierarchy: %i", gameObjects.size());
 	ClearScene();
+	CONSOLE_LOG("Game Objects in the gameObjectsToDelete vector: %i", gameObjectsToDelete.size());
 
 	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{

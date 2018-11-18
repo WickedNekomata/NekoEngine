@@ -127,7 +127,6 @@ void ComponentMaterial::OnUniqueEditor()
 
 void ComponentMaterial::OnInternalSave(JSON_Object* file)
 {
-	// TODO
 	JSON_Value* arrayValue = json_value_init_array();
 	JSON_Array* jsonArray = json_value_get_array(arrayValue);
 	json_array_append_number(jsonArray, color[0]);

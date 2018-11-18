@@ -10,6 +10,8 @@
 
 #include "Application.h"
 
+#include "Brofiler\Brofiler.h"
+
 #include <sstream>
 #include <assert.h>
 
@@ -227,6 +229,8 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, s
 // Determines how to import a file and calls ImportFile into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	uint ret = 0;
 
 	// Search for the meta associated to the file
@@ -331,6 +335,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 // Imports a file into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile)
 {
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
 	uint ret = 0;
 
 	if (fileInAssets == nullptr)

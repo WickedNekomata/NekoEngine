@@ -7,9 +7,9 @@
 
 bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModTime)
 {
-	if (metaFile == nullptr || lastModTime == -1)
+	if (metaFile == nullptr)
 	{
-		assert(metaFile != nullptr && lastModTime != -1);
+		assert(metaFile != nullptr);
 		return false;
 	}
 

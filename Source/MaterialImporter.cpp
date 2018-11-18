@@ -177,7 +177,6 @@ bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSetti
 
 	// Fill the JSON with data
 	int lastModTime = App->fs->GetLastModificationTime(resource->file.data());
-	assert(lastModTime != -1);
 	json_object_set_number(rootObject, "Time Created", lastModTime);
 	json_object_set_number(rootObject, "UUID", resource->GetUUID());
 
@@ -455,9 +454,7 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 			// Bind the texture
 			glBindTexture(GL_TEXTURE_2D, texName);
 
-			// TODO: CHECK IF THIS WORKS
-			// http://openil.sourceforge.net/tuts/tut_8/index.htm
-			//iluAlienify();
+			// TODO (someday): http://openil.sourceforge.net/tuts/tut_8/index.htm // iluAlienify();
 
 			// Set texture wrap mode
 			int wrap = 0;

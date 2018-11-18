@@ -111,11 +111,13 @@ bool ModuleGOs::OnGameMode()
 	// Save scene in memory
 
 	// 1. Copy game objects to a temporary gameObjects vector
+	CONSOLE_LOG("gameObjects vector size at Play: %i", gameObjects.size());
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
 		tmpGameObjects.push_back(tmpGameObject);
 	}
+	CONSOLE_LOG("tmpGameObjects vector size at Play: %i", tmpGameObjects.size());
 
 	return true;
 }

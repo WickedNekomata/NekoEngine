@@ -481,7 +481,7 @@ void ModuleFileSystem::CheckAssets()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	// NOTE: Files in library are not expected to be removed by the user
+	// NOTE: Files in Library are not expected to be removed by the user
 
 	for (std::map<std::string, uint>::const_iterator it = metas.begin(); it != metas.end(); ++it)
 	{

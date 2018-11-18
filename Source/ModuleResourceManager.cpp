@@ -243,7 +243,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 	{
 		// Import the file (using the default import settings)
 		if (fileInAssets == "Assets/")
-			int a = 1;
+		{
+			// TODO: DELETE THIS. JUST DEBUG PURPOSES
+			CONSOLE_LOG("ERROR. THE FILE THAT YOU WANT TO IMPORT IS CALLED ASSETS/. WHAT ARE YOU TRYING TO DO...?");
+			return ret;
+		}
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
 		ret = ImportFile(fileInAssets, nullptr, nullptr);

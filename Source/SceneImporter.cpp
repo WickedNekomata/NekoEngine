@@ -219,7 +219,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
 
 		bool broken = false;
-		for (uint i = 0; i < nodeMesh->mNumFaces; i++)
+		for (uint i = 0; i < nodeMesh->mNumFaces; ++i)
 		{
 			broken = nodeMesh->mFaces[i].mNumIndices != 3;
 
@@ -278,30 +278,30 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 					memcpy(&textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
 					memcpy(&textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
 				}
-			}
 
-			// Material
-			if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr)
-			{
-				aiString textureName;
-				scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
-
-				std::string file;
-				App->fs->GetFileName(textureName.data, file, true);
-
-				// Check if the texture exists in Assets
-				std::string outputFile = DIR_ASSETS;
-				if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
+				// Material
+				if (scene->mMaterials[nodeMesh->mMaterialIndex] != nullptr)
 				{
-					uint UUID;
-					if (!App->res->FindTextureByFile(outputFile.data(), UUID))
-						// If the texture is not a resource yet, import it
-						UUID = App->res->ImportFile(outputFile.data());
+					aiString textureName;
+					scene->mMaterials[nodeMesh->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureName);
 
-					if (UUID > 0)
+					std::string file;
+					App->fs->GetFileName(textureName.data, file, true);
+
+					// Check if the texture exists in Assets
+					std::string outputFile = DIR_ASSETS;
+					if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 					{
-						gameObject->AddComponent(ComponentType::Material_Component);
-						gameObject->materialRenderer->res[0].res = UUID;
+						uint UUID;
+						if (!App->res->FindTextureByFile(outputFile.data(), UUID))
+							// If the texture is not a resource yet, import it
+							UUID = App->res->ImportFile(outputFile.data());
+
+						if (UUID > 0)
+						{
+							gameObject->AddComponent(ComponentType::Material_Component);
+							gameObject->materialRenderer->res[0].res = UUID;
+						}
 					}
 				}
 			}

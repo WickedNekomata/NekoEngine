@@ -128,11 +128,13 @@ bool ModuleGOs::OnEditorMode()
 	DeleteScene();
 
 	// 2. Copy temporary game objects to the real gameObjects vector and activate them
+	CONSOLE_LOG("tmpGameObjects vector size: %i", tmpGameObjects.size());
 	for (uint i = 0; i < tmpGameObjects.size(); ++i)
 	{
 		gameObjects.push_back(tmpGameObjects[i]);
 		tmpGameObjects[i]->Activate();
 	}
+	CONSOLE_LOG("gameObjects vector size after pushing back the tmpGameObjects vector: %i", gameObjects.size());
 
 	tmpGameObjects.clear();
 
@@ -191,6 +193,8 @@ void ModuleGOs::DeleteScene()
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
 	}
+
+	CONSOLE_LOG("Game Objects after deleting the gameObjectsToDelete vector: %i", gameObjects.size());
 
 	componentsToDelete.clear();
 	gameObjectsToDelete.clear();

@@ -21,6 +21,7 @@ public:
 	void OnUniqueEditor();
 
 	void SetFOV(float fov);
+	float GetFOV() const;
 	void SetNearPlaneDistance(float nearPlane);
 	void SetFarPlaneDistance(float farPlane);
 	void SetAspectRatio(float aspectRatio);

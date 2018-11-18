@@ -277,7 +277,7 @@ Component* GameObject::GetComponent(uint index) const
 	return components[index];
 }
 
-// Get the index of the component from the gameobject's components vector. If the component can not be found returns -1
+// Get the index of the component from the gameobject's components vector. If the component cannot be found, returns -1
 int GameObject::GetComponentIndexOnComponents(Component* component) const
 {
 	for (int i = 0; i < components.size(); ++i)
@@ -285,6 +285,7 @@ int GameObject::GetComponentIndexOnComponents(Component* component) const
 		if (components[i] == component)
 			return i;
 	}
+
 	return -1;
 }
 

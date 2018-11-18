@@ -115,7 +115,6 @@ void ModuleScene::Draw() const
 }
 
 #ifndef GAMEMODE
-
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
 	ImGuiViewport* vport = ImGui::GetMainViewport();
@@ -161,7 +160,6 @@ ImGuizmo::MODE ModuleScene::GetImGuizmoMode() const
 {
 	return currentImGuizmoMode;
 }
-
 #endif
 
 bool ModuleScene::GetShowGrid() const

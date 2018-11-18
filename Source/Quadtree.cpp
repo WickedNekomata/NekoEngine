@@ -29,7 +29,9 @@ bool QuadtreeNode::IsLeaf() const
 
 void QuadtreeNode::Insert(GameObject* gameObject)
 {
-	if (objects.size() >= BUCKET_SIZE)
+	if (IsLeaf() && objects.size() < BUCKET_SIZE)
+		objects.push_back(gameObject);
+	else
 	{
 		objects.push_back(gameObject);
 
@@ -41,8 +43,6 @@ void QuadtreeNode::Insert(GameObject* gameObject)
 			RedistributeChildren();
 		}
 	}
-	else
-		objects.push_back(gameObject);
 }
 
 void QuadtreeNode::Subdivide()

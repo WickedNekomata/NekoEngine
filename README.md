@@ -31,6 +31,10 @@ Assets panel:
 - Dropped files will be imported.
 - When importing a model, if it has a texture, the engine will search for it in the Assets folder. If it exists, it will be assigned to the model.
 
+IMPORTANT: After drag and drop any OS file into the engine or edit something at assets, push REIMPORT button at Assets panel.
+If the button is not clicked, assets will show the new files but any resource will be generated, so them would not work properly and
+work as invalid resources. Sorry for the inconvenience!
+
 - Drag and drop any texture to a material component.
 - For models (fbx, dae and obj), open them to see its associated resources and drag and drop them to a mesh component.
 

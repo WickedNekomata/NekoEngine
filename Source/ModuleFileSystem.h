@@ -47,11 +47,11 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles);
+	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles) const;
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
-	bool RecursiveExists(const char* fileName, const char* dir, std::string& path);
+	bool RecursiveExists(const char* fileName, const char* dir, std::string& path) const;
 
 	int GetLastModificationTime(const char* file) const;
 
@@ -69,7 +69,7 @@ public:
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
 
-	void CheckAssets();
+	void CheckAssets() const;
 
 private:
 

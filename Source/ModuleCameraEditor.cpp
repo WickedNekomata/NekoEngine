@@ -52,6 +52,9 @@ bool ModuleCameraEditor::Start()
 
 update_status ModuleCameraEditor::Update()
 {
+	if (!App->IsEditor())
+		return UPDATE_CONTINUE;
+
 	// Free movement and rotation
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
@@ -123,7 +126,8 @@ update_status ModuleCameraEditor::Update()
 	}
 
 	// Select game object
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && !App->gui->IsMouseHoveringAnyWindow() && !App->scene->IsGizmoValid())
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN 
+		&& !App->gui->IsMouseHoveringAnyWindow() && !App->scene->IsGizmoValid())
 	{
 		float distance;
 		math::float3 hitPoint;

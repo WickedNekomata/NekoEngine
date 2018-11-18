@@ -35,7 +35,7 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	assert(SomethingOnMemory() == false && "Memory still allocated on vram. Code better!");
+	assert(IsAnyResourceInVram() == false && "Memory still allocated on vram. Code better!");
 
 	DestroyResources();
 
@@ -768,7 +768,7 @@ void ModuleResourceManager::DestroyResources()
 }
 
 // Returns true if someone is still referencing any resource
-bool ModuleResourceManager::SomethingOnMemory() const
+bool ModuleResourceManager::IsAnyResourceInVram() const
 {
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{

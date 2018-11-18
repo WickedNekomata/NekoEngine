@@ -69,7 +69,7 @@ public:
 
 	bool DestroyResourcesAndRemoveLibraryEntries(const char* metaFile);
 
-	bool SomethingOnMemory() const;
+	bool IsAnyResourceInVram() const;
 
 private:
 

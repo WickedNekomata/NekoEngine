@@ -64,7 +64,7 @@ private:
 	std::vector<GameObject*> gameObjectsToDelete;
 	std::vector<Component*> componentsToDelete;
 
-	// OnGameMode / OnEditorMode
+	// OnGameMode/OnEditorMode
 	std::vector<GameObject*> tmpGameObjects;
 };
 

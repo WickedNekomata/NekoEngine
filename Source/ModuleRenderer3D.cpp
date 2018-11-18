@@ -51,9 +51,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	
 	if (ret)
 	{
-		// TODO: load this variables from .json (and save them when the app is closed)
-		SetVSync(json_object_get_boolean(jObject, "vSync"));
-		SetDebugDraw(json_object_get_boolean(jObject, "debugDraw"));
+		LoadStatus(jObject);
 
 		// Initialize glew
 		GLenum error = glewInit();
@@ -246,10 +244,20 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 {
 	json_object_set_boolean(jObject, "vSync", vsync);
+
+	json_object_set_boolean(jObject, "debugDraw", debugDraw);
+	json_object_set_boolean(jObject, "drawBoundingBoxes", drawBoundingBoxes);
+	json_object_set_boolean(jObject, "drawCamerasFrustum", drawCamerasFrustum);
+	json_object_set_boolean(jObject, "drawQuadtree", drawQuadtree);
 }
 void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 {
 	SetVSync(json_object_get_boolean(jObject, "vSync"));
+
+	debugDraw = json_object_get_boolean(jObject, "debugDraw");
+	drawBoundingBoxes = json_object_get_boolean(jObject, "drawBoundingBoxes");
+	drawCamerasFrustum = json_object_get_boolean(jObject, "drawCamerasFrustum");
+	drawQuadtree = json_object_get_boolean(jObject, "drawQuadtree");
 }
 
 bool ModuleRenderer3D::OnGameMode()
@@ -294,7 +302,8 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 
 	this->vsync = vsync;
 
-	if (this->vsync) {
+	if (this->vsync) 
+	{
 
 		if (SDL_GL_SetSwapInterval(1) == -1)
 		{

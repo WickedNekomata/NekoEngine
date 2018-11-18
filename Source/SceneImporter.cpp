@@ -336,8 +336,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			cursor += bytes;
 
 			// 4. Store texture coords
-			bytes = sizeof(float) * textureCoordsSize;
-			memcpy(cursor, textureCoords, bytes);
+			if (textureCoordsSize > 0) {
+				bytes = sizeof(float) * textureCoordsSize;
+				memcpy(cursor, textureCoords, bytes);
+			}
 
 			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
 

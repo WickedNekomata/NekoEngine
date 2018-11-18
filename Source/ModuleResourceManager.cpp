@@ -508,11 +508,8 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 		break;
 	}
 
-	if (resource != nullptr) {
-		if (resources.find(uuid) != resources.end())
-			assert(2 == 1 && "same UUID");
+	if (resource != nullptr)
 		resources[uuid] = resource;
-	}
 
 	return resource;
 }

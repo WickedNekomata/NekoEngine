@@ -81,8 +81,10 @@ public:
 		cur = (void*)newSelection;
 		type = SelectedType::gameObject;
 
+#ifndef GAMEMODE
 		// New game object selected. Update the camera reference
 		App->camera->SetReference(newSelection->transform->position);
+#endif
 
 		return *this;
 	}

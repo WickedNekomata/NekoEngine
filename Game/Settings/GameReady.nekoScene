@@ -1,0 +1,307 @@
+[
+    {
+        "name": "RootNode",
+        "UUID": 660984348,
+        "Parent UUID": 2686352455,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Chimney",
+        "UUID": 368700996,
+        "Parent UUID": 660984348,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 4092047978,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ]
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 1238176281
+            }
+        ]
+    },
+    {
+        "name": "Baker_house",
+        "UUID": 3391408837,
+        "Parent UUID": 660984348,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 4092047978,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ]
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 3299646432
+            }
+        ]
+    },
+    {
+        "name": "camera",
+        "UUID": 2542583422,
+        "Parent UUID": 2686352455,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0.25751343369483948,
+                "PosY": 2.4717562198638916,
+                "PosZ": -13.359343528747559,
+                "RotX": -0.0041896342299878597,
+                "RotY": -0.04301905632019043,
+                "RotZ": -0.00018040192662738264,
+                "RotW": 0.99906545877456665,
+                "ScaleX": 0.99999856948852539,
+                "ScaleY": 0.99999809265136719,
+                "ScaleZ": 0.9999963641166687
+            },
+            {
+                "Type": 4,
+                "nearPlaneDistance": 0.10000000149011612,
+                "farPlaneDistance": 100,
+                "verticalFov": 1.0471975803375244,
+                "horizontalFov": 1.2877128124237061,
+                "isMainCamera": true,
+                "isFrustumCulling": true
+            }
+        ]
+    },
+    {
+        "name": "RootNode",
+        "UUID": 483108864,
+        "Parent UUID": 2686352455,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 1.9750707149505615,
+                "PosY": 4.4677295684814453,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "name": "Box001",
+        "UUID": 3394796935,
+        "Parent UUID": 483108864,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": -0.1418268233537674,
+                "RotY": 0.85660010576248169,
+                "RotZ": -0.32165402173995972,
+                "RotW": 0.37770366668701172,
+                "ScaleX": 1.0000066757202148,
+                "ScaleY": 1.0000019073486328,
+                "ScaleZ": 1.0000014305114746
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 2484056049
+            }
+        ]
+    },
+    {
+        "name": "RootNode",
+        "UUID": 2404993314,
+        "Parent UUID": 2686352455,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": -4.4148750305175781,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0.70390439033508301,
+                "RotZ": 0,
+                "RotW": 0.71029472351074219,
+                "ScaleX": 0.99999797344207764,
+                "ScaleY": 1,
+                "ScaleZ": 0.99999797344207764
+            }
+        ]
+    },
+    {
+        "name": "Chimney",
+        "UUID": 2488895868,
+        "Parent UUID": 2404993314,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 4092047978,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ]
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 1238176281
+            }
+        ]
+    },
+    {
+        "name": "Baker_house",
+        "UUID": 350392744,
+        "Parent UUID": 2404993314,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 4092047978,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ]
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 3299646432
+            }
+        ]
+    }
+] 

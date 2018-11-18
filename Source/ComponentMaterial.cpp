@@ -23,7 +23,10 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 	res = componentMaterial.res;
 
 	for (uint i = 0; i < res.size(); ++i)
-		SetResource(res[i].res, i);
+	{
+		res[i].res = 0;
+		SetResource(componentMaterial.res[i].res, i);
+	}
 
 	for (uint i = 0; i < 4; ++i)
 		color[i] = componentMaterial.color[i];

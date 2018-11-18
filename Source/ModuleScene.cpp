@@ -75,6 +75,9 @@ bool ModuleScene::Start()
 update_status ModuleScene::Update()
 {
 #ifndef GAMEMODE
+	if (!App->IsEditor())
+		return UPDATE_CONTINUE;
+
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -98,7 +101,6 @@ update_status ModuleScene::Update()
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);
 	}
-
 #endif
 
 	return UPDATE_CONTINUE;

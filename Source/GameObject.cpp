@@ -31,9 +31,6 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 
 	boundingBox.SetNegativeInfinity();
 
-	if (isStatic)
-		App->scene->quadtree.Insert(this);
-
 	UUID = App->GenerateRandomNumber();
 }
 
@@ -432,20 +429,6 @@ void GameObject::OnLoad(JSON_Object* file)
 		cObject = json_array_get_object(jsonComponents, i);
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
 		newComponent->OnLoad(cObject);
-	}
-
-	// Recalculate bounding boxes
-	System_Event newEvent;
-	newEvent.goEvent.gameObject = parent;
-	newEvent.type = System_Event_Type::RecalculateBBoxes;
-	App->PushSystemEvent(newEvent);
-
-	if (isStatic)
-	{
-		// Recreate quadtree
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
 	}
 }
 

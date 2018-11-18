@@ -4,6 +4,7 @@
 #include "ComponentCamera.h"
 #include "Application.h"
 #include "ModuleTimeManager.h"
+#include "ModuleCameraEditor.h"
 #include "ModuleScene.h"
 
 #include "imgui\imgui.h"
@@ -93,6 +94,10 @@ void ComponentTransform::OnUniqueEditor()
 		if (parent->camera != nullptr)
 			parent->camera->UpdateTransform();
 
+		// Transform updated: if the game object is selected, update the camera reference
+		if (parent == App->scene->selectedObject.Get())
+			App->camera->SetReference(position);
+
 		// Transform updated: recalculate bounding boxes
 		System_Event newEvent;
 		newEvent.goEvent.gameObject = parent;
@@ -158,6 +163,10 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();
+
+	// Transform updated: if the game object is selected, update the camera reference
+	if (parent == App->scene->selectedObject.Get())
+		App->camera->SetReference(position);
 
 	// Transform updated: recalculate bounding boxes
 	System_Event newEvent;

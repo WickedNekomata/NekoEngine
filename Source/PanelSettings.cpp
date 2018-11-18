@@ -181,7 +181,7 @@ void PanelSettings::WindowNode() const
 
 	ImGui::Text("Refresh rate: ");
 	ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%i", refreshRate);
+	ImGui::TextColored(BLUE, "%i", refreshRate);
 
 	// Fullscreen, resizable, borderless, fullscreen desktop
 	static bool fullscreen = App->window->GetFullscreenWindow();
@@ -249,23 +249,23 @@ void PanelSettings::FileSystemNode() const
 {
 	// Paths
 	ImGui::Text("Base Path:");
-	ImGui::TextColored(YELLOW, "%s", App->fs->GetBasePath());
+	ImGui::TextColored(BLUE, "%s", App->fs->GetBasePath());
 	ImGui::Text("Read Paths:");
-	ImGui::TextColored(YELLOW, "%s", App->fs->GetReadPaths());
+	ImGui::TextColored(BLUE, "%s", App->fs->GetReadPaths());
 	ImGui::Text("Write Path:");
-	ImGui::TextColored(YELLOW, "%s", App->fs->GetWritePath());
+	ImGui::TextColored(BLUE, "%s", App->fs->GetWritePath());
 }
 
 void PanelSettings::InputNode() const
 {
 	ImGui::Text("Mouse Position:");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i, %i", App->input->GetMouseX(), App->input->GetMouseY());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%i, %i", App->input->GetMouseX(), App->input->GetMouseY());
 
 	ImGui::Text("Mouse Motion:");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i, %i", App->input->GetMouseXMotion(), App->input->GetMouseYMotion());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%i, %i", App->input->GetMouseXMotion(), App->input->GetMouseYMotion());
 
 	ImGui::Text("Mouse Wheel:");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->input->GetMouseZ());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%i", App->input->GetMouseZ());
 
 	ImGui::Separator();
 	ImGui::Text("Input LOGS:");
@@ -293,15 +293,15 @@ void PanelSettings::HardwareNode() const
 
 	// CPU
 	ImGui::Text("CPUs:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+	ImGui::TextColored(BLUE, "%i (Cache: %ikb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
 
 	// RAM
 	ImGui::Text("System Ram:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%iMb", SDL_GetSystemRAM());
+	ImGui::TextColored(BLUE, "%iMb", SDL_GetSystemRAM());
 
 	// Capabilites
 	ImGui::Text("Caps:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
+	ImGui::TextColored(BLUE, "%s%s%s%s%s%s%s%s%s%s%s", (SDL_HasAVX()) ? "AVX " : "", (SDL_HasAVX2()) ? "AVX2 " : "", (SDL_HasAltiVec()) ? "AltiVec " : "",
 		(SDL_Has3DNow()) ? "3DNow " : "", (SDL_HasMMX()) ? "MMX " : "", (SDL_HasRDTSC()) ? "RDTSC " : "", (SDL_HasSSE()) ? "SEE " : "",
 		(SDL_HasSSE2()) ? "SSE2 " : "", (SDL_HasSSE3()) ? "SSE3 " : "", (SDL_HasSSE41()) ? "SSE41 " : "",
 		(SDL_HasSSE42()) ? "SSE42 " : "");
@@ -309,9 +309,9 @@ void PanelSettings::HardwareNode() const
 	ImGui::Separator();
 
 	ImGui::Text("GPU:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%s", glGetString(GL_RENDERER));
+	ImGui::TextColored(BLUE, "%s", glGetString(GL_RENDERER));
 	ImGui::Text("Brand:"); ImGui::SameLine();
-	ImGui::TextColored(YELLOW, "%s", glGetString(GL_VENDOR));
+	ImGui::TextColored(BLUE, "%s", glGetString(GL_VENDOR));
 }
 
 void PanelSettings::SceneNode() const
@@ -328,7 +328,7 @@ void PanelSettings::SceneNode() const
 		QuadtreeNode* root = App->scene->quadtree.root;
 
 		for (std::list<GameObject*>::const_iterator it = root->objects.begin(); it != root->objects.end(); ++it)
-			ImGui::TextColored(WHITE, (*it)->GetName());
+			ImGui::TextColored(BLUE, (*it)->GetName());
 
 		RecursiveDrawQuadtreeHierarchy(root);
 		ImGui::TreePop();
@@ -341,13 +341,13 @@ void PanelSettings::TimeManagerNode() const
 	ImGui::Spacing();
 
 	ImGui::Text("Game time scale:");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetTimeScale());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%f", App->timeManager->GetTimeScale());
 
 	ImGui::Text("Time since game start (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetTime());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%f", App->timeManager->GetTime());
 
 	ImGui::Text("Dt (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetDt());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%f", App->timeManager->GetDt());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -357,13 +357,13 @@ void PanelSettings::TimeManagerNode() const
 	ImGui::Spacing();
 
 	ImGui::Text("Frame count:");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%i", App->timeManager->GetFrameCount());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%i", App->timeManager->GetFrameCount());
 
 	ImGui::Text("Real time since game start (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealTime());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%f", App->timeManager->GetRealTime());
 
 	ImGui::Text("Real dt (seconds):");
-	ImGui::SameLine(); ImGui::TextColored(YELLOW, "%f", App->timeManager->GetRealDt());
+	ImGui::SameLine(); ImGui::TextColored(BLUE, "%f", App->timeManager->GetRealDt());
 }
 
 void PanelSettings::AddInput(const char* input)
@@ -408,7 +408,7 @@ void PanelSettings::RecursiveDrawQuadtreeHierarchy(QuadtreeNode* node) const
 				if (treeNodeOpened)
 				{
 					for (std::list<GameObject*>::const_iterator it = child->objects.begin(); it != child->objects.end(); ++it)
-						ImGui::TextColored(WHITE, (*it)->GetName());
+						ImGui::TextColored(BLUE, (*it)->GetName());
 
 					if (!child->IsLeaf())
 						RecursiveDrawQuadtreeHierarchy(child);

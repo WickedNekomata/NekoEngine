@@ -5,8 +5,7 @@
 
 #ifndef GAMEMODE
 
-#define YELLOW { 239, 201, 0, 255 }
-#define WHITE { 255, 255, 255, 255 }
+#define BLUE { 0.06f, 0.53f, 0.98f, 1.00f }
 
 class Panel
 {

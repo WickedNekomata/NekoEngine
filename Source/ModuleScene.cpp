@@ -233,7 +233,7 @@ void ModuleScene::CreateRandomStaticGameObject()
 
 #ifndef GAMEMODE
 
-bool ModuleScene::IsImguizmoValid() const
+bool ModuleScene::IsGizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }

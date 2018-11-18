@@ -25,13 +25,14 @@
 ModuleScene::ModuleScene(bool start_enabled) : Module(start_enabled)
 {
 	name = "Scene";
-	game = true;
 }
 
 ModuleScene::~ModuleScene() {}
 
 bool ModuleScene::Init(JSON_Object* jObject)
 {
+	LoadStatus(jObject);
+
 	CreateQuadtree();
 
 	return true;
@@ -39,7 +40,6 @@ bool ModuleScene::Init(JSON_Object* jObject)
 
 bool ModuleScene::Start()
 {
-	bool ret = true;
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr);
@@ -50,7 +50,7 @@ bool ModuleScene::Start()
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 #endif// GAME
 
-	return ret;
+	return true;
 }
 
 update_status ModuleScene::Update()
@@ -95,7 +95,19 @@ bool ModuleScene::CleanUp()
 
 	DESTROYANDSET(NULL);
 
+	quadtree.Clear();
+
 	return ret;
+}
+
+void ModuleScene::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_boolean(jObject, "showGrid", showGrid);
+}
+
+void ModuleScene::LoadStatus(const JSON_Object* jObject)
+{
+	showGrid = json_object_get_boolean(jObject, "showGrid");
 }
 
 void ModuleScene::OnSystemEvent(System_Event event)

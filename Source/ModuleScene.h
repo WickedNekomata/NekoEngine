@@ -28,6 +28,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void SaveStatus(JSON_Object*) const;
+	void LoadStatus(const JSON_Object*);
+
 	void OnSystemEvent(System_Event event);
 
 	void Draw() const;
@@ -36,13 +39,11 @@ public:
 	void OnGizmos(GameObject* gameObject) const;
 
 #ifndef GAMEMODE
-
 	void SetImGuizmoOperation(ImGuizmo::OPERATION operation);
 	ImGuizmo::OPERATION GetImGuizmoOperation() const;
 
 	void SetImGuizmoMode(ImGuizmo::MODE mode);
 	ImGuizmo::MODE GetImGuizmoMode() const;
-
 #endif
 
 	bool GetShowGrid() const;
@@ -62,11 +63,9 @@ private:
 	bool showGrid = true;
 
 #ifndef GAMEMODE
-
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
-
-#endif // !GAMEMODE
+#endif
 
 public:
 

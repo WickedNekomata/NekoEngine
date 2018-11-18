@@ -66,8 +66,6 @@ public:
 
 	uint Load(const char* file, char** buffer) const;
 
-	// ----- Resource Manager -----
-
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
 

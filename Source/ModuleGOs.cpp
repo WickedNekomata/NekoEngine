@@ -22,7 +22,6 @@
 ModuleGOs::ModuleGOs(bool start_enabled) : Module(start_enabled)
 {
 	name = "GameObjects";
-	game = true;
 
 	nameScene = new char[DEFAULT_BUF_SIZE];
 	strcpy_s((char*)nameScene, DEFAULT_BUF_SIZE, "Main Scene");

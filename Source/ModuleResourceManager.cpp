@@ -536,10 +536,11 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 
 	switch (asciiUnion.asciiValue)
 	{
-	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ:
+	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ: case ASCIIdae: case ASCIIDAE:
 		return ResourceType::Mesh_Resource;
 		break;
 	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
+	case ASCIItga: case ASCIITGA:
 		return ResourceType::Texture_Resource;
 		break;
 	}

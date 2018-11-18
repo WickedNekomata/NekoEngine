@@ -14,6 +14,10 @@
 // https://www.quora.com/How-is-an-integer-value-stored-in-the-memory-in-C
 #define ASCIIfbx 2019714606
 #define ASCIIFBX 1480738350
+#define ASCIItga 1634169902
+#define ASCIITGA 1095193646
+#define ASCIIdae 1700881454
+#define ASCIIDAE 1161905198
 #define ASCIIobj 1784835886
 #define ASCIIOBJ 1245859630
 #define ASCIIdds 1935959086

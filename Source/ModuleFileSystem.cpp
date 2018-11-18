@@ -21,14 +21,17 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	PHYSFS_init(nullptr);
 
 	AddPath(".");
+#ifndef GAMEMODE
 	AddPath("./Assets/", "Assets");
+#endif
 	AddPath("./Settings/", "Settings");
 
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
+#ifndef GAMEMODE
 	CreateDir(DIR_ASSETS_SCENES);
-
+#endif
 	if (CreateDir(DIR_LIBRARY))
 	{
 		AddPath("./Library/", "Library");

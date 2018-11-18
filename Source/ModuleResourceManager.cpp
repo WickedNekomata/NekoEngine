@@ -21,6 +21,7 @@ ModuleResourceManager::~ModuleResourceManager() {}
 
 bool ModuleResourceManager::Start()
 {
+#ifndef GAMEMODE
 	std::string path = DIR_ASSETS;
 	RecursiveImportFilesFromDir(DIR_ASSETS, path);
 
@@ -28,7 +29,7 @@ bool ModuleResourceManager::Start()
 	path.clear();
 	path.append(DIR_LIBRARY);
 	RecursiveDeleteUnusedFilesFromDir(DIR_LIBRARY, path);
-
+#endif
 	return true;
 }
 

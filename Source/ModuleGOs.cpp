@@ -111,13 +111,12 @@ bool ModuleGOs::OnGameMode()
 	// Save scene in memory
 
 	// 1. Copy game objects to a temporary gameObjects vector
-	CONSOLE_LOG("gameObjects vector size at Play: %i", gameObjects.size());
 	for (uint i = 0; i < gameObjects.size(); ++i)
 	{
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
 		tmpGameObjects.push_back(tmpGameObject);
 	}
-	CONSOLE_LOG("tmpGameObjects vector size at Play: %i", tmpGameObjects.size());
+	CONSOLE_LOG("MODULE GOS: tmpGameObjects vector size OnGameMode: %i", tmpGameObjects.size());
 
 	return true;
 }
@@ -130,13 +129,12 @@ bool ModuleGOs::OnEditorMode()
 	DeleteScene();
 
 	// 2. Copy temporary game objects to the real gameObjects vector and activate them
-	CONSOLE_LOG("tmpGameObjects vector size: %i", tmpGameObjects.size());
+	CONSOLE_LOG("MODULE GOS: tmpGameObjects vector size OnEditorMode: %i", tmpGameObjects.size());
 	for (uint i = 0; i < tmpGameObjects.size(); ++i)
 	{
 		gameObjects.push_back(tmpGameObjects[i]);
 		tmpGameObjects[i]->Activate();
 	}
-	CONSOLE_LOG("gameObjects vector size after pushing back the tmpGameObjects vector: %i", gameObjects.size());
 
 	tmpGameObjects.clear();
 
@@ -184,19 +182,25 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 	}
 }
 
+void ModuleGOs::DeleteTemporaryGameObjects()
+{
+	for (uint i = 0; i < tmpGameObjects.size(); ++i)
+		RELEASE(tmpGameObjects[i]);
+
+	tmpGameObjects.clear();
+}
+
 void ModuleGOs::DeleteScene()
 {
-	CONSOLE_LOG("Game Objects in the hierarchy: %i", gameObjects.size());
+	CONSOLE_LOG("MODULE GOS: Game Objects in hierarchy: %i", gameObjects.size());
 	ClearScene();
-	CONSOLE_LOG("Game Objects in the gameObjectsToDelete vector: %i", gameObjectsToDelete.size());
+	CONSOLE_LOG("MODULE GOS: Game Objects in gameObjectsToDelete vector after ClearScene: %i", gameObjectsToDelete.size());
 
 	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
 		RELEASE(gameObjectsToDelete[i]);
 	}
-
-	CONSOLE_LOG("Game Objects after deleting the gameObjectsToDelete vector: %i", gameObjects.size());
 
 	componentsToDelete.clear();
 	gameObjectsToDelete.clear();

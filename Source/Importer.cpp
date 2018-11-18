@@ -17,7 +17,7 @@ bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModT
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -67,7 +67,7 @@ bool Importer::GetLastModificationTimeFromMeta(const char* metaFile, int& lastMo
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{

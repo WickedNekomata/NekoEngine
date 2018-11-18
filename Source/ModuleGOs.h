@@ -29,6 +29,8 @@ public:
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
+
+	void DeleteTemporaryGameObjects();
 	void DeleteScene();
 	void ClearScene();
 

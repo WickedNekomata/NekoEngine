@@ -221,8 +221,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		bool broken = false;
 		for (uint i = 0; i < nodeMesh->mNumFaces; i++)
 		{
-			if (nodeMesh->mFaces[i].mNumIndices != 3)
-				broken = true;
+			broken = nodeMesh->mFaces[i].mNumIndices != 3;
+
+			if (broken)
+				break;
 		}
 
 		if (!broken)
@@ -447,7 +449,7 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint>& UU
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -501,7 +503,7 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -569,7 +571,7 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -603,7 +605,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{

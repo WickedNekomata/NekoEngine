@@ -112,14 +112,8 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		case TextureImportSettings::TextureCompression::DXT1:
 			compression = IL_DXT1;
 			break;
-		case TextureImportSettings::TextureCompression::DXT2:
-			compression = IL_DXT2;
-			break;
 		case TextureImportSettings::TextureCompression::DXT3:
 			compression = IL_DXT3;
-			break;
-		case TextureImportSettings::TextureCompression::DXT4:
-			compression = IL_DXT4;
 			break;
 		case TextureImportSettings::TextureCompression::DXT5:
 			compression = IL_DXT5;
@@ -229,7 +223,7 @@ bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint& UUID) co
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -279,7 +273,7 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -336,7 +330,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{
@@ -367,7 +361,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	uint size = App->fs->Load(metaFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
 	}
 	else
 	{

@@ -214,6 +214,8 @@ void Application::PrepareUpdate()
 		{
 			if (!(*item)->OnGameMode())
 			{
+				App->GOs->DeleteTemporaryGameObjects();
+
 				engineState = engine_states::ENGINE_EDITOR;
 				ret = false;
 				break;

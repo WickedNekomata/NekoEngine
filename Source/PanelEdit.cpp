@@ -109,7 +109,7 @@ bool PanelEdit::Draw()
 		// Local Mode button
 		if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::LOCAL)
 		{
-			ImGui::PushID("localHovered");
+			ImGui::PushID("localNormal");
 			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f))
 				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::WORLD);
@@ -123,7 +123,7 @@ bool PanelEdit::Draw()
 		// World Mode button
 		else if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::WORLD)
 		{
-			ImGui::PushID("worldHovered");
+			ImGui::PushID("worldNormal");
 			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f))
 				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::LOCAL);

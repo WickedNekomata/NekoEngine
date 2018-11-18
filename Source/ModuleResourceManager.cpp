@@ -242,6 +242,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 	if (!App->fs->Exists(metaFile))
 	{
 		// Import the file (using the default import settings)
+		if (fileInAssets == "Assets/")
+			int a = 1;
+
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
 		ret = ImportFile(fileInAssets, nullptr, nullptr);
 	}
@@ -269,7 +272,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 					if (App->fs->Exists(exportedFile))
 						meshes++;
 				}
-				if (meshes == UUIDs.size())
+				if (meshes > 0 && meshes == UUIDs.size())
 				{
 					std::string exportedFileName;
 					App->fs->GetFileName(fileInAssets, exportedFileName);

@@ -420,7 +420,7 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 			
 				if (objCount == size)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName.data());
+					//CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName.data());
 				}
 				else
 				{

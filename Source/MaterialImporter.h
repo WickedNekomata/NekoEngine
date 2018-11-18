@@ -11,7 +11,7 @@ struct TextureImportSettings : public ImportSettings
 {
 	const char* metaFile = nullptr;
 
-	enum TextureCompression { DXT1, DXT2, DXT3, DXT4, DXT5 };
+	enum TextureCompression { DXT1, DXT3, DXT5 };
 	TextureCompression compression = DXT5;
 
 	enum TextureWrapMode { REPEAT, MIRRORED_REPEAT, CLAMP_TO_EDGE, CLAMP_TO_BORDER };

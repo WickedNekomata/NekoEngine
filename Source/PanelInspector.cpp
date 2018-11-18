@@ -419,7 +419,7 @@ void PanelInspector::ShowTextureImportSettingsInspector()
 	ImGui::Text("Import Settings");
 	ImGui::Spacing();
 
-	const char* compression[] = { "DXT1", "DXT2", "DXT3", "DXT4", "DXT5" };
+	const char* compression[] = { "DXT1", "DXT3", "DXT5" };
 	int currentCompression = textureImportSettings->compression;
 	ImGui::PushItemWidth(100.0f);
 	if (ImGui::Combo("Compression", &currentCompression, compression, IM_ARRAYSIZE(compression)))

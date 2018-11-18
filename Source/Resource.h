@@ -39,7 +39,7 @@ protected:
 
 	uint UUID;
 	ResourceType type;
-	uint count = 0u;
+	uint count = 0;
 };
 
 

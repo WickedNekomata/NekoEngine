@@ -114,7 +114,7 @@ void GameObject::SetParent(GameObject* parent)
 	this->parent = parent;
 }
 
-GameObject* GameObject::GetParent()
+GameObject* GameObject::GetParent() const
 {
 	return parent;
 }
@@ -448,13 +448,14 @@ void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
 		children[i]->RecursiveSerialitzation(goArray);	
 }
 
-void GameObject::RecursiveForceAllResources(uint forceRes)
+void GameObject::RecursiveForceAllResources(uint forceRes) const
 {
 	if (materialRenderer != nullptr)
 	{
 		for (int i = 0; i < materialRenderer->res.size(); ++i)
 			materialRenderer->res[i].res = forceRes;
 	}
+
 	if (meshRenderer != nullptr)
 		meshRenderer->res = forceRes;
 

@@ -20,6 +20,8 @@ public:
 
 	bool Draw();
 
+private:
+
 	void RecursiveDrawDir(const char* dir, std::string& path) const;
 	void SetDragAndDropSource(const char* file) const;
 };

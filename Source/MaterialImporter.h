@@ -51,10 +51,10 @@ public:
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
-	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings);
-	bool Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings);
+	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
+	bool Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
 	
-	bool LoadCheckers(ResourceTexture* textureResource);
+	bool LoadCheckers(ResourceTexture* textureResource) const;
 
 	bool IsAnisotropySupported() const;
 	float GetLargestSupportedAnisotropy() const;

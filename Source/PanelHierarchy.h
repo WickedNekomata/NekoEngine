@@ -20,8 +20,8 @@ public:
 
 private:
 
-	void IterateAllChildren(GameObject* root);
-	void AtGameObjectPopUp(GameObject* child);
+	void IterateAllChildren(GameObject* root) const;
+	void AtGameObjectPopUp(GameObject* child) const;
 	void SetGameObjectDragAndDrop(GameObject* SourceTarget) const;
 	void SetGameObjectDragAndDropSource(GameObject* source) const;
 	void SetGameObjectDragAndDropTarget(GameObject* target) const;

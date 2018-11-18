@@ -16,7 +16,7 @@ public:
 	Raycaster();
 	~Raycaster();
 
-	void ScreenPointToRay(int posX, int posY, float& distance, math::float3& hitPoint, GameObject** hit);
+	void ScreenPointToRay(int posX, int posY, float& distance, math::float3& hitPoint, GameObject** hit) const;
 };
 
 #endif

@@ -18,14 +18,16 @@ public:
 
 	bool Draw();
 
-	void ShowGameObjectInspector();
-	void DragnDropSeparatorTarget(Component* target);
+private:
+
+	void ShowGameObjectInspector() const;
+	void DragnDropSeparatorTarget(Component* target) const;
 
 	void ShowSceneInspector() const;
 	void ShowMeshResourceInspector() const;
 	void ShowTextureResourceInspector() const;
-	void ShowMeshImportSettingsInspector();
-	void ShowTextureImportSettingsInspector();
+	void ShowMeshImportSettingsInspector() const;
+	void ShowTextureImportSettingsInspector() const;
 };
 
 #endif

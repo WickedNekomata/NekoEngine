@@ -86,26 +86,26 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 	return ret;
 }
 
-bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint)
+bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint) const
 {
 	bool ret = false;
 
 	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while adding a path or zip (%s): %s", newDir, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
 		
 	return ret;
 }
 
-bool ModuleFileSystem::DeleteFileOrDir(const char* path)
+bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 {
 	bool ret = false;
 
 	if (PHYSFS_delete(path) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while deleting a file or directory (%s): %s", path, PHYSFS_getLastError());
+		CONSOLE_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
 
 	return ret;
 }

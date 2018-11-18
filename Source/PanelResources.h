@@ -18,6 +18,8 @@ public:
 
 	bool Draw();
 
+private:
+
 	void RecursiveDrawDir(const char* dir, std::string& path) const;
 	void OpenSettingsAtClick(const char** iterator, std::string currentFile) const;
 };

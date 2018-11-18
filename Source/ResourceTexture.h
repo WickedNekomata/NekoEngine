@@ -8,12 +8,12 @@ class ResourceTexture : public Resource
 public:
 
 	ResourceTexture(ResourceType type, uint uuid);
-	virtual ~ResourceTexture();
+	~ResourceTexture();
 
 private:
 
-	virtual bool LoadInMemory();
-	virtual bool UnloadFromMemory();
+	bool LoadInMemory();
+	bool UnloadFromMemory();
 
 public:
 

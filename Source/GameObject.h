@@ -30,7 +30,7 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	void SetParent(GameObject* parent);
-	GameObject* GetParent();
+	GameObject* GetParent() const;
 	uint GetParentUUID() const;
 
 	void DestroyChildren();
@@ -79,7 +79,7 @@ public:
 	void OnLoad(JSON_Object* file);
 	void RecursiveSerialitzation(JSON_Array* goArray) const;
 
-	void RecursiveForceAllResources(uint forceRes);
+	void RecursiveForceAllResources(uint forceRes) const;
 
 public:
 

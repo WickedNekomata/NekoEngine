@@ -2,12 +2,13 @@
 #define __QUADTREE_H__
 
 #include "Globals.h"
+
 #include "MathGeoLib\include\Geometry\AABB.h"
 
 #include <vector>
 #include <list>
 
-#define BUCKET_SIZE 1
+#define BUCKET_SIZE 5
 #define MAX_SUBDIVISIONS 15
 
 class GameObject;

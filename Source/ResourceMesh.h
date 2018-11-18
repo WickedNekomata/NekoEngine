@@ -8,12 +8,12 @@ class ResourceMesh : public Resource
 public:
 
 	ResourceMesh(ResourceType type, uint uuid);
-	virtual ~ResourceMesh();
+	~ResourceMesh();
 
 private:
 
-	virtual bool LoadInMemory();
-	virtual bool UnloadFromMemory();
+	bool LoadInMemory();
+	bool UnloadFromMemory();
 
 public:
 

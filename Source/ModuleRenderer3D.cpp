@@ -235,9 +235,6 @@ bool ModuleRenderer3D::CleanUp()
 	CONSOLE_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 
-	meshComponents;
-	cameraComponents;
-
 	return ret;
 }
 

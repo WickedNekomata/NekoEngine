@@ -641,7 +641,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	return true;
 }
 
-bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
+bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh) const
 {
 	bool ret = false;
 
@@ -665,7 +665,7 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh)
 	return ret;
 }
 
-bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh)
+bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh) const
 {
 	if (buffer == nullptr || size <= 0 || outputMesh == nullptr)
 	{

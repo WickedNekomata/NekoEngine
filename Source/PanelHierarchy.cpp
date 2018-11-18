@@ -65,7 +65,7 @@ bool PanelHierarchy::Draw()
 	return true;
 }
 
-void PanelHierarchy::IterateAllChildren(GameObject* root)
+void PanelHierarchy::IterateAllChildren(GameObject* root) const
 {
 	ImGuiTreeNodeFlags treeNodeFlags;
 
@@ -136,7 +136,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root)
 	}
 }
 
-void PanelHierarchy::AtGameObjectPopUp(GameObject* child)
+void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 {
 	if (ImGui::BeginPopupContextItem())
 	{

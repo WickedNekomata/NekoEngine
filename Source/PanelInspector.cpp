@@ -60,7 +60,7 @@ bool PanelInspector::Draw()
 	return true;
 }
 
-void PanelInspector::ShowGameObjectInspector()
+void PanelInspector::ShowGameObjectInspector() const
 {
 	GameObject* gameObject = (GameObject*)App->scene->selectedObject.Get();
 
@@ -123,7 +123,7 @@ void PanelInspector::ShowGameObjectInspector()
 	}
 }
 
-void PanelInspector::DragnDropSeparatorTarget(Component* target)
+void PanelInspector::DragnDropSeparatorTarget(Component* target) const
 {
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -214,7 +214,7 @@ void PanelInspector::ShowTextureResourceInspector() const
 	ImGui::TextColored(BLUE, "%u x %u", resourceTexture->width, resourceTexture->height);
 }
 
-void PanelInspector::ShowMeshImportSettingsInspector()
+void PanelInspector::ShowMeshImportSettingsInspector() const
 {
 	MeshImportSettings* meshImportSettings = (MeshImportSettings*)App->scene->selectedObject.Get();
 
@@ -407,7 +407,7 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 	}
 }
 
-void PanelInspector::ShowTextureImportSettingsInspector()
+void PanelInspector::ShowTextureImportSettingsInspector() const
 {
 	TextureImportSettings* textureImportSettings = (TextureImportSettings*)App->scene->selectedObject.Get();
 

@@ -30,5 +30,4 @@ private:
 	bool wireframeMode = false;
 };
 
-
 #endif

@@ -19,6 +19,9 @@ public:
 	bool Draw();
 
 	void AddLog(const char* log);
+
+private:
+
 	void Clear();
 
 private:

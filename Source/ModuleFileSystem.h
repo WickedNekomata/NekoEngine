@@ -39,8 +39,8 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	bool CreateDir(const char* dirName) const;
-	bool AddPath(const char* newDir, const char* mountPoint = nullptr);
-	bool DeleteFileOrDir(const char* path);
+	bool AddPath(const char* newDir, const char* mountPoint = nullptr) const;
+	bool DeleteFileOrDir(const char* path) const;
 
 	const char* GetBasePath() const;
 	const char* GetReadPaths() const;

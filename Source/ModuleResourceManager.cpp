@@ -1,4 +1,6 @@
 #include "ModuleResourceManager.h"
+
+#include "Application.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "Application.h"
@@ -7,8 +9,6 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
-
-#include "Application.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -53,7 +53,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		if (GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
 		{
-			CONSOLE_LOG("FILE SYSTEM: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
+			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
 			std::string outputFile;
 			App->fs->Copy(event.fileEvent.file, DIR_ASSETS, outputFile);

@@ -1,7 +1,6 @@
 #include "ComponentMesh.h"
 #include "GameObject.h"
 #include "SceneImporter.h"
-#include "Primitive.h"
 #include "ComponentTransform.h"
 #include "Application.h"
 #include "Resource.h"

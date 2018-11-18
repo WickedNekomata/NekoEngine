@@ -25,7 +25,7 @@ Raycaster::~Raycaster()
 {
 }
 
-void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, math::float3& shortestHitPoint, GameObject** hitGo)
+void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, math::float3& shortestHitPoint, GameObject** hitGo) const
 {
 	*hitGo = nullptr;
 	shortestHitPoint = math::float3::inf;

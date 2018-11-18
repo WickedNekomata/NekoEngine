@@ -59,8 +59,8 @@ public:
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
 	bool GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const;
 
-	bool Load(const char* exportedFile, ResourceMesh* outputMesh);
-	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh);
+	bool Load(const char* exportedFile, ResourceMesh* outputMesh) const;
+	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh) const;
 
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;

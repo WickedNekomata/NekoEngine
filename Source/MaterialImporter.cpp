@@ -386,7 +386,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	return true;
 }
 
-bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings)
+bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const
 {
 	bool ret = false;
 
@@ -410,7 +410,7 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTex
 	return ret;
 }
 
-bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings)
+bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const
 {
 	bool ret = false;
 
@@ -580,7 +580,7 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 #define CHECKERS_WIDTH 128
 #define CHECKERS_HEIGHT 128
 
-bool MaterialImporter::LoadCheckers(ResourceTexture* outputTexture)
+bool MaterialImporter::LoadCheckers(ResourceTexture* outputTexture) const
 {
 	bool ret = false;
 

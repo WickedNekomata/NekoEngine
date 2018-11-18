@@ -165,8 +165,10 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 		parent->camera->UpdateTransform();
 
 	// Transform updated: if the game object is selected, update the camera reference
+#ifndef GAMEMODE
 	if (parent == App->scene->selectedObject.Get())
 		App->camera->SetReference(position);
+#endif
 
 	// Transform updated: recalculate bounding boxes
 	System_Event newEvent;

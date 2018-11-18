@@ -43,31 +43,12 @@ bool ModuleScene::Start()
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr);
-	//child = App->GOs->CreateGameObject("Api", root);
-	//GameObject* fillGuillem = App->GOs->CreateGameObject("fill de Api", child);
-	//App->GOs->CreateGameObject("net de Api1", fillGuillem);
-	//App->GOs->CreateGameObject("net de Api2", fillGuillem);
-	//child = App->GOs->CreateGameObject("Patata", root);
-	//fillGuillem = App->GOs->CreateGameObject("fill de Patata", child);
 
-	//App->GOs->CreateGameObject("net de Patata", fillGuillem);
-	// Load Baker House last mesh
-#ifndef GAMEMODE
-	//std::string outputFile;
-	//App->sceneImporter->Import("Meshes/cube.fbx", outputFile, nullptr);
-#else
-	App->GOs->LoadScene("GameReady");
+#ifdef GAMEMODE
+	App->GOs->LoadScene("Settings/GameReady.nekoscene");
 	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 #endif// GAME
-
-	//Mesh* mesh = new Mesh();
-	//App->sceneImporter->Load(outputFile.data(), mesh);
-
-	// Load Baker House texture
-	//App->materialImporter->Import("Baker_house.png", "Assets/", outputFile);
-	//Texture* texture = new Texture();
-	//App->materialImporter->Load(outputFile.data(), texture);
 
 	return ret;
 }

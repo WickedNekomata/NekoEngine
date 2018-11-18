@@ -24,10 +24,12 @@ bool PanelAssets::Draw()
 
 	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
-		// Game time scale slider
-		ImGui::PushItemWidth(100.0f);
-		float checkTime = App->fs->GetAssetsCheckTime();
-		if (ImGui::SliderFloat("Check Time", &checkTime, 0.0f, MAX_ASSETS_CHECK_TIME)) { App->fs->SetAssetsCheckTime(checkTime); }
+		if (ImGui::Button("Refresh"))
+		{
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RefreshAssets;
+			App->PushSystemEvent(newEvent);
+		}
 
 		if (ImGui::TreeNodeEx(DIR_ASSETS))
 		{

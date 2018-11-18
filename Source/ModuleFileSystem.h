@@ -13,8 +13,6 @@
 #define DIR_ASSETS "Assets"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 
-#define MAX_ASSETS_CHECK_TIME 2.0f // seconds
-
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
 
@@ -37,8 +35,9 @@ public:
 	ModuleFileSystem(bool start_enabled = true);
 	~ModuleFileSystem();
 	bool Start();
-	update_status Update() override;
 	bool CleanUp();
+
+	void OnSystemEvent(System_Event event);
 
 	bool CreateDir(const char* dirName) const;
 	bool AddPath(const char* newDir, const char* mountPoint = nullptr);
@@ -73,18 +72,14 @@ public:
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
 
-	void SetAssetsCheckTime(float assetsCheckTime);
-	float GetAssetsCheckTime() const;
+	std::map<std::string, uint> GetFilesInAssets() const;
 
 	void CheckAssets();
 
 private:
 
 	std::map<std::string, uint> metas;
-	std::map<std::string, uint> newFilesInAssets;
-
-	float assetsCheckTime = 1.0f; // seconds
-	PerfTimer assetsCheckTimer;
+	std::map<std::string, uint> filesInAssets;
 };
 
 #endif

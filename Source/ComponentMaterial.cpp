@@ -2,11 +2,13 @@
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "MaterialImporter.h"
 #include "ModuleResourceManager.h"
 #include "ModuleFileSystem.h"
+#include "MaterialImporter.h"
 #include "Resource.h"
+#include "ResourceTexture.h"
 #include "GameObject.h"
+#include "Panel.h"
 
 #include "imgui\imgui.h"
 
@@ -58,7 +60,7 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 void ComponentMaterial::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Material");
+	ImGui::Text("Material Renderer");
 	ImGui::Spacing();
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
 	for (uint i = 0; i < res.size(); ++i)
@@ -98,8 +100,32 @@ void ComponentMaterial::OnUniqueEditor()
 		if (ImGui::Button(itemName))
 			minusClicked = true;
 
+		if (minusClicked)
+		{
+			SetResource(0, i);
+			res.erase(std::remove(res.begin(), res.end(), res[i]));
+		}
+
+		const ResourceTexture* texture = (const ResourceTexture*)App->res->GetResource(res[i].res);
+
+		uint id = 0;
+		uint width = 0;
+		uint height = 0;
+		if (texture != nullptr)
+		{
+			id = texture->id;
+			width = texture->width;
+			height = texture->height;
+		}
+
+		ImGui::Image((void*)(intptr_t)id, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Matrix##%i", i);
 		ImGui::Button(itemName);
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Edit Texture Matrix");
+
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Edit Matrix##%i", i);
 		if (ImGui::BeginPopupContextItem(itemName, 0)) {
 
@@ -108,11 +134,8 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::EndPopup();
 		}
 
-		if (minusClicked)
-		{
-			SetResource(0, i);
-			res.erase(std::remove(res.begin(), res.end(), res[i]));
-		}
+		ImGui::TextColored(BLUE, "%u x %u", width, height);
+		ImGui::Spacing();
 	}
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())

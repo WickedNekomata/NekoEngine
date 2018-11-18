@@ -42,30 +42,8 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::Start()
 {
-	assetsCheckTimer.Start();
-
-	return true;
-}
-
-update_status ModuleFileSystem::Update()
-{
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-
-	if (assetsCheckTimer.ReadMs() >= assetsCheckTime * 1000.0f)
-	{
-		// Read the current files in Assets
-		newFilesInAssets.clear();
-
-		std::string path = DIR_ASSETS;
-		RecursiveGetFilesFromDir(DIR_ASSETS, path, newFilesInAssets);
-
-		// Check the read files against the metas
-		CheckAssets();
-
-		assetsCheckTimer.Start();
-	}
-
-	return UPDATE_CONTINUE;
+	std::string path = DIR_ASSETS;
+	RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
 }
 
 bool ModuleFileSystem::CleanUp()
@@ -74,6 +52,25 @@ bool ModuleFileSystem::CleanUp()
 	PHYSFS_deinit();
 
 	return true;
+}
+
+void ModuleFileSystem::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::RefreshAssets:
+
+		// Read the current files in Assets
+		filesInAssets.clear();
+
+		std::string path = DIR_ASSETS;
+		RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
+
+		// Check the read files against the metas
+		CheckAssets();
+
+		break;
+	}
 }
 
 bool ModuleFileSystem::CreateDir(const char* dirName) const
@@ -151,14 +148,14 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles)
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-	// TODO: IMPLEMENT THIS FUNCTION WITHOUT USING ANY STRINGS
+
 	if (dir == nullptr)
 	{
 		assert(dir != nullptr);
 		return;
 	}
 
-	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** files = GetFilesFromDir(path.data());
 	const char** it;
 
 	path.append("/");
@@ -167,12 +164,12 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 	{
 		path.append(*it);
 
-		if (App->fs->IsDirectory(path.data()))
+		if (IsDirectory(path.data()))
 			RecursiveGetFilesFromDir(*it, path, outputFiles);
 		else
 		{
 			std::string extension;
-			App->fs->GetExtension(*it, extension);
+			GetExtension(*it, extension);
 
 			int lastModTime = GetLastModificationTime(path.data());
 			outputFiles[path.data()] = lastModTime;
@@ -215,14 +212,14 @@ bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, st
 		return exists;
 	}
 
-	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** files = GetFilesFromDir(path.data());
 	const char** it;
 
 	for (it = files; *it != nullptr; ++it)
 	{
 		path.append(*it);
 
-		if (App->fs->IsDirectory(path.data()))
+		if (IsDirectory(path.data()))
 		{
 			exists = RecursiveExists(fileName, *it, path);
 
@@ -486,17 +483,9 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 	return ret;
 }
 
-void ModuleFileSystem::SetAssetsCheckTime(float assetsCheckTime)
+std::map<std::string, uint> ModuleFileSystem::GetFilesInAssets() const
 {
-	this->assetsCheckTime = assetsCheckTime;
-
-	if (this->assetsCheckTime > MAX_ASSETS_CHECK_TIME)
-		this->assetsCheckTime = MAX_ASSETS_CHECK_TIME;
-}
-
-float ModuleFileSystem::GetAssetsCheckTime() const
-{
-	return assetsCheckTime;
+	return filesInAssets;
 }
 
 void ModuleFileSystem::CheckAssets()
@@ -518,7 +507,7 @@ void ModuleFileSystem::CheckAssets()
 		// CASE 1. Original file has been removed
 		// + Original file has been renamed from outside the editor (we have no way to detect it)
 		// + Original file has been moved to another folder from outside the editor (we have no way to detect it)
-		if (newFilesInAssets.find(fileInAssets.data()) == newFilesInAssets.end())
+		if (filesInAssets.find(fileInAssets.data()) == filesInAssets.end())
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -526,7 +515,7 @@ void ModuleFileSystem::CheckAssets()
 			App->PushSystemEvent(newEvent);
 		}
 		// CASE 2. Meta has been removed
-		else if (newFilesInAssets.find(it->first.data()) == newFilesInAssets.end())
+		else if (filesInAssets.find(it->first.data()) == filesInAssets.end())
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -534,7 +523,7 @@ void ModuleFileSystem::CheckAssets()
 			App->PushSystemEvent(newEvent);
 		}
 		// CASE 3. Original file has been overwritten
-		else if (newFilesInAssets.find(fileInAssets.data())->second != it->second)
+		else if (filesInAssets.find(fileInAssets.data())->second != it->second)
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -543,7 +532,7 @@ void ModuleFileSystem::CheckAssets()
 		}
 	}
 
-	for (std::map<std::string, uint>::const_iterator it = newFilesInAssets.begin(); it != newFilesInAssets.end(); ++it)
+	for (std::map<std::string, uint>::const_iterator it = filesInAssets.begin(); it != filesInAssets.end(); ++it)
 	{
 		std::string extension;
 		GetExtension(it->first.data(), extension);

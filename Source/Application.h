@@ -47,6 +47,7 @@ struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
 struct DebugDrawer;
+struct ModuleWrenVM;
 
 class Application
 {
@@ -128,6 +129,7 @@ public:
 	ModuleTimeManager*		timeManager;
 
 	DebugDrawer*			debugDrawer;
+	ModuleWrenVM*			wrenVM;
 
 	pcg32_random_t			rng;
 

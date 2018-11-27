@@ -21,6 +21,7 @@ class PanelAssets;
 class PanelResources;
 class PanelDebugDraw;
 class PanelEdit;
+class PanelCodeEditor;
 
 class ModuleGui : public Module
 {
@@ -64,6 +65,7 @@ public:
 	PanelResources*		panelResources = nullptr;
 	PanelDebugDraw*		panelDebugDraw = nullptr;
 	PanelEdit*			panelEdit = nullptr;
+	PanelCodeEditor*	panelCodeEditor = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 

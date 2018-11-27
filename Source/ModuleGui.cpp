@@ -23,6 +23,7 @@
 #include "PanelResources.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
+#include "PanelCodeEditor.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -50,6 +51,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelResources = new PanelResources("Resources");
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
+	panelCodeEditor = new PanelCodeEditor("Code Editor");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -60,6 +62,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelResources);
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
+	panels.push_back(panelCodeEditor);
 
 	LoadStatus(jObject);
 
@@ -160,6 +163,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "CTRL+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "CTRL+D")) { panelDebugDraw->OnOff(); }
+			if (ImGui::MenuItem("Code Editor", "")) { panelCodeEditor->OnOff(); }
 
 			ImGui::EndMenu();
 		}

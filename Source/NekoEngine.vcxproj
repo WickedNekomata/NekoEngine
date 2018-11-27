@@ -18,7 +18,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -172,6 +172,7 @@
     <ClInclude Include="glew\include\GL\glxew.h" />
     <ClInclude Include="glew\include\GL\wglew.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="ImGuiColorTextEdit\TextEditor.h" />
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelResources.h" />
@@ -281,6 +283,18 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="ModuleWrenVM.h" />
+    <ClInclude Include="wren\include\wren.h" />
+    <ClInclude Include="wren\include\wren.hpp" />
+    <ClInclude Include="wren\vm\wren_common.h" />
+    <ClInclude Include="wren\vm\wren_compiler.h" />
+    <ClInclude Include="wren\vm\wren_core.h" />
+    <ClInclude Include="wren\vm\wren_debug.h" />
+    <ClInclude Include="wren\vm\wren_opcodes.h" />
+    <ClInclude Include="wren\vm\wren_primitive.h" />
+    <ClInclude Include="wren\vm\wren_utils.h" />
+    <ClInclude Include="wren\vm\wren_value.h" />
+    <ClInclude Include="wren\vm\wren_vm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -292,6 +306,7 @@
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -335,6 +350,7 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelResources.cpp" />
@@ -366,6 +382,14 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="ModuleWrenVM.cpp" />
+    <ClCompile Include="wren\vm\wren_compiler.c" />
+    <ClCompile Include="wren\vm\wren_core.c" />
+    <ClCompile Include="wren\vm\wren_debug.c" />
+    <ClCompile Include="wren\vm\wren_primitive.c" />
+    <ClCompile Include="wren\vm\wren_utils.c" />
+    <ClCompile Include="wren\vm\wren_value.c" />
+    <ClCompile Include="wren\vm\wren_vm.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assimp\include\.editorconfig" />

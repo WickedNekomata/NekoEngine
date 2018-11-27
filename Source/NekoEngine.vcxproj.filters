@@ -91,6 +91,18 @@
     <Filter Include="Sources\Modules\Resources\Types">
       <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\ImGuiColorText">
+      <UniqueIdentifier>{351337b5-d2cb-4751-bd10-e54e81c0c6dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\wren">
+      <UniqueIdentifier>{b2501a87-a220-4654-950f-c87592b13996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\wren\includes">
+      <UniqueIdentifier>{192337d5-b3b0-463d-a38c-750b1ee15a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\wren\vm">
+      <UniqueIdentifier>{9149c8b4-62b0-43cd-96f3-3cdd2526e25e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -616,6 +628,48 @@
     <ClInclude Include="EventSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiColorTextEdit\TextEditor.h">
+      <Filter>Sources\3rd Party\ImGuiColorText</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelCodeEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\include\wren.hpp">
+      <Filter>Sources\3rd Party\wren\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\include\wren.h">
+      <Filter>Sources\3rd Party\wren\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_common.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_compiler.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_core.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_debug.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_opcodes.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_primitive.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_utils.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_value.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="wren\vm\wren_vm.h">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleWrenVM.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -866,6 +920,36 @@
     </ClCompile>
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp">
+      <Filter>Sources\3rd Party\ImGuiColorText</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelCodeEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_compiler.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_core.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_debug.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_primitive.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_utils.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_value.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="wren\vm\wren_vm.c">
+      <Filter>Sources\3rd Party\wren\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleWrenVM.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,6 +14,7 @@
 #include "SceneImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "ModuleWrenVM.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -33,6 +34,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 
+	wrenVM = new ModuleWrenVM();
+
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
 	gui = new ModuleGui();	
@@ -49,6 +52,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(gui);
 #endif // GAME
 
+	AddModule(wrenVM);
 	AddModule(timeManager);
 	AddModule(res);
 	AddModule(GOs);

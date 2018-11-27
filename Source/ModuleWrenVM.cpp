@@ -29,7 +29,7 @@ bool ModuleWrenVM::Init(JSON_Object* jObject)
 
 update_status ModuleWrenVM::Update()
 {
-	Interpret("System.print(\"Hello, world!\")");
+	//Interpret("System.print(\"Hello, world!\")");
 
 	return UPDATE_CONTINUE;
 }

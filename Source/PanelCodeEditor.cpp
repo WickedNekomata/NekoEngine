@@ -1,5 +1,8 @@
 #include "PanelCodeEditor.h"
 
+#include "Application.h"
+#include "ModuleWrenVM.h"
+
 PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 {
 	editor;
@@ -56,6 +59,8 @@ PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 	markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
 	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
 	editor.SetErrorMarkers(markers);
+
+	editor.SetText("System.print(\"Hello, world!\")");
 }
 
 PanelCodeEditor::~PanelCodeEditor()
@@ -71,6 +76,11 @@ bool PanelCodeEditor::Draw()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Execute"))
+			{
+				App->wrenVM->Interpret(editor.GetText().data());
+				/// save text....
+			}
 			if (ImGui::MenuItem("Save"))
 			{
 				auto textToSave = editor.GetText();

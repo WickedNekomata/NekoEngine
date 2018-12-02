@@ -51,7 +51,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
 	const char** it;
 
 	path.append("/");
-	
+
 	for (it = files; *it != nullptr; ++it)
 	{
 		path.append(*it);
@@ -60,7 +60,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
 
 		treeNodeFlags = 0;
 		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-		
+
 		if (App->fs->IsDirectory(path.data()))
 		{
 			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
@@ -82,21 +82,21 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
 
 			uint UUID = strtoul(*it, NULL, 0);
 			const Resource* res = App->res->GetResource(UUID);
-			
+
 			if (App->scene->selectedObject != NULL && App->scene->selectedObject == res)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			ImGui::TreeNodeEx(*it, treeNodeFlags);			
-			
+			ImGui::TreeNodeEx(*it, treeNodeFlags);
+
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				DESTROYANDSET(res);
 
 			ImGui::TreePop();
 
-			if (res != nullptr) 
+			if (res != nullptr)
 			{
-				if (res->GetType() == ResourceType::Mesh_Resource) 
+				if (res->GetType() == ResourceType::Mesh_Resource)
 				{
 					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 					{

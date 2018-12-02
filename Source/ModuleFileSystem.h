@@ -17,16 +17,33 @@
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
 
+class Resource;
+struct ImportSettings;
+
 enum FileType
 {
 	NoType,
-
 	MeshFile,
 	TextureFile,
-
 	SceneFile,
-
 	MetaFile
+};
+
+struct FileInAssets
+{
+	std::string name;
+	uint lastModTime = 0;
+	const ImportSettings* importSettings = nullptr;
+
+	std::vector<FileInAssets*> children;
+};
+
+struct FileInLibrary
+{
+	std::string name;
+	const Resource* resource = nullptr;
+
+	std::vector<FileInLibrary*> children;
 };
 
 class ModuleFileSystem : public Module
@@ -47,7 +64,9 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
-	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles) const;
+
+	void RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) const;
+	void RecursiveGetFilesFromLibrary(FileInLibrary* fileInLibrary) const;
 
 	int GetLastModificationTime(const char* file) const;
 
@@ -70,12 +89,14 @@ public:
 	bool DeleteMeta(const char* metaFile);
 
 	void CheckFilesInAssets() const;
-	void GetFilesInAssets(std::vector<std::string>& filesInAssets) const;
+	FileInAssets* GetRootFileInAssets() const;
+	FileInLibrary* GetRootFileInLibrary() const;
 
 private:
 
 	std::map<std::string, uint> metas;
-	std::map<std::string, uint> filesInAssets;
+	FileInAssets* rootFileInAssets = nullptr;
+	FileInLibrary* rootFileInLibrary = nullptr;
 };
 
 #endif

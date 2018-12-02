@@ -45,9 +45,6 @@ MaterialImporter::MaterialImporter()
 		isAnisotropySupported = true;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
 	}
-
-	// Load default texture
-	defaultTexture = LoadDefaultTexture();
 }
 
 MaterialImporter::~MaterialImporter() {}
@@ -626,12 +623,16 @@ uint MaterialImporter::LoadCheckers() const
 
 uint MaterialImporter::LoadDefaultTexture() const
 {
-	GLubyte checkImage[1][1][4];
+	GLubyte checkImage[2][2][4];
 
-	checkImage[1][1][0] = (GLubyte)255;
-	checkImage[1][1][1] = (GLubyte)255;
-	checkImage[1][1][2] = (GLubyte)255;
-	checkImage[1][1][3] = (GLubyte)255;
+	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (int j = 0; j < CHECKERS_WIDTH; j++) {
+			checkImage[i][j][0] = (GLubyte)255;
+			checkImage[i][j][1] = (GLubyte)255;
+			checkImage[i][j][2] = (GLubyte)255;
+			checkImage[i][j][3] = (GLubyte)255;
+		}
+	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 

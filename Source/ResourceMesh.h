@@ -3,6 +3,8 @@
 
 #include "Resource.h"
 
+#include "glew\include\GL\glew.h"
+
 struct Vertex
 {
 	GLfloat position[3];

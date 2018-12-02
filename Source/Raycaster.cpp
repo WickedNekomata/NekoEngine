@@ -68,9 +68,9 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 
 		for (int j = 0; j < resMesh->indicesSize;)
 		{
-			tri.a = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
-			tri.b = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
-			tri.c = math::float3(resMesh->vertices[resMesh->indices[j] * 3], resMesh->vertices[resMesh->indices[j] * 3 + 1], resMesh->vertices[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.a = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.b = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.c = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
 
 			float distance;
 			math::float3 hitPoint;

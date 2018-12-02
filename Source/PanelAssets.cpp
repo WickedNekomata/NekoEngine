@@ -33,8 +33,7 @@ bool PanelAssets::Draw()
 
 		if (ImGui::TreeNodeEx(DIR_ASSETS))
 		{
-			std::string path = DIR_ASSETS;
-			RecursiveDrawDir(DIR_ASSETS, path);
+			RecursiveDrawDir(App->fs->GetRootFileInAssets());
 			ImGui::TreePop();
 		}
 	}
@@ -43,54 +42,49 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
+void PanelAssets::RecursiveDrawDir(FileInAssets* fileInAssets) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	if (dir == nullptr)
+	assert(fileInAssets != nullptr);
+
+	ImGuiTreeNodeFlags treeNodeFlags;
+
+	for (uint i = 0; i < fileInAssets->children.size(); ++i)
 	{
-		assert(dir != nullptr);
-		return;
-	}
+		FileInAssets* child = fileInAssets->children[i];
 
-	ImGuiTreeNodeFlags treeNodeFlags = 0;
-	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+		std::string extension;
+		App->fs->GetExtension(child->name.data(), extension);
 
-	const char** files = App->fs->GetFilesFromDir(path.data());
-	const char** it;
+		// Ignore metas
+		if (!IS_META(extension.data()))
+			continue;
 
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
-
-		bool treeNodeOpened = false;
-
-		treeNodeFlags = 0;
-		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-		if (App->fs->IsDirectory(path.data()))
+		if (!child->children.empty())
 		{
-			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
+			treeNodeFlags = 0;
+			treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+			bool treeNodeOpened = false;
+			if (ImGui::TreeNodeEx(name, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (treeNodeOpened)
 			{
-				RecursiveDrawDir(*it, path);
+				RecursiveDrawDir(child);
 				ImGui::TreePop();
 			}
 		}
 		else
 		{
-			std::string extension;
-			App->fs->GetExtension(*it, extension);
+			treeNodeFlags = 0;
+			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-			// Ignore metas
-			if (!IS_META(extension.data()))
-			{
-				treeNodeFlags = 0;
-
+			ImGui::TreeNodeEx(name, treeNodeFlags);
+			ImGui::TreePop();
+		}
+		/*
 				ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
 
 				if (type != ResourceType::Mesh_Resource)
@@ -104,9 +98,6 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 					&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				{
-					// Ignore scenes
-					if (!IS_SCENE(extension.data()))
-					{
 						// Search for the meta associated to the file
 						char metaFile[DEFAULT_BUF_SIZE];
 						strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
@@ -118,7 +109,7 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 						{
 							MeshImportSettings* currentSettings = new MeshImportSettings();
 							App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, currentSettings);
-						
+
 							// Every dynamic allocation here is deleted at currentSettings
 
 							currentSettings->metaFile = new char[DEFAULT_BUF_SIZE];
@@ -147,14 +138,10 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 
 							break;
 						}
-					}
 				}
 
 				if (treeNodeOpened)
 				{
-					// Ignore scenes
-					if (!IS_SCENE(extension.data()))
-					{
 						// Search for the meta associated to the file
 						char metaFile[DEFAULT_BUF_SIZE];
 						strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
@@ -180,11 +167,8 @@ void PanelAssets::RecursiveDrawDir(const char* dir, std::string& path) const
 
 				SetDragAndDropSource(path.data());
 			}
-		}
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
+	}
+	*/
 	}
 }
 

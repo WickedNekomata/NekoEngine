@@ -1,11 +1,12 @@
 #include "ModuleFileSystem.h"
 
 #include "Application.h"
-#include "ModuleResourceManager.h"
-#include "Importer.h"
 #include "Globals.h"
-#include "Importer.h"
+
 #include "ModuleResourceManager.h"
+#include "Importer.h"
+#include "SceneImporter.h"
+#include "MaterialImporter.h"
 
 #include "physfs\include\physfs.h"
 #include "Brofiler\Brofiler.h"
@@ -58,9 +59,10 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 	case System_Event_Type::RefreshAssets:
 
 		// Read the current files in Assets
-		filesInAssets.clear();
-		std::string path = DIR_ASSETS;
-		RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
+		RELEASE(rootFileInAssets);
+		rootFileInAssets = new FileInAssets();
+		rootFileInAssets->name = DIR_ASSETS;
+		RecursiveGetFilesFromAssets(rootFileInAssets);
 
 		// Check the read files against the metas
 		CheckFilesInAssets();
@@ -141,15 +143,13 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles) const
+void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return;
-	}
+	assert(fileInAssets != nullptr);
+
+	std::string path = fileInAssets->name;
 
 	const char** files = GetFilesFromDir(path.data());
 	const char** it;
@@ -160,16 +160,80 @@ void ModuleFileSystem::RecursiveGetFilesFromDir(const char* dir, std::string& pa
 	{
 		path.append(*it);
 
+		FileInAssets* file = new FileInAssets();
+		file->name = path.data();
+
 		if (IsDirectory(path.data()))
-			RecursiveGetFilesFromDir(*it, path, outputFiles);
+			RecursiveGetFilesFromAssets(file);
 		else
 		{
 			std::string extension;
 			GetExtension(*it, extension);
 
-			int lastModTime = GetLastModificationTime(path.data());
-			outputFiles[path.data()] = lastModTime;
+			file->lastModTime = GetLastModificationTime(path.data());
+
+			// Search for the meta associated to the file
+			char metaFile[DEFAULT_BUF_SIZE];
+			strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
+			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
+			switch (type)
+			{
+			case ResourceType::Mesh_Resource:
+			{
+				MeshImportSettings* importSettings = new MeshImportSettings();
+				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, importSettings);
+				file->importSettings = importSettings;
+			}
+			break;
+			case ResourceType::Texture_Resource:
+			{
+				TextureImportSettings* importSettings = new TextureImportSettings();
+				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, importSettings);
+				file->importSettings = importSettings;
+			}
+			break;
+			}
 		}
+
+		fileInAssets->children.push_back(file);
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+	}
+}
+
+void ModuleFileSystem::RecursiveGetFilesFromLibrary(FileInLibrary* fileInLibrary) const
+{
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+
+	assert(fileInLibrary != nullptr);
+
+	std::string path = fileInLibrary->name;
+
+	const char** files = GetFilesFromDir(path.data());
+	const char** it;
+
+	path.append("/");
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		FileInLibrary* file = new FileInLibrary();
+		file->name = path.data();
+
+		if (IsDirectory(path.data()))
+			RecursiveGetFilesFromLibrary(file);
+		else
+		{
+			uint UUID = strtoul(*it, NULL, 0);
+			file->resource = App->res->GetResource(UUID);
+		}
+
+		fileInLibrary->children.push_back(file);
 
 		uint found = path.rfind(*it);
 		if (found != std::string::npos)
@@ -481,6 +545,7 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 void ModuleFileSystem::CheckFilesInAssets() const
 {
+	/*
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
 	// NOTE: Files in Library are not expected to be removed by the user
@@ -546,10 +611,15 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			}
 		}
 	}
+	*/
 }
 
-void ModuleFileSystem::GetFilesInAssets(std::vector<std::string>& filesInAssets) const
+FileInAssets* ModuleFileSystem::GetRootFileInAssets() const
 {
-	for (std::map<std::string, uint>::const_iterator it = this->filesInAssets.begin(); it != this->filesInAssets.end(); ++it)
-		filesInAssets.push_back(it->first.data());
+	return rootFileInAssets;
+}
+
+FileInLibrary* ModuleFileSystem::GetRootFileInLibrary() const
+{
+	return rootFileInLibrary;
 }

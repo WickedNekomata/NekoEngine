@@ -11,6 +11,8 @@
 
 #include <string>
 
+struct FileInAssets;
+
 class PanelAssets : public Panel
 {
 public:
@@ -22,7 +24,7 @@ public:
 
 private:
 
-	void RecursiveDrawDir(const char* dir, std::string& path) const;
+	void RecursiveDrawDir(FileInAssets* fileInAssets) const;
 	void SetDragAndDropSource(const char* file) const;
 };
 

@@ -168,12 +168,12 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Text("Vertices:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
 	ImGui::Text("Vertices ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesID);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
 
 	ImGui::Text("Indices:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
 	ImGui::Text("Indices ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesID);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->IBO);
 
 	ImGui::Text("Triangles:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
@@ -181,7 +181,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Text("Texture Coords:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
 	ImGui::Text("Texture Coords ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->textureCoordsID);
+	//ImGui::TextColored(BLUE, "%u", resourceMesh->textureCoordsID);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const

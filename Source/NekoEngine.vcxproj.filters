@@ -631,6 +631,9 @@
     <ClInclude Include="ImGuiColorTextEdit\TextEditor.h">
       <Filter>Sources\3rd Party\ImGuiCOlorTextEdit</Filter>
     </ClInclude>
+    <ClInclude Include="PanelLayersTags.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -890,6 +893,9 @@
     </ClCompile>
     <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp">
       <Filter>Sources\3rd Party\ImGuiCOlorTextEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelLayersTags.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,8 +18,6 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 
 	MaterialResource texture;
 	res.push_back(texture);
-
-	shaderProgram = glCreateProgram();
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
@@ -34,9 +32,6 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 
 	for (uint i = 0; i < 4; ++i)
 		color[i] = componentMaterial.color[i];
-
-
-	shaderProgram = glCreateProgram();
 }
 
 ComponentMaterial::~ComponentMaterial()
@@ -46,7 +41,7 @@ ComponentMaterial::~ComponentMaterial()
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
 
-	glDeleteShader(shaderProgram);
+	glDeleteProgram(shaderProgram);
 }
 
 void ComponentMaterial::Update() {}
@@ -260,6 +255,11 @@ void ComponentMaterial::ClearShaderObjects()
 
 bool ComponentMaterial::LinkShaderProgram()
 {
+	// 2. LINKING
+
+	// Create a Shader Program
+	shaderProgram = glCreateProgram();
+
 	for (auto it = shObj.begin(); it != shObj.end(); ++it)
 		glAttachShader(shaderProgram, *it);
 
@@ -270,13 +270,22 @@ bool ComponentMaterial::LinkShaderProgram()
 
 	GLint success;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE) {
-		GLchar infoLog[512];
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		CONSOLE_LOG("MATERIAL: Shader link error: %s", infoLog);
-		return false;
+	if (success == GL_FALSE) 
+	{
+		GLint logSize = 0;
+		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
+
+		GLchar* infoLog = new GLchar[logSize];
+		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
+
+		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+	
+		glDeleteProgram(shaderProgram);
 	}
-	return true;
+	else
+		CONSOLE_LOG("Successfully linked Shader Program");
+
+	return success;
 }
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)

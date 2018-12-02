@@ -214,7 +214,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 
 	// Meshes
-	if (!isTransformation && node->mNumMeshes > 0) // Transformations don't contain meshes
+	if (!isTransformation && node->mNumMeshes > 0) // We assume that transformations don't contain meshes
 	{
 		aiMesh* nodeMesh = scene->mMeshes[node->mMeshes[0]];
 
@@ -232,22 +232,30 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			gameObject->AddComponent(ComponentType::Mesh_Component);
 			gameObject->meshRenderer->res = App->GenerateRandomNumber();
 
-			float* vertices = nullptr;
+			GLfloat* vertices = nullptr;
 			uint verticesSize = 0;
 			uint verticesID = 0;
 
 			uint* indices = nullptr;
-			uint indicesID = 0;
 			uint indicesSize = 0;
+			uint indicesID = 0;
 
-			float* textureCoords = nullptr;
-			uint textureCoordsID = 0;
-			uint textureCoordsSize = 0;
+			GLfloat* normals = nullptr;
+			uint normalsSize = 0;
+			uint normalsID = 0;
+
+			GLubyte* colors = nullptr;
+			uint colorsSize = 0;
+			uint colorsID = 0;
+
+			GLfloat* texCoords = nullptr;
+			uint texCoordsSize = 0;
+			uint texCoordsID = 0;
 
 			// Unique vertices
 			verticesSize = nodeMesh->mNumVertices;
-			vertices = new float[verticesSize * 3];
-			memcpy(vertices, (float*)nodeMesh->mVertices, sizeof(float) * verticesSize * 3);
+			vertices = new GLfloat[verticesSize * 3];
+			memcpy(vertices, nodeMesh->mVertices, sizeof(GLfloat) * verticesSize * 3);
 
 			// Indices
 			if (nodeMesh->HasFaces())
@@ -267,16 +275,32 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				}
 			}
 
+			// Normals
+			if (nodeMesh->HasNormals())
+			{
+				normalsSize = verticesSize;
+				normals = new GLfloat[normalsSize * 3];
+				memcpy(normals, nodeMesh->mNormals, sizeof(GLfloat) * normalsSize * 3);
+			}
+
+			// Color
+			if (nodeMesh->HasVertexColors(0))
+			{
+				colorsSize = verticesSize;
+				colors = new GLubyte[colorsSize * 4];
+				memcpy(colors, nodeMesh->mColors, sizeof(GLubyte) * colorsSize * 4);
+			}
+
 			// Texture coords
 			if (nodeMesh->HasTextureCoords(0))
 			{
-				textureCoordsSize = verticesSize * 2;
-				textureCoords = new float[textureCoordsSize];
+				texCoordsSize = verticesSize;
+				texCoords = new GLfloat[texCoordsSize * 2];
 
 				for (uint j = 0; j < verticesSize; ++j)
 				{
-					memcpy(&textureCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
-					memcpy(&textureCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
+					memcpy(&texCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(GLfloat));
+					memcpy(&texCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(GLfloat));
 				}
 
 				// Material
@@ -292,7 +316,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 					std::string outputFile = DIR_ASSETS;
 					if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 					{
-						uint UUID;
+						uint UUID = 0;
 						if (!App->res->FindTextureByFile(outputFile.data(), UUID))
 							// If the texture is not a resource yet, import it
 							UUID = App->res->ImportFile(outputFile.data());
@@ -306,13 +330,15 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				}
 			}
 
-			// Vertices + Indices + Texture Coords
-			uint ranges[3] = { verticesSize, indicesSize, textureCoordsSize };
+			// Vertices + Indices + Normals + Colors + Texture Coords
+			uint ranges[5] = { verticesSize, indicesSize, normalsSize, colorsSize, texCoordsSize };
 
 			uint size = sizeof(ranges) +
-				sizeof(float) * verticesSize * 3 +
+				sizeof(GLfloat) * verticesSize * 3 +
 				sizeof(uint) * indicesSize +
-				sizeof(float) * textureCoordsSize;
+				sizeof(GLfloat) * normalsSize * 3 +
+				sizeof(GLubyte) * colorsSize * 4 +
+				sizeof(GLfloat) * texCoordsSize * 2;
 
 			char* data = new char[size];
 			char* cursor = data;
@@ -324,7 +350,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			cursor += bytes;
 
 			// 2. Store vertices
-			bytes = sizeof(float) * verticesSize * 3;
+			bytes = sizeof(GLfloat) * verticesSize * 3;
 			memcpy(cursor, vertices, bytes);
 
 			cursor += bytes;
@@ -335,13 +361,21 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 			cursor += bytes;
 
-			// 4. Store texture coords
-			if (textureCoordsSize > 0) {
-				bytes = sizeof(float) * textureCoordsSize;
-				memcpy(cursor, textureCoords, bytes);
-			}
-			else
-				int a = 0;
+			// 4. Store normals
+			bytes = sizeof(uint) * normalsSize * 3;
+			memcpy(cursor, indices, bytes);
+
+			cursor += bytes;
+
+			// 5. Store colors
+			bytes = sizeof(uint) * colorsSize * 4;
+			memcpy(cursor, indices, bytes);
+
+			cursor += bytes;
+
+			// 6. Store texture coords
+			bytes = sizeof(GLfloat) * texCoordsSize * 2;
+			memcpy(cursor, texCoords, bytes);
 
 			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
 
@@ -355,17 +389,19 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			RELEASE_ARRAY(data);
 			RELEASE_ARRAY(vertices);
 			RELEASE_ARRAY(indices);
-			RELEASE_ARRAY(textureCoords);
+			RELEASE_ARRAY(normals);
+			RELEASE_ARRAY(colors);
+			RELEASE_ARRAY(texCoords);
 		}
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
 	{
-		// If the current game object is a transformation, keep its parent and pass it as the new transformation for the next game object
 		if (isTransformation)
+			// If the current game object is a transformation, keep its parent and pass it as the new transformation for the next game object
 			RecursivelyImportNodes(scene, node->mChildren[i], parent, gameObject);
-		// Else, the current game object becomes the new parent for the next game object
 		else
+			// Else, the current game object becomes the new parent for the next game object
 			RecursivelyImportNodes(scene, node->mChildren[i], gameObject, nullptr);
 	}
 }
@@ -679,41 +715,57 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	char* cursor = (char*)buffer;
 
-	// Vertices + Indices + Texture Coords
-	uint ranges[3];
+	// Vertices + Indices + Normals + Colors + Texture Coords
+	uint ranges[5];
 
 	// 1. Load ranges
 	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
 
-	cursor += bytes;
-
 	outputMesh->verticesSize = ranges[0];
 	outputMesh->indicesSize = ranges[1];
-	outputMesh->textureCoordsSize = ranges[2];
-
-	// 2. Load vertices
-	bytes = sizeof(float) * outputMesh->verticesSize * 3;
-	outputMesh->vertices = new float[outputMesh->verticesSize * 3];
-	memcpy(outputMesh->vertices, cursor, bytes);
 
 	cursor += bytes;
 
-	// 3. Load indices
+	uint normalsBytes = bytes + sizeof(sizeof(GLfloat) * ranges[2] * 3);
+	uint colorsBytes = bytes + sizeof(sizeof(GLubyte) * ranges[2] * 4);
+	uint texCoordsBytes = bytes + sizeof(sizeof(GLfloat) * ranges[2] * 2);
+
+	outputMesh->vertices = new Vertex[outputMesh->verticesSize];
+
+	for (uint i = 0; i < outputMesh->verticesSize; ++i)
+	{
+		// 2. Load vertices
+		bytes += sizeof(GLfloat) * 3;
+		memcpy(outputMesh->vertices, cursor, bytes);
+
+		cursor += bytes;
+
+		// 3. Load normals
+		normalsBytes += sizeof(GLfloat) * 3;
+		memcpy(outputMesh->vertices, cursor, normalsBytes);
+
+		cursor += normalsBytes;
+
+		// 4. Load colors
+		colorsBytes += sizeof(GLubyte) * 4;
+		memcpy(outputMesh->vertices, cursor, colorsBytes);
+
+		cursor += colorsBytes;
+
+		// 5. Load texture coords
+		texCoordsBytes += sizeof(GLfloat) * 2;
+		memcpy(outputMesh->vertices, cursor, texCoordsBytes);
+
+		cursor += texCoordsBytes;
+	}	
+
+	// 6. Load indices
 	bytes = sizeof(uint) * outputMesh->indicesSize;
 	outputMesh->indices = new uint[outputMesh->indicesSize];
 	memcpy(outputMesh->indices, cursor, bytes);
 
-	cursor += bytes;
-
-	// 4. Load texture coords
-	if (outputMesh->textureCoordsSize > 0) {
-		bytes = sizeof(float) * outputMesh->textureCoordsSize;
-		outputMesh->textureCoords = new float[outputMesh->textureCoordsSize];
-		memcpy(outputMesh->textureCoords, cursor, bytes);
-	}
-
-	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices, %u indices, %u texture coords", outputMesh->verticesSize, outputMesh->indicesSize, outputMesh->textureCoordsSize);
+	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
 
 	return true;
 }

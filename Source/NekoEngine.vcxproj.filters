@@ -91,9 +91,6 @@
     <Filter Include="Sources\Modules\Resources\Types">
       <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\Resources\Types\Shaders">
-      <UniqueIdentifier>{b466b897-e7b8-460d-8daa-2a4448baed0f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -619,11 +616,8 @@
     <ClInclude Include="EventSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceFragmentShader.h">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceVertexShader.h">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
+    <ClInclude Include="ResourceShader.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -876,11 +870,8 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceFragmentShader.cpp">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceVertexShader.cpp">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
+    <ClCompile Include="ResourceShader.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

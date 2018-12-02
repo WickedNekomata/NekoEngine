@@ -94,6 +94,9 @@
     <Filter Include="Sources\Modules\Resources\Types\Shaders">
       <UniqueIdentifier>{b466b897-e7b8-460d-8daa-2a4448baed0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\ImGuiCOlorTextEdit">
+      <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -625,6 +628,12 @@
     <ClInclude Include="ResourceVertexShader.h">
       <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="PanelCodeEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiColorTextEdit\TextEditor.h">
+      <Filter>Sources\3rd Party\ImGuiCOlorTextEdit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -881,6 +890,12 @@
     </ClCompile>
     <ClCompile Include="ResourceVertexShader.cpp">
       <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelCodeEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp">
+      <Filter>Sources\3rd Party\ImGuiCOlorTextEdit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -650,7 +650,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glDisableClientState(GL_VERTEX_ARRAY);
 
 	// -----
-
+	
 	// Disable Multitexturing
 	if (materialRenderer != nullptr)
 	{

@@ -24,6 +24,7 @@
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
+#include "PanelLayersTags.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -52,6 +53,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
+	panelLayersTags = new PanelLayersTags("Layer & Tags");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -63,6 +65,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
+	panels.push_back(panelLayersTags);
 
 	LoadStatus(jObject);
 

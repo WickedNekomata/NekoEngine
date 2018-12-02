@@ -539,15 +539,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		}
 		break;
 		case ResourceType::Vertex_Shader_Resource:
-		{
-			// Create a new resource for the vertex shader
-			//Resource* resource = CreateNewResource(type, UUID);
-		}
-		break;
 		case ResourceType::Fragment_Shader_Resource:
 		{
-			// Create a new resource for the fragment shader
-			//Resource* resource = CreateNewResource(type, UUID);
+			// Create a new resource for the shader
+			Resource* resource = CreateNewResource(type);
+			resource->LoadToMemory();
 		}
 		break;
 		}

@@ -4,6 +4,7 @@
 #include "Module.h"
 #include "PerfTimer.h"
 
+#include <vector>
 #include <string>
 #include <map>
 
@@ -46,14 +47,13 @@ public:
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
-
 	void RecursiveGetFilesFromDir(const char* dir, std::string& path, std::map<std::string, uint>& outputFiles) const;
+
+	int GetLastModificationTime(const char* file) const;
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(const char* file) const;
 	bool RecursiveExists(const char* fileName, const char* dir, std::string& path) const;
-
-	int GetLastModificationTime(const char* file) const;
 
 	void GetFileName(const char* file, std::string& fileName, bool extension = false) const;
 	void GetExtension(const char* file, std::string& extension) const;
@@ -69,7 +69,8 @@ public:
 	bool AddMeta(const char* metaFile, uint lastModTime);
 	bool DeleteMeta(const char* metaFile);
 
-	void CheckAssets() const;
+	void CheckFilesInAssets() const;
+	void GetFilesInAssets(std::vector<std::string>& filesInAssets) const;
 
 private:
 

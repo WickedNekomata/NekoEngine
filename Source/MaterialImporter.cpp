@@ -45,6 +45,9 @@ MaterialImporter::MaterialImporter()
 		isAnisotropySupported = true;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
 	}
+
+	// Load default texture
+	defaultTexture = LoadDefaultTexture();
 }
 
 MaterialImporter::~MaterialImporter() {}
@@ -580,16 +583,8 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 #define CHECKERS_WIDTH 128
 #define CHECKERS_HEIGHT 128
 
-bool MaterialImporter::LoadCheckers(ResourceTexture* outputTexture) const
+uint MaterialImporter::LoadCheckers() const
 {
-	bool ret = false;
-
-	if (outputTexture == nullptr)
-	{
-		assert(outputTexture != nullptr);
-		return ret;
-	}
-
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 
 	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
@@ -624,14 +619,50 @@ bool MaterialImporter::LoadCheckers(ResourceTexture* outputTexture) const
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	outputTexture->id = texName;
-	outputTexture->width = CHECKERS_WIDTH;
-	outputTexture->height = CHECKERS_HEIGHT;
+	CONSOLE_LOG("MATERIAL IMPORTER: Succes at loading the checkers texture: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+
+	return texName;
+}
+
+uint MaterialImporter::LoadDefaultTexture() const
+{
+	GLubyte checkImage[1][1][4];
+
+	checkImage[1][1][0] = (GLubyte)255;
+	checkImage[1][1][1] = (GLubyte)255;
+	checkImage[1][1][2] = (GLubyte)255;
+	checkImage[1][1][3] = (GLubyte)255;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// Generate the texture name
+	uint texName = 0;
+	glGenTextures(1, &texName);
+
+	// Bind the texture
+	glBindTexture(GL_TEXTURE_2D, texName);
+
+	// Set texture clamping method
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Set texture interpolation method
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
+		0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	CONSOLE_LOG("MATERIAL IMPORTER: Succes at loading the checkers texture: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-	ret = true;
 
-	return ret;
+	return texName;
+}
+
+uint MaterialImporter::GetDefaultTexture() const
+{
+	return defaultTexture;
 }
 
 bool MaterialImporter::IsAnisotropySupported() const

@@ -91,9 +91,6 @@
     <Filter Include="Sources\Modules\Resources\Types">
       <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Modules\Resources\Types\Shaders">
-      <UniqueIdentifier>{b466b897-e7b8-460d-8daa-2a4448baed0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\3rd Party\ImGuiCOlorTextEdit">
       <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
     </Filter>

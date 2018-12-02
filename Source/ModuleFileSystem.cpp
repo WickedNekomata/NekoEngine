@@ -59,12 +59,11 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 
 		// Read the current files in Assets
 		filesInAssets.clear();
-
 		std::string path = DIR_ASSETS;
 		RecursiveGetFilesFromDir(DIR_ASSETS, path, filesInAssets);
 
 		// Check the read files against the metas
-		CheckAssets();
+		CheckFilesInAssets();
 
 		break;
 	}
@@ -480,7 +479,7 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 	return ret;
 }
 
-void ModuleFileSystem::CheckAssets() const
+void ModuleFileSystem::CheckFilesInAssets() const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -547,4 +546,10 @@ void ModuleFileSystem::CheckAssets() const
 			}
 		}
 	}
+}
+
+void ModuleFileSystem::GetFilesInAssets(std::vector<std::string>& filesInAssets) const
+{
+	for (std::map<std::string, uint>::const_iterator it = this->filesInAssets.begin(); it != this->filesInAssets.end(); ++it)
+		filesInAssets.push_back(it->first.data());
 }

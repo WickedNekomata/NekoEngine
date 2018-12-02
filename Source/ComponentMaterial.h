@@ -6,8 +6,11 @@
 #include "Globals.h"
 
 #include <vector>
+#include <list>
 #include "MathGeoLib\include\Math\Quat.h"
 #include "MathGeoLib\include\Math\float4x4.h"
+
+#include "glew/include/GL/glew.h"
 
 struct MaterialResource
 {
@@ -37,6 +40,11 @@ public:
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
 
+	void AttachShaderObject(GLuint shaderObject);
+	void DetachShaderObject(GLuint shaderObject);
+	void ClearShaderObjects();
+	bool LinkShaderProgram();
+
 private:
 
 	void EditCurrentResMatrixByIndex(int i);
@@ -45,6 +53,9 @@ public:
 
 	std::vector<MaterialResource> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
+
+	GLuint shaderProgram;
+	std::list<GLuint> shObj;
 };
 
 #endif

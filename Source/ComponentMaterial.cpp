@@ -18,6 +18,8 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 
 	MaterialResource texture;
 	res.push_back(texture);
+
+	shaderProgram = glCreateProgram();
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
@@ -32,6 +34,9 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 
 	for (uint i = 0; i < 4; ++i)
 		color[i] = componentMaterial.color[i];
+
+
+	shaderProgram = glCreateProgram();
 }
 
 ComponentMaterial::~ComponentMaterial()
@@ -40,6 +45,8 @@ ComponentMaterial::~ComponentMaterial()
 
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
+
+	glDeleteShader(shaderProgram);
 }
 
 void ComponentMaterial::Update() {}
@@ -233,6 +240,43 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 
 		res[i].matrix = math::float4x4::FromTRS(pos, rot, scale);
 	}
+}
+
+void ComponentMaterial::AttachShaderObject(GLuint shaderObject)
+{
+	if (std::find(shObj.begin(), shObj.end(), shaderObject) != shObj.end())
+		shObj.push_back(shaderObject);
+}
+
+void ComponentMaterial::DetachShaderObject(GLuint shaderObject)
+{
+	shObj.remove(shaderObject);
+}
+
+void ComponentMaterial::ClearShaderObjects()
+{
+	shObj.clear();
+}
+
+bool ComponentMaterial::LinkShaderProgram()
+{
+	for (auto it = shObj.begin(); it != shObj.end(); ++it)
+		glAttachShader(shaderProgram, *it);
+
+	glLinkProgram(shaderProgram);
+
+	for (auto it = shObj.begin(); it != shObj.end(); ++it)
+		glDetachShader(shaderProgram, *it);
+
+	GLint success;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE) {
+		GLchar infoLog[512];
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		CONSOLE_LOG("MATERIAL: Shader link error: %s", infoLog);
+		return false;
+	}
+	return true;
 }
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)

@@ -600,16 +600,14 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (toDraw->res == 0)
 		return;
 
-	glPushMatrix();
-	math::float4x4 matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
-	glMultMatrixf(matrix.Transposed().ptr());
-
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
 
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
 	if (materialRenderer != nullptr && materialRenderer->IsActive())
 	{
+		glUseProgram(materialRenderer->shaderProgram);
+
 		glColor4f(materialRenderer->color[0], materialRenderer->color[1],
 			materialRenderer->color[2], materialRenderer->color[3]);
 
@@ -643,6 +641,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->indicesID);
+
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -665,6 +664,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		}
 	}
 	glColor4f(1.0f, 1.0f, 1.0f, 255.0f);
+
+	glUseProgram(0);
+
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 }

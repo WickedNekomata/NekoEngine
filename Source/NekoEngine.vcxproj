@@ -253,9 +253,11 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
+    <ClInclude Include="ResourceFragmentShader.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="ResourceTypes.h" />
+    <ClInclude Include="ResourceVertexShader.h" />
     <ClInclude Include="SceneImporter.h" />
     <ClInclude Include="ModuleCameraEditor.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -343,8 +345,10 @@
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceFragmentShader.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
+    <ClCompile Include="ResourceVertexShader.cpp" />
     <ClCompile Include="SceneImporter.cpp" />
     <ClCompile Include="ModuleCameraEditor.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />

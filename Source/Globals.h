@@ -46,6 +46,7 @@ enum update_status
 };
 
 #define MAX_BUF_SIZE 4096
+#define OPEN_GL_BUF_SIZE 512
 #define DEFAULT_BUF_SIZE 256
 #define INPUT_BUF_SIZE 128
 

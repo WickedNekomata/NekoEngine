@@ -9,8 +9,7 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
-#include "ResourceVertexShader.h"
-#include "ResourceFragmentShader.h"
+#include "ResourceShader.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -573,10 +572,8 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 		resource = new ResourceTexture(type, uuid);
 		break;
 	case ResourceType::Vertex_Shader_Resource:
-		resource = new ResourceVertexShader(type, uuid);
-		break;
 	case ResourceType::Fragment_Shader_Resource:
-		resource = new ResourceFragmentShader(type, uuid);
+		resource = new ResourceShader(type, uuid);
 		break;
 	}
 

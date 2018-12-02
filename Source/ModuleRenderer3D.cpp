@@ -607,7 +607,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (materialRenderer != nullptr && materialRenderer->IsActive())
 	{
 		glUseProgram(materialRenderer->shaderProgram);
-
+		/*
 		glColor4f(materialRenderer->color[0], materialRenderer->color[1],
 			materialRenderer->color[2], materialRenderer->color[3]);
 
@@ -626,28 +626,23 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glPushMatrix();
 			glMultMatrixf(materialRenderer->res[i].matrix.Transposed().ptr());
 
-			glBindTexture(GL_TEXTURE_2D, texRes->id);
+			//glBindTexture(GL_TEXTURE_2D, texRes->id);
 
-			glBindBuffer(GL_ARRAY_BUFFER, res->textureCoordsID);
+			//glBindBuffer(GL_ARRAY_BUFFER, res->textureCoordsID);
 			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 		}
+		*/
 	}
 
 	// -----
 
-	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindVertexArray(res->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, res->verticesID);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->indicesID);
-
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glBindVertexArray(0);
 
 	// -----
 	

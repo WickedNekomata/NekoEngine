@@ -622,11 +622,8 @@
     <ClInclude Include="EventSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceFragmentShader.h">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceVertexShader.h">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
+    <ClInclude Include="ResourceShader.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
     <ClInclude Include="PanelCodeEditor.h">
       <Filter>Sources\Modules\Panels</Filter>
@@ -885,11 +882,8 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceFragmentShader.cpp">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceVertexShader.cpp">
-      <Filter>Sources\Modules\Resources\Types\Shaders</Filter>
+    <ClCompile Include="ResourceShader.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="PanelCodeEditor.cpp">
       <Filter>Sources\Modules\Panels</Filter>

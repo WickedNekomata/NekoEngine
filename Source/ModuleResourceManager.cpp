@@ -9,6 +9,8 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
+#include "ResourceVertexShader.h"
+#include "ResourceFragmentShader.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -570,6 +572,12 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 	case ResourceType::Texture_Resource:
 		resource = new ResourceTexture(type, uuid);
 		break;
+	case ResourceType::Vertex_Shader_Resource:
+		resource = new ResourceVertexShader(type, uuid);
+		break;
+	case ResourceType::Fragment_Shader_Resource:
+		resource = new ResourceFragmentShader(type, uuid);
+		break;
 	}
 
 	if (resource != nullptr)
@@ -609,6 +617,12 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
 	case ASCIItga: case ASCIITGA:
 		return ResourceType::Texture_Resource;
+		break;
+	case ASCIIvsh: case ASCIIVSH:
+		return ResourceType::Vertex_Shader_Resource;
+		break;
+	case ASCIIfsh: case ASCIIFSH:
+		return ResourceType::Fragment_Shader_Resource;
 		break;
 	}
 

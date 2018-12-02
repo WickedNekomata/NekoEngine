@@ -26,6 +26,10 @@
 #define ASCIIPNG 1196314670
 #define ASCIIjpg 1735420462
 #define ASCIIJPG 1196444206
+#define ASCIIvsh 1752397358 
+#define ASCIIVSH 1213421102 
+#define ASCIIfsh 1752393262 
+#define ASCIIFSH 1213417006 
 
 struct ImportSettings;
 class Resource;

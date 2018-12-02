@@ -54,7 +54,10 @@ public:
 	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
 	bool Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
 	
-	bool LoadCheckers(ResourceTexture* textureResource) const;
+	uint LoadCheckers() const;
+	uint LoadDefaultTexture() const;
+
+	uint GetDefaultTexture() const;
 
 	bool IsAnisotropySupported() const;
 	float GetLargestSupportedAnisotropy() const;
@@ -65,6 +68,8 @@ private:
 
 	bool isAnisotropySupported = false;
 	float largestSupportedAnisotropy = 0.0f;
+
+	uint defaultTexture = 0;
 };
 
 #endif

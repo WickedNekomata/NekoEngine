@@ -16,8 +16,13 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 {
 	res.reserve(App->renderer3D->GetMaxTextureUnits());
 
+	// Default texture (0)
 	MaterialResource texture;
+	texture.res = App->materialImporter->GetDefaultTexture();
 	res.push_back(texture);
+
+	// Default shader (0)
+
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)

@@ -447,14 +447,20 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			}
 		}
 
-		// Import the file using the import settings
+		// Import the file
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::Mesh_Resource: // Use the import settings
 			imported = App->sceneImporter->Import(fileInAssets, outputFile, importSettings); // Models' outputFileName is the name of the Scene
 			break;
-		case ResourceType::Texture_Resource:
+		case ResourceType::Texture_Resource: // Use the import settings
 			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
+			break;
+		case ResourceType::Vertex_Shader_Resource:
+
+			break;
+		case ResourceType::Fragment_Shader_Resource:
+
 			break;
 		}
 	}
@@ -508,9 +514,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		{
 			std::string outputFileName;
 			App->fs->GetFileName(outputFile.data(), outputFileName);
-			
+
 			uint UUID = strtoul(outputFileName.data(), NULL, 0);
-			
+
 			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type, UUID);
 			resource->file = fileInAssets;
@@ -530,6 +536,18 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
+		}
+		break;
+		case ResourceType::Vertex_Shader_Resource:
+		{
+			// Create a new resource for the vertex shader
+			//Resource* resource = CreateNewResource(type, UUID);
+		}
+		break;
+		case ResourceType::Fragment_Shader_Resource:
+		{
+			// Create a new resource for the fragment shader
+			//Resource* resource = CreateNewResource(type, UUID);
 		}
 		break;
 		}

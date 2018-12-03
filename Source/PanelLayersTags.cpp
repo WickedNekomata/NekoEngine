@@ -16,8 +16,8 @@ bool PanelLayersTags::Draw()
 
 	if (ImGui::TreeNode("Tags"))
 	{
-		for (int it = 0; it < tags.size(); ++it)
-			ImGui::Text("Tag%i			%s");
+		//for (int it = 0; it < tags.size(); ++it)
+			//ImGui::Text("Tag%i			%s");
 
 		ImGui::TreePop();
 	}

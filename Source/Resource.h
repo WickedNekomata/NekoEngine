@@ -37,8 +37,8 @@ public:
 
 protected:
 
-	uint UUID;
-	ResourceType type;
+	ResourceType type = ResourceType::No_Type_Resource;
+	uint UUID = 0;
 	uint count = 0;
 };
 

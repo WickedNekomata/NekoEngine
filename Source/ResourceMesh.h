@@ -31,6 +31,8 @@ private:
 
 public:
 
+	const char* name = nullptr;
+
 	Vertex* vertices = nullptr;
 	uint verticesSize = 0;
 

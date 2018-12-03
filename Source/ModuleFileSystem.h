@@ -29,21 +29,25 @@ enum FileType
 	MetaFile
 };
 
-struct FileInAssets
+struct File
 {
 	std::string name;
+	std::string path;
+	bool isDirectory = false;
+	std::vector<File*> children;
+};
+
+struct AssetsFile : public File
+{
 	uint lastModTime = 0;
 	const ImportSettings* importSettings = nullptr;
 
-	std::vector<FileInAssets*> children;
+	std::map<std::string, uint> meshes; // only for models
 };
 
-struct FileInLibrary
+struct LibraryFile : public File
 {
-	std::string name;
 	const Resource* resource = nullptr;
-
-	std::vector<FileInLibrary*> children;
 };
 
 class ModuleFileSystem : public Module
@@ -65,8 +69,8 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) const;
-	void RecursiveGetFilesFromLibrary(FileInLibrary* fileInLibrary) const;
+	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const;
+	void RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const;
 
 	int GetLastModificationTime(const char* file) const;
 
@@ -89,14 +93,14 @@ public:
 	bool DeleteMeta(const char* metaFile);
 
 	void CheckFilesInAssets() const;
-	FileInAssets* GetRootFileInAssets() const;
-	FileInLibrary* GetRootFileInLibrary() const;
+	AssetsFile* GetRootAssetsFile() const;
+	LibraryFile* GetRootLibraryFile() const;
 
 private:
 
 	std::map<std::string, uint> metas;
-	FileInAssets* rootFileInAssets = nullptr;
-	FileInLibrary* rootFileInLibrary = nullptr;
+	AssetsFile* rootAssetsFile = nullptr;
+	LibraryFile* rootLibraryFile = nullptr;
 };
 
 #endif

@@ -37,6 +37,11 @@ bool ModuleResourceManager::Start()
 	std::string path = DIR_LIBRARY;
 	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
 #endif
+
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::RefreshAssets;
+	App->PushSystemEvent(newEvent);
+
 	return true;
 }
 

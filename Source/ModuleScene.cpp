@@ -14,6 +14,7 @@
 #include "ComponentMesh.h"
 
 #include "imgui\imgui.h"
+#include "imgui\imgui_internal.h"
 
 #include <list>
 #include <vector>
@@ -59,6 +60,8 @@ update_status ModuleScene::Update()
 	if (!App->IsEditor())
 		return UPDATE_CONTINUE;
 
+	//ImGuiContext* g = ImGui::GetCurrentContext();
+
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
@@ -69,7 +72,7 @@ update_status ModuleScene::Update()
 			SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) 
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
 		if (currentImGuizmoMode == ImGuizmo::MODE::WORLD)
 			SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
@@ -77,7 +80,7 @@ update_status ModuleScene::Update()
 			SetImGuizmoMode(ImGuizmo::MODE::WORLD);
 	}
 
-	if (selectedObject == CurrentSelection::SelectedType::gameObject) 
+	if (selectedObject == CurrentSelection::SelectedType::gameObject)
 	{
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);

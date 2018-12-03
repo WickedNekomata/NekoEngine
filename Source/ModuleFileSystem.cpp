@@ -59,13 +59,21 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 	case System_Event_Type::RefreshAssets:
 
 		// Read the current files in Assets
-		RELEASE(rootFileInAssets);
-		rootFileInAssets = new FileInAssets();
-		rootFileInAssets->name = DIR_ASSETS;
-		RecursiveGetFilesFromAssets(rootFileInAssets);
+		RELEASE(rootAssetsFile);
+		rootAssetsFile = new AssetsFile();
+		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
+		rootAssetsFile->isDirectory = true;
+		RecursiveGetFilesFromAssets(rootAssetsFile);
 
 		// Check the read files against the metas
 		CheckFilesInAssets();
+
+		// Read the current files in Library
+		RELEASE(rootLibraryFile);
+		rootLibraryFile = new LibraryFile();
+		rootLibraryFile->name = rootLibraryFile->path = DIR_LIBRARY;
+		rootLibraryFile->isDirectory = true;
+		RecursiveGetFilesFromLibrary(rootLibraryFile);
 
 		break;
 	}
@@ -143,13 +151,13 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) const
+void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	assert(fileInAssets != nullptr);
+	assert(assetsFile != nullptr);
 
-	std::string path = fileInAssets->name;
+	std::string path = assetsFile->path;
 
 	const char** files = GetFilesFromDir(path.data());
 	const char** it;
@@ -160,11 +168,15 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) c
 	{
 		path.append(*it);
 
-		FileInAssets* file = new FileInAssets();
-		file->name = path.data();
+		AssetsFile* file = new AssetsFile();
+		file->path = path.data();
+		GetFileName(file->path.data(), file->name);
 
 		if (IsDirectory(path.data()))
+		{
+			file->isDirectory = true;
 			RecursiveGetFilesFromAssets(file);
+		}
 		else
 		{
 			std::string extension;
@@ -185,6 +197,10 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) c
 				MeshImportSettings* importSettings = new MeshImportSettings();
 				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, importSettings);
 				file->importSettings = importSettings;
+
+				std::list<uint> UUIDs;
+				App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs);
+
 			}
 			break;
 			case ResourceType::Texture_Resource:
@@ -197,7 +213,7 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) c
 			}
 		}
 
-		fileInAssets->children.push_back(file);
+		assetsFile->children.push_back(file);
 
 		uint found = path.rfind(*it);
 		if (found != std::string::npos)
@@ -205,13 +221,13 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(FileInAssets* fileInAssets) c
 	}
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromLibrary(FileInLibrary* fileInLibrary) const
+void ModuleFileSystem::RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	assert(fileInLibrary != nullptr);
+	assert(libraryFile != nullptr);
 
-	std::string path = fileInLibrary->name;
+	std::string path = libraryFile->path;
 
 	const char** files = GetFilesFromDir(path.data());
 	const char** it;
@@ -222,18 +238,22 @@ void ModuleFileSystem::RecursiveGetFilesFromLibrary(FileInLibrary* fileInLibrary
 	{
 		path.append(*it);
 
-		FileInLibrary* file = new FileInLibrary();
-		file->name = path.data();
+		LibraryFile* file = new LibraryFile();
+		file->path = path.data();
+		GetFileName(file->path.data(), file->name);
 
 		if (IsDirectory(path.data()))
+		{
+			file->isDirectory = true;
 			RecursiveGetFilesFromLibrary(file);
+		}
 		else
 		{
 			uint UUID = strtoul(*it, NULL, 0);
 			file->resource = App->res->GetResource(UUID);
 		}
 
-		fileInLibrary->children.push_back(file);
+		libraryFile->children.push_back(file);
 
 		uint found = path.rfind(*it);
 		if (found != std::string::npos)
@@ -614,12 +634,12 @@ void ModuleFileSystem::CheckFilesInAssets() const
 	*/
 }
 
-FileInAssets* ModuleFileSystem::GetRootFileInAssets() const
+AssetsFile* ModuleFileSystem::GetRootAssetsFile() const
 {
-	return rootFileInAssets;
+	return rootAssetsFile;
 }
 
-FileInLibrary* ModuleFileSystem::GetRootFileInLibrary() const
+LibraryFile* ModuleFileSystem::GetRootLibraryFile() const
 {
-	return rootFileInLibrary;
+	return rootLibraryFile;
 }

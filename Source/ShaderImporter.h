@@ -26,11 +26,11 @@ public:
 	bool Load(const char* exportedFile, ResourceShader* outputShader) const;
 	bool Load(const void* buffer, uint size, ResourceShader* outputShader) const;
 
-	GLuint LoadDefaultVertexShaderObject() const;
-	GLuint LoadDefaultFragmentShaderObject() const;
-	GLuint LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject) const;
+	void LoadDefaultShader();
+	void LoadDefaultVertexShaderObject();
+	void LoadDefaultFragmentShaderObject();
+	void LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject);
 
-	void InitDefaultShaders();
 	GLuint GetDefaultVertexShaderObject() const;
 	GLuint GetDefaultFragmentShaderObject() const;
 	GLuint GetDefaultShaderProgram() const;

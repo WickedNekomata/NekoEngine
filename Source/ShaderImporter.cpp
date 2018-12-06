@@ -10,11 +10,9 @@
 
 #include <assert.h>
 
-ShaderImporter::ShaderImporter()
-{
-}
+ShaderImporter::ShaderImporter() {}
 
-ShaderImporter::~ShaderImporter() 
+ShaderImporter::~ShaderImporter()
 {
 	glDeleteProgram(defaultShaderProgram);
 	glDeleteShader(defaultVertexShaderObject);
@@ -188,7 +186,14 @@ bool ShaderImporter::Load(const void* buffer, uint size, ResourceShader* outputS
 	return ret;
 }
 
-GLuint ShaderImporter::LoadDefaultVertexShaderObject() const
+void ShaderImporter::LoadDefaultShader()
+{
+	LoadDefaultVertexShaderObject();
+	LoadDefaultFragmentShaderObject();
+	LoadDefaultShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
+}
+
+void ShaderImporter::LoadDefaultVertexShaderObject()
 {
 	const GLchar* vertex_shader_glsl_330_es =
 		"#version 330 core\n"
@@ -208,7 +213,7 @@ GLuint ShaderImporter::LoadDefaultVertexShaderObject() const
 		"    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0f);\n"
 		"}\n";
 
-	GLuint defaultVertexShaderObject = glCreateShader(GL_VERTEX_SHADER);
+	defaultVertexShaderObject = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(defaultVertexShaderObject, 1, &vertex_shader_glsl_330_es, NULL);
 
 	glCompileShader(defaultVertexShaderObject);
@@ -230,11 +235,9 @@ GLuint ShaderImporter::LoadDefaultVertexShaderObject() const
 		else
 			CONSOLE_LOG("SHADER IMPORTER: Successfully compiled Default Vertex Shader Object");
 	}
-
-	return defaultVertexShaderObject;
 }
 
-GLuint ShaderImporter::LoadDefaultFragmentShaderObject() const
+void ShaderImporter::LoadDefaultFragmentShaderObject()
 {
 	const GLchar* fragment_shader_glsl_330_es =
 		"#version 330 core\n"
@@ -247,7 +250,7 @@ GLuint ShaderImporter::LoadDefaultFragmentShaderObject() const
 		"     FragColor = texture(ourTexture_0, ourTexCoord);\n"
 		"}\n";
 
-	GLuint defaultFragmentShaderObject = glCreateShader(GL_FRAGMENT_SHADER);
+	defaultFragmentShaderObject = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(defaultFragmentShaderObject, 1, &fragment_shader_glsl_330_es, NULL);
 
 	glCompileShader(defaultFragmentShaderObject);
@@ -269,13 +272,11 @@ GLuint ShaderImporter::LoadDefaultFragmentShaderObject() const
 		else
 			CONSOLE_LOG("SHADER IMPORTER: Successfully compiled Default Fragment Shader Object");
 	}
-
-	return defaultFragmentShaderObject;
 }
 
-GLuint ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject) const
+void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject)
 {
-	GLuint defaultShaderProgram = glCreateProgram();
+	defaultShaderProgram = glCreateProgram();
 
 	glAttachShader(defaultShaderProgram, defaultVertexShaderObject);
 	glAttachShader(defaultShaderProgram, defaultFragmentShaderObject);
@@ -303,15 +304,6 @@ GLuint ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, 
 		else
 			CONSOLE_LOG("SHADER IMPORTER: Successfully linked Default Shader Program");
 	}
-
-	return defaultShaderProgram;
-}
-
-void ShaderImporter::InitDefaultShaders()
-{
-	defaultVertexShaderObject = LoadDefaultVertexShaderObject();
-	defaultFragmentShaderObject = LoadDefaultFragmentShaderObject();
-	defaultShaderProgram = LoadDefaultShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
 }
 
 GLuint ShaderImporter::GetDefaultVertexShaderObject() const

@@ -139,7 +139,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glActiveTexture(GL_TEXTURE0);
 	}
 
-	App->shaderImporter->InitDefaultShaders();
+	App->materialImporter->LoadCheckers();
+	App->materialImporter->LoadDefaultTexture();
+	App->shaderImporter->LoadDefaultShader();
 
 #ifndef GAMEMODE
 	// Editor camera
@@ -608,7 +610,6 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 	
 	GLuint shaderProgram;
-
 	if (glIsProgram(materialRenderer->shaderProgram))
 		shaderProgram = materialRenderer->shaderProgram;
 	else
@@ -616,17 +617,15 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	glUseProgram(shaderProgram);
 
-	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{
+		glActiveTexture(GL_TEXTURE0 + i);
+
 		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
+		glBindTexture(GL_TEXTURE_2D, texRes != nullptr ? texRes->id : App->materialImporter->GetDefaultTexture());
 
-		if (texRes == nullptr)
-			continue;
-
-		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-		glBindTexture(GL_TEXTURE_2D, texRes->id);
 		char ourTexturei[13] = "ourTexture_i";
-		ourTexturei[12] = i - '0';
+		ourTexturei[11] = i + '0';
 		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
 	}
 
@@ -642,9 +641,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
 
-	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 

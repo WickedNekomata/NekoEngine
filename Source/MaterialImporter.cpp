@@ -48,7 +48,11 @@ MaterialImporter::MaterialImporter()
 	}
 }
 
-MaterialImporter::~MaterialImporter() {}
+MaterialImporter::~MaterialImporter() 
+{
+	glDeleteTextures(1, (GLuint*)&checkers);
+	glDeleteTextures(1, (GLuint*)&defaultTexture);
+}
 
 bool MaterialImporter::Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const
 {
@@ -581,12 +585,12 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 #define CHECKERS_WIDTH 128
 #define CHECKERS_HEIGHT 128
 
-uint MaterialImporter::LoadCheckers() const
+void MaterialImporter::LoadCheckers()
 {
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
 
-	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
-		for (int j = 0; j < CHECKERS_WIDTH; j++) {
+	for (uint i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (uint j = 0; j < CHECKERS_WIDTH; j++) {
 			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
 			checkImage[i][j][0] = (GLubyte)c;
 			checkImage[i][j][1] = (GLubyte)c;
@@ -598,11 +602,10 @@ uint MaterialImporter::LoadCheckers() const
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// Generate the texture name
-	uint texName = 0;
-	glGenTextures(1, &texName);
+	glGenTextures(1, &checkers);
 
 	// Bind the texture
-	glBindTexture(GL_TEXTURE_2D, texName);
+	glBindTexture(GL_TEXTURE_2D, checkers);
 
 	// Set texture clamping method
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -612,37 +615,36 @@ uint MaterialImporter::LoadCheckers() const
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-		0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	CONSOLE_LOG("MATERIAL IMPORTER: Succes at loading the checkers texture: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+	CONSOLE_LOG("MATERIAL IMPORTER: Success at loading Checkers: %i ID, %i x %i", checkers, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 
-	return texName;
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-uint MaterialImporter::LoadDefaultTexture() const
+void MaterialImporter::LoadDefaultTexture()
 {
-	GLubyte checkImage[2][2][4];
+	GLubyte replaceMeTexture[2][2][4]; // REPLACE ME!
 
-	for (int i = 0; i < CHECKERS_HEIGHT; i++) {
-		for (int j = 0; j < CHECKERS_WIDTH; j++) {
-			checkImage[i][j][0] = (GLubyte)255;
-			checkImage[i][j][1] = (GLubyte)255;
-			checkImage[i][j][2] = (GLubyte)255;
-			checkImage[i][j][3] = (GLubyte)255;
+	for (uint i = 0; i < 2; i++) {
+		for (uint j = 0; j < 2; j++) {
+			replaceMeTexture[i][j][0] = (GLubyte)255;
+			replaceMeTexture[i][j][1] = (GLubyte)0;
+			replaceMeTexture[i][j][2] = (GLubyte)144;
+			replaceMeTexture[i][j][3] = (GLubyte)255;
 		}
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// Generate the texture name
-	uint texName = 0;
-	glGenTextures(1, &texName);
+	glGenTextures(1, &defaultTexture);
 
 	// Bind the texture
-	glBindTexture(GL_TEXTURE_2D, texName);
+	glBindTexture(GL_TEXTURE_2D, defaultTexture);
 
 	// Set texture clamping method
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -652,14 +654,19 @@ uint MaterialImporter::LoadDefaultTexture() const
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-		0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, replaceMeTexture);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	CONSOLE_LOG("MATERIAL IMPORTER: Succes at loading the checkers texture: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+	CONSOLE_LOG("MATERIAL IMPORTER: Success at loading Default Texture: %i ID, %i x %i", defaultTexture, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 
-	return texName;
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+uint MaterialImporter::GetCheckers() const
+{
+	return checkers;
 }
 
 uint MaterialImporter::GetDefaultTexture() const

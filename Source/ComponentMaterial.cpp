@@ -67,7 +67,36 @@ void ComponentMaterial::OnUniqueEditor()
 #ifndef GAMEMODE
 	ImGui::Text("Material Renderer");
 	ImGui::Spacing();
+
+	{
+	ImGui::Text("Shader");
+	ImGui::SameLine();
+
+	ImGui::PushID("shader");
+	ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
+	ImGui::PopID();
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::Text("Default Shader");
+		ImGui::EndTooltip();
+	}
+	/*
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+		{
+			uint payload_n = *(uint*)payload->Data;
+			SetResource(payload_n);
+		}
+		ImGui::EndDragDropTarget();
+	}
+	*/
+}
+
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
+
 	for (uint i = 0; i < res.size(); ++i)
 	{
 		ImGui::Text("Texture %i", i + 1);

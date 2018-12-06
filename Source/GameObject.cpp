@@ -194,12 +194,12 @@ Component* GameObject::AddComponent(ComponentType type)
 		break;
 	case Mesh_Component:
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
-
 		if (materialRenderer == nullptr)
 			createMaterial = true;
-
 		break;
 	case Material_Component:
+		if (materialRenderer != nullptr)
+			return nullptr;
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
 	case Camera_Component:
@@ -392,6 +392,8 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	{
 		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
 		boundingBox.Enclose((const math::float3*)meshRes->vertices, meshRes->verticesSize);
+
+		// TODO: fix vertices (mouse picking too)
 	}
 
 	// Transform bounding box (calculate OBB)
@@ -438,7 +440,11 @@ void GameObject::OnLoad(JSON_Object* file)
 	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
 		cObject = json_array_get_object(jsonComponents, i);
 		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
-		newComponent->OnLoad(cObject);
+		// material special case cause of its bonunding property to mesh component
+		if (newComponent == nullptr)
+			materialRenderer->OnLoad(cObject);
+		else
+			newComponent->OnLoad(cObject);
 	}
 }
 

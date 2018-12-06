@@ -324,10 +324,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 								UUID = App->res->ImportFile(outputFile.data());
 
 							if (UUID > 0)
-							{
-								gameObject->AddComponent(ComponentType::Material_Component);
 								gameObject->materialRenderer->res[0].res = UUID;
-							}
 						}
 					}
 				}

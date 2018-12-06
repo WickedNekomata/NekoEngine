@@ -108,8 +108,13 @@ void ComponentMaterial::OnUniqueEditor()
 			App->fs->GetFileName(resource->GetFile(), fileName);
 
 		char itemName[DEFAULT_BUF_SIZE];
-		sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", fileName.data(), i);
-		ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
+		
+		if (res[i].res != 0) {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", fileName.data(), i);
+			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
+		}
+		else
+			ImGui::Button("Replace Me!", ImVec2(100.0f, 0.0f));
 
 		if (ImGui::IsItemHovered())
 		{
@@ -127,17 +132,15 @@ void ComponentMaterial::OnUniqueEditor()
 			}
 			ImGui::EndDragDropTarget();
 		}
-		ImGui::SameLine();
 
-		sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
 		bool minusClicked = false;
-		if (ImGui::Button(itemName))
-			minusClicked = true;
 
-		if (minusClicked)
-		{
-			SetResource(0, i);
-			res.erase(std::remove(res.begin(), res.end(), res[i]));
+		if (res.size() > 1) {
+			ImGui::SameLine();
+
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
+			if (ImGui::Button(itemName))
+				minusClicked = true;
 		}
 
 		const ResourceTexture* texture = (const ResourceTexture*)App->res->GetResource(res[i].res);
@@ -170,6 +173,12 @@ void ComponentMaterial::OnUniqueEditor()
 
 		ImGui::TextColored(BLUE, "%u x %u", width, height);
 		ImGui::Spacing();
+
+		if (minusClicked)
+		{
+			SetResource(0, i);
+			res.erase(std::remove(res.begin(), res.end(), res[i]));
+		}
 	}
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())

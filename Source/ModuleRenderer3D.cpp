@@ -26,6 +26,7 @@
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew\\libx86\\glew32.lib")
 
+#include <stdio.h>
 #include <algorithm>
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
@@ -605,22 +606,46 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 	uint defaultShaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 
+	GLuint shaderProgram;
 	if (glIsProgram(materialRenderer->shaderProgram))
-		glUseProgram(materialRenderer->shaderProgram);
+		shaderProgram = materialRenderer->shaderProgram;
 	else
-		glUseProgram(defaultShaderProgram);
-	
-	GLint location = glGetUniformLocation(defaultShaderProgram, "model_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLProjectionMatrix().ptr());
-	location = glGetUniformLocation(defaultShaderProgram, "proj_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLViewMatrix().ptr());
-	location = glGetUniformLocation(defaultShaderProgram, "view_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
+		shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+
+	glUseProgram(shaderProgram);
+
+	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	{
+		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
+
+		if (texRes == nullptr)
+			continue;
+
+		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+		glBindTexture(GL_TEXTURE_2D, texRes->id);
+		char* ourTexturei = "ourTexture_%i";
+		ourTexturei[12] = i - '0';
+		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
+	}
+
+	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_TRUE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
+	location = glGetUniformLocation(shaderProgram, "view_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
+	location = glGetUniformLocation(shaderProgram, "proj_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
 
 	glBindVertexArray(res->VAO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
+
+
+	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

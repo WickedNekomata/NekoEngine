@@ -139,6 +139,8 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glActiveTexture(GL_TEXTURE0);
 	}
 
+	App->shaderImporter->InitDefaultShaders();
+
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
@@ -604,9 +606,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
-	uint defaultShaderProgram = App->shaderImporter->GetDefaultShaderProgram();
-
+	
 	GLuint shaderProgram;
+
 	if (glIsProgram(materialRenderer->shaderProgram))
 		shaderProgram = materialRenderer->shaderProgram;
 	else
@@ -639,7 +641,6 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
-
 
 	for (int i = 0; i < materialRenderer->res.size(); ++i)
 	{

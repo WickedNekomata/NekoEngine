@@ -15,7 +15,7 @@ public:
 
 	ShaderImporter();
 	~ShaderImporter();
-
+	
 	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 
@@ -30,6 +30,7 @@ public:
 	GLuint LoadDefaultFragmentShaderObject() const;
 	GLuint LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject) const;
 
+	void InitDefaultShaders();
 	GLuint GetDefaultVertexShaderObject() const;
 	GLuint GetDefaultFragmentShaderObject() const;
 	GLuint GetDefaultShaderProgram() const;

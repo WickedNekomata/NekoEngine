@@ -25,6 +25,7 @@
 #pragma comment(lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment(lib, "glew\\libx86\\glew32.lib")
 
+#include <stdio.h>
 #include <algorithm>
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled)
@@ -139,16 +140,19 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 	// DEFAULT SHADER
 	const GLchar* vertex_shader_glsl_330_es =
-		"#version 330 core"
-		"layout (location = 0) in vec2 Position;\n"
-		"layout (location = 1) in vec4 Color;\n"
-		"layout (location = 2) in vec2 texCoord;\n"
-		"uniform mat4 ProjMtx;\n"
+		"#version 330 core\n"
+		"layout (location = 0) in vec3 position;\n"
+		"layout (location = 1) in vec4 normals;\n"
+		"layout (location = 2) in vec4 color;\n"
+		"layout (location = 3) in vec2 texCoord;\n"
+		"uniform mat4 model_matrix;\n"
+		"uniform mat4 view_matrix;\n"
+		"uniform mat4 proj_matrix;\n"
 		"out vec4 ourColor;\n"
-		"out vec2 TexCoord;\n"
+		"out vec2 ourTexCoord;\n"
 		"void main()\n"
 		"{\n"
-		"    TexCoord = texCoord;\n"
+		"    ourTexCoord = texCoord;\n"
 		"    ourColor = color;\n"
 		"    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0f);\n"
 		"}\n";
@@ -177,18 +181,18 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	}
 
 	const GLchar* fragment_shader_glsl_330_es =
-		"#version 330 core"
-		"in vec3 ourColor;\n"
-		"in vec2 TexCoord;\n"
-		"out vec4 color;\n"
-		"uniform sampler2D ourTexture;\n"
+		"#version 330 core\n"
+		"in vec4 ourColor;\n"
+		"in vec2 ourTexCoord;\n"
+		"out vec4 FragColor;\n"
+		"uniform sampler2D ourTexture_0;\n"
 		"void main()\n"
 		"{\n"
-		"    color = texture(ourTexture, TexCoord);\n"
+		"     FragColor = texture(ourTexture_0, ourTexCoord);\n"
 		"}\n";
 
 
-	GLuint fShaderObject = glCreateShader(GL_VERTEX_SHADER); // Creates an empty Shader Object
+	GLuint fShaderObject = glCreateShader(GL_FRAGMENT_SHADER); // Creates an empty Shader Object
 	glShaderSource(fShaderObject, 1, &fragment_shader_glsl_330_es, NULL); // Takes an array of strings and stores it into the shader
 
 	glCompileShader(fShaderObject);
@@ -710,22 +714,47 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	if (glIsProgram(materialRenderer->shaderProgram))
-		glUseProgram(materialRenderer->shaderProgram);
-	else
-		glUseProgram(defaultShader);
+	GLuint shaderProgram;
 
-	GLint location = glGetUniformLocation(defaultShader, "model_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLProjectionMatrix().ptr());
-	location = glGetUniformLocation(defaultShader, "proj_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLViewMatrix().ptr());
-	location = glGetUniformLocation(defaultShader, "view_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
+	if (glIsProgram(materialRenderer->shaderProgram))
+		shaderProgram = materialRenderer->shaderProgram;
+	else
+		shaderProgram = defaultShader;
+
+	glUseProgram(shaderProgram);
+
+	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	{
+		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
+
+		if (texRes == nullptr)
+			continue;
+
+		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+		glBindTexture(GL_TEXTURE_2D, texRes->id);
+		char* ourTexturei = "ourTexture_%i";
+		ourTexturei[12] = i - '0';
+		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
+	}
+
+	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_TRUE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
+	location = glGetUniformLocation(shaderProgram, "view_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
+	location = glGetUniformLocation(shaderProgram, "proj_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
 
 	glBindVertexArray(res->VAO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
 	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
+
+
+	for (int i = 0; i < materialRenderer->res.size(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

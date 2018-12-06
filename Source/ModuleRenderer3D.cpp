@@ -137,6 +137,110 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		glActiveTexture(GL_TEXTURE0);
 	}
 
+	// DEFAULT SHADER
+	const GLchar* vertex_shader_glsl_330_es =
+		"#version 330 core"
+		"layout (location = 0) in vec2 Position;\n"
+		"layout (location = 1) in vec4 Color;\n"
+		"layout (location = 2) in vec2 texCoord;\n"
+		"uniform mat4 ProjMtx;\n"
+		"out vec4 ourColor;\n"
+		"out vec2 TexCoord;\n"
+		"void main()\n"
+		"{\n"
+		"    TexCoord = texCoord;\n"
+		"    ourColor = color;\n"
+		"    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0f);\n"
+		"}\n";
+
+	GLuint vShaderObject = glCreateShader(GL_VERTEX_SHADER); // Creates an empty Shader Object
+	glShaderSource(vShaderObject, 1, &vertex_shader_glsl_330_es, NULL); // Takes an array of strings and stores it into the shader
+
+	glCompileShader(vShaderObject);
+	{
+		GLint success = 0;
+		glGetShaderiv(vShaderObject, GL_COMPILE_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			GLint logSize = 0;
+			glGetShaderiv(vShaderObject, GL_INFO_LOG_LENGTH, &logSize);
+
+			GLchar* infoLog = new GLchar[logSize];
+			glGetShaderInfoLog(vShaderObject, logSize, NULL, infoLog);
+
+			CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+
+			glDeleteShader(vShaderObject); // TODO
+		}
+		else
+			CONSOLE_LOG("Successfully compiled Shader Object");
+	}
+
+	const GLchar* fragment_shader_glsl_330_es =
+		"#version 330 core"
+		"in vec3 ourColor;\n"
+		"in vec2 TexCoord;\n"
+		"out vec4 color;\n"
+		"uniform sampler2D ourTexture;\n"
+		"void main()\n"
+		"{\n"
+		"    color = texture(ourTexture, TexCoord);\n"
+		"}\n";
+
+
+	GLuint fShaderObject = glCreateShader(GL_VERTEX_SHADER); // Creates an empty Shader Object
+	glShaderSource(fShaderObject, 1, &fragment_shader_glsl_330_es, NULL); // Takes an array of strings and stores it into the shader
+
+	glCompileShader(fShaderObject);
+	{
+		GLint success = 0;
+		glGetShaderiv(fShaderObject, GL_COMPILE_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			GLint logSize = 0;
+			glGetShaderiv(fShaderObject, GL_INFO_LOG_LENGTH, &logSize);
+
+			GLchar* infoLog = new GLchar[logSize];
+			glGetShaderInfoLog(fShaderObject, logSize, NULL, infoLog);
+
+			CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+
+			glDeleteShader(fShaderObject); // TODO
+		}
+		else
+			CONSOLE_LOG("Successfully compiled Shader Object");
+	}
+
+	defaultShader = glCreateProgram();
+
+	glAttachShader(defaultShader, vShaderObject);
+	glAttachShader(defaultShader, fShaderObject);
+
+	glLinkProgram(defaultShader);
+	
+	glDetachShader(defaultShader, vShaderObject);
+	glDetachShader(defaultShader, fShaderObject);
+
+	{
+		GLint success;
+		glGetProgramiv(defaultShader, GL_LINK_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			GLint logSize = 0;
+			glGetShaderiv(defaultShader, GL_INFO_LOG_LENGTH, &logSize);
+
+			GLchar* infoLog = new GLchar[logSize];
+			glGetProgramInfoLog(defaultShader, logSize, NULL, infoLog);
+
+			CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+
+			glDeleteProgram(defaultShader);
+		}
+		else
+			CONSOLE_LOG("Successfully linked Shader Program");
+	}
+
+
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
@@ -234,6 +338,8 @@ bool ModuleRenderer3D::CleanUp()
 
 	CONSOLE_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
+
+	glDeleteProgram(defaultShader);
 
 	return ret;
 }
@@ -604,37 +710,17 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	if (materialRenderer != nullptr && materialRenderer->IsActive())
-	{
+	if (glIsProgram(materialRenderer->shaderProgram))
 		glUseProgram(materialRenderer->shaderProgram);
-		/*
-		glColor4f(materialRenderer->color[0], materialRenderer->color[1],
-			materialRenderer->color[2], materialRenderer->color[3]);
+	else
+		glUseProgram(defaultShader);
 
-		for (int i = 0; i < materialRenderer->res.size(); ++i)
-		{
-			const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
-
-			if (texRes == nullptr)
-				continue;
-			
-			glClientActiveTexture(GL_TEXTURE0 + i);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			glMatrixMode(GL_TEXTURE);
-			glPushMatrix();
-			glMultMatrixf(materialRenderer->res[i].matrix.Transposed().ptr());
-
-			//glBindTexture(GL_TEXTURE_2D, texRes->id);
-
-			//glBindBuffer(GL_ARRAY_BUFFER, res->textureCoordsID);
-			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-		}
-		*/
-	}
-
-	// -----
+	GLint location = glGetUniformLocation(defaultShader, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLProjectionMatrix().ptr());
+	location = glGetUniformLocation(defaultShader, "proj_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLViewMatrix().ptr());
+	location = glGetUniformLocation(defaultShader, "view_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
 
 	glBindVertexArray(res->VAO);
 
@@ -644,26 +730,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// -----
-	
-	// Disable Multitexturing
-	if (materialRenderer != nullptr)
-	{
-		for (int i = 0; i < materialRenderer->res.size(); ++i)
-		{
-			glClientActiveTexture(GL_TEXTURE0 + i);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			glActiveTexture(GL_TEXTURE0 + i);
-			glPopMatrix();
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-	}
-	glColor4f(1.0f, 1.0f, 1.0f, 255.0f);
-
 	glUseProgram(0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
 }
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const

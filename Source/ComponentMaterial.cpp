@@ -20,9 +20,6 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 	MaterialResource texture;
 	texture.res = App->materialImporter->GetDefaultTexture();
 	res.push_back(texture);
-
-	// Default shader (0)
-
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
@@ -46,7 +43,8 @@ ComponentMaterial::~ComponentMaterial()
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
 
-	glDeleteProgram(shaderProgram);
+	if (glIsProgram(shaderProgram))
+		glDeleteProgram(shaderProgram);
 }
 
 void ComponentMaterial::Update() {}

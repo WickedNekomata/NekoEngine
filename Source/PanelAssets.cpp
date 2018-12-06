@@ -70,6 +70,10 @@ void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
 			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
 				treeNodeOpened = true;
 
+			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				SELECT(NULL);
+
 			if (treeNodeOpened)
 			{
 				if (!child->children.empty())
@@ -102,7 +106,8 @@ void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
 			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
 				treeNodeOpened = true;
 
-			if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 			{
 				switch (type)
 				{
@@ -111,18 +116,27 @@ void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
 					break;
 				case ResourceType::Texture_Resource:
 					SELECT((TextureImportSettings*)child->importSettings);
-					SetResourceDragAndDropSource(type, nullptr, child->UUIDs.begin()->second);
 					break;
 				case ResourceType::No_Type_Resource:
 					if (IS_SCENE(extension.data()))
 					{
 						SELECT(CurrentSelection::SelectedType::scene);
-						SetResourceDragAndDropSource(type, child->path.data());
 					}
 					else
 						SELECT(NULL);
 					break;
 				}
+			}
+
+			switch (type)
+			{
+			case ResourceType::Texture_Resource:
+				SetResourceDragAndDropSource(type, nullptr, child->UUIDs.begin()->second);
+				break;
+			case ResourceType::No_Type_Resource:
+				if (IS_SCENE(extension.data()))
+					SetResourceDragAndDropSource(type, child->path.data());
+				break;
 			}
 
 			if (treeNodeOpened)
@@ -131,10 +145,15 @@ void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
 				{
 					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
 					{
-						ImGui::TreeNodeEx(it->first.data(), ImGuiTreeNodeFlags_Leaf);
-						ImGui::TreePop();
+						if (ImGui::TreeNodeEx(it->first.data(), ImGuiTreeNodeFlags_Leaf))
+						{
+							if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+								&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+								SELECT(NULL);
 
-						SetResourceDragAndDropSource(type, nullptr, it->second);
+							SetResourceDragAndDropSource(type, nullptr, it->second);
+							ImGui::TreePop();
+						}
 					}
 				}
 				ImGui::TreePop();

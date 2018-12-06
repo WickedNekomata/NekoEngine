@@ -761,7 +761,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		memcpy(outputMesh->vertices[i].texCoord, texCoordsCursor, bytes);
 
 		texCoordsCursor += bytes;
-	}	
+	}
 
 	// 6. Load indices
 	cursor = texCoordsCursor;

@@ -36,9 +36,6 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::gameObject:
 			ShowGameObjectInspector();
 			break;
-		case CurrentSelection::SelectedType::scene:
-			ShowSceneInspector();
-			break;
 		case CurrentSelection::SelectedType::resource:
 		{
 			if (((Resource*)App->scene->selectedObject.Get())->GetType() == ResourceType::Mesh_Resource)
@@ -134,11 +131,6 @@ void PanelInspector::DragnDropSeparatorTarget(Component* target) const
 		}
 		ImGui::EndDragDropTarget();
 	}
-}
-
-void PanelInspector::ShowSceneInspector() const
-{
-	ImGui::Text("Scene");
 }
 
 void PanelInspector::ShowMeshResourceInspector() const

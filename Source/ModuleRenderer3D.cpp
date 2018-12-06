@@ -625,7 +625,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
 		glBindTexture(GL_TEXTURE_2D, texRes->id);
-		char* ourTexturei = "ourTexture_%i";
+		char ourTexturei[13] = "ourTexture_i";
 		ourTexturei[12] = i - '0';
 		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
 	}

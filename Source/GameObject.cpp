@@ -19,7 +19,7 @@
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
-	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
+	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
 
 	if (parent != nullptr)
 	{
@@ -37,7 +37,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 GameObject::GameObject(const GameObject& gameObject)
 {
 	name = new char[DEFAULT_BUF_SIZE];
-	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
+	strcpy_s((char*)name, DEFAULT_BUF_SIZE, gameObject.name);
 
 	transform = new ComponentTransform(*gameObject.transform);
 	transform->SetParent(this);
@@ -316,7 +316,7 @@ bool GameObject::EqualsToChildrenOrMe(const void* isEqual) const
 
 void GameObject::SetName(const char* name)
 {
-	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
+	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
 }
 
 const char* GameObject::GetName() const
@@ -401,7 +401,7 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 
 void GameObject::OnSave(JSON_Object* file) const
 {
-	json_object_set_string(file, "name", name);
+	json_object_set_string(file, "Name", name);
 	json_object_set_number(file, "UUID", UUID);
 	json_object_set_number(file, "Parent UUID", parent->UUID);
 

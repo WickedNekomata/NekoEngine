@@ -90,7 +90,7 @@ void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-				DESTROYANDSET(res);
+				SELECT(res);
 
 			ImGui::TreePop();
 

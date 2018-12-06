@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <list>
+#include <map>
 
 class GameObject;
 class Component;
@@ -48,7 +49,7 @@ public:
 	void MarkSceneToSerialize();
 	bool SerializeFromNode(const GameObject* node, std::string& outputFile);
 	bool LoadScene(const char* file);
-	bool GetMeshResourcesFromScene(const char* file, std::list<uint>& UUIDs) const;
+	bool GetMeshResourcesFromScene(const char* file, std::map<std::string, uint>& meshes) const;
 
 	bool InvalidateResource(const Resource* resource);
 

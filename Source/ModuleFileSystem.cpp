@@ -3,10 +3,11 @@
 #include "Application.h"
 #include "Globals.h"
 
-#include "ModuleResourceManager.h"
 #include "Importer.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
+#include "ModuleResourceManager.h"
+#include "ResourceMesh.h"
 
 #include "physfs\include\physfs.h"
 #include "Brofiler\Brofiler.h"
@@ -194,20 +195,33 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const
 			{
 			case ResourceType::Mesh_Resource:
 			{
+				// Read the import settings
 				MeshImportSettings* importSettings = new MeshImportSettings();
 				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, importSettings);
 				file->importSettings = importSettings;
 
+				// Read the UUIDs of the meshes
 				std::list<uint> UUIDs;
 				App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs);
 
+				for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
+				{
+					ResourceMesh* mesh = (ResourceMesh*)App->res->GetResource(*it);
+					file->UUIDs[mesh->name] = *it;
+				}
 			}
 			break;
 			case ResourceType::Texture_Resource:
 			{
+				// Read the import settings
 				TextureImportSettings* importSettings = new TextureImportSettings();
 				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, importSettings);
 				file->importSettings = importSettings;
+
+				// Read the UUID of the texture
+				uint UUID = 0;
+				App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID);
+				file->UUIDs[file->name.data()] = UUID;
 			}
 			break;
 			}

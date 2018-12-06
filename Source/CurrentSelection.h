@@ -9,13 +9,6 @@
 
 class Resource;
 
-// Highly recomend using this instead of operator =. ////Take care of one line conditionals!!///
-#define DESTROYANDSET(x) \
-{ \
-App->scene->selectedObject.DestroyImportSettings(); \
-App->scene->selectedObject = x; \
-} \
-
 struct CurrentSelection
 {
 	enum class SelectedType { null, gameObject, scene, resource, meshImportSettings, textureImportSettings };
@@ -135,31 +128,6 @@ public:
 	bool operator==(const TextureImportSettings* rhs)
 	{
 		return cur == rhs;
-	}
-
-	bool DestroyImportSettings()
-	{
-		if (type != SelectedType::meshImportSettings && type != SelectedType::textureImportSettings)
-			return false;
-
-		switch (type) {
-		case SelectedType::meshImportSettings:
-		{
-			MeshImportSettings* toRelease = (MeshImportSettings*)cur;
-			RELEASE_ARRAY(toRelease->metaFile);
-			break;
-		}
-		case SelectedType::textureImportSettings:
-		{
-			TextureImportSettings* toRelease = (TextureImportSettings*)cur;
-			RELEASE_ARRAY(toRelease->metaFile);
-			break;
-		}
-		}
-		delete cur;
-		cur = nullptr;
-		type = SelectedType::null;
-		return true;
 	}
 
 	// Add operators in case of new kinds of selection :)

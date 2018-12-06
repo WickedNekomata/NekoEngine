@@ -97,7 +97,7 @@ bool ModuleScene::CleanUp()
 
 	RELEASE(grid);
 
-	DESTROYANDSET(NULL);
+	SELECT(NULL);
 
 	quadtree.Clear();
 

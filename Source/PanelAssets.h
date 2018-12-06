@@ -8,6 +8,7 @@
 #include "Panel.h"
 
 #include "ResourceTypes.h"
+#include "Globals.h"
 
 #include <string>
 
@@ -25,7 +26,7 @@ public:
 private:
 
 	void RecursiveDrawDir(AssetsFile* assetsFile) const;
-	void SetDragAndDropSource(const char* file) const;
+	void SetResourceDragAndDropSource(ResourceType type, const char* file = nullptr, uint UUID = 0) const;
 };
 
 #endif

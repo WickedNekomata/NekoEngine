@@ -209,7 +209,7 @@ void ModuleGOs::DeleteScene()
 void ModuleGOs::ClearScene()
 {
 	App->scene->root->DeleteChildren();
-	DESTROYANDSET(NULL);
+	SELECT(NULL);
 }
 
 void ModuleGOs::SetToDelete(GameObject* toDelete)
@@ -342,7 +342,7 @@ bool ModuleGOs::LoadScene(const char* file)
 	for (int i = 0; i < sizeOfArray; i++)
 	{
 		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "name"), App->scene->root, true);
+		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "Name"), App->scene->root, true);
 		go->OnLoad(gObject);
 		auxList.push_back(go);
 	}
@@ -367,7 +367,7 @@ bool ModuleGOs::LoadScene(const char* file)
 	return true;
 }
 
-bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::list<uint>& UUIDs) const
+bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::map<std::string, uint>& meshes) const
 {
 	char* buffer;
 	uint size = App->fs->Load(file, &buffer);
@@ -399,11 +399,12 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::list<uint>& UUI
 		JSON_Array* jsonComponents = json_object_get_array(gObject, "jsonComponents");
 		JSON_Object* cObject;
 
-		for (int i = 0; i < json_array_get_count(jsonComponents); i++) 
+		for (int i = 0; i < json_array_get_count(jsonComponents); i++)
 		{
 			cObject = json_array_get_object(jsonComponents, i);
+
 			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::Mesh_Component)
-				UUIDs.push_back(json_object_get_number(cObject, "ResourceMesh"));
+				meshes[json_object_get_string(gObject, "Name")] = json_object_get_number(cObject, "ResourceMesh");
 		}
 	}
 

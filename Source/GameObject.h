@@ -92,7 +92,7 @@ public:
 
 private:
 
-	char* name = nullptr;
+	const char* name = nullptr;
 	uint UUID = 0;
 
 	std::vector<Component*> components;

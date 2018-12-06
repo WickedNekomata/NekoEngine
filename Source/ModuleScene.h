@@ -13,6 +13,8 @@
 
 #include "ImGuizmo\ImGuizmo.h"
 
+#define SELECT(x) App->scene->selectedObject = x;
+
 class PrimitiveGrid;
 class GameObject;
 

@@ -42,7 +42,7 @@ struct AssetsFile : public File
 	uint lastModTime = 0;
 	const ImportSettings* importSettings = nullptr;
 
-	std::map<std::string, uint> meshes; // only for models
+	std::map<std::string, uint> UUIDs;
 };
 
 struct LibraryFile : public File

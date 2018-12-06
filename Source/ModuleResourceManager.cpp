@@ -484,18 +484,20 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		case ResourceType::Mesh_Resource:
 		{
 			// Create a new resource for each mesh
-			std::list<uint> meshesUUIDs;
-			App->GOs->GetMeshResourcesFromScene(outputFile.data(), meshesUUIDs);
+			std::map<std::string, uint> meshes;
+			App->GOs->GetMeshResourcesFromScene(outputFile.data(), meshes);
 
-			for (auto it = meshesUUIDs.begin(); it != meshesUUIDs.end(); ++it)
+			for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
 			{
-				Resource* resource = CreateNewResource(type, *it);
+				ResourceMesh* resource = (ResourceMesh*)CreateNewResource(type, it->second);
 				resource->file = fileInAssets;
 
 				resource->exportedFile = DIR_LIBRARY_MESHES;
 				resource->exportedFile.append("/");
-				resource->exportedFile.append(std::to_string(*it));
+				resource->exportedFile.append(std::to_string(it->second));
 				resource->exportedFile.append(EXTENSION_MESH);
+
+				strcpy_s((char*)resource->name, DEFAULT_BUF_SIZE, it->first.data());
 
 				resources.push_back(resource);
 			}
@@ -508,7 +510,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			{
 				outputMetaFile = metaFile;
 
-				App->sceneImporter->SetMeshUUIDsToMeta(metaFile, meshesUUIDs);
+				std::list<uint> UUIDs;
+				for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+					UUIDs.push_back(it->second);
+
+				App->sceneImporter->SetMeshUUIDsToMeta(metaFile, UUIDs);
 
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);

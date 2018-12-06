@@ -100,7 +100,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				}
 
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					DESTROYANDSET(child);
+					SELECT(child);
 
 				if (treeNodeOpened) 
 				{
@@ -119,8 +119,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				ImGui::TreeNodeEx(name, treeNodeFlags);
 				ImGui::TreePop();
 
-				SetGameObjectDragAndDrop(child);
-				
+				SetGameObjectDragAndDrop(child);			
 				AtGameObjectPopUp(child);
 
 				if (App->scene->selectedObject == child && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
@@ -130,7 +129,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				}
 			
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-					DESTROYANDSET(child);				
+					SELECT(child);
 			}
 		}
 	}

@@ -183,6 +183,8 @@ Component* GameObject::AddComponent(ComponentType type)
 {
 	Component* newComponent;
 
+	bool createMaterial = false;
+
 	switch (type)
 	{
 	case No_type:
@@ -194,7 +196,7 @@ Component* GameObject::AddComponent(ComponentType type)
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 
 		if (materialRenderer == nullptr)
-			AddComponent(ComponentType::Material_Component);
+			createMaterial = true;
 
 		break;
 	case Material_Component:
@@ -208,6 +210,9 @@ Component* GameObject::AddComponent(ComponentType type)
 	}
 	
 	components.push_back(newComponent);
+
+	if (createMaterial)
+		AddComponent(ComponentType::Material_Component);
 
 	return newComponent;
 }

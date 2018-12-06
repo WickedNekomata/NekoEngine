@@ -38,11 +38,16 @@ void Component::OnEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
+	if (type != ComponentType::Material_Component) {
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
 
-	ImGui::SameLine();
-	if (ImGui::Button(itemName))
-		GetParent()->MarkToDeleteComponentByValue(this);
+		ImGui::SameLine();
+		if (ImGui::Button(itemName)) {
+			GetParent()->MarkToDeleteComponentByValue(this);
+			if (type == ComponentType::Mesh_Component)
+				GetParent()->MarkToDeleteComponentByValue((Component*)GetParent()->materialRenderer);
+		}
+	}
 
 	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##isActive%u", UUID);
 

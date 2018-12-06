@@ -108,12 +108,6 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		if (gameObject->materialRenderer == nullptr) {
-			if (ImGui::Selectable("Material")) {
-				gameObject->AddComponent(ComponentType::Material_Component);
-				ImGui::CloseCurrentPopup();
-			}
-		}
 		if (gameObject->camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
 				gameObject->AddComponent(ComponentType::Camera_Component);

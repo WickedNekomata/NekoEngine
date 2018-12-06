@@ -10,7 +10,7 @@ struct Vertex
 	GLfloat position[3];
 	GLfloat normal[3];
 	GLubyte color[4];
-	GLfloat texCoord[4];
+	GLfloat texCoord[2];
 };
 
 class ResourceMesh : public Resource

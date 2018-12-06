@@ -23,7 +23,6 @@ private:
 	void ShowGameObjectInspector() const;
 	void DragnDropSeparatorTarget(Component* target) const;
 
-	void ShowSceneInspector() const;
 	void ShowMeshResourceInspector() const;
 	void ShowTextureResourceInspector() const;
 	void ShowMeshImportSettingsInspector() const;

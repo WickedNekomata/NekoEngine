@@ -228,7 +228,7 @@ GLuint ShaderImporter::LoadDefaultVertexShaderObject() const
 			glDeleteShader(defaultVertexShaderObject);
 		}
 		else
-			CONSOLE_LOG("Successfully compiled Default Vertex Shader Object");
+			CONSOLE_LOG("SHADER IMPORTER: Successfully compiled Default Vertex Shader Object");
 	}
 
 	return defaultVertexShaderObject;

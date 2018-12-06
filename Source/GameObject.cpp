@@ -192,6 +192,10 @@ Component* GameObject::AddComponent(ComponentType type)
 		break;
 	case Mesh_Component:
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
+
+		if (materialRenderer == nullptr)
+			AddComponent(ComponentType::Material_Component);
+
 		break;
 	case Material_Component:
 		newComponent = materialRenderer = new ComponentMaterial(this);

@@ -25,6 +25,7 @@ bool ResourceMesh::LoadInMemory()
 
 	GenerateVBO();
 	GenerateVAO();
+	GenerateIBO();
 
 	/*
 	glGenBuffers(1, (GLuint*)&indicesID);

@@ -56,7 +56,7 @@ update_status ModuleCameraEditor::Update()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	if (!App->IsEditor())
+	if (!App->IsEditor() || App->gui->WantTextInput())
 		return UPDATE_CONTINUE;
 
 	// Free movement and rotation

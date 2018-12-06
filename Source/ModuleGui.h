@@ -54,6 +54,7 @@ public:
 
 	bool IsMouseHoveringAnyWindow();
 	bool IsAnyItemFocused();
+	bool WantTextInput();
 
 public:
 

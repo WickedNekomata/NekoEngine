@@ -403,5 +403,10 @@ bool ModuleGui::IsAnyItemFocused()
 	return ImGui::IsAnyItemFocused();
 }
 
+bool ModuleGui::WantTextInput()
+{
+	ImGuiContext& g = *GImGui;
+	return g.IO.WantTextInput;
+}
 
 #endif // GAME

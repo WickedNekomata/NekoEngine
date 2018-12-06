@@ -7,14 +7,14 @@
 #include "Primitive.h"
 #include "SceneImporter.h"
 #include "ModuleGOs.h"
+#include "ModuleGui.h"
 #include "GameObject.h"
 #include "DebugDrawer.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
-#include "imgui\imgui.h"
-#include "imgui\imgui_internal.h"
+#include "imgui/imgui.h"
 
 #include <list>
 #include <vector>
@@ -60,24 +60,25 @@ update_status ModuleScene::Update()
 	if (!App->IsEditor())
 		return UPDATE_CONTINUE;
 
-	//ImGuiContext* g = ImGui::GetCurrentContext();
-
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
+	if (!App->gui->WantTextInput())
 	{
-		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-			SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
-		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
-			SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
-		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
-			SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
-	}
+		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
+		{
+			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+				SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
+			if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+				SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
+			if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+				SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
-	{
-		if (currentImGuizmoMode == ImGuizmo::MODE::WORLD)
-			SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
-		else
-			SetImGuizmoMode(ImGuizmo::MODE::WORLD);
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+		{
+			if (currentImGuizmoMode == ImGuizmo::MODE::WORLD)
+				SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
+			else
+				SetImGuizmoMode(ImGuizmo::MODE::WORLD);
+		}
 	}
 
 	if (selectedObject == CurrentSelection::SelectedType::gameObject)

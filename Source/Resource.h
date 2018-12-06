@@ -17,13 +17,15 @@ public:
 	virtual ~Resource();
 
 	uint GetUUID() const;
+	ResourceType GetType() const;
 	const char* GetFile() const;
 	const char* GetExportedFile() const;
+
 	bool IsInMemory() const;
-	uint LoadToMemory();
-	uint UnloadMemory();
+	virtual uint LoadMemory();
+	virtual uint UnloadMemory();
+
 	uint CountReferences() const;
-	ResourceType GetType() const;
 
 private:
 

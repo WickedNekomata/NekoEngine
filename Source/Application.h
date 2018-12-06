@@ -36,6 +36,7 @@ struct Module;
 struct ModuleResourceManager;
 struct MaterialImporter;
 struct SceneImporter;
+struct ShaderImporter;
 struct ModuleCameraEditor;
 struct ModuleGui;
 struct Raycaster;
@@ -111,8 +112,9 @@ public:
 	ModuleResourceManager*	res;
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
-#ifndef GAMEMODE
-	
+	ShaderImporter*			shaderImporter;
+
+#ifndef GAMEMODE	
 	ModuleCameraEditor*		camera;
 	ModuleGui*				gui;
 

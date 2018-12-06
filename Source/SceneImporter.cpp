@@ -406,7 +406,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, const MeshImportSettings* meshImportSettings, std::string& outputMetaFile) const
+bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, std::string& outputMetaFile, const MeshImportSettings* meshImportSettings) const
 {
 	if (resources.empty() || meshImportSettings == nullptr)
 	{

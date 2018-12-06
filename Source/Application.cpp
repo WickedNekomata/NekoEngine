@@ -12,6 +12,7 @@
 #include "ModuleResourceManager.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
+#include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 
@@ -28,15 +29,14 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	GOs = new ModuleGOs();
 	timeManager = new ModuleTimeManager();
 	res = new ModuleResourceManager();
-
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
+	shaderImporter = new ShaderImporter();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
 	gui = new ModuleGui();	
-
 	raycaster = new Raycaster();
 #endif // GAME
 

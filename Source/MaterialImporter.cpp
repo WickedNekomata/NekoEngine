@@ -1,6 +1,7 @@
 #include "GameMode.h"
 
 #include "MaterialImporter.h"
+
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleRenderer3D.h"
@@ -158,7 +159,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-bool MaterialImporter::GenerateMeta(Resource* resource, const TextureImportSettings* textureImportSettings, std::string& outputMetaFile) const
+bool MaterialImporter::GenerateMeta(Resource* resource, std::string& outputMetaFile, const TextureImportSettings* textureImportSettings) const
 {
 	if (resource == nullptr || textureImportSettings == nullptr)
 	{

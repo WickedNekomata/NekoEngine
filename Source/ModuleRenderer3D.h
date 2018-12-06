@@ -105,9 +105,6 @@ public:
 	math::float3x3 NormalMatrix;
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
-	// DEFAULT SHADER
-	GLuint defaultShader;
-
 	bool vsync = false;
 
 	bool debugDraw = false;

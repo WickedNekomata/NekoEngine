@@ -15,6 +15,12 @@ uint Resource::GetUUID() const
 	return UUID;
 }
 
+// Get type of the current resource.
+ResourceType Resource::GetType() const
+{
+	return type;
+}
+
 // Get file of the current resource.
 const char* Resource::GetFile() const
 {
@@ -34,12 +40,14 @@ bool Resource::IsInMemory() const
 }
 
 // Increase number of references and returns it. In case of 0 references also load into memory.
-uint Resource::LoadToMemory()
+uint Resource::LoadMemory()
 {
-	if (!IsInMemory())
-		LoadInMemory();
+	bool result = false;
 
-	return count++;
+	if (!IsInMemory())
+		result = LoadInMemory();
+
+	return result ? count++ : count;
 }
 
 // Decrease number of references and returns it. In case of 0 references also unload from memory.
@@ -47,19 +55,18 @@ uint Resource::UnloadMemory()
 {
 	assert(count > 0 && "Calls to load and unload of resource not equivalent");
 
-	if (count <= 1)
-		UnloadFromMemory();
+	bool result = false;
 
-	return count--;
+	if (count <= 1)
+		result = UnloadFromMemory();
+
+	assert(result && "Resource could not be unloaded from memory");
+
+	return result ? count-- : count;
 }
 
 // Get the number of references.
 uint Resource::CountReferences() const
 {
 	return count;
-}
-
-ResourceType Resource::GetType() const
-{
-	return type;
 }

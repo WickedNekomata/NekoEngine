@@ -12,12 +12,15 @@ public:
 	ResourceShader(ResourceType type, uint uuid);
 	~ResourceShader();
 
+	uint LoadMemory();
+	uint UnloadMemory() { return 0; }
+
 private:
 
 	bool LoadInMemory();
-	bool UnloadFromMemory();
+	bool UnloadFromMemory() { return true; }
 
-private:
+public:
 
 	const char* source = nullptr;
 	GLuint shaderObject = 0;

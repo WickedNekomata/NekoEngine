@@ -1,11 +1,14 @@
 #include "ModuleResourceManager.h"
 
 #include "Application.h"
+
+#include "ModuleFileSystem.h"
+#include "ModuleGOs.h"
+
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
-#include "Application.h"
-#include "ModuleGOs.h"
-#include "ModuleFileSystem.h"
+#include "ShaderImporter.h"
+
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -47,7 +50,7 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	assert(IsAnyResourceInVram() == false && "Memory still allocated on vram. Code better!");
+	assert(!IsAnyResourceInVram() && "Memory still allocated on vram. Code better!");
 
 	DestroyResources();
 
@@ -425,7 +428,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
 	// If the file has no file(s) in Libray or its import settings have changed, import or reimport the file
-	if (exportedFile == nullptr)
+	if (exportedFile == nullptr && (type == ResourceType::Mesh_Resource || type == ResourceType::Texture_Resource))
 	{
 		// Initialize the import settings to the default import settings
 		switch (type)
@@ -452,27 +455,25 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			}
 		}
 
-		// Import the file
+		// Import the file using the import settings
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource: // Use the import settings
+		case ResourceType::Mesh_Resource:
 			imported = App->sceneImporter->Import(fileInAssets, outputFile, importSettings); // Models' outputFileName is the name of the Scene
 			break;
-		case ResourceType::Texture_Resource: // Use the import settings
+		case ResourceType::Texture_Resource:
 			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
-			break;
-		case ResourceType::Vertex_Shader_Resource:
-
-			break;
-		case ResourceType::Fragment_Shader_Resource:
-
 			break;
 		}
 	}
 	else
 	{
 		imported = true;
-		outputFile = exportedFile;
+
+		if (type == ResourceType::Vertex_Shader_Resource || type == ResourceType::Fragment_Shader_Resource)
+			outputFile = fileInAssets;
+		else
+			outputFile = exportedFile;
 	}
 
 	if (imported)
@@ -504,7 +505,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->sceneImporter->GenerateMeta(resources, (MeshImportSettings*)importSettings, outputMetaFile);
+				App->sceneImporter->GenerateMeta(resources, outputMetaFile, (MeshImportSettings*)importSettings);
 			// Else, update the UUIDs and the last modified time in the existing meta
 			else
 			{
@@ -536,8 +537,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->materialImporter->GenerateMeta(resources.front(), (TextureImportSettings*)importSettings, outputMetaFile);
-			// Else, update the UUIDs and the last modified time in the existing meta
+				App->materialImporter->GenerateMeta(resources.front(), outputMetaFile, (TextureImportSettings*)importSettings);
+			// Else, update the UUID and the last modified time in the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
@@ -554,7 +555,31 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		{
 			// Create a new resource for the shader
 			Resource* resource = CreateNewResource(type);
-			resource->LoadToMemory();
+			resource->file = fileInAssets;
+			resource->exportedFile = outputFile;
+
+			// Try to compile the shader
+			if (resource->LoadMemory())
+			{
+				resources.push_back(resource);
+
+				// If the file has no meta associated, generate a new meta
+				if (metaFile == nullptr)
+					App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
+				// Else, update the UUID and the last modified time in the existing meta
+				else
+				{
+					outputMetaFile = metaFile;
+
+					uint UUID = resource->GetUUID();
+					App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
+
+					int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
+					Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
+				}
+			}
+			else
+				RELEASE(resource); // TODO: Invalid resource. Draw an X or whatever
 		}
 		break;
 		}
@@ -729,7 +754,7 @@ int ModuleResourceManager::SetAsUsed(uint uuid) const
 	if (it == resources.end())
 		return -1;
 
-	return it->second->LoadToMemory();
+	return it->second->LoadMemory();
 }
 
 // Unloads the resource from memory and returns the number of references. In case of error, it returns -1.

@@ -1,5 +1,8 @@
 #include "ResourceShader.h"
 
+#include "Application.h"
+#include "ShaderImporter.h"
+
 ResourceShader::ResourceShader(ResourceType type, uint uuid) : Resource(type, uuid) {}
 
 ResourceShader::~ResourceShader() 
@@ -7,8 +10,18 @@ ResourceShader::~ResourceShader()
 	glDeleteShader(shaderObject);
 }
 
+uint ResourceShader::LoadMemory()
+{
+	return LoadInMemory();
+}
+
 bool ResourceShader::LoadInMemory()
 {
+	bool ret = App->shaderImporter->Load(exportedFile.data(), this);
+
+	if (!ret)
+		return ret;
+
 	// 1. COMPILATION
 
 	GLenum shaderType = 0;
@@ -47,10 +60,4 @@ bool ResourceShader::LoadInMemory()
 		CONSOLE_LOG("Successfully compiled Shader Object");
 
 	return success;
-}
-
-bool ResourceShader::UnloadFromMemory()
-{
-	glDeleteShader(shaderObject); // TODO
-	return true;
 }

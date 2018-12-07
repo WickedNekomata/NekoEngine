@@ -44,11 +44,22 @@ bool PanelShaderEditor::Draw()
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
 		}
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
+			{
+				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				if (payload_n->shaderType == ShaderType::VertexShaderType)
+					*it = payload_n;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		ImGui::SameLine();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##v%i", std::distance(vertexShaders.begin(), it));
 		if (ImGui::Button(itemName))
-			App->gui->panelCodeEditor->OpeninCodeEditor(vShaderTemplate);
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
 		ImGui::SameLine();
 
@@ -81,11 +92,22 @@ bool PanelShaderEditor::Draw()
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
 		}
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
+			{
+				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				if (payload_n->shaderType == ShaderType::FragmentShaderType)
+					*it = payload_n;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		ImGui::SameLine();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##f%i", std::distance(fragmentShaders.begin(), it));
 		if (ImGui::Button(itemName)) {
-			App->gui->panelCodeEditor->OpeninCodeEditor(fShaderTemplate);
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 		}
 
 		ImGui::SameLine();

@@ -8,8 +8,8 @@
 enum ShaderType
 {
 	NoShaderType,
-	Vertex,
-	Fragment
+	VertexShaderType,
+	FragmentShaderType
 };
 
 class ResourceShaderObject : public Resource

@@ -6,7 +6,6 @@
 #include "Globals.h"
 
 #include "ModuleFileSystem.h"
-#include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 
 #include <assert.h>
@@ -275,6 +274,56 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 	return ret;
 }
 
+// Returns opengl id of compiled shader. In case of error returns -1.
+uint ShaderImporter::CompileShaderObject(const char* shader, ShaderType type) const
+{
+	GLuint shaderCompiled;
+	switch (type)
+	{
+	case ShaderType::VertexShaderType:
+		shaderCompiled = glCreateShader(GL_VERTEX_SHADER);
+		break;
+	case ShaderType::FragmentShaderType:
+		shaderCompiled = glCreateShader(GL_FRAGMENT_SHADER);
+		break;
+	default:
+		return -1;
+		break;
+	}
+	glShaderSource(shaderCompiled, 1, &shader, NULL);
+
+	glCompileShader(shaderCompiled);
+	{
+		GLint success = 0;
+		glGetShaderiv(shaderCompiled, GL_COMPILE_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			GLint logSize = 0;
+			glGetShaderiv(shaderCompiled, GL_INFO_LOG_LENGTH, &logSize);
+
+			GLchar* infoLog = new GLchar[logSize];
+			glGetShaderInfoLog(shaderCompiled, logSize, NULL, infoLog);
+
+			CONSOLE_LOG("SHADER IMPORTER: Shader Object could not be compiled. ERROR: %s", infoLog);
+
+			glDeleteShader(defaultVertexShaderObject);
+
+			return -1;
+		}
+	}
+
+	return shaderCompiled;
+}
+
+bool ShaderImporter::DeleteShaderObject(uint shader) const
+{
+	if (!glIsShader(shader))
+		return false;
+
+	glDeleteShader(shader);
+	return true;
+}
+
 bool ShaderImporter::LoadShaderProgram(const char* programFile, ResourceShaderProgram* shaderProgram) const
 {
 	bool ret = false;
@@ -324,83 +373,12 @@ void ShaderImporter::LoadDefaultShader()
 
 void ShaderImporter::LoadDefaultVertexShaderObject()
 {
-	const GLchar* vertex_shader_glsl_330_es =
-		"#version 330 core\n"
-		"layout (location = 0) in vec3 position;\n"
-		"layout (location = 1) in vec4 normals;\n"
-		"layout (location = 2) in vec4 color;\n"
-		"layout (location = 3) in vec2 texCoord;\n"
-		"uniform mat4 model_matrix;\n"
-		"uniform mat4 view_matrix;\n"
-		"uniform mat4 proj_matrix;\n"
-		"out vec4 ourColor;\n"
-		"out vec2 ourTexCoord;\n"
-		"void main()\n"
-		"{\n"
-		"    ourTexCoord = texCoord;\n"
-		"    ourColor = color;\n"
-		"    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0f);\n"
-		"}\n";
-
-	defaultVertexShaderObject = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(defaultVertexShaderObject, 1, &vertex_shader_glsl_330_es, NULL);
-
-	glCompileShader(defaultVertexShaderObject);
-	{
-		GLint success = 0;
-		glGetShaderiv(defaultVertexShaderObject, GL_COMPILE_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			GLint logSize = 0;
-			glGetShaderiv(defaultVertexShaderObject, GL_INFO_LOG_LENGTH, &logSize);
-
-			GLchar* infoLog = new GLchar[logSize];
-			glGetShaderInfoLog(defaultVertexShaderObject, logSize, NULL, infoLog);
-
-			CONSOLE_LOG("SHADER IMPORTER: Default Vertex Shader Object could not be compiled. ERROR: %s", infoLog);
-
-			glDeleteShader(defaultVertexShaderObject);
-		}
-		else
-			CONSOLE_LOG("SHADER IMPORTER: Successfully compiled Default Vertex Shader Object");
-	}
+	defaultVertexShaderObject = CompileShaderObject(vShaderTemplate, ShaderType::VertexShaderType);
 }
 
 void ShaderImporter::LoadDefaultFragmentShaderObject()
 {
-	const GLchar* fragment_shader_glsl_330_es =
-		"#version 330 core\n"
-		"in vec4 ourColor;\n"
-		"in vec2 ourTexCoord;\n"
-		"out vec4 FragColor;\n"
-		"uniform sampler2D ourTexture_0;\n"
-		"void main()\n"
-		"{\n"
-		"     FragColor = texture(ourTexture_0, ourTexCoord);\n"
-		"}\n";
-
-	defaultFragmentShaderObject = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(defaultFragmentShaderObject, 1, &fragment_shader_glsl_330_es, NULL);
-
-	glCompileShader(defaultFragmentShaderObject);
-	{
-		GLint success = 0;
-		glGetShaderiv(defaultFragmentShaderObject, GL_COMPILE_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			GLint logSize = 0;
-			glGetShaderiv(defaultFragmentShaderObject, GL_INFO_LOG_LENGTH, &logSize);
-
-			GLchar* infoLog = new GLchar[logSize];
-			glGetShaderInfoLog(defaultFragmentShaderObject, logSize, NULL, infoLog);
-
-			CONSOLE_LOG("SHADER IMPORTER: Default Fragment Shader Object could not be compiled. ERROR: %s", infoLog);
-
-			glDeleteShader(defaultFragmentShaderObject);
-		}
-		else
-			CONSOLE_LOG("SHADER IMPORTER: Successfully compiled Default Fragment Shader Object");
-	}
+	defaultFragmentShaderObject = CompileShaderObject(fShaderTemplate, ShaderType::FragmentShaderType);
 }
 
 void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject)

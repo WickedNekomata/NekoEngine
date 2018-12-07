@@ -33,6 +33,9 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 #ifndef GAMEMODE
 	CreateDir(DIR_ASSETS_SCENES);
+	CreateDir(DIR_ASSETS_SHADERS);
+	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
+	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
 #endif
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -443,7 +446,7 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 	return size;
 }
 
-uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFile) const
+uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile) const
 {
 	uint ret = 0;
 
@@ -463,6 +466,21 @@ uint ModuleFileSystem::SaveInLibrary(char* buffer, uint size, FileType fileType,
 		outputFile.insert(0, DIR_ASSETS_SCENES);
 		outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
 		outputFile.append(EXTENSION_SCENE);
+		break;
+	case FileType::VertexShaderObjectFile:
+		outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+		outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+		outputFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
+		break;
+	case FileType::FragmentShaderObjectFile:
+		outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+		outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+		outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
+		break;
+	case FileType::ShaderProgramFile:
+		outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
+		outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
+		outputFile.append(EXTENSION_SHADER_PROGRAM);
 		break;
 	}
 

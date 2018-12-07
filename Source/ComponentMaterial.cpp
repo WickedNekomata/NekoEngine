@@ -278,57 +278,6 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 	}
 }
 
-void ComponentMaterial::AttachShaderObject(GLuint shaderObject)
-{
-	if (std::find(shObj.begin(), shObj.end(), shaderObject) != shObj.end())
-		shObj.push_back(shaderObject);
-}
-
-void ComponentMaterial::DetachShaderObject(GLuint shaderObject)
-{
-	shObj.remove(shaderObject);
-}
-
-void ComponentMaterial::ClearShaderObjects()
-{
-	shObj.clear();
-}
-
-bool ComponentMaterial::LinkShaderProgram()
-{
-	// 2. LINKING
-
-	// Create a Shader Program
-	shaderProgram = glCreateProgram();
-
-	for (auto it = shObj.begin(); it != shObj.end(); ++it)
-		glAttachShader(shaderProgram, *it);
-
-	glLinkProgram(shaderProgram);
-
-	for (auto it = shObj.begin(); it != shObj.end(); ++it)
-		glDetachShader(shaderProgram, *it);
-
-	GLint success;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE) 
-	{
-		GLint logSize = 0;
-		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-
-		GLchar* infoLog = new GLchar[logSize];
-		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
-
-		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
-	
-		glDeleteProgram(shaderProgram);
-	}
-	else
-		CONSOLE_LOG("Successfully linked Shader Program");
-
-	return success;
-}
-
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)
 {
 #ifndef GAMEMODE

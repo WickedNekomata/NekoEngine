@@ -6,17 +6,104 @@
 #include "Globals.h"
 
 #include "ModuleFileSystem.h"
-#include "ResourceShader.h"
+#include "ResourceShaderObject.h"
+#include "ResourceShaderProgram.h"
 
 #include <assert.h>
 
-ShaderImporter::ShaderImporter() {}
+ShaderImporter::ShaderImporter() 
+{
+	// Verify that the driver supports at least one shader binary format
+	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+}
 
 ShaderImporter::~ShaderImporter()
 {
 	glDeleteProgram(defaultShaderProgram);
 	glDeleteShader(defaultVertexShaderObject);
 	glDeleteShader(defaultFragmentShaderObject);
+}
+
+bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile) const
+{
+	bool ret = false;
+
+	assert(shaderObject != nullptr);
+
+	outputFile = shaderObject->file;
+
+	/*
+	GLubyte* buffer;
+	uint size = shaderProgram->GetBinary(&buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
+		ret = SaveShaderProgram(buffer, size, outputFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+		*/
+	return ret;
+}
+
+bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, std::string& outputFile) const
+{
+	bool ret = false;
+
+	/*
+	if (App->fs->SaveInGame((char*)buffer, size, FileType::TextureFile, outputFile) > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
+		ret = true;
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not save Binary Program '%s'", outputFile.data());
+		*/
+	return ret;
+}
+
+bool ShaderImporter::SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile) const
+{
+	bool ret = false;
+
+	if (formats == 0)
+		return false;
+
+	assert(shaderProgram != nullptr);
+
+	outputFile = shaderProgram->name;
+
+	GLubyte* buffer;
+	uint size = shaderProgram->GetBinary(&buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
+		ret = SaveShaderProgram(buffer, size, outputFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+
+	return ret;
+}
+
+bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::string& outputFile) const
+{
+	bool ret = false;
+
+	if (formats == 0)
+		return ret;
+
+	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile) > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
+		ret = true;
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not save Binary Program '%s'", outputFile.data());
+
+	return ret;
 }
 
 bool ShaderImporter::GenerateMeta(Resource* resource, std::string& outputMetaFile) const
@@ -142,46 +229,88 @@ bool ShaderImporter::GetShaderUUIDFromMeta(const char* metaFile, uint& UUID) con
 	return true;
 }
 
-bool ShaderImporter::Load(const char* exportedFile, ResourceShader* outputShader) const
+bool ShaderImporter::LoadShaderObject(const char* objectFile, ResourceShaderObject* shaderObject) const
 {
 	bool ret = false;
 
-	if (exportedFile == nullptr || outputShader == nullptr)
-	{
-		assert(exportedFile != nullptr && outputShader != nullptr);
-		return ret;
-	}
+	assert(objectFile != nullptr && shaderObject != nullptr);
 
 	char* buffer;
-	uint size = App->fs->Load(exportedFile, &buffer);
+	uint size = App->fs->Load(objectFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully loaded Shader '%s'", exportedFile);
-		ret = Load(buffer, size, outputShader);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully loaded Shader Object '%s'", objectFile);
+		ret = LoadShaderObject(buffer, size, shaderObject);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not load Shader '%s'", exportedFile);
+		CONSOLE_LOG("SHADER IMPORTER: Could not load Shader Object '%s'", objectFile);
 
 	return ret;
 }
 
-bool ShaderImporter::Load(const void* buffer, uint size, ResourceShader* outputShader) const
+bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceShaderObject* shaderObject) const
 {
 	bool ret = false;
 
-	if (buffer == nullptr || size <= 0 || outputShader == nullptr)
+	assert(shaderObject != nullptr);
+
+	if (buffer != nullptr && size > 0)
 	{
-		assert(buffer != nullptr && size > 0 && outputShader != nullptr);
-		return ret;
+		shaderObject->source = new char[size];
+		memcpy((char*)shaderObject->source, buffer, size);
+		((char*)shaderObject->source)[size] = 0;
+
+		// Try to compile the shader object
+		ret = shaderObject->Compile();
 	}
 
-	outputShader->source = new char[size];
-	memcpy((char*)outputShader->source, buffer, size);
+	if (ret)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: New Shader Object loaded with: size %u", size);
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Shader Object with size %u could not be loaded", size);
 
-	ret = true;
+	return ret;
+}
 
-	CONSOLE_LOG("SHADER IMPORTER: New Shader loaded with: size %u", size);
+bool ShaderImporter::LoadShaderProgram(const char* programFile, ResourceShaderProgram* shaderProgram) const
+{
+	bool ret = false;
+
+	assert(programFile != nullptr && shaderProgram != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(programFile, &buffer);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully loaded Shader Program '%s'", programFile);
+		ret = LoadShaderProgram(buffer, size, shaderProgram);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not load Shader Program '%s'", programFile);
+
+	return ret;
+}
+
+bool ShaderImporter::LoadShaderProgram(const void* buffer, uint size, ResourceShaderProgram* shaderProgram) const
+{
+	bool ret = false;
+
+	assert(shaderProgram != nullptr);
+
+	if (buffer != nullptr && size > 0)
+		// Try to link the shader program
+		ret = shaderProgram->LoadBinary(buffer, size);
+
+	if (ret)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: New Shader Program loaded with: size %u", size);
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Shader Program with size %u could not be loaded", size);
 
 	return ret;
 }

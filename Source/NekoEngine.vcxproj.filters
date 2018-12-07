@@ -619,9 +619,6 @@
     <ClInclude Include="EventSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceShader.h">
-      <Filter>Sources\Modules\Resources\Types</Filter>
-    </ClInclude>
     <ClInclude Include="PanelCodeEditor.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
@@ -633,6 +630,12 @@
     </ClInclude>
     <ClInclude Include="ShaderImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceShaderProgram.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceShaderObject.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -885,9 +888,6 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceShader.cpp">
-      <Filter>Sources\Modules\Resources\Types</Filter>
-    </ClCompile>
     <ClCompile Include="PanelCodeEditor.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
@@ -899,6 +899,12 @@
     </ClCompile>
     <ClCompile Include="ShaderImporter.cpp">
       <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceShaderProgram.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceShaderObject.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

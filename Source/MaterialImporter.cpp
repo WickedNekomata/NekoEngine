@@ -143,7 +143,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 				uint UUID = App->GenerateRandomNumber();
 				outputFile = std::to_string(UUID);
 
-				if (App->fs->SaveInLibrary((char*)data, size, FileType::TextureFile, outputFile) > 0)
+				if (App->fs->SaveInGame((char*)data, size, FileType::TextureFile, outputFile) > 0)
 				{
 					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
 					ret = true;

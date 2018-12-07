@@ -16,6 +16,7 @@ ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid)
 ResourceMesh::~ResourceMesh() 
 {
 	RELEASE_ARRAY(name);
+
 	App->GOs->InvalidateResource(this);
 }
 

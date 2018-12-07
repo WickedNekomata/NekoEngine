@@ -13,6 +13,9 @@
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_ASSETS "Assets"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
+#define DIR_ASSETS_SHADERS "Assets/Shaders"
+#define DIR_ASSETS_SHADERS_OBJECTS "Assets/Shaders/Objects"
+#define DIR_ASSETS_SHADERS_PROGRAMS "Assets/Shaders/Programs"
 
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
@@ -26,6 +29,9 @@ enum FileType
 	MeshFile,
 	TextureFile,
 	SceneFile,
+	VertexShaderObjectFile,
+	FragmentShaderObjectFile,
+	ShaderProgramFile,
 	MetaFile
 };
 
@@ -86,7 +92,7 @@ public:
 
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;
 
-	uint SaveInLibrary(char* buffer, uint size, FileType fileType, std::string& outputFile) const;
+	uint SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile) const;
 	uint Save(const char* file, char* buffer, uint size, bool append = false) const;
 
 	uint Load(const char* file, char** buffer) const;

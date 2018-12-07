@@ -37,6 +37,8 @@ public:
 	std::string file;
 	std::string exportedFile;
 
+	bool isValid = true;
+
 protected:
 
 	ResourceType type = ResourceType::No_Type_Resource;

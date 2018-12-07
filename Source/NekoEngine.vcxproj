@@ -256,7 +256,8 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
-    <ClInclude Include="ResourceShader.h" />
+    <ClInclude Include="ResourceShaderObject.h" />
+    <ClInclude Include="ResourceShaderProgram.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="ResourceTypes.h" />
@@ -351,7 +352,8 @@
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
-    <ClCompile Include="ResourceShader.cpp" />
+    <ClCompile Include="ResourceShaderObject.cpp" />
+    <ClCompile Include="ResourceShaderProgram.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="SceneImporter.cpp" />

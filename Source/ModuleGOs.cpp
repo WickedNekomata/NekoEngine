@@ -295,7 +295,7 @@ bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 	char* buf = new char[sizeBuf];
 	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
 
-	uint size = App->fs->SaveInLibrary(buf, sizeBuf, FileType::SceneFile, outputFile);
+	uint size = App->fs->SaveInGame(buf, sizeBuf, FileType::SceneFile, outputFile);
 	if (size > 0)
 	{
 		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFile.data());

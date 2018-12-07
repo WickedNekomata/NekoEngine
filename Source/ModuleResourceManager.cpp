@@ -12,7 +12,7 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
-#include "ResourceShader.h"
+#include "ResourceShaderObject.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -452,6 +452,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			case ResourceType::Texture_Resource:
 				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
 				break;
+			case ResourceType::Vertex_Shader_Object_Resource:
+			case ResourceType::Fragment_Shader_Object_Resource:
+				break;
+			case ResourceType::Shader_Program_Resource:
+				break;
 			}
 		}
 
@@ -470,7 +475,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	{
 		imported = true;
 
-		if (type == ResourceType::Vertex_Shader_Resource || type == ResourceType::Fragment_Shader_Resource)
+		if (type == ResourceType::Vertex_Shader_Object_Resource || type == ResourceType::Fragment_Shader_Object_Resource)
 			outputFile = fileInAssets;
 		else
 			outputFile = exportedFile;
@@ -550,36 +555,33 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			}
 		}
 		break;
-		case ResourceType::Vertex_Shader_Resource:
-		case ResourceType::Fragment_Shader_Resource:
+		case ResourceType::Vertex_Shader_Object_Resource:
+		case ResourceType::Fragment_Shader_Object_Resource:
 		{
 			// Create a new resource for the shader
 			Resource* resource = CreateNewResource(type);
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 
-			// Try to compile the shader
-			if (resource->LoadMemory())
-			{
-				resources.push_back(resource);
+			if (!resource->LoadMemory())
+				resource->isValid = false;
 
-				// If the file has no meta associated, generate a new meta
-				if (metaFile == nullptr)
-					App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
-				// Else, update the UUID and the last modified time in the existing meta
-				else
-				{
-					outputMetaFile = metaFile;
+			resources.push_back(resource);
 
-					uint UUID = resource->GetUUID();
-					App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
-
-					int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
-					Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
-				}
-			}
+			// If the file has no meta associated, generate a new meta
+			if (metaFile == nullptr)
+				App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
+			// Else, update the UUID and the last modified time in the existing meta
 			else
-				RELEASE(resource); // TODO: Invalid resource. Draw an X or whatever
+			{
+				outputMetaFile = metaFile;
+
+				uint UUID = resource->GetUUID();
+				App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
+
+				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
+				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
+			}
 		}
 		break;
 		}
@@ -621,9 +623,9 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 	case ResourceType::Texture_Resource:
 		resource = new ResourceTexture(type, uuid);
 		break;
-	case ResourceType::Vertex_Shader_Resource:
-	case ResourceType::Fragment_Shader_Resource:
-		resource = new ResourceShader(type, uuid);
+	case ResourceType::Vertex_Shader_Object_Resource:
+	case ResourceType::Fragment_Shader_Object_Resource:
+		resource = new ResourceShaderObject(type, uuid);
 		break;
 	}
 
@@ -666,10 +668,10 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 		return ResourceType::Texture_Resource;
 		break;
 	case ASCIIvsh: case ASCIIVSH:
-		return ResourceType::Vertex_Shader_Resource;
+		return ResourceType::Vertex_Shader_Object_Resource;
 		break;
 	case ASCIIfsh: case ASCIIFSH:
-		return ResourceType::Fragment_Shader_Resource;
+		return ResourceType::Fragment_Shader_Object_Resource;
 		break;
 	}
 

@@ -1,19 +1,21 @@
-#ifndef __RESOURCE_SHADER_H__
-#define __RESOURCE_SHADER_H__
+#ifndef __RESOURCE_SHADER_OBJECT_H__
+#define __RESOURCE_SHADER_OBJECT_H__
 
 #include "Resource.h"
 
 #include "glew\include\GL\glew.h"
 
-class ResourceShader : public Resource
+class ResourceShaderObject : public Resource
 {
 public:
 
-	ResourceShader(ResourceType type, uint uuid);
-	~ResourceShader();
+	ResourceShaderObject(ResourceType type, uint uuid);
+	~ResourceShaderObject();
 
 	uint LoadMemory();
 	uint UnloadMemory() { return 0; }
+
+	bool Compile();
 
 private:
 
@@ -26,4 +28,4 @@ public:
 	GLuint shaderObject = 0;
 };
 
-#endif // __RESOURCE_SHADER_H__
+#endif // __RESOURCE_SHADER_OBJECT_H__

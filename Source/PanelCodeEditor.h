@@ -10,6 +10,8 @@
 #include "ImGui\imgui.h"
 #include "ImGuiColorTextEdit/TextEditor.h"
 
+class ResourceShaderObject;
+
 class PanelCodeEditor : public Panel
 {
 public:
@@ -19,12 +21,15 @@ public:
 
 	bool Draw();
 
-	void OpeninCodeEditor(const char* buffer);
+	void OpenShaderInCodeEditor(ResourceShaderObject* shader);
 
 private:
 
 	const char* fileToEdit = "";
 	TextEditor editor;
+
+	ResourceShaderObject* currentShader = nullptr;;
+	
 };
 
 #endif

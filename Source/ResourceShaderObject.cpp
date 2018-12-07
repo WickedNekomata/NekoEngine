@@ -21,10 +21,10 @@ bool ResourceShaderObject::Compile()
 	GLenum shader = 0;
 	switch (shaderType)
 	{
-	case ShaderType::Vertex:
+	case ShaderType::VertexShaderType:
 		shader = GL_VERTEX_SHADER;
 		break;
-	case ShaderType::Fragment:
+	case ShaderType::FragmentShaderType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
 	}
@@ -71,10 +71,10 @@ ShaderType ResourceShaderObject::GetShaderTypeByExtension(const char* extension)
 	switch (asciiUnion.asciiValue)
 	{
 	case ASCIIvsh: case ASCIIVSH:
-		return ShaderType::Vertex;
+		return ShaderType::VertexShaderType;
 		break;
 	case ASCIIfsh: case ASCIIFSH:
-		return ShaderType::Fragment;
+		return ShaderType::FragmentShaderType;
 		break;
 	}
 

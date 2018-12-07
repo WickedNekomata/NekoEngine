@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ShaderImporter.h"
+#include "ResourceShaderObject.h"
 
 PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 {
@@ -61,15 +62,17 @@ bool PanelCodeEditor::Draw()
 
 		if (ImGui::Button("Save"))
 		{
-			auto textToSave = editor.GetText();
-			/// save shader object
+			// TODO: MEMORY LEAK COMPILING SHADER OBJECT!!
+			if (App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType))
+				currentShader->source = editor.GetText().data();
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Compile"))
 		{
-			// Compile Shader Object
+			uint shaderCompiled = App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType);
+			App->shaderImporter->DeleteShaderObject(shaderCompiled);
 		}
 
 	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
@@ -82,8 +85,9 @@ bool PanelCodeEditor::Draw()
 	return true;
 }
 
-void PanelCodeEditor::OpeninCodeEditor(const char* buffer)
+void PanelCodeEditor::OpenShaderInCodeEditor(ResourceShaderObject* shader)
 {
 	enabled = true;
-	editor.SetText(buffer);
+	editor.SetText(shader->source);
+	currentShader = shader;
 }

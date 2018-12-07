@@ -391,9 +391,16 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	if (meshRenderer != nullptr && meshRenderer->res != 0) 
 	{
 		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
-		boundingBox.Enclose((const math::float3*)meshRes->vertices, meshRes->verticesSize);
 
-		// TODO: fix vertices (mouse picking too)
+		float* vertices = new float[meshRes->verticesSize * 3];
+		for (uint i = 0; i < meshRes->verticesSize; ++i)
+		{
+			vertices[3 * i] = meshRes->vertices[i].position[0];
+			vertices[3 * i + 1] = meshRes->vertices[i].position[1];
+			vertices[3 * i + 2] = meshRes->vertices[i].position[2];
+		}
+
+		boundingBox.Enclose((const math::float3*)vertices, meshRes->verticesSize);
 	}
 
 	// Transform bounding box (calculate OBB)

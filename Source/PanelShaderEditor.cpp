@@ -44,6 +44,17 @@ bool PanelShaderEditor::Draw()
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
 		}
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
+			{
+				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				if (payload_n->shaderType == ShaderType::Vertex)
+					*it = payload_n;
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		ImGui::SameLine();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##v%i", std::distance(vertexShaders.begin(), it));
@@ -79,6 +90,17 @@ bool PanelShaderEditor::Draw()
 		else {
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Empty##f%i", std::distance(fragmentShaders.begin(), it));
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
+			{
+				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				if (payload_n->shaderType == ShaderType::Fragment)
+					*it = payload_n;
+			}
+			ImGui::EndDragDropTarget();
 		}
 
 		ImGui::SameLine();

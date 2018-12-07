@@ -25,6 +25,7 @@
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
 #include "PanelLayersTags.h"
+#include "PanelShaderEditor.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -54,6 +55,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelLayersTags = new PanelLayersTags("Layer & Tags");
+	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -66,6 +68,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelLayersTags);
+	panels.push_back(panelShaderEditor);
 
 	LoadStatus(jObject);
 
@@ -166,7 +169,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "CTRL+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "CTRL+D")) { panelDebugDraw->OnOff(); }
-			if (ImGui::MenuItem("Code Editor", "CTRL+D")) { panelCodeEditor->OnOff(); }
+			if (ImGui::MenuItem("Shader Editor", "CTRL+D")) { panelShaderEditor->OnOff(); }
 
 			ImGui::EndMenu();
 		}

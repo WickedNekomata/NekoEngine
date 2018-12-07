@@ -16,6 +16,8 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
+#include "ResourceShaderObject.h"
+#include "ResourceShaderProgram.h"
 
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -480,7 +482,17 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 
 void PanelInspector::ShowShaderObjectInspector() const
 {
-	ImGui::Text("Shader Object");
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->scene->selectedObject.Get();
+
+	switch (shaderObject->shaderType)
+	{
+	case ShaderType::VertexShaderType:
+		ImGui::Text("Vertex Shader Object");
+		break;
+	case ShaderType::FragmentShaderType:
+		ImGui::Text("Fragment Shader Object");
+		break;
+	}
 	ImGui::Separator();
 	ImGui::Spacing();
 }

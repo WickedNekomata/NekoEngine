@@ -293,24 +293,24 @@ uint ShaderImporter::CompileShaderObject(const char* shader, ShaderType type) co
 	glShaderSource(shaderCompiled, 1, &shader, NULL);
 
 	glCompileShader(shaderCompiled);
+	GLint success = 0;
+	glGetShaderiv(shaderCompiled, GL_COMPILE_STATUS, &success);
+	if (success == GL_FALSE)
 	{
-		GLint success = 0;
-		glGetShaderiv(shaderCompiled, GL_COMPILE_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			GLint logSize = 0;
-			glGetShaderiv(shaderCompiled, GL_INFO_LOG_LENGTH, &logSize);
+		GLint logSize = 0;
+		glGetShaderiv(shaderCompiled, GL_INFO_LOG_LENGTH, &logSize);
 
-			GLchar* infoLog = new GLchar[logSize];
-			glGetShaderInfoLog(shaderCompiled, logSize, NULL, infoLog);
+		GLchar* infoLog = new GLchar[logSize];
+		glGetShaderInfoLog(shaderCompiled, logSize, NULL, infoLog);
 
-			CONSOLE_LOG("SHADER IMPORTER: Shader Object could not be compiled. ERROR: %s", infoLog);
+		CONSOLE_LOG("SHADER IMPORTER: Shader Object could not be compiled. ERROR: %s", infoLog);
 
-			glDeleteShader(defaultVertexShaderObject);
+		glDeleteShader(defaultVertexShaderObject);
 
-			return -1;
-		}
+		return -1;
 	}
+
+	CONSOLE_LOG("SHADER IMPORTER: Shader Object successfully compiled");
 
 	return shaderCompiled;
 }

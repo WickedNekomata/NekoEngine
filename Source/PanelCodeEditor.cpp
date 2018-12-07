@@ -68,6 +68,7 @@ bool PanelCodeEditor::Draw()
 				App->shaderImporter->DeleteShaderObject(currentShader->shaderObject);
 				currentShader->source = editor.GetText().data();
 				currentShader->shaderObject = shaderCompiled;
+				CONSOLE_LOG("%s saved", currentShader->file.data());
 			}
 		}
 

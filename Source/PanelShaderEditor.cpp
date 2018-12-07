@@ -48,7 +48,7 @@ bool PanelShaderEditor::Draw()
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
 			{
-				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
 				if (payload_n->shaderType == ShaderType::VertexShaderType)
 					*it = payload_n;
 			}
@@ -57,11 +57,13 @@ bool PanelShaderEditor::Draw()
 
 		ImGui::SameLine();
 
-		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##v%i", std::distance(vertexShaders.begin(), it));
-		if (ImGui::Button(itemName))
-			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
+		if (*it != nullptr) {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##v%i", std::distance(vertexShaders.begin(), it));
+			if (ImGui::Button(itemName))
+				App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
-		ImGui::SameLine();
+			ImGui::SameLine();
+		}
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "X##v%i", std::distance(vertexShaders.begin(), it));
 		if (ImGui::Button(itemName))
@@ -74,10 +76,7 @@ bool PanelShaderEditor::Draw()
 	}
 
 	if (ImGui::Button("+##vertex"))
-	{
-		vertexShaders.push_back(0);
-
-	}
+		vertexShaders.push_back(nullptr);
 
 	ImGui::Text("Fragment Shader");
 
@@ -96,7 +95,7 @@ bool PanelShaderEditor::Draw()
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
 			{
-				ResourceShaderObject* payload_n = (ResourceShaderObject*)(payload->Data);
+				ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
 				if (payload_n->shaderType == ShaderType::FragmentShaderType)
 					*it = payload_n;
 			}
@@ -105,12 +104,14 @@ bool PanelShaderEditor::Draw()
 
 		ImGui::SameLine();
 
-		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##f%i", std::distance(fragmentShaders.begin(), it));
-		if (ImGui::Button(itemName)) {
-			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
-		}
+		if (*it != nullptr) {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##f%i", std::distance(fragmentShaders.begin(), it));
+			if (ImGui::Button(itemName)) {
+				App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
+			}
 
-		ImGui::SameLine();
+			ImGui::SameLine();
+		}
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "X##f%i", std::distance(fragmentShaders.begin(), it));
 		if (ImGui::Button(itemName))
@@ -123,7 +124,7 @@ bool PanelShaderEditor::Draw()
 	}
 
 	if (ImGui::Button("+##Fragment"))
-		fragmentShaders.push_back(0);
+		fragmentShaders.push_back(nullptr);
 
 	if (ImGui::Button("Compile and Save")) {
 

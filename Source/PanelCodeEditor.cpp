@@ -62,9 +62,13 @@ bool PanelCodeEditor::Draw()
 
 		if (ImGui::Button("Save"))
 		{
-			// TODO: MEMORY LEAK COMPILING SHADER OBJECT!!
-			if (App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType))
+			uint shaderCompiled = App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType);
+			if (shaderCompiled != -1)
+			{
+				App->shaderImporter->DeleteShaderObject(currentShader->shaderObject);
 				currentShader->source = editor.GetText().data();
+				currentShader->shaderObject = shaderCompiled;
+			}
 		}
 
 		ImGui::SameLine();

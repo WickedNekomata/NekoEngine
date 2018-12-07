@@ -143,14 +143,14 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 			switch (type)
 			{
 			case ResourceType::TextureResource:
-				SetResourceDragAndDropSource(type, nullptr, child->UUIDs.begin()->second);
+				SetResourceDragAndDropSource(type, child->UUIDs.begin()->second);
 			case ResourceType::ShaderObjectResource:
 			case ResourceType::ShaderProgramResource:
-				SetResourceDragAndDropSource(type, nullptr, child->resource->GetUUID());
+				SetResourceDragAndDropSource(type, 0, child->resource);
 				break;
 			case ResourceType::NoResourceType:
 				if (IS_SCENE(extension.data()))
-					SetResourceDragAndDropSource(type, child->path.data());
+					SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
 				break;
 			}
 
@@ -166,7 +166,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 								&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 								SELECT(NULL);
 
-							SetResourceDragAndDropSource(type, nullptr, it->second);
+							SetResourceDragAndDropSource(type, it->second);
 							ImGui::TreePop();
 						}
 					}
@@ -177,7 +177,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 	}
 }
 
-void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* file, uint UUID) const
+void PanelAssets::SetResourceDragAndDropSource(ResourceType type, uint UUID, const Resource* resource, const char* file) const
 {
 	switch (type)
 	{
@@ -203,7 +203,7 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* fi
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
-			ImGui::SetDragDropPayload("SHADER_OBJECT", &UUID, sizeof(uint));
+			ImGui::SetDragDropPayload("SHADER_OBJECT", &resource, sizeof(Resource*));
 			ImGui::EndDragDropSource();
 		}
 		break;
@@ -212,7 +212,7 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* fi
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
-			ImGui::SetDragDropPayload("SHADER_PROGRAM", &UUID, sizeof(uint));
+			ImGui::SetDragDropPayload("SHADER_PROGRAM", &resource, sizeof(Resource*));
 			ImGui::EndDragDropSource();
 		}
 		break;

@@ -613,9 +613,6 @@
     <ClInclude Include="ResourceTexture.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
-    <ClInclude Include="PanelResources.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="EventSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
@@ -638,6 +635,9 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
     <ClInclude Include="PanelShaderEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelLibrary.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
   </ItemGroup>
@@ -885,9 +885,6 @@
     <ClCompile Include="ResourceTexture.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
-    <ClCompile Include="PanelResources.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
@@ -910,6 +907,9 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="PanelShaderEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelLibrary.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>

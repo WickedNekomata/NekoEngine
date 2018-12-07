@@ -12,6 +12,8 @@
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
 
+#include "Resource.h"
+
 PanelAssets::PanelAssets(char* name) : Panel(name) {}
 
 PanelAssets::~PanelAssets() {}
@@ -87,19 +89,24 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 			
 			treeNodeFlags = 0;
 
-			if (type != ResourceType::Mesh_Resource)
+			if (type != ResourceType::MeshResource)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 			else
 				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
 			switch (type)
 			{
-			case ResourceType::Mesh_Resource:
+			case ResourceType::MeshResource:
 				if (App->scene->selectedObject == ((MeshImportSettings*)child->importSettings))
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 				break;
-			case ResourceType::Texture_Resource:
+			case ResourceType::TextureResource:
 				if (App->scene->selectedObject == ((TextureImportSettings*)child->importSettings))
+					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+				break;
+			case ResourceType::ShaderObjectResource:
+			case ResourceType::ShaderProgramResource:
+				if (App->scene->selectedObject == child->resource)
 					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 				break;
 			}
@@ -112,13 +119,17 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 			{
 				switch (type)
 				{
-				case ResourceType::Mesh_Resource:
+				case ResourceType::MeshResource:
 					SELECT((MeshImportSettings*)child->importSettings);
 					break;
-				case ResourceType::Texture_Resource:
+				case ResourceType::TextureResource:
 					SELECT((TextureImportSettings*)child->importSettings);
 					break;
-				case ResourceType::No_Type_Resource:
+				case ResourceType::ShaderObjectResource:
+				case ResourceType::ShaderProgramResource:
+					SELECT(child->resource);
+					break;
+				case ResourceType::NoResourceType:
 					if (IS_SCENE(extension.data()))
 					{
 						SELECT(CurrentSelection::SelectedType::scene);
@@ -131,10 +142,13 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 
 			switch (type)
 			{
-			case ResourceType::Texture_Resource:
+			case ResourceType::TextureResource:
 				SetResourceDragAndDropSource(type, nullptr, child->UUIDs.begin()->second);
+			case ResourceType::ShaderObjectResource:
+			case ResourceType::ShaderProgramResource:
+				SetResourceDragAndDropSource(type, nullptr, child->resource->GetUUID());
 				break;
-			case ResourceType::No_Type_Resource:
+			case ResourceType::NoResourceType:
 				if (IS_SCENE(extension.data()))
 					SetResourceDragAndDropSource(type, child->path.data());
 				break;
@@ -142,7 +156,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 
 			if (treeNodeOpened)
 			{
-				if (type == ResourceType::Mesh_Resource)
+				if (type == ResourceType::MeshResource)
 				{
 					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
 					{
@@ -167,7 +181,7 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* fi
 {
 	switch (type)
 	{
-	case ResourceType::Mesh_Resource:
+	case ResourceType::MeshResource:
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
@@ -176,7 +190,7 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* fi
 		}
 		break;
 
-	case ResourceType::Texture_Resource:
+	case ResourceType::TextureResource:
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
@@ -185,7 +199,25 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, const char* fi
 		}
 		break;
 
-	case ResourceType::No_Type_Resource:
+	case ResourceType::ShaderObjectResource:
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("SHADER_OBJECT", &UUID, sizeof(uint));
+			ImGui::EndDragDropSource();
+		}
+		break;
+
+	case ResourceType::ShaderProgramResource:
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("SHADER_PROGRAM", &UUID, sizeof(uint));
+			ImGui::EndDragDropSource();
+		}
+		break;
+
+	case ResourceType::NoResourceType:
 	{
 		std::string extension;
 		App->fs->GetExtension(file, extension);

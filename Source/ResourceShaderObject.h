@@ -5,6 +5,13 @@
 
 #include "glew\include\GL\glew.h"
 
+enum ShaderType
+{
+	NoShaderType,
+	Vertex,
+	Fragment
+};
+
 class ResourceShaderObject : public Resource
 {
 public:
@@ -17,6 +24,8 @@ public:
 
 	bool Compile();
 
+	static ShaderType GetShaderTypeByExtension(const char* extension);
+
 private:
 
 	bool LoadInMemory();
@@ -24,6 +33,7 @@ private:
 
 public:
 
+	ShaderType shaderType = ShaderType::NoShaderType;
 	const char* source = nullptr;
 	GLuint shaderObject = 0;
 };

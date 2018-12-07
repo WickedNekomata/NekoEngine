@@ -29,7 +29,9 @@
 #define ASCIIvsh 1752397358 
 #define ASCIIVSH 1213421102 
 #define ASCIIfsh 1752393262 
-#define ASCIIFSH 1213417006 
+#define ASCIIFSH 1213417006
+#define ASCIIpsh 1752395822
+#define ASCIIPSH 1213419566
 
 struct ImportSettings;
 class Resource;

@@ -41,7 +41,7 @@ public:
 
 protected:
 
-	ResourceType type = ResourceType::No_Type_Resource;
+	ResourceType type = ResourceType::NoResourceType;
 	uint UUID = 0;
 	uint count = 0;
 };

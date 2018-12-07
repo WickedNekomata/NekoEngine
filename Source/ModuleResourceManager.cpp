@@ -66,7 +66,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		std::string extension;
 		App->fs->GetExtension(event.fileEvent.file, extension);
 
-		if (GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
+		if (GetResourceTypeByExtension(extension.data()) != ResourceType::NoResourceType)
 		{
 			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
@@ -283,7 +283,7 @@ void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
 		uint UUID = strtoul(outputFileName.data(), NULL, 0);
 
 		// Create a new resource for the mesh
-		Resource* resource = CreateNewResource(ResourceType::Mesh_Resource, UUID);
+		Resource* resource = CreateNewResource(ResourceType::MeshResource, UUID);
 		resource->exportedFile = fileInLibrary;
 	}
 	else if (strcmp(extension.data(), EXTENSION_TEXTURE) == 0)
@@ -294,7 +294,7 @@ void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
 		uint UUID = strtoul(outputFileName.data(), NULL, 0);
 
 		// Create a new resource for the texture
-		Resource* resource = CreateNewResource(ResourceType::Texture_Resource, UUID);
+		Resource* resource = CreateNewResource(ResourceType::TextureResource, UUID);
 		resource->exportedFile = fileInLibrary;
 	}
 }
@@ -330,7 +330,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::MeshResource:
 		{
 			std::list<uint> UUIDs;
 			if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
@@ -353,7 +353,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 		}
 		break;
 
-		case ResourceType::Texture_Resource:
+		case ResourceType::TextureResource:
 		{
 			uint UUID;
 			if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))
@@ -378,13 +378,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 
 			switch (type)
 			{
-			case ResourceType::Mesh_Resource:
+			case ResourceType::MeshResource:
 			{
 				std::list<uint> UUIDs;
 				resources = FindMeshesByFile(fileInAssets, UUIDs);
 			}
 			break;
-			case ResourceType::Texture_Resource:
+			case ResourceType::TextureResource:
 			{
 				uint UUID;
 				resources = FindTextureByFile(fileInAssets, UUID);
@@ -428,15 +428,15 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
 	// If the file has no file(s) in Libray or its import settings have changed, import or reimport the file
-	if (exportedFile == nullptr && (type == ResourceType::Mesh_Resource || type == ResourceType::Texture_Resource))
+	if (exportedFile == nullptr && (type == ResourceType::MeshResource || type == ResourceType::TextureResource))
 	{
 		// Initialize the import settings to the default import settings
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::MeshResource:
 			importSettings = new MeshImportSettings();
 			break;
-		case ResourceType::Texture_Resource:
+		case ResourceType::TextureResource:
 			importSettings = new TextureImportSettings();
 			break;
 		}
@@ -446,16 +446,15 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		{
 			switch (type)
 			{
-			case ResourceType::Mesh_Resource:
+			case ResourceType::MeshResource:
 				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, (MeshImportSettings*)importSettings);
 				break;
-			case ResourceType::Texture_Resource:
+			case ResourceType::TextureResource:
 				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
 				break;
-			case ResourceType::Vertex_Shader_Object_Resource:
-			case ResourceType::Fragment_Shader_Object_Resource:
+			case ResourceType::ShaderObjectResource:
 				break;
-			case ResourceType::Shader_Program_Resource:
+			case ResourceType::ShaderProgramResource:
 				break;
 			}
 		}
@@ -463,10 +462,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		// Import the file using the import settings
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::MeshResource:
 			imported = App->sceneImporter->Import(fileInAssets, outputFile, importSettings); // Models' outputFileName is the name of the Scene
 			break;
-		case ResourceType::Texture_Resource:
+		case ResourceType::TextureResource:
 			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
 			break;
 		}
@@ -475,7 +474,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	{
 		imported = true;
 
-		if (type == ResourceType::Vertex_Shader_Object_Resource || type == ResourceType::Fragment_Shader_Object_Resource)
+		if (type == ResourceType::ShaderObjectResource)
 			outputFile = fileInAssets;
 		else
 			outputFile = exportedFile;
@@ -487,7 +486,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::MeshResource:
 		{
 			// Create a new resource for each mesh
 			std::map<std::string, uint> meshes;
@@ -527,7 +526,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			}
 		}
 		break;
-		case ResourceType::Texture_Resource:
+		case ResourceType::TextureResource:
 		{
 			std::string outputFileName;
 			App->fs->GetFileName(outputFile.data(), outputFileName);
@@ -555,13 +554,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			}
 		}
 		break;
-		case ResourceType::Vertex_Shader_Object_Resource:
-		case ResourceType::Fragment_Shader_Object_Resource:
+		case ResourceType::ShaderObjectResource:
 		{
 			// Create a new resource for the shader
-			Resource* resource = CreateNewResource(type);
+			ResourceShaderObject* resource = (ResourceShaderObject*)CreateNewResource(type);
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
+			resource->shaderType = resource->GetShaderTypeByExtension(extension.data());
 
 			if (!resource->LoadMemory())
 				resource->isValid = false;
@@ -607,7 +606,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 // In case of UUID set to 0, a random UUID will be generated
 Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force_uuid)
 {
-	assert(type != ResourceType::No_Type_Resource && "Invalid resource type");
+	assert(type != ResourceType::NoResourceType && "Invalid resource type");
 
 	Resource* resource = nullptr;
 
@@ -617,14 +616,13 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 
 	switch (type)
 	{
-	case ResourceType::Mesh_Resource:
+	case ResourceType::MeshResource:
 		resource = new ResourceMesh(type, uuid);
 		break;
-	case ResourceType::Texture_Resource:
+	case ResourceType::TextureResource:
 		resource = new ResourceTexture(type, uuid);
 		break;
-	case ResourceType::Vertex_Shader_Object_Resource:
-	case ResourceType::Fragment_Shader_Object_Resource:
+	case ResourceType::ShaderObjectResource:
 		resource = new ResourceShaderObject(type, uuid);
 		break;
 	}
@@ -660,22 +658,27 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 
 	switch (asciiUnion.asciiValue)
 	{
-	case ASCIIfbx: case ASCIIFBX: case ASCIIobj: case ASCIIOBJ: case ASCIIdae: case ASCIIDAE:
-		return ResourceType::Mesh_Resource;
+	case ASCIIfbx: case ASCIIFBX: 
+	case ASCIIobj: case ASCIIOBJ: 
+	case ASCIIdae: case ASCIIDAE:
+		return ResourceType::MeshResource;
 		break;
-	case ASCIIdds: case ASCIIDDS: case ASCIIpng: case ASCIIPNG: case ASCIIjpg: case ASCIIJPG:
+	case ASCIIdds: case ASCIIDDS: 
+	case ASCIIpng: case ASCIIPNG: 
+	case ASCIIjpg: case ASCIIJPG:
 	case ASCIItga: case ASCIITGA:
-		return ResourceType::Texture_Resource;
+		return ResourceType::TextureResource;
 		break;
 	case ASCIIvsh: case ASCIIVSH:
-		return ResourceType::Vertex_Shader_Object_Resource;
-		break;
 	case ASCIIfsh: case ASCIIFSH:
-		return ResourceType::Fragment_Shader_Object_Resource;
+		return ResourceType::ShaderObjectResource;
+		break;
+	case ASCIIpsh: case ASCIIPSH:
+		return ResourceType::ShaderProgramResource;
 		break;
 	}
 
-	return ResourceType::No_Type_Resource;
+	return ResourceType::NoResourceType;
 }
 
 // Returns the UUID associated to the resource of the file
@@ -850,7 +853,7 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 
 	switch (type)
 	{
-	case ResourceType::Mesh_Resource:
+	case ResourceType::MeshResource:
 	{
 		std::list<uint> UUIDs;
 		if (App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs))
@@ -861,7 +864,7 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 		}
 	}
 	break;
-	case ResourceType::Texture_Resource:
+	case ResourceType::TextureResource:
 	{
 		uint UUID;
 		if (App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID))

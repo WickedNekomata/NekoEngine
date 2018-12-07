@@ -1,16 +1,15 @@
-#ifndef RESOURCE_TYPE_H
-#define RESOURCE_TYPE_H
+#ifndef __RESOURCE_TYPE_H__
+#define __RESOURCE_TYPE_H__
 
 enum ResourceType 
 { 
-	No_Type_Resource,
+	NoResourceType,
 
-	Mesh_Resource,
-	Texture_Resource,
+	MeshResource,
+	TextureResource,
 
-	Vertex_Shader_Object_Resource, // Shader Object
-	Fragment_Shader_Object_Resource, // Shader Object
-	Shader_Program_Resource // Shader Program
+	ShaderObjectResource,
+	ShaderProgramResource
 };
 
 #endif

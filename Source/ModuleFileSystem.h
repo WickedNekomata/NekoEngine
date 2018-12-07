@@ -25,13 +25,17 @@ struct ImportSettings;
 
 enum FileType
 {
-	NoType,
+	NoFileType,
+
 	MeshFile,
 	TextureFile,
+
 	SceneFile,
+
 	VertexShaderObjectFile,
 	FragmentShaderObjectFile,
 	ShaderProgramFile,
+
 	MetaFile
 };
 
@@ -46,9 +50,11 @@ struct File
 struct AssetsFile : public File
 {
 	uint lastModTime = 0;
-	const ImportSettings* importSettings = nullptr;
 
-	std::map<std::string, uint> UUIDs;
+	const ImportSettings* importSettings = nullptr; // meshes, textures
+	const Resource* resource = nullptr; // shaders
+
+	std::map<std::string, uint> UUIDs; // meshes, textures
 };
 
 struct LibraryFile : public File

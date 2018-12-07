@@ -428,11 +428,11 @@ bool ModuleGOs::InvalidateResource(const Resource* resource)
 	{
 		switch (type)
 		{
-		case ResourceType::Mesh_Resource:
+		case ResourceType::MeshResource:
 			if (gameObjects[i]->meshRenderer != nullptr && gameObjects[i]->meshRenderer->res == resource->GetUUID())
 				gameObjects[i]->meshRenderer->SetResource(0);
 			break;
-		case ResourceType::Texture_Resource:
+		case ResourceType::TextureResource:
 			if (gameObjects[i]->materialRenderer != nullptr)
 			{
 				for (uint j = 0; j < gameObjects[i]->materialRenderer->res.size(); ++j)

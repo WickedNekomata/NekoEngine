@@ -38,10 +38,21 @@ bool PanelInspector::Draw()
 			break;
 		case CurrentSelection::SelectedType::resource:
 		{
-			if (((Resource*)App->scene->selectedObject.Get())->GetType() == ResourceType::Mesh_Resource)
+			switch (((Resource*)App->scene->selectedObject.Get())->GetType())
+			{
+			case ResourceType::MeshResource:
 				ShowMeshResourceInspector();
-			else
+				break;
+			case ResourceType::TextureResource:
 				ShowTextureResourceInspector();
+				break;
+			case ResourceType::ShaderObjectResource:
+				ShowShaderObjectInspector();
+				break;
+			case ResourceType::ShaderProgramResource:
+				ShowShaderProgramInspector();
+				break;
+			}
 			break;
 		}
 		case CurrentSelection::SelectedType::meshImportSettings:
@@ -451,6 +462,20 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		newEvent.type = System_Event_Type::ReimportFile;
 		App->PushSystemEvent(newEvent);
 	}
+}
+
+void PanelInspector::ShowShaderObjectInspector() const
+{
+	ImGui::Text("Shader Object");
+	ImGui::Separator();
+	ImGui::Spacing();
+}
+
+void PanelInspector::ShowShaderProgramInspector() const
+{
+	ImGui::Text("Shader Program");
+	ImGui::Separator();
+	ImGui::Spacing();
 }
 
 #endif // GAME

@@ -27,6 +27,8 @@ private:
 	void ShowTextureResourceInspector() const;
 	void ShowMeshImportSettingsInspector() const;
 	void ShowTextureImportSettingsInspector() const;
+	void ShowShaderObjectInspector() const;
+	void ShowShaderProgramInspector() const;
 };
 
 #endif

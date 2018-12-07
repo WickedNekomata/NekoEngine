@@ -6,6 +6,7 @@
 #include "Importer.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
+#include "ShaderImporter.h"
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 
@@ -204,7 +205,7 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
 			switch (type)
 			{
-			case ResourceType::Mesh_Resource:
+			case ResourceType::MeshResource:
 			{
 				// Read the import settings
 				MeshImportSettings* importSettings = new MeshImportSettings();
@@ -222,7 +223,7 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 				}
 			}
 			break;
-			case ResourceType::Texture_Resource:
+			case ResourceType::TextureResource:
 			{
 				// Read the import settings
 				TextureImportSettings* importSettings = new TextureImportSettings();
@@ -233,6 +234,19 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 				uint UUID = 0;
 				App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID);
 				file->UUIDs[file->name.data()] = UUID;
+			}
+			break;
+			case ResourceType::ShaderObjectResource:
+			{
+				// Read the UUID of the shader
+				uint UUID = 0;
+				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
+				file->resource = App->res->GetResource(UUID);
+			}
+			break;
+			case ResourceType::ShaderProgramResource:
+			{
+				// TODO
 			}
 			break;
 			}
@@ -664,7 +678,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		std::string extension;
 		GetExtension(it->first.data(), extension);
 
-		if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::No_Type_Resource)
+		if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::NoResourceType)
 		{
 			// Each file in Assets that creates a resource is expected to have an associated meta
 

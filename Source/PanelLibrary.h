@@ -1,5 +1,5 @@
-#ifndef __PANEL_RESOURCES_H__
-#define __PANEL_RESOURCES_H__
+#ifndef __PANEL_LIBRARY_H__
+#define __PANEL_LIBRARY_H__
 
 #include "GameMode.h"
 
@@ -11,19 +11,18 @@
 
 struct LibraryFile;
 
-class PanelResources : public Panel
+class PanelLibrary : public Panel
 {
 public:
 
-	PanelResources(char* name);
-	~PanelResources();
+	PanelLibrary(char* name);
+	~PanelLibrary();
 
 	bool Draw();
 
 private:
 
 	void RecursiveDrawLibraryDir(LibraryFile* libraryFile) const;
-	void OpenSettingsAtClick(const char** iterator, std::string currentFile) const;
 };
 
 #endif

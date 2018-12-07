@@ -1,4 +1,4 @@
-#include "PanelResources.h"
+#include "PanelLibrary.h"
 
 #ifndef GAMEMODE
 
@@ -10,11 +10,11 @@
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
 
-PanelResources::PanelResources(char* name) : Panel(name) {}
+PanelLibrary::PanelLibrary(char* name) : Panel(name) {}
 
-PanelResources::~PanelResources() {}
+PanelLibrary::~PanelLibrary() {}
 
-bool PanelResources::Draw()
+bool PanelLibrary::Draw()
 {
 	ImGuiWindowFlags libraryFlags = 0;
 	libraryFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
@@ -32,7 +32,7 @@ bool PanelResources::Draw()
 	return true;
 }
 
-void PanelResources::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
+void PanelLibrary::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 

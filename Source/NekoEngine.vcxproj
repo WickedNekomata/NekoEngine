@@ -250,7 +250,7 @@
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelLayersTags.h" />
-    <ClInclude Include="PanelResources.h" />
+    <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelShaderEditor.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
@@ -347,7 +347,7 @@
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelLayersTags.cpp" />
-    <ClCompile Include="PanelResources.cpp" />
+    <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />

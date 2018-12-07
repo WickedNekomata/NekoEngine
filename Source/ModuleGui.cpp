@@ -20,7 +20,7 @@
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
 #include "PanelAssets.h"
-#include "PanelResources.h"
+#include "PanelLibrary.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
@@ -50,7 +50,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelHierarchy = new PanelHierarchy("Hierarchy");
 	panelConsole = new PanelConsole("Console");
 	panelAssets = new PanelAssets("Assets");
-	panelResources = new PanelResources("Resources");
+	panelLibrary = new PanelLibrary("Library");
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
@@ -63,7 +63,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelHierarchy);
 	panels.push_back(panelConsole);
 	panels.push_back(panelAssets);
-	panels.push_back(panelResources);
+	panels.push_back(panelLibrary);
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
@@ -99,7 +99,7 @@ bool ModuleGui::Start()
 
 	// Load atlas texture
 	std::string outputFileName;
-	atlas = new ResourceTexture(ResourceType::Texture_Resource, App->GenerateRandomNumber());
+	atlas = new ResourceTexture(ResourceType::TextureResource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
 	App->materialImporter->Import("Settings/atlas.png", outputFileName, importSettings);
 	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
@@ -226,7 +226,7 @@ bool ModuleGui::CleanUp()
 	panelHierarchy = nullptr;
 	panelConsole = nullptr;
 	panelAssets = nullptr;
-	panelResources = nullptr;
+	panelLibrary = nullptr;
 	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
 
@@ -303,7 +303,7 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);
-		ImGui::DockBuilderDockWindow(panelResources->GetName(), dock_id_bottom);
+		ImGui::DockBuilderDockWindow(panelLibrary->GetName(), dock_id_bottom);
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}

@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleGui.h"
 #include "PanelCodeEditor.h"
+#include "ResourceShaderObject.h"
 
 #include "Globals.h"
 #include "imgui/imgui.h"
@@ -30,47 +31,74 @@ bool PanelShaderEditor::Draw()
 
 	ImGui::Text("Vertex Shader");
 
-	for (auto it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
+	char itemName[DEFAULT_BUF_SIZE];
+
+	for (auto it = vertexShaders.begin(); it != vertexShaders.end();)
 	{
-		std::string shader("%u", *it);
-		ImGui::Button(shader.data(), ImVec2(150.0f, 0.0f));
+		if (*it != nullptr) {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##v%i", (*it)->file.data(), std::distance(vertexShaders.begin(), it));
+			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
+		}
+		else {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Empty##v%i", std::distance(vertexShaders.begin(), it));
+			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
+		}
 
 		ImGui::SameLine();
-		
-		if (ImGui::Button("...##vertex"))
+
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##v%i", std::distance(vertexShaders.begin(), it));
+		if (ImGui::Button(itemName))
 			App->gui->panelCodeEditor->OpeninCodeEditor(vShaderTemplate);
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("X##vertex"))
-			vertexShaders.remove(*it);
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "X##v%i", std::distance(vertexShaders.begin(), it));
+		if (ImGui::Button(itemName))
+		{
+			it = vertexShaders.erase(it);
+			continue;
+		}
+
+		it++;
 	}
 
-	ImGui::SameLine();
-
 	if (ImGui::Button("+##vertex"))
+	{
 		vertexShaders.push_back(0);
+
+	}
 
 	ImGui::Text("Fragment Shader");
 
-	for (auto it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
+	for (auto it = fragmentShaders.begin(); it != fragmentShaders.end();)
 	{
-		std::string shader("%u", *it);
-		ImGui::Button(shader.data(), ImVec2(150.0f, 0.0f));
+		if (*it != nullptr) {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##f%i", (*it)->file.data(), std::distance(fragmentShaders.begin(), it));
+			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
+		}
+		else {
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Empty##f%i", std::distance(fragmentShaders.begin(), it));
+			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
+		}
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("...##fragment")) {
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "...##f%i", std::distance(fragmentShaders.begin(), it));
+		if (ImGui::Button(itemName)) {
 			App->gui->panelCodeEditor->OpeninCodeEditor(fShaderTemplate);
 		}
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("X##fragment"))
-			fragmentShaders.remove(*it);
-	}
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "X##f%i", std::distance(fragmentShaders.begin(), it));
+		if (ImGui::Button(itemName))
+		{
+			it = fragmentShaders.erase(it);
+			continue;
+		}
 
-	ImGui::SameLine();
+		it++;
+	}
 
 	if (ImGui::Button("+##Fragment"))
 		fragmentShaders.push_back(0);

@@ -44,8 +44,7 @@
 "     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
 "}\n" \
 
-class ResourceFragmentShader;
-class ResourceVertexShader;
+class ResourceShaderObject;
 
 class PanelShaderEditor : public Panel
 {
@@ -58,8 +57,8 @@ public:
 
 private:
 
-	std::list<uint> vertexShaders;
-	std::list<uint> fragmentShaders;
+	std::list<ResourceShaderObject*> vertexShaders;
+	std::list<ResourceShaderObject*> fragmentShaders;
 };
 
 #endif

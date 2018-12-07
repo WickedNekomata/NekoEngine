@@ -1,5 +1,8 @@
 #include "PanelCodeEditor.h"
 
+#include "Application.h"
+#include "ShaderImporter.h"
+
 PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 {
 	editor;
@@ -19,20 +22,6 @@ bool PanelCodeEditor::Draw()
 	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
 	if (ImGui::BeginMenuBar())
 	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Save Shader in Assets"))
-			{
-				auto textToSave = editor.GetText();
-				/// save text....
-			}
-			if (ImGui::MenuItem("Quit", "Alt-F4"))
-			{
-				goto jmp;
-			}
-		jmp:
-			ImGui::EndMenu();
-		}
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, editor.CanUndo()))
@@ -69,6 +58,19 @@ bool PanelCodeEditor::Draw()
 		}
 		ImGui::EndMenuBar();
 	}
+
+		if (ImGui::Button("Save"))
+		{
+			auto textToSave = editor.GetText();
+			/// save shader object
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Compile"))
+		{
+			// Compile Shader Object
+		}
 
 	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 		editor.IsOverwrite() ? "Ovr" : "Ins",

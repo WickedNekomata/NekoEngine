@@ -251,6 +251,7 @@
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelLayersTags.h" />
     <ClInclude Include="PanelResources.h" />
+    <ClInclude Include="PanelShaderEditor.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
@@ -346,6 +347,7 @@
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelLayersTags.cpp" />
     <ClCompile Include="PanelResources.cpp" />
+    <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />

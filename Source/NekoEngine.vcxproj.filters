@@ -634,6 +634,9 @@
     <ClInclude Include="ShaderImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
+    <ClInclude Include="PanelShaderEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -899,6 +902,9 @@
     </ClCompile>
     <ClCompile Include="ShaderImporter.cpp">
       <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelShaderEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -78,9 +78,6 @@ public:
 	bool LoadShaderObject(const char* objectFile, ResourceShaderObject* shaderObject) const;
 	bool LoadShaderObject(const void* buffer, uint size, ResourceShaderObject* shaderObject) const;
 
-	uint CompileShaderObject(const char* shader, ShaderType type) const;
-	bool DeleteShaderObject(uint shader) const;
-
 	// Shader Program (load)
 	bool LoadShaderProgram(const char* programFile, ResourceShaderProgram* shaderProgram) const;
 	bool LoadShaderProgram(const void* buffer, uint size, ResourceShaderProgram* shaderProgram) const;

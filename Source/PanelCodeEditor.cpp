@@ -60,26 +60,27 @@ bool PanelCodeEditor::Draw()
 		ImGui::EndMenuBar();
 	}
 
-		if (ImGui::Button("Save"))
+	if (ImGui::Button("Save"))
+	{
+		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
+		if (shaderCompiled != -1)
 		{
-			uint shaderCompiled = App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType);
-			if (shaderCompiled != -1)
-			{
-				App->shaderImporter->DeleteShaderObject(currentShader->shaderObject);
-				currentShader->source = editor.GetText().data();
-				currentShader->shaderObject = shaderCompiled;
-				CONSOLE_LOG("%s saved", currentShader->file.data());
-			}
+			ResourceShaderObject::DeleteShaderObject(currentShader->shaderObject);
+			currentShader->source = editor.GetText().data();
+			currentShader->shaderObject = shaderCompiled;
+			CONSOLE_LOG("%s saved", currentShader->file.data());
 		}
+	}
 
-		ImGui::SameLine();
+	ImGui::SameLine();
 
-		if (ImGui::Button("Compile"))
-		{
-			uint shaderCompiled = App->shaderImporter->CompileShaderObject(editor.GetText().data(), currentShader->shaderType);
-			App->shaderImporter->DeleteShaderObject(shaderCompiled);
-		}
+	if (ImGui::Button("Compile"))
+	{
+		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
+		ResourceShaderObject::DeleteShaderObject(shaderCompiled);
+	}
 
+	// TODO: Print the name of the shader and whether it is vertex or fragment
 	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 		editor.IsOverwrite() ? "Ovr" : "Ins",
 		editor.CanUndo() ? "*" : " ",
@@ -87,6 +88,7 @@ bool PanelCodeEditor::Draw()
 
 	editor.Render("TextEditor");
 	ImGui::End();
+
 	return true;
 }
 

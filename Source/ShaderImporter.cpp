@@ -261,7 +261,7 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 		((char*)shaderObject->source)[size] = 0;
 
 		// Try to compile the shader object
-		ret = shaderObject->Compile();
+		ret = shaderObject->Compile(shaderObject->source, shaderObject->shaderType);
 	}
 
 	if (ret)
@@ -272,56 +272,6 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 		CONSOLE_LOG("SHADER IMPORTER: Shader Object with size %u could not be loaded", size);
 
 	return ret;
-}
-
-// Returns opengl id of compiled shader. In case of error returns -1.
-uint ShaderImporter::CompileShaderObject(const char* shader, ShaderType type) const
-{
-	GLuint shaderCompiled;
-	switch (type)
-	{
-	case ShaderType::VertexShaderType:
-		shaderCompiled = glCreateShader(GL_VERTEX_SHADER);
-		break;
-	case ShaderType::FragmentShaderType:
-		shaderCompiled = glCreateShader(GL_FRAGMENT_SHADER);
-		break;
-	default:
-		return -1;
-		break;
-	}
-	glShaderSource(shaderCompiled, 1, &shader, NULL);
-
-	glCompileShader(shaderCompiled);
-	GLint success = 0;
-	glGetShaderiv(shaderCompiled, GL_COMPILE_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		GLint logSize = 0;
-		glGetShaderiv(shaderCompiled, GL_INFO_LOG_LENGTH, &logSize);
-
-		GLchar* infoLog = new GLchar[logSize];
-		glGetShaderInfoLog(shaderCompiled, logSize, NULL, infoLog);
-
-		CONSOLE_LOG("SHADER IMPORTER: Shader Object could not be compiled. ERROR: %s", infoLog);
-
-		glDeleteShader(defaultVertexShaderObject);
-
-		return -1;
-	}
-
-	CONSOLE_LOG("SHADER IMPORTER: Shader Object successfully compiled");
-
-	return shaderCompiled;
-}
-
-bool ShaderImporter::DeleteShaderObject(uint shader) const
-{
-	if (!glIsShader(shader))
-		return false;
-
-	glDeleteShader(shader);
-	return true;
 }
 
 bool ShaderImporter::LoadShaderProgram(const char* programFile, ResourceShaderProgram* shaderProgram) const
@@ -373,16 +323,17 @@ void ShaderImporter::LoadDefaultShader()
 
 void ShaderImporter::LoadDefaultVertexShaderObject()
 {
-	defaultVertexShaderObject = CompileShaderObject(vShaderTemplate, ShaderType::VertexShaderType);
+	defaultVertexShaderObject = ResourceShaderObject::Compile(vShaderTemplate, ShaderType::VertexShaderType);
 }
 
 void ShaderImporter::LoadDefaultFragmentShaderObject()
 {
-	defaultFragmentShaderObject = CompileShaderObject(fShaderTemplate, ShaderType::FragmentShaderType);
+	defaultFragmentShaderObject = ResourceShaderObject::Compile(fShaderTemplate, ShaderType::FragmentShaderType);
 }
 
 void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject)
 {
+	// TODO MAKE IT STATIC
 	defaultShaderProgram = glCreateProgram();
 
 	glAttachShader(defaultShaderProgram, defaultVertexShaderObject);

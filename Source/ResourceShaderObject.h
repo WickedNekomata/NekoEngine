@@ -22,7 +22,8 @@ public:
 	uint LoadMemory();
 	uint UnloadMemory() { return 0; }
 
-	bool Compile();
+	static GLuint Compile(const char* source, ShaderType shaderType);
+	static bool DeleteShaderObject(GLuint shaderObject);
 
 	static ShaderType GetShaderTypeByExtension(const char* extension);
 

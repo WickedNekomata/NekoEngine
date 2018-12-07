@@ -1,6 +1,7 @@
 #include "PanelShaderEditor.h"
 
 #include "Application.h"
+#include "ModuleFileSystem.h"
 #include "ModuleGui.h"
 #include "PanelCodeEditor.h"
 #include "ResourceShaderObject.h"
@@ -36,7 +37,10 @@ bool PanelShaderEditor::Draw()
 	for (auto it = vertexShaders.begin(); it != vertexShaders.end();)
 	{
 		if (*it != nullptr) {
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##v%i", (*it)->file.data(), std::distance(vertexShaders.begin(), it));
+			// TODO: Save this name in the Resource
+			std::string fileName;
+			App->fs->GetFileName((*it)->file.data(), fileName);
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##v%i", fileName.data(), std::distance(vertexShaders.begin(), it));
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
 		}
 		else {
@@ -83,7 +87,10 @@ bool PanelShaderEditor::Draw()
 	for (auto it = fragmentShaders.begin(); it != fragmentShaders.end();)
 	{
 		if (*it != nullptr) {
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##f%i", (*it)->file.data(), std::distance(fragmentShaders.begin(), it));
+			// TODO: Save this name in the Resource
+			std::string fileName;
+			App->fs->GetFileName((*it)->file.data(), fileName);
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##f%i", fileName.data(), std::distance(fragmentShaders.begin(), it));
 			ImGui::Button(itemName, ImVec2(150.0f, 0.0f));
 		}
 		else {

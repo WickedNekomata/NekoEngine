@@ -636,6 +636,7 @@
     </ClInclude>
     <ClInclude Include="ResourceShaderObject.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
     <ClInclude Include="PanelShaderEditor.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
@@ -907,6 +908,7 @@
     </ClCompile>
     <ClCompile Include="ResourceShaderObject.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
     <ClCompile Include="PanelShaderEditor.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>

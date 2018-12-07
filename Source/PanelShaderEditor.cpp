@@ -46,9 +46,6 @@ bool PanelShaderEditor::Draw()
 			vertexShaders.remove(*it);
 	}
 
-	if (ImGui::Button("New##vertex"))
-		App->gui->panelCodeEditor->OpeninCodeEditor(vShaderTemplate);
-
 	ImGui::SameLine();
 
 	if (ImGui::Button("+##vertex"))
@@ -72,9 +69,6 @@ bool PanelShaderEditor::Draw()
 		if (ImGui::Button("X##fragment"))
 			fragmentShaders.remove(*it);
 	}
-
-	if (ImGui::Button("New##Fragment"))
-		App->gui->panelCodeEditor->OpeninCodeEditor(fShaderTemplate);
 
 	ImGui::SameLine();
 

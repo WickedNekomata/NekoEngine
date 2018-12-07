@@ -44,6 +44,9 @@
 "     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
 "}\n" \
 
+class ResourceFragmentShader;
+class ResourceVertexShader;
+
 class PanelShaderEditor : public Panel
 {
 public:

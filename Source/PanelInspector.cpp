@@ -162,23 +162,35 @@ void PanelInspector::ShowMeshResourceInspector() const
 		ImGui::TextColored(BLUE, "%u", resourceMesh->CountReferences());
 	}
 
-	ImGui::Text("Vertices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
-	ImGui::Text("Vertices ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
+	ImGui::Spacing();
 
-	ImGui::Text("Indices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
-	ImGui::Text("Indices ID:"); ImGui::SameLine();
+	ImGui::Text("VBO ID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
+	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Vertices:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Normals:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Colors:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Texture Coordinates:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+
+	ImGui::Spacing();
+
+	ImGui::Text("VAO ID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->VAO);
+
+	ImGui::Spacing();
+
+	ImGui::Text("IBO ID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->IBO);
+	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Indices:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
+
+	ImGui::Spacing();
 
 	ImGui::Text("Triangles:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
-
-	ImGui::Text("Texture Coords:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
-	ImGui::Text("Texture Coords ID:"); ImGui::SameLine();
-	//ImGui::TextColored(BLUE, "%u", resourceMesh->textureCoordsID);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const
@@ -205,7 +217,9 @@ void PanelInspector::ShowTextureResourceInspector() const
 		ImGui::TextColored(BLUE, "%u", resourceTexture->CountReferences());
 	}
 
-	ImGui::Text("ID:");
+	ImGui::Spacing();
+
+	ImGui::Text("ID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceTexture->id);
 	ImGui::Image((void*)(intptr_t)resourceTexture->id, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::TextColored(BLUE, "%u x %u", resourceTexture->width, resourceTexture->height);

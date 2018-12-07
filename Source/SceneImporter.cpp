@@ -374,7 +374,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			cursor += bytes;
 
 			// 6. Store indices
-			bytes = sizeof(uint) * indicesSize;
+			bytes = sizeof(GLuint) * indicesSize;
 			memcpy(cursor, indices, bytes);
 
 			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
@@ -763,8 +763,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	// 6. Load indices
 	cursor = texCoordsCursor;
 
-	bytes = sizeof(uint) * outputMesh->indicesSize;
-	outputMesh->indices = new uint[outputMesh->indicesSize];
+	bytes = sizeof(GLuint) * outputMesh->indicesSize;
+	outputMesh->indices = new GLuint[outputMesh->indicesSize];
 	memcpy(outputMesh->indices, cursor, bytes);
 
 	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);

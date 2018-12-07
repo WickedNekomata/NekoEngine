@@ -36,7 +36,7 @@ public:
 	Vertex* vertices = nullptr;
 	uint verticesSize = 0;
 
-	uint* indices = nullptr;
+	GLuint* indices = nullptr;
 	uint indicesSize = 0;
 
 	GLuint VBO = 0;

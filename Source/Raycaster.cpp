@@ -52,7 +52,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 			hits.push_back(dynamicGameObjects[i]);
 	}
 
-	for (int i = 0; i < hits.size(); ++i)
+	for (uint i = 0; i < hits.size(); ++i)
 	{
 		math::Triangle tri;
 		math::LineSegment localSpaceSegment(raycast);
@@ -66,11 +66,11 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		if (resMesh == nullptr)
 			return;
 
-		for (int j = 0; j < resMesh->indicesSize;)
+		for (uint j = 0; j < resMesh->indicesSize;)
 		{
-			tri.a = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
-			tri.b = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
-			tri.c = math::float3(resMesh->vertices->position[resMesh->indices[j] * 3], resMesh->vertices->position[resMesh->indices[j] * 3 + 1], resMesh->vertices->position[resMesh->indices[j] * 3 + 2]);  j++;
+			tri.a = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
+			tri.b = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
+			tri.c = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
 
 			float distance;
 			math::float3 hitPoint;

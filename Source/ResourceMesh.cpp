@@ -73,7 +73,7 @@ void ResourceMesh::GenerateIBO()
 	// Bind the IBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

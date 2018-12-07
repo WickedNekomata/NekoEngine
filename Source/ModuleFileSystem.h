@@ -69,8 +69,10 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const;
+	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, uint>& assetsFiles) const;
 	void RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const;
+	AssetsFile* GetRootAssetsFile() const;
+	LibraryFile* GetRootLibraryFile() const;
 
 	int GetLastModificationTime(const char* file) const;
 
@@ -93,12 +95,12 @@ public:
 	bool DeleteMeta(const char* metaFile);
 
 	void CheckFilesInAssets() const;
-	AssetsFile* GetRootAssetsFile() const;
-	LibraryFile* GetRootLibraryFile() const;
 
 private:
 
 	std::map<std::string, uint> metas;
+	std::map<std::string, uint> assetsFiles;
+
 	AssetsFile* rootAssetsFile = nullptr;
 	LibraryFile* rootLibraryFile = nullptr;
 };

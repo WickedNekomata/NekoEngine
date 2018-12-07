@@ -10,8 +10,6 @@
 #include "ResourceTypes.h"
 #include "Globals.h"
 
-#include <string>
-
 struct AssetsFile;
 
 class PanelAssets : public Panel
@@ -25,7 +23,7 @@ public:
 
 private:
 
-	void RecursiveDrawDir(AssetsFile* assetsFile) const;
+	void RecursiveDrawAssetsDir(AssetsFile* assetsFile) const;
 	void SetResourceDragAndDropSource(ResourceType type, const char* file = nullptr, uint UUID = 0) const;
 };
 

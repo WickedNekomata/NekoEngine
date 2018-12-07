@@ -32,7 +32,7 @@ bool PanelAssets::Draw()
 
 		if (ImGui::TreeNodeEx(DIR_ASSETS))
 		{
-			RecursiveDrawDir(App->fs->GetRootAssetsFile());
+			RecursiveDrawAssetsDir(App->fs->GetRootAssetsFile());
 			ImGui::TreePop();
 		}
 	}
@@ -41,7 +41,7 @@ bool PanelAssets::Draw()
 	return true;
 }
 
-void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
+void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -77,13 +77,14 @@ void PanelAssets::RecursiveDrawDir(AssetsFile* assetsFile) const
 			if (treeNodeOpened)
 			{
 				if (!child->children.empty())
-					RecursiveDrawDir(child);
+					RecursiveDrawAssetsDir(child);
 				ImGui::TreePop();
 			}
 		}
 		else
 		{
 			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
+			
 			treeNodeFlags = 0;
 
 			if (type != ResourceType::Mesh_Resource)

@@ -64,10 +64,18 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 		rootAssetsFile = new AssetsFile();
 		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
 		rootAssetsFile->isDirectory = true;
-		RecursiveGetFilesFromAssets(rootAssetsFile);
+		RecursiveGetFilesFromAssets(rootAssetsFile, assetsFiles);
 
 		// Check the read files against the metas
 		CheckFilesInAssets();
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshLibrary;
+		App->PushSystemEvent(newEvent);
+
+		break;
+
+	case System_Event_Type::RefreshLibrary:
 
 		// Read the current files in Library
 		RELEASE(rootLibraryFile);
@@ -152,7 +160,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const
+void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, uint>& assetsFiles) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -176,7 +184,7 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const
 		if (IsDirectory(path.data()))
 		{
 			file->isDirectory = true;
-			RecursiveGetFilesFromAssets(file);
+			RecursiveGetFilesFromAssets(file, assetsFiles);
 		}
 		else
 		{
@@ -225,6 +233,8 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile) const
 			}
 			break;
 			}
+
+			assetsFiles[file->path] = file->lastModTime;
 		}
 
 		assetsFile->children.push_back(file);
@@ -273,6 +283,16 @@ void ModuleFileSystem::RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) co
 		if (found != std::string::npos)
 			path = path.substr(0, found);
 	}
+}
+
+AssetsFile* ModuleFileSystem::GetRootAssetsFile() const
+{
+	return rootAssetsFile;
+}
+
+LibraryFile* ModuleFileSystem::GetRootLibraryFile() const
+{
+	return rootLibraryFile;
 }
 
 bool ModuleFileSystem::IsDirectory(const char* file) const
@@ -579,7 +599,6 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 void ModuleFileSystem::CheckFilesInAssets() const
 {
-	/*
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
 	// NOTE: Files in Library are not expected to be removed by the user
@@ -589,15 +608,15 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		// Each meta is expected to have an associated file in Assets that creates a resource
 
 		// Path of the file in Assets associated to the meta
-		std::string fileInAssets = it->first;
-		uint found = fileInAssets.find_last_of(".");
+		std::string assetsFile = it->first;
+		uint found = assetsFile.find_last_of(".");
 		if (found != std::string::npos)
-			fileInAssets = fileInAssets.substr(0, found);
+			assetsFile = assetsFile.substr(0, found);
 
 		// CASE 1. Original file has been removed
 		// + Original file has been renamed from outside the editor (we have no way to detect it)
 		// + Original file has been moved to another folder from outside the editor (we have no way to detect it)
-		if (filesInAssets.find(fileInAssets.data()) == filesInAssets.end())
+		if (assetsFiles.find(assetsFile.data()) == assetsFiles.end())
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -605,7 +624,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			App->PushSystemEvent(newEvent);
 		}
 		// CASE 2. Meta has been removed
-		else if (filesInAssets.find(it->first.data()) == filesInAssets.end())
+		else if (assetsFiles.find(it->first.data()) == assetsFiles.end())
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -613,7 +632,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			App->PushSystemEvent(newEvent);
 		}
 		// CASE 3. Original file has been overwritten
-		else if (filesInAssets.find(fileInAssets.data())->second != it->second)
+		else if (assetsFiles.find(assetsFile.data())->second != it->second)
 		{
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = it->first.data();
@@ -622,7 +641,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		}
 	}
 
-	for (std::map<std::string, uint>::const_iterator it = filesInAssets.begin(); it != filesInAssets.end(); ++it)
+	for (std::map<std::string, uint>::const_iterator it = assetsFiles.begin(); it != assetsFiles.end(); ++it)
 	{
 		std::string extension;
 		GetExtension(it->first.data(), extension);
@@ -645,15 +664,4 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			}
 		}
 	}
-	*/
-}
-
-AssetsFile* ModuleFileSystem::GetRootAssetsFile() const
-{
-	return rootAssetsFile;
-}
-
-LibraryFile* ModuleFileSystem::GetRootLibraryFile() const
-{
-	return rootLibraryFile;
 }

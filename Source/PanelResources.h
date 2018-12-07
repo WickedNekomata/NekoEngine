@@ -9,6 +9,8 @@
 
 #include <string>
 
+struct LibraryFile;
+
 class PanelResources : public Panel
 {
 public:
@@ -20,7 +22,7 @@ public:
 
 private:
 
-	void RecursiveDrawDir(const char* dir, std::string& path) const;
+	void RecursiveDrawLibraryDir(LibraryFile* libraryFile) const;
 	void OpenSettingsAtClick(const char** iterator, std::string currentFile) const;
 };
 

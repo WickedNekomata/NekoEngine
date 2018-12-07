@@ -4,11 +4,10 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
-#include "ModuleResourceManager.h"
-#include "ResourceMesh.h"
 #include "ModuleScene.h"
+#include "ModuleResourceManager.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
 
 PanelResources::PanelResources(char* name) : Panel(name) {}
@@ -17,15 +16,14 @@ PanelResources::~PanelResources() {}
 
 bool PanelResources::Draw()
 {
-	ImGuiWindowFlags assetsFlags = 0;
-	assetsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
+	ImGuiWindowFlags libraryFlags = 0;
+	libraryFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
-	if (ImGui::Begin(name, &enabled, assetsFlags))
+	if (ImGui::Begin(name, &enabled, libraryFlags))
 	{
 		if (ImGui::TreeNodeEx(DIR_LIBRARY))
 		{
-			std::string path = DIR_LIBRARY;
-			RecursiveDrawDir(DIR_LIBRARY, path);
+			RecursiveDrawLibraryDir(App->fs->GetRootLibraryFile());
 			ImGui::TreePop();
 		}
 	}
@@ -34,90 +32,57 @@ bool PanelResources::Draw()
 	return true;
 }
 
-void PanelResources::RecursiveDrawDir(const char* dir, std::string& path) const
+void PanelResources::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
-	if (dir == nullptr)
+	assert(libraryFile != nullptr);
+
+	ImGuiTreeNodeFlags treeNodeFlags;
+
+	for (uint i = 0; i < libraryFile->children.size(); ++i)
 	{
-		assert(dir != nullptr);
-		return;
-	}
-
-	ImGuiTreeNodeFlags treeNodeFlags = 0;
-	treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-	const char** files = App->fs->GetFilesFromDir(path.data());
-	const char** it;
-
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
+		LibraryFile* child = (LibraryFile*)libraryFile->children[i];
 
 		bool treeNodeOpened = false;
 
-		treeNodeFlags = 0;
-		treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-		if (App->fs->IsDirectory(path.data()))
+		if (child->isDirectory)
 		{
-			if (ImGui::TreeNodeEx(*it, treeNodeFlags))
+			treeNodeFlags = 0;
+			treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
 				treeNodeOpened = true;
+
+			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				SELECT(NULL);
 
 			if (treeNodeOpened)
 			{
-				RecursiveDrawDir(*it, path);
+				if (!child->children.empty())
+					RecursiveDrawLibraryDir(child);
 				ImGui::TreePop();
 			}
 		}
 		else
 		{
-			std::string extension;
-			App->fs->GetExtension(*it, extension);
-
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-			uint UUID = strtoul(*it, NULL, 0);
-			const Resource* res = App->res->GetResource(UUID);
-
-			if (App->scene->selectedObject != NULL && App->scene->selectedObject == res)
+			if (App->scene->selectedObject == child->resource)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			ImGui::TreeNodeEx(*it, treeNodeFlags);
+			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
+				treeNodeOpened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-				SELECT(res);
+				SELECT(child->resource);
 
-			ImGui::TreePop();
-
-			if (res != nullptr)
-			{
-				if (res->GetType() == ResourceType::Mesh_Resource)
-				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-					{
-						ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
-						ImGui::EndDragDropSource();
-					}
-				}
-				else if (res->GetType() == ResourceType::Texture_Resource)
-				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-					{
-						ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
-						ImGui::EndDragDropSource();
-					}
-				}
-			}
+			if (treeNodeOpened)
+				ImGui::TreePop();
 		}
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
 	}
 }
 

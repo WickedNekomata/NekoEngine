@@ -19,6 +19,8 @@ public:
 
 	bool Draw();
 
+	bool RemoveShaderFromEditor(ResourceShaderObject* shader);
+
 private:
 
 	std::list<ResourceShaderObject*> vertexShaders;

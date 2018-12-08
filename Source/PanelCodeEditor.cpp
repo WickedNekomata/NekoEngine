@@ -1,6 +1,7 @@
 #include "PanelCodeEditor.h"
 
 #include "Application.h"
+#include "ModuleFileSystem.h"
 #include "ShaderImporter.h"
 #include "ResourceShaderObject.h"
 
@@ -66,19 +67,27 @@ bool PanelCodeEditor::Draw()
 		if (shaderCompiled > 0)
 		{
 			ResourceShaderObject::DeleteShaderObject(currentShader->shaderObject);
-			std::string text = editor.GetText();
-			currentShader->SetSource(text.data(), text.size());
 			currentShader->shaderObject = shaderCompiled;
+			std::string text = editor.GetText();
+			currentShader->SetSource((char*)text.data(), text.length());
+
+			std::string outputFile;
+			App->shaderImporter->SaveShaderObject(currentShader, outputFile);
 			
 			// Search for the meta associated to the file
 			char metaFile[DEFAULT_BUF_SIZE];
 			strcpy_s(metaFile, strlen(currentShader->file.data()) + 1, currentShader->file.data()); // file
 			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-			
+
 			// Reimport Shader Object file
 			System_Event newEvent;
-			newEvent.fileEvent.metaFile = metaFile;
+			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
+			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, metaFile);
 			newEvent.type = System_Event_Type::FileOverwritten;
+			App->PushSystemEvent(newEvent);
+
+			newEvent.fileEvent.metaFile = nullptr;
+			newEvent.type = System_Event_Type::RefreshAssets;
 			App->PushSystemEvent(newEvent);
 		}
 	}

@@ -652,7 +652,8 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		if (assetsFiles.find(assetsFile.data()) == assetsFiles.end())
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.metaFile = it->first.data();
+			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
+			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
 			newEvent.type = System_Event_Type::FileRemoved;
 			App->PushSystemEvent(newEvent);
 		}
@@ -660,7 +661,8 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		else if (assetsFiles.find(it->first.data()) == assetsFiles.end())
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.metaFile = it->first.data();
+			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
+			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
 			newEvent.type = System_Event_Type::MetaRemoved;
 			App->PushSystemEvent(newEvent);
 		}
@@ -668,7 +670,8 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		else if (assetsFiles.find(assetsFile.data())->second != it->second)
 		{
 			System_Event newEvent;
-			newEvent.fileEvent.metaFile = it->first.data();
+			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
+			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
 			newEvent.type = System_Event_Type::FileOverwritten;
 			App->PushSystemEvent(newEvent);
 		}
@@ -691,7 +694,8 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			if (metas.find(meta.data()) == metas.end())
 			{
 				System_Event newEvent;
-				newEvent.fileEvent.file = it->first.data();
+				newEvent.fileEvent.file = new char[DEFAULT_BUF_SIZE];
+				strcpy_s((char*)newEvent.fileEvent.file, DEFAULT_BUF_SIZE, it->first.data());
 				newEvent.type = System_Event_Type::NewFile;
 				App->PushSystemEvent(newEvent);
 			}

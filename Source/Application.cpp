@@ -72,9 +72,11 @@ Application::~Application()
 #ifndef GAMEMODE
 	RELEASE(raycaster);
 #endif
+
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
 	RELEASE(sceneImporter);
+	RELEASE(shaderImporter);
 }
 
 bool Application::Init()

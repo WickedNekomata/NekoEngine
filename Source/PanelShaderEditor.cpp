@@ -5,6 +5,7 @@
 #include "ModuleGui.h"
 #include "PanelCodeEditor.h"
 #include "ResourceShaderObject.h"
+#include "ResourceShaderProgram.h"
 
 #include "Globals.h"
 #include "imgui/imgui.h"
@@ -127,8 +128,19 @@ bool PanelShaderEditor::Draw()
 	if (ImGui::Button("+##Fragment"))
 		fragmentShaders.push_back(nullptr);
 
-	if (ImGui::Button("Compile and Save")) {
+	if (ImGui::Button("Link and Save")) {
 
+		std::list<uint> readyToLink;
+
+		for (auto it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
+			readyToLink.push_back((*it)->shaderObject);
+
+		for (auto it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
+			readyToLink.push_back((*it)->shaderObject);
+
+		uint program = ResourceShaderProgram::Link(readyToLink);
+		
+		ResourceShaderProgram* shaderProgram = new ResourceShaderProgram(ResourceType::ShaderProgramResource, 0);
 	}
 
 	ImGui::End();

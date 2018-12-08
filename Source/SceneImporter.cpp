@@ -318,13 +318,16 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						std::string outputFile = DIR_ASSETS;
 						if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
 						{
+							uint UUID = 0;
 							std::list<uint> UUIDs;
 							if (!App->res->FindResourcesByFile(outputFile.data(), UUIDs))
 								// If the texture is not a resource yet, import it
-								UUIDs.front() = App->res->ImportFile(outputFile.data());
+								UUID = App->res->ImportFile(outputFile.data());
+							else
+								UUID = UUIDs.front();
 
-							if (UUIDs.front() > 0)
-								gameObject->materialRenderer->res[0].res = UUIDs.front();
+							if (UUID > 0)
+								gameObject->materialRenderer->res[0].res = UUID;
 						}
 					}
 				}

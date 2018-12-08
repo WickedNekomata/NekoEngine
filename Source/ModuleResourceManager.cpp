@@ -16,6 +16,7 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 #include "ResourceShaderObject.h"
+#include "ResourceShaderProgram.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -591,7 +592,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		case ResourceType::ShaderObjectResource:
 		{
-			// Create a new resource for the shader
+			// Create a new resource for the shader object
 			ResourceShaderObject* resource = nullptr;
 			uint UUID = 0;
 			if (metaFile != nullptr)
@@ -615,6 +616,53 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			if (!resource->LoadMemory())
 				resource->isValid = false;
+
+			resources.push_back(resource);
+
+			// If the file has no meta associated, generate a new meta
+			if (metaFile == nullptr)
+				App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
+			// Else, update the UUID and the last modified time in the existing meta
+			else
+			{
+				outputMetaFile = metaFile;
+
+				App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
+
+				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
+				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
+			}
+		}
+		break;
+		case ResourceType::ShaderProgramResource:
+		{
+			// Create a new resource for the shader program
+			ResourceShaderProgram* resource = nullptr;
+			uint UUID = 0;
+			if (metaFile != nullptr)
+			{
+				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
+				resource = (ResourceShaderProgram*)CreateNewResource(type, UUID);
+			}
+			else
+			{
+				resource = (ResourceShaderProgram*)CreateNewResource(type);
+				UUID = resource->GetUUID();
+			}
+
+			std::string fileName;
+			App->fs->GetFileName(fileInAssets, fileName);
+			resource->SetName(fileName.data());
+
+			resource->file = fileInAssets;
+			resource->exportedFile = outputFile;
+
+			// Load the binary
+			//if (App->shaderImporter->LoadShaderProgram(fileInAssets, resource))
+			//if (!resource->LoadMemory())
+				//resource->isValid = false;
+			// If the binary hasn't loaded correctly, link the program
+
 
 			resources.push_back(resource);
 

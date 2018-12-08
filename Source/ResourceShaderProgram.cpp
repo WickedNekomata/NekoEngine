@@ -132,5 +132,5 @@ bool ResourceShaderProgram::IsProgramLinked(GLuint shaderProgram)
 
 bool ResourceShaderProgram::LoadInMemory()
 {
-	return Link(shaderObjects);
+	return App->shaderImporter->LoadShaderProgram(exportedFile.data(), this);
 }

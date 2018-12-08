@@ -46,7 +46,7 @@ bool Resource::IsInMemory() const
 // Increase number of references and returns it. In case of 0 references also load into memory.
 uint Resource::LoadMemory()
 {
-	bool result = false;
+	bool result = true;
 
 	if (!IsInMemory())
 		result = LoadInMemory();
@@ -59,7 +59,7 @@ uint Resource::UnloadMemory()
 {
 	assert(count > 0 && "Calls to load and unload of resource not equivalent");
 
-	bool result = false;
+	bool result = true;
 
 	if (count <= 1)
 		result = UnloadFromMemory();

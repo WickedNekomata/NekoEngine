@@ -166,7 +166,8 @@ update_status ModuleInput::PreUpdate()
 		{	
 			System_Event newEvent;
 			newEvent.type = System_Event_Type::FileDropped;
-			newEvent.fileEvent.file = event.drop.file;
+			newEvent.fileEvent.file = new char[DEFAULT_BUF_SIZE];
+			strcpy_s((char*)newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.drop.file);
 			App->PushSystemEvent(newEvent);
 
 			SDL_free(event.drop.file);

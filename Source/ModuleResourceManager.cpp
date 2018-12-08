@@ -74,6 +74,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			std::string outputFile;
 			App->fs->Copy(event.fileEvent.file, DIR_ASSETS, outputFile);
 		}
+
+		RELEASE_ARRAY(event.fileEvent.file);
 	}
 	break;
 
@@ -83,6 +85,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		// Import
 		ImportFile(event.fileEvent.file);
+
+		RELEASE_ARRAY(event.fileEvent.file);
 	}
 	break;
 
@@ -103,6 +107,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		// Import
 		ImportFile(fileInAssets.data(), nullptr, nullptr);
+
+		RELEASE_ARRAY(event.fileEvent.metaFile);
 	}
 	break;
 
@@ -115,11 +121,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		// Remove its meta from the metas map before removing it completely
 		App->fs->DeleteFileOrDir(event.fileEvent.metaFile);
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
+
+		RELEASE_ARRAY(event.fileEvent.metaFile);
 	}
 	break;
 
 	case System_Event_Type::FileOverwritten:
-
+	{
 		// Path of the file in Assets associated to the meta
 		std::string fileInAssets = event.fileEvent.metaFile;
 		uint found = fileInAssets.find_last_of(".");
@@ -127,17 +135,15 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			fileInAssets = fileInAssets.substr(0, found);
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
-		
+
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Reimport
 		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
 
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RefreshAssets;
-		App->PushSystemEvent(newEvent);
-
-		break;
+		RELEASE_ARRAY(event.fileEvent.metaFile);
+	}
+	break;
 	}
 }
 
@@ -441,10 +447,6 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			case ResourceType::TextureResource:
 				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, (TextureImportSettings*)importSettings);
 				break;
-			case ResourceType::ShaderObjectResource:
-				break;
-			case ResourceType::ShaderProgramResource:
-				break;
 			}
 		}
 
@@ -484,7 +486,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
 			{
 				ResourceMesh* resource = (ResourceMesh*)CreateNewResource(type, it->second);
+
 				resource->SetName(it->first.data());
+
 				resource->file = fileInAssets;
 				resource->exportedFile = DIR_LIBRARY_MESHES;
 				resource->exportedFile.append("/");
@@ -518,16 +522,16 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		case ResourceType::TextureResource:
 		{
-			std::string outputFileName;
-			App->fs->GetFileName(outputFile.data(), outputFileName);
+			std::string fileName;
+			App->fs->GetFileName(outputFile.data(), fileName);
 
-			uint UUID = strtoul(outputFileName.data(), NULL, 0);
+			uint UUID = strtoul(fileName.data(), NULL, 0);
 
 			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type, UUID);
 
-			App->fs->GetFileName(fileInAssets, outputFileName);
-			resource->SetName(outputFileName.data());
+			App->fs->GetFileName(fileInAssets, fileName);
+			resource->SetName(fileName.data());
 
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
@@ -551,7 +555,18 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		case ResourceType::ShaderObjectResource:
 		{
 			// Create a new resource for the shader
-			ResourceShaderObject* resource = (ResourceShaderObject*)CreateNewResource(type);
+			ResourceShaderObject* resource = nullptr;
+			uint UUID = 0;
+			if (metaFile != nullptr)
+			{
+				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
+				resource = (ResourceShaderObject*)CreateNewResource(type, UUID);
+			}
+			else
+			{
+				resource = (ResourceShaderObject*)CreateNewResource(type);
+				UUID = resource->GetUUID();
+			}
 
 			std::string fileName;
 			App->fs->GetFileName(fileInAssets, fileName);
@@ -574,7 +589,6 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			{
 				outputMetaFile = metaFile;
 
-				uint UUID = resource->GetUUID();
 				App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
 
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
@@ -610,7 +624,7 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 	Resource* resource = nullptr;
 
 	uint uuid = force_uuid;
-	if (uuid <= 0)
+	if (uuid == 0)
 		uuid = App->GenerateRandomNumber();
 
 	switch (type)
@@ -872,6 +886,13 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 			if (ret)
 				ret = RemoveTextureLibraryEntry(UUID);
 		}
+	}
+	break;
+	case ResourceType::ShaderObjectResource:
+	{
+		uint UUID;
+		if (App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID))
+			ret = DestroyResource(UUID);
 	}
 	break;
 	}

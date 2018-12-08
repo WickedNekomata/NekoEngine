@@ -29,7 +29,6 @@ private:
 	TextEditor editor;
 
 	ResourceShaderObject* currentShader = nullptr;;
-	
 };
 
 #endif

@@ -45,7 +45,7 @@ public:
 
 private:
 
-	const char* source = nullptr;
+	char* source = nullptr;
 };
 
 #endif // __RESOURCE_SHADER_OBJECT_H__

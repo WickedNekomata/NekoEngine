@@ -19,10 +19,8 @@ uint ResourceShaderObject::LoadMemory()
 void ResourceShaderObject::SetSource(const char* source, uint size)
 {
 	RELEASE_ARRAY(this->source);
-	this->source = new char[size];
-
-	memcpy((char*)this->source, source, size);
-	((char*)this->source)[size] = 0;
+	this->source = new char[size + 1];
+	strcpy_s(this->source, size + 1, source);
 }
 
 const char* ResourceShaderObject::GetSource() const

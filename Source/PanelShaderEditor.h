@@ -9,6 +9,7 @@
 #include "Globals.h"
 
 class ResourceShaderObject;
+class ResourceShaderProgram;
 
 class PanelShaderEditor : public Panel
 {
@@ -18,11 +19,15 @@ public:
 	~PanelShaderEditor();
 
 	bool Draw();
+	
+	void OpenFromShaderProgram(const ResourceShaderProgram* program);
 
 public:
 
 	std::list<ResourceShaderObject*> vertexShaders;
 	std::list<ResourceShaderObject*> fragmentShaders;
+
+	char shaderProgramName[INPUT_BUF_SIZE];
 };
 
 #endif

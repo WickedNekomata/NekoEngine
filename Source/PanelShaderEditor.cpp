@@ -12,6 +12,8 @@
 
 PanelShaderEditor::PanelShaderEditor(char* name) : Panel(name)
 {
+	char* defaultName = "Default Name";
+	memcpy(shaderProgramName, defaultName, strlen(defaultName));
 }
 
 PanelShaderEditor::~PanelShaderEditor()
@@ -24,7 +26,6 @@ bool PanelShaderEditor::Draw()
 
 	ImGui::Text("Shader Program:"); ImGui::SameLine();
 
-	static char shaderProgramName[INPUT_BUF_SIZE];
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 	ImGui::PushItemWidth(100.0f);
 	ImGui::InputText("##ShaderName", shaderProgramName, IM_ARRAYSIZE(shaderProgramName), inputFlag);
@@ -145,5 +146,26 @@ bool PanelShaderEditor::Draw()
 
 	ImGui::End();
 
+	if (!enabled)
+	{
+		vertexShaders.clear();
+		fragmentShaders.clear();
+		memset(shaderProgramName, ' ', strlen(shaderProgramName));
+		App->gui->panelCodeEditor->SetOnOff(false);
+	}
+
 	return true;
+}
+
+void PanelShaderEditor::OpenFromShaderProgram(const ResourceShaderProgram* program)
+{
+	enabled = true;
+
+	for (auto it = program->shaderObjects.begin(); it != program->shaderObjects.end(); ++it)
+	{
+		//if ((*it)) TODO: get type of shaderObject D:
+	}
+
+	memcpy(shaderProgramName, program->GetName(), strlen(program->GetName()));
+
 }

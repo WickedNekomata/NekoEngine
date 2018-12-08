@@ -140,24 +140,11 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 				}
 			}
 
-			switch (type)
-			{
-			case ResourceType::TextureResource:
-				SetResourceDragAndDropSource(type, child->UUIDs.begin()->second);
-			case ResourceType::ShaderObjectResource:
-			case ResourceType::ShaderProgramResource:
-				SetResourceDragAndDropSource(type, 0, child->resource);
-				break;
-			case ResourceType::NoResourceType:
-				if (IS_SCENE(extension.data()))
-					SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
-				break;
-			}
-
 			if (treeNodeOpened)
 			{
-				if (type == ResourceType::MeshResource)
+				switch (type)
 				{
+				case ResourceType::MeshResource:
 					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
 					{
 						if (ImGui::TreeNodeEx(it->first.data(), ImGuiTreeNodeFlags_Leaf))
@@ -170,6 +157,18 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 							ImGui::TreePop();
 						}
 					}
+					break;
+				case ResourceType::TextureResource:
+					SetResourceDragAndDropSource(type, child->UUIDs.begin()->second);
+					break;
+				case ResourceType::ShaderObjectResource:
+				case ResourceType::ShaderProgramResource:
+					SetResourceDragAndDropSource(type, 0, child->resource);
+					break;
+				case ResourceType::NoResourceType:
+					if (IS_SCENE(extension.data()))
+						SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
+					break;
 				}
 				ImGui::TreePop();
 			}

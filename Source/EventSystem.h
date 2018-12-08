@@ -5,7 +5,7 @@ enum System_Event_Type
 { 
 	NoEvent,
 	RefreshAssets, RefreshLibrary,
-	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, ReimportFile, // FileEvent
+	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, // FileEvent
 	RecalculateBBoxes, // GameObjectEvent
 	RecreateQuadtree
 };

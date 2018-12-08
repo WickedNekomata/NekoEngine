@@ -17,7 +17,7 @@ class ResourceMesh;
 
 struct MeshImportSettings : public ImportSettings
 {
-	const char* metaFile = nullptr;
+	std::string metaFile;
 
 	enum MeshPostProcessConfiguration { TARGET_REALTIME_FAST, TARGET_REALTIME_QUALITY, TARGET_REALTIME_MAX_QUALITY, CUSTOM };
 	MeshPostProcessConfiguration postProcessConfiguration = TARGET_REALTIME_MAX_QUALITY;
@@ -38,8 +38,6 @@ struct MeshImportSettings : public ImportSettings
 	bool findInstances = true;
 	bool validateDataStructure = true;
 	bool optimizeMeshes = true;
-
-	~MeshImportSettings() { RELEASE_ARRAY(metaFile); }
 };
 
 class SceneImporter : public Importer

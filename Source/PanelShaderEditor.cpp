@@ -21,8 +21,8 @@ bool PanelShaderEditor::Draw()
 {
 	ImGui::Begin(name, &enabled);
 
-	ImGui::Text("Name:"); 
-	ImGui::SameLine();
+	ImGui::Text("Shader Program:"); ImGui::SameLine();
+
 	static char shaderProgramName[INPUT_BUF_SIZE];
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 	ImGui::PushItemWidth(100.0f);

@@ -653,6 +653,8 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 		return false;
 	}
 
+	meshImportSettings->metaFile = metaFile;
+
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 

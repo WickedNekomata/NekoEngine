@@ -215,7 +215,7 @@ void PanelInspector::ShowTextureResourceInspector() const
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 	if (inMemory)
 	{
-		ImGui::Text("References:");
+		ImGui::Text("References:"); ImGui::SameLine();
 		ImGui::TextColored(BLUE, "%u", resourceTexture->CountReferences());
 	}
 
@@ -411,12 +411,12 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT")) 
 	{ 
-		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile, meshImportSettings);
+		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile.data(), meshImportSettings);
 
 		// Reimport Mesh file
 		System_Event newEvent;
-		newEvent.fileEvent.metaFile = meshImportSettings->metaFile;
-		newEvent.type = System_Event_Type::ReimportFile;
+		newEvent.fileEvent.metaFile = meshImportSettings->metaFile.data();
+		newEvent.type = System_Event_Type::FileOverwritten;
 		App->PushSystemEvent(newEvent);
 	}
 }
@@ -472,12 +472,12 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT")) 
 	{ 
-		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile, textureImportSettings); 
+		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings); 
 		
 		// Reimport Texture file
 		System_Event newEvent;
-		newEvent.fileEvent.metaFile = textureImportSettings->metaFile;
-		newEvent.type = System_Event_Type::ReimportFile;
+		newEvent.fileEvent.metaFile = textureImportSettings->metaFile.data();
+		newEvent.type = System_Event_Type::FileOverwritten;
 		App->PushSystemEvent(newEvent);
 	}
 }

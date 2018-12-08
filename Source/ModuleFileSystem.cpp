@@ -65,6 +65,7 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 
 		// Read the current files in Assets
 		RELEASE(rootAssetsFile);
+		assetsFiles.clear();
 		rootAssetsFile = new AssetsFile();
 		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
 		rootAssetsFile->isDirectory = true;

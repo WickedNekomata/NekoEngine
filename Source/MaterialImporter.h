@@ -9,7 +9,7 @@ class ResourceTexture;
 
 struct TextureImportSettings : public ImportSettings
 {
-	const char* metaFile = nullptr;
+	std::string metaFile;
 
 	enum TextureCompression { DXT1, DXT3, DXT5 };
 	TextureCompression compression = DXT5;
@@ -31,8 +31,6 @@ struct TextureImportSettings : public ImportSettings
 			|| minFilter == NEAREST_MIPMAP_LINEAR || magFilter == NEAREST_MIPMAP_LINEAR
 			|| minFilter == LINEAR_MIPMAP_LINEAR || magFilter == LINEAR_MIPMAP_LINEAR;
 	}
-
-	~TextureImportSettings() { RELEASE_ARRAY(metaFile); }
 };
 
 class MaterialImporter : public Importer

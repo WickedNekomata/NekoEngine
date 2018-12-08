@@ -24,6 +24,8 @@ bool PanelHierarchy::Draw()
 
 	if (ImGui::Begin(name, &enabled, hierarchyFlags))
 	{
+		ImGui::Text("Scene:"); ImGui::SameLine();
+
 		static char sceneName[INPUT_BUF_SIZE];
 		strcpy_s(sceneName, IM_ARRAYSIZE(sceneName), App->GOs->nameScene);
 		ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;

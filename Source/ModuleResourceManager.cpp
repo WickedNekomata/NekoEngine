@@ -70,6 +70,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		{
 			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
+			// Copy
 			std::string outputFile;
 			App->fs->Copy(event.fileEvent.file, DIR_ASSETS, outputFile);
 		}
@@ -82,22 +83,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		// Import
 		ImportFile(event.fileEvent.file);
-	}
-	break;
-
-	case System_Event_Type::ReimportFile:
-	{
-		// Path of the file in Assets associated to the meta
-		std::string fileInAssets = event.fileEvent.metaFile;
-		uint found = fileInAssets.find_last_of(".");
-		if (found != std::string::npos)
-			fileInAssets = fileInAssets.substr(0, found);
-
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be reimported", fileInAssets.data());
-
-		App->res->DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
-
-		App->res->ImportFile(fileInAssets.data());
 	}
 	break;
 
@@ -117,7 +102,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
 
 		// Import
-		ImportFile(fileInAssets.data());
+		ImportFile(fileInAssets.data(), nullptr, nullptr);
 	}
 	break;
 
@@ -147,6 +132,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		// Reimport
 		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshAssets;
+		App->PushSystemEvent(newEvent);
 
 		break;
 	}
@@ -521,6 +510,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
+
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RefreshAssets;
+			App->PushSystemEvent(newEvent);
 		}
 		break;
 		case ResourceType::TextureResource:
@@ -532,7 +525,10 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type, UUID);
+
+			App->fs->GetFileName(fileInAssets, outputFileName);
 			resource->SetName(outputFileName.data());
+
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 			resources.push_back(resource);
@@ -554,12 +550,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		case ResourceType::ShaderObjectResource:
 		{
-			std::string outputFileName;
-			App->fs->GetFileName(outputFile.data(), outputFileName);
-
 			// Create a new resource for the shader
 			ResourceShaderObject* resource = (ResourceShaderObject*)CreateNewResource(type);
-			resource->SetName(outputFileName.data());
+
+			std::string fileName;
+			App->fs->GetFileName(fileInAssets, fileName);
+			resource->SetName(fileName.data());
+
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 			resource->shaderType = resource->GetShaderTypeByExtension(extension.data());

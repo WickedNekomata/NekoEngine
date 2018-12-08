@@ -374,6 +374,8 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 		return false;
 	}
 
+	textureImportSettings->metaFile = metaFile;
+
 	JSON_Value* rootValue = json_parse_string(buffer);
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 

@@ -78,7 +78,7 @@ bool PanelCodeEditor::Draw()
 			// Reimport Shader Object file
 			System_Event newEvent;
 			newEvent.fileEvent.metaFile = metaFile;
-			newEvent.type = System_Event_Type::ReimportFile;
+			newEvent.type = System_Event_Type::FileOverwritten;
 			App->PushSystemEvent(newEvent);
 		}
 	}

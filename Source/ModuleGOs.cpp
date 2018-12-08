@@ -52,7 +52,12 @@ update_status ModuleGOs::PostUpdate()
 	if (serializeScene)
 	{
 		std::string outputFileName = nameScene;
-		SerializeFromNode(App->scene->root, outputFileName);
+		if (SerializeFromNode(App->scene->root, outputFileName))
+		{
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RefreshAssets;
+			App->PushSystemEvent(newEvent);
+		}
 	}
 
 	serializeScene = false;

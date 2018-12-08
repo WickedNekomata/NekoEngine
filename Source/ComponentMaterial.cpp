@@ -18,7 +18,6 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 
 	// Default texture (0)
 	MaterialResource texture;
-	texture.res = App->materialImporter->GetDefaultTexture();
 	res.push_back(texture);
 }
 
@@ -69,31 +68,31 @@ void ComponentMaterial::OnUniqueEditor()
 	ImGui::Spacing();
 
 	{
-	ImGui::Text("Shader");
-	ImGui::SameLine();
+		ImGui::Text("Shader");
+		ImGui::SameLine();
 
-	ImGui::PushID("shader");
-	ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
-	ImGui::PopID();
+		ImGui::PushID("shader");
+		ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::Text("Default Shader");
-		ImGui::EndTooltip();
-	}
-	/*
-	if (ImGui::BeginDragDropTarget())
-	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+		if (ImGui::IsItemHovered())
 		{
-			uint payload_n = *(uint*)payload->Data;
-			SetResource(payload_n);
+			ImGui::BeginTooltip();
+			ImGui::Text("Default Shader");
+			ImGui::EndTooltip();
 		}
-		ImGui::EndDragDropTarget();
+		/*
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+			{
+				uint payload_n = *(uint*)payload->Data;
+				SetResource(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
+		*/
 	}
-	*/
-}
 
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
 

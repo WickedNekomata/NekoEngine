@@ -8,6 +8,8 @@ ResourceShaderObject::ResourceShaderObject(ResourceType type, uint uuid) : Resou
 
 ResourceShaderObject::~ResourceShaderObject()
 {
+	RELEASE_ARRAY(source);
+
 	glDeleteShader(shaderObject);
 }
 

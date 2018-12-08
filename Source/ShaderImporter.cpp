@@ -29,7 +29,7 @@ bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::s
 
 	assert(shaderObject != nullptr);
 
-	outputFile = shaderObject->file;
+	outputFile = shaderObject->GetName();
 
 	/*
 	GLubyte* buffer;
@@ -71,7 +71,7 @@ bool ShaderImporter::SaveShaderProgram(ResourceShaderProgram* shaderProgram, std
 
 	assert(shaderProgram != nullptr);
 
-	outputFile = shaderProgram->name;
+	outputFile = shaderProgram->GetName();
 
 	GLubyte* buffer;
 	uint size = shaderProgram->GetBinary(&buffer);
@@ -333,35 +333,11 @@ void ShaderImporter::LoadDefaultFragmentShaderObject()
 
 void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject)
 {
-	// TODO MAKE IT STATIC
-	defaultShaderProgram = glCreateProgram();
+	std::list<GLuint> shaderObjects;
+	shaderObjects.push_back(defaultVertexShaderObject);
+	shaderObjects.push_back(defaultFragmentShaderObject);
 
-	glAttachShader(defaultShaderProgram, defaultVertexShaderObject);
-	glAttachShader(defaultShaderProgram, defaultFragmentShaderObject);
-
-	glLinkProgram(defaultShaderProgram);
-
-	glDetachShader(defaultShaderProgram, defaultVertexShaderObject);
-	glDetachShader(defaultShaderProgram, defaultFragmentShaderObject);
-
-	{
-		GLint success;
-		glGetProgramiv(defaultShaderProgram, GL_LINK_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			GLint logSize = 0;
-			glGetShaderiv(defaultShaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-
-			GLchar* infoLog = new GLchar[logSize];
-			glGetProgramInfoLog(defaultShaderProgram, logSize, NULL, infoLog);
-
-			CONSOLE_LOG("SHADER IMPORTER: Default Shader Program could not be linked. ERROR: %s", infoLog);
-
-			glDeleteProgram(defaultShaderProgram);
-		}
-		else
-			CONSOLE_LOG("SHADER IMPORTER: Successfully linked Default Shader Program");
-	}
+	defaultShaderProgram = ResourceShaderProgram::Link(shaderObjects);
 }
 
 GLuint ShaderImporter::GetDefaultVertexShaderObject() const

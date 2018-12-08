@@ -495,15 +495,12 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
 			{
 				ResourceMesh* resource = (ResourceMesh*)CreateNewResource(type, it->second);
+				resource->SetName(it->first.data());
 				resource->file = fileInAssets;
-
 				resource->exportedFile = DIR_LIBRARY_MESHES;
 				resource->exportedFile.append("/");
 				resource->exportedFile.append(std::to_string(it->second));
 				resource->exportedFile.append(EXTENSION_MESH);
-
-				strcpy_s((char*)resource->name, DEFAULT_BUF_SIZE, it->first.data());
-
 				resources.push_back(resource);
 			}
 
@@ -535,6 +532,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// Create a new resource for the texture
 			Resource* resource = CreateNewResource(type, UUID);
+			resource->SetName(outputFileName.data());
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 			resources.push_back(resource);
@@ -556,8 +554,12 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		case ResourceType::ShaderObjectResource:
 		{
+			std::string outputFileName;
+			App->fs->GetFileName(outputFile.data(), outputFileName);
+
 			// Create a new resource for the shader
 			ResourceShaderObject* resource = (ResourceShaderObject*)CreateNewResource(type);
+			resource->SetName(outputFileName.data());
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 			resource->shaderType = resource->GetShaderTypeByExtension(extension.data());

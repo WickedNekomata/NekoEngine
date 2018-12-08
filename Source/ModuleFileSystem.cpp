@@ -218,8 +218,8 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 
 				for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
 				{
-					ResourceMesh* mesh = (ResourceMesh*)App->res->GetResource(*it);
-					file->UUIDs[mesh->name] = *it;
+					const Resource* resource = App->res->GetResource(*it);
+					file->UUIDs[resource->GetName()] = *it;
 				}
 			}
 			break;

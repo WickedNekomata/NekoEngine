@@ -20,12 +20,13 @@ public:
 	bool AddShaderObject(GLuint shaderObject);
 	bool RemoveShaderObject(GLuint shaderObject);
 
-	bool Link();
-	uint GetBinary(GLubyte** buffer);
-	bool LoadBinary(const void* buffer, uint size);
+	static GLuint Link(std::list<GLuint> shaderObjects);
 
-	bool IsProgramValid() const;
-	bool IsProgramLinked() const;
+	GLint GetBinary(GLubyte** buffer);
+	GLuint LoadBinary(const void* buffer, GLint size);
+
+	static bool IsProgramValid(GLuint shaderProgram);
+	static bool IsProgramLinked(GLuint shaderProgram);
 
 private:
 
@@ -33,8 +34,6 @@ private:
 	bool UnloadFromMemory() { return true; }
 
 public:
-
-	const char* name = nullptr;
 
 	std::list<GLuint> shaderObjects;
 	GLuint shaderProgram = 0;

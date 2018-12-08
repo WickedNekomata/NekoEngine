@@ -5,9 +5,25 @@
 
 #include <assert.h> 
 
-Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) {}
+Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) 
+{
+	name = new char[DEFAULT_BUF_SIZE];
+}
 
-Resource::~Resource() {}
+Resource::~Resource() 
+{
+	RELEASE_ARRAY(name);
+}
+
+void Resource::SetName(const char* name)
+{
+	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
+}
+
+const char* Resource::GetName() const
+{
+	return name;
+}
 
 // Get UUID of the current resource.
 uint Resource::GetUUID() const

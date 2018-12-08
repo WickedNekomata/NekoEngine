@@ -229,7 +229,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 		if (!broken)
 		{
-			gameObject->AddComponent(ComponentType::Mesh_Component);
+			gameObject->AddComponent(ComponentType::MeshComponent);
 			gameObject->meshRenderer->res = App->GenerateRandomNumber();
 
 			GLfloat* vertices = nullptr;

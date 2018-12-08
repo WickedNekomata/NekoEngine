@@ -37,18 +37,6 @@ ResourceType Resource::GetType() const
 	return type;
 }
 
-// Get file of the current resource.
-const char* Resource::GetFile() const
-{
-	return file.data();
-}
-
-// Get the exported file of the current resource.
-const char* Resource::GetExportedFile() const
-{
-	return exportedFile.data();
-}
-
 // Returns true if the current resource is already loaded into vram.
 bool Resource::IsInMemory() const
 {

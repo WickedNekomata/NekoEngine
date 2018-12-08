@@ -31,34 +31,46 @@ bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::s
 
 	outputFile = shaderObject->GetName();
 
-	/*
-	GLubyte* buffer;
-	uint size = shaderProgram->GetBinary(&buffer);
+	const char* buffer = shaderObject->source;
+	uint size = 0;
+	if (buffer != nullptr)
+		size = strlen(buffer);
+
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
+		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", outputFile.data());
 		ret = SaveShaderProgram(buffer, size, outputFile);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
-		*/
+		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", outputFile.data());
+
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, std::string& outputFile) const
+bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile) const
 {
 	bool ret = false;
 
-	/*
-	if (App->fs->SaveInGame((char*)buffer, size, FileType::TextureFile, outputFile) > 0)
+	FileType fileType = FileType::NoFileType;
+	switch (shaderType)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
+	case ShaderType::VertexShaderType:
+		fileType = FileType::VertexShaderObjectFile;
+		break;
+	case ShaderType::FragmentShaderType:
+		fileType = FileType::FragmentShaderObjectFile;
+		break;
+	}
+
+	if (App->fs->SaveInGame((char*)buffer, size, fileType, outputFile) > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Shader Object '%s'", outputFile.data());
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not save Binary Program '%s'", outputFile.data());
-		*/
+		CONSOLE_LOG("SHADER IMPORTER: Could not save Shader Object '%s'", outputFile.data());
+
 	return ret;
 }
 

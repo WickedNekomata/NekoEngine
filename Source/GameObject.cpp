@@ -26,7 +26,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 		parent->AddChild(this);
 
 		if (!disableTransform)
-			AddComponent(ComponentType::Transform_Component);
+			AddComponent(ComponentType::TransformComponent);
 	}
 
 	boundingBox.SetNegativeInfinity();
@@ -187,22 +187,22 @@ Component* GameObject::AddComponent(ComponentType type)
 
 	switch (type)
 	{
-	case No_type:
+	case NoComponentType:
 		break;
-	case Transform_Component:
+	case TransformComponent:
 		newComponent = transform = new ComponentTransform(this);
 		break;
-	case Mesh_Component:
+	case MeshComponent:
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
 		break;
-	case Material_Component:
+	case MaterialComponent:
 		if (materialRenderer != nullptr)
 			return nullptr;
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
-	case Camera_Component:
+	case CameraComponent:
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	default:
@@ -212,7 +212,7 @@ Component* GameObject::AddComponent(ComponentType type)
 	components.push_back(newComponent);
 
 	if (createMaterial)
-		AddComponent(ComponentType::Material_Component);
+		AddComponent(ComponentType::MaterialComponent);
 
 	return newComponent;
 }
@@ -237,11 +237,11 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 {
 	switch (toDelete->GetType())
 	{
-	case ComponentType::Mesh_Component:
+	case ComponentType::MeshComponent:
 		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
 		meshRenderer = nullptr;
 		break;
-	case ComponentType::Camera_Component:
+	case ComponentType::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
 		materialRenderer = nullptr;
 		break;
@@ -257,10 +257,10 @@ void GameObject::InternallyDeleteComponents()
 	{   
 		switch (components[i]->GetType())
 		{
-		case ComponentType::Mesh_Component:
+		case ComponentType::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
 			break;
-		case ComponentType::Camera_Component:
+		case ComponentType::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
 		}		

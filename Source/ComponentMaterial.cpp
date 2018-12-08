@@ -12,7 +12,7 @@
 
 #include "imgui\imgui.h"
 
-ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::Material_Component) 
+ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::MaterialComponent) 
 {
 	res.reserve(App->renderer3D->GetMaxTextureUnits());
 
@@ -22,7 +22,7 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 	res.push_back(texture);
 }
 
-ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::Material_Component)
+ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::MaterialComponent)
 {
 	res = componentMaterial.res;
 

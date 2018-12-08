@@ -22,9 +22,6 @@ public:
 	uint GetUUID() const;
 	ResourceType GetType() const;
 
-	const char* GetFile() const;
-	const char* GetExportedFile() const;
-
 	bool IsInMemory() const;
 	virtual uint LoadMemory();
 	virtual uint UnloadMemory();

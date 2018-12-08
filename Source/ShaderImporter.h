@@ -64,7 +64,7 @@ public:
 
 	// Shader Object (save)
 	bool SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile) const;
-	bool SaveShaderObject(const void* buffer, uint size, std::string& outputFile) const;
+	bool SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile) const;
 
 	// Shader Program (save)
 	bool SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile) const;

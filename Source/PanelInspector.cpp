@@ -114,13 +114,13 @@ void PanelInspector::ShowGameObjectInspector() const
 	{
 		if (gameObject->meshRenderer == nullptr) {
 			if (ImGui::Selectable("Mesh")) {
-				gameObject->AddComponent(ComponentType::Mesh_Component);
+				gameObject->AddComponent(ComponentType::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}
 		if (gameObject->camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
-				gameObject->AddComponent(ComponentType::Camera_Component);
+				gameObject->AddComponent(ComponentType::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		ImGui::EndPopup();		

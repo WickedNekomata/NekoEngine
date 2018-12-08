@@ -11,9 +11,9 @@
 #include "imgui\imgui_internal.h"
 #include <list>
 
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::Transform_Component) {}
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::TransformComponent) {}
 
-ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::Transform_Component)
+ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::TransformComponent)
 {
 	position = componentTransform.position;
 	rotation = componentTransform.rotation;

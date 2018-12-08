@@ -403,7 +403,7 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::map<std::string
 		{
 			cObject = json_array_get_object(jsonComponents, i);
 
-			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::Mesh_Component)
+			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::MeshComponent)
 				meshes[json_object_get_string(gObject, "Name")] = json_object_get_number(cObject, "ResourceMesh");
 		}
 	}

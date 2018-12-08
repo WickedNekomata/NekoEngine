@@ -12,7 +12,7 @@ class Component
 {
 public:
 
-	Component(GameObject* parent, ComponentType type = ComponentType::No_type);
+	Component(GameObject* parent, ComponentType type = ComponentType::NoComponentType);
 	virtual void Activate() {};
 	virtual ~Component();
 

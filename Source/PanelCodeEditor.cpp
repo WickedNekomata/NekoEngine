@@ -80,11 +80,21 @@ bool PanelCodeEditor::Draw()
 		ResourceShaderObject::DeleteShaderObject(shaderCompiled);
 	}
 
-	// TODO: Print the name of the shader and whether it is vertex or fragment
-	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-		editor.IsOverwrite() ? "Ovr" : "Ins",
-		editor.CanUndo() ? "*" : " ",
-		editor.GetLanguageDefinition().mName.c_str(), fileToEdit);
+	switch (currentShader->shaderType)
+	{
+	case ShaderType::VertexShaderType:
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+			editor.GetLanguageDefinition().mName.c_str(), fileToEdit),
+			"Vertex Shader",
+			currentShader->GetName();
+		break;
+	case ShaderType::FragmentShaderType:
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+			editor.GetLanguageDefinition().mName.c_str(), fileToEdit),
+			"Vertex Shader",
+			currentShader->GetName();
+		break;
+	}
 
 	editor.Render("TextEditor");
 	ImGui::End();

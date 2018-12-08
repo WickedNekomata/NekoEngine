@@ -16,8 +16,12 @@ public:
 	Resource(ResourceType type, uint uuid);
 	virtual ~Resource();
 
+	void SetName(const char* name);
+	const char* GetName() const;
+
 	uint GetUUID() const;
 	ResourceType GetType() const;
+
 	const char* GetFile() const;
 	const char* GetExportedFile() const;
 
@@ -41,6 +45,7 @@ public:
 
 protected:
 
+	const char* name = nullptr;
 	ResourceType type = ResourceType::NoResourceType;
 	uint UUID = 0;
 	uint count = 0;

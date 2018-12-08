@@ -16,6 +16,7 @@ uint ResourceShaderObject::LoadMemory()
 	return LoadInMemory();
 }
 
+// Returns the shader object that has been compiled. If error, returns -1
 GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 {
 	GLenum shader = 0;
@@ -36,6 +37,17 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 	// Compile the Shader Object
 	glCompileShader(shaderObject);
 
+	if (!IsObjectCompiled(shaderObject))
+	{
+		glDeleteShader(shaderObject);
+		return -1;
+	}
+
+	return shaderObject;
+}
+
+bool ResourceShaderObject::IsObjectCompiled(GLuint shaderObject)
+{
 	GLint success = 0;
 	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE)
@@ -47,15 +59,11 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
 		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
-
-		glDeleteShader(shaderObject); // TODO
-
-		return -1;
 	}
 	else
 		CONSOLE_LOG("Successfully compiled Shader Object");
 
-	return shaderObject;
+	return success;
 }
 
 bool ResourceShaderObject::DeleteShaderObject(GLuint shaderObject)
@@ -64,6 +72,7 @@ bool ResourceShaderObject::DeleteShaderObject(GLuint shaderObject)
 		return false;
 
 	glDeleteShader(shaderObject);
+
 	return true;
 }
 

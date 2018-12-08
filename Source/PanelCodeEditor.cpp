@@ -63,12 +63,23 @@ bool PanelCodeEditor::Draw()
 	if (ImGui::Button("Save"))
 	{
 		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
-		if (shaderCompiled != -1)
+		if (shaderCompiled > 0)
 		{
 			ResourceShaderObject::DeleteShaderObject(currentShader->shaderObject);
-			currentShader->source = editor.GetText().data();
+			std::string text = editor.GetText();
+			currentShader->SetSource(text.data(), text.size());
 			currentShader->shaderObject = shaderCompiled;
-			CONSOLE_LOG("%s saved", currentShader->file.data());
+			
+			// Search for the meta associated to the file
+			char metaFile[DEFAULT_BUF_SIZE];
+			strcpy_s(metaFile, strlen(currentShader->file.data()) + 1, currentShader->file.data()); // file
+			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+			
+			// Reimport Shader Object file
+			System_Event newEvent;
+			newEvent.fileEvent.metaFile = metaFile;
+			newEvent.type = System_Event_Type::ReimportFile;
+			App->PushSystemEvent(newEvent);
 		}
 	}
 
@@ -95,6 +106,6 @@ bool PanelCodeEditor::Draw()
 void PanelCodeEditor::OpenShaderInCodeEditor(ResourceShaderObject* shader)
 {
 	enabled = true;
-	editor.SetText(shader->source);
+	editor.SetText(shader->GetSource());
 	currentShader = shader;
 }

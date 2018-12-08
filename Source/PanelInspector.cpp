@@ -413,6 +413,7 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 	{ 
 		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile, meshImportSettings);
 
+		// Reimport Mesh file
 		System_Event newEvent;
 		newEvent.fileEvent.metaFile = meshImportSettings->metaFile;
 		newEvent.type = System_Event_Type::ReimportFile;
@@ -473,6 +474,7 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	{ 
 		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile, textureImportSettings); 
 		
+		// Reimport Texture file
 		System_Event newEvent;
 		newEvent.fileEvent.metaFile = textureImportSettings->metaFile;
 		newEvent.type = System_Event_Type::ReimportFile;

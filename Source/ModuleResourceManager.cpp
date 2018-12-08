@@ -690,7 +690,7 @@ bool ModuleResourceManager::FindTextureByFile(const char* fileInAssets, uint& UU
 
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
+		if (strcmp(it->second->file.data(), fileInAssets) == 0)
 		{
 			UUID = it->first;
 			return true;
@@ -707,7 +707,7 @@ bool ModuleResourceManager::FindTextureByExportedFile(const char* exportedFile, 
 
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)
+		if (strcmp(it->second->exportedFile.data(), exportedFile) == 0)
 		{
 			UUID = it->first;
 			return true;
@@ -724,7 +724,7 @@ bool ModuleResourceManager::FindMeshesByFile(const char* fileInAssets, std::list
 
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetFile(), fileInAssets) == 0)
+		if (strcmp(it->second->file.data(), fileInAssets) == 0)
 		{
 			uint UUID = it->first;
 			UUIDs.push_back(UUID);
@@ -742,7 +742,7 @@ bool ModuleResourceManager::FindMeshesByExportedFile(const char* exportedFile, s
 
 	for (auto it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(it->second->GetExportedFile(), exportedFile) == 0)
+		if (strcmp(it->second->exportedFile.data(), exportedFile) == 0)
 		{
 			uint UUID = it->first;
 			UUIDs.push_back(UUID);

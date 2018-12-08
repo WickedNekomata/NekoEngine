@@ -102,10 +102,10 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::Text("Texture %i", i + 1);
 		ImGui::SameLine();
 
-		std::string fileName;
+		std::string fileName = "Empty Texture";
 		const Resource* resource = App->res->GetResource(res[i].res);
 		if (resource != nullptr)
-			App->fs->GetFileName(resource->GetFile(), fileName);
+			fileName = resource->GetName();
 
 		char itemName[DEFAULT_BUF_SIZE];
 		

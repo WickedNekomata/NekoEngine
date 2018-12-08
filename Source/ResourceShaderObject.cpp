@@ -16,7 +16,21 @@ uint ResourceShaderObject::LoadMemory()
 	return LoadInMemory();
 }
 
-// Returns the shader object that has been compiled. If error, returns -1
+void ResourceShaderObject::SetSource(const char* source, uint size)
+{
+	RELEASE_ARRAY(this->source);
+	this->source = new char[size];
+
+	memcpy((char*)this->source, source, size);
+	((char*)this->source)[size] = 0;
+}
+
+const char* ResourceShaderObject::GetSource() const
+{
+	return source;
+}
+
+// Returns the shader object that has been compiled. If error, returns 0
 GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 {
 	GLenum shader = 0;
@@ -38,10 +52,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 	glCompileShader(shaderObject);
 
 	if (!IsObjectCompiled(shaderObject))
-	{
 		glDeleteShader(shaderObject);
-		return -1;
-	}
 
 	return shaderObject;
 }

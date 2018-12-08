@@ -31,7 +31,7 @@ bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::s
 
 	outputFile = shaderObject->GetName();
 
-	const char* buffer = shaderObject->source;
+	const char* buffer = shaderObject->GetSource();
 	uint size = 0;
 	if (buffer != nullptr)
 		size = strlen(buffer);
@@ -268,12 +268,10 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 
 	if (buffer != nullptr && size > 0)
 	{
-		shaderObject->source = new char[size];
-		memcpy((char*)shaderObject->source, buffer, size);
-		((char*)shaderObject->source)[size] = 0;
+		shaderObject->SetSource((const char*)buffer, size);
 
 		// Try to compile the shader object
-		ret = shaderObject->Compile(shaderObject->source, shaderObject->shaderType);
+		ret = shaderObject->shaderObject = ResourceShaderObject::Compile(shaderObject->GetSource(), shaderObject->shaderType);
 	}
 
 	if (ret)

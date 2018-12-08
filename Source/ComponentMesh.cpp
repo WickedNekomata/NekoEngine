@@ -62,10 +62,10 @@ void ComponentMesh::OnUniqueEditor()
 	ImGui::Text("Mesh");
 	ImGui::SameLine();
 
-	std::string fileName;
+	std::string fileName = "Empty Mesh";
 	const Resource* resource = App->res->GetResource(res);
 	if (resource != nullptr)
-		App->fs->GetFileName(resource->GetFile(), fileName);
+		fileName = resource->GetName();
 
 	ImGui::PushID("mesh");
 	ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));

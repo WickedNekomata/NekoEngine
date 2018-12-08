@@ -12,6 +12,7 @@
 
 ShaderImporter::ShaderImporter() 
 {
+	// TODO: this is not working. Maybe because it is here?
 	// Verify that the driver supports at least one shader binary format
 	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
 }
@@ -114,11 +115,11 @@ bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::strin
 	return ret;
 }
 
-bool ShaderImporter::GenerateMeta(Resource* resource, std::string& outputMetaFile) const
+bool ShaderImporter::GenerateShaderObjectMeta(ResourceShaderObject* shaderObject, std::string& outputMetaFile) const
 {
-	if (resource == nullptr)
+	if (shaderObject == nullptr)
 	{
-		assert(resource != nullptr);
+		assert(shaderObject != nullptr);
 		return false;
 	}
 
@@ -126,12 +127,12 @@ bool ShaderImporter::GenerateMeta(Resource* resource, std::string& outputMetaFil
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	// Fill the JSON with data
-	int lastModTime = App->fs->GetLastModificationTime(resource->file.data());
+	int lastModTime = App->fs->GetLastModificationTime(shaderObject->file.data());
 	json_object_set_number(rootObject, "Time Created", lastModTime);
-	json_object_set_number(rootObject, "UUID", resource->GetUUID());
+	json_object_set_number(rootObject, "UUID", shaderObject->GetUUID());
 
 	// Build the path of the meta file
-	outputMetaFile.append(resource->file.data());
+	outputMetaFile.append(shaderObject->file.data());
 	outputMetaFile.append(EXTENSION_META);
 
 	// Create the JSON
@@ -156,7 +157,60 @@ bool ShaderImporter::GenerateMeta(Resource* resource, std::string& outputMetaFil
 	return true;
 }
 
-bool ShaderImporter::SetShaderUUIDToMeta(const char* metaFile, uint& UUID) const
+bool ShaderImporter::GenerateShaderProgramMeta(ResourceShaderProgram* shaderProgram, std::string& outputMetaFile) const
+{
+	if (shaderProgram == nullptr)
+	{
+		assert(shaderProgram != nullptr);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_value_init_object();
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	// Fill the JSON with data
+	int lastModTime = App->fs->GetLastModificationTime(shaderProgram->file.data());
+	json_object_set_number(rootObject, "Time Created", lastModTime);
+	json_object_set_number(rootObject, "UUID", shaderProgram->GetUUID());
+
+	JSON_Value* shaderObjectsArrayValue = json_value_init_array();
+	JSON_Array* shaderObjectsArray = json_value_get_array(shaderObjectsArrayValue);
+	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->shaderObjects;
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	{
+		std::string fileName;
+		App->fs->GetFileName((*it)->file.data(), fileName, true);
+		json_array_append_string(shaderObjectsArray, fileName.data());
+	}
+	json_object_set_value(rootObject, "Shader Objects", shaderObjectsArrayValue);
+
+	// Build the path of the meta file
+	outputMetaFile.append(shaderProgram->file.data());
+	outputMetaFile.append(EXTENSION_META);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+	char* buf = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
+
+	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+	}
+	else
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		return false;
+	}
+
+	RELEASE_ARRAY(buf);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool ShaderImporter::SetShaderUUIDToMeta(const char* metaFile, uint UUID) const
 {
 	if (metaFile == nullptr)
 	{
@@ -192,11 +246,11 @@ bool ShaderImporter::SetShaderUUIDToMeta(const char* metaFile, uint& UUID) const
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
+		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
 		return false;
 	}
 
@@ -230,6 +284,98 @@ bool ShaderImporter::GetShaderUUIDFromMeta(const char* metaFile, uint& UUID) con
 	JSON_Object* rootObject = json_value_get_object(rootValue);
 
 	UUID = json_object_get_number(rootObject, "UUID");
+
+	RELEASE_ARRAY(buffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool ShaderImporter::SetShaderObjectsToMeta(const char* metaFile, std::list<ResourceShaderObject*> shaderObjects) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		//CONSOLE_LOG("SHADER IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Value* shaderObjectsArrayValue = json_value_init_array();
+	JSON_Array* shaderObjectsArray = json_value_get_array(shaderObjectsArrayValue);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	{
+		std::string fileName;
+		App->fs->GetFileName((*it)->file.data(), fileName, true);
+		json_array_append_string(shaderObjectsArray, fileName.data());
+	}
+	json_object_set_value(rootObject, "Shader Objects", shaderObjectsArrayValue);
+
+	// Create the JSON
+	int sizeBuf = json_serialization_size_pretty(rootValue);
+
+	RELEASE_ARRAY(buffer);
+
+	char* newBuffer = new char[sizeBuf];
+	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
+
+	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
+	if (size > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its Shader Objects UUIDs", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its Shader Objects UUIDs", metaFile);
+		return false;
+	}
+
+	RELEASE_ARRAY(newBuffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool ShaderImporter::GetShaderObjectsFromMeta(const char* metaFile, std::list<std::string>& files) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		//CONSOLE_LOG("SHADER IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Array* shaderObjectsArray = json_object_get_array(rootObject, "Shader Objects");
+	uint shaderObjectsArraySize = json_array_get_count(shaderObjectsArray);
+	for (uint i = 0; i < shaderObjectsArraySize; i++)
+		files.push_back(json_array_get_string(shaderObjectsArray, i));
 
 	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
@@ -349,7 +495,7 @@ void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, ui
 	shaderObjects.push_back(defaultVertexShaderObject);
 	shaderObjects.push_back(defaultFragmentShaderObject);
 
-	defaultShaderProgram = ResourceShaderProgram::Link(shaderObjects);
+	//defaultShaderProgram = ResourceShaderProgram::Link(shaderObjects); //TODO
 }
 
 GLuint ShaderImporter::GetDefaultVertexShaderObject() const

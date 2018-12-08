@@ -621,7 +621,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
+				App->shaderImporter->GenerateShaderObjectMeta((ResourceShaderObject*)resources.front(), outputMetaFile);
 			// Else, update the UUID and the last modified time in the existing meta
 			else
 			{
@@ -657,18 +657,51 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 
-			// Load the binary
-			//if (App->shaderImporter->LoadShaderProgram(fileInAssets, resource))
-			//if (!resource->LoadMemory())
-				//resource->isValid = false;
-			// If the binary hasn't loaded correctly, link the program
+			std::list<ResourceShaderObject*> shaderObjects;
 
+			// 1. Load the binary
+			if (!resource->LoadMemory())
+			{
+				// 2. If the binary hasn't loaded correctly, retrieve the shader objects of the shader program
+				std::list<std::string> files;
+				App->shaderImporter->GetShaderObjectsFromMeta(metaFile, files);
+
+				for (std::list<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+				{
+					// Check if the resource exists in Assets
+					std::string outputFile = DIR_ASSETS;
+					if (App->fs->RecursiveExists((*it).data(), DIR_ASSETS, outputFile))
+					{
+						uint UUID = 0;
+						std::list<uint> UUIDs;
+						if (!App->res->FindResourcesByFile(outputFile.data(), UUIDs))
+							// If the shader object is not a resource yet, import it
+							UUID = App->res->ImportFile(outputFile.data());
+						else
+							UUID = UUIDs.front();
+
+						if (UUID > 0)
+							shaderObjects.push_back((ResourceShaderObject*)GetResource(UUID));
+					}
+				}
+
+				if (files.size() == shaderObjects.size())
+				{
+					// 3. With the shader objects, link the program
+					if (!ResourceShaderProgram::Link(shaderObjects))
+						resource->isValid = false;
+				}
+				else
+					resource->isValid = false;
+			}
+			else
+				resource->isValid = false;
 
 			resources.push_back(resource);
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
-				App->shaderImporter->GenerateMeta(resources.front(), outputMetaFile);
+				App->shaderImporter->GenerateShaderProgramMeta((ResourceShaderProgram*)resources.front(), outputMetaFile);
 			// Else, update the UUID and the last modified time in the existing meta
 			else
 			{

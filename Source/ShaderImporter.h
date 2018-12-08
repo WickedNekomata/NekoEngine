@@ -8,6 +8,8 @@
 
 #include "glew\include\GL\glew.h"
 
+#include <list>
+
 #pragma region ShadersTemplate
 
 #define vShaderTemplate \
@@ -70,9 +72,12 @@ public:
 	bool SaveShaderProgram(const char* name, GLint shaderProgram, std::string& outputFile) const;
 	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile) const;
 
-	bool GenerateMeta(Resource* resource, std::string& outputMetaFile) const;
-	bool SetShaderUUIDToMeta(const char* metaFile, uint& UUID) const;
+	bool GenerateShaderObjectMeta(ResourceShaderObject* shaderObject, std::string& outputMetaFile) const;
+	bool GenerateShaderProgramMeta(ResourceShaderProgram* shaderProgram, std::string& outputMetaFile) const;
+	bool SetShaderUUIDToMeta(const char* metaFile, uint UUID) const;
 	bool GetShaderUUIDFromMeta(const char* metaFile, uint& UUID) const;
+	bool SetShaderObjectsToMeta(const char* metaFile, std::list<ResourceShaderObject*> shaderObjects) const;
+	bool GetShaderObjectsFromMeta(const char* metaFile, std::list<std::string>& files) const;
 
 	// Shader Object (load)
 	bool LoadShaderObject(const char* objectFile, ResourceShaderObject* shaderObject) const;

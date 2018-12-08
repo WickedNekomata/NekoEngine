@@ -15,7 +15,8 @@ uint ResourceShaderProgram::LoadMemory()
 	return LoadInMemory();
 }
 
-bool ResourceShaderProgram::AddShaderObject(GLuint shaderObject)
+// TODO: Add and Remove Shader Objects updating the meta of the Program!
+bool ResourceShaderProgram::AddShaderObject(ResourceShaderObject* shaderObject)
 {
 	bool ret = std::find(shaderObjects.begin(), shaderObjects.end(), shaderObject) == shaderObjects.end();
 
@@ -25,7 +26,7 @@ bool ResourceShaderProgram::AddShaderObject(GLuint shaderObject)
 	return ret;
 }
 
-bool ResourceShaderProgram::RemoveShaderObject(GLuint shaderObject)
+bool ResourceShaderProgram::RemoveShaderObject(ResourceShaderObject* shaderObject)
 {
 	bool ret = std::find(shaderObjects.begin(), shaderObjects.end(), shaderObject) != shaderObjects.end();
 
@@ -36,19 +37,19 @@ bool ResourceShaderProgram::RemoveShaderObject(GLuint shaderObject)
 }
 
 // Returns the shader program that has been linked. If error, returns 0
-GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
+GLuint ResourceShaderProgram::Link(std::list<ResourceShaderObject*> shaderObjects)
 {
 	// Create a Shader Program
 	GLuint shaderProgram = glCreateProgram();
 
-	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
-		glAttachShader(shaderProgram, *it);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glAttachShader(shaderProgram, (*it)->shaderObject);
 
 	// Link the Shader Program
 	glLinkProgram(shaderProgram);
 
-	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
-		glDetachShader(shaderProgram, *it);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glDetachShader(shaderProgram, (*it)->shaderObject);
 
 	if (!IsProgramLinked(shaderProgram))
 		glDeleteProgram(shaderProgram);

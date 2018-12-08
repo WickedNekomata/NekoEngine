@@ -311,12 +311,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 					if (textureName.length > 0)
 					{
-						std::string file;
-						App->fs->GetFileName(textureName.data, file, true);
+						std::string fileName;
+						App->fs->GetFileName(textureName.data, fileName, true);
 
 						// Check if the texture exists in Assets
 						std::string outputFile = DIR_ASSETS;
-						if (App->fs->RecursiveExists(file.data(), DIR_ASSETS, outputFile))
+						if (App->fs->RecursiveExists(fileName.data(), DIR_ASSETS, outputFile))
 						{
 							uint UUID = 0;
 							std::list<uint> UUIDs;
@@ -409,7 +409,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	}
 }
 
-bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, std::string& outputMetaFile, const MeshImportSettings* meshImportSettings) const
+bool SceneImporter::GenerateMeta(std::list<Resource*> resources, std::string& outputMetaFile, const MeshImportSettings* meshImportSettings) const
 {
 	if (resources.empty() || meshImportSettings == nullptr)
 	{
@@ -480,7 +480,7 @@ bool SceneImporter::GenerateMeta(std::list<Resource*>& resources, std::string& o
 	return true;
 }
 
-bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint>& UUIDs) const
+bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUIDs) const
 {
 	if (metaFile == nullptr)
 	{
@@ -529,6 +529,40 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint>& UU
 	}
 
 	RELEASE_ARRAY(newBuffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	JSON_Array* meshesArray = json_object_get_array(rootObject, "Meshes");
+	uint meshesArraySize = json_array_get_count(meshesArray);
+	for (uint i = 0; i < meshesArraySize; i++)
+		UUIDs.push_back(json_array_get_number(meshesArray, i));
+
+	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
 
 	return true;
@@ -597,40 +631,6 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	}
 
 	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Array* meshesArray = json_object_get_array(rootObject, "Meshes");
-	uint meshesArraySize = json_array_get_count(meshesArray);
-	for (uint i = 0; i < meshesArraySize; i++)
-		UUIDs.push_back(json_array_get_number(meshesArray, i));
-
-	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
 
 	return true;

@@ -1,13 +1,15 @@
 #include "PanelShaderEditor.h"
 
 #include "Application.h"
+#include "Globals.h"
 #include "ModuleFileSystem.h"
 #include "ModuleGui.h"
+#include "ModuleResourceManager.h"
+#include "ShaderImporter.h"
 #include "PanelCodeEditor.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 
-#include "Globals.h"
 #include "imgui/imgui.h"
 
 PanelShaderEditor::PanelShaderEditor(char* name) : Panel(name)
@@ -131,17 +133,33 @@ bool PanelShaderEditor::Draw()
 
 	if (ImGui::Button("Link and Save")) {
 
-		std::list<uint> readyToLink;
+		std::list<ResourceShaderObject*> readyToLink;
 
 		for (auto it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
-			readyToLink.push_back((*it)->shaderObject);
+			readyToLink.push_back(*it);
 
 		for (auto it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
-			readyToLink.push_back((*it)->shaderObject);
+			readyToLink.push_back(*it);
 
-		uint program = ResourceShaderProgram::Link(readyToLink);
-		
-		ResourceShaderProgram* shaderProgram = new ResourceShaderProgram(ResourceType::ShaderProgramResource, 0);
+		GLuint shaderProgram = ResourceShaderProgram::Link(readyToLink);
+		if (shaderProgram > 0)
+		{
+			// TODO: mix this together with the Resource Manager (handle specific cases)
+			std::string outputFile;
+			if (App->shaderImporter->SaveShaderProgram(&shaderProgramName, shaderProgram, outputFile))
+			{
+				ResourceShaderProgram* resource = (ResourceShaderProgram*)App->res->CreateNewResource(ResourceType::ShaderProgramResource);
+				resource->shaderProgram = shaderProgram;
+				resource->shaderObjects = readyToLink;
+
+				std::string outputMetaFile;
+				App->shaderImporter->GenerateShaderProgramMeta(resource, outputMetaFile);
+
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::RefreshAssets;
+				App->PushSystemEvent(newEvent);
+			}
+		}
 	}
 
 	ImGui::End();

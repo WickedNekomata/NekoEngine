@@ -216,7 +216,7 @@ bool MaterialImporter::GenerateMeta(Resource* resource, std::string& outputMetaF
 	return true;
 }
 
-bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint& UUID) const
+bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint UUID) const
 {
 	if (metaFile == nullptr)
 	{
@@ -261,6 +261,37 @@ bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint& UUID) co
 	}
 
 	RELEASE_ARRAY(newBuffer);
+	json_value_free(rootValue);
+
+	return true;
+}
+
+bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
+{
+	if (metaFile == nullptr)
+	{
+		assert(metaFile != nullptr);
+		return false;
+	}
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	JSON_Value* rootValue = json_parse_string(buffer);
+	JSON_Object* rootObject = json_value_get_object(rootValue);
+
+	UUID = json_object_get_number(rootObject, "UUID");
+
+	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
 
 	return true;
@@ -318,37 +349,6 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 	}
 
 	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	UUID = json_object_get_number(rootObject, "UUID");
-
-	RELEASE_ARRAY(buffer);
 	json_value_free(rootValue);
 
 	return true;

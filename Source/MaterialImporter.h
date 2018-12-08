@@ -44,9 +44,9 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const;
 
 	bool GenerateMeta(Resource* resource, std::string& outputMetaFile, const TextureImportSettings* textureImportSettings) const;
-	bool SetTextureUUIDToMeta(const char* metaFile, uint& UUID) const;
-	bool SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const;
+	bool SetTextureUUIDToMeta(const char* metaFile, uint UUID) const;
 	bool GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const;
+	bool SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const;
 	bool GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const;
 	
 	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;

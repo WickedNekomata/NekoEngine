@@ -7,6 +7,8 @@
 
 #include <list>
 
+class ResourceShaderObject;
+
 class ResourceShaderProgram : public Resource
 {
 public:
@@ -17,10 +19,10 @@ public:
 	uint LoadMemory();
 	uint UnloadMemory() { return 0; }
 
-	bool AddShaderObject(GLuint shaderObject);
-	bool RemoveShaderObject(GLuint shaderObject);
+	bool AddShaderObject(ResourceShaderObject* shaderObject);
+	bool RemoveShaderObject(ResourceShaderObject* shaderObject);
 
-	static GLuint Link(std::list<GLuint> shaderObjects);
+	static GLuint Link(std::list<ResourceShaderObject*> shaderObjects);
 
 	static GLint GetBinary(GLint shaderProgram, GLubyte** buffer);
 	GLuint LoadBinary(const void* buffer, GLint size);
@@ -35,7 +37,7 @@ private:
 
 public:
 
-	std::list<GLuint> shaderObjects;
+	std::list<ResourceShaderObject*> shaderObjects;
 	GLuint shaderProgram = 0;
 };
 

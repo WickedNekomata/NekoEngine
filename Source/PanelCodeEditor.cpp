@@ -95,15 +95,15 @@ bool PanelCodeEditor::Draw()
 	{
 	case ShaderType::VertexShaderType:
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-			editor.GetLanguageDefinition().mName.c_str(), fileToEdit),
+			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 			"Vertex Shader",
-			currentShader->GetName();
+			currentShader->GetName());
 		break;
 	case ShaderType::FragmentShaderType:
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-			editor.GetLanguageDefinition().mName.c_str(), fileToEdit),
+			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 			"Vertex Shader",
-			currentShader->GetName();
+			currentShader->GetName());
 		break;
 	}
 

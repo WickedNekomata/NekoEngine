@@ -4,6 +4,9 @@
 
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
+#include "ModuleGui.h"
+#include "PanelShaderEditor.h"
+#include "PanelCodeEditor.h"
 
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
@@ -136,10 +139,65 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
+		std::string extension;
+		App->fs->GetExtension(fileInAssets.data(), extension);
+		ResourceType type = GetResourceTypeByExtension(extension.data());
+
+		std::list<ResourceShaderObject*>::iterator it;
+		bool currentShader = false;
+
+		if (type == ResourceType::ShaderObjectResource)
+		{
+			std::list<uint> UUIDs;
+			FindResourcesByFile(fileInAssets.data(), UUIDs);
+			ResourceShaderObject* resource = (ResourceShaderObject*)GetResource(UUIDs.front());
+
+			switch (resource->shaderType)
+			{
+			case ShaderType::VertexShaderType:
+				it = std::find(App->gui->panelShaderEditor->vertexShaders.begin(), App->gui->panelShaderEditor->vertexShaders.end(), resource);
+				if (it != App->gui->panelShaderEditor->vertexShaders.end())
+					currentShader = resource == App->gui->panelCodeEditor->currentShader;
+				break;
+			case ShaderType::FragmentShaderType:
+				it = std::find(App->gui->panelShaderEditor->fragmentShaders.begin(), App->gui->panelShaderEditor->fragmentShaders.end(), resource);
+				if (it != App->gui->panelShaderEditor->vertexShaders.end())
+					currentShader = resource == App->gui->panelCodeEditor->currentShader;
+				break;
+			}
+		}
+
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Reimport
-		ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+		uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+
+		if (type == ResourceType::ShaderObjectResource)
+		{	
+			ResourceShaderObject* resource = (ResourceShaderObject*)GetResource(UUID);
+
+			switch (resource->shaderType)
+			{
+			case ShaderType::VertexShaderType:
+				if (it != App->gui->panelShaderEditor->vertexShaders.end())
+				{
+					*it = resource;
+
+					if (currentShader)
+						App->gui->panelCodeEditor->currentShader = resource;
+				}
+				break;
+			case ShaderType::FragmentShaderType:
+				if (it != App->gui->panelShaderEditor->fragmentShaders.end())
+				{
+					*it = resource;
+
+					if (currentShader)
+						App->gui->panelCodeEditor->currentShader = resource;
+				}
+				break;
+			}
+		}
 
 		RELEASE_ARRAY(event.fileEvent.metaFile);
 	}
@@ -215,17 +273,9 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, s
 			{
 				bool resources = false;
 
-				if (strcmp(extension.data(), EXTENSION_MESH))
-				{
-					std::list<uint> UUIDs;
-					resources = FindMeshesByExportedFile(path.data(), UUIDs);
-				}
-				else if (strcmp(extension.data(), EXTENSION_TEXTURE))
-				{
-					uint UUID;
-					resources = FindTextureByExportedFile(path.data(), UUID);
-				}
-
+				std::list<uint> UUIDs;
+				resources = FindResourcesByExportedFile(path.data(), UUIDs);
+				
 				if (!resources)
 					App->fs->DeleteFileOrDir(path.data());
 			}
@@ -371,21 +421,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 		{
 			bool resources = false;
 
-			switch (type)
-			{
-			case ResourceType::MeshResource:
-			{
-				std::list<uint> UUIDs;
-				resources = FindMeshesByFile(fileInAssets, UUIDs);
-			}
-			break;
-			case ResourceType::TextureResource:
-			{
-				uint UUID;
-				resources = FindTextureByFile(fileInAssets, UUID);
-			}
-			break;
-			}
+			std::list<uint> UUIDs;
+			resources = FindResourcesByFile(fileInAssets, UUIDs);
 
 			// CASE 3 (file + meta + Library file(s)). The resource(s) do(es)n't exist
 			if (!resources)
@@ -598,16 +635,29 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		}
 
-		// Add the meta to the metas map to keep track of it
-		if (!outputMetaFile.empty())
-		{
-			int lastModTime;
-			App->sceneImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
-			App->fs->AddMeta(outputMetaFile.data(), lastModTime);
-		}
-
 		if (resources.size() > 0)
-			ret = resources.front()->GetUUID();
+		{
+			Resource* resource = resources.front();
+
+			// Add the meta to the metas map to keep track of it
+			int lastModTime = 0;
+			switch (resource->GetType())
+			{
+			case ResourceType::MeshResource:
+				App->sceneImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
+				break;
+			case ResourceType::TextureResource:
+				App->materialImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
+				break;
+			case ResourceType::ShaderObjectResource:
+				App->shaderImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
+				break;
+			}
+
+			App->fs->AddMeta(outputMetaFile.data(), lastModTime);
+
+			ret = resource->GetUUID();
+		}
 	}
 
 	RELEASE(importSettings);
@@ -694,42 +744,8 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	return ResourceType::NoResourceType;
 }
 
-// Returns the UUID associated to the resource of the file
-bool ModuleResourceManager::FindTextureByFile(const char* fileInAssets, uint& UUID) const
-{
-	UUID = 0;
-
-	for (auto it = resources.begin(); it != resources.end(); ++it)
-	{
-		if (strcmp(it->second->file.data(), fileInAssets) == 0)
-		{
-			UUID = it->first;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-// Returns the UUID associated to the resource of the exported file
-bool ModuleResourceManager::FindTextureByExportedFile(const char* exportedFile, uint& UUID) const
-{
-	UUID = 0;
-
-	for (auto it = resources.begin(); it != resources.end(); ++it)
-	{
-		if (strcmp(it->second->exportedFile.data(), exportedFile) == 0)
-		{
-			UUID = it->first;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 // Returns the UUID(s) associated to the resource(s) of the file
-bool ModuleResourceManager::FindMeshesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const
+bool ModuleResourceManager::FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const
 {
 	bool ret = false;
 
@@ -747,7 +763,7 @@ bool ModuleResourceManager::FindMeshesByFile(const char* fileInAssets, std::list
 }
 
 // Returns the UUID(s) associated to the resource(s) of the file
-bool ModuleResourceManager::FindMeshesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const
+bool ModuleResourceManager::FindResourcesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const
 {
 	bool ret = false;
 

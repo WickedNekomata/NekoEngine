@@ -461,42 +461,45 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 	return size;
 }
 
-uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile) const
+uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile, bool overwrite) const
 {
 	uint ret = 0;
 
-	switch (fileType)
+	if (!overwrite)
 	{
-	case FileType::MeshFile:
-		outputFile.insert(0, DIR_LIBRARY_MESHES);
-		outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
-		outputFile.append(EXTENSION_MESH);
-		break;
-	case FileType::TextureFile:
-		outputFile.insert(0, DIR_LIBRARY_MATERIALS);
-		outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
-		outputFile.append(EXTENSION_TEXTURE);
-		break;
-	case FileType::SceneFile:
-		outputFile.insert(0, DIR_ASSETS_SCENES);
-		outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
-		outputFile.append(EXTENSION_SCENE);
-		break;
-	case FileType::VertexShaderObjectFile:
-		outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
-		outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
-		outputFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
-		break;
-	case FileType::FragmentShaderObjectFile:
-		outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
-		outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
-		outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
-		break;
-	case FileType::ShaderProgramFile:
-		outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
-		outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
-		outputFile.append(EXTENSION_SHADER_PROGRAM);
-		break;
+		switch (fileType)
+		{
+		case FileType::MeshFile:
+			outputFile.insert(0, DIR_LIBRARY_MESHES);
+			outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
+			outputFile.append(EXTENSION_MESH);
+			break;
+		case FileType::TextureFile:
+			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
+			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
+			outputFile.append(EXTENSION_TEXTURE);
+			break;
+		case FileType::SceneFile:
+			outputFile.insert(0, DIR_ASSETS_SCENES);
+			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
+			outputFile.append(EXTENSION_SCENE);
+			break;
+		case FileType::VertexShaderObjectFile:
+			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+			outputFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
+			break;
+		case FileType::FragmentShaderObjectFile:
+			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+			outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
+			break;
+		case FileType::ShaderProgramFile:
+			outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
+			outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
+			outputFile.append(EXTENSION_SHADER_PROGRAM);
+			break;
+		}
 	}
 
 	ret = Save(outputFile.data(), buffer, size);

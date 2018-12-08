@@ -72,7 +72,7 @@ bool PanelCodeEditor::Draw()
 			currentShader->SetSource((char*)text.data(), text.length());
 
 			std::string outputFile;
-			App->shaderImporter->SaveShaderObject(currentShader, outputFile);
+			App->shaderImporter->SaveShaderObject(currentShader, outputFile, true);
 			
 			// Search for the meta associated to the file
 			char metaFile[DEFAULT_BUF_SIZE];

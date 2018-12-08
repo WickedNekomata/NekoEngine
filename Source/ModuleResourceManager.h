@@ -61,10 +61,8 @@ public:
 	const Resource* GetResource(uint UUID) const;
 	static ResourceType GetResourceTypeByExtension(const char* extension);
 
-	bool FindTextureByFile(const char* fileInAssets, uint& UUID) const;
-	bool FindTextureByExportedFile(const char* exportedFile, uint& UUID) const;
-	bool FindMeshesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
-	bool FindMeshesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
+	bool FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
+	bool FindResourcesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
 
 	int SetAsUsed(uint UUID) const;
 	int SetAsUnused(uint UUID) const;

@@ -28,7 +28,9 @@ private:
 	const char* fileToEdit = "";
 	TextEditor editor;
 
-	ResourceShaderObject* currentShader = nullptr;;
+public:
+
+	ResourceShaderObject* currentShader = nullptr;
 };
 
 #endif

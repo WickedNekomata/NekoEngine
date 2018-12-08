@@ -23,13 +23,16 @@ ShaderImporter::~ShaderImporter()
 	glDeleteShader(defaultFragmentShaderObject);
 }
 
-bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile) const
+bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
 	assert(shaderObject != nullptr);
 
-	outputFile = shaderObject->GetName();
+	if (overwrite)
+		outputFile = shaderObject->file;
+	else
+		outputFile = shaderObject->GetName();
 
 	const char* buffer = shaderObject->GetSource();
 	uint size = 0;
@@ -38,17 +41,16 @@ bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::s
 
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", outputFile.data());
-		ret = SaveShaderObject(buffer, size, shaderObject->shaderType, outputFile);
-		RELEASE_ARRAY(buffer);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", shaderObject->GetName());
+		ret = SaveShaderObject(buffer, size, shaderObject->shaderType, outputFile, overwrite);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", outputFile.data());
+		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", shaderObject->GetName());
 
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile) const
+bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
@@ -63,7 +65,7 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType 
 		break;
 	}
 
-	if (App->fs->SaveInGame((char*)buffer, size, fileType, outputFile) > 0)
+	if (App->fs->SaveInGame((char*)buffer, size, fileType, outputFile, overwrite) > 0)
 	{
 		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Shader Object '%s'", outputFile.data());
 		ret = true;

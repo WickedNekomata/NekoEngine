@@ -98,7 +98,7 @@ public:
 
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;
 
-	uint SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile) const;
+	uint SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile, bool overwrite = false) const;
 	uint Save(const char* file, char* buffer, uint size, bool append = false) const;
 
 	uint Load(const char* file, char** buffer) const;

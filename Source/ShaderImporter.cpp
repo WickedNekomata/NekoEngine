@@ -23,29 +23,26 @@ ShaderImporter::~ShaderImporter()
 	glDeleteShader(defaultFragmentShaderObject);
 }
 
-bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite) const
+bool ShaderImporter::SaveShaderObject(const char* name, const char* file, const char* buffer, ShaderType shaderType, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
-	assert(shaderObject != nullptr);
-
 	if (overwrite)
-		outputFile = shaderObject->file;
+		outputFile = file;
 	else
-		outputFile = shaderObject->GetName();
+		outputFile = name;
 
-	const char* buffer = shaderObject->GetSource();
 	uint size = 0;
 	if (buffer != nullptr)
 		size = strlen(buffer);
 
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", shaderObject->GetName());
-		ret = SaveShaderObject(buffer, size, shaderObject->shaderType, outputFile, overwrite);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", name);
+		ret = SaveShaderObject(buffer, size, shaderType, outputFile, overwrite);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", shaderObject->GetName());
+		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", name);
 
 	return ret;
 }

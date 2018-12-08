@@ -66,13 +66,8 @@ bool PanelCodeEditor::Draw()
 		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
 		if (shaderCompiled > 0)
 		{
-			ResourceShaderObject::DeleteShaderObject(currentShader->shaderObject);
-			currentShader->shaderObject = shaderCompiled;
-			std::string text = editor.GetText();
-			currentShader->SetSource((char*)text.data(), text.length());
-
 			std::string outputFile;
-			App->shaderImporter->SaveShaderObject(currentShader, outputFile, true);
+			App->shaderImporter->SaveShaderObject(currentShader->GetName(), currentShader->file.data(), editor.GetText().data(), currentShader->shaderType, outputFile, true);
 			
 			// Search for the meta associated to the file
 			char metaFile[DEFAULT_BUF_SIZE];

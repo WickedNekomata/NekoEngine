@@ -22,7 +22,7 @@ public:
 
 	static GLuint Link(std::list<GLuint> shaderObjects);
 
-	GLint GetBinary(GLubyte** buffer);
+	static GLint GetBinary(GLint shaderProgram, GLubyte** buffer);
 	GLuint LoadBinary(const void* buffer, GLint size);
 
 	static bool IsProgramValid(GLuint shaderProgram);

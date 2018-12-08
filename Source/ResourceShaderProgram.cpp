@@ -57,7 +57,7 @@ GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
 }
 
 // Returns the length of the binary
-GLint ResourceShaderProgram::GetBinary(GLubyte** buffer)
+GLint ResourceShaderProgram::GetBinary(GLint shaderProgram, GLubyte** buffer)
 {
 	// Get the binary length
 	GLint length = 0;

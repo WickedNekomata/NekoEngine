@@ -76,19 +76,17 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType 
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile) const
+bool ShaderImporter::SaveShaderProgram(const char* name, GLint shaderProgram, std::string& outputFile) const
 {
 	bool ret = false;
 
 	if (formats == 0)
 		return false;
 
-	assert(shaderProgram != nullptr);
-
-	outputFile = shaderProgram->GetName();
+	outputFile = name;
 
 	GLubyte* buffer;
-	uint size = shaderProgram->GetBinary(&buffer);
+	uint size = ResourceShaderProgram::GetBinary(shaderProgram, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());

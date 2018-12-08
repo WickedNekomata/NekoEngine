@@ -67,7 +67,7 @@ public:
 	bool SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile, bool overwrite = false) const;
 
 	// Shader Program (save)
-	bool SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile) const;
+	bool SaveShaderProgram(const char* name, GLint shaderProgram, std::string& outputFile) const;
 	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile) const;
 
 	bool GenerateMeta(Resource* resource, std::string& outputMetaFile) const;

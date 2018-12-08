@@ -13,6 +13,7 @@
 PanelShaderEditor::PanelShaderEditor(char* name) : Panel(name)
 {
 	char* defaultName = "Default Name";
+	memset(&shaderProgramName, '\0', sizeof(shaderProgramName));
 	memcpy(shaderProgramName, defaultName, strlen(defaultName));
 }
 
@@ -150,7 +151,7 @@ bool PanelShaderEditor::Draw()
 	{
 		vertexShaders.clear();
 		fragmentShaders.clear();
-		memset(shaderProgramName, ' ', strlen(shaderProgramName));
+		memset(&shaderProgramName, '\0', sizeof(shaderProgramName));
 		App->gui->panelCodeEditor->SetOnOff(false);
 	}
 

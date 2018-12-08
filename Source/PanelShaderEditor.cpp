@@ -138,13 +138,29 @@ bool PanelShaderEditor::Draw()
 
 bool PanelShaderEditor::RemoveShaderFromEditor(ResourceShaderObject* shader)
 {
-	auto it = std::find(vertexShaders.begin(), vertexShaders.end(), shader);
+	switch (shader->shaderType)
+	{
+	case ShaderType::VertexShaderType:
+	{
+		auto it = std::find(vertexShaders.begin(), vertexShaders.end(), shader);
 
-	if (it == vertexShaders.end())
-		it = std::find(fragmentShaders.begin(), fragmentShaders.end(), shader);
+		if (it != vertexShaders.end()) {
+			vertexShaders.remove(shader);
+			return true;
+		}
+		break;
+	}
+	case ShaderType::FragmentShaderType:
+	{
+		auto it = std::find(fragmentShaders.begin(), fragmentShaders.end(), shader);
 
-	if (it == fragmentShaders.end())
-		fragmentShaders.remove(shader);
+		if (it != fragmentShaders.end()) {
+			fragmentShaders.remove(shader);
+			return true;
+		}
+		break;
+	}
+	}
 
-	return it != fragmentShaders.end();
+	return false;
 }

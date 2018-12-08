@@ -190,9 +190,11 @@ Component* GameObject::AddComponent(ComponentType type)
 	case No_type:
 		break;
 	case Transform_Component:
+		assert(transform == NULL);
 		newComponent = transform = new ComponentTransform(this);
 		break;
 	case Mesh_Component:
+		assert(meshRenderer == NULL);
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
@@ -200,9 +202,11 @@ Component* GameObject::AddComponent(ComponentType type)
 	case Material_Component:
 		if (materialRenderer != nullptr)
 			return nullptr;
+		assert(materialRenderer == NULL);
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
 	case Camera_Component:
+		assert(camera == NULL);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	default:

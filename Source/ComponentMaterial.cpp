@@ -78,7 +78,7 @@ void ComponentMaterial::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("%u", shaderProgram != nullptr ? shaderProgram->shaderProgram : App->shaderImporter->GetDefaultShaderProgram()->shaderProgram);
+			ImGui::Text("%u", shaderProgram != nullptr ? shaderProgram->shaderProgram : App->shaderImporter->GetDefaultShaderProgram());
 			ImGui::EndTooltip();
 		}
 

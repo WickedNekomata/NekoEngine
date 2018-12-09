@@ -7,7 +7,7 @@
 #include "Globals.h"
 #include "Light.h"
 
-#include "MathGeoLib/include/Math/float4x4.h"
+#include "MathGeoLib\include\Math\float4x4.h"
 
 #include "glew\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -83,6 +83,7 @@ public:
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;
 
+	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
@@ -95,6 +96,12 @@ private:
 	ComponentCamera* currentCamera = nullptr;
 
 	uint maxTextureUnits = 0;
+
+public:
+	// cubemap
+	GLuint cubemapTexture = 0;
+	GLuint cubemapVBO = 0;
+	GLuint cubemapVAO = 0;
 
 public:
 

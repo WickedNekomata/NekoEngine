@@ -48,6 +48,20 @@
 "     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
 "}\n" \
 
+#define cubemapvShader \
+"#version 330 core\n" \
+"layout (location = 0) in vec3 position;\n" \
+"uniform mat4 view_matrix;\n" \
+"uniform mat4 proj_matrix;\n" \
+"out vec4 ourColor;\n" \
+"out vec2 ourTexCoord;\n" \
+"void main()\n" \
+"{\n" \
+"    ourTexCoord = position;\n" \
+"    ourColor = color;\n" \
+"    gl_Position = proj_matrix * view_matrix * vec4(position, 1.0f);\n" \
+"}\n"
+
 #pragma endregion
 
 class Resource;
@@ -60,7 +74,7 @@ public:
 
 	ShaderImporter();
 	~ShaderImporter();
-	
+
 	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 
@@ -91,20 +105,24 @@ public:
 	GLint GetBinaryFormats() const;
 
 	void LoadDefaultShader();
-	ResourceShaderObject* LoadDefaultShaderObject(ShaderType shaderType) const;
-	ResourceShaderProgram* LoadDefaultShaderProgram(ResourceShaderObject* defaultVertexShaderObject, ResourceShaderObject* defaultFragmentShaderObject) const;
+	void LoadCubemapShader();
+	GLuint LoadDefaultShaderObject(ShaderType shaderType) const;
+	GLuint LoadShaderProgram(GLuint vertexShaderObject, GLuint fragmentShaderObject) const;
 
-	ResourceShaderObject* GetDefaultVertexShaderObject() const;
-	ResourceShaderObject* GetDefaultFragmentShaderObject() const;
-	ResourceShaderProgram* GetDefaultShaderProgram() const;
+	GLuint GetDefaultVertexShaderObject() const;
+	GLuint GetDefaultFragmentShaderObject() const;
+	GLuint GetDefaultShaderProgram() const;
+	GLuint GetCubemapShaderProgram() const;
 
 private:
 
 	GLint formats = 0;
 
-	ResourceShaderObject* defaultVertexShaderObject = nullptr;
-	ResourceShaderObject* defaultFragmentShaderObject = nullptr;
-	ResourceShaderProgram* defaultShaderProgram = nullptr;
+	GLuint defaultVertexShaderObject = 0;
+	GLuint defaultFragmentShaderObject = 0;
+	GLuint defaultShaderProgram = 0;
+
+	GLuint cubemapShaderProgram = 0;
 };
 
 #endif

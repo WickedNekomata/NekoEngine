@@ -24,7 +24,8 @@ public:
 
 private:
 
-	std::list<ResourceShaderObject*> GetShaderObjects() const;
+	void GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
+	void GetShaderObjects(std::list<uint>& shaderObjects) const;
 
 private:
 

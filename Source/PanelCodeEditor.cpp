@@ -98,13 +98,7 @@ bool PanelCodeEditor::Draw()
 
 	// Try to compile
 	if (ImGui::Button("Compile"))
-	{
-		ResourceShaderObject* tryCompile = new ResourceShaderObject(ResourceType::ShaderObjectResource, 0);
-		tryCompile->shaderType = shaderObject->shaderType;
-		tryCompile->SetSource(editor.GetText().data(), editor.GetText().length());
-		tryCompile->Compile();
-		RELEASE(tryCompile);
-	}
+		ResourceShaderObject::DeleteShaderObject(ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType));
 
 	switch (shaderObject->shaderType)
 	{

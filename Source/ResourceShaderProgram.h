@@ -23,6 +23,8 @@ public:
 	std::list<ResourceShaderObject*> GetShaderObjects(ShaderType shaderType = ShaderType::NoShaderType) const;
 
 	bool Link();
+	static GLuint Link(std::list<GLuint> shaderObjects);
+	static bool DeleteShaderProgram(GLuint shaderProgram);
 
 	GLint GetBinary(GLubyte** buffer);
 	bool LoadBinary(const void* buffer, GLint size);

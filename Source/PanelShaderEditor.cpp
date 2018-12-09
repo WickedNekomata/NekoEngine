@@ -122,7 +122,8 @@ bool PanelShaderEditor::Draw()
 		// Link
 		if (ImGui::Button("Link and Save"))
 		{
-			std::list<ResourceShaderObject*> shaderObjects = GetShaderObjects();
+			std::list<ResourceShaderObject*> shaderObjects;
+			GetShaderObjects(shaderObjects);
 
 			// Existing shader program?
 			if (shaderProgram != nullptr)
@@ -182,10 +183,10 @@ bool PanelShaderEditor::Draw()
 		// Try to link
 		if (ImGui::Button("Link"))
 		{
-			ResourceShaderProgram* tryLink = new ResourceShaderProgram(ResourceType::ShaderProgramResource, 0);
-			tryLink->SetShaderObjects(GetShaderObjects());
-			tryLink->Link();
-			RELEASE(tryLink);
+			std::list<uint> shaderObjects;
+			GetShaderObjects(shaderObjects);
+
+			ResourceShaderProgram::DeleteShaderProgram(ResourceShaderProgram::Link(shaderObjects));
 		}
 	}
 	ImGui::End();
@@ -213,15 +214,20 @@ void PanelShaderEditor::OpenShaderInShaderEditor(ResourceShaderProgram* shaderPr
 	fragmentShaders = shaderProgram->GetShaderObjects(ShaderType::FragmentShaderType);
 }
 
-std::list<ResourceShaderObject*> PanelShaderEditor::GetShaderObjects() const
+void PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const
 {
-	std::list<ResourceShaderObject*> shaderObjects;
-
 	for (std::list<ResourceShaderObject*>::const_iterator it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
 		shaderObjects.push_back(*it);
 
 	for (std::list<ResourceShaderObject*>::const_iterator it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
 		shaderObjects.push_back(*it);
+}
 
-	return shaderObjects;
+void PanelShaderEditor::GetShaderObjects(std::list<uint>& shaderObjects) const
+{
+	for (std::list<ResourceShaderObject*>::const_iterator it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
+		shaderObjects.push_back((*it)->shaderObject);
+
+	for (std::list<ResourceShaderObject*>::const_iterator it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
+		shaderObjects.push_back((*it)->shaderObject);
 }

@@ -63,6 +63,59 @@ bool ResourceShaderObject::Compile()
 	return ret;
 }
 
+GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
+{
+	GLenum shader = 0;
+	switch (shaderType)
+	{
+	case ShaderType::VertexShaderType:
+		shader = GL_VERTEX_SHADER;
+		break;
+	case ShaderType::FragmentShaderType:
+		shader = GL_FRAGMENT_SHADER;
+		break;
+	}
+
+	// Create a Shader Object
+	GLuint shaderObject = glCreateShader(shader); // Creates an empty Shader Object
+	glShaderSource(shaderObject, 1, &source, NULL); // Takes an array of strings and stores it into the shader
+
+	// Compile the Shader Object
+	glCompileShader(shaderObject);
+
+	GLint success = 0;
+	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		GLint logSize = 0;
+		glGetShaderiv(shaderObject, GL_INFO_LOG_LENGTH, &logSize);
+
+		GLchar* infoLog = new GLchar[logSize];
+		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
+
+		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+
+		glDeleteShader(shaderObject);
+	}
+	else
+		CONSOLE_LOG("Successfully compiled Shader Object");
+
+	return shaderObject;
+}
+
+bool ResourceShaderObject::DeleteShaderObject(GLuint shaderObject)
+{
+	bool ret = false;
+
+	if (glIsShader(shaderObject))
+	{
+		glDeleteShader(shaderObject);
+		ret = true;
+	}
+
+	return ret;
+}
+
 bool ResourceShaderObject::IsObjectCompiled() const
 {
 	GLint success = 0;

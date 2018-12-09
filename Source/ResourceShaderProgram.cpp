@@ -62,6 +62,53 @@ bool ResourceShaderProgram::Link()
 	return ret;
 }
 
+GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
+{
+	// Create a Shader Program
+	GLuint shaderProgram = glCreateProgram();
+
+	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glAttachShader(shaderProgram, *it);
+
+	// Link the Shader Program
+	glLinkProgram(shaderProgram);
+
+	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glDetachShader(shaderProgram, *it);
+
+	GLint success = 0;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		GLint logSize = 0;
+		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
+
+		GLchar* infoLog = new GLchar[logSize];
+		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
+
+		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+
+		glDeleteProgram(shaderProgram);
+	}
+	else
+		CONSOLE_LOG("Successfully linked Shader Program");
+
+	return shaderProgram;
+}
+
+bool ResourceShaderProgram::DeleteShaderProgram(GLuint shaderProgram)
+{
+	bool ret = false;
+
+	if (glIsProgram(shaderProgram))
+	{
+		glDeleteProgram(shaderProgram);
+		ret = true;
+	}
+
+	return ret;
+}
+
 // Returns the length of the binary
 GLint ResourceShaderProgram::GetBinary(GLubyte** buffer)
 {

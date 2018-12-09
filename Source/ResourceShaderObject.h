@@ -26,6 +26,8 @@ public:
 	const char* GetSource() const;
 
 	bool Compile();
+	static GLuint Compile(const char* source, ShaderType shaderType);
+	static bool DeleteShaderObject(GLuint shaderObject);
 
 	bool IsObjectCompiled() const;
 

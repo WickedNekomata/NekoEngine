@@ -679,6 +679,43 @@ void MaterialImporter::LoadDefaultTexture()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
+{
+	uint result = 0;
+
+	glGenTextures(1, &result);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, result);
+
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		// if this does not work try getTexImage. it returns the pixels.
+		// https://stackoverflow.com/questions/3073796/how-to-use-glcopyimage2d
+		// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, result);
+
+		GLint width, height, format;
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+		uint target = 0;
+		glCopyTexImage2D(target, 0, format, 0, 0, width, height, 0);
+	}
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	return result;
+}
+
+bool MaterialImporter::DeleteTexture(uint texture)
+{
+	if (!glIsTexture(texture))
+		return false;
+	glDeleteTextures(1, &texture);
+	return true;
+}
+
 uint MaterialImporter::GetCheckers() const
 {
 	return checkers;

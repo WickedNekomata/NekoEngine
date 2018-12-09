@@ -640,6 +640,9 @@
     <ClInclude Include="PanelLibrary.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="PanelSkybox.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -910,6 +913,9 @@
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="PanelLibrary.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>

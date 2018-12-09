@@ -43,14 +43,14 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
+	AddModule(res);
+
+	AddModule(timeManager);
 
 #ifndef GAMEMODE
 	AddModule(camera);
 	AddModule(gui);
 #endif // GAME
-
-	AddModule(timeManager);
-	AddModule(res);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);

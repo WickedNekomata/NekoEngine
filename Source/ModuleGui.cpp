@@ -220,6 +220,8 @@ update_status ModuleGui::PostUpdate()
 
 bool ModuleGui::CleanUp()
 {
+	panelSkybox->ClearSkybox();
+
 	for (uint i = 0; i < panels.size(); ++i)
 		RELEASE(panels[i]);
 

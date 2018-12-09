@@ -19,6 +19,9 @@ public:
 
 	bool Draw();
 
+	void ClearSkybox();
+
+private:
 	std::vector<ResourceTexture*> cubemapTextures;
 };
 

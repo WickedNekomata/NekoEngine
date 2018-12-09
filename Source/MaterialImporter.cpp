@@ -688,21 +688,55 @@ uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
+		if (faces[i] == 0)
+			continue;
+
+		glBindTexture(GL_TEXTURE_2D, faces[i]);
+		int w, h;
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+		GLubyte* pixels = new GLubyte[w*h * 3];
+
+		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, result);
+
+		glTexImage2D(
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+			0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels
+		);
+
+		delete[] pixels;
+
+		/*
+		glBindTexture(GL_TEXTURE_CUBE_MAP, result);
 		// if this does not work try getTexImage. it returns the pixels.
 		// https://stackoverflow.com/questions/3073796/how-to-use-glcopyimage2d
 		// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, result);
 
 		GLint width, height, format;
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
 		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
+		glTexImage2D(
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+			0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL
+		);
+		
+		glBindTexture(GL_TEXTURE, faces[i]);
+
 		uint target = 0;
-		glCopyTexImage2D(target, 0, format, 0, 0, width, height, 0);
+		glCopyTexSubImage2D(result, 0, format, 0, 0, width, height, 0);
+		*/
 	}
 
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	return result;

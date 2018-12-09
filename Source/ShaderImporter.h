@@ -46,21 +46,34 @@
 "void main()\n" \
 "{\n" \
 "     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
-"}\n" \
+"}\n"
+
+// TODO: move operation to ignore translation at view to renderer and do it on cpu. we wanna do it once
 
 #define cubemapvShader \
 "#version 330 core\n" \
 "layout (location = 0) in vec3 position;\n" \
 "uniform mat4 view_matrix;\n" \
 "uniform mat4 proj_matrix;\n" \
-"out vec4 ourColor;\n" \
-"out vec2 ourTexCoord;\n" \
+"out vec3 ourTexCoord;\n" \
 "void main()\n" \
 "{\n" \
-"    ourTexCoord = position;\n" \
-"    ourColor = color;\n" \
-"    gl_Position = proj_matrix * view_matrix * vec4(position, 1.0f);\n" \
+"	 mat3 mat3View = mat3(view_matrix); \n" \
+"	 mat4 noTranslationView = mat4(mat3View); \n" \
+"    ourTexCoord = position * vec3(1.0,-1.0,1.0);\n" \
+"    vec4 pos = proj_matrix * noTranslationView * vec4(position, 1.0f);\n" \
+"	 gl_Position = pos.xyww;\n" \
 "}\n"
+
+#define cubemapfShader \
+"#version 330 core\n" \
+"out vec4 FragColor\n;" \
+"in vec3 ourTexCoord\n;" \
+"uniform samplerCube skybox\n;" \
+"void main()\n" \
+"{\n" \
+"	FragColor = texture(skybox, ourTexCoord);\n" \
+"}\n" \
 
 #pragma endregion
 

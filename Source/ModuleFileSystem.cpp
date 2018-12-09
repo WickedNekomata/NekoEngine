@@ -238,16 +238,12 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 			}
 			break;
 			case ResourceType::ShaderObjectResource:
+			case ResourceType::ShaderProgramResource:
 			{
 				// Read the UUID of the shader
 				uint UUID = 0;
 				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
 				file->resource = App->res->GetResource(UUID);
-			}
-			break;
-			case ResourceType::ShaderProgramResource:
-			{
-				// TODO
 			}
 			break;
 			}

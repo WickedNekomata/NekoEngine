@@ -503,7 +503,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	{
 		imported = true;
 
-		if (type == ResourceType::ShaderObjectResource)
+		if (type == ResourceType::ShaderObjectResource || type == ResourceType::ShaderProgramResource)
 			outputFile = fileInAssets;
 		else
 			outputFile = exportedFile;
@@ -768,6 +768,9 @@ Resource* ModuleResourceManager::CreateNewResource(ResourceType type, uint force
 		break;
 	case ResourceType::ShaderObjectResource:
 		resource = new ResourceShaderObject(type, uuid);
+		break;
+	case ResourceType::ShaderProgramResource:
+		resource = new ResourceShaderProgram(type, uuid);
 		break;
 	}
 

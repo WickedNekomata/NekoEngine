@@ -8,6 +8,8 @@
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "DebugDrawer.h"
+#include "ShaderImporter.h"
+#include "Quadtree.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -15,10 +17,9 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 
-#include "Quadtree.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
-#include "ShaderImporter.h"
+#include "ResourceShaderProgram.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -137,6 +138,21 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		}
 
 		glActiveTexture(GL_TEXTURE0);
+
+		// Material Importer: anisotropic filtering
+		if (GLEW_EXT_texture_filter_anisotropic)
+		{
+			float largestSupportedAnisotropy = 0;
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
+
+			App->materialImporter->SetIsAnisotropySupported(true);
+			App->materialImporter->SetLargestSupportedAnisotropy(largestSupportedAnisotropy);
+		}
+
+		// Shader Importer: binary formats
+		GLint formats = 0;
+		glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+		App->shaderImporter->SetBinaryFormats(formats);
 	}
 
 	App->materialImporter->LoadCheckers();
@@ -651,9 +667,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
 	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 	
-	GLuint shaderProgram;
-	if (glIsProgram(materialRenderer->shaderProgram))
-		shaderProgram = materialRenderer->shaderProgram;
+	GLuint shaderProgram = 0;
+	if (materialRenderer->shaderProgram != nullptr && glIsProgram(materialRenderer->shaderProgram->shaderProgram))
+		shaderProgram = materialRenderer->shaderProgram->shaderProgram;
 	else
 		shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 

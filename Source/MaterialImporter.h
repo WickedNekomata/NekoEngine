@@ -53,7 +53,12 @@ public:
 	
 	bool Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
 	bool Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const;
-	
+
+	void SetIsAnisotropySupported(bool isAnisotropySupported);
+	bool IsAnisotropySupported() const;
+	void SetLargestSupportedAnisotropy(float largestSupportedAnisotropy);
+	float GetLargestSupportedAnisotropy() const;
+
 	void LoadCheckers();
 	void LoadDefaultTexture();
 	uint LoadCubemapTexture(std::vector<uint>& faces);
@@ -62,9 +67,6 @@ public:
 
 	uint GetCheckers() const;
 	uint GetDefaultTexture() const;
-
-	bool IsAnisotropySupported() const;
-	float GetLargestSupportedAnisotropy() const;
 
 	uint GetDevILVersion() const;
 

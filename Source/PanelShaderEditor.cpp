@@ -147,7 +147,7 @@ bool PanelShaderEditor::Draw()
 		{
 			// TODO: mix this together with the Resource Manager (handle specific cases)
 			std::string outputFile;
-			if (App->shaderImporter->SaveShaderProgram(&shaderProgramName, shaderProgram, outputFile))
+			if (App->shaderImporter->SaveShaderProgram(&shaderProgramName[0], shaderProgram, outputFile))
 			{
 				ResourceShaderProgram* resource = (ResourceShaderProgram*)App->res->CreateNewResource(ResourceType::ShaderProgramResource);
 				resource->shaderProgram = shaderProgram;

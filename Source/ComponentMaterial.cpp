@@ -5,10 +5,12 @@
 #include "ModuleResourceManager.h"
 #include "ModuleFileSystem.h"
 #include "MaterialImporter.h"
-#include "Resource.h"
-#include "ResourceTexture.h"
+#include "ShaderImporter.h"
 #include "GameObject.h"
 #include "Panel.h"
+#include "Resource.h"
+#include "ResourceTexture.h"
+#include "ResourceShaderProgram.h"
 
 #include "imgui\imgui.h"
 
@@ -41,9 +43,6 @@ ComponentMaterial::~ComponentMaterial()
 
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
-
-	if (glIsProgram(shaderProgram))
-		glDeleteProgram(shaderProgram);
 }
 
 void ComponentMaterial::Update() {}
@@ -67,31 +66,34 @@ void ComponentMaterial::OnUniqueEditor()
 	ImGui::Text("Material Renderer");
 	ImGui::Spacing();
 
+	// Shader Program
 	{
 		ImGui::Text("Shader");
 		ImGui::SameLine();
 
 		ImGui::PushID("shader");
-		ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
+		if (shaderProgram != nullptr)
+			ImGui::Button(shaderProgram->GetName(), ImVec2(150.0f, 0.0f));
+		else
+			ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
 		ImGui::PopID();
 
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("Default Shader");
+			if (shaderProgram != nullptr)
+				ImGui::Text("%u", shaderProgram->shaderProgram);
+			else
+				ImGui::Text("%u", App->shaderImporter->GetDefaultShaderProgram());
 			ImGui::EndTooltip();
 		}
-		/*
+
 		if (ImGui::BeginDragDropTarget())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
-			{
-				uint payload_n = *(uint*)payload->Data;
-				SetResource(payload_n);
-			}
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
+				shaderProgram = *(ResourceShaderProgram**)payload->Data;
 			ImGui::EndDragDropTarget();
 		}
-		*/
 	}
 
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);

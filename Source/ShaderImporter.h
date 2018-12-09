@@ -124,8 +124,6 @@ private:
 	GLuint defaultFragmentShaderObject = 0;
 	GLuint defaultShaderProgram = 0;
 	GLuint cubemapShaderProgram = 0;
-
-	GLint formats = 0;
 };
 
 #endif

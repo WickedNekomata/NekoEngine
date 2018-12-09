@@ -142,6 +142,18 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
 	App->shaderImporter->LoadDefaultShader();
+	App->shaderImporter->LoadCubemapShader();
+
+	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVBO);
+
+	std::vector<uint> checkers;
+	checkers.push_back(App->materialImporter->GetCheckers());
+	checkers.push_back(App->materialImporter->GetCheckers());
+	checkers.push_back(App->materialImporter->GetCheckers());
+	checkers.push_back(App->materialImporter->GetCheckers());
+	checkers.push_back(App->materialImporter->GetCheckers());
+	checkers.push_back(App->materialImporter->GetCheckers());
+	cubemapTexture = App->materialImporter->LoadCubemapTexture(checkers);
 
 #ifndef GAMEMODE
 	// Editor camera
@@ -222,6 +234,9 @@ update_status ModuleRenderer3D::PostUpdate()
 	App->gui->Draw();
 #endif // GAME
 
+	if (glIsTexture(cubemapTexture))
+		DrawSkybox();
+
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
 	SDL_GL_SwapWindow(App->window->window);
@@ -232,6 +247,10 @@ update_status ModuleRenderer3D::PostUpdate()
 bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
+
+	glDeleteVertexArrays(1, &cubemapVAO);
+	glDeleteBuffers(1, &cubemapVBO);
+	glDeleteBuffers(1, &cubemapTexture);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	uint x, y;
@@ -599,6 +618,29 @@ void ModuleRenderer3D::FrustumCulling() const
 
 	for (uint i = 0; i < seen.size(); ++i)
 		seen[i]->SetSeenLastFrame(true);
+}
+
+void ModuleRenderer3D::DrawSkybox()
+{
+	GetCapabilityState(GL_DEPTH);
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+
+	uint shaderProgram = App->shaderImporter->GetCubemapShaderProgram();
+	glUseProgram(shaderProgram);
+
+	uint location = glGetUniformLocation(shaderProgram, "view_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
+	location = glGetUniformLocation(shaderProgram, "proj_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
+	//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+
+	glBindVertexArray(cubemapVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+
+	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const

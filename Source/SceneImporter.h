@@ -60,6 +60,8 @@ public:
 	bool Load(const char* exportedFile, ResourceMesh* outputMesh) const;
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh) const;
 
+	void LoadCubemap(uint& VBO, uint& VAO) const;
+
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;
 	uint GetAssimpRevisionVersion() const;

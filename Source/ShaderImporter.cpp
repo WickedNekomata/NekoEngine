@@ -19,6 +19,7 @@ ShaderImporter::ShaderImporter()
 
 ShaderImporter::~ShaderImporter()
 {
+	glDeleteProgram(cubemapShaderProgram);
 	glDeleteProgram(defaultShaderProgram);
 	glDeleteShader(defaultVertexShaderObject);
 	glDeleteShader(defaultFragmentShaderObject);
@@ -479,6 +480,13 @@ void ShaderImporter::LoadDefaultShader()
 	LoadDefaultShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
 }
 
+void ShaderImporter::LoadCubemapShader()
+{
+	uint cubemapVShaderObject = ResourceShaderObject::Compile(cubemapvShader, ShaderType::VertexShaderType);
+	LoadCubemapShaderProgram(cubemapVShaderObject, defaultFragmentShaderObject);
+	glDeleteShader(cubemapVShaderObject);
+}
+
 void ShaderImporter::LoadDefaultVertexShaderObject()
 {
 	defaultVertexShaderObject = ResourceShaderObject::Compile(vShaderTemplate, ShaderType::VertexShaderType);
@@ -498,6 +506,15 @@ void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, ui
 	//defaultShaderProgram = ResourceShaderProgram::Link(shaderObjects); //TODO
 }
 
+void ShaderImporter::LoadCubemapShaderProgram(uint vertexShaderObject, uint FragmentShaderObject)
+{
+	std::list<GLuint> shaderObjects;
+	shaderObjects.push_back(vertexShaderObject);
+	shaderObjects.push_back(FragmentShaderObject);
+
+	//cubemapShaderProgram = ResourceShaderProgram::Link(shaderObjects); //TODO
+}
+
 GLuint ShaderImporter::GetDefaultVertexShaderObject() const
 {
 	return defaultVertexShaderObject;
@@ -511,4 +528,9 @@ GLuint ShaderImporter::GetDefaultFragmentShaderObject() const
 GLuint ShaderImporter::GetDefaultShaderProgram() const
 {
 	return defaultShaderProgram;
+}
+
+GLuint ShaderImporter::GetCubemapShaderProgram() const
+{
+	return cubemapShaderProgram;
 }

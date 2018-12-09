@@ -26,6 +26,7 @@
 #include "PanelCodeEditor.h"
 #include "PanelLayersTags.h"
 #include "PanelShaderEditor.h"
+#include "PanelSkybox.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -56,6 +57,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelLayersTags = new PanelLayersTags("Layer & Tags");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
+	panelSkybox = new PanelSkybox("Skybox");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -69,6 +71,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelLayersTags);
 	panels.push_back(panelShaderEditor);
+	panels.push_back(panelSkybox);
 
 	LoadStatus(jObject);
 

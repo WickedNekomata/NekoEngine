@@ -252,6 +252,7 @@
     <ClInclude Include="PanelLayersTags.h" />
     <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelShaderEditor.h" />
+    <ClInclude Include="PanelSkybox.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
@@ -349,6 +350,7 @@
     <ClCompile Include="PanelLayersTags.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
+    <ClCompile Include="PanelSkybox.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />

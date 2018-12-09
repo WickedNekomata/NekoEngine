@@ -4,6 +4,8 @@
 #include "Importer.h"
 #include "GameMode.h"
 
+#include <vector>
+
 class Resource;
 class ResourceTexture;
 
@@ -54,6 +56,9 @@ public:
 	
 	void LoadCheckers();
 	void LoadDefaultTexture();
+	uint LoadCubemapTexture(std::vector<uint>& faces);
+
+	static bool DeleteTexture(uint texture);
 
 	uint GetCheckers() const;
 	uint GetDefaultTexture() const;

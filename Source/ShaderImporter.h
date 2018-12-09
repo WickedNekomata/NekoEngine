@@ -48,6 +48,20 @@
 "     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
 "}\n" \
 
+#define cubemapvShader \
+"#version 330 core\n" \
+"layout (location = 0) in vec3 position;\n" \
+"uniform mat4 view_matrix;\n" \
+"uniform mat4 proj_matrix;\n" \
+"out vec4 ourColor;\n" \
+"out vec2 ourTexCoord;\n" \
+"void main()\n" \
+"{\n" \
+"    ourTexCoord = position;\n" \
+"    ourColor = color;\n" \
+"    gl_Position = proj_matrix * view_matrix * vec4(position, 1.0f);\n" \
+"}\n"
+
 #pragma endregion
 
 class Resource;
@@ -88,19 +102,23 @@ public:
 	bool LoadShaderProgram(const void* buffer, uint size, ResourceShaderProgram* shaderProgram) const;
 
 	void LoadDefaultShader();
+	void LoadCubemapShader();
 	void LoadDefaultVertexShaderObject();
 	void LoadDefaultFragmentShaderObject();
 	void LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject);
+	void LoadCubemapShaderProgram(uint vertexShaderObject, uint FragmentShaderObject);
 
 	GLuint GetDefaultVertexShaderObject() const;
 	GLuint GetDefaultFragmentShaderObject() const;
 	GLuint GetDefaultShaderProgram() const;
+	GLuint GetCubemapShaderProgram() const;
 
 private:
 
 	GLuint defaultVertexShaderObject = 0;
 	GLuint defaultFragmentShaderObject = 0;
 	GLuint defaultShaderProgram = 0;
+	GLuint cubemapShaderProgram = 0;
 
 	GLint formats = 0;
 };

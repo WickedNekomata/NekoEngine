@@ -69,7 +69,7 @@ GLint ResourceShaderProgram::GetBinary(GLint shaderProgram, GLubyte** buffer)
 		// Get the binary code
 		*buffer = new GLubyte[length];
 		GLenum format = 0;
-		glGetProgramBinary(shaderProgram, length, NULL, &format, (void*)buffer);
+		glGetProgramBinary(shaderProgram, length, NULL, &format, *buffer);
 	}
 
 	return length;

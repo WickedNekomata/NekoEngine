@@ -10,12 +10,7 @@
 
 #include <assert.h>
 
-ShaderImporter::ShaderImporter() 
-{
-	// TODO: this is not working. Maybe because it is here?
-	// Verify that the driver supports at least one shader binary format
-	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
-}
+ShaderImporter::ShaderImporter() {}
 
 ShaderImporter::~ShaderImporter()
 {
@@ -74,12 +69,13 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType 
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderProgram(const char* name, GLint shaderProgram, std::string& outputFile) const
+bool ShaderImporter::SaveShaderProgram(const char* name, GLuint shaderProgram, std::string& outputFile) const
 {
 	bool ret = false;
 
-	if (formats == 0)
-		return false;
+	// Verify that the driver supports at least one shader binary format
+	if (GetBinaryFormats() == 0)
+		return ret;
 
 	outputFile = name;
 
@@ -101,7 +97,8 @@ bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::strin
 {
 	bool ret = false;
 
-	if (formats == 0)
+	// Verify that the driver supports at least one shader binary format
+	if (GetBinaryFormats() == 0)
 		return ret;
 
 	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile) > 0)
@@ -470,6 +467,16 @@ bool ShaderImporter::LoadShaderProgram(const void* buffer, uint size, ResourceSh
 		CONSOLE_LOG("SHADER IMPORTER: Shader Program with size %u could not be loaded", size);
 
 	return ret;
+}
+
+void ShaderImporter::SetBinaryFormats(GLint formats)
+{
+	this->formats = formats;
+}
+
+GLint ShaderImporter::GetBinaryFormats() const
+{
+	return formats;
 }
 
 void ShaderImporter::LoadDefaultShader()

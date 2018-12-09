@@ -137,6 +137,21 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		}
 
 		glActiveTexture(GL_TEXTURE0);
+
+		// Material Importer: anisotropic filtering
+		if (GLEW_EXT_texture_filter_anisotropic)
+		{
+			float largestSupportedAnisotropy = 0;
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
+
+			App->materialImporter->SetIsAnisotropySupported(true);
+			App->materialImporter->SetLargestSupportedAnisotropy(largestSupportedAnisotropy);
+		}
+
+		// Shader Importer: binary formats
+		GLint formats = 0;
+		glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+		App->shaderImporter->SetBinaryFormats(formats);
 	}
 
 	App->materialImporter->LoadCheckers();

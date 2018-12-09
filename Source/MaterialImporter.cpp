@@ -39,13 +39,6 @@ MaterialImporter::MaterialImporter()
 		ilutInit();
 		ilutRenderer(ILUT_OPENGL); // Tell DevIL that we're using OpenGL for our rendering
 	}
-
-	// Anisotropic filtering
-	if (GLEW_EXT_texture_filter_anisotropic)
-	{
-		isAnisotropySupported = true;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy);
-	}
 }
 
 MaterialImporter::~MaterialImporter() 
@@ -584,6 +577,26 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 		CONSOLE_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 }
 
+void MaterialImporter::SetIsAnisotropySupported(bool isAnisotropySupported)
+{
+	this->isAnisotropySupported = isAnisotropySupported;
+}
+
+bool MaterialImporter::IsAnisotropySupported() const
+{
+	return isAnisotropySupported;
+}
+
+void MaterialImporter::SetLargestSupportedAnisotropy(float largestSupportedAnisotropy)
+{
+	this->largestSupportedAnisotropy = largestSupportedAnisotropy;
+}
+
+float MaterialImporter::GetLargestSupportedAnisotropy() const
+{
+	return largestSupportedAnisotropy;
+}
+
 #define CHECKERS_WIDTH 128
 #define CHECKERS_HEIGHT 128
 
@@ -674,16 +687,6 @@ uint MaterialImporter::GetCheckers() const
 uint MaterialImporter::GetDefaultTexture() const
 {
 	return defaultTexture;
-}
-
-bool MaterialImporter::IsAnisotropySupported() const
-{
-	return isAnisotropySupported;
-}
-
-float MaterialImporter::GetLargestSupportedAnisotropy() const
-{
-	return largestSupportedAnisotropy;
 }
 
 uint MaterialImporter::GetDevILVersion() const

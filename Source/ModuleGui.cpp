@@ -131,7 +131,6 @@ update_status ModuleGui::Update()
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
-	
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) { panelConsole->OnOff(); }
@@ -159,6 +158,8 @@ update_status ModuleGui::Update()
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Edit", "CTRL+E")) { panelEdit->OnOff(); }
+			if (ImGui::MenuItem("Skybox")) { panelSkybox->OnOff(); }
+			if (ImGui::MenuItem("Shader Editor")) { panelShaderEditor->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -172,7 +173,6 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "CTRL+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "CTRL+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "CTRL+D")) { panelDebugDraw->OnOff(); }
-			if (ImGui::MenuItem("Shader Editor", "CTRL+D")) { panelShaderEditor->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -371,7 +371,10 @@ void ModuleGui::LoadScenePopUp()
 void ModuleGui::ShowAllWindows()
 {
 	for (uint i = 0; i < panels.size(); ++i)
-		panels[i]->SetOnOff(true);
+	{
+		if (panels[i] != panelCodeEditor)
+			panels[i]->SetOnOff(true);
+	}
 }
 
 void ModuleGui::HideAllWindows()

@@ -19,6 +19,7 @@ struct MaterialResource
 {
 	uint res = 0;
 	math::float4x4 matrix = math::float4x4::identity;
+	bool checkers = false;
 
 	bool operator==(const MaterialResource rhs)
 	{
@@ -50,7 +51,6 @@ private:
 public:
 
 	ResourceShaderProgram* shaderProgram = nullptr;
-	bool useDefaultShader = true;
 
 	std::vector<MaterialResource> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };

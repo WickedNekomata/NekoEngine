@@ -35,7 +35,7 @@ std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderT
 	return shaderObjects;
 }
 
-bool ResourceShaderProgram::Link()
+bool ResourceShaderProgram::Link(bool comment)
 {
 	bool ret = true;
 
@@ -52,7 +52,7 @@ bool ResourceShaderProgram::Link()
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 		glDetachShader(shaderProgram, (*it)->shaderObject);
 
-	if (!IsProgramLinked())
+	if (!IsProgramLinked(comment))
 	{
 		DeleteShaderProgram(shaderProgram);
 		ret = false;
@@ -168,7 +168,7 @@ bool ResourceShaderProgram::IsProgramValid() const
 	return success;
 }
 
-bool ResourceShaderProgram::IsProgramLinked() const
+bool ResourceShaderProgram::IsProgramLinked(bool comment) const
 {
 	GLint success = 0;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -180,9 +180,10 @@ bool ResourceShaderProgram::IsProgramLinked() const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
 
-		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+		if (comment)
+			CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
 	}
-	else
+	else if (comment)
 		CONSOLE_LOG("Successfully linked Shader Program");
 
 	return success;

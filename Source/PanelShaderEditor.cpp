@@ -64,7 +64,7 @@ bool PanelShaderEditor::Draw()
 				ImGui::SameLine();
 			}
 
-			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "X##v%i", std::distance(vertexShaders.begin(), it));
+			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##v%i", std::distance(vertexShaders.begin(), it));
 			if (ImGui::Button(shaderObjectName))
 			{
 				it = vertexShaders.erase(it);
@@ -81,9 +81,9 @@ bool PanelShaderEditor::Draw()
 		for (std::list<ResourceShaderObject*>::iterator it = fragmentShaders.begin(); it != fragmentShaders.end();)
 		{
 			if (*it != nullptr)
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##v%i", (*it)->GetName(), std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##f%i", (*it)->GetName(), std::distance(fragmentShaders.begin(), it));
 			else
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Fragment##v%i", std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Fragment##f%i", std::distance(fragmentShaders.begin(), it));
 			ImGui::Button(shaderObjectName, ImVec2(150.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget())
@@ -101,14 +101,14 @@ bool PanelShaderEditor::Draw()
 
 			if (*it != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##v%i", std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##f%i", std::distance(fragmentShaders.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
 				ImGui::SameLine();
 			}
 
-			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "X##f%i", std::distance(fragmentShaders.begin(), it));
+			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##f%i", std::distance(fragmentShaders.begin(), it));
 			if (ImGui::Button(shaderObjectName))
 			{
 				it = fragmentShaders.erase(it);
@@ -171,7 +171,7 @@ bool PanelShaderEditor::Draw()
 					// If the shader program cannot be saved, restore its parameters
 					shaderProgram->SetName(sName.data());
 					shaderProgram->SetShaderObjects(sShaderObjects);
-					if (!shaderProgram->Link())
+					if (!shaderProgram->Link(false))
 						shaderProgram->isValid = false;
 					else
 						shaderProgram->isValid = true;

@@ -22,7 +22,7 @@ bool PanelCodeEditor::Draw()
 	assert(shaderObject != nullptr);
 
 	auto cpos = editor.GetCursorPosition();
-	ImGui::Begin("Text Editor Demo", &enabled, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Code Editor", &enabled, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::SetWindowSize(ImVec2(800.0f, 600.0f), ImGuiCond_FirstUseEver);
 	
 	if (ImGui::BeginMenuBar())
@@ -99,7 +99,7 @@ bool PanelCodeEditor::Draw()
 		{
 			// If the shader object cannot be saved, restore its parameters
 			shaderObject->SetSource(sSource.data(), sSource.length());
-			if (!shaderObject->Compile())
+			if (!shaderObject->Compile(false))
 				shaderObject->isValid = false;
 			else
 				shaderObject->isValid = true;

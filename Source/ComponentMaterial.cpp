@@ -67,31 +67,31 @@ void ComponentMaterial::OnUniqueEditor()
 	ImGui::Spacing();
 
 	// Shader Program
+	ImGui::Text("Shader");
+	ImGui::SameLine();
+
+	ImGui::PushID("shader");
+	ImGui::Button(shaderProgram != nullptr ? shaderProgram->GetName() : "Default Shader", ImVec2(150.0f, 0.0f));
+	ImGui::PopID();
+
+	if (ImGui::IsItemHovered())
 	{
-		ImGui::Text("Shader");
-		ImGui::SameLine();
-
-		ImGui::PushID("shader");
-		ImGui::Button(shaderProgram != nullptr ? shaderProgram->GetName() : "Default Shader", ImVec2(150.0f, 0.0f));
-		ImGui::PopID();
-
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::Text("%u", shaderProgram != nullptr ? shaderProgram->shaderProgram : App->shaderImporter->GetDefaultShaderProgram());
-			ImGui::EndTooltip();
-		}
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
-				shaderProgram = *(ResourceShaderProgram**)payload->Data;
-			ImGui::EndDragDropTarget();
-		}
-
-		ImGui::Checkbox("Use Default Shader", &useDefaultShader);
+		ImGui::BeginTooltip();
+		ImGui::Text("%u", shaderProgram != nullptr ? shaderProgram->shaderProgram : App->shaderImporter->GetDefaultShaderProgram());
+		ImGui::EndTooltip();
 	}
 
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
+			shaderProgram = *(ResourceShaderProgram**)payload->Data;
+		ImGui::EndDragDropTarget();
+	}
+
+	if (ImGui::Button("USE DEFAULT SHADER"))
+		shaderProgram = nullptr;
+
+	// Textures
 	ImGui::Spacing();
 
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
@@ -101,25 +101,44 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::Text("Texture %i", i + 1);
 		ImGui::SameLine();
 
-		std::string fileName = "Empty Texture";
-		const Resource* resource = App->res->GetResource(res[i].res);
-		if (resource != nullptr)
-			fileName = resource->GetName();
+		uint id = 0;
+		uint width = 0;
+		uint height = 0;
 
 		char itemName[DEFAULT_BUF_SIZE];
-		
-		if (res[i].res != 0) 
+
+		const ResourceTexture* resource = (const ResourceTexture*)App->res->GetResource(res[i].res);
+		if (resource != nullptr)
 		{
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", fileName.data(), i);
-			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
+			id = resource->id;
+			width = resource->width;
+			height = resource->height;
+
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", resource->GetName(), i);
+		}
+		else if (res[i].checkers)
+		{
+			id = App->materialImporter->GetCheckers();
+			width = CHECKERS_WIDTH;
+			height = CHECKERS_HEIGHT;
+
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Checkers##%i", i);
 		}
 		else
-			ImGui::Button("Replace Me!", ImVec2(100.0f, 0.0f));
+		{
+			id = App->materialImporter->GetDefaultTexture();
+			width = REPLACE_ME_WIDTH;
+			height = REPLACE_ME_HEIGHT;
+
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
+		}
+
+		ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
 
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("%u", (res.size() > 0) ? res.front().res : 0);
+			ImGui::Text("%u", id);
 			ImGui::EndTooltip();
 		}
 
@@ -129,31 +148,20 @@ void ComponentMaterial::OnUniqueEditor()
 			{
 				uint payload_n = *(uint*)payload->Data;
 				SetResource(payload_n, i);
+				res[i].checkers = false;
 			}
 			ImGui::EndDragDropTarget();
 		}
 
 		bool minusClicked = false;
 
-		if (res.size() > 1) 
+		if (res.size() > 1)
 		{
 			ImGui::SameLine();
 
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
 			if (ImGui::Button(itemName))
 				minusClicked = true;
-		}
-
-		const ResourceTexture* texture = (const ResourceTexture*)App->res->GetResource(res[i].res);
-
-		uint id = 0;
-		uint width = 0;
-		uint height = 0;
-		if (texture != nullptr)
-		{
-			id = texture->id;
-			width = texture->width;
-			height = texture->height;
 		}
 
 		ImGui::Image((void*)(intptr_t)id, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
@@ -165,10 +173,9 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::SetTooltip("Edit Texture Matrix");
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Edit Matrix##%i", i);
-		if (ImGui::BeginPopupContextItem(itemName, 0)) {
-
+		if (ImGui::BeginPopupContextItem(itemName, 0)) 
+		{
 			EditCurrentResMatrixByIndex(i);
-
 			ImGui::EndPopup();
 		}
 
@@ -178,7 +185,21 @@ void ComponentMaterial::OnUniqueEditor()
 		if (minusClicked)
 		{
 			SetResource(0, i);
-			res.erase(std::remove(res.begin(), res.end(), res[i]));
+			res.erase(res.begin() + i);
+		}
+
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE DEFAULT TEXTURE##%i", i);
+		if (ImGui::Button(itemName))
+		{
+			SetResource(0, i);
+			res[i].checkers = false;
+		}
+
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE CHECKERS TEXTURE##%i", i);
+		if (ImGui::Button(itemName))
+		{
+			SetResource(0, i);
+			res[i].checkers = true;
 		}
 	}
 

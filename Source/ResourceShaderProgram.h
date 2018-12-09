@@ -22,7 +22,7 @@ public:
 	void SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects);
 	std::list<ResourceShaderObject*> GetShaderObjects(ShaderType shaderType = ShaderType::NoShaderType) const;
 
-	bool Link();
+	bool Link(bool comment = true);
 	static GLuint Link(std::list<GLuint> shaderObjects);
 
 	GLint GetBinary(GLubyte** buffer);
@@ -31,7 +31,7 @@ public:
 	static bool DeleteShaderProgram(GLuint& shaderProgram);
 
 	bool IsProgramValid() const;
-	bool IsProgramLinked() const;
+	bool IsProgramLinked(bool comment = true) const;
 
 private:
 

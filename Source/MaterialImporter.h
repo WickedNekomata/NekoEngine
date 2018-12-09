@@ -6,6 +6,12 @@
 
 #include <vector>
 
+#define CHECKERS_WIDTH 128
+#define CHECKERS_HEIGHT 128
+
+#define REPLACE_ME_WIDTH 2
+#define REPLACE_ME_HEIGHT 2
+
 class Resource;
 class ResourceTexture;
 

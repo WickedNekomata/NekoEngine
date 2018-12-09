@@ -597,9 +597,6 @@ float MaterialImporter::GetLargestSupportedAnisotropy() const
 	return largestSupportedAnisotropy;
 }
 
-#define CHECKERS_WIDTH 128
-#define CHECKERS_HEIGHT 128
-
 void MaterialImporter::LoadCheckers()
 {
 	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
@@ -642,7 +639,7 @@ void MaterialImporter::LoadCheckers()
 
 void MaterialImporter::LoadDefaultTexture()
 {
-	GLubyte replaceMeTexture[2][2][4]; // REPLACE ME!
+	GLubyte replaceMeTexture[REPLACE_ME_WIDTH][REPLACE_ME_HEIGHT][4]; // REPLACE ME!
 
 	for (uint i = 0; i < 2; i++) {
 		for (uint j = 0; j < 2; j++) {

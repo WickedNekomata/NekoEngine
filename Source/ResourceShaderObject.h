@@ -25,12 +25,12 @@ public:
 	void SetSource(const char* source, uint size);
 	const char* GetSource() const;
 
-	bool Compile();
+	bool Compile(bool comment = true);
 	static GLuint Compile(const char* source, ShaderType shaderType);
 
 	static bool DeleteShaderObject(GLuint& shaderObject);
 
-	bool IsObjectCompiled() const;
+	bool IsObjectCompiled(bool comment = true) const;
 
 	static ShaderType GetShaderTypeByExtension(const char* extension);
 

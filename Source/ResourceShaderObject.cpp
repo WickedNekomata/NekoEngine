@@ -30,7 +30,7 @@ const char* ResourceShaderObject::GetSource() const
 	return source;
 }
 
-bool ResourceShaderObject::Compile()
+bool ResourceShaderObject::Compile(bool comment)
 {
 	bool ret = true;
 
@@ -53,7 +53,7 @@ bool ResourceShaderObject::Compile()
 	// Compile the Shader Object
 	glCompileShader(shaderObject);
 
-	if (!IsObjectCompiled())
+	if (!IsObjectCompiled(comment))
 	{
 		DeleteShaderObject(shaderObject);
 		ret = false;
@@ -116,7 +116,7 @@ bool ResourceShaderObject::DeleteShaderObject(GLuint& shaderObject)
 	return ret;
 }
 
-bool ResourceShaderObject::IsObjectCompiled() const
+bool ResourceShaderObject::IsObjectCompiled(bool comment) const
 {
 	GLint success = 0;
 	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &success);
@@ -130,7 +130,7 @@ bool ResourceShaderObject::IsObjectCompiled() const
 
 		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
 	}
-	else
+	else if (comment)
 		CONSOLE_LOG("Successfully compiled Shader Object");
 
 	return success;

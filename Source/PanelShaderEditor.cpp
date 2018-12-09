@@ -99,7 +99,7 @@ bool PanelShaderEditor::Draw()
 
 			if (*it != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT SHADER OBJECT##v%i", std::distance(vertexShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT SHADER OBJECT##v%i", std::distance(fragmentShaders.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 

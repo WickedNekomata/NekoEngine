@@ -9,6 +9,7 @@
 #include "ShaderImporter.h"
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
+#include "ModuleScene.h"
 
 #include "physfs\include\physfs.h"
 #include "Brofiler\Brofiler.h"

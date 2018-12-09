@@ -12,6 +12,7 @@
 #include "PanelCodeEditor.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
+#include "ShaderImporter.h"
 
 #include "GameObject.h"
 #include "Component.h"
@@ -93,7 +94,7 @@ void PanelInspector::ShowGameObjectInspector() const
 
 	ImGui::PushItemWidth(100.0f);
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
-	if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
+	if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName)))
 		gameObject->SetName(objName);
 	ImGui::PopItemWidth();
 
@@ -511,6 +512,23 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::Separator();
 	ImGui::Spacing();
 
+	ImGui::Text("Name:"); ImGui::SameLine();
+	static char name[INPUT_BUF_SIZE];
+	strcpy_s(name, INPUT_BUF_SIZE, shaderObject->GetName());
+	ImGui::PushItemWidth(150.0f);
+	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
+	{	
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(shaderObject->file.data()) + 1, shaderObject->file.data()); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		shaderObject->SetName(name);
+		App->shaderImporter->SetShaderNameToMeta(metaFile, shaderObject->GetName());
+	}
+	ImGui::Spacing();
+
 	ImGui::Text("File:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%s", shaderObject->file.data());
 	ImGui::Text("Exported file:"); ImGui::SameLine();
@@ -519,7 +537,10 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::TextColored(BLUE, "%u", shaderObject->GetUUID());
 
 	// Shader Object info
+	ImGui::Spacing();
 
+	if (ImGui::Button("EDIT SHADER OBJECT"))
+		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject);
 }
 
 void PanelInspector::ShowShaderProgramInspector() const
@@ -531,7 +552,23 @@ void PanelInspector::ShowShaderProgramInspector() const
 	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->scene->selectedObject.Get();
 
 	ImGui::Text("Name:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderProgram->GetName());
+	static char name[INPUT_BUF_SIZE];
+	strcpy_s(name, INPUT_BUF_SIZE, shaderProgram->GetName());
+	ImGui::PushItemWidth(150.0f);
+	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
+	{
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(shaderProgram->file.data()) + 1, shaderProgram->file.data()); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		shaderProgram->SetName(name);
+		App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
+
+		if (App->gui->panelShaderEditor->GetShaderProgram() == shaderProgram)
+			App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram);
+	}
 	ImGui::Spacing();
 
 	ImGui::Text("File:"); ImGui::SameLine();
@@ -544,13 +581,19 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	// Shader Program info
 	ImGui::Text("Shader Objects:");
+
+	char shaderObject[DEFAULT_BUF_SIZE];
+
 	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects();
-	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	for (std::list<ResourceShaderObject*>::iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 	{
-		ImGui::TextColored(BLUE, "%s", (*it)->GetName());
-		if (ImGui::Button("EDIT SHADER OBJECT"))
+		ImGui::TextColored(BLUE, "%s", (*it)->GetName()); ImGui::SameLine();
+		sprintf_s(shaderObject, DEFAULT_BUF_SIZE, "EDIT##%i", std::distance(shaderObjects.begin(), it));
+		if (ImGui::Button(shaderObject))
 			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 	}
+
+	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
 		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram);

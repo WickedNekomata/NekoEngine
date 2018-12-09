@@ -10,7 +10,7 @@ ResourceShaderObject::~ResourceShaderObject()
 {
 	RELEASE_ARRAY(source);
 
-	glDeleteShader(shaderObject);
+	DeleteShaderObject(shaderObject);
 }
 
 uint ResourceShaderObject::LoadMemory()
@@ -46,8 +46,7 @@ bool ResourceShaderObject::Compile()
 	}
 
 	// Create a Shader Object
-	if (glIsShader(shaderObject))
-		glDeleteShader(shaderObject);
+	DeleteShaderObject(shaderObject);
 	shaderObject = glCreateShader(shader); // Creates an empty Shader Object
 	glShaderSource(shaderObject, 1, &source, NULL); // Takes an array of strings and stores it into the shader
 
@@ -56,7 +55,7 @@ bool ResourceShaderObject::Compile()
 
 	if (!IsObjectCompiled())
 	{
-		glDeleteShader(shaderObject);
+		DeleteShaderObject(shaderObject);
 		ret = false;
 	}
 
@@ -95,7 +94,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 
 		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
 
-		glDeleteShader(shaderObject);
+		DeleteShaderObject(shaderObject);
 	}
 	else
 		CONSOLE_LOG("Successfully compiled Shader Object");
@@ -103,13 +102,14 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 	return shaderObject;
 }
 
-bool ResourceShaderObject::DeleteShaderObject(GLuint shaderObject)
+bool ResourceShaderObject::DeleteShaderObject(GLuint& shaderObject)
 {
 	bool ret = false;
 
 	if (glIsShader(shaderObject))
 	{
 		glDeleteShader(shaderObject);
+		shaderObject = 0;
 		ret = true;
 	}
 

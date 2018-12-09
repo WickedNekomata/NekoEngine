@@ -67,6 +67,10 @@ bool PanelCodeEditor::Draw()
 	// Compile
 	if (ImGui::Button("Compile and Save"))
 	{
+		// Temporary store the parameters of the shader object
+		std::string sSource = shaderObject->GetSource();
+
+		// Update the parameters of the shader object
 		shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
 		if (!shaderObject->Compile())
 			shaderObject->isValid = false;
@@ -85,9 +89,20 @@ bool PanelCodeEditor::Draw()
 			int lastModTime = App->fs->GetLastModificationTime(output.data());
 			Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 
+			App->fs->AddMeta(metaFile, lastModTime);
+
 			System_Event newEvent;
 			newEvent.type = System_Event_Type::RefreshAssets;
 			App->PushSystemEvent(newEvent);
+		}
+		else
+		{
+			// If the shader object cannot be saved, restore its parameters
+			shaderObject->SetSource(sSource.data(), sSource.length());
+			if (!shaderObject->Compile())
+				shaderObject->isValid = false;
+			else
+				shaderObject->isValid = true;
 		}
 	}
 
@@ -98,7 +113,10 @@ bool PanelCodeEditor::Draw()
 
 	// Try to compile
 	if (ImGui::Button("Compile"))
-		ResourceShaderObject::DeleteShaderObject(ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType));
+	{
+		uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
+		ResourceShaderObject::DeleteShaderObject(tryCompile);
+	}
 
 	switch (shaderObject->shaderType)
 	{

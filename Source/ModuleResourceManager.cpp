@@ -452,6 +452,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			}
 		}
 		break;
+
+		case ResourceType::ShaderObjectResource:
+		case ResourceType::ShaderProgramResource:
+			entries = true;
+			break;
 		}
 
 		// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
@@ -649,13 +654,17 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				UUID = resource->GetUUID();
 			}
 
-			std::string fileName;
-			App->fs->GetFileName(fileInAssets, fileName);
-			resource->SetName(fileName.data());
-
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 			resource->shaderType = resource->GetShaderTypeByExtension(extension.data());
+
+			std::string name;
+			if (metaFile != nullptr)
+				App->shaderImporter->GetShaderNameFromMeta(metaFile, name);
+			else
+				App->fs->GetFileName(fileInAssets, name);
+
+			resource->SetName(name.data());
 
 			// -----
 
@@ -697,12 +706,16 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				UUID = resource->GetUUID();
 			}
 
-			std::string fileName;
-			App->fs->GetFileName(fileInAssets, fileName);
-			resource->SetName(fileName.data());
-
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
+
+			std::string name;
+			if (metaFile != nullptr)
+				App->shaderImporter->GetShaderNameFromMeta(metaFile, name);
+			else
+				App->fs->GetFileName(fileInAssets, name);
+
+			resource->SetName(name.data());
 
 			// -----
 
@@ -761,6 +774,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			{
 				outputMetaFile = metaFile;
 
+				App->shaderImporter->SetShaderNameToMeta(metaFile, resource->GetName());
 				App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
 				App->shaderImporter->SetShaderObjectsToMeta(metaFile, shaderObjects);
 
@@ -936,7 +950,7 @@ bool ModuleResourceManager::DestroyResource(uint UUID)
 	if (it == resources.end())
 		return false;
 	
-	delete it->second;
+	RELEASE(it->second);
 	resources.erase(UUID);
 	return true;
 }
@@ -949,7 +963,7 @@ bool ModuleResourceManager::DestroyResources(std::list<uint> UUIDs)
 
 		if (res != resources.end())
 		{
-			delete res->second;
+			RELEASE(res->second);
 			resources.erase(*it);
 		}
 		else

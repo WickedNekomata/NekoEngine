@@ -26,7 +26,8 @@ bool PanelShaderEditor::Draw()
 	if (ImGui::Begin(name, &enabled))
 	{
 		ImGui::Text("Shader Program:"); ImGui::SameLine();
-		ImGui::PushItemWidth(150.0f); ImGui::InputText("##name", shaderProgramName, INPUT_BUF_SIZE);
+		ImGui::PushItemWidth(150.0f); 
+		ImGui::InputText("##name", shaderProgramName, INPUT_BUF_SIZE);
 		ImGui::Separator();
 
 		char shaderObjectName[DEFAULT_BUF_SIZE];
@@ -34,6 +35,7 @@ bool PanelShaderEditor::Draw()
 		ImGui::Text("Vertex Shaders");
 		for (std::list<ResourceShaderObject*>::iterator it = vertexShaders.begin(); it != vertexShaders.end();)
 		{
+			ResourceShaderObject* i = *it;
 			if (*it != nullptr)
 				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##v%i", (*it)->GetName(), std::distance(vertexShaders.begin(), it));
 			else
@@ -55,7 +57,7 @@ bool PanelShaderEditor::Draw()
 
 			if (*it != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT SHADER OBJECT##v%i", std::distance(vertexShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##v%i", std::distance(vertexShaders.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
@@ -99,7 +101,7 @@ bool PanelShaderEditor::Draw()
 
 			if (*it != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT SHADER OBJECT##v%i", std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##v%i", std::distance(fragmentShaders.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
@@ -125,10 +127,15 @@ bool PanelShaderEditor::Draw()
 			std::list<ResourceShaderObject*> shaderObjects;
 			GetShaderObjects(shaderObjects);
 
-			// Existing shader program?
+			// Existing shader program
 			if (shaderProgram != nullptr)
 			{
-				shaderProgram->SetName(&shaderProgramName[0]);
+				// Temporary store the parameters of the shader program
+				std::string sName = shaderProgram->GetName();
+				std::list<ResourceShaderObject*> sShaderObjects = shaderProgram->GetShaderObjects();
+
+				// Update the parameters of the shader program
+				shaderProgram->SetName(shaderProgramName);
 				shaderProgram->SetShaderObjects(shaderObjects);
 				if (!shaderProgram->Link())
 					shaderProgram->isValid = false;
@@ -143,6 +150,9 @@ bool PanelShaderEditor::Draw()
 					strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
 					strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
+					// Update name in the meta
+					App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
+
 					// Update shader objects in the meta
 					App->shaderImporter->SetShaderObjectsToMeta(metaFile, shaderObjects);
 
@@ -150,9 +160,21 @@ bool PanelShaderEditor::Draw()
 					int lastModTime = App->fs->GetLastModificationTime(output.data());
 					Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);			
 
+					App->fs->AddMeta(metaFile, lastModTime);
+
 					System_Event newEvent;
 					newEvent.type = System_Event_Type::RefreshAssets;
 					App->PushSystemEvent(newEvent);
+				}
+				else
+				{
+					// If the shader program cannot be saved, restore its parameters
+					shaderProgram->SetName(sName.data());
+					shaderProgram->SetShaderObjects(sShaderObjects);
+					if (!shaderProgram->Link())
+						shaderProgram->isValid = false;
+					else
+						shaderProgram->isValid = true;
 				}
 			}
 			else
@@ -160,7 +182,7 @@ bool PanelShaderEditor::Draw()
 				// Create a new resource for the shader program
 				shaderProgram = (ResourceShaderProgram*)App->res->CreateNewResource(ResourceType::ShaderProgramResource);
 
-				shaderProgram->SetName(&shaderProgramName[0]);
+				shaderProgram->SetName(shaderProgramName);
 				shaderProgram->SetShaderObjects(shaderObjects);
 				if (!shaderProgram->Link())
 					shaderProgram->isValid = false;
@@ -168,12 +190,23 @@ bool PanelShaderEditor::Draw()
 				std::string output;
 				if (App->shaderImporter->SaveShaderProgram(shaderProgram, output))
 				{
+					shaderProgram->file = shaderProgram->exportedFile = output;
+
 					// Generate a new meta
+					output.clear();
 					App->shaderImporter->GenerateShaderProgramMeta(shaderProgram, output);
+					int lastModTime = App->fs->GetLastModificationTime(output.data());
+					App->fs->AddMeta(output.data(), lastModTime);
 
 					System_Event newEvent;
 					newEvent.type = System_Event_Type::RefreshAssets;
 					App->PushSystemEvent(newEvent);
+				}
+				else
+				{
+					// If the shader program cannot be saved, remove its resource
+					App->res->DestroyResource(shaderProgram->GetUUID());
+					shaderProgram = nullptr;
 				}
 			}
 		}
@@ -186,7 +219,8 @@ bool PanelShaderEditor::Draw()
 			std::list<uint> shaderObjects;
 			GetShaderObjects(shaderObjects);
 
-			ResourceShaderProgram::DeleteShaderProgram(ResourceShaderProgram::Link(shaderObjects));
+			uint tryLink = ResourceShaderProgram::Link(shaderObjects);
+			ResourceShaderProgram::DeleteShaderProgram(tryLink);
 		}
 	}
 	ImGui::End();
@@ -212,6 +246,11 @@ void PanelShaderEditor::OpenShaderInShaderEditor(ResourceShaderProgram* shaderPr
 	strcpy_s(shaderProgramName, strlen(shaderProgram->GetName()) + 1, shaderProgram->GetName());
 	vertexShaders = shaderProgram->GetShaderObjects(ShaderType::VertexShaderType);
 	fragmentShaders = shaderProgram->GetShaderObjects(ShaderType::FragmentShaderType);
+}
+
+ResourceShaderProgram* PanelShaderEditor::GetShaderProgram() const
+{
+	return shaderProgram;
 }
 
 void PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const

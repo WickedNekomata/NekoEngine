@@ -21,6 +21,7 @@ public:
 	bool Draw();
 	
 	void OpenShaderInShaderEditor(ResourceShaderProgram* program);
+	ResourceShaderProgram* GetShaderProgram() const;
 
 private:
 

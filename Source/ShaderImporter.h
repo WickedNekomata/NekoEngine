@@ -88,10 +88,12 @@ public:
 
 	bool GenerateShaderObjectMeta(ResourceShaderObject* shaderObject, std::string& outputMetaFile) const;
 	bool GenerateShaderProgramMeta(ResourceShaderProgram* shaderProgram, std::string& outputMetaFile) const;
+	bool SetShaderNameToMeta(const char* metaFile, std::string name) const;
+	bool GetShaderNameFromMeta(const char* metaFile, std::string& name) const;
 	bool SetShaderUUIDToMeta(const char* metaFile, uint UUID) const;
 	bool GetShaderUUIDFromMeta(const char* metaFile, uint& UUID) const;
-	bool SetShaderObjectsToMeta(const char* metaFile, std::list<ResourceShaderObject*> shaderObjects) const;
-	bool GetShaderObjectsFromMeta(const char* metaFile, std::list<std::string>& files) const;
+	bool SetShaderObjectsToMeta(const char* metaFile, std::list<ResourceShaderObject*> shaderObjects) const; // Only for Shader Program
+	bool GetShaderObjectsFromMeta(const char* metaFile, std::list<std::string>& files) const; // Only for Shader Program
 
 	// Shader Object (load)
 	bool LoadShaderObject(const char* objectFile, ResourceShaderObject* shaderObject) const;

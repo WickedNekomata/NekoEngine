@@ -7,7 +7,7 @@ ResourceShaderProgram::ResourceShaderProgram(ResourceType type, uint uuid) : Res
 
 ResourceShaderProgram::~ResourceShaderProgram()
 {
-	glDeleteProgram(shaderProgram);
+	DeleteShaderProgram(shaderProgram);
 }
 
 uint ResourceShaderProgram::LoadMemory()
@@ -40,8 +40,7 @@ bool ResourceShaderProgram::Link()
 	bool ret = true;
 
 	// Create a Shader Program
-	if (glIsProgram(shaderProgram))
-		glDeleteProgram(shaderProgram);
+	DeleteShaderProgram(shaderProgram);
 	shaderProgram = glCreateProgram();
 
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
@@ -55,7 +54,7 @@ bool ResourceShaderProgram::Link()
 
 	if (!IsProgramLinked())
 	{
-		glDeleteProgram(shaderProgram);
+		DeleteShaderProgram(shaderProgram);
 		ret = false;
 	}
 
@@ -88,25 +87,12 @@ GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
 
 		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
 
-		glDeleteProgram(shaderProgram);
+		DeleteShaderProgram(shaderProgram);
 	}
 	else
 		CONSOLE_LOG("Successfully linked Shader Program");
 
 	return shaderProgram;
-}
-
-bool ResourceShaderProgram::DeleteShaderProgram(GLuint shaderProgram)
-{
-	bool ret = false;
-
-	if (glIsProgram(shaderProgram))
-	{
-		glDeleteProgram(shaderProgram);
-		ret = true;
-	}
-
-	return ret;
 }
 
 // Returns the length of the binary
@@ -132,8 +118,7 @@ bool ResourceShaderProgram::LoadBinary(const void* buffer, GLint size)
 	bool ret = true;
 
 	// Create a Shader Program
-	if (glIsProgram(shaderProgram))
-		glDeleteProgram(shaderProgram);
+	DeleteShaderProgram(shaderProgram);
 	shaderProgram = glCreateProgram();
 
 	// Install the binary
@@ -142,8 +127,22 @@ bool ResourceShaderProgram::LoadBinary(const void* buffer, GLint size)
 
 	if (!IsProgramLinked())
 	{
-		glDeleteProgram(shaderProgram);
+		DeleteShaderProgram(shaderProgram);
 		ret = false;
+	}
+
+	return ret;
+}
+
+bool ResourceShaderProgram::DeleteShaderProgram(GLuint& shaderProgram)
+{
+	bool ret = false;
+
+	if (glIsProgram(shaderProgram))
+	{
+		glDeleteProgram(shaderProgram);
+		shaderProgram = 0;
+		ret = true;
 	}
 
 	return ret;

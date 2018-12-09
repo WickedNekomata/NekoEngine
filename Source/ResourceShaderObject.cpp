@@ -30,9 +30,10 @@ const char* ResourceShaderObject::GetSource() const
 	return source;
 }
 
-// Returns the shader object that has been compiled. If error, returns 0
-GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
+bool ResourceShaderObject::Compile()
 {
+	bool ret = true;
+
 	GLenum shader = 0;
 	switch (shaderType)
 	{
@@ -45,19 +46,24 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 	}
 
 	// Create a Shader Object
-	GLuint shaderObject = glCreateShader(shader); // Creates an empty Shader Object
+	if (glIsShader(shaderObject))
+		glDeleteShader(shaderObject);
+	shaderObject = glCreateShader(shader); // Creates an empty Shader Object
 	glShaderSource(shaderObject, 1, &source, NULL); // Takes an array of strings and stores it into the shader
 
 	// Compile the Shader Object
 	glCompileShader(shaderObject);
 
-	if (!IsObjectCompiled(shaderObject))
+	if (!IsObjectCompiled())
+	{
 		glDeleteShader(shaderObject);
+		ret = false;
+	}
 
-	return shaderObject;
+	return ret;
 }
 
-bool ResourceShaderObject::IsObjectCompiled(GLuint shaderObject)
+bool ResourceShaderObject::IsObjectCompiled() const
 {
 	GLint success = 0;
 	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &success);
@@ -75,16 +81,6 @@ bool ResourceShaderObject::IsObjectCompiled(GLuint shaderObject)
 		CONSOLE_LOG("Successfully compiled Shader Object");
 
 	return success;
-}
-
-bool ResourceShaderObject::DeleteShaderObject(GLuint shaderObject)
-{
-	if (!glIsShader(shaderObject))
-		return false;
-
-	glDeleteShader(shaderObject);
-
-	return true;
 }
 
 // Returns the shader type that matches the extension

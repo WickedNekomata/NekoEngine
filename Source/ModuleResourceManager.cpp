@@ -158,12 +158,12 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			case ShaderType::VertexShaderType:
 				it = std::find(App->gui->panelShaderEditor->vertexShaders.begin(), App->gui->panelShaderEditor->vertexShaders.end(), resource);
 				if (it != App->gui->panelShaderEditor->vertexShaders.end())
-					currentShader = resource == App->gui->panelCodeEditor->currentShader;
+					currentShader = resource == App->gui->panelCodeEditor->GetShaderObject();
 				break;
 			case ShaderType::FragmentShaderType:
 				it = std::find(App->gui->panelShaderEditor->fragmentShaders.begin(), App->gui->panelShaderEditor->fragmentShaders.end(), resource);
 				if (it != App->gui->panelShaderEditor->vertexShaders.end())
-					currentShader = resource == App->gui->panelCodeEditor->currentShader;
+					currentShader = resource == App->gui->panelCodeEditor->GetShaderObject();
 				break;
 			}
 		}
@@ -185,7 +185,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					*it = resource;
 
 					if (currentShader)
-						App->gui->panelCodeEditor->currentShader = resource;
+						App->gui->panelCodeEditor->OpenShaderInCodeEditor(resource);
 				}
 				break;
 			case ShaderType::FragmentShaderType:
@@ -194,7 +194,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					*it = resource;
 
 					if (currentShader)
-						App->gui->panelCodeEditor->currentShader = resource;
+						App->gui->panelCodeEditor->OpenShaderInCodeEditor(resource);
 				}
 				break;
 			}
@@ -343,6 +343,49 @@ void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
 		Resource* resource = CreateNewResource(ResourceType::TextureResource, UUID);
 		resource->exportedFile = fileInLibrary;
 	}
+
+	// TODO: Load Shader Objects and Programs
+	/*
+	std::list<ResourceShaderObject*> shaderObjects;
+
+	// 1. Load the binary
+	if (!resource->LoadMemory())
+	{
+		// 2. If the binary hasn't loaded correctly, retrieve the shader objects of the shader program
+		std::list<std::string> files;
+		App->shaderImporter->GetShaderObjectsFromMeta(metaFile, files);
+
+		for (std::list<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+		{
+			// Check if the resource exists in Assets
+			std::string outputFile = DIR_ASSETS;
+			if (App->fs->RecursiveExists((*it).data(), DIR_ASSETS, outputFile))
+			{
+				uint UUID = 0;
+				std::list<uint> UUIDs;
+				if (!App->res->FindResourcesByFile(outputFile.data(), UUIDs))
+					// If the shader object is not a resource yet, import it
+					UUID = App->res->ImportFile(outputFile.data());
+				else
+					UUID = UUIDs.front();
+
+				if (UUID > 0)
+					shaderObjects.push_back((ResourceShaderObject*)GetResource(UUID));
+			}
+		}
+
+		if (files.size() == shaderObjects.size())
+		{
+			// 3. With the shader objects, link the program
+			if (!ResourceShaderProgram::Link(shaderObjects))
+				resource->isValid = false;
+		}
+		else
+			resource->isValid = false;
+	}
+	else
+		resource->isValid = false;
+	*/
 }
 
 // Determines how to import a file and calls ImportFile into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
@@ -538,7 +581,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->sceneImporter->GenerateMeta(resources, outputMetaFile, (MeshImportSettings*)importSettings);
-			// Else, update the UUIDs and the last modified time in the existing meta
+			// Else, update the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
@@ -578,7 +621,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->materialImporter->GenerateMeta(resources.front(), outputMetaFile, (TextureImportSettings*)importSettings);
-			// Else, update the UUID and the last modified time in the existing meta
+			// Else, update the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
@@ -614,15 +657,19 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			resource->exportedFile = outputFile;
 			resource->shaderType = resource->GetShaderTypeByExtension(extension.data());
 
-			if (!resource->LoadMemory())
+			// -----
+
+			if (resource->LoadMemory() == 0)
 				resource->isValid = false;
+
+			// -----
 
 			resources.push_back(resource);
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->shaderImporter->GenerateShaderObjectMeta((ResourceShaderObject*)resources.front(), outputMetaFile);
-			// Else, update the UUID and the last modified time in the existing meta
+			// Else, update the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
@@ -657,12 +704,16 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			resource->file = fileInAssets;
 			resource->exportedFile = outputFile;
 
+			// -----
+
+			// Load the binary
+			uint success = resource->LoadMemory();
+
 			std::list<ResourceShaderObject*> shaderObjects;
 
-			// 1. Load the binary
-			if (!resource->LoadMemory())
+			if (metaFile != nullptr)
 			{
-				// 2. If the binary hasn't loaded correctly, retrieve the shader objects of the shader program
+				// Retrieve the shader objects of the shader program
 				std::list<std::string> files;
 				App->shaderImporter->GetShaderObjectsFromMeta(metaFile, files);
 
@@ -687,27 +738,31 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 				if (files.size() == shaderObjects.size())
 				{
-					// 3. With the shader objects, link the program
-					if (!ResourceShaderProgram::Link(shaderObjects))
-						resource->isValid = false;
+					resource->SetShaderObjects(shaderObjects);
+
+					if (success == 0)
+						// If the binary hasn't loaded correctly, link the shader program with the shader objects
+						success = resource->Link();
 				}
-				else
-					resource->isValid = false;
 			}
-			else
+
+			if (success == 0)
 				resource->isValid = false;
+
+			// -----
 
 			resources.push_back(resource);
 
 			// If the file has no meta associated, generate a new meta
 			if (metaFile == nullptr)
 				App->shaderImporter->GenerateShaderProgramMeta((ResourceShaderProgram*)resources.front(), outputMetaFile);
-			// Else, update the UUID and the last modified time in the existing meta
+			// Else, update the existing meta
 			else
 			{
 				outputMetaFile = metaFile;
 
 				App->shaderImporter->SetShaderUUIDToMeta(metaFile, UUID);
+				App->shaderImporter->SetShaderObjectsToMeta(metaFile, shaderObjects);
 
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
@@ -716,29 +771,16 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		break;
 		}
 
-		if (resources.size() > 0)
+		if (!outputMetaFile.empty())
 		{
-			Resource* resource = resources.front();
-
 			// Add the meta to the metas map to keep track of it
 			int lastModTime = 0;
-			switch (resource->GetType())
-			{
-			case ResourceType::MeshResource:
-				App->sceneImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
-				break;
-			case ResourceType::TextureResource:
-				App->materialImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
-				break;
-			case ResourceType::ShaderObjectResource:
-				App->shaderImporter->GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
-				break;
-			}
-
+			Importer::GetLastModificationTimeFromMeta(outputMetaFile.data(), lastModTime);
 			App->fs->AddMeta(outputMetaFile.data(), lastModTime);
-
-			ret = resource->GetUUID();
 		}
+
+		if (resources.size() > 0)
+			ret = resources.front()->GetUUID();
 	}
 
 	RELEASE(importSettings);

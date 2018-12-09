@@ -72,19 +72,13 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::SameLine();
 
 		ImGui::PushID("shader");
-		if (shaderProgram != nullptr)
-			ImGui::Button(shaderProgram->GetName(), ImVec2(150.0f, 0.0f));
-		else
-			ImGui::Button("Default Shader", ImVec2(150.0f, 0.0f));
+		ImGui::Button(shaderProgram != nullptr ? shaderProgram->GetName() : "Default Shader", ImVec2(150.0f, 0.0f));
 		ImGui::PopID();
 
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			if (shaderProgram != nullptr)
-				ImGui::Text("%u", shaderProgram->shaderProgram);
-			else
-				ImGui::Text("%u", App->shaderImporter->GetDefaultShaderProgram());
+			ImGui::Text("%u", shaderProgram != nullptr ? shaderProgram->shaderProgram : App->shaderImporter->GetDefaultShaderProgram()->shaderProgram);
 			ImGui::EndTooltip();
 		}
 
@@ -94,7 +88,11 @@ void ComponentMaterial::OnUniqueEditor()
 				shaderProgram = *(ResourceShaderProgram**)payload->Data;
 			ImGui::EndDragDropTarget();
 		}
+
+		ImGui::Checkbox("Use Default Shader", &useDefaultShader);
 	}
+
+	ImGui::Spacing();
 
 	ImGui::ColorEdit4("Color", (float*)&color, ImGuiColorEditFlags_NoInputs);
 
@@ -110,7 +108,8 @@ void ComponentMaterial::OnUniqueEditor()
 
 		char itemName[DEFAULT_BUF_SIZE];
 		
-		if (res[i].res != 0) {
+		if (res[i].res != 0) 
+		{
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", fileName.data(), i);
 			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
 		}
@@ -136,7 +135,8 @@ void ComponentMaterial::OnUniqueEditor()
 
 		bool minusClicked = false;
 
-		if (res.size() > 1) {
+		if (res.size() > 1) 
+		{
 			ImGui::SameLine();
 
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);

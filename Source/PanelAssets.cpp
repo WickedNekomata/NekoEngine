@@ -145,7 +145,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile) const
 				switch (type)
 				{
 				case ResourceType::MeshResource:
-					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
+					for (std::map<std::string, int>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
 					{
 						if (ImGui::TreeNodeEx(it->first.data(), ImGuiTreeNodeFlags_Leaf))
 						{

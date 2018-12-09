@@ -49,12 +49,12 @@ struct File
 
 struct AssetsFile : public File
 {
-	uint lastModTime = 0;
+	int lastModTime = 0;
 
 	const ImportSettings* importSettings = nullptr; // meshes, textures
 	const Resource* resource = nullptr; // shaders
 
-	std::map<std::string, uint> UUIDs; // meshes, textures
+	std::map<std::string, int> UUIDs; // meshes, textures
 };
 
 struct LibraryFile : public File
@@ -81,7 +81,7 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, uint>& assetsFiles) const;
+	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, int>& assetsFiles) const;
 	void RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const;
 	AssetsFile* GetRootAssetsFile() const;
 	LibraryFile* GetRootLibraryFile() const;
@@ -103,15 +103,15 @@ public:
 
 	uint Load(const char* file, char** buffer) const;
 
-	bool AddMeta(const char* metaFile, uint lastModTime);
+	bool AddMeta(const char* metaFile, int lastModTime);
 	bool DeleteMeta(const char* metaFile);
 
 	void CheckFilesInAssets() const;
 
 private:
 
-	std::map<std::string, uint> metas;
-	std::map<std::string, uint> assetsFiles;
+	std::map<std::string, int> metas;
+	std::map<std::string, int> assetsFiles;
 
 	AssetsFile* rootAssetsFile = nullptr;
 	LibraryFile* rootLibraryFile = nullptr;

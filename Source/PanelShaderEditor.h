@@ -20,14 +20,22 @@ public:
 
 	bool Draw();
 	
-	void OpenFromShaderProgram(const ResourceShaderProgram* program);
+	void OpenShaderInShaderEditor(ResourceShaderProgram* program);
+
+private:
+
+	std::list<ResourceShaderObject*> GetShaderObjects() const;
+
+private:
+
+	ResourceShaderProgram* shaderProgram = nullptr;
 
 public:
 
+	char shaderProgramName[INPUT_BUF_SIZE];
+
 	std::list<ResourceShaderObject*> vertexShaders;
 	std::list<ResourceShaderObject*> fragmentShaders;
-
-	char shaderProgramName[INPUT_BUF_SIZE];
 };
 
 #endif

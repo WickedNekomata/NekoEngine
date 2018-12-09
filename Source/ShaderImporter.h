@@ -65,12 +65,12 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 
 	// Shader Object (save)
-	bool SaveShaderObject(const char* name, const char* file, const char* buffer, ShaderType shaderType, std::string& outputFile, bool overwrite = false) const;
+	bool SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite = false) const;
 	bool SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile, bool overwrite = false) const;
 
 	// Shader Program (save)
-	bool SaveShaderProgram(const char* name, GLuint shaderProgram, std::string& outputFile) const;
-	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile) const;
+	bool SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile, bool overwrite = false) const;
+	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile, bool overwrite = false) const;
 
 	bool GenerateShaderObjectMeta(ResourceShaderObject* shaderObject, std::string& outputMetaFile) const;
 	bool GenerateShaderProgramMeta(ResourceShaderProgram* shaderProgram, std::string& outputMetaFile) const;
@@ -91,21 +91,20 @@ public:
 	GLint GetBinaryFormats() const;
 
 	void LoadDefaultShader();
-	void LoadDefaultVertexShaderObject();
-	void LoadDefaultFragmentShaderObject();
-	void LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject);
+	ResourceShaderObject* LoadDefaultShaderObject(ShaderType shaderType) const;
+	ResourceShaderProgram* LoadDefaultShaderProgram(ResourceShaderObject* defaultVertexShaderObject, ResourceShaderObject* defaultFragmentShaderObject) const;
 
-	GLuint GetDefaultVertexShaderObject() const;
-	GLuint GetDefaultFragmentShaderObject() const;
-	GLuint GetDefaultShaderProgram() const;
+	ResourceShaderObject* GetDefaultVertexShaderObject() const;
+	ResourceShaderObject* GetDefaultFragmentShaderObject() const;
+	ResourceShaderProgram* GetDefaultShaderProgram() const;
 
 private:
 
 	GLint formats = 0;
 
-	GLuint defaultVertexShaderObject = 0;
-	GLuint defaultFragmentShaderObject = 0;
-	GLuint defaultShaderProgram = 0;
+	ResourceShaderObject* defaultVertexShaderObject = nullptr;
+	ResourceShaderObject* defaultFragmentShaderObject = nullptr;
+	ResourceShaderProgram* defaultShaderProgram = nullptr;
 };
 
 #endif

@@ -5,6 +5,8 @@
 #include "ShaderImporter.h"
 #include "ResourceShaderObject.h"
 
+// Allows the modification of an existing shader object
+
 PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 {
 	editor;
@@ -13,15 +15,16 @@ PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
 	editor.SetLanguageDefinition(lang);
 }
 
-PanelCodeEditor::~PanelCodeEditor()
-{
-}
+PanelCodeEditor::~PanelCodeEditor() {}
 
 bool PanelCodeEditor::Draw()
 {
+	assert(shaderObject != nullptr);
+
 	auto cpos = editor.GetCursorPosition();
 	ImGui::Begin("Text Editor Demo", &enabled, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+	ImGui::SetWindowSize(ImVec2(800.0f, 600.0f), ImGuiCond_FirstUseEver);
+	
 	if (ImGui::BeginMenuBar())
 	{
 		if (ImGui::BeginMenu("Edit"))
@@ -44,7 +47,7 @@ bool PanelCodeEditor::Draw()
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem("Select all", nullptr, nullptr))
+			if (ImGui::MenuItem("Select All", nullptr, nullptr))
 				editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(editor.GetTotalLines(), 0));
 
 			ImGui::EndMenu();
@@ -52,74 +55,94 @@ bool PanelCodeEditor::Draw()
 
 		if (ImGui::BeginMenu("View"))
 		{
-			if (ImGui::MenuItem("Dark palette"))
+			if (ImGui::MenuItem("Dark Palette"))
 				editor.SetPalette(TextEditor::GetDarkPalette());
-			if (ImGui::MenuItem("Light palette"))
+			if (ImGui::MenuItem("Light Palette"))
 				editor.SetPalette(TextEditor::GetLightPalette());
 			ImGui::EndMenu();
 		}
 		ImGui::EndMenuBar();
 	}
 
-	if (ImGui::Button("Save"))
+	// Compile
+	if (ImGui::Button("Compile and Save"))
 	{
-		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
-		if (shaderCompiled > 0)
+		shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
+		if (!shaderObject->Compile())
+			shaderObject->isValid = false;
+		else
+			shaderObject->isValid = true;
+
+		std::string output;
+		if (App->shaderImporter->SaveShaderObject(shaderObject, output, true))
 		{
-			std::string outputFile;
-			App->shaderImporter->SaveShaderObject(currentShader->GetName(), currentShader->file.data(), editor.GetText().data(), currentShader->shaderType, outputFile, true);
-			
 			// Search for the meta associated to the file
 			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(currentShader->file.data()) + 1, currentShader->file.data()); // file
+			strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
 			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-			// Reimport Shader Object file
-			System_Event newEvent;
-			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, metaFile);
-			newEvent.type = System_Event_Type::FileOverwritten;
-			App->PushSystemEvent(newEvent);
+			// Update last modification time in the meta
+			int lastModTime = App->fs->GetLastModificationTime(output.data());
+			Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 
-			newEvent.fileEvent.metaFile = nullptr;
+			System_Event newEvent;
 			newEvent.type = System_Event_Type::RefreshAssets;
 			App->PushSystemEvent(newEvent);
 		}
 	}
 
+	// TODO: if (App->shaderImporter->SaveShaderObject(shaderObject, outputFile)) when creating a new shader object!!!
+	// TODO: shaderObject->shaderType 
+
 	ImGui::SameLine();
 
+	// Try to compile
 	if (ImGui::Button("Compile"))
 	{
-		uint shaderCompiled = ResourceShaderObject::Compile(editor.GetText().data(), currentShader->shaderType);
-		ResourceShaderObject::DeleteShaderObject(shaderCompiled);
+		ResourceShaderObject* tryCompile = new ResourceShaderObject(ResourceType::ShaderObjectResource, 0);
+		tryCompile->shaderType = shaderObject->shaderType;
+		tryCompile->SetSource(editor.GetText().data(), editor.GetText().length());
+		tryCompile->Compile();
+		RELEASE(tryCompile);
 	}
 
-	switch (currentShader->shaderType)
+	switch (shaderObject->shaderType)
 	{
 	case ShaderType::VertexShaderType:
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 			"Vertex Shader",
-			currentShader->GetName());
+			shaderObject->GetName());
 		break;
 	case ShaderType::FragmentShaderType:
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 			"Vertex Shader",
-			currentShader->GetName());
+			shaderObject->GetName());
 		break;
 	}
 
 	editor.Render("TextEditor");
+
 	ImGui::End();
+
+	if (!enabled)
+		shaderObject = nullptr;
 
 	return true;
 }
 
-void PanelCodeEditor::OpenShaderInCodeEditor(ResourceShaderObject* shader)
+void PanelCodeEditor::OpenShaderInCodeEditor(ResourceShaderObject* shaderObject)
 {
+	assert(shaderObject != nullptr);
+
 	enabled = true;
-	editor.SetText(shader->GetSource());
-	currentShader = shader;
+	this->shaderObject = shaderObject;
+
+	editor.SetText(shaderObject->GetSource());
+}
+
+ResourceShaderObject* PanelCodeEditor::GetShaderObject() const
+{
+	return shaderObject;
 }

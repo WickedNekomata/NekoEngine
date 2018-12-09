@@ -165,7 +165,7 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 	return (const char**)PHYSFS_enumerateFiles(dir);
 }
 
-void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, uint>& assetsFiles) const
+void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, int>& assetsFiles) const
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 
@@ -593,7 +593,7 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 	return objCount;
 }
 
-bool ModuleFileSystem::AddMeta(const char* metaFile, uint lastModTime)
+bool ModuleFileSystem::AddMeta(const char* metaFile, int lastModTime)
 {
 	if (metaFile == nullptr)
 	{
@@ -635,7 +635,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 
 	// NOTE: Files in Library are not expected to be removed by the user
 
-	for (std::map<std::string, uint>::const_iterator it = metas.begin(); it != metas.end(); ++it)
+	for (std::map<std::string, int>::const_iterator it = metas.begin(); it != metas.end(); ++it)
 	{
 		// Each meta is expected to have an associated file in Assets that creates a resource
 
@@ -676,7 +676,7 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		}
 	}
 
-	for (std::map<std::string, uint>::const_iterator it = assetsFiles.begin(); it != assetsFiles.end(); ++it)
+	for (std::map<std::string, int>::const_iterator it = assetsFiles.begin(); it != assetsFiles.end(); ++it)
 	{
 		std::string extension;
 		GetExtension(it->first.data(), extension);

@@ -629,7 +629,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (materialRenderer->shaderProgram != nullptr && glIsProgram(materialRenderer->shaderProgram->shaderProgram))
 		shaderProgram = materialRenderer->shaderProgram->shaderProgram;
 	else
-		shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+		shaderProgram = App->shaderImporter->GetDefaultShaderProgram()->shaderProgram;
 
 	glUseProgram(shaderProgram);
 

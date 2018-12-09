@@ -21,16 +21,15 @@ public:
 
 	bool Draw();
 
-	void OpenShaderInCodeEditor(ResourceShaderObject* shader);
+	void OpenShaderInCodeEditor(ResourceShaderObject* shaderObject);
+	ResourceShaderObject* GetShaderObject() const;
 
 private:
 
+	ResourceShaderObject* shaderObject = nullptr;
+
 	const char* fileToEdit = "";
 	TextEditor editor;
-
-public:
-
-	ResourceShaderObject* currentShader = nullptr;
 };
 
 #endif

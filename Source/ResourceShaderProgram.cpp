@@ -15,32 +15,34 @@ uint ResourceShaderProgram::LoadMemory()
 	return LoadInMemory();
 }
 
-// TODO: Add and Remove Shader Objects updating the meta of the Program!
-bool ResourceShaderProgram::AddShaderObject(ResourceShaderObject* shaderObject)
+void ResourceShaderProgram::SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects)
 {
-	bool ret = std::find(shaderObjects.begin(), shaderObjects.end(), shaderObject) == shaderObjects.end();
-
-	if (ret)
-		shaderObjects.push_back(shaderObject);
-
-	return ret;
+	this->shaderObjects = shaderObjects;
 }
 
-bool ResourceShaderProgram::RemoveShaderObject(ResourceShaderObject* shaderObject)
+std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderType shaderType) const
 {
-	bool ret = std::find(shaderObjects.begin(), shaderObjects.end(), shaderObject) != shaderObjects.end();
+	std::list<ResourceShaderObject*> shaderObjects;
 
-	if (ret)
-		shaderObjects.remove(shaderObject);
+	for (std::list<ResourceShaderObject*>::const_iterator it = this->shaderObjects.begin(); it != this->shaderObjects.end(); ++it)
+	{
+		if (shaderType != ShaderType::NoShaderType && (*it)->shaderType == shaderType)
+			shaderObjects.push_back(*it);
+		else if (shaderType == ShaderType::NoShaderType)
+			shaderObjects.push_back(*it);
+	}
 
-	return ret;
+	return shaderObjects;
 }
 
-// Returns the shader program that has been linked. If error, returns 0
-GLuint ResourceShaderProgram::Link(std::list<ResourceShaderObject*> shaderObjects)
+bool ResourceShaderProgram::Link()
 {
+	bool ret = true;
+
 	// Create a Shader Program
-	GLuint shaderProgram = glCreateProgram();
+	if (glIsProgram(shaderProgram))
+		glDeleteProgram(shaderProgram);
+	shaderProgram = glCreateProgram();
 
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 		glAttachShader(shaderProgram, (*it)->shaderObject);
@@ -51,14 +53,17 @@ GLuint ResourceShaderProgram::Link(std::list<ResourceShaderObject*> shaderObject
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 		glDetachShader(shaderProgram, (*it)->shaderObject);
 
-	if (!IsProgramLinked(shaderProgram))
+	if (!IsProgramLinked())
+	{
 		glDeleteProgram(shaderProgram);
+		ret = false;
+	}
 
-	return shaderProgram;
+	return ret;
 }
 
 // Returns the length of the binary
-GLint ResourceShaderProgram::GetBinary(GLint shaderProgram, GLubyte** buffer)
+GLint ResourceShaderProgram::GetBinary(GLubyte** buffer)
 {
 	// Get the binary length
 	GLint length = 0;
@@ -75,23 +80,29 @@ GLint ResourceShaderProgram::GetBinary(GLint shaderProgram, GLubyte** buffer)
 	return length;
 }
 
-// Returns the binary. If error, returns 0
-GLuint ResourceShaderProgram::LoadBinary(const void* buffer, GLint size)
+bool ResourceShaderProgram::LoadBinary(const void* buffer, GLint size)
 {
+	bool ret = true;
+
 	// Create a Shader Program
+	if (glIsProgram(shaderProgram))
+		glDeleteProgram(shaderProgram);
 	shaderProgram = glCreateProgram();
 
 	// Install the binary
 	GLenum format = 0;
 	glProgramBinary(shaderProgram, format, buffer, size);
 
-	if (!IsProgramLinked(shaderProgram))
+	if (!IsProgramLinked())
+	{
 		glDeleteProgram(shaderProgram);
+		ret = false;
+	}
 
-	return shaderProgram;
+	return ret;
 }
 
-bool ResourceShaderProgram::IsProgramValid(GLuint shaderProgram)
+bool ResourceShaderProgram::IsProgramValid() const
 {
 	GLint success = 0;
 	glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &success);
@@ -111,7 +122,7 @@ bool ResourceShaderProgram::IsProgramValid(GLuint shaderProgram)
 	return success;
 }
 
-bool ResourceShaderProgram::IsProgramLinked(GLuint shaderProgram)
+bool ResourceShaderProgram::IsProgramLinked() const
 {
 	GLint success = 0;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);

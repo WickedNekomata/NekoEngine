@@ -3,11 +3,11 @@
 
 #include "Resource.h"
 
+#include "ResourceShaderObject.h"
+
 #include "glew\include\GL\glew.h"
 
 #include <list>
-
-class ResourceShaderObject;
 
 class ResourceShaderProgram : public Resource
 {
@@ -19,25 +19,28 @@ public:
 	uint LoadMemory();
 	uint UnloadMemory() { return 0; }
 
-	bool AddShaderObject(ResourceShaderObject* shaderObject);
-	bool RemoveShaderObject(ResourceShaderObject* shaderObject);
+	void SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects);
+	std::list<ResourceShaderObject*> GetShaderObjects(ShaderType shaderType = ShaderType::NoShaderType) const;
 
-	static GLuint Link(std::list<ResourceShaderObject*> shaderObjects);
+	bool Link();
 
-	static GLint GetBinary(GLint shaderProgram, GLubyte** buffer);
-	GLuint LoadBinary(const void* buffer, GLint size);
+	GLint GetBinary(GLubyte** buffer);
+	bool LoadBinary(const void* buffer, GLint size);
 
-	static bool IsProgramValid(GLuint shaderProgram);
-	static bool IsProgramLinked(GLuint shaderProgram);
+	bool IsProgramValid() const;
+	bool IsProgramLinked() const;
 
 private:
 
 	bool LoadInMemory();
 	bool UnloadFromMemory() { return true; }
 
-public:
+private:
 
 	std::list<ResourceShaderObject*> shaderObjects;
+
+public:
+
 	GLuint shaderProgram = 0;
 };
 

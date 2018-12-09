@@ -7,6 +7,9 @@
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleResourceManager.h"
+#include "ModuleGui.h"
+#include "PanelShaderEditor.h"
+#include "PanelCodeEditor.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 
@@ -507,6 +510,16 @@ void PanelInspector::ShowShaderObjectInspector() const
 	}
 	ImGui::Separator();
 	ImGui::Spacing();
+
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", shaderObject->file.data());
+	ImGui::Text("Exported file:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", shaderObject->exportedFile.data());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", shaderObject->GetUUID());
+
+	// Shader Object info
+
 }
 
 void PanelInspector::ShowShaderProgramInspector() const
@@ -514,6 +527,33 @@ void PanelInspector::ShowShaderProgramInspector() const
 	ImGui::Text("Shader Program");
 	ImGui::Separator();
 	ImGui::Spacing();
+
+	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->scene->selectedObject.Get();
+
+	ImGui::Text("Name:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", shaderProgram->GetName());
+	ImGui::Spacing();
+
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", shaderProgram->file.data());
+	ImGui::Text("Exported file:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", shaderProgram->exportedFile.data());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUUID());
+	ImGui::Spacing();
+
+	// Shader Program info
+	ImGui::Text("Shader Objects:");
+	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects();
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	{
+		ImGui::TextColored(BLUE, "%s", (*it)->GetName());
+		if (ImGui::Button("EDIT SHADER OBJECT"))
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
+	}
+
+	if (ImGui::Button("EDIT SHADER PROGRAM"))
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram);
 }
 
 #endif // GAME

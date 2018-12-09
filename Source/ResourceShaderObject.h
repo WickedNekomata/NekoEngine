@@ -25,11 +25,9 @@ public:
 	void SetSource(const char* source, uint size);
 	const char* GetSource() const;
 
-	static GLuint Compile(const char* source, ShaderType shaderType);
+	bool Compile();
 
-	static bool IsObjectCompiled(GLuint shaderObject);
-
-	static bool DeleteShaderObject(GLuint shaderObject);
+	bool IsObjectCompiled() const;
 
 	static ShaderType GetShaderTypeByExtension(const char* extension);
 
@@ -38,14 +36,14 @@ private:
 	bool LoadInMemory();
 	bool UnloadFromMemory() { return true; }
 
+private:
+
+	char* source = nullptr;
+
 public:
 
 	ShaderType shaderType = ShaderType::NoShaderType;
 	GLuint shaderObject = 0;
-
-private:
-
-	char* source = nullptr;
 };
 
 #endif // __RESOURCE_SHADER_OBJECT_H__

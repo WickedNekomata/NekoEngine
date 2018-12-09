@@ -14,31 +14,30 @@ ShaderImporter::ShaderImporter() {}
 
 ShaderImporter::~ShaderImporter()
 {
-	glDeleteProgram(defaultShaderProgram);
-	glDeleteShader(defaultVertexShaderObject);
-	glDeleteShader(defaultFragmentShaderObject);
+	RELEASE(defaultShaderProgram);
+	RELEASE(defaultVertexShaderObject);
+	RELEASE(defaultFragmentShaderObject);
 }
 
-bool ShaderImporter::SaveShaderObject(const char* name, const char* file, const char* buffer, ShaderType shaderType, std::string& outputFile, bool overwrite) const
+bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
+	assert(shaderObject != nullptr);
+
 	if (overwrite)
-		outputFile = file;
+		outputFile = shaderObject->file;
 	else
-		outputFile = name;
+		outputFile = shaderObject->GetName();
 
-	uint size = 0;
-	if (buffer != nullptr)
-		size = strlen(buffer);
-
+	uint size = strlen(shaderObject->GetSource());
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", name);
-		ret = SaveShaderObject(buffer, size, shaderType, outputFile, overwrite);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", shaderObject->GetName());
+		ret = SaveShaderObject(shaderObject->GetSource(), size, shaderObject->shaderType, outputFile, overwrite);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", name);
+		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", shaderObject->GetName());
 
 	return ret;
 }
@@ -69,31 +68,36 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType 
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderProgram(const char* name, GLuint shaderProgram, std::string& outputFile) const
+bool ShaderImporter::SaveShaderProgram(ResourceShaderProgram* shaderProgram, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
+
+	assert(shaderProgram != nullptr);
 
 	// Verify that the driver supports at least one shader binary format
 	if (GetBinaryFormats() == 0)
 		return ret;
 
-	outputFile = name;
+	if (overwrite)
+		outputFile = shaderProgram->file;
+	else
+		outputFile = shaderProgram->GetName();
 
 	GLubyte* buffer;
-	uint size = ResourceShaderProgram::GetBinary(shaderProgram, &buffer);
+	uint size = shaderProgram->GetBinary(&buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
-		ret = SaveShaderProgram(buffer, size, outputFile);
+		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", shaderProgram->GetName());
+		ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", shaderProgram->GetName());
 
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::string& outputFile) const
+bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
@@ -101,7 +105,7 @@ bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::strin
 	if (GetBinaryFormats() == 0)
 		return ret;
 
-	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile) > 0)
+	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile, overwrite) > 0)
 	{
 		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
 		ret = true;
@@ -172,7 +176,7 @@ bool ShaderImporter::GenerateShaderProgramMeta(ResourceShaderProgram* shaderProg
 
 	JSON_Value* shaderObjectsArrayValue = json_value_init_array();
 	JSON_Array* shaderObjectsArray = json_value_get_array(shaderObjectsArrayValue);
-	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->shaderObjects;
+	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects();
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 	{
 		std::string fileName;
@@ -416,7 +420,7 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 		RELEASE_ARRAY(buf);
 
 		// Try to compile the shader object
-		ret = shaderObject->shaderObject = ResourceShaderObject::Compile(shaderObject->GetSource(), shaderObject->shaderType);
+		ret = shaderObject->Compile();
 	}
 
 	if (ret)
@@ -481,41 +485,56 @@ GLint ShaderImporter::GetBinaryFormats() const
 
 void ShaderImporter::LoadDefaultShader()
 {
-	LoadDefaultVertexShaderObject();
-	LoadDefaultFragmentShaderObject();
-	LoadDefaultShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
+	defaultVertexShaderObject = LoadDefaultShaderObject(ShaderType::VertexShaderType);
+	defaultFragmentShaderObject = LoadDefaultShaderObject(ShaderType::FragmentShaderType);
+	defaultShaderProgram = LoadDefaultShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
 }
 
-void ShaderImporter::LoadDefaultVertexShaderObject()
+ResourceShaderObject* ShaderImporter::LoadDefaultShaderObject(ShaderType shaderType) const
 {
-	defaultVertexShaderObject = ResourceShaderObject::Compile(vShaderTemplate, ShaderType::VertexShaderType);
+	ResourceShaderObject* shaderObject = new ResourceShaderObject(ResourceType::ShaderObjectResource, 0);
+	shaderObject->shaderType = shaderType;
+
+	switch (shaderType)
+	{
+	case ShaderType::VertexShaderType:
+		shaderObject->SetSource(vShaderTemplate, strlen(vShaderTemplate));
+		break;
+	case ShaderType::FragmentShaderType:
+		shaderObject->SetSource(fShaderTemplate, strlen(fShaderTemplate));
+		break;
+	}
+
+	shaderObject->Compile();
+
+	return shaderObject;
 }
 
-void ShaderImporter::LoadDefaultFragmentShaderObject()
+ResourceShaderProgram* ShaderImporter::LoadDefaultShaderProgram(ResourceShaderObject* defaultVertexShaderObject, ResourceShaderObject* defaultFragmentShaderObject) const
 {
-	defaultFragmentShaderObject = ResourceShaderObject::Compile(fShaderTemplate, ShaderType::FragmentShaderType);
-}
+	ResourceShaderProgram* shaderProgram = new ResourceShaderProgram(ResourceType::ShaderProgramResource, 0);
 
-void ShaderImporter::LoadDefaultShaderProgram(uint defaultVertexShaderObject, uint defaultFragmentShaderObject)
-{
-	std::list<GLuint> shaderObjects;
+	std::list<ResourceShaderObject*> shaderObjects;
 	shaderObjects.push_back(defaultVertexShaderObject);
 	shaderObjects.push_back(defaultFragmentShaderObject);
+	shaderProgram->SetShaderObjects(shaderObjects);
 
-	//defaultShaderProgram = ResourceShaderProgram::Link(shaderObjects); //TODO
+	shaderProgram->Link();
+
+	return shaderProgram;
 }
 
-GLuint ShaderImporter::GetDefaultVertexShaderObject() const
+ResourceShaderObject* ShaderImporter::GetDefaultVertexShaderObject() const
 {
 	return defaultVertexShaderObject;
 }
 
-GLuint ShaderImporter::GetDefaultFragmentShaderObject() const
+ResourceShaderObject* ShaderImporter::GetDefaultFragmentShaderObject() const
 {
 	return defaultFragmentShaderObject;
 }
 
-GLuint ShaderImporter::GetDefaultShaderProgram() const
+ResourceShaderProgram* ShaderImporter::GetDefaultShaderProgram() const
 {
 	return defaultShaderProgram;
 }

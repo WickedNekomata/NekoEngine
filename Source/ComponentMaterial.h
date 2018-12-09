@@ -5,12 +5,15 @@
 
 #include "Globals.h"
 
-#include <vector>
-#include <list>
 #include "MathGeoLib\include\Math\Quat.h"
 #include "MathGeoLib\include\Math\float4x4.h"
 
-#include "glew/include/GL/glew.h"
+#include "glew\include\GL\glew.h"
+
+#include <vector>
+#include <list>
+
+class ResourceShaderProgram;
 
 struct MaterialResource
 {
@@ -49,7 +52,7 @@ public:
 	std::vector<MaterialResource> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
 
-	GLuint shaderProgram = 0;
+	ResourceShaderProgram* shaderProgram = nullptr;
 };
 
 #endif

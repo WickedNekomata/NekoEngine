@@ -578,8 +578,10 @@ void ShaderImporter::LoadDefaultShader()
 void ShaderImporter::LoadCubemapShader()
 {
 	GLuint cubemapVertexShaderObject = ResourceShaderObject::Compile(cubemapvShader, ShaderType::VertexShaderType);
-	cubemapShaderProgram = LoadShaderProgram(cubemapVertexShaderObject, defaultFragmentShaderObject);
+	GLuint cubemapFragmentShaderObject = ResourceShaderObject::Compile(cubemapfShader, ShaderType::FragmentShaderType);
+	cubemapShaderProgram = LoadShaderProgram(cubemapVertexShaderObject, cubemapFragmentShaderObject);
 	ResourceShaderObject::DeleteShaderObject(cubemapVertexShaderObject);
+	ResourceShaderObject::DeleteShaderObject(cubemapFragmentShaderObject);
 }
 
 GLuint ShaderImporter::LoadDefaultShaderObject(ShaderType shaderType) const

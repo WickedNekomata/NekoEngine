@@ -160,7 +160,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
 
-	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVBO);
+	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVAO);
 
 	std::vector<uint> checkers;
 	checkers.push_back(App->materialImporter->GetCheckers());
@@ -198,6 +198,8 @@ update_status ModuleRenderer3D::PreUpdate()
 
 	return UPDATE_CONTINUE;
 }
+
+#include "imgui/imgui.h"
 
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
@@ -246,12 +248,15 @@ update_status ModuleRenderer3D::PostUpdate()
 		App->debugDrawer->EndDebugDraw();
 	}
 
+
+#endif // GAME
+	if (glIsTexture(cubemapTexture))
+		DrawSkybox();
+
+#ifndef GAMEMODE
 	// 3. Editor
 	App->gui->Draw();
 #endif // GAME
-
-	if (glIsTexture(cubemapTexture))
-		DrawSkybox();
 
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
@@ -638,23 +643,26 @@ void ModuleRenderer3D::FrustumCulling() const
 
 void ModuleRenderer3D::DrawSkybox()
 {
-	GetCapabilityState(GL_DEPTH);
 	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 
 	uint shaderProgram = App->shaderImporter->GetCubemapShaderProgram();
 	glUseProgram(shaderProgram);
 
+
+	//math::float4x4 view = glm::mat4(glm::mat3(App->camera->camera->GetOpenGLViewMatrix())); // remove translation from the view matrix
 	uint location = glGetUniformLocation(shaderProgram, "view_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
-	//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+	
 
 	glBindVertexArray(cubemapVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glBindVertexArray(0);
+	glUseProgram(0);
 
 	glDepthFunc(GL_LESS); // set depth function back to default
 }

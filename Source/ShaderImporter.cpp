@@ -21,6 +21,21 @@ ShaderImporter::~ShaderImporter()
 	ResourceShaderObject::DeleteShaderObject(defaultFragmentShaderObject);
 }
 
+bool ShaderImporter::CreateShaderObject(std::string& file) const
+{
+	bool ret = false;
+
+	if (App->fs->SaveInGame(nullptr, 0, FileType::NoFileType, file, true) > 0)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Shader Object '%s'", file.data());
+		ret = true;
+	}
+	else
+		CONSOLE_LOG("SHADER IMPORTER: Could not save Shader Object '%s'", file.data());
+
+	return ret;
+}
+
 bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;

@@ -91,6 +91,8 @@ public:
 	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 
+	bool CreateShaderObject(std::string& file) const;
+
 	// Shader Object (save)
 	bool SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite = false) const;
 	bool SaveShaderObject(const void* buffer, uint size, ShaderType shaderType, std::string& outputFile, bool overwrite = false) const;

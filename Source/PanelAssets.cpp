@@ -58,7 +58,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 
 	ImGuiTreeNodeFlags treeNodeFlags;
 
-	static char id[DEFAULT_BUF_SIZE];
+	char id[DEFAULT_BUF_SIZE];
 
 	for (uint i = 0; i < assetsFile->children.size(); ++i)
 	{
@@ -78,7 +78,8 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
+			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
+			if (ImGui::TreeNodeEx(id, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
@@ -86,7 +87,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 				SELECT(NULL);
 
 			strcpy_s(id, DEFAULT_BUF_SIZE, child->path.data());
-			if (ImGui::BeginPopupContextWindow(id))
+			if (ImGui::BeginPopupContextItem(id))
 			{
 				if (ImGui::Selectable("Create Vertex Shader"))
 				{
@@ -146,7 +147,8 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 				break;
 			}
 
-			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
+			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
+			if (ImGui::TreeNodeEx(id, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
@@ -180,9 +182,10 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 				switch (type)
 				{
 				case ResourceType::MeshResource:
-					for (std::map<std::string, int>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
+					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
 					{
-						if (ImGui::TreeNodeEx(it->first.data(), ImGuiTreeNodeFlags_Leaf))
+						sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%u", it->first.data(), it->second);
+						if (ImGui::TreeNodeEx(id, ImGuiTreeNodeFlags_Leaf))
 						{
 							if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 								&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
@@ -278,13 +281,35 @@ void PanelAssets::CreateShaderPopUp()
 		ImGui::PushItemWidth(200.0f);
 		ImGui::InputText("##shaderName", shaderName, INPUT_BUF_SIZE);
 
-		ImGui::Text(".vsh");
+		switch (shaderType)
+		{
+		case ShaderType::VertexShaderType:
+			ImGui::Text(".vsh");
+			break;
+		case ShaderType::FragmentShaderType:
+			ImGui::Text(".fsh");
+			break;
+		}
 
 		if (ImGui::Button("Create", ImVec2(120.0f, 0)))
 		{
 			shaderFile.append(shaderName);
-			shaderFile.append(".vsh");
+
+			switch (shaderType)
+			{
+			case ShaderType::VertexShaderType:
+				shaderFile.append(".vsh");
+				break;
+			case ShaderType::FragmentShaderType:
+				shaderFile.append(".fsh");
+				break;
+			}
+
 			App->shaderImporter->CreateShaderObject(shaderFile);
+
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RefreshAssets;
+			App->PushSystemEvent(newEvent);
 
 			showCreateShaderPopUp = false;
 			ImGui::CloseCurrentPopup();

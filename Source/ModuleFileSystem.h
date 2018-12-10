@@ -54,7 +54,7 @@ struct AssetsFile : public File
 	const ImportSettings* importSettings = nullptr; // meshes, textures
 	const Resource* resource = nullptr; // shaders
 
-	std::map<std::string, int> UUIDs; // meshes, textures
+	std::map<std::string, uint> UUIDs; // meshes, textures
 };
 
 struct LibraryFile : public File

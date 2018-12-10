@@ -33,7 +33,9 @@ bool PanelAssets::Draw()
 			App->PushSystemEvent(newEvent);
 		}
 
-		if (ImGui::TreeNodeEx(DIR_ASSETS))
+		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
+		ChooseShaderPopUp(DIR_ASSETS);
+		if (treeNodeOpened)
 		{
 			RecursiveDrawAssetsDir(App->fs->GetRootAssetsFile());
 			ImGui::TreePop();
@@ -86,31 +88,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				SELECT(NULL);
 
-			strcpy_s(id, DEFAULT_BUF_SIZE, child->path.data());
-			if (ImGui::BeginPopupContextItem(id))
-			{
-				if (ImGui::Selectable("Create Vertex Shader"))
-				{
-					shaderType = ShaderType::VertexShaderType;
-					strcpy_s(shaderName, strlen("New Vertex Shader") + 1, "New Vertex Shader");
-					shaderFile = child->path.data();
-					shaderFile.append("/");
-
-					showCreateShaderPopUp = true;
-					ImGui::CloseCurrentPopup();
-				}
-				else if (ImGui::Selectable("Create Fragment Shader"))
-				{
-					shaderType = ShaderType::FragmentShaderType;
-					strcpy_s(shaderName, strlen("New Fragment Shader") + 1, "New Fragment Shader");
-					shaderFile = child->path.data();
-					shaderFile.append("/");
-
-					showCreateShaderPopUp = true;
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndPopup();
-			}
+			ChooseShaderPopUp(child->path.data());			
 
 			if (treeNodeOpened)
 			{
@@ -272,6 +250,36 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, uint UUID, con
 	}
 }
 
+void PanelAssets::ChooseShaderPopUp(const char* path)
+{
+	char id[DEFAULT_BUF_SIZE];
+	strcpy_s(id, DEFAULT_BUF_SIZE, path);
+	if (ImGui::BeginPopupContextItem(id))
+	{
+		if (ImGui::Selectable("Create Vertex Shader"))
+		{
+			shaderType = ShaderType::VertexShaderType;
+			strcpy_s(shaderName, strlen("New Vertex Shader") + 1, "New Vertex Shader");
+			shaderFile = path;
+			shaderFile.append("/");
+
+			showCreateShaderPopUp = true;
+			ImGui::CloseCurrentPopup();
+		}
+		else if (ImGui::Selectable("Create Fragment Shader"))
+		{
+			shaderType = ShaderType::FragmentShaderType;
+			strcpy_s(shaderName, strlen("New Fragment Shader") + 1, "New Fragment Shader");
+			shaderFile = path;
+			shaderFile.append("/");
+
+			showCreateShaderPopUp = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}
+
 void PanelAssets::CreateShaderPopUp()
 {
 	if (ImGui::BeginPopupModal("Create Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -284,10 +292,10 @@ void PanelAssets::CreateShaderPopUp()
 		switch (shaderType)
 		{
 		case ShaderType::VertexShaderType:
-			ImGui::Text(".vsh");
+			ImGui::Text(EXTENSION_VERTEX_SHADER_OBJECT);
 			break;
 		case ShaderType::FragmentShaderType:
-			ImGui::Text(".fsh");
+			ImGui::Text(EXTENSION_FRAGMENT_SHADER_OBJECT);
 			break;
 		}
 
@@ -298,15 +306,16 @@ void PanelAssets::CreateShaderPopUp()
 			switch (shaderType)
 			{
 			case ShaderType::VertexShaderType:
-				shaderFile.append(".vsh");
+				shaderFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
 				break;
 			case ShaderType::FragmentShaderType:
-				shaderFile.append(".fsh");
+				shaderFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
 				break;
 			}
 
-			App->shaderImporter->CreateShaderObject(shaderFile);
-
+			if (App->shaderImporter->CreateShaderObject(shaderFile))
+				App->res->ImportFile(shaderFile.data());
+			
 			System_Event newEvent;
 			newEvent.type = System_Event_Type::RefreshAssets;
 			App->PushSystemEvent(newEvent);

@@ -27,6 +27,8 @@ private:
 
 	void RecursiveDrawAssetsDir(AssetsFile* assetsFile);
 	void SetResourceDragAndDropSource(ResourceType type, uint UUID = 0, const Resource* resource = nullptr, const char* file = nullptr) const;
+	
+	void ChooseShaderPopUp(const char* path);
 	void CreateShaderPopUp();
 
 public:

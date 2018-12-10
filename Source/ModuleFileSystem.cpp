@@ -64,6 +64,9 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 	{
 	case System_Event_Type::RefreshAssets:
 
+		if (App->scene->selectedObject != CurrentSelection::SelectedType::gameObject)
+			SELECT(NULL);
+
 		// Read the current files in Assets
 		RELEASE(rootAssetsFile);
 		assetsFiles.clear();

@@ -423,10 +423,6 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 		strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, meshImportSettings->metaFile.data());
 		newEvent.type = System_Event_Type::FileOverwritten;
 		App->PushSystemEvent(newEvent);
-
-		newEvent.fileEvent.metaFile = nullptr;
-		newEvent.type = System_Event_Type::RefreshAssets;
-		App->PushSystemEvent(newEvent);
 	}
 }
 
@@ -488,10 +484,6 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
 		strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, textureImportSettings->metaFile.data());
 		newEvent.type = System_Event_Type::FileOverwritten;
-		App->PushSystemEvent(newEvent);
-
-		newEvent.fileEvent.metaFile = nullptr;
-		newEvent.type = System_Event_Type::RefreshAssets;
 		App->PushSystemEvent(newEvent);
 	}
 }

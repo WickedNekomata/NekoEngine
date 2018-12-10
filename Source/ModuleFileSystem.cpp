@@ -78,13 +78,17 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 		// Check the read files against the metas
 		CheckFilesInAssets();
 
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RefreshLibrary;
-		App->PushSystemEvent(newEvent);
-
 		break;
 
-	case System_Event_Type::RefreshLibrary:
+	case System_Event_Type::RefreshFiles:
+
+		// Read the current files in Assets
+		RELEASE(rootAssetsFile);
+		assetsFiles.clear();
+		rootAssetsFile = new AssetsFile();
+		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
+		rootAssetsFile->isDirectory = true;
+		RecursiveGetFilesFromAssets(rootAssetsFile, assetsFiles);
 
 		// Read the current files in Library
 		RELEASE(rootLibraryFile);

@@ -55,7 +55,7 @@ update_status ModuleGOs::PostUpdate()
 		if (SerializeFromNode(App->scene->root, outputFileName))
 		{
 			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshAssets;
+			newEvent.type = System_Event_Type::RefreshFiles;
 			App->PushSystemEvent(newEvent);
 		}
 	}

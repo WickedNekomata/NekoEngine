@@ -92,7 +92,7 @@ bool PanelCodeEditor::Draw()
 			App->fs->AddMeta(metaFile, lastModTime);
 
 			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshAssets;
+			newEvent.type = System_Event_Type::RefreshFiles;
 			App->PushSystemEvent(newEvent);
 		}
 		else

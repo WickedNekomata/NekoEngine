@@ -315,10 +315,6 @@ void PanelAssets::CreateShaderPopUp()
 
 			if (App->shaderImporter->CreateShaderObject(shaderFile))
 				App->res->ImportFile(shaderFile.data());
-			
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshAssets;
-			App->PushSystemEvent(newEvent);
 
 			showCreateShaderPopUp = false;
 			ImGui::CloseCurrentPopup();

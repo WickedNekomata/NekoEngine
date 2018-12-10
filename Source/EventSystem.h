@@ -4,7 +4,7 @@
 enum System_Event_Type 
 { 
 	NoEvent,
-	RefreshAssets, RefreshLibrary,
+	RefreshAssets, RefreshFiles,
 	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, // FileEvent
 	RecalculateBBoxes, // GameObjectEvent
 	RecreateQuadtree

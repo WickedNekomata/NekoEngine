@@ -46,7 +46,7 @@ bool ModuleResourceManager::Start()
 #endif
 
 	System_Event newEvent;
-	newEvent.type = System_Event_Type::RefreshAssets;
+	newEvent.type = System_Event_Type::RefreshFiles;
 	App->PushSystemEvent(newEvent);
 
 	return true;
@@ -80,6 +80,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 
 		RELEASE_ARRAY(event.fileEvent.file);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshFiles;
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 
@@ -91,6 +95,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		ImportFile(event.fileEvent.file);
 
 		RELEASE_ARRAY(event.fileEvent.file);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshFiles;
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 
@@ -113,6 +121,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		ImportFile(fileInAssets.data(), nullptr, nullptr);
 
 		RELEASE_ARRAY(event.fileEvent.metaFile);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshFiles;
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 
@@ -127,6 +139,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		App->fs->DeleteMeta(event.fileEvent.metaFile);
 
 		RELEASE_ARRAY(event.fileEvent.metaFile);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshFiles;
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 
@@ -201,6 +217,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 
 		RELEASE_ARRAY(event.fileEvent.metaFile);
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RefreshFiles;
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 	}
@@ -600,10 +620,6 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
-
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshAssets;
-			App->PushSystemEvent(newEvent);
 		}
 		break;
 		case ResourceType::TextureResource:

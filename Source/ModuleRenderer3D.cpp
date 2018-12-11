@@ -327,7 +327,6 @@ void ModuleRenderer3D::CalculateProjectionMatrix()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	glLoadMatrixf(currentCamera->GetOpenGLProjectionMatrix().ptr());
 
 	glMatrixMode(GL_MODELVIEW);
@@ -696,11 +695,14 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	}
 
 	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
-	glUniformMatrix4fv(location, 1, GL_TRUE, toDraw->GetParent()->transform->GetGlobalMatrix().ptr());
+	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
+	glUniformMatrix4fv(location, 1, GL_TRUE, model_matrix.ptr());
 	location = glGetUniformLocation(shaderProgram, "view_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
+	math::float4x4 view_matrix = App->camera->camera->GetOpenGLViewMatrix();
+	glUniformMatrix4fv(location, 1, GL_FALSE, view_matrix.ptr());
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
+	math::float4x4 proj_matrix = App->camera->camera->GetOpenGLProjectionMatrix();
+	glUniformMatrix4fv(location, 1, GL_FALSE, proj_matrix.ptr());
 
 	glBindVertexArray(res->VAO);
 

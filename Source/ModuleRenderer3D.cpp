@@ -704,6 +704,11 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	math::float4x4 proj_matrix = App->camera->camera->GetOpenGLProjectionMatrix();
 	glUniformMatrix4fv(location, 1, GL_FALSE, proj_matrix.ptr());
 
+	// TODO: store locations at Uniform class. This is just a first approach :)
+
+	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
+		glUniform1i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->value);
+
 	glBindVertexArray(res->VAO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);

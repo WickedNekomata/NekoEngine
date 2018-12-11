@@ -27,6 +27,15 @@ struct MaterialResource
 	}
 };
 
+template<typename Value>
+class Uniform
+{
+public:
+	char name[DEFAULT_BUF_SIZE];
+	int type;
+	Value value;
+};
+
 class ComponentMaterial : public Component
 {
 public:
@@ -54,6 +63,8 @@ public:
 
 	std::vector<MaterialResource> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
+
+	std::list<Uniform<int>*> uniforms;
 };
 
 #endif

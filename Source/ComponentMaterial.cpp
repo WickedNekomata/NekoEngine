@@ -88,6 +88,40 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::EndDragDropTarget();
 	}
 
+	if (shaderProgram != nullptr) {
+		int count;
+		glGetProgramiv(shaderProgram->shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+		printf("Active Uniforms: %d\n", count);
+
+		GLuint program;
+		GLuint index;
+		GLsizei length;
+		GLint size;
+		GLenum type;
+		GLchar name[DEFAULT_BUF_SIZE];
+
+		for (auto it = uniforms.begin(); it != uniforms.end(); it++)
+			delete (*it);
+		uniforms.clear();
+
+		for (int i = 0; i < count; i++)
+		{
+			glGetActiveUniform(shaderProgram->shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
+			if (type == GL_INT) {
+				Uniform<int>* uniform = new Uniform<int>();
+				memset(uniform->name, '\0', DEFAULT_BUF_SIZE);
+				strcpy_s(uniform->name, name);
+				uniform->type = 0;
+				uniform->value = 0;
+				uniforms.push_back(uniform);
+				ImGui::PushItemWidth(100);
+				ImGui::InputInt(name, &uniform->value);
+				ImGui::PopItemWidth();
+			}
+		}
+	}
+
+
 	if (ImGui::Button("USE DEFAULT SHADER"))
 		shaderProgram = nullptr;
 

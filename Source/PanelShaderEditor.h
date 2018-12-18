@@ -25,8 +25,8 @@ public:
 
 private:
 
-	void GetShaderObjectsUUIDs(std::list<uint>& shaderObjectsUUIDs) const;
-	void GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
+	bool GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
+	bool GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) const;
 
 private:
 

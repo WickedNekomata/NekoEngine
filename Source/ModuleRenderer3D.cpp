@@ -672,13 +672,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		return;
 
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
-	const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(toDraw->res);
-	
-	GLuint shaderProgram = 0;
-	if (materialRenderer->shaderProgram != nullptr && glIsProgram(materialRenderer->shaderProgram->shaderProgram))
-		shaderProgram = materialRenderer->shaderProgram->shaderProgram;
-	else
-		shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+
+	// Shader
+	const ResourceShaderProgram* shader = (const ResourceShaderProgram*)App->res->GetResource(materialRenderer->shaderProgramUUID);
+	GLuint shaderProgram = shader != nullptr ? shader->shaderProgram : App->shaderImporter->GetDefaultShaderProgram();
 
 	glUseProgram(shaderProgram);
 
@@ -686,8 +683,16 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 
+		// Texture(s)
+		GLuint tex = 0;
 		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
-		glBindTexture(GL_TEXTURE_2D, texRes != nullptr ? texRes->id : App->materialImporter->GetDefaultTexture());
+		if (texRes != nullptr)
+			tex = texRes->id;
+		else if (materialRenderer->res[i].checkers)
+			tex = App->materialImporter->GetCheckers();
+		else
+			tex = App->materialImporter->GetDefaultTexture();
+		glBindTexture(GL_TEXTURE_2D, tex);
 
 		char ourTexturei[13] = "ourTexture_i";
 		ourTexturei[11] = i + '0';
@@ -709,10 +714,13 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
 		glUniform1i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->value);
 
-	glBindVertexArray(res->VAO);
+	// Mesh
+	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
-	glDrawElements(GL_TRIANGLES, res->indicesSize, GL_UNSIGNED_INT, NULL);
+	glBindVertexArray(mesh->VAO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
+	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
 
 	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{

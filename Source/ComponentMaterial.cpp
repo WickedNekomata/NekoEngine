@@ -70,6 +70,8 @@ void ComponentMaterial::OnUniqueEditor()
 	ImGui::Text("Shader");
 	ImGui::SameLine();
 
+	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
+
 	ImGui::PushID("shader");
 	ImGui::Button(shaderProgram != nullptr ? shaderProgram->GetName() : "Default Shader", ImVec2(150.0f, 0.0f));
 	ImGui::PopID();
@@ -84,11 +86,12 @@ void ComponentMaterial::OnUniqueEditor()
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
-			shaderProgram = *(ResourceShaderProgram**)payload->Data;
+			shaderProgramUUID = (*(ResourceShaderProgram**)payload->Data)->GetUUID();
 		ImGui::EndDragDropTarget();
 	}
 
-	if (shaderProgram != nullptr) {
+	if (shaderProgram != nullptr) 
+	{
 		int count;
 		glGetProgramiv(shaderProgram->shaderProgram, GL_ACTIVE_UNIFORMS, &count);
 		printf("Active Uniforms: %d\n", count);
@@ -121,9 +124,8 @@ void ComponentMaterial::OnUniqueEditor()
 		}
 	}
 
-
 	if (ImGui::Button("USE DEFAULT SHADER"))
-		shaderProgram = nullptr;
+		shaderProgramUUID = 0;
 
 	// Textures
 	ImGui::Spacing();
@@ -239,7 +241,8 @@ void ComponentMaterial::OnUniqueEditor()
 
 	if (res.size() < App->renderer3D->GetMaxTextureUnits())
 	{
-		if (ImGui::Button("+")) {
+		if (ImGui::Button("+")) 
+		{
 			MaterialResource newRes;
 			res.push_back(newRes);
 		}

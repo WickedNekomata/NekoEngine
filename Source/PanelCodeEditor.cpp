@@ -141,7 +141,10 @@ bool PanelCodeEditor::Draw()
 	ImGui::End();
 
 	if (!enabled)
-		shaderObject = nullptr;
+	{
+		shaderObjectUUID = 0;
+		editor.Delete();
+	}
 
 	return true;
 }

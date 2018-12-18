@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ModuleResourceManager.h"
 #include "ShaderImporter.h"
 #include "ResourceShaderObject.h"
 
@@ -19,6 +20,7 @@ PanelCodeEditor::~PanelCodeEditor() {}
 
 bool PanelCodeEditor::Draw()
 {
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
 	assert(shaderObject != nullptr);
 
 	auto cpos = editor.GetCursorPosition();
@@ -144,17 +146,18 @@ bool PanelCodeEditor::Draw()
 	return true;
 }
 
-void PanelCodeEditor::OpenShaderInCodeEditor(ResourceShaderObject* shaderObject)
+void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUUID)
 {
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
 	assert(shaderObject != nullptr);
 
 	enabled = true;
-	this->shaderObject = shaderObject;
+	this->shaderObjectUUID = shaderObjectUUID;
 
 	editor.SetText(shaderObject->GetSource());
 }
 
-ResourceShaderObject* PanelCodeEditor::GetShaderObject() const
+uint PanelCodeEditor::GetShaderObjectUUID() const
 {
-	return shaderObject;
+	return shaderObjectUUID;
 }

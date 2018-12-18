@@ -26,6 +26,7 @@ bool ShaderImporter::CreateShaderObject(std::string& file) const
 	bool ret = false;
 
 	char* buffer = new char[1];
+	buffer[0] = '\0';
 
 	if (App->fs->SaveInGame(buffer, 1, FileType::NoFileType, file, true) == 1)
 	{

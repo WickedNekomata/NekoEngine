@@ -532,7 +532,7 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER OBJECT"))
-		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject);
+		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject->GetUUID());
 }
 
 void PanelInspector::ShowShaderProgramInspector() const
@@ -557,9 +557,6 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 		shaderProgram->SetName(name);
 		App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
-
-		if (App->gui->panelShaderEditor->GetShaderProgram() == shaderProgram)
-			App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram);
 	}
 	ImGui::Spacing();
 
@@ -582,13 +579,13 @@ void PanelInspector::ShowShaderProgramInspector() const
 		ImGui::TextColored(BLUE, "%s", (*it)->GetName()); ImGui::SameLine();
 		sprintf_s(shaderObject, DEFAULT_BUF_SIZE, "EDIT##%i", std::distance(shaderObjects.begin(), it));
 		if (ImGui::Button(shaderObject))
-			App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor((*it)->GetUUID());
 	}
 
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
-		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram);
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUUID());
 }
 
 #endif // GAME

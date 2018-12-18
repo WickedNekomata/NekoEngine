@@ -33,13 +33,14 @@ bool PanelShaderEditor::Draw()
 		char shaderObjectName[DEFAULT_BUF_SIZE];
 
 		ImGui::Text("Vertex Shaders");
-		for (std::list<ResourceShaderObject*>::iterator it = vertexShaders.begin(); it != vertexShaders.end();)
+		for (std::list<uint>::iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end();)
 		{
-			ResourceShaderObject* i = *it;
-			if (*it != nullptr)
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##v%i", (*it)->GetName(), std::distance(vertexShaders.begin(), it));
+			ResourceShaderObject* vertexShader = (ResourceShaderObject*)App->res->GetResource(*it);
+
+			if (vertexShader != nullptr)
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##v%i", vertexShader->GetName(), std::distance(vertexShadersUUIDs.begin(), it));
 			else
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Vertex##v%i", std::distance(vertexShaders.begin(), it));
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Vertex##v%i", std::distance(vertexShadersUUIDs.begin(), it));
 			ImGui::Button(shaderObjectName, ImVec2(150.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget())
@@ -48,26 +49,26 @@ bool PanelShaderEditor::Draw()
 				{
 					ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
 					if (payload_n->shaderType == ShaderType::VertexShaderType)
-						*it = payload_n;
+						*it = payload_n->GetUUID();
 				}
 				ImGui::EndDragDropTarget();
 			}
 
 			ImGui::SameLine();
 
-			if (*it != nullptr)
+			if (vertexShader != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##v%i", std::distance(vertexShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##v%i", std::distance(vertexShadersUUIDs.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
 				ImGui::SameLine();
 			}
 
-			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##v%i", std::distance(vertexShaders.begin(), it));
+			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##v%i", std::distance(vertexShadersUUIDs.begin(), it));
 			if (ImGui::Button(shaderObjectName))
 			{
-				it = vertexShaders.erase(it);
+				it = vertexShadersUUIDs.erase(it);
 				continue;
 			}
 
@@ -75,15 +76,17 @@ bool PanelShaderEditor::Draw()
 		}
 
 		if (ImGui::Button("+##vertex"))
-			vertexShaders.push_back(nullptr);
+			vertexShadersUUIDs.push_back(0);
 
 		ImGui::Text("Fragment Shaders");
-		for (std::list<ResourceShaderObject*>::iterator it = fragmentShaders.begin(); it != fragmentShaders.end();)
+		for (std::list<uint>::iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end();)
 		{
-			if (*it != nullptr)
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##f%i", (*it)->GetName(), std::distance(fragmentShaders.begin(), it));
+			ResourceShaderObject* fragmentShader = (ResourceShaderObject*)App->res->GetResource(*it);
+
+			if (fragmentShader != nullptr)
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##f%i", fragmentShader->GetName(), std::distance(fragmentShadersUUIDs.begin(), it));
 			else
-				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Fragment##f%i", std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Fragment##f%i", std::distance(fragmentShadersUUIDs.begin(), it));
 			ImGui::Button(shaderObjectName, ImVec2(150.0f, 0.0f));
 
 			if (ImGui::BeginDragDropTarget())
@@ -92,26 +95,26 @@ bool PanelShaderEditor::Draw()
 				{
 					ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
 					if (payload_n->shaderType == ShaderType::FragmentShaderType)
-						*it = payload_n;
+						*it = payload_n->GetUUID();
 				}
 				ImGui::EndDragDropTarget();
 			}
 
 			ImGui::SameLine();
 
-			if (*it != nullptr)
+			if (fragmentShader != nullptr)
 			{
-				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##f%i", std::distance(fragmentShaders.begin(), it));
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##f%i", std::distance(fragmentShadersUUIDs.begin(), it));
 				if (ImGui::Button(shaderObjectName))
 					App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
 
 				ImGui::SameLine();
 			}
 
-			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##f%i", std::distance(fragmentShaders.begin(), it));
+			sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##f%i", std::distance(fragmentShadersUUIDs.begin(), it));
 			if (ImGui::Button(shaderObjectName))
 			{
-				it = fragmentShaders.erase(it);
+				it = fragmentShadersUUIDs.erase(it);
 				continue;
 			}
 
@@ -119,13 +122,15 @@ bool PanelShaderEditor::Draw()
 		}
 
 		if (ImGui::Button("+##Fragment"))
-			fragmentShaders.push_back(nullptr);
+			fragmentShadersUUIDs.push_back(0);
 
 		// Link
 		if (ImGui::Button("Link and Save"))
 		{
 			std::list<ResourceShaderObject*> shaderObjects;
 			GetShaderObjects(shaderObjects);
+
+			ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
 
 			// Existing shader program
 			if (shaderProgram != nullptr)
@@ -216,10 +221,10 @@ bool PanelShaderEditor::Draw()
 		// Try to link
 		if (ImGui::Button("Link"))
 		{
-			std::list<uint> shaderObjects;
-			GetShaderObjects(shaderObjects);
+			std::list<uint> shaderObjectsUUIDs;
+			GetShaderObjectsUUIDs(shaderObjectsUUIDs);
 
-			uint tryLink = ResourceShaderProgram::Link(shaderObjects);
+			uint tryLink = ResourceShaderProgram::Link(shaderObjectsUUIDs);
 			ResourceShaderProgram::DeleteShaderProgram(tryLink);
 		}
 	}
@@ -227,46 +232,53 @@ bool PanelShaderEditor::Draw()
 
 	if (!enabled)
 	{
-		shaderProgram = nullptr;
+		shaderProgramUUID = 0;
 		strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
-		vertexShaders.clear();
-		fragmentShaders.clear();
+		vertexShadersUUIDs.clear();
+		fragmentShadersUUIDs.clear();
 	}
 
 	return true;
 }
 
-void PanelShaderEditor::OpenShaderInShaderEditor(ResourceShaderProgram* shaderProgram)
+void PanelShaderEditor::OpenShaderInShaderEditor(uint shaderProgramUUID)
 {
+	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
 	assert(shaderProgram != nullptr);
 
 	enabled = true;
-	this->shaderProgram = shaderProgram;
+	this->shaderProgramUUID = shaderProgramUUID;
 
 	strcpy_s(shaderProgramName, strlen(shaderProgram->GetName()) + 1, shaderProgram->GetName());
-	vertexShaders = shaderProgram->GetShaderObjects(ShaderType::VertexShaderType);
-	fragmentShaders = shaderProgram->GetShaderObjects(ShaderType::FragmentShaderType);
+
+	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects(ShaderType::VertexShaderType);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		vertexShadersUUIDs.push_back((*it)->GetUUID());
+
+	shaderObjects = shaderProgram->GetShaderObjects(ShaderType::FragmentShaderType);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		vertexShadersUUIDs.push_back((*it)->GetUUID());
 }
 
-ResourceShaderProgram* PanelShaderEditor::GetShaderProgram() const
+uint PanelShaderEditor::GetShaderProgramUUID() const
 {
-	return shaderProgram;
+	return shaderProgramUUID;
+}
+
+void PanelShaderEditor::GetShaderObjectsUUIDs(std::list<uint>& shaderObjectsUUIDs) const
+{
+	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
+		shaderObjectsUUIDs.push_back(*it);
+
+	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
+		shaderObjectsUUIDs.push_back(*it);
 }
 
 void PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const
 {
-	for (std::list<ResourceShaderObject*>::const_iterator it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
-		shaderObjects.push_back(*it);
+	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
+		shaderObjects.push_back((ResourceShaderObject*)App->res->GetResource(*it));
 
-	for (std::list<ResourceShaderObject*>::const_iterator it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
-		shaderObjects.push_back(*it);
-}
-
-void PanelShaderEditor::GetShaderObjects(std::list<uint>& shaderObjects) const
-{
-	for (std::list<ResourceShaderObject*>::const_iterator it = vertexShaders.begin(); it != vertexShaders.end(); ++it)
-		shaderObjects.push_back((*it)->shaderObject);
-
-	for (std::list<ResourceShaderObject*>::const_iterator it = fragmentShaders.begin(); it != fragmentShaders.end(); ++it)
-		shaderObjects.push_back((*it)->shaderObject);
+	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
+		shaderObjects.push_back((ResourceShaderObject*)App->res->GetResource(*it));
 }

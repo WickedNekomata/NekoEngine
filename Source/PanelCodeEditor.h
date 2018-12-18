@@ -7,8 +7,10 @@
 
 #include "Panel.h"
 
+#include "Globals.h"
+
 #include "ImGui\imgui.h"
-#include "ImGuiColorTextEdit/TextEditor.h"
+#include "ImGuiColorTextEdit\TextEditor.h"
 
 class ResourceShaderObject;
 
@@ -21,12 +23,12 @@ public:
 
 	bool Draw();
 
-	void OpenShaderInCodeEditor(ResourceShaderObject* shaderObject);
-	ResourceShaderObject* GetShaderObject() const;
+	void OpenShaderInCodeEditor(uint shaderObjectUUID);
+	uint GetShaderObjectUUID() const;
 
 private:
 
-	ResourceShaderObject* shaderObject = nullptr;
+	uint shaderObjectUUID = 0;
 
 	const char* fileToEdit = "";
 	TextEditor editor;

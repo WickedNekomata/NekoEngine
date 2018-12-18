@@ -156,65 +156,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
-		std::string extension;
-		App->fs->GetExtension(fileInAssets.data(), extension);
-		ResourceType type = GetResourceTypeByExtension(extension.data());
-
-		std::list<ResourceShaderObject*>::iterator it;
-		bool currentShader = false;
-
-		if (type == ResourceType::ShaderObjectResource)
-		{
-			std::list<uint> UUIDs;
-			FindResourcesByFile(fileInAssets.data(), UUIDs);
-			ResourceShaderObject* resource = (ResourceShaderObject*)GetResource(UUIDs.front());
-
-			switch (resource->shaderType)
-			{
-			case ShaderType::VertexShaderType:
-				it = std::find(App->gui->panelShaderEditor->vertexShaders.begin(), App->gui->panelShaderEditor->vertexShaders.end(), resource);
-				if (it != App->gui->panelShaderEditor->vertexShaders.end())
-					currentShader = resource == App->gui->panelCodeEditor->GetShaderObject();
-				break;
-			case ShaderType::FragmentShaderType:
-				it = std::find(App->gui->panelShaderEditor->fragmentShaders.begin(), App->gui->panelShaderEditor->fragmentShaders.end(), resource);
-				if (it != App->gui->panelShaderEditor->vertexShaders.end())
-					currentShader = resource == App->gui->panelCodeEditor->GetShaderObject();
-				break;
-			}
-		}
-
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
 		// Reimport
 		uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
-
-		if (type == ResourceType::ShaderObjectResource)
-		{	
-			ResourceShaderObject* resource = (ResourceShaderObject*)GetResource(UUID);
-
-			switch (resource->shaderType)
-			{
-			case ShaderType::VertexShaderType:
-				if (it != App->gui->panelShaderEditor->vertexShaders.end())
-				{
-					*it = resource;
-
-					if (currentShader)
-						App->gui->panelCodeEditor->OpenShaderInCodeEditor(resource);
-				}
-				break;
-			case ShaderType::FragmentShaderType:
-				if (it != App->gui->panelShaderEditor->fragmentShaders.end())
-				{
-					*it = resource;
-
-					if (currentShader)
-						App->gui->panelCodeEditor->OpenShaderInCodeEditor(resource);
-				}
-				break;
-			}
-		}
 
 		RELEASE_ARRAY(event.fileEvent.metaFile);
 

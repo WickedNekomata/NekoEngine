@@ -28,8 +28,10 @@ private:
 	void RecursiveDrawAssetsDir(AssetsFile* assetsFile);
 	void SetResourceDragAndDropSource(ResourceType type, uint UUID = 0, const Resource* resource = nullptr, const char* file = nullptr) const;
 	
-	void ChooseShaderPopUp(const char* path);
-	void CreateShaderPopUp();
+	void CreateShaderPopUp(const char* path);
+	void DeleteShaderPopUp(const char* path);
+	void CreateShaderConfirmationPopUp();
+	void DeleteShaderConfirmationPopUp();
 
 public:
 
@@ -37,7 +39,8 @@ public:
 	std::string shaderFile;
 	char shaderName[INPUT_BUF_SIZE];
 
-	bool showCreateShaderPopUp = false;
+	bool showCreateShaderConfirmationPopUp = false;
+	bool showDeleteShaderConfirmationPopUp = false;
 };
 
 #endif

@@ -34,7 +34,7 @@ bool PanelAssets::Draw()
 		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
-		ChooseShaderPopUp(DIR_ASSETS);
+		CreateShaderPopUp(DIR_ASSETS);
 		if (treeNodeOpened)
 		{
 			RecursiveDrawAssetsDir(App->fs->GetRootAssetsFile());
@@ -43,10 +43,15 @@ bool PanelAssets::Draw()
 	}
 	ImGui::End();
 
-	if (showCreateShaderPopUp)
+	if (showCreateShaderConfirmationPopUp)
 	{
 		ImGui::OpenPopup("Create Shader");
-		CreateShaderPopUp();
+		CreateShaderConfirmationPopUp();
+	}
+	else if (showDeleteShaderConfirmationPopUp)
+	{
+		ImGui::OpenPopup("Delete Shader");
+		DeleteShaderConfirmationPopUp();
 	}
 
 	return true;
@@ -88,7 +93,7 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 				SELECT(NULL);
 
-			ChooseShaderPopUp(child->path.data());			
+			CreateShaderPopUp(child->path.data());			
 
 			if (treeNodeOpened)
 			{
@@ -176,17 +181,19 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 					break;
 				case ResourceType::TextureResource:
 					SetResourceDragAndDropSource(type, child->UUIDs.begin()->second);
+					DeleteShaderPopUp(child->path.data());
 					break;
 				case ResourceType::ShaderObjectResource:
 				case ResourceType::ShaderProgramResource:
 					SetResourceDragAndDropSource(type, 0, child->resource);
+					DeleteShaderPopUp(child->path.data());
 					break;
 				case ResourceType::NoResourceType:
 					if (IS_SCENE(extension.data()))
 						SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
 					break;
 				}
-				ImGui::TreePop();				
+				ImGui::TreePop();
 			}
 		}
 	}
@@ -250,11 +257,9 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, uint UUID, con
 	}
 }
 
-void PanelAssets::ChooseShaderPopUp(const char* path)
+void PanelAssets::CreateShaderPopUp(const char* path)
 {
-	char id[DEFAULT_BUF_SIZE];
-	strcpy_s(id, DEFAULT_BUF_SIZE, path);
-	if (ImGui::BeginPopupContextItem(id))
+	if (ImGui::BeginPopupContextItem(path))
 	{
 		if (ImGui::Selectable("Create Vertex Shader"))
 		{
@@ -263,7 +268,7 @@ void PanelAssets::ChooseShaderPopUp(const char* path)
 			shaderFile = path;
 			shaderFile.append("/");
 
-			showCreateShaderPopUp = true;
+			showCreateShaderConfirmationPopUp = true;
 			ImGui::CloseCurrentPopup();
 		}
 		else if (ImGui::Selectable("Create Fragment Shader"))
@@ -273,14 +278,29 @@ void PanelAssets::ChooseShaderPopUp(const char* path)
 			shaderFile = path;
 			shaderFile.append("/");
 
-			showCreateShaderPopUp = true;
+			showCreateShaderConfirmationPopUp = true;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
 }
 
-void PanelAssets::CreateShaderPopUp()
+void PanelAssets::DeleteShaderPopUp(const char* path)
+{
+	if (ImGui::BeginPopupContextItem(path))
+	{
+		if (ImGui::Selectable("Delete Shader"))
+		{
+			shaderFile = path;
+
+			showDeleteShaderConfirmationPopUp = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}
+
+void PanelAssets::CreateShaderConfirmationPopUp()
 {
 	if (ImGui::BeginPopupModal("Create Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -314,9 +334,15 @@ void PanelAssets::CreateShaderPopUp()
 			}
 
 			if (App->shaderImporter->CreateShaderObject(shaderFile))
+			{
 				App->res->ImportFile(shaderFile.data());
 
-			showCreateShaderPopUp = false;
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::RefreshFiles;
+				App->PushSystemEvent(newEvent);
+			}
+
+			showCreateShaderConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -325,7 +351,46 @@ void PanelAssets::CreateShaderPopUp()
 
 		if (ImGui::Button("Cancel", ImVec2(120.0f, 0)))
 		{
-			showCreateShaderPopUp = false;
+			showCreateShaderConfirmationPopUp = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}
+
+void PanelAssets::DeleteShaderConfirmationPopUp()
+{
+	if (ImGui::BeginPopupModal("Delete Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		std::string extension;
+		App->fs->GetExtension(shaderFile.data(), extension);
+
+		if (strcmp(extension.data(), EXTENSION_VERTEX_SHADER_OBJECT) == 0
+			|| strcmp(extension.data(), EXTENSION_FRAGMENT_SHADER_OBJECT) == 0)
+			ImGui::Text("Are you sure that you want to delete the following shader object?");
+		else if (strcmp(extension.data(), EXTENSION_SHADER_PROGRAM) == 0)
+			ImGui::Text("Are you sure that you want to delete the following shader program?");
+		ImGui::TextColored(BLUE, "%s", shaderFile.data());
+
+		if (ImGui::Button("Delete", ImVec2(120.0f, 0)))
+		{
+			if (App->fs->DeleteFileOrDir(shaderFile.data()))
+			{
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::RefreshAssets;
+				App->PushSystemEvent(newEvent);
+			}
+
+			showDeleteShaderConfirmationPopUp = false;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120.0f, 0)))
+		{
+			showDeleteShaderConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

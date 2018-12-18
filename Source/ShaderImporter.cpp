@@ -25,9 +25,15 @@ bool ShaderImporter::CreateShaderObject(std::string& file) const
 {
 	bool ret = false;
 
-	App->fs->SaveInGame(nullptr, 0, FileType::NoFileType, file, true);
-	CONSOLE_LOG("SHADER IMPORTER: Successfully created Shader Object '%s'", file.data());
-	ret = true;
+	char* buffer = new char[1];
+
+	if (App->fs->SaveInGame(buffer, 1, FileType::NoFileType, file, true) == 1)
+	{
+		CONSOLE_LOG("SHADER IMPORTER: Successfully created Shader Object '%s'", file.data());
+		ret = true;
+	}
+
+	RELEASE_ARRAY(buffer);
 
 	return ret;
 }

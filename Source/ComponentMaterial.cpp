@@ -86,41 +86,67 @@ void ComponentMaterial::OnUniqueEditor()
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
-			shaderProgramUUID = (*(ResourceShaderProgram**)payload->Data)->GetUUID();
+		{
+			ResourceShaderProgram* payload_n = *(ResourceShaderProgram**)payload->Data;
+			payload_n->GetUniforms(uniforms);
+			shaderProgramUUID = payload_n->GetUUID();
+		}
 		ImGui::EndDragDropTarget();
 	}
 
-	if (shaderProgram != nullptr) 
+	for (int i = 0, n = uniforms.size(); i < n; ++i)
 	{
-		int count;
-		glGetProgramiv(shaderProgram->shaderProgram, GL_ACTIVE_UNIFORMS, &count);
-		printf("Active Uniforms: %d\n", count);
+		Uniform* uniform = uniforms[i];
+		ImGui::Text(uniform->name);
+		ImGui::SameLine();
 
-		GLuint program;
-		GLuint index;
-		GLsizei length;
-		GLint size;
-		GLenum type;
-		GLchar name[DEFAULT_BUF_SIZE];
+		char itemName[] = { "##uniformX" };
+		itemName[10] = i;
 
-		for (auto it = uniforms.begin(); it != uniforms.end(); it++)
-			delete (*it);
-		uniforms.clear();
-
-		for (int i = 0; i < count; i++)
+		switch (uniform->type)
 		{
-			glGetActiveUniform(shaderProgram->shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
-			if (type == GL_INT) {
-				Uniform<int>* uniform = new Uniform<int>();
-				memset(uniform->name, '\0', DEFAULT_BUF_SIZE);
-				strcpy_s(uniform->name, name);
-				uniform->type = 0;
-				uniform->value = 0;
-				uniforms.push_back(uniform);
-				ImGui::PushItemWidth(100);
-				ImGui::InputInt(name, &uniform->value);
-				ImGui::PopItemWidth();
-			}
+		case Uniforms_Values::FloatU_value:
+			ImGui::InputFloat(itemName, &uniform->floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			ImGui::InputInt(itemName, (int*)&uniform->intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+		{
+			float v[] = { uniform->vec2FU.value.x, uniform->vec2FU.value.y };
+			ImGui::InputFloat2(itemName, v);
+			break;
+		}
+		case Uniforms_Values::Vec3FU_value:
+		{
+			float v[] = { uniform->vec3FU.value.x, uniform->vec3FU.value.y , uniform->vec3FU.value.z };
+			ImGui::InputFloat3(itemName, v);
+			break;
+		}
+		case Uniforms_Values::Vec4FU_value:
+		{
+			float v[] = { uniform->vec4FU.value.x, uniform->vec4FU.value.y , uniform->vec4FU.value.z, uniform->vec4FU.value.w };
+			ImGui::InputFloat4(itemName, v);
+			break;
+		}
+		case Uniforms_Values::Vec2IU_value:
+		{
+			int v[] = { uniform->vec2IU.value.x, uniform->vec2IU.value.y };
+			ImGui::InputInt2(itemName, v);
+			break;
+		}
+		case Uniforms_Values::Vec3IU_value:
+		{
+			int v[] = { uniform->vec3IU.value.x, uniform->vec3IU.value.y , uniform->vec3IU.value.z };
+			ImGui::InputInt3(itemName, v);
+			break;
+		}
+		case Uniforms_Values::Vec4IU_value:
+		{
+			int v[] = { uniform->vec4IU.value.x, uniform->vec4IU.value.y , uniform->vec4IU.value.z, uniform->vec4IU.value.w };
+			ImGui::InputInt4(itemName, v);
+			break;
+		}
 		}
 	}
 

@@ -965,5 +965,8 @@
     <None Include="Assimp\include\vector3.inl">
       <Filter>Sources\3rd Party\Assimp</Filter>
     </None>
+    <None Include="Uniforms.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </None>
   </ItemGroup>
 </Project>

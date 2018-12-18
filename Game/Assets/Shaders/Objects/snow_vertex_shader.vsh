@@ -10,6 +10,7 @@ layout (location = 3) in vec2 texCoord;
 uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
+uniform int patata;
 
 out vec4 ourColor;
 out vec2 ourTexCoord;
@@ -25,7 +26,8 @@ void main()
   ourColor = color;
   fNormals = normals;
   snowDirection = vec3(0.0,1.0,0.0);
-  
+  int cola;
+  cola = patata;
   snowQuantity = 0.4;
     
   vec3 pos = position;

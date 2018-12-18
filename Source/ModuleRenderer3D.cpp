@@ -712,7 +712,35 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// TODO: store locations at Uniform class. This is just a first approach :)
 
 	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
-		glUniform1i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->value);
+	{
+		switch ((*it)->type)
+		{
+		case Uniforms_Values::FloatU_value:
+			glUniform1f(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			glUniform1i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+			glUniform2f(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec2FU.value.x, (*it)->vec2FU.value.y);
+			break;
+		case Uniforms_Values::Vec3FU_value:
+			glUniform3f(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec3FU.value.x, (*it)->vec3FU.value.y, (*it)->vec3FU.value.z);
+			break;
+		case Uniforms_Values::Vec4FU_value:
+			glUniform4f(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec4FU.value.x, (*it)->vec4FU.value.y, (*it)->vec4FU.value.z, (*it)->vec4FU.value.w);
+			break;
+		case Uniforms_Values::Vec2IU_value:
+			glUniform2i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec2IU.value.x, (*it)->vec2IU.value.y);
+			break;
+		case Uniforms_Values::Vec3IU_value:
+			glUniform3i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec3IU.value.x, (*it)->vec3IU.value.y, (*it)->vec3IU.value.z);
+			break;
+		case Uniforms_Values::Vec4IU_value:
+			glUniform4i(glGetUniformLocation(shaderProgram, (*it)->name), (*it)->vec4IU.value.x, (*it)->vec4IU.value.y, (*it)->vec4IU.value.z, (*it)->vec4IU.value.w);
+			break;
+		}
+	}
 
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);

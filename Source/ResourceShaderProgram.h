@@ -5,9 +5,12 @@
 
 #include "ResourceShaderObject.h"
 
+#include "Uniforms.h"
+
 #include "glew\include\GL\glew.h"
 
 #include <list>
+#include <vector>
 
 class ResourceShaderProgram : public Resource
 {
@@ -33,6 +36,8 @@ public:
 	bool IsProgramValid() const;
 	bool IsProgramLinked(bool comment = true) const;
 
+	void GetUniforms(std::vector<Uniform*>& result) const;
+
 private:
 
 	bool LoadInMemory();
@@ -40,7 +45,8 @@ private:
 
 private:
 
-	std::list<ResourceShaderObject*> shaderObjects;
+	std::list<ResourceShaderObject*>	shaderObjects;
+	std::vector<Uniform*>				uniforms;
 
 public:
 

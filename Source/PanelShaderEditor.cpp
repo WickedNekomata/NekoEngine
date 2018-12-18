@@ -216,7 +216,7 @@ bool PanelShaderEditor::Draw()
 				}
 			}
 			else
-				CONSOLE_LOG("Shader Program could not be linked since one or more shaders are null");
+				CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 		}
 
 		ImGui::SameLine();
@@ -231,7 +231,7 @@ bool PanelShaderEditor::Draw()
 				ResourceShaderProgram::DeleteShaderProgram(tryLink);
 			}
 			else
-				CONSOLE_LOG("Shader Program could not be linked since one or more shaders are null");
+				CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 		}
 	}
 	ImGui::End();
@@ -275,6 +275,8 @@ uint PanelShaderEditor::GetShaderProgramUUID() const
 
 bool PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const
 {
+	if (vertexShadersUUIDs.empty())
+		return false;
 	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
@@ -283,6 +285,8 @@ bool PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shade
 		shaderObjects.push_back(shaderObject);
 	}
 
+	if (fragmentShadersUUIDs.empty())
+		return false;
 	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
@@ -291,11 +295,16 @@ bool PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shade
 		shaderObjects.push_back(shaderObject);
 	}
 
+	if (shaderObjects.empty())
+		return false;
+
 	return true;
 }
 
 bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) const
 {
+	if (vertexShadersUUIDs.empty())
+		return false;
 	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
@@ -304,6 +313,8 @@ bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) c
 		shaderObjectsIDs.push_back(shaderObject->shaderObject);
 	}		
 
+	if (fragmentShadersUUIDs.empty())
+		return false;
 	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
@@ -311,6 +322,9 @@ bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) c
 			return false;
 		shaderObjectsIDs.push_back(shaderObject->shaderObject);
 	}
+
+	if (shaderObjectsIDs.empty())
+		return false;
 
 	return true;
 }

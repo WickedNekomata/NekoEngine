@@ -1006,6 +1006,7 @@ bool ModuleResourceManager::DestroyResourcesAndRemoveLibraryEntries(const char* 
 	}
 	break;
 	case ResourceType::ShaderObjectResource:
+	case ResourceType::ShaderProgramResource:
 	{
 		uint UUID;
 		if (App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID))

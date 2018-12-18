@@ -21,124 +21,125 @@ PanelCodeEditor::~PanelCodeEditor() {}
 bool PanelCodeEditor::Draw()
 {
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
-	assert(shaderObject != nullptr);
 
-	auto cpos = editor.GetCursorPosition();
-	ImGui::Begin("Code Editor", &enabled, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-	ImGui::SetWindowSize(ImVec2(800.0f, 600.0f), ImGuiCond_FirstUseEver);
-	
-	if (ImGui::BeginMenuBar())
+	if (shaderObject != nullptr)
 	{
-		if (ImGui::BeginMenu("Edit"))
+		auto cpos = editor.GetCursorPosition();
+		ImGui::Begin("Code Editor", &enabled, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+		ImGui::SetWindowSize(ImVec2(800.0f, 600.0f), ImGuiCond_FirstUseEver);
+
+		if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, editor.CanUndo()))
-				editor.Undo();
-			if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, editor.CanRedo()))
-				editor.Redo();
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, editor.CanUndo()))
+					editor.Undo();
+				if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, editor.CanRedo()))
+					editor.Redo();
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, editor.HasSelection()))
-				editor.Copy();
-			if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, editor.HasSelection()))
-				editor.Cut();
-			if (ImGui::MenuItem("Delete", "Del", nullptr, editor.HasSelection()))
-				editor.Delete();
-			if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, ImGui::GetClipboardText() != nullptr))
-				editor.Paste();
+				if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, editor.HasSelection()))
+					editor.Copy();
+				if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, editor.HasSelection()))
+					editor.Cut();
+				if (ImGui::MenuItem("Delete", "Del", nullptr, editor.HasSelection()))
+					editor.Delete();
+				if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, ImGui::GetClipboardText() != nullptr))
+					editor.Paste();
 
-			ImGui::Separator();
+				ImGui::Separator();
 
-			if (ImGui::MenuItem("Select All", nullptr, nullptr))
-				editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(editor.GetTotalLines(), 0));
+				if (ImGui::MenuItem("Select All", nullptr, nullptr))
+					editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(editor.GetTotalLines(), 0));
 
-			ImGui::EndMenu();
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("View"))
+			{
+				if (ImGui::MenuItem("Dark Palette"))
+					editor.SetPalette(TextEditor::GetDarkPalette());
+				if (ImGui::MenuItem("Light Palette"))
+					editor.SetPalette(TextEditor::GetLightPalette());
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
 		}
 
-		if (ImGui::BeginMenu("View"))
+		// Compile
+		if (ImGui::Button("Compile and Save"))
 		{
-			if (ImGui::MenuItem("Dark Palette"))
-				editor.SetPalette(TextEditor::GetDarkPalette());
-			if (ImGui::MenuItem("Light Palette"))
-				editor.SetPalette(TextEditor::GetLightPalette());
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
+			// Temporary store the parameters of the shader object
+			std::string sSource = shaderObject->GetSource();
 
-	// Compile
-	if (ImGui::Button("Compile and Save"))
-	{
-		// Temporary store the parameters of the shader object
-		std::string sSource = shaderObject->GetSource();
-
-		// Update the parameters of the shader object
-		shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
-		if (!shaderObject->Compile())
-			shaderObject->isValid = false;
-		else
-			shaderObject->isValid = true;
-
-		std::string output;
-		if (App->shaderImporter->SaveShaderObject(shaderObject, output, true))
-		{
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
-			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-
-			// Update last modification time in the meta
-			int lastModTime = App->fs->GetLastModificationTime(output.data());
-			Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
-
-			App->fs->AddMeta(metaFile, lastModTime);
-
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshFiles;
-			App->PushSystemEvent(newEvent);
-		}
-		else
-		{
-			// If the shader object cannot be saved, restore its parameters
-			shaderObject->SetSource(sSource.data(), sSource.length());
-			if (!shaderObject->Compile(false))
+			// Update the parameters of the shader object
+			shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
+			if (!shaderObject->Compile())
 				shaderObject->isValid = false;
 			else
 				shaderObject->isValid = true;
+
+			std::string output;
+			if (App->shaderImporter->SaveShaderObject(shaderObject, output, true))
+			{
+				// Search for the meta associated to the file
+				char metaFile[DEFAULT_BUF_SIZE];
+				strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
+				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+				// Update last modification time in the meta
+				int lastModTime = App->fs->GetLastModificationTime(output.data());
+				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
+
+				App->fs->AddMeta(metaFile, lastModTime);
+
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::RefreshFiles;
+				App->PushSystemEvent(newEvent);
+			}
+			else
+			{
+				// If the shader object cannot be saved, restore its parameters
+				shaderObject->SetSource(sSource.data(), sSource.length());
+				if (!shaderObject->Compile(false))
+					shaderObject->isValid = false;
+				else
+					shaderObject->isValid = true;
+			}
 		}
+
+		ImGui::SameLine();
+
+		// Try to compile
+		if (ImGui::Button("Compile"))
+		{
+			uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
+			ResourceShaderObject::DeleteShaderObject(tryCompile);
+		}
+
+		switch (shaderObject->shaderType)
+		{
+		case ShaderType::VertexShaderType:
+			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
+				"Vertex Shader",
+				shaderObject->GetName());
+			break;
+		case ShaderType::FragmentShaderType:
+			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
+				"Vertex Shader",
+				shaderObject->GetName());
+			break;
+		}
+
+		editor.Render("TextEditor");
+
+		ImGui::End();
 	}
-
-	// TODO: if (App->shaderImporter->SaveShaderObject(shaderObject, outputFile)) when creating a new shader object!!!
-	// TODO: shaderObject->shaderType 
-
-	ImGui::SameLine();
-
-	// Try to compile
-	if (ImGui::Button("Compile"))
-	{
-		uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
-		ResourceShaderObject::DeleteShaderObject(tryCompile);
-	}
-
-	switch (shaderObject->shaderType)
-	{
-	case ShaderType::VertexShaderType:
-		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
-			"Vertex Shader",
-			shaderObject->GetName());
-		break;
-	case ShaderType::FragmentShaderType:
-		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-			editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
-			"Vertex Shader",
-			shaderObject->GetName());
-		break;
-	}
-
-	editor.Render("TextEditor");
-
-	ImGui::End();
+	else
+		enabled = false;
 
 	if (!enabled)
 	{

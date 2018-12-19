@@ -11,6 +11,7 @@ uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
 uniform int patata;
+uniform vec2 sexy;
 
 out vec4 ourColor;
 out vec2 ourTexCoord;
@@ -29,7 +30,8 @@ void main()
   int cola;
   cola = patata;
   snowQuantity = 0.4;
-    
+  vec2 yeah;
+  yeah = sexy;
   vec3 pos = position;
   if (dot(normals, snowDirection) > snowQuantity)
        pos += normals * height;

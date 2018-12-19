@@ -60,6 +60,14 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 	res[position].res = res_uuid;
 }
 
+void ComponentMaterial::ReleaseUniforms()
+{
+	for (int i = 0; i < uniforms.size(); ++i)
+		RELEASE(uniforms[i]);
+
+	uniforms.clear();
+}
+
 void ComponentMaterial::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -88,6 +96,7 @@ void ComponentMaterial::OnUniqueEditor()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
 		{
 			ResourceShaderProgram* payload_n = *(ResourceShaderProgram**)payload->Data;
+			ReleaseUniforms();
 			payload_n->GetUniforms(uniforms);
 			shaderProgramUUID = payload_n->GetUUID();
 		}
@@ -96,13 +105,16 @@ void ComponentMaterial::OnUniqueEditor()
 
 	for (int i = 0, n = uniforms.size(); i < n; ++i)
 	{
+		if (i == 0)
+			ImGui::Text("Active Uniforms");
+
 		Uniform* uniform = uniforms[i];
 		ImGui::Text(uniform->common.name);
 		ImGui::SameLine();
 
 		char itemName[] = { "##uniformX" };
 		itemName[10] = i;
-
+		ImGui::PushItemWidth(100.0f);
 		switch (uniform->common.type)
 		{
 		case Uniforms_Values::FloatU_value:
@@ -166,6 +178,7 @@ void ComponentMaterial::OnUniqueEditor()
 			break;
 		}
 		}
+		ImGui::PopItemWidth();
 	}
 
 	if (ImGui::Button("USE DEFAULT SHADER"))

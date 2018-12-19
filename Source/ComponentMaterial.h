@@ -39,6 +39,7 @@ public:
 	void Update();
 
 	void SetResource(uint res_uuid, uint position);
+	void ReleaseUniforms();
 
 	void OnUniqueEditor();
 

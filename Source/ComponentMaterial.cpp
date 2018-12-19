@@ -483,88 +483,102 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 
 	shaderProgramUUID = json_object_get_number(file, "Shader");
 
+	ResourceShaderProgram* program = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
+
+	if (program == nullptr || !program->isValid)
+	{
+		CONSOLE_LOG("COMPONENT MATERIAL: Invalid Shader");
+		return;
+	}
+
+	// Here we get all uniforms from shader and update them loading data from json. This is important cause shader could been modified.
+
+	program->GetUniforms(uniforms);
 	JSON_Array* uniformsArray = json_object_get_array(file, "Uniforms");
-
 	uint size = json_array_get_count(uniformsArray);
-
-	uniforms.reserve(size);
 
 	for (int i = 0; i < size; ++i)
 	{	
-		Uniform* uniform = new Uniform();
 		JSON_Object* uniformObject = json_array_get_object(uniformsArray, i);
-		int type = json_object_get_number(uniformObject, "Type");
+		char name[DEFAULT_BUF_SIZE];
+		strcpy_s(name, json_object_get_string(uniformObject, "Name"));
 
-		switch (type)
+		for (int j = 0; j < uniforms.size(); ++j)
 		{
-		case Uniforms_Values::FloatU_value:
-			uniform->floatU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->floatU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->floatU.location = json_object_get_number(uniformObject, "Location");
-			uniform->floatU.value = json_object_get_number(uniformObject, "Value");
-			break;
-		case Uniforms_Values::IntU_value:
-			uniform->intU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->intU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->intU.location = json_object_get_number(uniformObject, "Location");
-			uniform->intU.value = json_object_get_number(uniformObject, "Value");
-			break;
-		case Uniforms_Values::Vec2FU_value:
-			uniform->vec2FU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec2FU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec2FU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec2FU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec2FU.value.y = json_object_get_number(uniformObject, "ValueY");
-			break;
-		case Uniforms_Values::Vec3FU_value:
-			uniform->vec3FU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec3FU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec3FU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec3FU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec3FU.value.y = json_object_get_number(uniformObject, "ValueY");
-			uniform->vec3FU.value.z = json_object_get_number(uniformObject, "ValueZ");
-			break;
-		case Uniforms_Values::Vec4FU_value:
-			uniform->vec4FU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec4FU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec4FU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec4FU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec4FU.value.y = json_object_get_number(uniformObject, "ValueY");
-			uniform->vec4FU.value.z = json_object_get_number(uniformObject, "ValueZ");
-			uniform->vec4FU.value.w = json_object_get_number(uniformObject, "ValueW");
-			break;
-		case Uniforms_Values::Vec2IU_value:
-			uniform->vec2IU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec2IU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec2IU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec2IU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec2IU.value.y = json_object_get_number(uniformObject, "ValueY");
-			break;
-		case Uniforms_Values::Vec3IU_value:
-			uniform->vec3IU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec3IU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec3IU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec3IU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec3IU.value.y = json_object_get_number(uniformObject, "ValueY");
-			uniform->vec3IU.value.z = json_object_get_number(uniformObject, "ValueZ");
-			break;		
-		case Uniforms_Values::Vec4IU_value:
-			uniform->vec4IU.type = json_object_get_number(uniformObject, "Type");
-			strcpy_s(uniform->vec4IU.name, json_object_get_string(uniformObject, "Name"));
-			uniform->vec4IU.location = json_object_get_number(uniformObject, "Location");
-			uniform->vec4IU.value.x = json_object_get_number(uniformObject, "ValueX");
-			uniform->vec4IU.value.y = json_object_get_number(uniformObject, "ValueY");
-			uniform->vec4IU.value.z = json_object_get_number(uniformObject, "ValueZ");
-			uniform->vec4IU.value.w = json_object_get_number(uniformObject, "ValueW");
-			break;
-		default:
-			assert("Material Component: Fatal error at loading uniforms");
-			break;
-		}
-		uniforms.push_back(uniform);
+			if (strcpy(name, uniforms[j]->common.name) == 0)
+			{
+				int type = json_object_get_number(uniformObject, "Type");
+
+				switch (type)
+				{
+				case Uniforms_Values::FloatU_value:
+					uniforms[j]->floatU.type = type;
+					strcpy_s(uniforms[j]->floatU.name, name);
+					uniforms[j]->floatU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->floatU.value = json_object_get_number(uniformObject, "Value");
+					break;
+				case Uniforms_Values::IntU_value:
+					uniforms[j]->intU.type = type;
+					strcpy_s(uniforms[j]->intU.name, name);
+					uniforms[j]->intU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->intU.value = json_object_get_number(uniformObject, "Value");
+					break;
+				case Uniforms_Values::Vec2FU_value:
+					uniforms[j]->vec2FU.type = type;
+					strcpy_s(uniforms[j]->vec2FU.name, name);
+					uniforms[j]->vec2FU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec2FU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec2FU.value.y = json_object_get_number(uniformObject, "ValueY");
+					break;
+				case Uniforms_Values::Vec3FU_value:
+					uniforms[j]->vec3FU.type = type;
+					strcpy_s(uniforms[j]->vec3FU.name, name);
+					uniforms[j]->vec3FU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec3FU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec3FU.value.y = json_object_get_number(uniformObject, "ValueY");
+					uniforms[j]->vec3FU.value.z = json_object_get_number(uniformObject, "ValueZ");
+					break;
+				case Uniforms_Values::Vec4FU_value:
+					uniforms[j]->vec4FU.type = type;
+					strcpy_s(uniforms[j]->vec4FU.name, name);
+					uniforms[j]->vec4FU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec4FU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec4FU.value.y = json_object_get_number(uniformObject, "ValueY");
+					uniforms[j]->vec4FU.value.z = json_object_get_number(uniformObject, "ValueZ");
+					uniforms[j]->vec4FU.value.w = json_object_get_number(uniformObject, "ValueW");
+					break;
+				case Uniforms_Values::Vec2IU_value:
+					uniforms[j]->vec2IU.type = type;
+					strcpy_s(uniforms[j]->vec2IU.name, name);
+					uniforms[j]->vec2IU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec2IU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec2IU.value.y = json_object_get_number(uniformObject, "ValueY");
+					break;
+				case Uniforms_Values::Vec3IU_value:
+					uniforms[j]->vec3IU.type = type;
+					strcpy_s(uniforms[j]->vec3IU.name, name);
+					uniforms[j]->vec3IU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec3IU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec3IU.value.y = json_object_get_number(uniformObject, "ValueY");
+					uniforms[j]->vec3IU.value.z = json_object_get_number(uniformObject, "ValueZ");
+					break;
+				case Uniforms_Values::Vec4IU_value:
+					uniforms[j]->vec4IU.type = type;
+					strcpy_s(uniforms[j]->vec4IU.name, name);
+					uniforms[j]->vec4IU.location = json_object_get_number(uniformObject, "Location");
+					uniforms[j]->vec4IU.value.x = json_object_get_number(uniformObject, "ValueX");
+					uniforms[j]->vec4IU.value.y = json_object_get_number(uniformObject, "ValueY");
+					uniforms[j]->vec4IU.value.z = json_object_get_number(uniformObject, "ValueZ");
+					uniforms[j]->vec4IU.value.w = json_object_get_number(uniformObject, "ValueW");
+					break;
+				default:
+					assert("Material Component: Fatal error at loading uniforms");
+					break;
+				}
+				break;
+			}
+		}		
 	}
-	
-	uniforms.shrink_to_fit();
 }
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)

@@ -31,7 +31,7 @@ void main()
 vec3 ambient = light.ambient * vec3(texture(material.ourTexture_0, fTexCoord));
 
 // Diffuse
-vec3 lightDir = -normalize(light.direction);
+vec3 lightDir = normalize(-light.direction);
 float diff = max(dot(fNormal, lightDir), 0.0);
 vec3 diffuse = light.diffuse * diff * vec3(texture(material.ourTexture_0, fTexCoord));
 

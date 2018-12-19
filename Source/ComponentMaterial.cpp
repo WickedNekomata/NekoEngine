@@ -107,8 +107,13 @@ void ComponentMaterial::OnUniqueEditor()
 		{
 			ResourceShaderProgram* payload_n = *(ResourceShaderProgram**)payload->Data;
 			ReleaseUniforms();
-			payload_n->GetUniforms(uniforms);
-			shaderProgramUUID = payload_n->GetUUID();
+			if (payload_n->isValid)
+			{
+				payload_n->GetUniforms(uniforms);
+				shaderProgramUUID = payload_n->GetUUID();
+			}
+			else
+				CONSOLE_LOG("Invalid shader program");
 		}
 		ImGui::EndDragDropTarget();
 	}

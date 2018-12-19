@@ -23,7 +23,6 @@
 "uniform mat4 model_matrix;\n" \
 "uniform mat4 view_matrix;\n" \
 "uniform mat4 proj_matrix;\n" \
-"uniform mat4 normal_matrix;\n" \
 "\n" \
 "out vec4 ourColor;\n" \
 "out vec2 ourTexCoord;\n" \

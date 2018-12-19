@@ -568,6 +568,12 @@ void PanelInspector::ShowShaderProgramInspector() const
 	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUUID());
 	ImGui::Spacing();
 
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool isValid = shaderProgram->isValid;
+	ImGui::Checkbox("Is valid", &isValid);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+	ImGui::Spacing();
+
 	// Shader Program info
 	ImGui::Text("Shader Objects:");
 

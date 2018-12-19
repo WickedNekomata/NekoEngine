@@ -703,18 +703,15 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	glUniformMatrix4fv(location, 1, GL_TRUE, model_matrix.ptr());
 	location = glGetUniformLocation(shaderProgram, "view_matrix");
-	math::float4x4 view_matrix = App->camera->camera->GetOpenGLViewMatrix();
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
 	glUniformMatrix4fv(location, 1, GL_FALSE, view_matrix.ptr());
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
-	math::float4x4 proj_matrix = App->camera->camera->GetOpenGLProjectionMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
 	glUniformMatrix4fv(location, 1, GL_FALSE, proj_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "normal_matrix");
-	math::float4x4 normal_matrix = view_matrix * model_matrix;
-	normal_matrix.Inverse();
-	normal_matrix.Transpose();
-	glUniformMatrix4fv(location, 1, GL_FALSE, normal_matrix.ptr());
 	location = glGetUniformLocation(shaderProgram, "Time");
 	glUniform1f(location, App->GetDt());
+	location = glGetUniformLocation(shaderProgram, "viewPos");
+	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
 
 	// TODO: store locations at Uniform class. This is just a first approach :)
 

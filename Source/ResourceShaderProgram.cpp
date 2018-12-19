@@ -198,12 +198,6 @@ bool ResourceShaderProgram::IsProgramLinked(bool comment) const
 
 void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 {
-	if (shaderProgram == 0)
-	{
-		assert(shaderProgram != 0 && "Unitialized shader program");
-		return;
-	}
-
 	int count;
 	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
 	uniforms.reserve(count);
@@ -219,7 +213,8 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 	{
 		glGetActiveUniform(shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
 
-		if (strcmp(name, "model_matrix") == 0 || strcmp(name, "view_matrix") == 0 || strcmp(name, "proj_matrix") == 0 || strcmp(name, "Time") == 0)
+		if (strcmp(name, "model_matrix") == 0 || strcmp(name, "view_matrix") == 0 || strcmp(name, "proj_matrix") == 0 
+			|| strcmp(name, "Time") == 0 || strcmp(name, "viewPos") == 0)
 			continue;
 
 		Uniform* uniform;

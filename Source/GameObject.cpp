@@ -182,6 +182,22 @@ GameObject* GameObject::GetChild(uint index) const
 	return children[index];
 }
 
+bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) const
+{
+	bool ret = false;
+
+	for (int i = 0; i < children.size() && !ret; ++i)
+	{
+		if (target == children[i])
+			return true;
+
+		if (untilTheEnd)
+			ret = children[i]->IsChild(target, true);
+	}
+
+	return ret;
+}
+
 Component* GameObject::AddComponent(ComponentType type)
 {
 	Component* newComponent;

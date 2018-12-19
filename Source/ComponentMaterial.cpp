@@ -106,9 +106,9 @@ void ComponentMaterial::OnUniqueEditor()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_PROGRAM"))
 		{
 			ResourceShaderProgram* payload_n = *(ResourceShaderProgram**)payload->Data;
-			ReleaseUniforms();
 			if (payload_n->isValid)
 			{
+				ReleaseUniforms();
 				payload_n->GetUniforms(uniforms);
 				shaderProgramUUID = payload_n->GetUUID();
 			}
@@ -197,7 +197,10 @@ void ComponentMaterial::OnUniqueEditor()
 	}
 
 	if (ImGui::Button("USE DEFAULT SHADER"))
+	{
 		shaderProgramUUID = 0;
+		ReleaseUniforms();
+	}
 
 	// Textures
 	ImGui::Spacing();

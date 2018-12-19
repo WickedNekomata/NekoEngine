@@ -181,12 +181,17 @@ void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target) const
 		{
 			GameObject* payload_n = *(GameObject**)payload->Data;
 
-			math::float4x4 globalMatrix = payload_n->transform->GetGlobalMatrix();
-			payload_n->GetParent()->EraseChild(payload_n);
-			target->AddChild(payload_n);
+			if (!payload_n->IsChild(target, true))
+			{
+				math::float4x4 globalMatrix = payload_n->transform->GetGlobalMatrix();
+				payload_n->GetParent()->EraseChild(payload_n);
+				target->AddChild(payload_n);
 
-			payload_n->SetParent(target);
-			payload_n->transform->SetMatrixFromGlobal(globalMatrix);
+				payload_n->SetParent(target);
+				payload_n->transform->SetMatrixFromGlobal(globalMatrix);
+			}
+			else
+				CONSOLE_LOG("ERROR: Invalid Target. Don't be so badass ;)");
 		}
 		ImGui::EndDragDropTarget();
 	}

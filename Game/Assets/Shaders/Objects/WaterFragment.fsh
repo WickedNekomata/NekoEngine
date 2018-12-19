@@ -12,6 +12,7 @@ vec3 ambient;
 vec3 diffuse;
 vec3 specular;
 float shininess;
+sampler2D ourTexture_0;
 };
 
 struct Light {
@@ -22,19 +23,20 @@ vec3 diffuse;
 vec3 specular;
 };
 
-uniform float Time;
 uniform vec3 viewPos;
 uniform Light light;
-
-uniform float Time;
-uniform vec3 viewPos;
-uniform Light light;
+uniform Material material;
 
 void main()
 {
+FragColor = texture(material.ourTexture_0, fTexCoord);
+}
+/*
+void main()
+{
 Material material;
-material.ambient = vec3(1.0,0.5,0.31);
-material.diffuse = vec3(1.0,0.5,0.31);
+material.ambient = vec3(0.0,0.0,1.0);
+material.diffuse = vec3(0.0,0.0,1.0);
 material.specular = vec3(0.5,0.5,0.5);
 material.shininess = 1;
 
@@ -42,7 +44,7 @@ material.shininess = 1;
 vec3 ambient = light.ambient * material.ambient;
 
 // Diffuse
-vec3 lightDir = -normalize(light.direction);
+vec3 lightDir = normalize(-light.direction);
 float diff = max(dot(fNormal, lightDir), 0.0);
 vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
@@ -54,4 +56,4 @@ vec3 specular = light.specular * (spec * material.specular);
 
 vec3 result = ambient + diffuse + specular;
 FragColor = vec4(result, 1.0);
-}
+}*/

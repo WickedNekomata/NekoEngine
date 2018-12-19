@@ -5,6 +5,7 @@
 #include "ModuleScene.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleResourceManager.h"
+#include "ModuleTimeManager.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "DebugDrawer.h"
@@ -704,7 +705,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
 	location = glGetUniformLocation(shaderProgram, "Time");
-	glUniform1f(location, App->GetDt());
+	glUniform1f(location, App->timeManager->GetRealTime());
 
 	// TODO: store locations at Uniform class. This is just a first approach :)
 

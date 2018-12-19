@@ -24,28 +24,32 @@
 "uniform mat4 view_matrix;\n" \
 "uniform mat4 proj_matrix;\n" \
 "\n" \
-"out vec4 ourColor;\n" \
-"out vec2 ourTexCoord;\n" \
+"out vec3 fPosition;\n" \
+"out vec3 fNormal;\n" \
+"out vec4 fColor;\n" \
+"out vec2 fTexCoord;\n" \
 "\n" \
 "void main()\n" \
 "{\n" \
-"    ourTexCoord = texCoord;\n" \
-"    ourColor = color;\n" \
+"    fTexCoord = texCoord;\n" \
+"    fColor = color;\n" \
 "    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0f);\n" \
 "}\n"
 
 #define fShaderTemplate \
 "#version 330 core\n" \
 "\n" \
-"in vec4 ourColor;\n" \
-"in vec2 ourTexCoord;\n" \
+"in vec3 fPosition;\n" \
+"in vec3 fNormal;\n" \
+"in vec4 fColor;\n" \
+"in vec2 fTexCoord;\n" \
 "out vec4 FragColor;\n" \
 "\n" \
 "uniform sampler2D ourTexture_0;\n" \
 "\n" \
 "void main()\n" \
 "{\n" \
-"     FragColor = texture(ourTexture_0, ourTexCoord);\n" \
+"     FragColor = texture(ourTexture_0, fTexCoord);\n" \
 "}\n"
 
 // TODO: move operation to ignore translation at view to renderer and do it on cpu. we wanna do it once

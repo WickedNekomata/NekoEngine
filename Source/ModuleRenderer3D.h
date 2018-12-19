@@ -15,12 +15,19 @@
 
 #include <vector>
 
-#define MAX_LIGHTS 8
-
 class GameObject;
 class ComponentMesh;
 class ComponentCamera;
 class QuadtreeNode;
+
+struct DirectionalLight
+{
+	math::float3 direction;
+
+	math::float3 ambient;
+	math::float3 diffuse;
+	math::float3 specular;
+};
 
 class ModuleRenderer3D : public Module
 {
@@ -98,7 +105,8 @@ private:
 	uint maxTextureUnits = 0;
 
 public:
-	// cubemap
+
+	// Cubemap
 	GLuint cubemapTexture = 0;
 	GLuint cubemapVBO = 0;
 	GLuint cubemapVAO = 0;
@@ -107,7 +115,7 @@ public:
 
 	uint rendererTexture_id = 0;
 
-	Light lights[MAX_LIGHTS];
+	DirectionalLight directionalLight;
 	SDL_GLContext context;
 	math::float3x3 NormalMatrix;
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;

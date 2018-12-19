@@ -105,21 +105,10 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 			ret = false;
 		}
 
-		GLfloat LightModelAmbient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
-
-		lights[0].ref = GL_LIGHT0;
-		lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
-		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
-		lights[0].SetPos(0.0f, 0.0f, 2.5f);
-		lights[0].Init();
-		lights[0].Active(true);
-
-		GLfloat MaterialAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
-
-		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
+		directionalLight.direction = math::float3(-0.2f, -1.0f, -0.3f);
+		directionalLight.ambient = math::float3(0.25f, 0.25f, 0.25f);
+		directionalLight.diffuse = math::float3(0.5f, 0.5f, 0.5f);
+		directionalLight.specular = math::float3(1.0f, 1.0f, 1.0f);
 
 		// GL capabilities
 		glEnable(GL_DEPTH_TEST);
@@ -189,12 +178,6 @@ update_status ModuleRenderer3D::PreUpdate()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(currentCamera->GetOpenGLViewMatrix().ptr());
-
-	// Light 0 on cam pos
-	lights[0].SetPos(currentCamera->frustum.pos.x, currentCamera->frustum.pos.y, currentCamera->frustum.pos.z);
-
-	for (uint i = 0; i < MAX_LIGHTS; ++i)
-		lights[i].Render();
 
 	return UPDATE_CONTINUE;
 }
@@ -708,10 +691,20 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
 	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
 	glUniformMatrix4fv(location, 1, GL_FALSE, proj_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "Time");
-	glUniform1f(location, App->GetDt());
+
+	location = glGetUniformLocation(shaderProgram, "light.direction");
+	glUniform3fv(location, 1, directionalLight.direction.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.ambient");
+	glUniform3fv(location, 1, directionalLight.ambient.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.diffuse");
+	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.specular");
+	glUniform3fv(location, 1, directionalLight.specular.ptr());
+
 	location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
+	location = glGetUniformLocation(shaderProgram, "Time");
+	glUniform1f(location, App->GetDt());
 
 	// TODO: store locations at Uniform class. This is just a first approach :)
 

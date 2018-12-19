@@ -213,7 +213,8 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 	{
 		glGetActiveUniform(shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
 
-		if (strcmp(name, "model_matrix") == 0 || strcmp(name, "view_matrix") == 0 || strcmp(name, "proj_matrix") == 0 
+		if (strcmp(name, "model_matrix") == 0 || strcmp(name, "view_matrix") == 0 || strcmp(name, "proj_matrix") == 0
+			|| strcmp(name, "light.direction") == 0 || strcmp(name, "light.ambient") == 0 || strcmp(name, "light.diffuse") == 0 || strcmp(name, "light.specular") == 0
 			|| strcmp(name, "Time") == 0 || strcmp(name, "viewPos") == 0)
 			continue;
 

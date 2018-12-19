@@ -43,6 +43,8 @@ ComponentMaterial::~ComponentMaterial()
 
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
+
+	ReleaseUniforms();
 }
 
 void ComponentMaterial::Update() {}
@@ -66,6 +68,14 @@ void ComponentMaterial::ReleaseUniforms()
 		RELEASE(uniforms[i]);
 
 	uniforms.clear();
+}
+
+void ComponentMaterial::UpdateUniforms()
+{
+	ReleaseUniforms();
+	const ResourceShaderProgram* program = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
+	if (program != nullptr)
+		program->GetUniforms(uniforms);
 }
 
 void ComponentMaterial::OnUniqueEditor()

@@ -107,7 +107,7 @@ void GameObject::OnSystemEvent(System_Event event)
 		RecursiveRecalculateBoundingBoxes();
 		break;
 	case System_Event_Type::ShaderProgramChanged:
-		// TODO Guillem
+		materialRenderer->UpdateUniforms();
 		break;
 	}
 }

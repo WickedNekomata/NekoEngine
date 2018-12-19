@@ -677,8 +677,8 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 
-		char ourTexturei[13] = "ourTexture_i";
-		ourTexturei[11] = i + '0';
+		char ourTexturei[] = "material.ourTexture_i";
+		ourTexturei[20] = i + '0';
 		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
 	}
 

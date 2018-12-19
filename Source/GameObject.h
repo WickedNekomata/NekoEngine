@@ -42,6 +42,7 @@ public:
 	bool HasChildren() const;
 	uint GetChildrenLength() const;
 	GameObject* GetChild(uint index) const;
+	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
 	Component* AddComponent(ComponentType type);
 	void MarkToDeleteComponent(uint index);

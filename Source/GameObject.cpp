@@ -106,6 +106,9 @@ void GameObject::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;
+	case System_Event_Type::ShaderProgramChanged:
+		// TODO Guillem
+		break;
 	}
 }
 

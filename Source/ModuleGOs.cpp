@@ -10,8 +10,10 @@
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleScene.h"
+#include "ModuleResourceManager.h"
 
 #include "Resource.h"
+#include "ResourceShaderProgram.h"
 
 #include "parson\parson.h"
 #include "Brofiler\Brofiler.h"
@@ -103,10 +105,27 @@ bool ModuleGOs::CleanUp()
 
 void ModuleGOs::OnSystemEvent(System_Event event)
 {
-	for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+	switch (event.type)
 	{
-		if (event.goEvent.gameObject == *it)
-			(*it)->OnSystemEvent(event);
+	case System_Event_Type::RecalculateBBoxes:
+		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	case System_Event_Type::ShaderProgramChanged:
+		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		{
+			if ((*it)->materialRenderer != nullptr)
+			{
+				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource((*it)->materialRenderer->shaderProgramUUID);
+				
+				if (shaderProgram != nullptr && shaderProgram->shaderProgram == event.shaderEvent.shader)
+					(*it)->OnSystemEvent(event);
+			}
+		}
+		break;
 	}
 }
 

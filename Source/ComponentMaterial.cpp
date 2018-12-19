@@ -381,7 +381,6 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 		case Uniforms_Values::FloatU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "Value", uniforms[i]->floatU.value);
 			break;
 		case Uniforms_Values::IntU_value:
@@ -393,14 +392,12 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 		case Uniforms_Values::Vec2FU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec2FU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec2FU.value.y);
 			break;
 		case Uniforms_Values::Vec3FU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "Value", uniforms[i]->intU.value);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec3FU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec3FU.value.y);
@@ -409,7 +406,6 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 		case Uniforms_Values::Vec4FU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec4FU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec4FU.value.y);
 			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec4FU.value.z);
@@ -418,14 +414,12 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 		case Uniforms_Values::Vec2IU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec2IU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec2IU.value.y);
 			break;
 		case Uniforms_Values::Vec3IU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec3IU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec3IU.value.y);
 			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec3IU.value.z);
@@ -433,7 +427,6 @@ void ComponentMaterial::OnInternalSave(JSON_Object* file)
 		case Uniforms_Values::Vec4IU_value:
 			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
 			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
 			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec4IU.value.x);
 			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec4IU.value.y);
 			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec4IU.value.z);
@@ -513,7 +506,7 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 
 		for (int j = 0; j < uniforms.size(); ++j)
 		{
-			if (strcpy(name, uniforms[j]->common.name) == 0)
+			if (strcmp(name, uniforms[j]->common.name) == 0)
 			{
 				int type = json_object_get_number(uniformObject, "Type");
 
@@ -522,26 +515,22 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 				case Uniforms_Values::FloatU_value:
 					uniforms[j]->floatU.type = type;
 					strcpy_s(uniforms[j]->floatU.name, name);
-					uniforms[j]->floatU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->floatU.value = json_object_get_number(uniformObject, "Value");
 					break;
 				case Uniforms_Values::IntU_value:
 					uniforms[j]->intU.type = type;
 					strcpy_s(uniforms[j]->intU.name, name);
-					uniforms[j]->intU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->intU.value = json_object_get_number(uniformObject, "Value");
 					break;
 				case Uniforms_Values::Vec2FU_value:
 					uniforms[j]->vec2FU.type = type;
 					strcpy_s(uniforms[j]->vec2FU.name, name);
-					uniforms[j]->vec2FU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec2FU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec2FU.value.y = json_object_get_number(uniformObject, "ValueY");
 					break;
 				case Uniforms_Values::Vec3FU_value:
 					uniforms[j]->vec3FU.type = type;
 					strcpy_s(uniforms[j]->vec3FU.name, name);
-					uniforms[j]->vec3FU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec3FU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec3FU.value.y = json_object_get_number(uniformObject, "ValueY");
 					uniforms[j]->vec3FU.value.z = json_object_get_number(uniformObject, "ValueZ");
@@ -549,7 +538,6 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 				case Uniforms_Values::Vec4FU_value:
 					uniforms[j]->vec4FU.type = type;
 					strcpy_s(uniforms[j]->vec4FU.name, name);
-					uniforms[j]->vec4FU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec4FU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec4FU.value.y = json_object_get_number(uniformObject, "ValueY");
 					uniforms[j]->vec4FU.value.z = json_object_get_number(uniformObject, "ValueZ");
@@ -558,14 +546,12 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 				case Uniforms_Values::Vec2IU_value:
 					uniforms[j]->vec2IU.type = type;
 					strcpy_s(uniforms[j]->vec2IU.name, name);
-					uniforms[j]->vec2IU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec2IU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec2IU.value.y = json_object_get_number(uniformObject, "ValueY");
 					break;
 				case Uniforms_Values::Vec3IU_value:
 					uniforms[j]->vec3IU.type = type;
 					strcpy_s(uniforms[j]->vec3IU.name, name);
-					uniforms[j]->vec3IU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec3IU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec3IU.value.y = json_object_get_number(uniformObject, "ValueY");
 					uniforms[j]->vec3IU.value.z = json_object_get_number(uniformObject, "ValueZ");
@@ -573,7 +559,6 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 				case Uniforms_Values::Vec4IU_value:
 					uniforms[j]->vec4IU.type = type;
 					strcpy_s(uniforms[j]->vec4IU.name, name);
-					uniforms[j]->vec4IU.location = json_object_get_number(uniformObject, "Location");
 					uniforms[j]->vec4IU.value.x = json_object_get_number(uniformObject, "ValueX");
 					uniforms[j]->vec4IU.value.y = json_object_get_number(uniformObject, "ValueY");
 					uniforms[j]->vec4IU.value.z = json_object_get_number(uniformObject, "ValueZ");

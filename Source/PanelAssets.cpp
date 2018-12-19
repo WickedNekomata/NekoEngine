@@ -333,7 +333,7 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 				break;
 			}
 
-			if (App->shaderImporter->CreateShaderObject(shaderFile))
+			if (App->shaderImporter->CreateShaderObject(shaderFile, shaderType))
 			{
 				App->res->ImportFile(shaderFile.data());
 

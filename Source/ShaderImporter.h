@@ -16,13 +16,14 @@
 "#version 330 core\n" \
 "\n" \
 "layout (location = 0) in vec3 position;\n" \
-"layout (location = 1) in vec4 normals;\n" \
+"layout (location = 1) in vec3 normal;\n" \
 "layout (location = 2) in vec4 color;\n" \
 "layout (location = 3) in vec2 texCoord;\n" \
 "\n" \
 "uniform mat4 model_matrix;\n" \
 "uniform mat4 view_matrix;\n" \
 "uniform mat4 proj_matrix;\n" \
+"uniform mat4 normal_matrix;\n" \
 "\n" \
 "out vec4 ourColor;\n" \
 "out vec2 ourTexCoord;\n" \
@@ -91,7 +92,7 @@ public:
 	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const { return true; }
 
-	bool CreateShaderObject(std::string& file) const;
+	bool CreateShaderObject(std::string& file, ShaderType shaderType) const;
 
 	// Shader Object (save)
 	bool SaveShaderObject(ResourceShaderObject* shaderObject, std::string& outputFile, bool overwrite = false) const;

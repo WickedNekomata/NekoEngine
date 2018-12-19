@@ -97,13 +97,13 @@ void ComponentMaterial::OnUniqueEditor()
 	for (int i = 0, n = uniforms.size(); i < n; ++i)
 	{
 		Uniform* uniform = uniforms[i];
-		ImGui::Text(uniform->name);
+		ImGui::Text(uniform->common.name);
 		ImGui::SameLine();
 
 		char itemName[] = { "##uniformX" };
 		itemName[10] = i;
 
-		switch (uniform->type)
+		switch (uniform->common.type)
 		{
 		case Uniforms_Values::FloatU_value:
 			ImGui::InputFloat(itemName, &uniform->floatU.value);
@@ -115,36 +115,54 @@ void ComponentMaterial::OnUniqueEditor()
 		{
 			float v[] = { uniform->vec2FU.value.x, uniform->vec2FU.value.y };
 			ImGui::InputFloat2(itemName, v);
+			uniform->vec2FU.value.x = v[0];
+			uniform->vec2FU.value.y = v[1];
 			break;
 		}
 		case Uniforms_Values::Vec3FU_value:
 		{
 			float v[] = { uniform->vec3FU.value.x, uniform->vec3FU.value.y , uniform->vec3FU.value.z };
 			ImGui::InputFloat3(itemName, v);
+			uniform->vec3FU.value.x = v[0];
+			uniform->vec3FU.value.y = v[1];
+			uniform->vec3FU.value.z = v[2];
 			break;
 		}
 		case Uniforms_Values::Vec4FU_value:
 		{
 			float v[] = { uniform->vec4FU.value.x, uniform->vec4FU.value.y , uniform->vec4FU.value.z, uniform->vec4FU.value.w };
 			ImGui::InputFloat4(itemName, v);
+			uniform->vec4FU.value.x = v[0];
+			uniform->vec4FU.value.y = v[1];
+			uniform->vec4FU.value.z = v[2];
+			uniform->vec4FU.value.w = v[3];
 			break;
 		}
 		case Uniforms_Values::Vec2IU_value:
 		{
 			int v[] = { uniform->vec2IU.value.x, uniform->vec2IU.value.y };
 			ImGui::InputInt2(itemName, v);
+			uniform->vec2IU.value.x = v[0];
+			uniform->vec2IU.value.y = v[1];
 			break;
 		}
 		case Uniforms_Values::Vec3IU_value:
 		{
 			int v[] = { uniform->vec3IU.value.x, uniform->vec3IU.value.y , uniform->vec3IU.value.z };
 			ImGui::InputInt3(itemName, v);
+			uniform->vec3IU.value.x = v[0];
+			uniform->vec3IU.value.y = v[1];
+			uniform->vec3IU.value.z = v[2];
 			break;
 		}
 		case Uniforms_Values::Vec4IU_value:
 		{
 			int v[] = { uniform->vec4IU.value.x, uniform->vec4IU.value.y , uniform->vec4IU.value.z, uniform->vec4IU.value.w };
 			ImGui::InputInt4(itemName, v);
+			uniform->vec4IU.value.x = v[0];
+			uniform->vec4IU.value.y = v[1];
+			uniform->vec4IU.value.z = v[2];
+			uniform->vec4IU.value.w = v[3];
 			break;
 		}
 		}

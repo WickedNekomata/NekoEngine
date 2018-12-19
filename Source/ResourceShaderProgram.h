@@ -46,7 +46,6 @@ private:
 private:
 
 	std::list<ResourceShaderObject*>	shaderObjects;
-	std::vector<Uniform*>				uniforms;
 
 public:
 

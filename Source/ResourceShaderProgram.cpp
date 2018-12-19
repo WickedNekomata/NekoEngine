@@ -3,6 +3,8 @@
 #include "Application.h"
 #include "ShaderImporter.h"
 
+#include <assert.h>
+
 ResourceShaderProgram::ResourceShaderProgram(ResourceType type, uint uuid) : Resource(type, uuid) {}
 
 ResourceShaderProgram::~ResourceShaderProgram()
@@ -56,64 +58,6 @@ bool ResourceShaderProgram::Link(bool comment)
 	{
 		DeleteShaderProgram(shaderProgram);
 		ret = false;
-	}
-	else
-	{
-		int count;
-		glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
-		uniforms.reserve(count);
-
-		GLuint program;
-		GLuint index;
-		GLsizei length;
-		GLint size;
-		GLenum type;
-		GLchar name[DEFAULT_BUF_SIZE];
-
-		for (int i = 0; i < count; ++i)
-		{
-			Uniform* uniform = new Uniform();			
-			glGetActiveUniform(shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
-
-			switch (type)
-			{
-			case Uniforms_Values::FloatU_value:
-				strcpy_s(uniform->floatU.name, name);
-				uniform->floatU.type = type;
-				break;
-			case Uniforms_Values::IntU_value:
-				strcpy_s(uniform->intU.name, name);
-				uniform->intU.type = type;
-				break;
-			case Uniforms_Values::Vec2FU_value:
-				strcpy_s(uniform->vec2FU.name, name);
-				uniform->vec2FU.type = type;
-				break;
-			case Uniforms_Values::Vec3FU_value:
-				strcpy_s(uniform->vec3FU.name, name);
-				uniform->vec3FU.type = type;
-				break;
-			case Uniforms_Values::Vec4FU_value:
-				strcpy_s(uniform->vec4FU.name, name);
-				uniform->vec4FU.type = type;
-				break;
-			case Uniforms_Values::Vec2IU_value:
-				strcpy_s(uniform->vec2IU.name, name);
-				uniform->vec2IU.type = type;
-				break;
-			case Uniforms_Values::Vec3IU_value:
-				strcpy_s(uniform->vec3IU.name, name);
-				uniform->vec3IU.type = type;
-				break;
-			case Uniforms_Values::Vec4IU_value:
-				strcpy_s(uniform->vec4IU.name, name);
-				uniform->vec4IU.type = type;
-				break;
-			}
-			
-			uniforms.push_back(uniform);
-		}
-		uniforms.shrink_to_fit();
 	}
 
 	return ret;
@@ -247,9 +191,90 @@ bool ResourceShaderProgram::IsProgramLinked(bool comment) const
 	return success;
 }
 
-void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& result) const
+void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 {
-	result = uniforms;
+	if (shaderProgram == 0)
+	{
+		assert(shaderProgram != 0 && "Unitialized shader program");
+		return;
+	}
+
+	int count;
+	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
+	uniforms.reserve(count);
+
+	GLuint program;
+	GLuint index;
+	GLsizei length;
+	GLint size;
+	GLenum type;
+	GLchar name[DEFAULT_BUF_SIZE];
+
+	for (int i = 0; i < count; ++i)
+	{
+		glGetActiveUniform(shaderProgram, (GLuint)i, DEFAULT_BUF_SIZE, &length, &size, &type, name);
+
+		if (strcmp(name, "model_matrix") == 0 || strcmp(name, "view_matrix") == 0 || strcmp(name, "proj_matrix") == 0)
+			continue;
+
+		Uniform* uniform;
+		switch (type)
+		{
+		case Uniforms_Values::FloatU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->floatU.name, name);
+			uniform->floatU.type = type;
+			uniform->floatU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::IntU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->intU.name, name);
+			uniform->intU.type = type;
+			uniform->intU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec2FU.name, name);
+			uniform->vec2FU.type = type;
+			uniform->vec2FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec3FU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec3FU.name, name);
+			uniform->vec3FU.type = type;
+			uniform->vec3FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec4FU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec4FU.name, name);
+			uniform->vec4FU.type = type;
+			uniform->vec4FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec2IU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec2IU.name, name);
+			uniform->vec2IU.type = type;
+			uniform->vec2IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec3IU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec3IU.name, name);
+			uniform->vec3IU.type = type;
+			uniform->vec3IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		case Uniforms_Values::Vec4IU_value:
+			uniform = new Uniform();
+			strcpy_s(uniform->vec4IU.name, name);
+			uniform->vec4IU.type = type;
+			uniform->vec4IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			break;
+		default:
+			continue;
+			break;
+		}
+		uniforms.push_back(uniform);
+	}
+	uniforms.shrink_to_fit();
 }
 
 bool ResourceShaderProgram::LoadInMemory()

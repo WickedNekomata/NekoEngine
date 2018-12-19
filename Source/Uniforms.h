@@ -13,15 +13,17 @@ enum Uniforms_Values { FloatU_value = 0x1406,	  Vec2FU_value = 0x8B50,	 Vec3FU_v
 
 struct IntU
 {
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	uint32_t	value;
 };
 
 struct FloatU
 {
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	float		value;
 };
 
@@ -33,8 +35,9 @@ struct Vec2FU
 		float y;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecF2		value;
 };
 
@@ -47,8 +50,9 @@ struct Vec3FU
 		float z;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecF3		value;
 };
 
@@ -62,8 +66,9 @@ struct Vec4FU
 		float w;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecF4		value;
 };
 
@@ -71,12 +76,13 @@ struct Vec2IU
 {
 	struct VecI2
 	{
-		int x;
-		int y;
+		uint32_t x;
+		uint32_t y;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecI2		value;
 };
 
@@ -84,13 +90,14 @@ struct Vec3IU
 {
 	struct VecI3
 	{
-		int x;
-		int y;
-		int z;
+		uint32_t x;
+		uint32_t y;
+		uint32_t z;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecI3		value;
 };
 
@@ -98,23 +105,30 @@ struct Vec4IU
 {
 	struct VecI4
 	{
-		int x;
-		int y;
-		int z;
-		int w;
+		uint32_t x;
+		uint32_t y;
+		uint32_t z;
+		uint32_t w;
 	};
 
+	uint32_t	type;
 	char		name[DEFAULT_BUF_SIZE];
-	int			type;
+	uint32_t	location;
 	VecI4		value;
 };
 
 /////////////////////////////////////////////////////////
 
+struct CommonData
+{
+	uint32_t	type;
+	char		name[DEFAULT_BUF_SIZE];
+	uint32_t	location;
+};
+
 union Uniform
 {
-	char		name[DEFAULT_BUF_SIZE];
-	uint32_t	type;
+	CommonData	common;
 
 	IntU		intU;
 	FloatU		floatU;

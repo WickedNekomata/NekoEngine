@@ -6,7 +6,10 @@ layout (location = 2) in vec4 color;
 layout (location = 3) in vec2 texCoord;
 
 uniform mat4 model_matrix;
+uniform mat4 mvp_matrix;
+uniform mat3 normal_matrix;
 uniform mat4 view_matrix;
+uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 
 out vec3 fPosition;
@@ -16,11 +19,10 @@ out vec2 fTexCoord;
 
 void main()
 {    
-    fPosition = vec3(model_matrix * vec4(position, 1.0));
-    mat3 normal_matrix = mat3(transpose(inverse(model_matrix)));   
+    fPosition = vec3(model_matrix * vec4(position, 1.0));  
     fNormal = normalize(normal_matrix * normal);
     fColor = color;
     fTexCoord = texCoord;
     
-    gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0);
+    gl_Position = mvp_matrix * vec4(position, 1.0);
 }

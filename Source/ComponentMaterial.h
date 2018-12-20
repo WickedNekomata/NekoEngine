@@ -14,6 +14,8 @@
 
 #include <vector>
 
+#define MAX_TEXTURES 3 // Ambient, Diffuse, Specular
+
 class ResourceShaderProgram;
 
 struct MaterialResource
@@ -54,11 +56,10 @@ private:
 public:
 
 	GLuint shaderProgramUUID = 0;
-
-	std::vector<MaterialResource> res;
+	std::vector<Uniform*> uniforms;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
 
-	std::vector<Uniform*> uniforms;
+	std::vector<MaterialResource> res;
 };
 
 #endif

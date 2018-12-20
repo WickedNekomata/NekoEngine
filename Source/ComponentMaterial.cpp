@@ -16,11 +16,16 @@
 
 ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::MaterialComponent) 
 {
-	res.reserve(App->renderer3D->GetMaxTextureUnits());
+	if (MAX_TEXTURES <= App->renderer3D->GetMaxTextureUnits())
+	{
+		res.reserve(MAX_TEXTURES);
 
-	// Default texture (0)
-	MaterialResource texture;
-	res.push_back(texture);
+		for (uint i = 0; i < MAX_TEXTURES; ++i)
+		{
+			MaterialResource materialResource;
+			res.push_back(materialResource);
+		}
+	}
 }
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::MaterialComponent)
@@ -54,7 +59,8 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 	if (res[position].res != 0)
 		App->res->SetAsUnused(res[position].res);
 
-	if (res_uuid != 0) {
+	if (res_uuid != 0) 
+	{
 		if (App->res->SetAsUsed(res_uuid) == -1)
 			return;
 	}
@@ -64,7 +70,7 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 
 void ComponentMaterial::ReleaseUniforms()
 {
-	for (int i = 0; i < uniforms.size(); ++i)
+	for (uint i = 0; i < uniforms.size(); ++i)
 		RELEASE(uniforms[i]);
 
 	uniforms.clear();
@@ -118,7 +124,7 @@ void ComponentMaterial::OnUniqueEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	for (int i = 0, n = uniforms.size(); i < n; ++i)
+	for (uint i = 0, n = uniforms.size(); i < n; ++i)
 	{
 		if (i == 0)
 			ImGui::Text("Active Uniforms");
@@ -209,7 +215,18 @@ void ComponentMaterial::OnUniqueEditor()
 
 	for (uint i = 0; i < res.size(); ++i)
 	{
-		ImGui::Text("Texture %i", i + 1);
+		switch (i)
+		{
+			case 0:
+				ImGui::Text("Ambient");
+				break;
+			case 1:
+				ImGui::Text("Diffuse");
+				break;
+			case 2:
+				ImGui::Text("Specular");
+				break;
+		}
 		ImGui::SameLine();
 
 		uint id = 0;
@@ -264,17 +281,6 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::EndDragDropTarget();
 		}
 
-		bool minusClicked = false;
-
-		if (res.size() > 1)
-		{
-			ImGui::SameLine();
-
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "-##%i", i);
-			if (ImGui::Button(itemName))
-				minusClicked = true;
-		}
-
 		ImGui::Image((void*)(intptr_t)id, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 
@@ -284,7 +290,7 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::SetTooltip("Edit Texture Matrix");
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Edit Matrix##%i", i);
-		if (ImGui::BeginPopupContextItem(itemName, 0)) 
+		if (ImGui::BeginPopupContextItem(itemName, 0))
 		{
 			EditCurrentResMatrixByIndex(i);
 			ImGui::EndPopup();
@@ -292,12 +298,6 @@ void ComponentMaterial::OnUniqueEditor()
 
 		ImGui::TextColored(BLUE, "%u x %u", width, height);
 		ImGui::Spacing();
-
-		if (minusClicked)
-		{
-			SetResource(0, i);
-			res.erase(res.begin() + i);
-		}
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE DEFAULT TEXTURE##%i", i);
 		if (ImGui::Button(itemName))
@@ -311,15 +311,6 @@ void ComponentMaterial::OnUniqueEditor()
 		{
 			SetResource(0, i);
 			res[i].checkers = true;
-		}
-	}
-
-	if (res.size() < App->renderer3D->GetMaxTextureUnits())
-	{
-		if (ImGui::Button("+")) 
-		{
-			MaterialResource newRes;
-			res.push_back(newRes);
 		}
 	}
 #endif

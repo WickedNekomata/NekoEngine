@@ -678,19 +678,43 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 
-		char ourTexturei[] = "material.ourTexture_i";
-		ourTexturei[20] = i + '0';
-		glUniform1i(glGetUniformLocation(shaderProgram, ourTexturei), i);
+		switch (i)
+		{
+		case 0:
+			glUniform1i(glGetUniformLocation(shaderProgram, "ambient"), i);
+			break;
+		case 1:
+			glUniform1i(glGetUniformLocation(shaderProgram, "diffuse"), i);
+			break;
+		case 2:
+			glUniform1i(glGetUniformLocation(shaderProgram, "specular"), i);
+			break;
+		}
 	}
 
-	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
-	glUniformMatrix4fv(location, 1, GL_TRUE, model_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "view_matrix");
+	model_matrix = model_matrix.Transposed();
 	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
-	glUniformMatrix4fv(location, 1, GL_FALSE, view_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "proj_matrix");
 	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+
+	math::float4x4 mv_matrix = view_matrix * model_matrix;
+	math::float4x4 mvp_matrix = proj_matrix * mv_matrix;
+	math::float4x4 normal_matrix = model_matrix;
+	normal_matrix.Inverse();
+	normal_matrix.Transpose();
+
+	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+	location = glGetUniformLocation(shaderProgram, "view_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, view_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mv_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mv_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "proj_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, proj_matrix.ptr());
 
 	location = glGetUniformLocation(shaderProgram, "light.direction");

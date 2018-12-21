@@ -34,12 +34,12 @@ bool ModuleResourceManager::Start()
 {
 #ifndef GAMEMODE
 	std::string path = DIR_ASSETS;
-	RecursiveImportFilesFromDir(DIR_ASSETS, path);
+	RecursiveImportFilesFromAssets(DIR_ASSETS, path);
 
 	// Remove any entries in Library that are not being used by the resources
 	path.clear();
 	path.append(DIR_LIBRARY);
-	RecursiveDeleteUnusedFilesFromDir(DIR_LIBRARY, path);
+	RecursiveDeleteUnusedFilesFromLibrary(DIR_LIBRARY, path);
 #else
 	std::string path = DIR_LIBRARY;
 	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
@@ -171,88 +171,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 }
 
-// Imports all files found in a directory (except scenes and metas)
-void ModuleResourceManager::RecursiveImportFilesFromDir(const char* dir, std::string& path)
-{
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return;
-	}
-
-	const char** files = App->fs->GetFilesFromDir(path.data());
-	const char** it;
-
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
-
-		if (App->fs->IsDirectory(path.data()))
-			RecursiveImportFilesFromDir(*it, path);
-		else
-		{
-			std::string extension;
-			App->fs->GetExtension(*it, extension);
-
-			// Ignore scenes and metas
-			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
-				ImportFile(path.data());
-		}
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
-	}
-}
-
-// Deletes all files found in a directory (excepte scenes and metas) that are not being used by any resource
-// Normally called to delete unused files in Library
-void ModuleResourceManager::RecursiveDeleteUnusedFilesFromDir(const char* dir, std::string& path) const
-{
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return;
-	}
-
-	const char** files = App->fs->GetFilesFromDir(path.data());
-	const char** it;
-
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
-
-		if (App->fs->IsDirectory(path.data()))
-			RecursiveDeleteUnusedFilesFromDir(*it, path);
-		else
-		{
-			std::string extension;
-			App->fs->GetExtension(*it, extension);
-
-			// Ignore scenes and metas
-			// If the file has no associated resource, then it is unused and must be deleted
-			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
-			{
-				bool resources = false;
-
-				std::list<uint> UUIDs;
-				resources = FindResourcesByExportedFile(path.data(), UUIDs);
-				
-				if (!resources)
-					App->fs->DeleteFileOrDir(path.data());
-			}
-		}
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
-	}
-}
-
 void ModuleResourceManager::RecursiveImportFilesFromLibrary(const char* dir, std::string& path)
 {
 	if (dir == nullptr)
@@ -351,6 +269,88 @@ void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
 	else
 		resource->isValid = false;
 	*/
+}
+
+// Imports all files found in a directory (except scenes and metas)
+void ModuleResourceManager::RecursiveImportFilesFromAssets(const char* dir, std::string& path)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** it;
+
+	path.append("/");
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
+			RecursiveImportFilesFromAssets(*it, path);
+		else
+		{
+			std::string extension;
+			App->fs->GetExtension(*it, extension);
+
+			// Ignore scenes and metas
+			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
+				ImportFile(path.data());
+		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+	}
+}
+
+// Deletes all files found in a directory (excepte scenes and metas) that are not being used by any resource
+// Normally called to delete unused files in Library
+void ModuleResourceManager::RecursiveDeleteUnusedFilesFromLibrary(const char* dir, std::string& path) const
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** it;
+
+	path.append("/");
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
+			RecursiveDeleteUnusedFilesFromLibrary(*it, path);
+		else
+		{
+			std::string extension;
+			App->fs->GetExtension(*it, extension);
+
+			// Ignore scenes and metas
+			// If the file has no associated resource, then it is unused and must be deleted
+			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
+			{
+				bool resources = false;
+
+				std::list<uint> UUIDs;
+				resources = FindResourcesByExportedFile(path.data(), UUIDs);
+				
+				if (!resources)
+					App->fs->DeleteFileOrDir(path.data());
+			}
+		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+	}
 }
 
 // Determines how to import a file and calls ImportFile into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0

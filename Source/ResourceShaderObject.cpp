@@ -1,5 +1,8 @@
 #include "ResourceShaderObject.h"
 
+#include "ModuleGui.h"
+#include "PanelCodeEditor.h"
+
 #include "Application.h"
 #include "ModuleResourceManager.h"
 #include "ShaderImporter.h"
@@ -93,6 +96,48 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
 		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+
+		// GET ERROR LINE AND ERROR TEXT AND SEND IT TO THE CODE EDITOR
+		{
+			int line = 0;
+			char error[DEFAULT_BUF_SIZE];
+			memset(error, '\0', 100);
+			for (int i = 0, count = 0; i < strlen(infoLog); ++i)
+			{
+				if (infoLog[i] == ':')
+				{
+					count++;
+					if (count != 2 && count != 3)
+						continue;
+					for (int j = i + 1, x = 1; infoLog[j] != ':'; ++j, x *= 10)
+					{
+						if (count == 2)
+						{
+							if (infoLog[j] == '?')
+							{
+								line = 1;
+								break;
+							}
+							else if (infoLog[j] != '0')
+							{
+								if (infoLog[j] != '0')
+									line = (line * x) + infoLog[j] - '0';
+							}
+							else
+								line *= x;
+						}
+						else if (count == 3)
+						{
+							for (int j = i + 2, x = 0; infoLog[j] != '\n'; ++j, ++x)
+							{
+								error[x] = infoLog[j];
+							}
+						}
+					}
+				}
+			}
+			App->gui->panelCodeEditor->SetError(line, error);
+		}
 
 		DeleteShaderObject(shaderObject);
 	}

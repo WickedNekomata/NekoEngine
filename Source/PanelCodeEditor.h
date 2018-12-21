@@ -26,6 +26,8 @@ public:
 	void OpenShaderInCodeEditor(uint shaderObjectUUID);
 	uint GetShaderObjectUUID() const;
 
+	void SetError(int line, const char* error);
+
 private:
 
 	uint shaderObjectUUID = 0;

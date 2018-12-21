@@ -118,6 +118,14 @@ bool PanelCodeEditor::Draw()
 			ResourceShaderObject::DeleteShaderObject(tryCompile);
 		}
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Clean Errors"))
+		{
+			TextEditor::ErrorMarkers markers;
+			editor.SetErrorMarkers(markers);
+		}
+
 		switch (shaderObject->shaderType)
 		{
 		case ShaderType::VertexShaderType:
@@ -164,4 +172,14 @@ void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUUID)
 uint PanelCodeEditor::GetShaderObjectUUID() const
 {
 	return shaderObjectUUID;
+}
+
+void PanelCodeEditor::SetError(int line, const char* error)
+{
+	if (!enabled)
+		return;
+
+	TextEditor::ErrorMarkers markers;
+	markers[line] = error;
+	editor.SetErrorMarkers(markers);
 }

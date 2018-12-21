@@ -21,7 +21,7 @@ enum engine_states
 {
 	// Game
 	ENGINE_PLAY = 1,
-	ENGINE_WANTS_PLAY,
+	ENGINE_WANTS_EDITOR,
 	ENGINE_PAUSE,
 	ENGINE_WANTS_PAUSE,
 	ENGINE_STEP,
@@ -29,7 +29,7 @@ enum engine_states
 
 	// Editor
 	ENGINE_EDITOR,
-	ENGINE_WANTS_EDITOR
+	ENGINE_WANTS_PLAY
 };
 
 struct Module;

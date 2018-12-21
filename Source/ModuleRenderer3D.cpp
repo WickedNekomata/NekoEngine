@@ -729,7 +729,24 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
 	location = glGetUniformLocation(shaderProgram, "Time");
-	glUniform1f(location, App->timeManager->GetRealTime());
+	switch (App->GetEngineState())
+	{
+		// Game
+	case ENGINE_PLAY:
+	case ENGINE_PAUSE:
+	case ENGINE_WANTS_PAUSE:
+	case ENGINE_STEP:
+	case ENGINE_WANTS_STEP:
+	case ENGINE_WANTS_EDITOR:
+		glUniform1f(location, App->timeManager->GetTime());
+		break;
+
+		// Editor
+	case ENGINE_EDITOR:
+	case ENGINE_WANTS_PLAY:
+		glUniform1f(location, App->timeManager->GetRealTime());
+		break;
+	}
 
 	// TODO: store locations at Uniform class. This is just a first approach :)
 

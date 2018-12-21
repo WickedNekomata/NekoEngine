@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "ModuleScene.h"
 #include "ModuleInput.h"
+#include "ModuleGui.h"
 
 #include "SDL\include\SDL_scancode.h"
 #include "ModuleGOs.h"
@@ -96,7 +97,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
-				if (App->scene->selectedObject == child && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+				if (App->scene->selectedObject == child 
+					&& !App->gui->WantTextInput() && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 				{
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
 					App->GOs->DeleteGameObject(child);
@@ -125,7 +127,8 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				SetGameObjectDragAndDrop(child);			
 				AtGameObjectPopUp(child);
 
-				if (App->scene->selectedObject == child && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
+				if (App->scene->selectedObject == child
+					&& !App->gui->WantTextInput() && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 				{
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
 					App->GOs->DeleteGameObject(child);

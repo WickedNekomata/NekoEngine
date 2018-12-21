@@ -40,6 +40,15 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 
 	for (uint i = 0; i < 4; ++i)
 		color[i] = componentMaterial.color[i];
+
+	shaderProgramUUID = componentMaterial.shaderProgramUUID;
+
+	for (uint i = 0; i < componentMaterial.uniforms.size(); ++i)
+	{
+		Uniform* uniform = new Uniform();
+		memcpy_s(uniform, sizeof(Uniform), componentMaterial.uniforms[i], sizeof(Uniform));
+		uniforms.push_back(uniform);
+	}
 }
 
 ComponentMaterial::~ComponentMaterial()

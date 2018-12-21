@@ -70,9 +70,6 @@ bool PanelCodeEditor::Draw()
 		// Compile
 		if (ImGui::Button("Compile and Save"))
 		{
-			// Temporary store the parameters of the shader object
-			std::string sSource = shaderObject->GetSource();
-
 			// Update the parameters of the shader object
 			shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
 			if (!shaderObject->Compile())
@@ -98,25 +95,13 @@ bool PanelCodeEditor::Draw()
 				newEvent.type = System_Event_Type::RefreshFiles;
 				App->PushSystemEvent(newEvent);
 			}
-			else
-			{
-				// If the shader object cannot be saved, restore its parameters
-				shaderObject->SetSource(sSource.data(), sSource.length());
-				if (!shaderObject->Compile(false))
-					shaderObject->isValid = false;
-				else
-					shaderObject->isValid = true;
-			}
 		}
 
 		ImGui::SameLine();
 
 		// Try to compile
 		if (ImGui::Button("Compile"))
-		{
-			uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
-			ResourceShaderObject::DeleteShaderObject(tryCompile);
-		}
+			TryCompile();
 
 		ImGui::SameLine();
 
@@ -182,4 +167,19 @@ void PanelCodeEditor::SetError(int line, const char* error)
 	TextEditor::ErrorMarkers markers;
 	markers[line] = error;
 	editor.SetErrorMarkers(markers);
+}
+
+bool PanelCodeEditor::TryCompile() const
+{
+	bool ret = false;
+
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
+	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
+
+	if (tryCompile > 0)
+		ret = true;
+
+	ResourceShaderObject::DeleteShaderObject(tryCompile);
+
+	return ret;
 }

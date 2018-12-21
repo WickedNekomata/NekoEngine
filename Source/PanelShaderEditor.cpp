@@ -127,112 +127,90 @@ bool PanelShaderEditor::Draw()
 		// Link
 		if (ImGui::Button("Link and Save"))
 		{
-			std::list<ResourceShaderObject*> shaderObjects;
-			if (GetShaderObjects(shaderObjects))
+			if (TryLink())
 			{
-				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
-
-				// Existing shader program
-				if (shaderProgram != nullptr)
+				std::list<ResourceShaderObject*> shaderObjects;
+				if (GetShaderObjects(shaderObjects))
 				{
-					// Temporary store the parameters of the shader program
-					std::string sName = shaderProgram->GetName();
-					std::list<ResourceShaderObject*> sShaderObjects = shaderProgram->GetShaderObjects();
+					ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
 
-					// Update the parameters of the shader program
-					shaderProgram->SetName(shaderProgramName);
-					shaderProgram->SetShaderObjects(shaderObjects);
-					if (!shaderProgram->Link())
-						shaderProgram->isValid = false;
-					else
-						shaderProgram->isValid = true;
-
-					std::string output;
-					if (App->shaderImporter->SaveShaderProgram(shaderProgram, output, true))
+					// Existing shader program
+					if (shaderProgram != nullptr)
 					{
-						// Search for the meta associated to the file
-						char metaFile[DEFAULT_BUF_SIZE];
-						strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
-						strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-
-						// Update name in the meta
-						App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
-
-						// Update shader objects in the meta
-						App->shaderImporter->SetShaderObjectsToMeta(metaFile, shaderObjects);
-
-						// Update last modification time in the meta
-						int lastModTime = App->fs->GetLastModificationTime(output.data());
-						Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
-
-						App->fs->AddMeta(metaFile, lastModTime);
-
-						System_Event newEvent;
-						newEvent.type = System_Event_Type::RefreshFiles;
-						App->PushSystemEvent(newEvent);
-					}
-					else
-					{
-						// If the shader program cannot be saved, restore its parameters
-						shaderProgram->SetName(sName.data());
-						shaderProgram->SetShaderObjects(sShaderObjects);
+						// Update the parameters of the shader program
+						shaderProgram->SetName(shaderProgramName);
+						shaderProgram->SetShaderObjects(shaderObjects);
 						if (!shaderProgram->Link(false))
 							shaderProgram->isValid = false;
 						else
 							shaderProgram->isValid = true;
-					}
-				}
-				else
-				{
-					// Create a new resource for the shader program
-					shaderProgram = (ResourceShaderProgram*)App->res->CreateNewResource(ResourceType::ShaderProgramResource);
 
-					shaderProgram->SetName(shaderProgramName);
-					shaderProgram->SetShaderObjects(shaderObjects);
-					if (!shaderProgram->Link())
-						shaderProgram->isValid = false;
+						std::string output;
+						if (App->shaderImporter->SaveShaderProgram(shaderProgram, output, true))
+						{
+							// Search for the meta associated to the file
+							char metaFile[DEFAULT_BUF_SIZE];
+							strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
+							strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-					std::string output;
-					if (App->shaderImporter->SaveShaderProgram(shaderProgram, output))
-					{
-						shaderProgram->file = shaderProgram->exportedFile = output;
+							// Update name in the meta
+							App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
 
-						// Generate a new meta
-						output.clear();
-						App->shaderImporter->GenerateShaderProgramMeta(shaderProgram, output);
-						int lastModTime = App->fs->GetLastModificationTime(output.data());
-						App->fs->AddMeta(output.data(), lastModTime);
+							// Update shader objects in the meta
+							App->shaderImporter->SetShaderObjectsToMeta(metaFile, shaderObjects);
 
-						System_Event newEvent;
-						newEvent.type = System_Event_Type::RefreshFiles;
-						App->PushSystemEvent(newEvent);
+							// Update last modification time in the meta
+							int lastModTime = App->fs->GetLastModificationTime(output.data());
+							Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
+
+							App->fs->AddMeta(metaFile, lastModTime);
+
+							System_Event newEvent;
+							newEvent.type = System_Event_Type::RefreshFiles;
+							App->PushSystemEvent(newEvent);
+						}
 					}
 					else
 					{
-						// If the shader program cannot be saved, remove its resource
-						App->res->DestroyResource(shaderProgram->GetUUID());
-						shaderProgram = nullptr;
+						// Create a new resource for the shader program
+						shaderProgram = (ResourceShaderProgram*)App->res->CreateNewResource(ResourceType::ShaderProgramResource);
+						shaderProgramUUID = shaderProgram->GetUUID();
+
+						// Update the parameters of the shader program
+						shaderProgram->SetName(shaderProgramName);
+						shaderProgram->SetShaderObjects(shaderObjects);
+						if (!shaderProgram->Link(false))
+							shaderProgram->isValid = false;
+						else
+							shaderProgram->isValid = true;
+
+						std::string output;
+						if (App->shaderImporter->SaveShaderProgram(shaderProgram, output))
+						{
+							shaderProgram->file = shaderProgram->exportedFile = output;
+
+							// Generate a new meta
+							output.clear();
+							App->shaderImporter->GenerateShaderProgramMeta(shaderProgram, output);
+							int lastModTime = App->fs->GetLastModificationTime(output.data());
+							App->fs->AddMeta(output.data(), lastModTime);
+
+							System_Event newEvent;
+							newEvent.type = System_Event_Type::RefreshFiles;
+							App->PushSystemEvent(newEvent);
+						}
 					}
 				}
+				else
+					CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 			}
-			else
-				CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 		}
 
 		ImGui::SameLine();
 
 		// Try to link
 		if (ImGui::Button("Link"))
-		{
-			std::list<uint> shaderObjectsIDs;
-			if (GetShaderObjectsIDs(shaderObjectsIDs))
-			{
-				uint tryLink = ResourceShaderProgram::Link(shaderObjectsIDs);
-				ResourceShaderProgram::DeleteShaderProgram(tryLink);
-			}
-			else
-				CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
-		}
+			TryLink();
 	}
 	ImGui::End();
 
@@ -327,4 +305,24 @@ bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) c
 		return false;
 
 	return true;
+}
+
+bool PanelShaderEditor::TryLink() const
+{
+	bool ret = false;
+
+	std::list<uint> shaderObjectsIDs;
+	if (GetShaderObjectsIDs(shaderObjectsIDs))
+	{
+		uint tryLink = ResourceShaderProgram::Link(shaderObjectsIDs);
+
+		if (tryLink > 0)
+			ret = true;
+
+		ResourceShaderProgram::DeleteShaderProgram(tryLink);
+	}
+	else
+		CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
+
+	return ret;
 }

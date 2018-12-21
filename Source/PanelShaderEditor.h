@@ -28,6 +28,8 @@ private:
 	bool GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
 	bool GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) const;
 
+	bool TryLink() const;
+
 private:
 
 	uint shaderProgramUUID = 0;

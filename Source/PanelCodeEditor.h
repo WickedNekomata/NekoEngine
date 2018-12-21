@@ -30,6 +30,10 @@ public:
 
 private:
 
+	bool TryCompile() const;
+
+private:
+
 	uint shaderObjectUUID = 0;
 
 	const char* fileToEdit = "";

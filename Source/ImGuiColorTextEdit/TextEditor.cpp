@@ -2516,7 +2516,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::GLSLCustom
 	if (!inited)
 	{
 		static const char* const keywords[] = {
-			"int", "float", "vec2", "vec3", "vec4", "mat3", "mat4", "uniform"
+			"int", "float", "bool", "true", "false", "vec2", "vec3", "vec4", "mat3", "mat4", "uniform"
 		};
 
 		for (auto& k : keywords)

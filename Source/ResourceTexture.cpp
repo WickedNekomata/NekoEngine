@@ -34,5 +34,9 @@ bool ResourceTexture::UnloadFromMemory()
 {
 	glDeleteTextures(1, (GLuint*)&id);
 
+	id = 0;
+	width = 0;
+	height = 0;
+
 	return true;
 }

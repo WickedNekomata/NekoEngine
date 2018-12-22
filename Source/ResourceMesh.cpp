@@ -38,6 +38,13 @@ bool ResourceMesh::UnloadFromMemory()
 	RELEASE_ARRAY(vertices);
 	RELEASE_ARRAY(indices);
 
+	verticesSize = 0;
+	indicesSize = 0;
+
+	VBO = 0;
+	IBO = 0;
+	VAO = 0;
+
 	return true;
 }
 

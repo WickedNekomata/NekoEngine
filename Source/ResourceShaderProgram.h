@@ -45,7 +45,7 @@ private:
 
 private:
 
-	std::list<ResourceShaderObject*>	shaderObjects;
+	std::list<ResourceShaderObject*> shaderObjects;
 
 public:
 

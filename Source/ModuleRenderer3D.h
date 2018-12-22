@@ -93,7 +93,7 @@ public:
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
-	
+
 	void ClearSkybox();
 
 private:
@@ -108,16 +108,11 @@ private:
 
 public:
 
-	// Cubemap
-	GLuint cubemapTexture = 0;
-	GLuint cubemapVBO = 0;
-	GLuint cubemapVAO = 0;
-
-	std::vector<uint> cubemapTextures;
-
-public:
-
-	uint rendererTexture_id = 0;
+	// Skybox
+	GLuint skyboxTexture = 0;
+	std::vector<GLuint> skyboxTextures;
+	GLuint skyboxVBO = 0;
+	GLuint skyboxVAO = 0;
 
 	DirectionalLight directionalLight;
 	SDL_GLContext context;

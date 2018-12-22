@@ -46,28 +46,9 @@ bool ModuleScene::Start()
 	root = new GameObject("Root", nullptr);
 
 #ifdef GAMEMODE
-	std::vector<uint> skyboxTextures;
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	App->renderer3D->cubemapTexture = App->materialImporter->LoadCubemapTexture(skyboxTextures);
-
-	App->renderer3D->cubemapTexture = App->materialImporter->LoadCubemapTexture(skyboxTextures);
 	App->GOs->LoadScene("Settings/GameReady.nekoScene");
 	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
-#else
-	std::vector<uint> skyboxTextures;
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	skyboxTextures.push_back(App->materialImporter->GetCheckers());
-	App->renderer3D->cubemapTexture = App->materialImporter->LoadCubemapTexture(skyboxTextures);
 #endif
 
 	return true;

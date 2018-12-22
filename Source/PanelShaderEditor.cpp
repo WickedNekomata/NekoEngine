@@ -260,7 +260,7 @@ bool PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shade
 	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
-		if (shaderObject == nullptr)
+		if (shaderObject == nullptr || shaderObject->shaderObject == 0)
 			return false;
 		shaderObjects.push_back(shaderObject);
 	}
@@ -270,7 +270,7 @@ bool PanelShaderEditor::GetShaderObjects(std::list<ResourceShaderObject*>& shade
 	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
-		if (shaderObject == nullptr)
+		if (shaderObject == nullptr || shaderObject->shaderObject == 0)
 			return false;
 		shaderObjects.push_back(shaderObject);
 	}
@@ -288,7 +288,7 @@ bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) c
 	for (std::list<uint>::const_iterator it = vertexShadersUUIDs.begin(); it != vertexShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
-		if (shaderObject == nullptr)
+		if (shaderObject == nullptr || shaderObject->shaderObject == 0)
 			return false;
 		shaderObjectsIDs.push_back(shaderObject->shaderObject);
 	}		
@@ -298,7 +298,7 @@ bool PanelShaderEditor::GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) c
 	for (std::list<uint>::const_iterator it = fragmentShadersUUIDs.begin(); it != fragmentShadersUUIDs.end(); ++it)
 	{
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
-		if (shaderObject == nullptr)
+		if (shaderObject == nullptr || shaderObject->shaderObject == 0)
 			return false;
 		shaderObjectsIDs.push_back(shaderObject->shaderObject);
 	}

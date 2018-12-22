@@ -10,8 +10,7 @@ in vec3 startPos;
 out vec4 FragColor;
 
 struct Material {
-sampler2D ambient;
-sampler2D diffuse;
+sampler2D albedo;
 sampler2D specular;
 float shininess;
 };
@@ -56,8 +55,7 @@ return a + d + s;
 
 void main()
 {
-vec3 a = vec3(texture(material.ambient, fTexCoord));
-vec3 d = vec3(texture(material.diffuse, fTexCoord));
+vec3 a = vec3(texture(material.albedo, fTexCoord));
 vec3 s = vec3(texture(material.specular, fTexCoord));
 
 float waveTop = startPos.y + wave.height;
@@ -72,9 +70,8 @@ mixAmount = (fPosition.y - waveBottom) / range;
 vec4 color = mix(blue, white, mixAmount);
 
 a = vec3(mix(color, vec4(a, 1.0), 0.5));
-d = vec3(mix(color, vec4(d, 1.0), 0.5));
 
-vec3 Phong = Phong(a, d, s, material.shininess);
+vec3 Phong = Phong(a, a, s, material.shininess);
 vec4 result = vec4(Phong, 0.9);
 FragColor = result;
 }

@@ -72,9 +72,11 @@ bool PanelCodeEditor::Draw()
 		// Compile
 		if (ImGui::Button("Compile and Save"))
 		{
+			TryCompile();
+
 			// Update the parameters of the shader object
 			shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
-			if (!shaderObject->Compile())
+			if (!shaderObject->Compile(false))
 				shaderObject->isValid = false;
 			else
 				shaderObject->isValid = true;

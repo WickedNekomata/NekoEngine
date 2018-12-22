@@ -671,7 +671,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = texRes->id;
 		else if (materialRenderer->res[i].checkers)
 			tex = App->materialImporter->GetCheckers();
-		else
+		else if (i == 0)
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -684,7 +684,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), i);
 			break;
 		case 2:
-			//glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
+			glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
 			break;
 		}
 	}

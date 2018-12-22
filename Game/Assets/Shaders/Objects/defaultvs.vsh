@@ -16,6 +16,11 @@ out vec2 fTexCoord;
 
 void main()
 {
+vec3 T = normalize(vec3(model_matrix * vec4(tangent,   0.0)));
+vec3 B = normalize(vec3(model_matrix * vec4(bitangent, 0.0)));
+vec3 N = normalize(vec3(model_matrix * vec4(normal,    0.0)));
+mat3 TBN = mat3(T, B, N);
+
 fPosition = vec3(model_matrix * vec4(position, 1.0));
 fNormal = normalize(normal_matrix * normal);
 fColor = color;

@@ -671,20 +671,20 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = texRes->id;
 		else if (materialRenderer->res[i].checkers)
 			tex = App->materialImporter->GetCheckers();
-		else if (i == 0)
+		else
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 
 		switch (i)
 		{
 		case 0:
-			glUniform1i(glGetUniformLocation(shaderProgram, "albedo"), i);
+			glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), i);
 			break;
 		case 1:
-			glUniform1i(glGetUniformLocation(shaderProgram, "specular"), i);
+			glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), i);
 			break;
 		case 2:
-			glUniform1i(glGetUniformLocation(shaderProgram, "normalMap"), i);
+			//glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
 			break;
 		}
 	}

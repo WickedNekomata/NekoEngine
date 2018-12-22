@@ -9,8 +9,8 @@ struct Vertex
 {
 	GLfloat position[3];
 	GLfloat normal[3];
-	GLfloat tangent[3];
-	GLfloat bitangent[3];
+	//GLfloat tangent[3];
+	//GLfloat bitangent[3];
 	GLubyte color[4];
 	GLfloat texCoord[2];
 };

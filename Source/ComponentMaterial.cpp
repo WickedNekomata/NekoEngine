@@ -232,15 +232,15 @@ void ComponentMaterial::OnUniqueEditor()
 	{
 		switch (i)
 		{
-			case 0:
-				ImGui::Text("Albedo");
-				break;
-			case 1:
-				ImGui::Text("Specular");
-				break;
-			case 2:
-				ImGui::Text("Normal Map");
-				break;
+		case 0:
+			ImGui::Text("Albedo");
+			break;
+		case 1:
+			ImGui::Text("Specular");
+			break;
+		case 2:
+			ImGui::Text("Normal Map");
+			break;
 		}
 		ImGui::SameLine();
 
@@ -269,16 +269,11 @@ void ComponentMaterial::OnUniqueEditor()
 		}
 		else
 		{
-			if (i == 0)
-			{
-				id = App->materialImporter->GetDefaultTexture();
-				width = REPLACE_ME_WIDTH;
-				height = REPLACE_ME_HEIGHT;
+			id = App->materialImporter->GetDefaultTexture();
+			width = REPLACE_ME_WIDTH;
+			height = REPLACE_ME_HEIGHT;
 
-				sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
-			}
-			else
-				sprintf_s(itemName, DEFAULT_BUF_SIZE, "No Texture##%i", i);
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
 		}
 
 		ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
@@ -326,14 +321,11 @@ void ComponentMaterial::OnUniqueEditor()
 			res[i].checkers = false;
 		}
 
-		if (i == 0)
+		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE CHECKERS TEXTURE##%i", i);
+		if (ImGui::Button(itemName))
 		{
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE CHECKERS TEXTURE##%i", i);
-			if (ImGui::Button(itemName))
-			{
-				SetResource(0, i);
-				res[i].checkers = true;
-			}
+			SetResource(0, i);
+			res[i].checkers = true;
 		}
 	}
 #endif

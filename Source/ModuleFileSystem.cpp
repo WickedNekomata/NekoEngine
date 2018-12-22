@@ -175,8 +175,9 @@ const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 
 void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, int>& assetsFiles) const
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-
+#endif
 	assert(assetsFile != nullptr);
 
 	std::string path = assetsFile->path;
@@ -269,7 +270,9 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 
 void ModuleFileSystem::RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	assert(libraryFile != nullptr);
 
@@ -667,7 +670,9 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 void ModuleFileSystem::CheckFilesInAssets() const
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	// NOTE: Files in Library are not expected to be removed by the user
 

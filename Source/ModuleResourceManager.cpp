@@ -389,7 +389,9 @@ void ModuleResourceManager::RecursiveCopyShadersIntoLibrary(const char* dir, std
 // Determines how to import a file and calls ImportFile into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	uint ret = 0;
 
@@ -487,7 +489,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 // Imports a file into a resource. If success, it returns the UUID of the resource. Otherwise, it returns 0
 uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile)
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	uint ret = 0;
 

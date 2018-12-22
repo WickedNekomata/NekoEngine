@@ -18,11 +18,6 @@ public:
 	~PanelSkybox();
 
 	bool Draw();
-
-	void ClearSkybox();
-
-private:
-	std::vector<ResourceTexture*> cubemapTextures;
 };
 
 #endif

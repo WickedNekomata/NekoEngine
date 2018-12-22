@@ -36,7 +36,9 @@ ModuleGOs::~ModuleGOs()
 
 update_status ModuleGOs::PostUpdate()
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
 	{

@@ -65,7 +65,9 @@ bool PanelAssets::Draw()
 
 void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	assert(assetsFile != nullptr);
 

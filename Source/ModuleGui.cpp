@@ -128,7 +128,9 @@ update_status ModuleGui::PreUpdate()
 
 update_status ModuleGui::Update()
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
@@ -220,8 +222,6 @@ update_status ModuleGui::PostUpdate()
 
 bool ModuleGui::CleanUp()
 {
-	panelSkybox->ClearSkybox();
-
 	for (uint i = 0; i < panels.size(); ++i)
 		RELEASE(panels[i]);
 

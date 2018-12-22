@@ -1,5 +1,7 @@
 #include "PanelShaderEditor.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "Globals.h"
 #include "ModuleFileSystem.h"
@@ -326,3 +328,5 @@ bool PanelShaderEditor::TryLink() const
 
 	return ret;
 }
+
+#endif

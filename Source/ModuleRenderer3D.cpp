@@ -684,7 +684,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), i);
 			break;
 		case 2:
-			//glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
+			glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
 			break;
 		}
 	}

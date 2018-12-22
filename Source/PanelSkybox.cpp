@@ -49,7 +49,7 @@ bool PanelSkybox::Draw()
 			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
 		}
 		else {
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "No Texture##%i", i);
 			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
 		}
 

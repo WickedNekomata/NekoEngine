@@ -269,11 +269,16 @@ void ComponentMaterial::OnUniqueEditor()
 		}
 		else
 		{
-			id = App->materialImporter->GetDefaultTexture();
-			width = REPLACE_ME_WIDTH;
-			height = REPLACE_ME_HEIGHT;
+			if (i == 0)
+			{
+				id = App->materialImporter->GetDefaultTexture();
+				width = REPLACE_ME_WIDTH;
+				height = REPLACE_ME_HEIGHT;
 
-			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
+				sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
+			}
+			else
+				sprintf_s(itemName, DEFAULT_BUF_SIZE, "No Texture##%i", i);
 		}
 
 		ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
@@ -321,11 +326,14 @@ void ComponentMaterial::OnUniqueEditor()
 			res[i].checkers = false;
 		}
 
-		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE CHECKERS TEXTURE##%i", i);
-		if (ImGui::Button(itemName))
+		if (i == 0)
 		{
-			SetResource(0, i);
-			res[i].checkers = true;
+			sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE CHECKERS TEXTURE##%i", i);
+			if (ImGui::Button(itemName))
+			{
+				SetResource(0, i);
+				res[i].checkers = true;
+			}
 		}
 	}
 #endif

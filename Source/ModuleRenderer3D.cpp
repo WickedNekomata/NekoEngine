@@ -671,7 +671,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = texRes->id;
 		else if (materialRenderer->res[i].checkers)
 			tex = App->materialImporter->GetCheckers();
-		else
+		else if (i == 0)
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 

@@ -1,5 +1,7 @@
 #version 330 core
 
+#define PI 3.14285714286
+
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec4 color;
@@ -18,17 +20,31 @@ out vec3 startPos;
 
 struct Wave {
 float speed;
-float height;
+float amplitude;
 float amount;
+};
+
+struct Ripple {
+float speed;
+float amplitude;
+float frequency;
+float distance;
 };
 
 uniform float Time;
 uniform Wave wave;
+uniform Ripple ripple;
 
 void main()
 {            
 vec3 pos = position;
-pos.z += sin((Time * wave.speed) + (pos.x * pos.y * wave.amount)) * wave.height;
+
+// Wave
+pos.y += sin((Time * wave.speed) + (pos.x * pos.z * wave.amount)) * wave.amplitude;
+
+// Ripple
+//float distance = length(position);
+//pos.y += sin((Time * ripple.speed) + (2.0 * PI * distance * ripple.frequency)) * ripple.amplitude;
     
 gl_Position = mvp_matrix * vec4(pos, 1.0);
     

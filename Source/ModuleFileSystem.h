@@ -11,6 +11,7 @@
 #define DIR_LIBRARY "Library"
 #define DIR_LIBRARY_MESHES "Library/Meshes"
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
+#define DIR_LIBRARY_SHADERS "Library/Shaders"
 #define DIR_ASSETS "Assets"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 #define DIR_ASSETS_SHADERS "Assets/Shaders"
@@ -94,6 +95,7 @@ public:
 
 	void GetFileName(const char* file, std::string& fileName, bool extension = false) const;
 	void GetExtension(const char* file, std::string& extension) const;
+	void GetMetaExtension(const char* file, std::string& extension) const;
 	void GetPath(const char* file, std::string& path) const;
 
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;

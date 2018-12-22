@@ -287,19 +287,31 @@ void ModuleFileSystem::RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) co
 		LibraryFile* file = new LibraryFile();
 		file->path = path.data();
 		GetFileName(file->path.data(), file->name);
+		bool invalid = false;
 
 		if (IsDirectory(path.data()))
 		{
-			file->isDirectory = true;
-			RecursiveGetFilesFromLibrary(file);
+			if (strcmp(path.data(), DIR_LIBRARY_SHADERS) != 0)
+			{
+				file->isDirectory = true;
+				RecursiveGetFilesFromLibrary(file);
+			}
+			else
+				invalid = true;
 		}
 		else
 		{
 			uint UUID = strtoul(*it, NULL, 0);
 			file->resource = App->res->GetResource(UUID);
+
+			if (file->resource == nullptr)
+				invalid = true;
 		}
 
-		libraryFile->children.push_back(file);
+		if (!invalid)
+			libraryFile->children.push_back(file);
+		else
+			RELEASE(file);
 
 		uint found = path.rfind(*it);
 		if (found != std::string::npos)
@@ -403,6 +415,22 @@ void ModuleFileSystem::GetExtension(const char* file, std::string& extension) co
 	uint found = extension.find_last_of(".");
 	if (found != std::string::npos)
 		extension = extension.substr(found);
+}
+
+void ModuleFileSystem::GetMetaExtension(const char* file, std::string& extension) const
+{
+	std::string ex = file;
+	extension = ex;
+
+	uint foundMeta = extension.find_last_of(".");
+	if (foundMeta != std::string::npos)
+	{
+		ex = ex.substr(foundMeta);
+		extension = extension.substr(0, foundMeta);
+	}
+	uint foundExtension = extension.find_last_of(".");
+	if (foundExtension != std::string::npos)
+		extension = extension.substr(foundExtension);
 }
 
 void ModuleFileSystem::GetPath(const char* file, std::string& path) const

@@ -105,6 +105,12 @@ void ComponentMaterial::OnUniqueEditor()
 
 	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
 
+	if (shaderProgram != nullptr && !shaderProgram->isValid)
+	{
+		shaderProgramUUID = 0;
+		ReleaseUniforms();
+	}
+
 	ImGui::PushID("shader");
 	ImGui::Button(shaderProgram != nullptr ? shaderProgram->GetName() : "Default Shader", ImVec2(150.0f, 0.0f));
 	ImGui::PopID();

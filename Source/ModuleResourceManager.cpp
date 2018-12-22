@@ -168,6 +168,14 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		App->PushSystemEvent(newEvent);
 	}
 	break;
+
+	case System_Event_Type::CopyShadersIntoLibrary:
+	{
+		App->fs->CreateDir(DIR_LIBRARY_SHADERS);
+		std::string path = DIR_ASSETS;
+		App->res->RecursiveCopyShadersIntoLibrary(DIR_ASSETS, path);
+	}
+	break;
 	}
 }
 
@@ -226,49 +234,17 @@ void ModuleResourceManager::ImportFileFromLibrary(const char* fileInLibrary)
 		Resource* resource = CreateNewResource(ResourceType::TextureResource, UUID);
 		resource->exportedFile = fileInLibrary;
 	}
-
-	// TODO: Load Shader Objects and Programs
-	/*
-	std::list<ResourceShaderObject*> shaderObjects;
-
-	// 1. Load the binary
-	if (!resource->LoadMemory())
-	{
-		// 2. If the binary hasn't loaded correctly, retrieve the shader objects of the shader program
-		std::list<std::string> files;
-		App->shaderImporter->GetShaderObjectsFromMeta(metaFile, files);
-
-		for (std::list<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
-		{
-			// Check if the resource exists in Assets
-			std::string outputFile = DIR_ASSETS;
-			if (App->fs->RecursiveExists((*it).data(), DIR_ASSETS, outputFile))
-			{
-				uint UUID = 0;
-				std::list<uint> UUIDs;
-				if (!App->res->FindResourcesByFile(outputFile.data(), UUIDs))
-					// If the shader object is not a resource yet, import it
-					UUID = App->res->ImportFile(outputFile.data());
-				else
-					UUID = UUIDs.front();
-
-				if (UUID > 0)
-					shaderObjects.push_back((ResourceShaderObject*)GetResource(UUID));
-			}
-		}
-
-		if (files.size() == shaderObjects.size())
-		{
-			// 3. With the shader objects, link the program
-			if (!ResourceShaderProgram::Link(shaderObjects))
-				resource->isValid = false;
-		}
-		else
-			resource->isValid = false;
-	}
 	else
-		resource->isValid = false;
-	*/
+	{
+		ResourceType type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+		case ResourceType::ShaderObjectResource:
+		case ResourceType::ShaderProgramResource:
+			ImportFile(fileInLibrary);
+			break;
+		}
+	}
 }
 
 // Imports all files found in a directory (except scenes and metas)
@@ -344,6 +320,63 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromLibrary(const char* di
 				
 				if (!resources)
 					App->fs->DeleteFileOrDir(path.data());
+			}
+		}
+
+		uint found = path.rfind(*it);
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+	}
+}
+
+void ModuleResourceManager::RecursiveCopyShadersIntoLibrary(const char* dir, std::string& path)
+{
+	if (dir == nullptr)
+	{
+		assert(dir != nullptr);
+		return;
+	}
+
+	const char** files = App->fs->GetFilesFromDir(path.data());
+	const char** it;
+
+	path.append("/");
+
+	for (it = files; *it != nullptr; ++it)
+	{
+		path.append(*it);
+
+		if (App->fs->IsDirectory(path.data()))
+			RecursiveCopyShadersIntoLibrary(*it, path);
+		else
+		{
+			std::string extension;
+			App->fs->GetExtension(*it, extension);
+
+			if (IS_META(extension.data()))
+			{
+				extension.clear();
+				App->fs->GetMetaExtension(*it, extension);
+
+				if (strcmp(extension.data(), EXTENSION_SHADER_PROGRAM) == 0)
+				{
+					// Copy shader program metas
+					std::string outputFile;
+					App->fs->Copy(path.data(), DIR_LIBRARY_SHADERS, outputFile);
+				}
+			}
+			else
+			{
+				ResourceType type = GetResourceTypeByExtension(extension.data());
+				switch (type)
+				{
+				case ResourceType::ShaderObjectResource:
+				case ResourceType::ShaderProgramResource:
+					// Copy shader objects and shader programs
+					std::string outputFile;
+					App->fs->Copy(path.data(), DIR_LIBRARY_SHADERS, outputFile);
+					break;
+				}
 			}
 		}
 

@@ -4,7 +4,7 @@
 enum System_Event_Type 
 { 
 	NoEvent,
-	RefreshAssets, RefreshFiles,
+	RefreshAssets, RefreshFiles, CopyShadersIntoLibrary,
 	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, // FileEvent
 	RecalculateBBoxes, // GameObjectEvent
 	ShaderProgramChanged,

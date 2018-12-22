@@ -40,6 +40,8 @@ void PanelLibrary::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
 
 	ImGuiTreeNodeFlags treeNodeFlags;
 
+	char id[DEFAULT_BUF_SIZE];
+
 	for (uint i = 0; i < libraryFile->children.size(); ++i)
 	{
 		LibraryFile* child = (LibraryFile*)libraryFile->children[i];
@@ -51,7 +53,8 @@ void PanelLibrary::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
 			treeNodeFlags = 0;
 			treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
 
-			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
+			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
+			if (ImGui::TreeNodeEx(id, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
@@ -73,7 +76,8 @@ void PanelLibrary::RecursiveDrawLibraryDir(LibraryFile* libraryFile) const
 			if (App->scene->selectedObject == child->resource)
 				treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			if (ImGui::TreeNodeEx(child->name.data(), treeNodeFlags))
+			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
+			if (ImGui::TreeNodeEx(id, treeNodeFlags))
 				treeNodeOpened = true;
 
 			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)

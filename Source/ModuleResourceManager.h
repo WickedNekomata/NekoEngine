@@ -54,6 +54,8 @@ public:
 	void RecursiveImportFilesFromAssets(const char* dir, std::string& path);
 	void RecursiveDeleteUnusedFilesFromLibrary(const char* dir, std::string& path) const;
 
+	void RecursiveCopyShadersIntoLibrary(const char* dir, std::string& path);
+
 	uint ImportFile(const char* fileInAssets);
 	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);
 

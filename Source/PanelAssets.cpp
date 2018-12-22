@@ -32,6 +32,12 @@ bool PanelAssets::Draw()
 			newEvent.type = System_Event_Type::RefreshAssets;
 			App->PushSystemEvent(newEvent);
 		}
+		else if (ImGui::Button("Copy Shaders Into Library"))
+		{
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::CopyShadersIntoLibrary;
+			App->PushSystemEvent(newEvent);
+		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
 		CreateShaderPopUp(DIR_ASSETS);

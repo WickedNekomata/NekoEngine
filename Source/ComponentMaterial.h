@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#define MAX_TEXTURES 2 // Albedo (Ambient + Diffuse), Specular
+#define MAX_TEXTURES 3 // Albedo (Ambient + Diffuse), Specular, normal
 
 class ResourceShaderProgram;
 

@@ -238,6 +238,9 @@ void ComponentMaterial::OnUniqueEditor()
 			case 1:
 				ImGui::Text("Specular");
 				break;
+			case 2:
+				ImGui::Text("Normal Map");
+				break;
 		}
 		ImGui::SameLine();
 

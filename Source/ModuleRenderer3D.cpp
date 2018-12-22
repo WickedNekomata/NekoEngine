@@ -685,8 +685,11 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		case 0:
 			glUniform1i(glGetUniformLocation(shaderProgram, "albedo"), i);
 			break;
-		case 2:
+		case 1:
 			glUniform1i(glGetUniformLocation(shaderProgram, "specular"), i);
+			break;
+		case 2:
+			glUniform1i(glGetUniformLocation(shaderProgram, "normalMap"), i);
 			break;
 		}
 	}

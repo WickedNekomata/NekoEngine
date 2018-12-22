@@ -244,6 +244,14 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			uint normalsSize = 0;
 			uint normalsID = 0;
 
+			GLfloat* tangents = nullptr;
+			uint tangentsSize = 0;
+			uint tangentsID = 0;
+
+			GLfloat* bitangents = nullptr;
+			uint bitangentsSize = 0;
+			uint bitangentsID = 0;
+
 			GLubyte* colors = nullptr;
 			uint colorsSize = 0;
 			uint colorsID = 0;
@@ -281,6 +289,18 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				normalsSize = verticesSize;
 				normals = new GLfloat[normalsSize * 3];
 				memcpy(normals, nodeMesh->mNormals, sizeof(GLfloat) * normalsSize * 3);
+			}
+
+			// Tangents and Bitangents
+			if (nodeMesh->HasTangentsAndBitangents())
+			{
+				tangentsSize = verticesSize;
+				tangents = new GLfloat[tangentsSize * 3];
+				memcpy(normals, nodeMesh->mTangents, sizeof(GLfloat) * tangentsSize * 3);
+				
+				bitangentsSize = verticesSize;
+				bitangents = new GLfloat[tangentsSize * 3];
+				memcpy(normals, nodeMesh->mBitangents, sizeof(GLfloat) * bitangentsSize * 3);
 			}
 
 			// Color
@@ -334,11 +354,13 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 
 			// Vertices + Normals + Colors + Texture Coords + Indices
-			uint ranges[5] = { verticesSize, normalsSize, colorsSize, texCoordsSize, indicesSize };
+			uint ranges[7] = { verticesSize, normalsSize, tangentsSize, bitangentsSize, colorsSize, texCoordsSize, indicesSize };
 
 			uint size = sizeof(ranges) +
 				sizeof(GLfloat) * verticesSize * 3 +
 				sizeof(GLfloat) * normalsSize * 3 +
+				sizeof(GLfloat) * tangentsSize * 3 +
+				sizeof(GLfloat) * bitangentsSize * 3 +
 				sizeof(GLubyte) * colorsSize * 4 +
 				sizeof(GLfloat) * texCoordsSize * 2 +
 				sizeof(uint) * indicesSize;
@@ -363,6 +385,22 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			{
 				bytes = sizeof(GLfloat) * normalsSize * 3;
 				memcpy(cursor, normals, bytes);
+
+				cursor += bytes;
+			}
+
+			if (tangentsSize > 0)
+			{
+				bytes = sizeof(GLfloat) * tangentsSize * 3;
+				memcpy(cursor, tangents, bytes);
+
+				cursor += bytes;
+			}
+
+			if (bitangentsSize > 0)
+			{
+				bytes = sizeof(GLfloat) * bitangentsSize * 3;
+				memcpy(cursor, bitangents, bytes);
 
 				cursor += bytes;
 			}
@@ -729,8 +767,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	char* cursor = (char*)buffer;
 
-	// Vertices + Normals + Colors + Texture Coords + Indices
-	uint ranges[5];
+	// Vertices + Normals + tangents + bitangents + Colors + Texture Coords + Indices
+	uint ranges[7];
 
 	// 1. Load ranges
 	uint bytes = sizeof(ranges);
@@ -739,14 +777,18 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	cursor += bytes;
 
 	outputMesh->verticesSize = ranges[0];
-	outputMesh->indicesSize = ranges[4];
+	outputMesh->indicesSize = ranges[6];
 	uint normalsSize = ranges[1];
-	uint colorsSize = ranges[2];
-	uint texCoordsSize = ranges[3];
+	uint tangentsSize = ranges[2];
+	uint bitangentsSize = ranges[3];
+	uint colorsSize = ranges[4];
+	uint texCoordsSize = ranges[5];
 
 	char* normalsCursor = cursor + ranges[0] * sizeof(GLfloat) * 3;
-	char* colorCursor = normalsCursor + ranges[1] * sizeof(GLfloat) * 3;
-	char* texCoordsCursor = colorCursor + ranges[2] * sizeof(GLubyte) * 4;
+	char* tangentsCursor = normalsCursor + ranges[1] * sizeof(GLfloat) * 3;
+	char* bitangentsCursor = tangentsCursor + ranges[2] * sizeof(GLfloat) * 3;
+	char* colorCursor = bitangentsCursor + ranges[3] * sizeof(GLfloat) * 3;
+	char* texCoordsCursor = colorCursor + ranges[4] * sizeof(GLubyte) * 4;
 
 	outputMesh->vertices = new Vertex[outputMesh->verticesSize];
 
@@ -765,6 +807,24 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 			memcpy(outputMesh->vertices[i].normal, normalsCursor, bytes);
 
 			normalsCursor += bytes;
+		}
+
+		// 3. Load normals
+		if (tangentsSize > 0)
+		{
+			bytes = sizeof(GLfloat) * 3;
+			memcpy(outputMesh->vertices[i].tangent, tangentsCursor, bytes);
+
+			tangentsCursor += bytes;
+		}
+
+		// 3. Load normals
+		if (bitangentsSize > 0)
+		{
+			bytes = sizeof(GLfloat) * 3;
+			memcpy(outputMesh->vertices[i].bitangent, bitangentsCursor, bytes);
+
+			bitangentsCursor += bytes;
 		}
 
 		// 4. Load colors

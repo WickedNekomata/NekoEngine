@@ -97,6 +97,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 
 		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
 
+#ifndef GAMEMODE
 		// GET ERROR LINE AND ERROR TEXT AND SEND IT TO THE CODE EDITOR
 		{
 			int line = 0;
@@ -138,6 +139,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 			}
 			App->gui->panelCodeEditor->SetError(line, error);
 		}
+#endif
 
 		DeleteShaderObject(shaderObject);
 	}

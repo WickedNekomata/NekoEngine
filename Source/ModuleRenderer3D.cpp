@@ -634,9 +634,9 @@ void ModuleRenderer3D::DrawSkybox()
 
 	//math::float4x4 view = glm::mat4(glm::mat3(App->camera->camera->GetOpenGLViewMatrix())); // remove translation from the view matrix
 	uint location = glGetUniformLocation(shaderProgram, "view_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
+	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLViewMatrix().ptr());
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
+	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLProjectionMatrix().ptr());
 	
 	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);

@@ -622,9 +622,6 @@
     <ClInclude Include="ImGuiColorTextEdit\TextEditor.h">
       <Filter>Sources\3rd Party\ImGuiColorTextEdit</Filter>
     </ClInclude>
-    <ClInclude Include="PanelLayersTags.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
@@ -896,9 +893,6 @@
     </ClCompile>
     <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp">
       <Filter>Sources\3rd Party\ImGuiColorTextEdit</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelLayersTags.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="ShaderImporter.cpp">
       <Filter>Sources\Modules\Importers</Filter>

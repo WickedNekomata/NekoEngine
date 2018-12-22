@@ -22,7 +22,6 @@ class PanelLibrary;
 class PanelDebugDraw;
 class PanelEdit;
 class PanelCodeEditor;
-class PanelLayersTags;
 class PanelShaderEditor;
 class PanelSkybox;
 
@@ -70,7 +69,6 @@ public:
 	PanelDebugDraw*		panelDebugDraw = nullptr;
 	PanelEdit*			panelEdit = nullptr;
 	PanelCodeEditor*	panelCodeEditor = nullptr;
-	PanelLayersTags*	panelLayersTags = nullptr;
 	PanelShaderEditor*  panelShaderEditor = nullptr;
 	PanelSkybox*		panelSkybox = nullptr;
 

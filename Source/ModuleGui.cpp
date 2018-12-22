@@ -24,7 +24,6 @@
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
-#include "PanelLayersTags.h"
 #include "PanelShaderEditor.h"
 #include "PanelSkybox.h"
 
@@ -55,7 +54,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
-	panelLayersTags = new PanelLayersTags("Layer & Tags");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 	panelSkybox = new PanelSkybox("Skybox");
 
@@ -69,7 +67,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
-	panels.push_back(panelLayersTags);
 	panels.push_back(panelShaderEditor);
 	panels.push_back(panelSkybox);
 

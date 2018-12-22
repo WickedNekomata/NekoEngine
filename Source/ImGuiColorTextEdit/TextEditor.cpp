@@ -1,10 +1,12 @@
+#include "TextEditor.h"
+
+#ifndef GAMEMODE
+
 #include <algorithm>
 #include <chrono>
 #include <string>
 #include <regex>
 #include <cmath>
-
-#include "TextEditor.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "../imgui/imgui.h" // for imGui::GetCurrentWindow()
@@ -2516,14 +2518,14 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::GLSLCustom
 	if (!inited)
 	{
 		static const char* const keywords[] = {
-			"int", "float", "bool", "true", "false", "vec2", "vec3", "vec4", "mat3", "mat4", "uniform", "sampler2D"
+			"int", "float", "bool", "true", "false", "vec2", "vec3", "vec4", "mat3", "mat4", "uniform", "sampler2D", "samplerCube"
 		};
 
 		for (auto& k : keywords)
 			langDef.mKeywords.insert(k);
 
 		static const char* const identifiers[] = {
-			"for", "while", "continue", "return", "break", "void", "if", "goto" ,"in", "out", "struct"
+			"for", "while", "continue", "return", "break", "void", "if", "else", "goto" ,"in", "out", "struct"
 		};
 
 		for (auto& k : identifiers)
@@ -2793,3 +2795,5 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua()
 	}
 	return langDef;
 }
+
+#endif

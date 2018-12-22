@@ -40,14 +40,14 @@ bool ModuleResourceManager::Start()
 	path.clear();
 	path.append(DIR_LIBRARY);
 	RecursiveDeleteUnusedFilesFromLibrary(DIR_LIBRARY, path);
-#else
-	std::string path = DIR_LIBRARY;
-	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
-#endif
 
 	System_Event newEvent;
 	newEvent.type = System_Event_Type::RefreshFiles;
 	App->PushSystemEvent(newEvent);
+#else
+	std::string path = DIR_LIBRARY;
+	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
+#endif
 
 	return true;
 }
@@ -308,10 +308,12 @@ void ModuleResourceManager::RecursiveDeleteUnusedFilesFromLibrary(const char* di
 		{
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
+			ResourceType type = GetResourceTypeByExtension(extension.data());
 
 			// Ignore scenes and metas
 			// If the file has no associated resource, then it is unused and must be deleted
-			if (!IS_SCENE(extension.data()) && !IS_META(extension.data()))
+			if (!IS_SCENE(extension.data()) && !IS_META(extension.data())
+				&& type != ResourceType::ShaderObjectResource && type != ResourceType::ShaderProgramResource)
 			{
 				bool resources = false;
 

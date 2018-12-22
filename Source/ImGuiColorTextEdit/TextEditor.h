@@ -1,4 +1,7 @@
 #pragma once
+#include "../GameMode.h"
+
+#ifndef GAMEMODE
 
 #include <string>
 #include <vector>
@@ -338,3 +341,5 @@ private:
 	ImVec2 mCharAdvance;
 	Coordinates mInteractiveStart, mInteractiveEnd;
 };
+
+#endif // !GAMEMODE

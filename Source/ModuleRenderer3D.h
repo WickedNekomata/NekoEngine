@@ -7,6 +7,11 @@
 #include "Globals.h"
 #include "Light.h"
 
+#include "ComponentMesh.h"
+#include "ComponentCamera.h"
+#include "ComponentTransform.h"
+#include "GameObject.h"
+
 #include "MathGeoLib\include\Math\float4x4.h"
 
 #include "glew\include\GL\glew.h"
@@ -16,8 +21,6 @@
 #include <vector>
 
 class GameObject;
-class ComponentMesh;
-class ComponentCamera;
 class QuadtreeNode;
 
 struct DirectionalLight
@@ -125,6 +128,26 @@ public:
 	bool drawBoundingBoxes = true;
 	bool drawCamerasFrustum = true;
 	bool drawQuadtree = false;
+};
+
+struct ComponentMeshComparator
+{
+	bool operator()(const ComponentMesh* a, const ComponentMesh* b) const
+	{
+		math::float4x4 globalMatrix = math::float4x4::identity;
+		math::float3 pos = math::float3::zero;
+		math::Quat rot = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+
+		globalMatrix = a->GetParent()->transform->GetGlobalMatrix();
+		globalMatrix.Decompose(pos, rot, scale);
+		float distanceToCamA = math::Abs(App->renderer3D->GetCurrentCamera()->frustum.pos - pos).Length();
+		globalMatrix = b->GetParent()->transform->GetGlobalMatrix();
+		globalMatrix.Decompose(pos, rot, scale);
+		float distanceToCamB = math::Abs(App->renderer3D->GetCurrentCamera()->frustum.pos - pos).Length();
+
+		return distanceToCamA < distanceToCamB;
+	}
 };
 
 #endif

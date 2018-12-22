@@ -199,7 +199,9 @@ update_status ModuleRenderer3D::PostUpdate()
 		for (uint i = 0; i < cameraComponents.size(); ++i)
 			cameraComponents[i]->UpdateTransform();
 
-		for (uint i = 0; i < meshComponents.size(); ++i)
+		std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
+
+		for (int i = meshComponents.size() - 1; i >= 0 ; --i)
 		{
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);

@@ -93,6 +93,8 @@ public:
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
+	
+	void ClearSkybox();
 
 private:
 
@@ -110,6 +112,8 @@ public:
 	GLuint cubemapTexture = 0;
 	GLuint cubemapVBO = 0;
 	GLuint cubemapVAO = 0;
+
+	std::vector<uint> cubemapTextures;
 
 public:
 

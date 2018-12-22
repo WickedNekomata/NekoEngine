@@ -11,6 +11,7 @@
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
+#include "PanelSkybox.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -151,16 +152,12 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
 
-	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVAO);
+	cubemapTextures.reserve(6);
+	for (int i = 0; i < 6; ++i)
+		cubemapTextures.push_back(0);
+	cubemapTextures.shrink_to_fit();
 
-	std::vector<uint> checkers;
-	checkers.push_back(App->materialImporter->GetCheckers());
-	checkers.push_back(App->materialImporter->GetCheckers());
-	checkers.push_back(App->materialImporter->GetCheckers());
-	checkers.push_back(App->materialImporter->GetCheckers());
-	checkers.push_back(App->materialImporter->GetCheckers());
-	checkers.push_back(App->materialImporter->GetCheckers());
-	cubemapTexture = App->materialImporter->LoadCubemapTexture(checkers);
+	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVAO);
 
 #ifndef GAMEMODE
 	// Editor camera
@@ -189,7 +186,9 @@ update_status ModuleRenderer3D::PreUpdate()
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#endif
 
 	// 1. Level geometry
 	App->scene->Draw();
@@ -253,6 +252,8 @@ update_status ModuleRenderer3D::PostUpdate()
 bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
+
+	ClearSkybox();
 
 	glDeleteVertexArrays(1, &cubemapVAO);
 	glDeleteBuffers(1, &cubemapVBO);
@@ -802,4 +803,15 @@ void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 		for (uint i = 0; i < 4; ++i)
 			RecursiveDrawQuadtree(node->children[i]);
 	}
+}
+
+void ModuleRenderer3D::ClearSkybox()
+{
+	for (int i = 0; i < App->renderer3D->cubemapTextures.size(); ++i) {
+		ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
+		if (res != nullptr)
+			App->res->SetAsUnused(res->GetUUID());
+	}
+
+	App->renderer3D->cubemapTextures.clear();
 }

@@ -1,5 +1,7 @@
 #include "PanelSkybox.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
@@ -10,10 +12,6 @@
 
 PanelSkybox::PanelSkybox(char* name) : Panel(name)
 {
-	cubemapTextures.reserve(6);
-	for (int i = 0; i < 6; ++i)
-		cubemapTextures.push_back(nullptr);
-	cubemapTextures.shrink_to_fit();
 }
 
 PanelSkybox::~PanelSkybox()
@@ -24,7 +22,7 @@ bool PanelSkybox::Draw()
 {
 	ImGui::Begin(name, &enabled);
 
-	for (int i = 0; i < cubemapTextures.size(); ++i)
+	for (int i = 0; i < App->renderer3D->cubemapTextures.size(); ++i)
 	{
 		switch (i)
 		{
@@ -49,7 +47,7 @@ bool PanelSkybox::Draw()
 		}
 
 		char itemName[DEFAULT_BUF_SIZE];
-		ResourceTexture* tex = cubemapTextures[i];
+		ResourceTexture* tex = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
 		if (tex != NULL) {
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", tex->GetName(), i);
 			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
@@ -67,13 +65,14 @@ bool PanelSkybox::Draw()
 					App->res->SetAsUnused(tex->GetUUID());
 				uint payload_n = *(uint*)payload->Data;
 				ResourceTexture* res = (ResourceTexture*)App->res->GetResource(payload_n);
-				cubemapTextures[i] = res;
 				if (res != nullptr)
-					App->res->SetAsUsed(cubemapTextures[i]->GetUUID());
+				{
+					App->renderer3D->cubemapTextures[i] = res->GetUUID();
+					App->res->SetAsUsed(App->renderer3D->cubemapTextures[i]);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
-
 	}
 
 	ImGui::Separator();
@@ -83,8 +82,9 @@ bool PanelSkybox::Draw()
 		std::vector<uint> texturesToLoad;
 		texturesToLoad.reserve(6);
 		for (int i = 0; i < 6; ++i) {
-			if (cubemapTextures[i] != nullptr)
-				texturesToLoad.push_back(cubemapTextures[i]->id);
+			ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
+			if (res != nullptr)
+				texturesToLoad.push_back(res->id);
 			else
 				texturesToLoad.push_back(0);
 		}
@@ -97,12 +97,4 @@ bool PanelSkybox::Draw()
 	return true;
 }
 
-void PanelSkybox::ClearSkybox()
-{
-	for (int i = 0; i < cubemapTextures.size(); ++i) {
-		if (cubemapTextures[i] != nullptr)
-			App->res->SetAsUnused(cubemapTextures[i]->GetUUID());
-	}
-
-	cubemapTextures.clear();
-}
+#endif

@@ -30,7 +30,7 @@ public:
 
 private:
 
-	bool TryCompile() const;
+	bool TryCompile();
 
 private:
 

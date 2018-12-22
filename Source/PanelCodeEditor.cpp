@@ -1,5 +1,7 @@
 #include "PanelCodeEditor.h"
 
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
@@ -169,9 +171,12 @@ void PanelCodeEditor::SetError(int line, const char* error)
 	editor.SetErrorMarkers(markers);
 }
 
-bool PanelCodeEditor::TryCompile() const
+bool PanelCodeEditor::TryCompile()
 {
 	bool ret = false;
+
+	TextEditor::ErrorMarkers markers;
+	editor.SetErrorMarkers(markers);
 
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
 	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
@@ -183,3 +188,5 @@ bool PanelCodeEditor::TryCompile() const
 
 	return ret;
 }
+
+#endif

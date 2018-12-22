@@ -8,8 +8,7 @@ in vec2 fTexCoord;
 out vec4 FragColor;
 
 struct Material {
-sampler2D ambient;
-sampler2D diffuse;
+sampler2D albedo;
 sampler2D specular;
 float shininess;
 };
@@ -56,9 +55,8 @@ return a + d + s;
 
 void main()
 {
-vec3 a = vec3(texture(material.ambient, fTexCoord));
-vec3 d = vec3(texture(material.diffuse, fTexCoord));
+vec3 a = vec3(texture(material.albedo, fTexCoord));
 vec3 s = vec3(texture(material.specular, fTexCoord));
-vec3 phong = phong(a, d, s, 8.0, true);
-FragColor = vec4(phong, texture(material.ambient, fTexCoord).w);
+vec3 phong = phong(a, a, s, 32.0, true);
+FragColor = vec4(phong, texture(material.albedo, fTexCoord).w);
 }

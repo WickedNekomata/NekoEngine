@@ -359,22 +359,31 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			cursor += bytes;
 
 			// 3. Store normals
-			bytes = sizeof(GLfloat) * normalsSize * 3;
-			memcpy(cursor, normals, bytes);
+			if (normalsSize > 0)
+			{
+				bytes = sizeof(GLfloat) * normalsSize * 3;
+				memcpy(cursor, normals, bytes);
 
-			cursor += bytes;
+				cursor += bytes;
+			}
 
 			// 4. Store colors
-			bytes = sizeof(GLubyte) * colorsSize * 4;
-			memcpy(cursor, colors, bytes);
+			if (colorsSize > 0)
+			{
+				bytes = sizeof(GLubyte) * colorsSize * 4;
+				memcpy(cursor, colors, bytes);
 
-			cursor += bytes;
+				cursor += bytes;
+			}
 
 			// 5. Store texture coords
-			bytes = sizeof(GLfloat) * texCoordsSize * 2;
-			memcpy(cursor, texCoords, bytes);
+			if (texCoordsSize > 0)
+			{
+				bytes = sizeof(GLfloat) * texCoordsSize * 2;
+				memcpy(cursor, texCoords, bytes);
 
-			cursor += bytes;
+				cursor += bytes;
+			}
 
 			// 6. Store indices
 			bytes = sizeof(GLuint) * indicesSize;
@@ -731,6 +740,9 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	outputMesh->verticesSize = ranges[0];
 	outputMesh->indicesSize = ranges[4];
+	uint normalsSize = ranges[1];
+	uint colorsSize = ranges[2];
+	uint texCoordsSize = ranges[3];
 
 	char* normalsCursor = cursor + ranges[0] * sizeof(GLfloat) * 3;
 	char* colorCursor = normalsCursor + ranges[1] * sizeof(GLfloat) * 3;
@@ -747,22 +759,31 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		cursor += bytes;
 
 		// 3. Load normals
-		bytes = sizeof(GLfloat) * 3;
-		memcpy(outputMesh->vertices[i].normal, normalsCursor, bytes);
+		if (normalsSize > 0)
+		{
+			bytes = sizeof(GLfloat) * 3;
+			memcpy(outputMesh->vertices[i].normal, normalsCursor, bytes);
 
-		normalsCursor += bytes;
+			normalsCursor += bytes;
+		}
 
 		// 4. Load colors
-		bytes = sizeof(GLubyte) * 4;
-		memcpy(outputMesh->vertices[i].color, colorCursor, bytes);
+		if (colorsSize > 0)
+		{
+			bytes = sizeof(GLubyte) * 4;
+			memcpy(outputMesh->vertices[i].color, colorCursor, bytes);
 
-		colorCursor += bytes;
+			colorCursor += bytes;
+		}
 
 		// 5. Load texture coords
-		bytes = sizeof(GLfloat) * 2;
-		memcpy(outputMesh->vertices[i].texCoord, texCoordsCursor, bytes);
+		if (texCoordsSize > 0)
+		{
+			bytes = sizeof(GLfloat) * 2;
+			memcpy(outputMesh->vertices[i].texCoord, texCoordsCursor, bytes);
 
-		texCoordsCursor += bytes;
+			texCoordsCursor += bytes;
+		}
 	}
 
 	// 6. Load indices

@@ -21,5 +21,5 @@ fNormal = normalize(normal_matrix * normal);
 fColor = color;
 fTexCoord = texCoord;
 
-gl_Position = mvp_matrix * vec4(position, 1.0f);
+gl_Position = mvp_matrix * vec4(position, 1.0);
 }

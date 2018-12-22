@@ -233,12 +233,9 @@ void ComponentMaterial::OnUniqueEditor()
 		switch (i)
 		{
 			case 0:
-				ImGui::Text("Ambient");
+				ImGui::Text("Albedo");
 				break;
 			case 1:
-				ImGui::Text("Diffuse");
-				break;
-			case 2:
 				ImGui::Text("Specular");
 				break;
 		}

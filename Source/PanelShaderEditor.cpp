@@ -30,6 +30,11 @@ bool PanelShaderEditor::Draw()
 		ImGui::Text("Shader Program:"); ImGui::SameLine();
 		ImGui::PushItemWidth(150.0f); 
 		ImGui::InputText("##name", shaderProgramName, INPUT_BUF_SIZE);
+
+		ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
+		if (shaderProgram != nullptr)
+			ImGui::TextColored(BLUE, "%s", shaderProgram->file.data());
+
 		ImGui::Separator();
 
 		char shaderObjectName[DEFAULT_BUF_SIZE];
@@ -134,8 +139,6 @@ bool PanelShaderEditor::Draw()
 				std::list<ResourceShaderObject*> shaderObjects;
 				if (GetShaderObjects(shaderObjects))
 				{
-					ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
-
 					// Existing shader program
 					if (shaderProgram != nullptr)
 					{
@@ -213,6 +216,16 @@ bool PanelShaderEditor::Draw()
 		// Try to link
 		if (ImGui::Button("Link"))
 			TryLink();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("New Shader"))
+		{
+			shaderProgramUUID = 0;
+			strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
+			vertexShadersUUIDs.clear();
+			fragmentShadersUUIDs.clear();
+		}
 	}
 	ImGui::End();
 

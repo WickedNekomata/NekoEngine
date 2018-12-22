@@ -59,6 +59,7 @@ bool PanelSkybox::Draw()
 			{
 				if (tex != nullptr)
 					App->res->SetAsUnused(tex->GetUUID());
+
 				uint payload_n = *(uint*)payload->Data;
 				ResourceTexture* res = (ResourceTexture*)App->res->GetResource(payload_n);
 				if (res != nullptr)
@@ -95,13 +96,15 @@ bool PanelSkybox::Draw()
 	}
 	else if (ImGui::Button("USE DEFAULT SKYBOX"))
 	{
+		App->renderer3D->ClearSkybox();
+
 		if (App->materialImporter->GetSkyboxTexture() != App->renderer3D->skyboxTexture)
 		{
 			App->materialImporter->DeleteTexture(App->renderer3D->skyboxTexture);
-
-			App->renderer3D->skyboxTextures = App->materialImporter->GetSkyboxTextures();
 			App->renderer3D->skyboxTexture = App->materialImporter->GetSkyboxTexture();
 		}
+
+		App->renderer3D->skyboxTextures = App->materialImporter->GetSkyboxTextures();
 	}
 	ImGui::End();
 

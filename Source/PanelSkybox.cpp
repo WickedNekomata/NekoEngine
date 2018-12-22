@@ -10,19 +10,15 @@
 
 #include "imgui/imgui.h"
 
-PanelSkybox::PanelSkybox(char* name) : Panel(name)
-{
-}
+PanelSkybox::PanelSkybox(char* name) : Panel(name) {}
 
-PanelSkybox::~PanelSkybox()
-{
-}
+PanelSkybox::~PanelSkybox() {}
 
 bool PanelSkybox::Draw()
 {
 	ImGui::Begin(name, &enabled);
 
-	for (int i = 0; i < App->renderer3D->cubemapTextures.size(); ++i)
+	for (uint i = 0; i < App->renderer3D->skyboxTextures.size(); ++i)
 	{
 		switch (i)
 		{
@@ -47,7 +43,7 @@ bool PanelSkybox::Draw()
 		}
 
 		char itemName[DEFAULT_BUF_SIZE];
-		ResourceTexture* tex = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
+		ResourceTexture* tex = (ResourceTexture*)App->res->GetResource(App->renderer3D->skyboxTextures[i]);
 		if (tex != NULL) {
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", tex->GetName(), i);
 			ImGui::Button(itemName, ImVec2(100.0f, 0.0f));
@@ -67,31 +63,46 @@ bool PanelSkybox::Draw()
 				ResourceTexture* res = (ResourceTexture*)App->res->GetResource(payload_n);
 				if (res != nullptr)
 				{
-					App->renderer3D->cubemapTextures[i] = res->GetUUID();
-					App->res->SetAsUsed(App->renderer3D->cubemapTextures[i]);
+					App->renderer3D->skyboxTextures[i] = res->GetUUID();
+					App->res->SetAsUsed(App->renderer3D->skyboxTextures[i]);
 				}
 			}
 			ImGui::EndDragDropTarget();
 		}
 	}
 
+	ImGui::Spacing();
 	ImGui::Separator();
+	ImGui::Spacing();
 
-	if (ImGui::Button("Set new Skybox")) {
-		App->materialImporter->DeleteTexture(App->renderer3D->cubemapTexture);
+	if (ImGui::Button("SET NEW SKYBOX")) 
+	{
+		if (App->materialImporter->GetSkyboxTexture() != App->renderer3D->skyboxTexture)
+			App->materialImporter->DeleteTexture(App->renderer3D->skyboxTexture);
+
 		std::vector<uint> texturesToLoad;
 		texturesToLoad.reserve(6);
-		for (int i = 0; i < 6; ++i) {
-			ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
+		for (uint i = 0; i < 6; ++i) 
+		{
+			ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->skyboxTextures[i]);
 			if (res != nullptr)
 				texturesToLoad.push_back(res->id);
 			else
 				texturesToLoad.push_back(0);
 		}
-		texturesToLoad.shrink_to_fit();
-		App->renderer3D->cubemapTexture = App->materialImporter->LoadCubemapTexture(texturesToLoad);
-	}
 
+		App->renderer3D->skyboxTexture = App->materialImporter->LoadCubemapTexture(texturesToLoad);
+	}
+	else if (ImGui::Button("USE DEFAULT SKYBOX"))
+	{
+		if (App->materialImporter->GetSkyboxTexture() != App->renderer3D->skyboxTexture)
+		{
+			App->materialImporter->DeleteTexture(App->renderer3D->skyboxTexture);
+
+			App->renderer3D->skyboxTextures = App->materialImporter->GetSkyboxTextures();
+			App->renderer3D->skyboxTexture = App->materialImporter->GetSkyboxTexture();
+		}
+	}
 	ImGui::End();
 
 	return true;

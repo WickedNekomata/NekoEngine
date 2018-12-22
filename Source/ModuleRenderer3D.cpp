@@ -147,17 +147,15 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		App->shaderImporter->SetBinaryFormats(formats);
 	}
 
-	App->materialImporter->LoadCheckers();
-	App->materialImporter->LoadDefaultTexture();
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
+	App->materialImporter->LoadCheckers();
+	App->materialImporter->LoadDefaultTexture();
+	App->materialImporter->LoadSkyboxTexture();
 
-	cubemapTextures.reserve(6);
-	for (int i = 0; i < 6; ++i)
-		cubemapTextures.push_back(0);
-	cubemapTextures.shrink_to_fit();
-
-	App->sceneImporter->LoadCubemap(cubemapVBO, cubemapVAO);
+	skyboxTextures = App->materialImporter->GetSkyboxTextures();
+	skyboxTexture = App->materialImporter->GetSkyboxTexture();
+	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
 
 #ifndef GAMEMODE
 	// Editor camera
@@ -234,8 +232,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 
 #endif // GAME
-	if (glIsTexture(cubemapTexture))
-		DrawSkybox();
+	DrawSkybox();
 
 #ifndef GAMEMODE
 	// 3. Editor
@@ -255,9 +252,9 @@ bool ModuleRenderer3D::CleanUp()
 
 	ClearSkybox();
 
-	glDeleteVertexArrays(1, &cubemapVAO);
-	glDeleteBuffers(1, &cubemapVBO);
-	glDeleteBuffers(1, &cubemapTexture);
+	glDeleteVertexArrays(1, &skyboxVAO);
+	glDeleteBuffers(1, &skyboxVBO);
+	glDeleteTextures(1, &skyboxTexture);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	uint x, y;
@@ -633,17 +630,15 @@ void ModuleRenderer3D::DrawSkybox()
 	uint shaderProgram = App->shaderImporter->GetCubemapShaderProgram();
 	glUseProgram(shaderProgram);
 
-
 	//math::float4x4 view = glm::mat4(glm::mat3(App->camera->camera->GetOpenGLViewMatrix())); // remove translation from the view matrix
 	uint location = glGetUniformLocation(shaderProgram, "view_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLViewMatrix().ptr());
 	location = glGetUniformLocation(shaderProgram, "proj_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, App->camera->camera->GetOpenGLProjectionMatrix().ptr());
 	
-
-	glBindVertexArray(cubemapVAO);
+	glBindVertexArray(skyboxVAO);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glBindVertexArray(0);
@@ -804,11 +799,12 @@ void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 
 void ModuleRenderer3D::ClearSkybox()
 {
-	for (int i = 0; i < App->renderer3D->cubemapTextures.size(); ++i) {
-		ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->cubemapTextures[i]);
+	for (uint i = 0; i < skyboxTextures.size(); ++i) 
+	{
+		ResourceTexture* res = (ResourceTexture*)App->res->GetResource(skyboxTextures[i]);
 		if (res != nullptr)
 			App->res->SetAsUnused(res->GetUUID());
 	}
 
-	App->renderer3D->cubemapTextures.clear();
+	skyboxTextures.clear();
 }

@@ -67,12 +67,15 @@ public:
 
 	void LoadCheckers();
 	void LoadDefaultTexture();
+	void LoadSkyboxTexture();
 	uint LoadCubemapTexture(std::vector<uint>& faces);
 
 	static bool DeleteTexture(uint texture);
 
 	uint GetCheckers() const;
 	uint GetDefaultTexture() const;
+	uint GetSkyboxTexture() const;
+	std::vector<uint> GetSkyboxTextures() const;
 
 	uint GetDevILVersion() const;
 
@@ -83,6 +86,8 @@ private:
 
 	uint checkers = 0;
 	uint defaultTexture = 0;
+	uint skyboxTexture = 0;
+	std::vector<uint> skyboxTextures;
 };
 
 #endif

@@ -671,7 +671,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			tex = texRes->id;
 		else if (materialRenderer->res[i].checkers)
 			tex = App->materialImporter->GetCheckers();
-		else
+		else if (i == 0)
 			tex = App->materialImporter->GetDefaultTexture();
 		glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -714,6 +714,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	location = glGetUniformLocation(shaderProgram, "light.specular");
 	glUniform3fv(location, 1, directionalLight.specular.ptr());
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+	glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 0);
 	location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
 	location = glGetUniformLocation(shaderProgram, "Time");

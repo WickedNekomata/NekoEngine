@@ -47,38 +47,35 @@ Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
 - Game.exe
 - Gizmos
 
-## Main Core Subsystems
+## Main Core Sub-Systems
 
-For the team, it was super important to keep every subsystem as simple as possible but always with the maximum efficiency that we could obtain.
+For the team, it was super important to keep every sub-system as simple as possible, but always with the maximum efficiency that we could obtain.
 
-### GameObjects (Entity-Component-Pattern)
-In order to implement GameObjects, we followed the Entity-Component-Pattern for its modularity.
+### Game Objects (Entity-Component-Pattern)
+To implement the Game Objects, we followed the Entity-Component-Pattern, since it is modular.
 The components that can be attached are: Transform Component, Mesh Component, Material Component and Camera Component.
-
-For a fast understanding, here you have a simple sheme with a short explanation.
 
 ![](GameObjectsSheme.png)
 
-As you can see in the image above, there is a main class called Gameobject that have instances for every component attached.
-Those instances are virtual classes that inherits from a base class called Component.
+As you can see in the image above, there is a main class called 'GameObject' that has instances for every component attached.
+These instances are virtual classes that inherit from a base class called 'Component'.
 
-If we implement a n-Child tree of gameobjects using this component pattern we finally get a Unity-like gameobjects system. 
+If we implement a n-child tree of game objects using this Entity-Component-Pattern we get a Unity-like Game Objects system. 
 
 ### Resource Manager (Reference Counting, Library and Metas)
-Since the very firsts engine-system scratches, we wanted to achive an easy but efficient way to manage vram. We both approved that the best way to did it was using a Reference Counting system.
+The Resource Manager takes care of the resources, which are: Mesh Resource, Material Resource, Shader Object Resource and Shader Program Resource. 
 
-Basically, we have a Resource Manager that keeps track of every Resource (fbx, dds, shader, etc) and, thanks to a variable stored on them, we can count every reference to them. When a Resource goes from 0 to 1 references we load it on memory and the same goes when the references down from 1 to 0 but, in this case, unloading them from memory.
+We wanted to achive an easy but efficient way to manage vram. The best way to do it was using a Reference Counting system. Basically, the Resource Manager keeps track of every Resource and, thanks to a variable stored in them, we can count every reference to them. When a Resource goes from 0 to 1 references we load it to memory. The same goes when the references down from 1 to 0, but, in this case, we unload it from memory.
 
-Assimp is a very nice library to import models but, because of the quantity of data, some formats are very low to read. In order to fix this issue, we stored all meshes in a very simple format on the Library folder. The same concept was applied for every resource so, at the end of the day, the time required for loading scenes was reduced by far.
+Due to the amount of data stored in a model (FBX, etc.), some formats are very slow to read. In order to fix this issue, we store all the meshes in our own simple format in the Library folder. The same concept is applied for every resource so, at the end of the day, the time required for loading a scene is reduced by far.
 
-We also wanted to allow the user to manage his assets in a unity-style method. In order to approach it, .metas joined the party. A .meta is a text file that stores the propierties of a resource and its uuid (unique identifier) and works as a link between the asset and the resource. 
+We also wanted to allow the user to manage their assets in a Unity-style way. In order to approach it, .metas joined the party. A .meta is a text file that stores the properties of a resource and its UUID (unique identifier) and works as a link between the asset and the resource.
 
 ### GUI (Using Imgui)
-In any game engine an easy-to-use UI is a must and, thanks to Imgui library, this was super fast an simple to do.
-The way we did it was having a GUI module that works as a manager for all imgui panels. To approach the inspector panel, we implemented an OnEditor method at each component so, when a gameobject is selected, we draw its components on the inspector.
+In any game engine an easy-to-use UI is a must and, thanks to the ImGui library, this was super fast an simple to implement.
+The way we did it was having a GUI module that works as a manager for all ImGui panels. To approach the Inspector panel, we implemented an OnEditor method at each component so, when a game object is selected, we draw its components on the Inspector.
 
 ## Shaders Sub-System
-
 The engine uses a Shader Pipeline to render.
 
 <img src="game.gif" width="600"><br>

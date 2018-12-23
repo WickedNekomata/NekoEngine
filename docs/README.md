@@ -4,11 +4,13 @@ Neko Engine is a 3D game engine currently being developed by two students from C
 
 The code is written in C++.
 
+<img src="NekoEngine.PNG" width="100"><br>
+
 - GitHub repository: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
 
 ## Team
 
-![](team_photo.JPG)
+<img src="team_photo.JPG" width="100"><br>
 
 - Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
 - Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)

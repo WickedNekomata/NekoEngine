@@ -12,9 +12,40 @@ The code is written in C++.
 
 <img src="team_photo.JPG" width="600"><br>
 
-- Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
-- Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
 - Our GitHub organization: [WickedNekomata](https://github.com/WickedNekomata)
+
+### Sandra Alvarez
+Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
+
+- Time Management (Play, Pause, Tick)
+- Quadtree and Frustum Culling
+- Camera
+- Resource Manager (offline)
+- FileSystem
+- ImGui panels
+- Shaders
+- Importers and import options
+- Multitexturing
+- Assets and Library
+- Bounding Boxes
+- Gizmos
+
+### Guillem Costa
+Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
+
+- Json (Parson)
+- Save and Load
+- Game Objects and components
+- Resource Manager (online)
+- FileSystem
+- ImGui panels
+- Shaders
+- Selection
+- Mouse picking
+- Skybox
+- Docking
+- Game.exe
+- Gizmos
 
 ## Main Core Subsystems
 

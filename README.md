@@ -18,6 +18,7 @@ The code is written in C++.
 - Skybox
 - Normal map (multitexturing with shaders). E.g.: the Brick Wall uses it
 - Uniforms are shown in Inspector and can be modified in real-time from there
+- Shader program binary
 
 ### Shaders sub-system
 

@@ -50,6 +50,7 @@ bool ModuleScene::Start()
 	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 #endif
+	App->GOs->LoadScene("Settings/GameReady.nekoScene");
 
 	return true;
 }

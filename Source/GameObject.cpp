@@ -108,7 +108,11 @@ void GameObject::OnSystemEvent(System_Event event)
 		break;
 	case System_Event_Type::ShaderProgramChanged:
 #ifndef GAMEMODE // This sucks
-		materialRenderer->UpdateUniforms();
+		if (!App->scene->FirstFrame) // This sucks even more
+		{
+			materialRenderer->UpdateUniforms();
+			App->scene->FirstFrame = false;
+		}
 #endif
 		break;
 	}

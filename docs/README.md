@@ -25,7 +25,7 @@ The components that can be attached are: Transform Component, Mesh Component, Ma
 
 For a fast understanding, here you have a simple sheme with a short explanation.
 
-![](gameobjects sheme.png)
+![](GameObjectsSheme.png)
 
 As you can see in the image above, there is a main class called Gameobject that have instances for every component attached.
 Those instances are virtual classes that inherits from a base class called Component.

@@ -9,7 +9,7 @@ The code is written in C++.
 
 ## Team
 
-
+![](team_photo.JPG)
 
 - Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
 - Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
@@ -18,6 +18,9 @@ The code is written in C++.
 ## Main Core Subsystems
 
 ## Shaders Subsystem
+
+![](driver_graphics_pipeline.jpg)
+[Image Source](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_shaders/opengl_shaders.html)
 
 ## Video
 
@@ -47,6 +50,7 @@ The code is written in C++.
 
 ## License
 
+```
 MIT License
 
 Copyright (c) 2018 WickedNekomata (Sandra Alvarez & Guillem Costa)
@@ -68,3 +72,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```

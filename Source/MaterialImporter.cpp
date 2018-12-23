@@ -591,6 +591,8 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 	}
 	else
 		CONSOLE_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
+
+	return ret;
 }
 
 void MaterialImporter::SetIsAnisotropySupported(bool isAnisotropySupported)

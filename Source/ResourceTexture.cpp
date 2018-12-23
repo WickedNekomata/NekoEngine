@@ -24,9 +24,6 @@ bool ResourceTexture::LoadInMemory()
 
 	bool ret = App->materialImporter->Load(exportedFile.data(), this, textureImportSettings);
 
-	if (!ret)
-		return ret;
-
 	return ret;
 }
 

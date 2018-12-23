@@ -179,14 +179,13 @@ update_status ModuleRenderer3D::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-#include "imgui/imgui.h"
-
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
 {
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
+	DrawSkybox();
 
 	// 1. Level geometry
 	App->scene->Draw();
@@ -199,9 +198,9 @@ update_status ModuleRenderer3D::PostUpdate()
 		for (uint i = 0; i < cameraComponents.size(); ++i)
 			cameraComponents[i]->UpdateTransform();
 
-		std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
+		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
 
-		for (int i = meshComponents.size() - 1; i >= 0 ; --i)
+		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->GetSeenLastFrame())
 				DrawMesh(meshComponents[i]);
@@ -232,11 +231,6 @@ update_status ModuleRenderer3D::PostUpdate()
 		App->debugDrawer->EndDebugDraw();
 	}
 
-
-#endif // GAME
-	DrawSkybox();
-
-#ifndef GAMEMODE
 	// 3. Editor
 	App->gui->Draw();
 #endif // GAME

@@ -13,30 +13,31 @@ out vec3 fPosition;
 out vec3 fNormal;
 out vec4 fColor;
 out vec2 fTexCoord;
-
 out vec3 startPos;
 
-struct Wave {
+struct Wave 
+{
 float speed;
-float height;
-float amount;
+float amplitude;
+float frequency;
 };
 
 uniform float Time;
 uniform Wave wave;
 
 void main()
-{            
-fTexCoord = texCoord;
+{    
 vec3 pos = position;
-pos.z += sin((Time * wave.speed) + (pos.x * pos.y * wave.amount)) * wave.height;
-fTexCoord.xy += sin((Time * 0.2) + (pos.x * pos.y * 0.0001)) * 0.2;
+fTexCoord = texCoord;
 
-gl_Position = mvp_matrix * vec4(pos, 1.0);
+// Wave
+pos.y += sin((Time * wave.speed) + (pos.x * pos.z * wave.frequency)) * wave.amplitude;
+fTexCoord.xy += sin((Time * 0.2) + (pos.x * pos.z * 0.0001)) * 0.2;
     
 fPosition = vec3(model_matrix * vec4(pos, 1.0));
 fNormal = normalize(normal_matrix * normal);
 fColor = color;
-
 startPos = vec3(model_matrix * vec4(position, 1.0));
+
+gl_Position = mvp_matrix * vec4(pos, 1.0);
 }

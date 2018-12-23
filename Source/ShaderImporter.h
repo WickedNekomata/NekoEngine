@@ -49,13 +49,15 @@
 "\n" \
 "out vec4 FragColor;\n" \
 "\n" \
-"struct Material {\n" \
+"struct Material\n" \
+"{\n" \
 "	sampler2D albedo;\n" \
 "	sampler2D specular;\n" \
 "	float shininess;\n" \
 "};\n" \
 "\n" \
-"struct Light {\n" \
+"struct Light\n" \
+"{\n" \
 "	vec3 direction;\n" \
 "\n" \
 "	vec3 ambient;\n" \
@@ -97,10 +99,14 @@
 "\n" \
 "void main()\n" \
 "{\n" \
-"	vec3 a = vec3(texture(material.albedo, fTexCoord));\n" \
+"	vec4 albedo = texture(material.albedo, fTexCoord);\n" \
+"	if (albedo.a < 0.1)\n" \
+"		discard;\n" \
+"\n" \
+"	vec3 a = vec3(albedo);\n" \
 "	vec3 s = vec3(texture(material.specular, fTexCoord));\n" \
 "	vec3 phong = phong(a, a, s, 32.0, true);\n" \
-"	FragColor = vec4(phong, texture(material.albedo, fTexCoord).w);\n" \
+"	FragColor = vec4(phong, albedo.a);\n" \
 "}"
 
 // TODO: move operation to ignore translation at view to renderer and do it on cpu. we wanna do it once

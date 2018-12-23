@@ -19,21 +19,14 @@ out vec2 fTexCoord;
 out mat3 TBN;
 out vec3 startPos;
 
-struct Wave {
-float speed;
-float amplitude;
-float amount;
-};
-
-struct Ripple {
+struct Ripple 
+{
 float speed;
 float amplitude;
 float frequency;
-float distance;
 };
 
 uniform float Time;
-uniform Wave wave;
 uniform Ripple ripple;
 
 void main()
@@ -45,19 +38,15 @@ TBN = mat3(T, B, N);
 
 vec3 pos = position;
 
-// Wave
-pos.y += sin((Time * wave.speed) + (pos.x * pos.z * wave.amount)) * wave.amplitude;
-
 // Ripple
-//float distance = length(position);
-//pos.y += sin((Time * ripple.speed) + (2.0 * PI * distance * ripple.frequency)) * ripple.amplitude;
-    
-gl_Position = mvp_matrix * vec4(pos, 1.0);
+float distance = length(position);
+pos.y += sin((Time * ripple.speed) + (2.0 * PI * distance * ripple.frequency)) * ripple.amplitude;
     
 fPosition = vec3(model_matrix * vec4(pos, 1.0));
 fNormal = normal;
 fColor = color;
 fTexCoord = texCoord;
-
 startPos = vec3(model_matrix * vec4(position, 1.0));
+
+gl_Position = mvp_matrix * vec4(pos, 1.0);
 }

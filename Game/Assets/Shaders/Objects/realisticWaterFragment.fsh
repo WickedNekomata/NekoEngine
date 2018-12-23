@@ -7,19 +7,20 @@ in vec3 fNormal;
 in vec4 fColor;
 in vec2 fTexCoord;
 in mat3 TBN;
-
 in vec3 startPos;
 
 out vec4 FragColor;
 
-struct Material {
+struct Material 
+{
 sampler2D albedo;
 sampler2D specular;
 sampler2D normalMap;
 float shininess;
 };
 
-struct Light {
+struct Light 
+{
 vec3 direction;
 
 vec3 ambient;
@@ -27,16 +28,17 @@ vec3 diffuse;
 vec3 specular;
 };
 
-struct Wave {
+struct Ripple 
+{
 float speed;
 float amplitude;
-float amount;
+float frequency;
 };
 
 uniform vec3 viewPos;
 uniform Light light;
 uniform Material material;
-uniform Wave wave;
+uniform Ripple ripple;
 uniform samplerCube skybox;
 
 vec3 FragNormal;
@@ -80,19 +82,19 @@ vec4 specular = texture(material.specular, fTexCoord);
 vec3 a = vec3(albedo);
 vec3 s = vec3(specular);
 
-// More blue on top, more white on bottom
-float waveTop = startPos.y + wave.amplitude;
-float waveBottom = startPos.y;
+// White on top, blue on bottom
+float rippleTop = startPos.y + ripple.amplitude;
+float rippleBottom = startPos.y;
 vec4 white = vec4(1.0,1.0,1.0,1.0);
 vec4 blue = vec4(0.0,0.5,0.8,1.0);
 
 float mixAmount = 0.0;
-float range = waveTop - waveBottom;
+float range = rippleTop - rippleBottom;
 if (range > 0)
-mixAmount = (fPosition.y - waveBottom) / range;
+mixAmount = (fPosition.y - rippleBottom) / range;
 vec4 color = mix(blue, white, mixAmount);
 
-a = vec3(mix(albedo, color, 0.8));
+a = vec3(color);
 
 // Reflection and refraction in the water
 vec3 lightDir = normalize(-light.direction);
@@ -112,6 +114,6 @@ vec4 refColour = mix(reflectionColour, refractionColour, refractiveFactor);
 // Final colour
 vec3 finalColour = vec3(mix(vec4(a, albedo.a), refColour, 0.5));
 
-vec3 phong = phong(finalColour, finalColour, s, material.shininess, false);
-FragColor = vec4(phong, 1.0);
+vec3 phong = phong(finalColour, finalColour, s, material.shininess, true);
+FragColor = vec4(phong, refColour.a);
 }

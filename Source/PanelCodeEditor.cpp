@@ -150,12 +150,13 @@ bool PanelCodeEditor::Draw()
 void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUUID)
 {
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
-	assert(shaderObject != nullptr);
+	if (shaderObject != nullptr)
+	{
+		enabled = true;
+		this->shaderObjectUUID = shaderObjectUUID;
 
-	enabled = true;
-	this->shaderObjectUUID = shaderObjectUUID;
-
-	editor.SetText(shaderObject->GetSource());
+		editor.SetText(shaderObject->GetSource());
+	}
 }
 
 uint PanelCodeEditor::GetShaderObjectUUID() const

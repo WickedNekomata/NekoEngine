@@ -1,6 +1,6 @@
 # Neko Engine
 
-Neko Engine is a 3D game engine currently being developed by two students from CITM-UPC Terrassa, Sandra Alvarez and Guillem Costa. The entire development has been supervised by the leturer Ricard Pillosu.
+Neko Engine is a 3D game engine currently being developed by two students from CITM-UPC Terrassa, Sandra Alvarez and Guillem Costa. The entire development has been supervised by the lecturer Ricard Pillosu.
 
 The code is written in C++.
 
@@ -17,9 +17,27 @@ The code is written in C++.
 
 ## Main Core Subsystems
 
+### GameObjects (Entity-Component-Pattern)
+In order to implement GameObjects, we followed the Entity-Component-Pattern for its modularity.
+The components that can be attached are: Transform Component, Mesh Component, Material Component and Camera Component.
+
+For a fast understanding, here you have a simple sheme with a short explanation.
+
+
+As you can see in the image above, there is a main class called Gameobject that have instances for every component attached.
+Those instances are virtual classes that inherits from a base class called Component.
+
+If we implement a n-Child tree of gameobjects using this component pattern we finally get a Unity-like gameobjects system. 
+
+### Resource Manager (Reference Counting)
+
+### GUI (Using Imgui)
+
+
 ## Shaders Subsystem
 
 ![](driver_graphics_pipeline.jpg)
+
 [Image Source](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_shaders/opengl_shaders.html)
 
 ## Video

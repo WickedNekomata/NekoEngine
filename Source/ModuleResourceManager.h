@@ -85,8 +85,6 @@ private:
 
 	std::map<uint, Resource*> resources;
 	std::vector<ImportSettings*> importsSettings;
-
-	bool checkInAssets = true;
 };
 
 #endif

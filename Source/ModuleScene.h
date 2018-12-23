@@ -77,8 +77,6 @@ public:
 	GameObject* root = nullptr;
 
 	Quadtree quadtree;
-
-	bool FirstFrame = true; // this sucks even more
 };
 
 #endif

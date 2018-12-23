@@ -45,7 +45,6 @@ bool ModuleResourceManager::Start()
 	newEvent.type = System_Event_Type::RefreshFiles;
 	App->PushSystemEvent(newEvent);
 #else
-	checkInAssets = false;
 	std::string path = DIR_LIBRARY;
 	RecursiveImportFilesFromLibrary(DIR_LIBRARY, path);
 #endif
@@ -733,15 +732,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 
 				for (std::list<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
 				{
-					// Check if the resource exists in Assets or Library
-					const char* dir = nullptr;
-					std::string outputFile;
-					if (checkInAssets)
-						dir = DIR_ASSETS;
-					else
-						dir = DIR_LIBRARY;
-					outputFile = dir;
-					if (App->fs->RecursiveExists((*it).data(), dir, outputFile))
+					// Check if the resource exists in Assets
+					std::string outputFile = DIR_ASSETS;
+					if (App->fs->RecursiveExists((*it).data(), DIR_ASSETS, outputFile))
 					{
 						uint UUID = 0;
 						std::list<uint> UUIDs;

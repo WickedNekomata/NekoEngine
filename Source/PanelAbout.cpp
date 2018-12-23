@@ -69,6 +69,9 @@ bool PanelAbout::Draw()
 		if (ImGui::Button("ImGui")) { OpenInBrowser("https://github.com/ocornut/imgui"); }
 		ImGui::SameLine(); ImGui::TextWrapped("%s", ImGui::GetVersion());
 
+		if (ImGui::Button("ImGuiColorTextEdit")) { OpenInBrowser("https://github.com/BalazsJako/ImGuiColorTextEdit"); }
+		ImGui::SameLine(); ImGui::TextWrapped("1.0");
+
 		if (ImGui::Button("ImGuizmo")) { OpenInBrowser("https://github.com/CedricGuillemet/ImGuizmo"); }
 		ImGui::SameLine(); ImGui::TextWrapped("1.0");
 

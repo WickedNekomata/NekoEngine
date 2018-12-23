@@ -71,7 +71,7 @@ Due to the amount of data stored in a model (FBX, etc.), some formats are very s
 
 We also wanted to allow the user to manage their assets in a Unity-style way. In order to approach it, .metas joined the party. A .meta is a text file that stores the properties of a resource and its UUID (unique identifier) and works as a link between the asset and the resource.
 
-### GUI (Using Imgui)
+### GUI (using ImGui)
 In any game engine an easy-to-use UI is a must and, thanks to the ImGui library, this was super fast an simple to implement.
 The way we did it was having a GUI module that works as a manager for all ImGui panels. To approach the Inspector panel, we implemented an OnEditor method at each component so, when a game object is selected, we draw its components on the Inspector.
 

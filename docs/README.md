@@ -69,6 +69,7 @@ The way we did it was having a GUI module that works as a manager for all imgui 
 	- Assimp 4.1
 	- DevIL 1.8
 	- ImGui 1.66 WIP
+	- ImGuiColorTextEdit 1.0
 	- ImGuizmo 1.0
 	- MathGeoLib 1.5
 	- PCG Random Number Generator 0.94

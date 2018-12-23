@@ -133,6 +133,8 @@ public:
 
 	pcg32_random_t			rng;
 
+	bool firstFrame = true;
+
 private:
 
 	// Framerate

@@ -61,10 +61,13 @@ bool ResourceShaderProgram::Link(bool comment)
 	}
 	else
 	{
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::ShaderProgramChanged;
-		newEvent.shaderEvent.shader = shaderProgram;
-		App->PushSystemEvent(newEvent);
+		if (!App->firstFrame)
+		{
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::ShaderProgramChanged;
+			newEvent.shaderEvent.shader = shaderProgram;
+			App->PushSystemEvent(newEvent);
+		}
 	}
 
 	return ret;

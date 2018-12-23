@@ -125,6 +125,8 @@ bool Application::Init()
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)	
 		ret = (*item)->Start();
 
+	firstFrame = false;
+
 	perfTimer.Start();
 
 	return ret;

@@ -107,11 +107,7 @@ void GameObject::OnSystemEvent(System_Event event)
 		RecursiveRecalculateBoundingBoxes();
 		break;
 	case System_Event_Type::ShaderProgramChanged:
-#ifndef GAMEMODE // This sucks
-		if (!App->scene->FirstFrame)
-			materialRenderer->UpdateUniforms();
-		App->scene->FirstFrame = false;
-#endif
+		materialRenderer->UpdateUniforms();
 		break;
 	}
 }

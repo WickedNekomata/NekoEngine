@@ -502,7 +502,7 @@ void ComponentMaterial::OnLoad(JSON_Object* file)
 
 	if (program == nullptr || !program->isValid)
 	{
-		CONSOLE_LOG("COMPONENT MATERIAL: Invalid Shader");
+		//CONSOLE_LOG("COMPONENT MATERIAL: Invalid Shader");
 		return;
 	}
 

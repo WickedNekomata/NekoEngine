@@ -474,6 +474,6 @@ bool ModuleGOs::InvalidateResource(const Resource* resource)
 		}
 	}
 
-	assert(resource->CountReferences() <= 0);
+	//assert(resource->CountReferences() <= 0);
 	return true;
 }

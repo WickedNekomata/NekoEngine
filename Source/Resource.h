@@ -23,10 +23,10 @@ public:
 	ResourceType GetType() const;
 
 	bool IsInMemory() const;
-	virtual uint LoadMemory();
-	virtual uint UnloadMemory();
+	virtual int LoadMemory();
+	virtual int UnloadMemory();
 
-	uint CountReferences() const;
+	int CountReferences() const;
 
 private:
 
@@ -45,7 +45,7 @@ protected:
 	const char* name = nullptr;
 	ResourceType type = ResourceType::NoResourceType;
 	uint UUID = 0;
-	uint count = 0;
+	int count = 0;
 };
 
 

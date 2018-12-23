@@ -16,7 +16,7 @@ ResourceShaderObject::~ResourceShaderObject()
 	DeleteShaderObject(shaderObject);
 }
 
-uint ResourceShaderObject::LoadMemory()
+int ResourceShaderObject::LoadMemory()
 {
 	return LoadInMemory();
 }

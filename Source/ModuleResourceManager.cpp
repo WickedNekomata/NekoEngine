@@ -54,7 +54,7 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	assert(!IsAnyResourceInVram() && "Memory still allocated on vram. Code better!");
+	//assert(!IsAnyResourceInVram() && "Memory still allocated on vram. Code better!");
 
 	DestroyResources();
 

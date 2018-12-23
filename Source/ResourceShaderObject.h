@@ -19,8 +19,8 @@ public:
 	ResourceShaderObject(ResourceType type, uint uuid);
 	~ResourceShaderObject();
 
-	uint LoadMemory();
-	uint UnloadMemory() { return 0; }
+	int LoadMemory();
+	int UnloadMemory() { return 0; }
 
 	void SetSource(const char* source, uint size);
 	const char* GetSource() const;

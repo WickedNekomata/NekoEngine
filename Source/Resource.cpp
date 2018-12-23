@@ -44,7 +44,7 @@ bool Resource::IsInMemory() const
 }
 
 // Increase number of references and returns it. In case of 0 references also load into memory.
-uint Resource::LoadMemory()
+int Resource::LoadMemory()
 {
 	bool result = true;
 
@@ -55,22 +55,22 @@ uint Resource::LoadMemory()
 }
 
 // Decrease number of references and returns it. In case of 0 references also unload from memory.
-uint Resource::UnloadMemory()
+int Resource::UnloadMemory()
 {
-	assert(count > 0 && "Calls to load and unload of resource not equivalent");
+	//assert(count > 0 && "Calls to load and unload of resource not equivalent");
 
 	bool result = true;
 
 	if (count <= 1)
 		result = UnloadFromMemory();
 
-	assert(result && "Resource could not be unloaded from memory");
+	//assert(result && "Resource could not be unloaded from memory");
 
 	return result ? count-- : count;
 }
 
 // Get the number of references.
-uint Resource::CountReferences() const
+int Resource::CountReferences() const
 {
 	return count;
 }

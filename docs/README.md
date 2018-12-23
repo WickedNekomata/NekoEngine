@@ -140,7 +140,7 @@ Every time we open the engine, we try to load this Shader Binary. If the loading
 
 - Source: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
 
-- Latest Release: [NekoEngine](https://github.com/WickedNekomata/NekoEngine/Releases)
+- Latest Release: [NekoEngine](https://github.com/WickedNekomata/NekoEngine/releases/tag/v3.0)
 
 ### Tools used to develop the engine
 

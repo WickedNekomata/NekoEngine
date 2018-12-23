@@ -19,8 +19,8 @@ public:
 	ResourceShaderProgram(ResourceType type, uint uuid);
 	~ResourceShaderProgram();
 
-	uint LoadMemory();
-	uint UnloadMemory() { return 0; }
+	int LoadMemory();
+	int UnloadMemory() { return 0; }
 
 	void SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects);
 	std::list<ResourceShaderObject*> GetShaderObjects(ShaderType shaderType = ShaderType::NoShaderType) const;

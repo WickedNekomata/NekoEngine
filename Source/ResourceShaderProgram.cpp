@@ -12,7 +12,7 @@ ResourceShaderProgram::~ResourceShaderProgram()
 	DeleteShaderProgram(shaderProgram);
 }
 
-uint ResourceShaderProgram::LoadMemory()
+int ResourceShaderProgram::LoadMemory()
 {
 	return LoadInMemory();
 }

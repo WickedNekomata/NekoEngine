@@ -75,7 +75,7 @@ The way we did it was having a GUI module that works as a manager for all imgui 
 	- Parson
 	- PhysFS 3.0.1
 	- MMGR
-	- ImGui Code Edit
+	- ImGuiColorTextEdit
 
 ## License
 

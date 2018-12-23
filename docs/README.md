@@ -129,6 +129,17 @@ The simplicity of these modifications allows to try lots of values and achieve t
 When a new Shader Program is linked and saved, we automatically generate its Shader Binary. 
 Every time we open the engine, we try to load this Shader Binary. If the loading fails, we Compile its Shader Objects and Link the Shader Program again.
 
+## Other Features
+- Time Management
+- Raycast
+- Quadtree and Frustum Culling
+- Camera Editor
+- Scene Serialization
+- Importers (Scene, Material and Shaders)
+- Event System
+- Mouse Picking
+- FileSystem
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/DVAqsAiQ2Us" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

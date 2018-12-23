@@ -4,13 +4,13 @@ Neko Engine is a 3D game engine currently being developed by two students from C
 
 The code is written in C++.
 
-<img src="NekoEngine.PNG" width="100"><br>
+<img src="NekoEngine.PNG" width="500"><br>
 
 - GitHub repository: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
 
 ## Team
 
-<img src="team_photo.JPG" width="100"><br>
+<img src="team_photo.JPG" width="500"><br>
 
 - Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
 - Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
@@ -49,6 +49,8 @@ The way we did it was having a GUI module that works as a manager for all imgui 
 ## Shaders Sub-System
 
 The engine uses a Shader Pipeline to render.
+
+<img src="game.gif" width="500"><br>
  
 Each mesh has its own VBO, IBO and VAO. The VBO contains positions, normals, colours, texture coordinates, tangents and bitangents.
 To manage the data, compilation and linking of shaders, we have the Shader Object and the Shader Program classes. 
@@ -92,6 +94,8 @@ Depending on the Shader Program used by the Component Material, it will use more
 ### Uniforms
 If the Shader Program used by the Component Material has Uniforms, they will appear in the Inspector. From there, they can be modified in real-time.
 The simplicity of these modifications allows to try lots of values and achieve the best combinations in the Shader Programs.
+
+<img src="editor.gif" width="500"><br>
 
 ### Binary Shader Loading
 When a new Shader Program is linked and saved, we automatically generate its Shader Binary. 

@@ -6,7 +6,6 @@ The code is written in C++.
 
 - GitHub repository: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
 
-
 ## Team
 
 ![](team_photo.JPG)
@@ -52,6 +51,8 @@ The way we did it was having a GUI module that works as a manager for all imgui 
 [Image Source](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_shaders/opengl_shaders.html)
 
 ## Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DVAqsAiQ2Us" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Source code and latest release
 

@@ -108,7 +108,9 @@ void GameObject::OnSystemEvent(System_Event event)
 		break;
 	case System_Event_Type::ShaderProgramChanged:
 #ifndef GAMEMODE // This sucks
-		materialRenderer->UpdateUniforms();
+		if (!App->scene->FirstFrame)
+			materialRenderer->UpdateUniforms();
+		App->scene->FirstFrame = false;
 #endif
 		break;
 	}
@@ -501,6 +503,8 @@ void GameObject::RecursiveForceAllResources(uint forceRes) const
 	{
 		for (int i = 0; i < materialRenderer->res.size(); ++i)
 			materialRenderer->res[i].res = forceRes;
+
+		materialRenderer->shaderProgramUUID = forceRes;
 	}
 
 	if (meshRenderer != nullptr)

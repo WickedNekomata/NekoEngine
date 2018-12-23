@@ -67,12 +67,17 @@ bool MaterialImporter::Import(const char* importFile, std::string& outputFile, c
 	App->fs->GetFileName(importFile, importFileName);
 	outputFile = importFileName.data();
 
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(importFile) + 1, importFile); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
 	char* buffer;
 	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
 		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
-		ret = Import(buffer, size, outputFile, importSettings);
+		ret = Import(buffer, size, outputFile, importSettings, metaFile);
 		RELEASE_ARRAY(buffer);
 	}
 	else
@@ -81,7 +86,7 @@ bool MaterialImporter::Import(const char* importFile, std::string& outputFile, c
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings, const char* metaFile) const
 {
 	bool ret = false;
 
@@ -139,7 +144,12 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				uint UUID = App->GenerateRandomNumber();
+				uint UUID = 0;
+				if (metaFile != nullptr && App->fs->Exists(metaFile))
+					GetTextureUUIDFromMeta(metaFile, UUID);
+				if (UUID == 0)
+					UUID = App->GenerateRandomNumber();
+
 				outputFile = std::to_string(UUID);
 
 				if (App->fs->SaveInGame((char*)data, size, FileType::TextureFile, outputFile) > 0)

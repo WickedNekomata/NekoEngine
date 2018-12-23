@@ -1,8 +1,8 @@
 [
     {
         "Name": "RootNode",
-        "UUID": 906973970,
-        "Parent UUID": 3358642226,
+        "UUID": 523417742,
+        "Parent UUID": 646493641,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "Name": "Sky001",
-        "UUID": 2625129618,
-        "Parent UUID": 906973970,
+        "UUID": 1896984611,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -41,8 +41,8 @@
     },
     {
         "Name": "Dummy001",
-        "UUID": 902986510,
-        "Parent UUID": 906973970,
+        "UUID": 1162689442,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -61,8 +61,8 @@
     },
     {
         "Name": "City_building_004",
-        "UUID": 2976596340,
-        "Parent UUID": 902986510,
+        "UUID": 766256822,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -137,8 +137,8 @@
     },
     {
         "Name": "City_building_001",
-        "UUID": 1431655995,
-        "Parent UUID": 902986510,
+        "UUID": 4128191079,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -213,8 +213,8 @@
     },
     {
         "Name": "City_building_007",
-        "UUID": 2404573296,
-        "Parent UUID": 902986510,
+        "UUID": 1582688607,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -289,8 +289,8 @@
     },
     {
         "Name": "City_building_008",
-        "UUID": 806254136,
-        "Parent UUID": 902986510,
+        "UUID": 836735037,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -365,8 +365,8 @@
     },
     {
         "Name": "Line002",
-        "UUID": 1090449482,
-        "Parent UUID": 902986510,
+        "UUID": 1812538880,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -441,8 +441,8 @@
     },
     {
         "Name": "Plane001",
-        "UUID": 1315245199,
-        "Parent UUID": 902986510,
+        "UUID": 927655382,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -517,8 +517,8 @@
     },
     {
         "Name": "City_building_010",
-        "UUID": 3417554814,
-        "Parent UUID": 902986510,
+        "UUID": 3791022959,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -537,8 +537,8 @@
     },
     {
         "Name": "City_building_011",
-        "UUID": 1868374596,
-        "Parent UUID": 902986510,
+        "UUID": 927849045,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -613,8 +613,8 @@
     },
     {
         "Name": "City_building_013",
-        "UUID": 834624699,
-        "Parent UUID": 902986510,
+        "UUID": 243917178,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -689,8 +689,8 @@
     },
     {
         "Name": "City_building_014",
-        "UUID": 4132779034,
-        "Parent UUID": 902986510,
+        "UUID": 489897367,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -765,8 +765,8 @@
     },
     {
         "Name": "City_building_016",
-        "UUID": 1357950573,
-        "Parent UUID": 902986510,
+        "UUID": 2239667856,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -785,8 +785,8 @@
     },
     {
         "Name": "City_building_017",
-        "UUID": 1941937382,
-        "Parent UUID": 902986510,
+        "UUID": 2099816465,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -805,8 +805,8 @@
     },
     {
         "Name": "City_building_022",
-        "UUID": 623848669,
-        "Parent UUID": 902986510,
+        "UUID": 2767449322,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -881,8 +881,8 @@
     },
     {
         "Name": "City_building_023",
-        "UUID": 2203540604,
-        "Parent UUID": 902986510,
+        "UUID": 4098289912,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -957,8 +957,8 @@
     },
     {
         "Name": "City_building_024",
-        "UUID": 1140774852,
-        "Parent UUID": 902986510,
+        "UUID": 627542488,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1033,8 +1033,8 @@
     },
     {
         "Name": "City_building_026",
-        "UUID": 2786986609,
-        "Parent UUID": 902986510,
+        "UUID": 3591205787,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1109,8 +1109,8 @@
     },
     {
         "Name": "City_building_028",
-        "UUID": 3950558166,
-        "Parent UUID": 902986510,
+        "UUID": 1486676986,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1185,8 +1185,8 @@
     },
     {
         "Name": "Object010",
-        "UUID": 1075936686,
-        "Parent UUID": 902986510,
+        "UUID": 899720252,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1261,8 +1261,8 @@
     },
     {
         "Name": "City_building_030",
-        "UUID": 3587139290,
-        "Parent UUID": 902986510,
+        "UUID": 3926393472,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1337,8 +1337,8 @@
     },
     {
         "Name": "City_building_031",
-        "UUID": 2111998427,
-        "Parent UUID": 902986510,
+        "UUID": 1247291879,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1413,8 +1413,8 @@
     },
     {
         "Name": "City_building_032",
-        "UUID": 1955113245,
-        "Parent UUID": 902986510,
+        "UUID": 1891077375,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1489,8 +1489,8 @@
     },
     {
         "Name": "City_building_033",
-        "UUID": 2896165758,
-        "Parent UUID": 902986510,
+        "UUID": 1154347491,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1565,8 +1565,8 @@
     },
     {
         "Name": "City_building_034",
-        "UUID": 2318192606,
-        "Parent UUID": 902986510,
+        "UUID": 3095953813,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1641,8 +1641,8 @@
     },
     {
         "Name": "City_building_035",
-        "UUID": 1354498822,
-        "Parent UUID": 902986510,
+        "UUID": 1517091544,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1717,8 +1717,8 @@
     },
     {
         "Name": "City_building_036",
-        "UUID": 1771633011,
-        "Parent UUID": 902986510,
+        "UUID": 132959528,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1793,8 +1793,8 @@
     },
     {
         "Name": "City_building_037",
-        "UUID": 3163681092,
-        "Parent UUID": 902986510,
+        "UUID": 3075584045,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1869,8 +1869,8 @@
     },
     {
         "Name": "City_building_038",
-        "UUID": 3818879286,
-        "Parent UUID": 902986510,
+        "UUID": 1134999349,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1945,8 +1945,8 @@
     },
     {
         "Name": "City_building_039",
-        "UUID": 2940603296,
-        "Parent UUID": 902986510,
+        "UUID": 611213323,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2021,8 +2021,8 @@
     },
     {
         "Name": "City_building_040",
-        "UUID": 3252797363,
-        "Parent UUID": 902986510,
+        "UUID": 2818834727,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2097,8 +2097,8 @@
     },
     {
         "Name": "City_building_041",
-        "UUID": 2326375229,
-        "Parent UUID": 902986510,
+        "UUID": 419493539,
+        "Parent UUID": 1162689442,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2173,8 +2173,8 @@
     },
     {
         "Name": "Camera001",
-        "UUID": 3711798747,
-        "Parent UUID": 906973970,
+        "UUID": 2717218655,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2193,8 +2193,8 @@
     },
     {
         "Name": "Camera001.Target",
-        "UUID": 3285503641,
-        "Parent UUID": 906973970,
+        "UUID": 2057797366,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2213,8 +2213,8 @@
     },
     {
         "Name": "Spot001",
-        "UUID": 294797097,
-        "Parent UUID": 906973970,
+        "UUID": 4095736763,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2233,8 +2233,8 @@
     },
     {
         "Name": "Spot001.Target",
-        "UUID": 883457826,
-        "Parent UUID": 906973970,
+        "UUID": 1367866126,
+        "Parent UUID": 523417742,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2248,6 +2248,123 @@
                 "ScaleX": 1,
                 "ScaleY": 1,
                 "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "RootNode",
+        "UUID": 2953882245,
+        "Parent UUID": 646493641,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "pPlane1",
+        "UUID": 3676762092,
+        "Parent UUID": 2953882245,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 2.4373230934143066,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 4128301645
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 2800210215,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 2800210215,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 18288615,
+                "Uniforms": [
+                    {
+                        "Type": 5126,
+                        "Name": "wave.speed",
+                        "Value": 1
+                    },
+                    {
+                        "Type": 5126,
+                        "Name": "wave.amplitude",
+                        "Value": 1
+                    },
+                    {
+                        "Type": 5126,
+                        "Name": "wave.frequency",
+                        "Value": 0.05000000074505806
+                    },
+                    {
+                        "Type": 5126,
+                        "Name": "material.shininess",
+                        "Value": 1
+                    }
+                ]
             }
         ]
     }

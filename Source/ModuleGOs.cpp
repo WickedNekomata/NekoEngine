@@ -393,7 +393,7 @@ bool ModuleGOs::LoadScene(const char* file)
 	return true;
 }
 
-bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::map<std::string, uint>& meshes) const
+bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::vector<std::string>& meshes, std::vector<uint>& UUIDs) const
 {
 	char* buffer;
 	uint size = App->fs->Load(file, &buffer);
@@ -430,7 +430,10 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::map<std::string
 			cObject = json_array_get_object(jsonComponents, i);
 
 			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::MeshComponent)
-				meshes[json_object_get_string(gObject, "Name")] = json_object_get_number(cObject, "ResourceMesh");
+			{
+				meshes.push_back(json_object_get_string(gObject, "Name"));
+				UUIDs.push_back(json_object_get_number(cObject, "ResourceMesh"));
+			}
 		}
 	}
 

@@ -570,19 +570,20 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 		case ResourceType::MeshResource:
 		{
 			// Create a new resource for each mesh
-			std::map<std::string, uint> meshes;
-			App->GOs->GetMeshResourcesFromScene(outputFile.data(), meshes);
+			std::vector<std::string> meshes;
+			std::vector<uint> UUIDs;
+			App->GOs->GetMeshResourcesFromScene(outputFile.data(), meshes, UUIDs);
 
-			for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+			for (uint i = 0; i < meshes.size(); ++i)
 			{
-				ResourceMesh* resource = (ResourceMesh*)CreateNewResource(type, it->second);
+				ResourceMesh* resource = (ResourceMesh*)CreateNewResource(type, UUIDs[i]);
 
-				resource->SetName(it->first.data());
+				resource->SetName(meshes[i].data());
 
 				resource->file = fileInAssets;
 				resource->exportedFile = DIR_LIBRARY_MESHES;
 				resource->exportedFile.append("/");
-				resource->exportedFile.append(std::to_string(it->second));
+				resource->exportedFile.append(std::to_string(UUIDs[i]));
 				resource->exportedFile.append(EXTENSION_MESH);
 				resources.push_back(resource);
 			}
@@ -595,11 +596,11 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			{
 				outputMetaFile = metaFile;
 
-				std::list<uint> UUIDs;
-				for (std::map<std::string, uint>::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
-					UUIDs.push_back(it->second);
+				std::list<uint> metaUUIDs;
+				for (uint i = 0; i < UUIDs.size(); ++i)
+					metaUUIDs.push_back(UUIDs[i]);
 
-				App->sceneImporter->SetMeshUUIDsToMeta(metaFile, UUIDs);
+				App->sceneImporter->SetMeshUUIDsToMeta(metaFile, metaUUIDs);
 
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
@@ -733,8 +734,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				for (std::list<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
 				{
 					// Check if the resource exists in Assets
-					std::string outputFile = DIR_ASSETS;
-					if (App->fs->RecursiveExists((*it).data(), DIR_ASSETS, outputFile))
+					std::string outputFile;
+#ifndef GAMEMODE
+					outputFile = DIR_ASSETS;
+#else
+					outputFile = DIR_LIBRARY;
+#endif
+					if (App->fs->RecursiveExists((*it).data(), outputFile.data(), outputFile))
 					{
 						uint UUID = 0;
 						std::list<uint> UUIDs;

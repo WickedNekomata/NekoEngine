@@ -49,7 +49,7 @@ public:
 	~MaterialImporter();
 
 	bool Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const;
-	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings) const;
+	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings, const char* metaFile) const;
 
 	bool GenerateMeta(Resource* resource, std::string& outputMetaFile, const TextureImportSettings* textureImportSettings) const;
 	bool SetTextureUUIDToMeta(const char* metaFile, uint UUID) const;

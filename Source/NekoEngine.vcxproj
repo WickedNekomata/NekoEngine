@@ -183,6 +183,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="InputGeom.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />

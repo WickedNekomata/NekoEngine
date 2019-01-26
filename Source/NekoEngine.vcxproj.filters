@@ -112,6 +112,9 @@
     <Filter Include="Sources\3rd Party\Recast&amp;Detour\Recast">
       <UniqueIdentifier>{df7e1bd5-a3d4-4af5-93ba-5fbbb345dee1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Helpers\NavMesh">
+      <UniqueIdentifier>{b4d148e9-5dfc-46a2-beaf-c2cc2732d010}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -731,7 +734,10 @@
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClInclude>
     <ClInclude Include="SoloMesh_Query.h">
-      <Filter>Sources\Helpers</Filter>
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGeom.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1090,7 +1096,7 @@
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClCompile>
     <ClCompile Include="SoloMesh_Query.cpp">
-      <Filter>Sources\Helpers</Filter>
+      <Filter>Sources\Helpers\NavMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

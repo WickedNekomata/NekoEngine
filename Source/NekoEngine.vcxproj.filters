@@ -730,6 +730,9 @@
     <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClInclude>
+    <ClInclude Include="SoloMesh_Query.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1085,6 +1088,9 @@
     </ClCompile>
     <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="SoloMesh_Query.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

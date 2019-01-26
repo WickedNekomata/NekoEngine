@@ -661,9 +661,9 @@ void MaterialImporter::LoadDefaultTexture()
 
 	for (uint i = 0; i < 2; i++) {
 		for (uint j = 0; j < 2; j++) {
-			replaceMeTexture[i][j][0] = (GLubyte)255;
-			replaceMeTexture[i][j][1] = (GLubyte)0;
-			replaceMeTexture[i][j][2] = (GLubyte)144;
+			replaceMeTexture[i][j][0] = (GLubyte)190;
+			replaceMeTexture[i][j][1] = (GLubyte)178;
+			replaceMeTexture[i][j][2] = (GLubyte)137;
 			replaceMeTexture[i][j][3] = (GLubyte)255;
 		}
 	}

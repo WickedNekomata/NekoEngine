@@ -48,6 +48,7 @@ struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
 struct DebugDrawer;
+struct SoloMesh_Query;
 
 class Application
 {
@@ -128,8 +129,8 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
-
 	DebugDrawer*			debugDrawer;
+	SoloMesh_Query*			soloMeshQuery;
 
 	pcg32_random_t			rng;
 

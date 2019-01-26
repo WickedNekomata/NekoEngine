@@ -1,0 +1,346 @@
+[
+    {
+        "Name": "$$$___magic___$$$.",
+        "UUID": 2200768140,
+        "Parent UUID": 3686863342,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "nav_test.obj",
+        "UUID": 3755421785,
+        "Parent UUID": 2200768140,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "Generic",
+        "UUID": 2130845894,
+        "Parent UUID": 2200768140,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 881689847
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "Cube",
+        "UUID": 818847348,
+        "Parent UUID": 2200768140,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 1540583862
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "Generic",
+        "UUID": 3327570800,
+        "Parent UUID": 2200768140,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 2056636773
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "Cube",
+        "UUID": 1917310083,
+        "Parent UUID": 2200768140,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 2676885887
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    }
+] 

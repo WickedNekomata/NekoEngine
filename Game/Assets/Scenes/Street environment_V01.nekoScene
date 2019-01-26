@@ -1,8 +1,8 @@
 [
     {
         "Name": "RootNode",
-        "UUID": 3815113005,
-        "Parent UUID": 2885935409,
+        "UUID": 204614856,
+        "Parent UUID": 1292736142,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "Name": "Sky001",
-        "UUID": 546240702,
-        "Parent UUID": 3815113005,
+        "UUID": 2381595162,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -41,8 +41,8 @@
     },
     {
         "Name": "Dummy001",
-        "UUID": 1592404801,
-        "Parent UUID": 3815113005,
+        "UUID": 1748156972,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -61,8 +61,8 @@
     },
     {
         "Name": "City_building_004",
-        "UUID": 4089690038,
-        "Parent UUID": 1592404801,
+        "UUID": 1051954277,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -79,7 +79,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3778973045
+                "ResourceMesh": 124350049
             },
             {
                 "Type": 3,
@@ -91,7 +91,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 649715161,
+                        "res": 1921774320,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -137,8 +137,8 @@
     },
     {
         "Name": "City_building_001",
-        "UUID": 742443792,
-        "Parent UUID": 1592404801,
+        "UUID": 666057858,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -155,7 +155,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 4073932212
+                "ResourceMesh": 1163442792
             },
             {
                 "Type": 3,
@@ -167,7 +167,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3055107354,
+                        "res": 3159575789,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -213,8 +213,8 @@
     },
     {
         "Name": "City_building_007",
-        "UUID": 3210183058,
-        "Parent UUID": 1592404801,
+        "UUID": 1899947998,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -231,7 +231,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 513613736
+                "ResourceMesh": 444567909
             },
             {
                 "Type": 3,
@@ -243,7 +243,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1599302285,
+                        "res": 3587455682,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -289,8 +289,8 @@
     },
     {
         "Name": "City_building_008",
-        "UUID": 3964135018,
-        "Parent UUID": 1592404801,
+        "UUID": 3129783164,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -307,7 +307,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 4082890973
+                "ResourceMesh": 1686334711
             },
             {
                 "Type": 3,
@@ -319,7 +319,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 2441463537,
+                        "res": 1755677010,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -365,8 +365,8 @@
     },
     {
         "Name": "Line002",
-        "UUID": 3658312287,
-        "Parent UUID": 1592404801,
+        "UUID": 3226943214,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -383,7 +383,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2450329479
+                "ResourceMesh": 2226538303
             },
             {
                 "Type": 3,
@@ -441,8 +441,8 @@
     },
     {
         "Name": "Plane001",
-        "UUID": 46990721,
-        "Parent UUID": 1592404801,
+        "UUID": 1827839433,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -459,7 +459,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 72924451
+                "ResourceMesh": 4194495019
             },
             {
                 "Type": 3,
@@ -517,8 +517,8 @@
     },
     {
         "Name": "City_building_010",
-        "UUID": 802466879,
-        "Parent UUID": 1592404801,
+        "UUID": 3896973660,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -537,8 +537,8 @@
     },
     {
         "Name": "City_building_011",
-        "UUID": 1508047377,
-        "Parent UUID": 1592404801,
+        "UUID": 4146671278,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -555,7 +555,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 603376407
+                "ResourceMesh": 2020455300
             },
             {
                 "Type": 3,
@@ -567,7 +567,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1599302285,
+                        "res": 3587455682,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -613,8 +613,8 @@
     },
     {
         "Name": "City_building_013",
-        "UUID": 1939252167,
-        "Parent UUID": 1592404801,
+        "UUID": 2250940322,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -631,7 +631,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 4078018087
+                "ResourceMesh": 48800520
             },
             {
                 "Type": 3,
@@ -643,7 +643,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 910927217,
+                        "res": 1267448701,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -689,8 +689,8 @@
     },
     {
         "Name": "City_building_014",
-        "UUID": 1797578107,
-        "Parent UUID": 1592404801,
+        "UUID": 2736160246,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -707,7 +707,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1195238166
+                "ResourceMesh": 3473500131
             },
             {
                 "Type": 3,
@@ -719,7 +719,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 649715161,
+                        "res": 1921774320,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -765,8 +765,8 @@
     },
     {
         "Name": "City_building_016",
-        "UUID": 3603947622,
-        "Parent UUID": 1592404801,
+        "UUID": 4192712355,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -785,8 +785,8 @@
     },
     {
         "Name": "City_building_017",
-        "UUID": 727259357,
-        "Parent UUID": 1592404801,
+        "UUID": 4243994050,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -805,8 +805,8 @@
     },
     {
         "Name": "City_building_022",
-        "UUID": 3861623951,
-        "Parent UUID": 1592404801,
+        "UUID": 568572799,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -823,7 +823,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 675584868
+                "ResourceMesh": 2522570181
             },
             {
                 "Type": 3,
@@ -835,7 +835,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3883959016,
+                        "res": 3930737654,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -881,8 +881,8 @@
     },
     {
         "Name": "City_building_023",
-        "UUID": 3991596538,
-        "Parent UUID": 1592404801,
+        "UUID": 1486304638,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -899,7 +899,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2314529340
+                "ResourceMesh": 2600582257
             },
             {
                 "Type": 3,
@@ -911,7 +911,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1599302285,
+                        "res": 3587455682,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -957,8 +957,8 @@
     },
     {
         "Name": "City_building_024",
-        "UUID": 2385752348,
-        "Parent UUID": 1592404801,
+        "UUID": 1116546594,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -975,7 +975,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1688591919
+                "ResourceMesh": 1492412696
             },
             {
                 "Type": 3,
@@ -987,7 +987,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 2441463537,
+                        "res": 1755677010,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1033,8 +1033,8 @@
     },
     {
         "Name": "City_building_026",
-        "UUID": 3408930578,
-        "Parent UUID": 1592404801,
+        "UUID": 2756959125,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1051,7 +1051,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2667275202
+                "ResourceMesh": 1407192252
             },
             {
                 "Type": 3,
@@ -1063,7 +1063,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3883959016,
+                        "res": 3930737654,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1109,8 +1109,8 @@
     },
     {
         "Name": "City_building_028",
-        "UUID": 1931509531,
-        "Parent UUID": 1592404801,
+        "UUID": 2345086082,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1127,7 +1127,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1931595881
+                "ResourceMesh": 2180768426
             },
             {
                 "Type": 3,
@@ -1139,7 +1139,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1185,8 +1185,8 @@
     },
     {
         "Name": "Object010",
-        "UUID": 2441857712,
-        "Parent UUID": 1592404801,
+        "UUID": 4280725671,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1203,7 +1203,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1556051614
+                "ResourceMesh": 3541417575
             },
             {
                 "Type": 3,
@@ -1261,8 +1261,8 @@
     },
     {
         "Name": "City_building_030",
-        "UUID": 2286993971,
-        "Parent UUID": 1592404801,
+        "UUID": 3359243413,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1279,7 +1279,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2682243954
+                "ResourceMesh": 2707121628
             },
             {
                 "Type": 3,
@@ -1291,7 +1291,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1337,8 +1337,8 @@
     },
     {
         "Name": "City_building_031",
-        "UUID": 2473090092,
-        "Parent UUID": 1592404801,
+        "UUID": 3075293963,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1355,7 +1355,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3204940859
+                "ResourceMesh": 700028207
             },
             {
                 "Type": 3,
@@ -1367,7 +1367,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1413,8 +1413,8 @@
     },
     {
         "Name": "City_building_032",
-        "UUID": 2413429368,
-        "Parent UUID": 1592404801,
+        "UUID": 2263659376,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1431,7 +1431,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1921663264
+                "ResourceMesh": 1019201869
             },
             {
                 "Type": 3,
@@ -1443,7 +1443,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 649715161,
+                        "res": 1921774320,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1489,8 +1489,8 @@
     },
     {
         "Name": "City_building_033",
-        "UUID": 3296402815,
-        "Parent UUID": 1592404801,
+        "UUID": 1704015162,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1507,7 +1507,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 725120767
+                "ResourceMesh": 3743828271
             },
             {
                 "Type": 3,
@@ -1519,7 +1519,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 910927217,
+                        "res": 1267448701,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1565,8 +1565,8 @@
     },
     {
         "Name": "City_building_034",
-        "UUID": 3163651879,
-        "Parent UUID": 1592404801,
+        "UUID": 685516343,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1583,7 +1583,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2286809221
+                "ResourceMesh": 1071690780
             },
             {
                 "Type": 3,
@@ -1595,7 +1595,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3883959016,
+                        "res": 3930737654,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1641,8 +1641,8 @@
     },
     {
         "Name": "City_building_035",
-        "UUID": 3353737002,
-        "Parent UUID": 1592404801,
+        "UUID": 1959291390,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1659,7 +1659,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3190115888
+                "ResourceMesh": 1710122349
             },
             {
                 "Type": 3,
@@ -1671,7 +1671,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1717,8 +1717,8 @@
     },
     {
         "Name": "City_building_036",
-        "UUID": 799959824,
-        "Parent UUID": 1592404801,
+        "UUID": 557173978,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1735,7 +1735,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 4053746773
+                "ResourceMesh": 4074532992
             },
             {
                 "Type": 3,
@@ -1747,7 +1747,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 910927217,
+                        "res": 1267448701,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1793,8 +1793,8 @@
     },
     {
         "Name": "City_building_037",
-        "UUID": 1426155247,
-        "Parent UUID": 1592404801,
+        "UUID": 2359891594,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1811,7 +1811,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3949679467
+                "ResourceMesh": 3784343001
             },
             {
                 "Type": 3,
@@ -1823,7 +1823,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3883959016,
+                        "res": 3930737654,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1869,8 +1869,8 @@
     },
     {
         "Name": "City_building_038",
-        "UUID": 1833721581,
-        "Parent UUID": 1592404801,
+        "UUID": 180795081,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1887,7 +1887,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1380409879
+                "ResourceMesh": 3797225646
             },
             {
                 "Type": 3,
@@ -1899,7 +1899,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3883959016,
+                        "res": 3930737654,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -1945,8 +1945,8 @@
     },
     {
         "Name": "City_building_039",
-        "UUID": 2294290626,
-        "Parent UUID": 1592404801,
+        "UUID": 1927474095,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -1963,7 +1963,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 671969905
+                "ResourceMesh": 18584753
             },
             {
                 "Type": 3,
@@ -1975,7 +1975,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -2021,8 +2021,8 @@
     },
     {
         "Name": "City_building_040",
-        "UUID": 511213332,
-        "Parent UUID": 1592404801,
+        "UUID": 105440091,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2039,7 +2039,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1266346431
+                "ResourceMesh": 699388469
             },
             {
                 "Type": 3,
@@ -2051,7 +2051,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 1055319560,
+                        "res": 2276313898,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -2097,8 +2097,8 @@
     },
     {
         "Name": "City_building_041",
-        "UUID": 1773959914,
-        "Parent UUID": 1592404801,
+        "UUID": 1312614059,
+        "Parent UUID": 1748156972,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2115,7 +2115,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3967145517
+                "ResourceMesh": 4272703684
             },
             {
                 "Type": 3,
@@ -2127,7 +2127,7 @@
                 ],
                 "TexturesResources": [
                     {
-                        "res": 3055107354,
+                        "res": 3159575789,
                         "posX": 0,
                         "posY": 0,
                         "posZ": 0,
@@ -2173,8 +2173,8 @@
     },
     {
         "Name": "Camera001",
-        "UUID": 1140649891,
-        "Parent UUID": 3815113005,
+        "UUID": 139223866,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2193,8 +2193,8 @@
     },
     {
         "Name": "Camera001.Target",
-        "UUID": 223552597,
-        "Parent UUID": 3815113005,
+        "UUID": 3032658878,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2213,8 +2213,8 @@
     },
     {
         "Name": "Spot001",
-        "UUID": 3542939510,
-        "Parent UUID": 3815113005,
+        "UUID": 1213885513,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -2233,8 +2233,8 @@
     },
     {
         "Name": "Spot001.Target",
-        "UUID": 3030539454,
-        "Parent UUID": 3815113005,
+        "UUID": 4026488042,
+        "Parent UUID": 204614856,
         "jsonComponents": [
             {
                 "Type": 1,

@@ -148,6 +148,9 @@
     <Filter Include="Sources\3rd Party\physx\foundation\windows">
       <UniqueIdentifier>{1bd8edf6-b76c-4400-adb1-384ba6b5e779}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics">
+      <UniqueIdentifier>{e8d12beb-7c4b-407e-a1c5-60c3d1ce4b57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1264,6 +1267,9 @@
     <ClInclude Include="physx\include\foundation\windows\PxWindowsIntrinsics.h">
       <Filter>Sources\3rd Party\physx\foundation\windows</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentRigidBody.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1538,6 +1544,9 @@
     </ClCompile>
     <ClCompile Include="ModulePhysics.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidBody.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

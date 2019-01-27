@@ -24,6 +24,8 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+
+
 private:
 
 	PxFoundation* gFoundation = nullptr;

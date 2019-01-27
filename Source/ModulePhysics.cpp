@@ -3,15 +3,17 @@
 #include "Application.h"
 
 #ifdef _DEBUG
-	#pragma comment(lib, "physx/libx86/debugx86/PhysX_32_debug.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXCommon_32_debug.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXFoundation_32_debug.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXExtensions_static_32_debug.lib")
-#else
-	#pragma comment(lib, "physx/libx86/releasex86/PhysX_32_release.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXCommon_32_release.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXFoundation_32_release.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXExtensions_static_32_release.lib")
+	#pragma comment(lib, "physx/libx86/debugx86/PhysX_32.lib")
+	#pragma comment(lib, "physx/libx86/debugx86/PhysXCommon_32.lib")
+	#pragma comment(lib, "physx/libx86/debugx86/PhysXFoundation_32.lib")
+	#pragma comment(lib, "physx/libx86/debugx86/PhysXExtensions_static_32.lib")
+#endif
+
+#ifdef NDEBUG
+	#pragma comment(lib, "physx/libx86/releasex86/PhysX_32.lib")
+	#pragma comment(lib, "physx/libx86/releasex86/PhysXCommon_32.lib")
+	#pragma comment(lib, "physx/libx86/releasex86/PhysXFoundation_32.lib")
+	#pragma comment(lib, "physx/libx86/releasex86/PhysXExtensions_static_32.lib")
 #endif
 
 ModulePhysics::ModulePhysics(bool start_enabled) : Module(start_enabled)

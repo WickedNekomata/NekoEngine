@@ -48,6 +48,7 @@ struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
 struct DebugDrawer;
+struct ModulePhysics;
 
 class Application
 {
@@ -128,6 +129,7 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ModulePhysics*			physics;
 
 	DebugDrawer*			debugDrawer;
 

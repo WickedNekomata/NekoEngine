@@ -9,15 +9,15 @@ public:
 	SoloMesh_Query();
 	virtual ~SoloMesh_Query();
 
+	void SetInputGeom(class InputGeom& inputGeom);
+
 protected:
-	class InputGeom* m_geom;
+	class InputGeom* m_geom = nullptr;
 	class dtNavMesh* m_navMesh;
 	class dtNavMeshQuery* m_navQuery;
 	class dtCrowd* m_crowd;
 
-	rcConfig m_cfg;
-
-	unsigned char* m_triareas;
+	unsigned char* m_triareas = nullptr;
 	rcHeightfield* m_solid;
 	rcCompactHeightfield* m_chf;
 	rcContourSet* m_cset;
@@ -27,6 +27,7 @@ protected:
 
 	void CleanUp();
 
+public:
 	bool HandleBuild();
 };
 

@@ -739,6 +739,9 @@
     <ClInclude Include="InputGeom.h">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </ClInclude>
+    <ClInclude Include="PanelNavMesh.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1097,6 +1100,9 @@
     </ClCompile>
     <ClCompile Include="SoloMesh_Query.cpp">
       <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelNavMesh.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

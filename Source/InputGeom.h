@@ -1,8 +1,6 @@
 #ifndef __INPUTGEOM_H__
 #define __INPUTGEOM_H__
 
-struct ResourceMesh;
-
 struct BuildSettings
 {
 	// Cell size in world units
@@ -41,14 +39,13 @@ struct BuildSettings
 	float tileSize;
 };
 
-
-
 class InputGeom
 {
 public:
 	BuildSettings m_buildSettings;
-	ResourceMesh* m_mesh;
+	class ResourceMesh* m_mesh;
 
+	float* bMin[3], bMax[3];
 };
 
 #endif

@@ -22,8 +22,15 @@ SoloMesh_Query::~SoloMesh_Query()
 
 void SoloMesh_Query::CleanUp()
 {
-	delete[] m_triareas;
+	if (m_triareas) delete[] m_triareas;
 	m_triareas = 0;
+}
+
+void SoloMesh_Query::SetInputGeom(InputGeom& inputGeom)
+{
+	if (m_geom) delete m_geom;
+	m_geom = new InputGeom();
+	memcpy(m_geom, &inputGeom, sizeof(InputGeom));
 }
 
 bool SoloMesh_Query::HandleBuild()

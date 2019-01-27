@@ -18,6 +18,7 @@ protected:
 	rcConfig m_cfg;
 
 	unsigned char* m_triareas;
+	rcHeightfield* m_solid;
 
 	void CleanUp();
 

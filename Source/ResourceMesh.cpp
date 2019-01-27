@@ -120,3 +120,38 @@ void ResourceMesh::GenerateVAO()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+void ResourceMesh::GetTris(int* tris)
+{
+	memcpy(tris, indices, indicesSize);
+}
+
+void ResourceMesh::GetVerts(float* verts)
+{
+	for (int i = 0, j = 0; i < verticesSize; ++i)
+	{
+		verts[j++] = vertices[i].position[0];
+		verts[j++] = vertices[i].position[1];
+		verts[j++] = vertices[i].position[2];
+	}
+}
+
+void ResourceMesh::GetNormals(float* normals)
+{
+	for (int i = 0, j = 0; i < verticesSize; ++i)
+	{
+		normals[j++] = vertices[i].normal[0];
+		normals[j++] = vertices[i].normal[1];
+		normals[j++] = vertices[i].normal[2];
+	}
+}
+
+int ResourceMesh::GetVertsCount()
+{
+	return verticesSize;
+}
+
+int ResourceMesh::GetTrisCount()
+{
+	return indicesSize;
+}

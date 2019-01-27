@@ -22,6 +22,12 @@ public:
 	ResourceMesh(ResourceType type, uint uuid);
 	~ResourceMesh();
 
+	void GetTris(int* tris);
+	void GetVerts(float* verts);
+	void GetNormals(float* normals);
+	int  GetVertsCount();
+	int  GetTrisCount();
+
 private:
 
 	bool LoadInMemory();

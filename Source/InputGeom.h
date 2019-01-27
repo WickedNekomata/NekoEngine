@@ -41,6 +41,8 @@ struct BuildSettings
 	float tileSize;
 };
 
+
+
 class InputGeom
 {
 public:

@@ -73,7 +73,7 @@ void ComponentRigidActor::OnUniqueEditor()
 		break;
 
 	case GeometryTypes::GeometryTypeCapsule:
-
+	{
 		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 		if (ImGui::DragScalar("##CapsuleRadius", ImGuiDataType_Float, (void*)&geometry->geometryCapsule.radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
 		{
@@ -81,6 +81,7 @@ void ComponentRigidActor::OnUniqueEditor()
 				geometry->geometryCapsule.radius = 0.5f;
 			updateShape = true;
 		}
+
 		ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 		if (ImGui::DragScalar("##CapsuleHalfHeight", ImGuiDataType_Float, (void*)&geometry->geometryCapsule.halfHeight, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
 		{
@@ -89,6 +90,15 @@ void ComponentRigidActor::OnUniqueEditor()
 			updateShape = true;
 		}
 
+		const char* capsuleDirection[] = { "X-Axis", "Y-Axis", "Z-Axis" };
+		int currentCapsuleDirection = geometry->geometryCapsule.direction;
+		ImGui::PushItemWidth(100.0f);
+		if (ImGui::Combo("Direction", &currentCapsuleDirection, capsuleDirection, IM_ARRAYSIZE(capsuleDirection)))
+		{
+			geometry->geometryCapsule.direction = (CapsuleDirection)currentCapsuleDirection;
+			updateShape = true;
+		}
+	}
 		break;
 
 	case GeometryTypes::GeometryTypeBox:
@@ -133,6 +143,7 @@ void ComponentRigidActor::ResetGeometry() const
 	case GeometryTypes::GeometryTypeCapsule:
 		geometry->geometryCapsule.radius = 0.5f;
 		geometry->geometryCapsule.halfHeight = 0.5f;
+		geometry->geometryCapsule.direction = CapsuleDirection::CapsuleDirectionYAxis;
 		break;
 
 	case GeometryTypes::GeometryTypeBox:
@@ -168,7 +179,27 @@ void ComponentRigidActor::UpdateShape()
 		break;
 
 	case GeometryTypes::GeometryTypeCapsule:
-		gShape = App->physics->CreateShape(PxCapsuleGeometry(geometry->geometryCapsule.radius, geometry->geometryCapsule.halfHeight), *App->physics->GetDefaultMaterial());	
+	{
+		gShape = App->physics->CreateShape(PxCapsuleGeometry(geometry->geometryCapsule.radius, geometry->geometryCapsule.halfHeight), *App->physics->GetDefaultMaterial());
+		
+		switch (geometry->geometryCapsule.direction)
+		{
+		case CapsuleDirection::CapsuleDirectionYAxis:
+		{
+			math::float3 direction = math::float3(0.0f, 0.0f, 1.0f);
+			PxTransform relativePose(PxQuat(PxHalfPi, PxVec3(direction.x, direction.y, direction.z)));
+			gShape->setLocalPose(relativePose);
+		}
+			break;
+		case CapsuleDirection::CapsuleDirectionZAxis:
+		{
+			math::float3 direction = math::float3(0.0f, 1.0f, 0.0f);
+			PxTransform relativePose(PxQuat(PxHalfPi, PxVec3(direction.x, direction.y, direction.z)));
+			gShape->setLocalPose(relativePose);
+		}
+			break;
+		}
+	}
 		break;
 
 	case GeometryTypes::GeometryTypeBox:

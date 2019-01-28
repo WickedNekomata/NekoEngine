@@ -17,12 +17,20 @@ struct GeometrySphere
 	float radius;
 };
 
+enum CapsuleDirection
+{
+	CapsuleDirectionXAxis,
+	CapsuleDirectionYAxis,
+	CapsuleDirectionZAxis
+};
+
 struct GeometryCapsule
 {
 	GeometryTypes geometryType;
 
 	float radius;
 	float halfHeight;
+	CapsuleDirection direction;
 };
 
 struct GeometryBox

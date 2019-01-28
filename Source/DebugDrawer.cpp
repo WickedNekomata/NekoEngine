@@ -168,52 +168,52 @@ void DebugDrawer::DebugDrawCapsule(float radius, float halfHeight, const Color& 
 
 	glBegin(GL_LINE_LOOP);
 	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
-		glVertex3f(radius * cosf(DEGTORAD * angle), halfHeight, radius * sinf(DEGTORAD * angle));
+		glVertex3f(halfHeight, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
 	glEnd();
 
 	glBegin(GL_LINE_LOOP);
 	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
-		glVertex3f(radius * cosf(DEGTORAD * angle), -halfHeight, radius * sinf(DEGTORAD * angle));
+		glVertex3f(-halfHeight, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float angle = 0.0f; angle <= 180.0f; angle += deltaAngle)
-		glVertex3f(radius * cosf(DEGTORAD * angle), halfHeight + radius * sinf(DEGTORAD * angle), 0.0f);
+	for (float angle = 270.0f; angle <= 450.0f; angle += deltaAngle)
+		glVertex3f(halfHeight + radius * cosf(DEGTORAD * angle), radius * sinf(DEGTORAD * angle), 0.0f);
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float angle = 0.0f; angle <= 180.0f; angle += deltaAngle)
-		glVertex3f(0.0f, halfHeight + radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
+	for (float angle = 270.0f; angle <= 450.0f; angle += deltaAngle)
+		glVertex3f(halfHeight + radius * cosf(DEGTORAD * angle), 0.0f, radius * sinf(DEGTORAD * angle));
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float angle = 180.0f; angle <= 360.0f; angle += deltaAngle)
-		glVertex3f(radius * cosf(DEGTORAD * angle), -halfHeight + radius * sinf(DEGTORAD * angle), 0.0f);
+	for (float angle = 90.0f; angle <= 270.0f; angle += deltaAngle)
+		glVertex3f(-halfHeight + radius * cosf(DEGTORAD * angle), radius * sinf(DEGTORAD * angle), 0.0f);
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float angle = 180.0f; angle <= 360.0f; angle += deltaAngle)
-		glVertex3f(0.0f, -halfHeight + radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
+	for (float angle = 90.0f; angle <= 270.0f; angle += deltaAngle)
+		glVertex3f(-halfHeight + radius * cosf(DEGTORAD * angle), 0.0f, radius * sinf(DEGTORAD * angle));
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(radius, halfHeight, 0.0f);
-	glVertex3f(radius, -halfHeight, 0.0f);
+	glVertex3f(halfHeight, radius, 0.0f);
+	glVertex3f(-halfHeight, radius, 0.0f);
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(-radius, halfHeight, 0.0f);
-	glVertex3f(-radius, -halfHeight, 0.0f);
+	glVertex3f(halfHeight, -radius, 0.0f);
+	glVertex3f(-halfHeight, -radius, 0.0f);
+	glEnd();
+	
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(halfHeight, 0.0f, radius);
+	glVertex3f(-halfHeight, 0.0f, radius);
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(0.0f, halfHeight, radius);
-	glVertex3f(0.0f, -halfHeight, radius);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(0.0f, halfHeight, -radius);
-	glVertex3f(0.0f, -halfHeight, -radius);
+	glVertex3f(halfHeight, 0.0f, -radius);
+	glVertex3f(-halfHeight, 0.0f, -radius);
 	glEnd();
 
 	glPopMatrix();

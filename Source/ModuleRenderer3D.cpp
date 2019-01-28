@@ -240,7 +240,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				PxShape* gShape = nullptr;
 				staticActors[i]->getShapes(&gShape, 1);
 
-				PxTransform gTransform = staticActors[i]->getGlobalPose();
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
 				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
 				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
 				math::float4x4 globalMatrix(q, p);
@@ -283,7 +283,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				PxShape* gShape = nullptr;
 				dynamicActors[i]->getShapes(&gShape, 1);
 
-				PxTransform gTransform = staticActors[i]->getGlobalPose();
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
 				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
 				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
 				math::float4x4 globalMatrix(q, p);

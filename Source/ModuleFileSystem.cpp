@@ -742,3 +742,50 @@ void ModuleFileSystem::CheckFilesInAssets() const
 		}
 	}
 }
+
+std::string ModuleFileSystem::getAppPath()
+{
+	std::string baseDir = PHYSFS_getBaseDir();
+
+	PHYSFS_unmount(".");
+
+	AddPath((char*)baseDir.data(), "");
+
+	if (Exists("physfs.dll"))
+	{
+		PHYSFS_unmount(baseDir.data());
+		PHYSFS_mount(".", "", 0);
+		return PHYSFS_getBaseDir();
+	}
+
+	else
+	{
+		PHYSFS_unmount(baseDir.data());
+
+		for (int i = 0; i < 2; ++i)
+		{
+			baseDir = baseDir.substr(0, baseDir.find_last_of("\\"));
+		}
+
+		baseDir += "\\Game\\";
+
+		AddPath((char*)baseDir.data(), "");
+
+		std::string moretemp = baseDir + "physfs.dll";
+
+		if (Exists("physfs.dll"))
+		{
+			PHYSFS_unmount(baseDir.data());
+			PHYSFS_mount(".", "", 0);
+			return baseDir;
+		}
+
+		PHYSFS_unmount(baseDir.data());
+	}
+
+	PHYSFS_unmount(baseDir.data());
+
+	PHYSFS_mount(".", "", 0);
+
+	return "";
+}

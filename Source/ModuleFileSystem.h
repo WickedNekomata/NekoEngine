@@ -110,6 +110,8 @@ public:
 
 	void CheckFilesInAssets() const;
 
+	std::string getAppPath();
+
 private:
 
 	std::map<std::string, int> metas;

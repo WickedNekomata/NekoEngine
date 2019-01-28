@@ -293,14 +293,16 @@ bool SoloMesh_Query::HandleBuild()
 		//	m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh");
 			return false;
 		}
+
+
+		// Next Step
 		/*
 		status = m_navQuery->init(m_navMesh, 2048);
 		if (dtStatusFailed(status))
 		{
 			//m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
 			return false;
-		}
-		
+		}	
 		*/
 	}
 

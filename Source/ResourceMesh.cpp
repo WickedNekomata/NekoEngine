@@ -123,7 +123,7 @@ void ResourceMesh::GenerateVAO()
 
 void ResourceMesh::GetTris(int* tris)
 {
-	memcpy(tris, indices, indicesSize);
+	memcpy(tris, indices, indicesSize * sizeof(int));
 }
 
 void ResourceMesh::GetVerts(float* verts)
@@ -153,5 +153,5 @@ int ResourceMesh::GetVertsCount()
 
 int ResourceMesh::GetTrisCount()
 {
-	return indicesSize;
+	return indicesSize / 3;
 }

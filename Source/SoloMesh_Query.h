@@ -25,6 +25,8 @@ protected:
 	rcConfig m_cfg;
 	rcPolyMeshDetail* m_dmesh;
 
+	rcContext ctx;
+
 	void CleanUp();
 
 public:

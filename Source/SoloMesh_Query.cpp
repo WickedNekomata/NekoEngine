@@ -43,14 +43,14 @@ bool SoloMesh_Query::HandleBuild()
 
 	CleanUp();
 
-	//const float* bmin = m_geom->m_mesh->
-	//const float* bmax = m_geom->getNavMeshBoundsMax();
+	const float* bmin = (const float*)m_geom->bMin;
+	const float* bmax = (const float*)m_geom->bMax;
 	const int nverts = m_geom->m_mesh->GetVertsCount();
-	float* verts = new float[nverts];
+	float* verts = new float[nverts * 3];
 	m_geom->m_mesh->GetVerts(verts);
 
 	const int ntris = m_geom->m_mesh->GetTrisCount();
-	int* tris = new int[ntris];
+	int* tris = new int[ntris * 3];
 	m_geom->m_mesh->GetTris(tris);
 
 	memset(&m_cfg, 0, sizeof(m_cfg));
@@ -69,9 +69,8 @@ bool SoloMesh_Query::HandleBuild()
 	m_cfg.detailSampleMaxError = 0.2f * 1.0f;
 
 	// area could be specified by an user defined box, etc.
-	float m_meshBMin[3] = {0.2f,0.2f,0.2f}, m_meshBMax[3] = { 0.2f,0.2f,0.2f };
-	rcVcopy(m_cfg.bmin, m_meshBMin);
-	rcVcopy(m_cfg.bmax, m_meshBMax);
+	rcVcopy(m_cfg.bmin, bmin);
+	rcVcopy(m_cfg.bmax, bmax);
 	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
 
 	m_solid = rcAllocHeightfield();
@@ -80,7 +79,7 @@ bool SoloMesh_Query::HandleBuild()
 		CONSOLE_LOG("buildNavigation: Out of memory 'solid'.");
 		return false;
 	}
-	if (!rcCreateHeightfield(NULL, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+	if (!rcCreateHeightfield(&ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
 	{
 		CONSOLE_LOG("buildNavigation: Could not create solid heightfield.");
 		return false;
@@ -93,10 +92,12 @@ bool SoloMesh_Query::HandleBuild()
 		CONSOLE_LOG("buildNavigation: Out of memory 'm_triareas' (%d).", 0);
 		return false;
 	}
-	
+
 	memset(m_triareas, 0, ntris * sizeof(unsigned char));
-	rcMarkWalkableTriangles(NULL, m_cfg.walkableSlopeAngle, verts, nverts, tris, ntris, m_triareas);
-	if (!rcRasterizeTriangles(NULL, verts, nverts, tris, m_triareas, ntris, *m_solid, m_cfg.walkableClimb))
+
+	// Getting each triangle using tris(indices) and vertices extract face normal and check if walkable
+	rcMarkWalkableTriangles(&ctx, m_cfg.walkableSlopeAngle, verts, nverts, tris, ntris, m_triareas);
+	if (!rcRasterizeTriangles(&ctx, verts, nverts, tris, m_triareas, ntris, *m_solid, m_cfg.walkableClimb))
 	{
 		CONSOLE_LOG("buildNavigation: Could not rasterize triangles.");
 		return false;
@@ -112,9 +113,9 @@ bool SoloMesh_Query::HandleBuild()
 	// Once all geoemtry is rasterized, we do initial pass of filtering to
 	// remove unwanted overhangs caused by the conservative rasterization
 	// as well as filter spans where the character cannot possibly stand.
-	rcFilterLowHangingWalkableObstacles(NULL, m_cfg.walkableClimb, *m_solid);
-	rcFilterLedgeSpans(NULL, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid);
-	rcFilterWalkableLowHeightSpans(NULL, m_cfg.walkableHeight, *m_solid);
+	rcFilterLowHangingWalkableObstacles(&ctx, m_cfg.walkableClimb, *m_solid);
+	rcFilterLedgeSpans(&ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid);
+	rcFilterWalkableLowHeightSpans(&ctx, m_cfg.walkableHeight, *m_solid);
 
 	//
 	// Step 4. Partition walkable surface to simple regions.
@@ -129,7 +130,7 @@ bool SoloMesh_Query::HandleBuild()
 		CONSOLE_LOG("buildNavigation: Out of memory 'chf'.");
 		return false;
 	}
-	if (!rcBuildCompactHeightfield(NULL, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid, *m_chf))
+	if (!rcBuildCompactHeightfield(&ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid, *m_chf))
 	{
 		CONSOLE_LOG("buildNavigation: Could not build compact data.");
 		return false;
@@ -142,7 +143,7 @@ bool SoloMesh_Query::HandleBuild()
 	}
 
 	// Erode the walkable area by agent radius.
-	if (!rcErodeWalkableArea(NULL, m_cfg.walkableRadius, *m_chf))
+	if (!rcErodeWalkableArea(&ctx, m_cfg.walkableRadius, *m_chf))
 	{
 		CONSOLE_LOG("buildNavigation: Could not erode.");
 		return false;
@@ -154,14 +155,14 @@ bool SoloMesh_Query::HandleBuild()
 		//rcMarkConvexPolyArea(NULL, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned char)vols[i].area, *m_chf);
 
 	// Prepare for region partitioning, by calculating distance field along the walkable surface.
-	if (!rcBuildDistanceField(NULL, *m_chf))
+	if (!rcBuildDistanceField(&ctx, *m_chf))
 	{
 		CONSOLE_LOG("buildNavigation: Could not build distance field.");
 		return false;
 	}
 
 	// Partition the walkable surface into simple regions without holes.
-	if (!rcBuildRegions(NULL, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
+	if (!rcBuildRegions(&ctx, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
 	{
 		CONSOLE_LOG("buildNavigation: Could not build watershed regions.");
 		return false;
@@ -178,7 +179,7 @@ bool SoloMesh_Query::HandleBuild()
 		CONSOLE_LOG("buildNavigation: Out of memory 'cset'.");
 		return false;
 	}
-	if (!rcBuildContours(NULL, *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_cset))
+	if (!rcBuildContours(&ctx, *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_cset))
 	{
 		CONSOLE_LOG("buildNavigation: Could not create contours.");
 		return false;
@@ -194,7 +195,7 @@ bool SoloMesh_Query::HandleBuild()
 		CONSOLE_LOG("buildNavigation: Out of memory 'pmesh'.");
 		return false;
 	}
-	if (!rcBuildPolyMesh(NULL, *m_cset, m_cfg.maxVertsPerPoly, *m_pmesh))
+	if (!rcBuildPolyMesh(&ctx, *m_cset, m_cfg.maxVertsPerPoly, *m_pmesh))
 	{
 		CONSOLE_LOG("buildNavigation: Could not triangulate contours.");
 		return false;
@@ -210,7 +211,7 @@ bool SoloMesh_Query::HandleBuild()
 		return false;
 	}
 
-	if (!rcBuildPolyMeshDetail(NULL, *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_dmesh))
+	if (!rcBuildPolyMeshDetail(&ctx, *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_dmesh))
 	{
 		CONSOLE_LOG("buildNavigation: Could not build detail mesh.");
 		return false;

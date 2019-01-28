@@ -23,6 +23,8 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderProgram.h"
 
+#include "SoloMesh_Query.h"
+
 #include "Brofiler\Brofiler.h"
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -208,6 +210,9 @@ update_status ModuleRenderer3D::PostUpdate()
 	}
 
 #ifndef GAMEMODE
+
+	App->soloMeshQuery->Draw();
+
 	// 2. Debug geometry
 	if (debugDraw)
 	{

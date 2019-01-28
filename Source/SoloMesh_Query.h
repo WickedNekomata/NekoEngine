@@ -27,10 +27,14 @@ protected:
 
 	rcContext ctx;
 
+	bool patata = false;
+
 	void CleanUp();
 
 public:
 	bool HandleBuild();
+
+	void Draw();
 };
 
 #endif

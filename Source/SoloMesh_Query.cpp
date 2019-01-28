@@ -1,7 +1,15 @@
 #include "SoloMesh_Query.h"
 #include "InputGeom.h"
+#include "M_DebugDraw.h"
+
+#include "Recast&Detour/Detour/Include/DetourNavMesh.h"
+#include "Recast&Detour/Detour/Include/DetourNavMeshBuilder.h"
+#include "Recast&Detour/DebugUtils/Include/DetourDebugDraw.h"
 
 #include "ResourceMesh.h"
+
+#include "Application.h"
+#include "DebugDrawer.h"
 
 #include "Globals.h"
 #include <math.h>
@@ -225,5 +233,89 @@ bool SoloMesh_Query::HandleBuild()
 		m_cset = 0;
 	}
 
+	// The GUI may allow more max points per polygon than Detour can handle.
+	// Only build the detour navmesh if we do not exceed the limit.
+	if (m_cfg.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)
+	{
+		unsigned char* navData = 0;
+		int navDataSize = 0;
+
+		dtNavMeshCreateParams params;
+		memset(&params, 0, sizeof(params));
+		params.verts = m_pmesh->verts;
+		params.vertCount = m_pmesh->nverts;
+		params.polys = m_pmesh->polys;
+		params.polyAreas = m_pmesh->areas;
+		params.polyFlags = m_pmesh->flags;
+		params.polyCount = m_pmesh->npolys;
+		params.nvp = m_pmesh->nvp;
+		params.detailMeshes = m_dmesh->meshes;
+		params.detailVerts = m_dmesh->verts;
+		params.detailVertsCount = m_dmesh->nverts;
+		params.detailTris = m_dmesh->tris;
+		params.detailTriCount = m_dmesh->ntris;
+		params.offMeshConVerts = NULL;
+		params.offMeshConRad = NULL;
+		params.offMeshConDir = NULL;
+		params.offMeshConAreas = NULL;
+		params.offMeshConFlags = NULL;
+		params.offMeshConUserID = NULL;
+		params.offMeshConCount = NULL;
+		params.walkableHeight = 2.0f;
+		params.walkableRadius = 0.6f;
+		params.walkableClimb = 0.9f;
+		rcVcopy(params.bmin, m_pmesh->bmin);
+		rcVcopy(params.bmax, m_pmesh->bmax);
+		params.cs = m_cfg.cs;
+		params.ch = m_cfg.ch;
+		params.buildBvTree = true;
+
+		if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
+		{
+			//m_ctx->log(RC_LOG_ERROR, "Could not build Detour navmesh.");
+			return false;
+		}
+
+		m_navMesh = dtAllocNavMesh();
+		if (!m_navMesh)
+		{
+			dtFree(navData);
+			//m_ctx->log(RC_LOG_ERROR, "Could not create Detour navmesh");
+			return false;
+		}
+
+		dtStatus status;
+
+		status = m_navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
+		if (dtStatusFailed(status))
+		{
+			dtFree(navData);
+		//	m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh");
+			return false;
+		}
+		/*
+		status = m_navQuery->init(m_navMesh, 2048);
+		if (dtStatusFailed(status))
+		{
+			//m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
+			return false;
+		}
+		
+		*/
+	}
+
+	patata = true;
+
 	return true;
+}
+
+void SoloMesh_Query::Draw()
+{
+	if (patata)
+	{
+		M_DebugDraw dd;
+		//for (int i = 0; i < m_pmesh->npolys; ++i)
+			duDebugDrawNavMesh(&dd, *m_navMesh, 0);
+			//duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_pmesh->polys[i], duRGBA(0, 0, 0, 128));
+	}
 }

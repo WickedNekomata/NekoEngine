@@ -742,6 +742,9 @@
     <ClInclude Include="PanelNavMesh.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="M_DebugDraw.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1103,6 +1106,9 @@
     </ClCompile>
     <ClCompile Include="PanelNavMesh.cpp">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="M_DebugDraw.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

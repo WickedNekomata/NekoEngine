@@ -247,6 +247,7 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="M_DebugDraw.h" />
     <ClInclude Include="PanelNavMesh.h" />
     <ClInclude Include="SoloMesh_Query.h" />
     <ClInclude Include="PanelCodeEditor.h" />
@@ -370,6 +371,7 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="M_DebugDraw.cpp" />
     <ClCompile Include="PanelNavMesh.cpp" />
     <ClCompile Include="SoloMesh_Query.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />

@@ -11,6 +11,11 @@
 #include <array>
 #include <iostream>
 
+#include "Application.h"
+#include "ModuleFileSystem.h"
+#include "ModuleInput.h"
+#include "ModuleTimeManager.h"
+
 bool exec(const char* cmd, std::string& error)
 {
 	std::array<char, 128> buffer;
@@ -80,18 +85,14 @@ update_status ScriptingModule::PreUpdate()
 	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		CreateInternalCSProject();
 
-	//Update Time.deltaTime and Time.realDeltaTime values
-	mono_field_static_set_value(timeVTable, deltaTime, &App->time->playDt);
-	mono_field_static_set_value(timeVTable, realDeltaTime, &App->time->dt);
-	mono_field_static_set_value(timeVTable, time, &App->time->gameTime);
-	mono_field_static_set_value(timeVTable, realTime, &App->time->timer);
+	//TODO: MAKE ALL CSHARP TIME STUFF PROPERTIES WITH GET AND SET, AND ASK FOR THE C++ REAL VALUES INSTEAD OF UPDATING COPIES.
 
 	return UPDATE_CONTINUE;
 }
 
 update_status ScriptingModule::Update()
 {
-	if (IN_GAME && !App->time->paused)
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
 	{
 		UpdateMethods();
 	}
@@ -119,113 +120,112 @@ bool ScriptingModule::CleanUp()
 
 void ScriptingModule::ReceiveEvent(System_Event event)
 {
-	//switch (event.type)
-	//{
-	//	case System_Event_Type::PLAY:
-	//	{
-	//		//Check if some files have compile errors and don't let the user hit the play.
+	switch (event.type)
+	{
+		case System_Event_Type::Play:
+		{
+			//Check if some files have compile errors and don't let the user hit the play.
 
-	//		UpdateMonoObjects();
+			UpdateMonoObjects();
 
-	//		for (int i = 0; i < scripts.size(); ++i)
-	//		{
-	//			if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-	//				scripts[i]->OnEnableMethod();
-	//		}
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->IsTreeActive())
+					scripts[i]->OnEnableMethod();
+			}
 
-	//		for (int i = 0; i < scripts.size(); ++i)
-	//		{
-	//			if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives() && !scripts[i]->awaked)
-	//				scripts[i]->Awake();
-	//		}
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->IsTreeActive() && !scripts[i]->awaked)
+					scripts[i]->Awake();
+			}
 
-	//		for (int i = 0; i < scripts.size(); ++i)
-	//		{
-	//			if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-	//				scripts[i]->Start();
-	//		}
-	//	
-	//		UpdateGameObjects();
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->IsTreeActive())
+					scripts[i]->Start();
+			}
+		
+			UpdateGameObjects();
 
-	//		//Call the Awake and Start for all the Enabled script in the Play instant.
-	//		break;
-	//	}
-	//
-	//	case EventType::STOP:
-	//	{
-	//		UpdateMonoObjects();
+			//Call the Awake and Start for all the Enabled script in the Play instant.
+			break;
+		}
+	
+		case System_Event_Type::Stop:
+		{
+			UpdateMonoObjects();
 
-	//		for (int i = 0; i < scripts.size(); ++i)
-	//		{
-	//			if (scripts[i]->isActive() && scripts[i]->gameObject->areParentsActives())
-	//			{
-	//				scripts[i]->OnStop();
-	//				scripts[i]->awaked = true;
-	//			}
-	//		}
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				if (scripts[i]->IsTreeActive())
+				{
+					scripts[i]->OnStop();
+				}
+			}
 
-	//		UpdateGameObjects();
+			UpdateGameObjects();
 
-	//		ClearMap();
+			ClearMap();
 
-	//		break;
-	//	}
+			break;
+		}
 
-	//	case EventType::RESOURCE_DESTROYED:
-	//	{		
-	//		for (int i = 0; i < scripts.size(); ++i)
-	//		{
-	//			bool somethingDestroyed = false;
-	//			if (scripts[i]->scriptRes == event.resEvent.resource)
-	//			{
-	//				somethingDestroyed = true;
-	//				scripts[i]->gameObject->ClearComponent(scripts[i]);
-	//				delete scripts[i];
-	//				scripts.erase(scripts.begin() + i);
+		case System_Event_Type::ResourceDestroyed:
+		{		
+			for (int i = 0; i < scripts.size(); ++i)
+			{
+				bool somethingDestroyed = false;
+				if (scripts[i]->scriptRes == event.resEvent.resource)
+				{
+					somethingDestroyed = true;
+					scripts[i]->GetParent()->ClearComponent(scripts[i]);
+					delete scripts[i];
+					scripts.erase(scripts.begin() + i);
 
-	//				i--;
-	//			}
-	//			if (somethingDestroyed)
-	//			{
-	//				IncludeCSFiles();
-	//			}
-	//		}			
-	//	}
+					i--;
+				}
+				if (somethingDestroyed)
+				{
+					IncludeCSFiles();
+				}
+			}			
+		}
 
-	//	case EventType::GO_DESTROYED:
-	//	{
-	//		for (int i = 0; i < gameObjectsMap.size(); ++i)
-	//		{
-	//			GameObject* gameObject = gameObjectsMap[i].first;
-	//			bool destroyed = false;
-	//			while (gameObject)
-	//			{
-	//				if (gameObject == event.goEvent.gameObject)
-	//				{
-	//					destroyed = true;
-	//					break;
-	//				}
-	//				gameObject = gameObject->parent;
-	//			}
+		case System_Event_Type::GameObjectDestroyed:
+		{
+			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			{
+				GameObject* gameObject = gameObjectsMap[i].first;
+				bool destroyed = false;
+				while (gameObject)
+				{
+					if (gameObject == event.goEvent.gameObject)
+					{
+						destroyed = true;
+						break;
+					}
+					gameObject = gameObject->GetParent();
+				}
 
-	//			if (destroyed)				
-	//			{
-	//				MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
-	//				MonoClass* monoObjectClass = mono_object_get_class(monoObject);
+				if (destroyed)				
+				{
+					MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
+					MonoClass* monoObjectClass = mono_object_get_class(monoObject);
 
-	//				MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
+					MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
 
-	//				bool temp = true;
-	//				mono_field_set_value(monoObject, deletedField, &temp);
+					bool temp = true;
+					mono_field_set_value(monoObject, deletedField, &temp);
 
-	//				mono_gchandle_free(gameObjectsMap[i].second);
+					mono_gchandle_free(gameObjectsMap[i].second);
 
-	//				gameObjectsMap.erase(gameObjectsMap.begin() + i);
-	//				i--;
-	//			}
-	//		}			
-	//	}
-	//}
+					gameObjectsMap.erase(gameObjectsMap.begin() + i);
+					i--;
+				}
+			}			
+		}
+	}
 }
 
 ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, bool createCS)
@@ -785,7 +785,7 @@ MonoArray* GetMouseDeltaPosCS()
 	return ret;
 }
 
-int  GetWheelMovementCS()
+int GetWheelMovementCS()
 {
 	return App->input->GetMouseZ();
 }

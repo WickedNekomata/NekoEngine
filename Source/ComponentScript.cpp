@@ -29,6 +29,7 @@ void ComponentScript::Awake()
 {
 	if (scriptRes && scriptRes->awakeMethod)
 	{
+		awaked = true;
 		MonoObject* exc = nullptr;
 		if (isActive() && gameObject->areParentsActives())
 		{
@@ -194,6 +195,7 @@ void ComponentScript::OnStop()
 {
 	if (scriptRes && scriptRes->stopMethod)
 	{
+		awaked = false;
 		MonoObject* exc = nullptr;
 		if (isActive() && gameObject->areParentsActives())
 		{

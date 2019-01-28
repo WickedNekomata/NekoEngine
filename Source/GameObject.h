@@ -45,6 +45,7 @@ public:
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
 	Component* AddComponent(ComponentType type);
+	void ClearComponent(Component* component);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteComponentByValue(Component* component);
 	void MarkToDeleteAllComponents();

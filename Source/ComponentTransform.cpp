@@ -1,19 +1,21 @@
 #include "ComponentTransform.h"
-#include "GameObject.h"
 
-#include "ComponentCamera.h"
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleScene.h"
+#include "GameObject.h"
+#include "ComponentCamera.h"
+#include "ComponentRigidBody.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
+
 #include <list>
 
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentType::TransformComponent) {}
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentTypes::TransformComponent) {}
 
-ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentType::TransformComponent)
+ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentTypes::TransformComponent)
 {
 	position = componentTransform.position;
 	rotation = componentTransform.rotation;
@@ -36,7 +38,6 @@ void ComponentTransform::OnEditor()
 void ComponentTransform::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool seenLastFrame = parent->GetSeenLastFrame();
 	ImGui::Checkbox("Seen last frame", &seenLastFrame);
@@ -56,7 +57,6 @@ void ComponentTransform::OnUniqueEditor()
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Position");
-
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
@@ -80,7 +80,6 @@ void ComponentTransform::OnUniqueEditor()
 	rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
 
 	ImGui::Text("Scale");
-
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
 	ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
 	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
@@ -90,13 +89,19 @@ void ComponentTransform::OnUniqueEditor()
 
 	if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
 	{
+		// Transform updated: if the game object has a rigid body, update its transform
+		if (parent->rigidBody != nullptr)
+			parent->rigidBody->SetTransform(GetGlobalMatrix().ptr());
+
 		// Transform updated: if the game object has a camera, update its frustum
 		if (parent->camera != nullptr)
 			parent->camera->UpdateTransform();
 
+#ifndef GAMEMODE
 		// Transform updated: if the game object is selected, update the camera reference
 		if (parent == App->scene->selectedObject.Get())
 			App->camera->SetReference(position);
+#endif
 
 		// Transform updated: recalculate bounding boxes
 		System_Event newEvent;
@@ -112,7 +117,6 @@ void ComponentTransform::OnUniqueEditor()
 			App->PushSystemEvent(newEvent);
 		}
 	}
-
 #endif // !GAMEMODE
 }
 
@@ -160,12 +164,16 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 		newMatrix.Decompose(position, rotation, scale);
 	}
 
+	// Transform updated: if the game object has a rigid body, update its transform
+	if (parent->rigidBody != nullptr)
+		parent->rigidBody->SetTransform(globalMatrix.ptr());
+
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->camera != nullptr)
 		parent->camera->UpdateTransform();
 
-	// Transform updated: if the game object is selected, update the camera reference
 #ifndef GAMEMODE
+	// Transform updated: if the game object is selected, update the camera reference
 	if (parent == App->scene->selectedObject.Get())
 		App->camera->SetReference(position);
 #endif

@@ -158,6 +158,8 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentRigidBody.h" />
+    <ClInclude Include="ComponentRigidStatic.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="CurrentSelection.h" />
@@ -173,6 +175,7 @@
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />
     <ClInclude Include="glew\include\GL\glew.h" />
     <ClInclude Include="glew\include\GL\glxew.h" />
@@ -483,7 +486,7 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="ShaderImporter.h" />
-    <ClInclude Include="ComponentRigidBody.h" />
+    <ClInclude Include="ComponentRigidDynamic.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +496,8 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentRigidBody.cpp" />
+    <ClCompile Include="ComponentRigidStatic.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -577,7 +582,7 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="ShaderImporter.cpp" />
-    <ClCompile Include="ComponentRigidBody.cpp" />
+    <ClCompile Include="ComponentRigidDynamic.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

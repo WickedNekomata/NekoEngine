@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "imgui\imgui.h"
 
-Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
+Component::Component(GameObject* parent, ComponentTypes type) : parent(parent), type(type)
 {
 	if (parent != nullptr)
 		UUID = App->GenerateRandomNumber();
@@ -38,13 +38,13 @@ void Component::OnEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	if (type != ComponentType::MaterialComponent) {
+	if (type != ComponentTypes::MaterialComponent) {
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
 
 		ImGui::SameLine();
 		if (ImGui::Button(itemName)) {
 			GetParent()->MarkToDeleteComponentByValue(this);
-			if (type == ComponentType::MeshComponent)
+			if (type == ComponentTypes::MeshComponent)
 				GetParent()->MarkToDeleteComponentByValue((Component*)GetParent()->materialRenderer);
 		}
 	}
@@ -71,7 +71,7 @@ bool Component::IsActive() const
 	return isActive;
 }
 
-ComponentType Component::GetType() const
+ComponentTypes Component::GetType() const
 {
 	return type;
 }

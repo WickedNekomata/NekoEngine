@@ -118,16 +118,27 @@ void PanelInspector::ShowGameObjectInspector() const
 	{
 		if (gameObject->meshRenderer == nullptr) {
 			if (ImGui::Selectable("Mesh")) {
-				gameObject->AddComponent(ComponentType::MeshComponent);
+				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		if (gameObject->camera == nullptr)
+		if (gameObject->camera == nullptr) {
 			if (ImGui::Selectable("Camera")) {
-				gameObject->AddComponent(ComponentType::CameraComponent);
+				gameObject->AddComponent(ComponentTypes::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		ImGui::EndPopup();		
+		}
+		if (gameObject->rigidBody == nullptr) {
+			if (ImGui::Selectable("RigidStatic")) {
+				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("RigidDynamic")) {
+				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndPopup();
 	}
 }
 

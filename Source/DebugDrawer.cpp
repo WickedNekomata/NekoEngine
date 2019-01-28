@@ -30,7 +30,7 @@ void DebugDrawer::EndDebugDraw()
 	App->renderer3D->SetWireframeMode(wireframeMode);
 }
 
-void DebugDrawer::DebugDraw(const math::AABB& aabb, Color color, const math::float4x4 globalTransform) const
+void DebugDrawer::DebugDraw(const math::AABB& aabb, const Color& color, const math::float4x4& globalTransform) const
 {
 	static math::float3 corners[8];
 	aabb.GetCornerPoints(corners);
@@ -38,7 +38,7 @@ void DebugDrawer::DebugDraw(const math::AABB& aabb, Color color, const math::flo
 	DebugDrawCube(corners, color, globalTransform);
 }
 
-void DebugDrawer::DebugDraw(const math::Frustum& frustum, Color color, const math::float4x4 globalTransform) const
+void DebugDrawer::DebugDraw(const math::Frustum& frustum, const Color& color, const math::float4x4& globalTransform) const
 {
 	static math::float3 corners[8];
 	frustum.GetCornerPoints(corners);
@@ -46,14 +46,13 @@ void DebugDrawer::DebugDraw(const math::Frustum& frustum, Color color, const mat
 	DebugDrawCube(corners, color, globalTransform);
 }
 
-void DebugDrawer::DebugDrawCube(const math::float3* vertices, Color color, const math::float4x4 globalTransform) const
+void DebugDrawer::DebugDrawCube(const math::float3* vertices, const Color& color, const math::float4x4& globalTransform) const
 {
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
 	glMultMatrixf(globalTransform.Transposed().ptr());
 
 	glBegin(GL_QUADS);
-
 	glVertex3fv((const GLfloat*)&vertices[1]);
 	glVertex3fv((const GLfloat*)&vertices[5]);
 	glVertex3fv((const GLfloat*)&vertices[7]);
@@ -83,7 +82,34 @@ void DebugDrawer::DebugDrawCube(const math::float3* vertices, Color color, const
 	glVertex3fv((const GLfloat*)&vertices[4]);
 	glVertex3fv((const GLfloat*)&vertices[5]);
 	glVertex3fv((const GLfloat*)&vertices[1]);
+	glEnd();
 
+	glPopMatrix();
+}
+
+#define SPHERE_SIDES 10
+
+void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::float4x4& globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	float deltaAngle = 360.0f / (float)SPHERE_SIDES;
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), 0.0f, radius * sinf(DEGTORAD * angle));
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), radius * sinf(DEGTORAD * angle), 0.0f);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(0.0f, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
 	glEnd();
 
 	glPopMatrix();

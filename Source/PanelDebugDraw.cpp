@@ -45,6 +45,11 @@ bool PanelDebugDraw::Draw()
 
 			ImGui::SameLine();
 
+			bool drawColliders = App->renderer3D->GetDrawColliders();
+			if (ImGui::Checkbox("Colliders", &drawColliders)) { App->renderer3D->SetDrawColliders(drawColliders); }
+
+			ImGui::SameLine();
+
 			bool drawQuadtree = App->renderer3D->GetDrawQuadtree();
 			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->renderer3D->SetDrawQuadtree(drawQuadtree); }
 		}

@@ -6,7 +6,7 @@
 
 #include "imgui\imgui.h"
 
-ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentType::CameraComponent)
+ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentTypes::CameraComponent)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
 
@@ -20,7 +20,7 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
 }
 
-ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentType::CameraComponent)
+ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentTypes::CameraComponent)
 {
 	frustum = componentCamera.frustum;
 

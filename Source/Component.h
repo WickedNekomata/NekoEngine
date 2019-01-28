@@ -12,7 +12,7 @@ class Component
 {
 public:
 
-	Component(GameObject* parent, ComponentType type = ComponentType::NoComponentType);
+	Component(GameObject* parent, ComponentTypes type = ComponentTypes::NoComponentType);
 	virtual void Activate() {};
 	virtual ~Component();
 
@@ -23,7 +23,7 @@ public:
 	void ToggleIsActive();
 	bool IsActive() const;
 
-	ComponentType GetType() const;
+	ComponentTypes GetType() const;
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent() const;
@@ -42,7 +42,7 @@ private:
 
 protected:
 
-	ComponentType type;
+	ComponentTypes type;
 	GameObject* parent = nullptr;
 
 public:

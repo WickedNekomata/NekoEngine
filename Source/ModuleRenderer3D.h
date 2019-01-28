@@ -73,6 +73,9 @@ public:
 	void SetDrawCamerasFrustum(bool drawCamerasFrustum);
 	bool GetDrawCamerasFrustum() const;
 
+	void SetDrawColliders(bool drawColliders);
+	bool GetDrawColliders() const;
+
 	void SetDrawQuadtree(bool drawQuadtree);
 	bool GetDrawQuadtree() const;
 
@@ -127,6 +130,7 @@ public:
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
 	bool drawCamerasFrustum = true;
+	bool drawColliders = true;
 	bool drawQuadtree = false;
 };
 

@@ -3,23 +3,18 @@
 
 #include "Component.h"
 
+#include "Geometry.h"
+
 #include "physx/include/PxPhysicsAPI.h"
 #include "MathGeoLib/include/Math/float3.h"
 
 using namespace physx;
 
-enum GeometryTypes
-{
-	Sphere,
-	Capsule,
-	Box
-};
-
 class ComponentRigidBody : public Component
 {
 public:
 
-	ComponentRigidBody(GameObject* parent, GeometryTypes geometryType);
+	ComponentRigidBody(GameObject* parent, ComponentTypes componentType);
 	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
 	~ComponentRigidBody();
 
@@ -27,18 +22,18 @@ public:
 
 	void OnUniqueEditor();
 
-	void CreateGeometry();
+	void ResetCurrentGeometry() const;
+	void UpdateCurrentShape();
+
+	void SetTransform(float* ptr) const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 
-private:
+protected:
 
-	GeometryTypes geometryType;
-
-	math::float3 center = math::float3::zero;
-	float radius = 0.0f;
-	float halfHeight = 0.0f;
+	PxRigidActor* gActor = nullptr;
+	Geometry* geometry = nullptr;
 };
 
 #endif

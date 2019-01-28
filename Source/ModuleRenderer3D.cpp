@@ -6,6 +6,7 @@
 #include "ModuleCameraEditor.h"
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
+#include "ModulePhysics.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "DebugDrawer.h"
@@ -213,19 +214,88 @@ update_status ModuleRenderer3D::PostUpdate()
 	{
 		App->debugDrawer->StartDebugDraw();
 
-		if (drawBoundingBoxes)
+		if (drawBoundingBoxes) // boundingBoxesColor = Yellow
 		{
+			Color boundingBoxesColor = Yellow;
+
 			for (uint i = 0; i < meshComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, Yellow);
+				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, boundingBoxesColor);
 		}
 
-		if (drawCamerasFrustum)
+		if (drawCamerasFrustum) // boundingBoxesColor = Grey
 		{
+			Color camerasFrustumColor = Grey;
+
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, Grey);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawQuadtree)
+		if (drawColliders)// boundingBoxesColor = Blue, DarkBlue
+		{
+			Color collidersColor = Blue;
+
+			std::vector<PxRigidActor*> staticActors = App->physics->GetRigidStatics();
+			for (uint i = 0; i < staticActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				staticActors[i]->getShapes(&gShape, 1);
+
+				PxTransform gTransform = staticActors[i]->getGlobalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 transform(q, p);
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, transform);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+						break;
+					case PxGeometryType::Enum::eBOX:
+						break;
+					}
+				}
+			}
+
+			std::vector<PxRigidActor*> dynamicActors = App->physics->GetRigidDynamics();
+			for (uint i = 0; i < dynamicActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				dynamicActors[i]->getShapes(&gShape, 1);
+
+				if (dynamicActors[i]->is<PxRigidDynamic>()->isSleeping())
+					collidersColor = DarkBlue;
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+						break;
+					case PxGeometryType::Enum::eBOX:
+						break;
+					}
+				}
+			}
+		}
+
+		if (drawQuadtree) // quadtreeColor = Green, DarkGreen
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
 		App->debugDrawer->EndDebugDraw();
@@ -422,6 +492,16 @@ void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
 bool ModuleRenderer3D::GetDrawCamerasFrustum() const
 {
 	return drawCamerasFrustum;
+}
+
+void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
+{
+	this->drawColliders = drawColliders;
+}
+
+bool ModuleRenderer3D::GetDrawColliders() const
+{
+	return drawColliders;
 }
 
 void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)

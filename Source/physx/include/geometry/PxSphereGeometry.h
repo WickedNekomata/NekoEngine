@@ -33,7 +33,7 @@
 /** \addtogroup geomutils
 @{
 */
-#include "geometry/PxGeometry.h"
+#include "../geometry/PxGeometry.h"
 
 #if !PX_DOXYGEN
 namespace physx

@@ -4,13 +4,17 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentRigidBody.h"
+#include "ComponentRigidDynamic.h"
+#include "ComponentRigidStatic.h"
 #include "ResourceMesh.h"
-#include "ModuleResourceManager.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleResourceManager.h"
 #include "ModuleGOs.h"
 #include "ModuleScene.h"
+#include "ModulePhysics.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -26,7 +30,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 		parent->AddChild(this);
 
 		if (!disableTransform)
-			AddComponent(ComponentType::TransformComponent);
+			AddComponent(ComponentTypes::TransformComponent);
 	}
 
 	boundingBox.SetNegativeInfinity();
@@ -198,7 +202,7 @@ bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) con
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentType type)
+Component* GameObject::AddComponent(ComponentTypes type)
 {
 	Component* newComponent;
 
@@ -206,27 +210,35 @@ Component* GameObject::AddComponent(ComponentType type)
 
 	switch (type)
 	{
-	case NoComponentType:
+	case ComponentTypes::NoComponentType:
 		break;
-	case TransformComponent:
-		assert(transform == NULL);
+	case ComponentTypes::TransformComponent:
+		assert(transform == nullptr);
 		newComponent = transform = new ComponentTransform(this);
 		break;
-	case MeshComponent:
-		assert(meshRenderer == NULL);
+	case ComponentTypes::MeshComponent:
+		assert(meshRenderer == nullptr);
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
 		break;
-	case MaterialComponent:
+	case ComponentTypes::MaterialComponent:
 		if (materialRenderer != nullptr)
 			return nullptr;
-		assert(materialRenderer == NULL);
+		assert(materialRenderer == nullptr);
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
-	case CameraComponent:
-		assert(camera == NULL);
+	case ComponentTypes::CameraComponent:
+		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+		assert(rigidBody == nullptr);
+		newComponent = rigidBody = new ComponentRigidDynamic(this);
+		break;
+	case ComponentTypes::RigidStaticComponent:
+		assert(rigidBody == nullptr);
+		newComponent = rigidBody = new ComponentRigidStatic(this);
 		break;
 	default:
 		break;
@@ -235,7 +247,7 @@ Component* GameObject::AddComponent(ComponentType type)
 	components.push_back(newComponent);
 
 	if (createMaterial)
-		AddComponent(ComponentType::MaterialComponent);
+		AddComponent(ComponentTypes::MaterialComponent);
 
 	return newComponent;
 }
@@ -260,13 +272,17 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 {
 	switch (toDelete->GetType())
 	{
-	case ComponentType::MeshComponent:
+	case ComponentTypes::MeshComponent:
 		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
 		meshRenderer = nullptr;
 		break;
-	case ComponentType::CameraComponent:
+	case ComponentTypes::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
 		materialRenderer = nullptr;
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+	case ComponentTypes::RigidStaticComponent:
+		rigidBody = nullptr;
 		break;
 	}
 
@@ -280,10 +296,10 @@ void GameObject::InternallyDeleteComponents()
 	{   
 		switch (components[i]->GetType())
 		{
-		case ComponentType::MeshComponent:
+		case ComponentTypes::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
 			break;
-		case ComponentType::CameraComponent:
+		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
 		}		
@@ -469,7 +485,7 @@ void GameObject::OnLoad(JSON_Object* file)
 	
 	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
 		cObject = json_array_get_object(jsonComponents, i);
-		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
+		Component* newComponent = AddComponent((ComponentTypes)(int)json_object_get_number(cObject, "Type"));
 		// material special case cause of its bonunding property to mesh component
 		if (newComponent == nullptr)
 			materialRenderer->OnLoad(cObject);

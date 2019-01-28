@@ -353,3 +353,12 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Scripting Files
+[Ii]nternal/
+**/[Mm]ono/
+**/Game/FlanCS/
+
+**/Game/LogError.txt
+*.sln
+*.csproj

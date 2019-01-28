@@ -154,6 +154,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="CurrentSelection.h" />
@@ -289,6 +290,7 @@
     <ClInclude Include="physfs\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
+    <ClInclude Include="ScriptingModule.h" />
     <ClInclude Include="ShaderImporter.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -299,6 +301,7 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -382,6 +385,7 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
+    <ClCompile Include="ScriptingModule.cpp" />
     <ClCompile Include="ShaderImporter.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

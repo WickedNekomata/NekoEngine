@@ -643,6 +643,12 @@
     <ClInclude Include="ResourceScript.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptingModule.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -917,6 +923,12 @@
     </ClCompile>
     <ClCompile Include="ResourceScript.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingModule.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

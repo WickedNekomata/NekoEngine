@@ -144,8 +144,13 @@ update_status ModulePhysics::PostUpdate()
 bool ModulePhysics::CleanUp()
 {
 	gScene->release();
+	gScene = nullptr;
+
 	gPhysics->release();
+	gPhysics = nullptr;
+
 	gFoundation->release();
+	gFoundation = nullptr;
 
 	return true;
 }
@@ -177,6 +182,11 @@ PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const PxTransform& transform, 
 PxShape* ModulePhysics::CreateShape(const PxGeometry& geometry, const PxMaterial& material, bool isExclusive) const
 {
 	return gPhysics->createShape(geometry, material, isExclusive);
+}
+
+void ModulePhysics::RemoveActor(PxActor& actor) const
+{
+	gScene->removeActor(actor);
 }
 
 PxMaterial* ModulePhysics::GetDefaultMaterial() const

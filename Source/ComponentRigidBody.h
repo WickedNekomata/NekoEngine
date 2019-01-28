@@ -7,6 +7,7 @@
 
 #include "physx/include/PxPhysicsAPI.h"
 #include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib/include/Math/float4x4.h"
 
 using namespace physx;
 
@@ -22,10 +23,9 @@ public:
 
 	void OnUniqueEditor();
 
-	void ResetCurrentGeometry() const;
-	void UpdateCurrentShape();
-
-	void SetTransform(float* ptr) const;
+	void ResetGeometry() const;
+	void UpdateShape();
+	void UpdateTransform() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);

@@ -5,18 +5,19 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
-#include "GameObject.h"
-#include "ComponentTransform.h"
 
 #include "imgui\imgui.h"
 
 ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidBody(parent, ComponentTypes::RigidDynamicComponent) 
 {
 	gActor = App->physics->CreateRigidDynamic(PxTransform(PxIDENTITY()), *App->physics->CreateShape(PxSphereGeometry(1.0f), *App->physics->GetDefaultMaterial()), 10.0f);
-	SetTransform(parent->transform->GetGlobalMatrix().ptr());
+	UpdateTransform();
 }
 
-ComponentRigidDynamic::~ComponentRigidDynamic() {}
+ComponentRigidDynamic::~ComponentRigidDynamic() 
+{
+
+}
 
 void ComponentRigidDynamic::Update() {}
 

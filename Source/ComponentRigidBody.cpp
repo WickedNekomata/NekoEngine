@@ -2,6 +2,8 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
 
 #include "imgui\imgui.h"
 
@@ -9,7 +11,7 @@ ComponentRigidBody::ComponentRigidBody(GameObject* parent, ComponentTypes compon
 {
 	geometry = new Geometry();
 	geometry->geometryType = GeometryTypes::GeometryTypeSphere;
-	ResetCurrentGeometry();
+	ResetGeometry();
 }
 
 ComponentRigidBody::~ComponentRigidBody() 
@@ -32,6 +34,9 @@ ComponentRigidBody::~ComponentRigidBody()
 			gShape = nullptr;
 		}
 	}*/
+
+	App->physics->RemoveActor(*gActor);
+	gActor->release();
 }
 
 void ComponentRigidBody::Update() {}
@@ -46,28 +51,28 @@ void ComponentRigidBody::OnUniqueEditor()
 	if (ImGui::Combo("Geometry Type", &currentGeometryType, geometryType, IM_ARRAYSIZE(geometryType)))
 	{
 		geometry->geometryType = (GeometryTypes)currentGeometryType;
-		ResetCurrentGeometry();
-		UpdateCurrentShape();
+		ResetGeometry();
+		UpdateShape();
 		return;
 	}
 
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
-	bool updateCurrentShape = false;
+	bool updateShape = false;
 	switch (geometry->geometryType)
 	{
 	case GeometryTypes::GeometryTypeSphere:
 
 		if (ImGui::InputFloat("Radius", &geometry->geometrySphere.radius))
-			updateCurrentShape = true;
+			updateShape = true;
 
 		break;
 
 	case GeometryTypes::GeometryTypeCapsule:
 
 		if (ImGui::InputFloat("Radius", &geometry->geometryCapsule.radius))
-			updateCurrentShape = true;
+			updateShape = true;
 		if (ImGui::InputFloat("Half height", &geometry->geometryCapsule.halfHeight))
-			updateCurrentShape = true;
+			updateShape = true;
 
 		break;
 
@@ -76,24 +81,24 @@ void ComponentRigidBody::OnUniqueEditor()
 		ImGui::Text("Half extents");
 		ImGui::PushItemWidth(50.0f);
 		if (ImGui::DragScalar("##CenterX", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
-			updateCurrentShape = true;
+			updateShape = true;
 		ImGui::SameLine();
 		ImGui::PushItemWidth(50.0f);
 		if (ImGui::DragScalar("##CenterY", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
-			updateCurrentShape = true; 
+			updateShape = true;
 		ImGui::SameLine();
 		ImGui::PushItemWidth(50.0f);
 		if (ImGui::DragScalar("##CenterZ", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
-			updateCurrentShape = true;
+			updateShape = true;
 
 		break;
 	}
-	if (updateCurrentShape)
-		UpdateCurrentShape();
+	if (updateShape)
+		UpdateShape();
 #endif
 }
 
-void ComponentRigidBody::ResetCurrentGeometry() const
+void ComponentRigidBody::ResetGeometry() const
 {
 	switch (geometry->geometryType)
 	{
@@ -112,7 +117,7 @@ void ComponentRigidBody::ResetCurrentGeometry() const
 	}
 }
 
-void ComponentRigidBody::UpdateCurrentShape()
+void ComponentRigidBody::UpdateShape()
 {
 	PxShape* gShape = nullptr;
 
@@ -152,7 +157,8 @@ void ComponentRigidBody::UpdateCurrentShape()
 		gActor->attachShape(*gShape);
 }
 
-void ComponentRigidBody::SetTransform(float* ptr) const
+void ComponentRigidBody::UpdateTransform() const
 {
-	gActor->setGlobalPose(PxTransform(PxMat44(ptr)));
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	gActor->setGlobalPose(PxTransform(PxMat44(globalMatrix.Transposed().ptr())));
 }

@@ -39,6 +39,8 @@ public:
 
 	PxShape* CreateShape(const PxGeometry& geometry, const PxMaterial& material, bool isExclusive = true) const;
 
+	void RemoveActor(PxActor& actor) const;
+
 	PxMaterial* GetDefaultMaterial() const;
 
 	std::vector<PxRigidActor*> GetRigidStatics() const;

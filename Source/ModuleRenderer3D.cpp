@@ -243,7 +243,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				PxTransform gTransform = staticActors[i]->getGlobalPose();
 				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
 				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
-				math::float4x4 transform(q, p);
+				math::float4x4 globalMatrix(q, p);
 
 				if (gShape != nullptr)
 				{
@@ -254,7 +254,7 @@ update_status ModuleRenderer3D::PostUpdate()
 						PxSphereGeometry gSphereGeometry;
 						gShape->getSphereGeometry(gSphereGeometry);
 
-						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, transform);
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
 					}
 						break;
 					case PxGeometryType::Enum::eCAPSULE:
@@ -271,6 +271,11 @@ update_status ModuleRenderer3D::PostUpdate()
 				PxShape* gShape = nullptr;
 				dynamicActors[i]->getShapes(&gShape, 1);
 
+				PxTransform gTransform = staticActors[i]->getGlobalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 globalMatrix(q, p);
+
 				if (dynamicActors[i]->is<PxRigidDynamic>()->isSleeping())
 					collidersColor = DarkBlue;
 
@@ -283,7 +288,7 @@ update_status ModuleRenderer3D::PostUpdate()
 						PxSphereGeometry gSphereGeometry;
 						gShape->getSphereGeometry(gSphereGeometry);
 
-						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor);
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
 					}
 						break;
 					case PxGeometryType::Enum::eCAPSULE:

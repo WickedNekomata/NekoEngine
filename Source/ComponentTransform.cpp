@@ -91,7 +91,7 @@ void ComponentTransform::OnUniqueEditor()
 	{
 		// Transform updated: if the game object has a rigid body, update its transform
 		if (parent->rigidBody != nullptr)
-			parent->rigidBody->SetTransform(GetGlobalMatrix().ptr());
+			parent->rigidBody->UpdateTransform();
 
 		// Transform updated: if the game object has a camera, update its frustum
 		if (parent->camera != nullptr)
@@ -166,7 +166,7 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 
 	// Transform updated: if the game object has a rigid body, update its transform
 	if (parent->rigidBody != nullptr)
-		parent->rigidBody->SetTransform(globalMatrix.ptr());
+		parent->rigidBody->UpdateTransform();
 
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->camera != nullptr)

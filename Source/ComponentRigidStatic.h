@@ -2,9 +2,9 @@
 #define __COMPONENT_RIGID_STATIC_H__
 
 #include "Component.h"
-#include "ComponentRigidBody.h"
+#include "ComponentRigidActor.h"
 
-class ComponentRigidStatic : public ComponentRigidBody
+class ComponentRigidStatic : public ComponentRigidActor
 {
 public:
 

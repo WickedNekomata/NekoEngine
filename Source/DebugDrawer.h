@@ -20,8 +20,10 @@ public:
 	void DebugDraw(const math::AABB& aabb, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
 	void DebugDraw(const math::Frustum& frustum, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
 
-	void DebugDrawCube(const math::float3* vertices, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
+	void DebugDrawBox(const math::float3* vertices, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
+	void DebugDrawBox(const math::float3& halfExtents, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
 	void DebugDrawSphere(float radius, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
+	void DebugDrawCapsule(float radius, float halfHeight, const Color& color = White, const math::float4x4& globalTransform = math::float4x4::identity) const;
 
 private:
 

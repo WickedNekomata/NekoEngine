@@ -1,4 +1,4 @@
-#include "ComponentRigidBody.h"
+#include "ComponentRigidActor.h"
 
 #include "Application.h"
 #include "ModulePhysics.h"
@@ -7,14 +7,14 @@
 
 #include "imgui\imgui.h"
 
-ComponentRigidBody::ComponentRigidBody(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType) 
+ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType)
 {
 	geometry = new Geometry();
 	geometry->geometryType = GeometryTypes::GeometryTypeSphere;
 	ResetGeometry();
 }
 
-ComponentRigidBody::~ComponentRigidBody() 
+ComponentRigidActor::~ComponentRigidActor()
 {
 	RELEASE(geometry);
 
@@ -39,9 +39,9 @@ ComponentRigidBody::~ComponentRigidBody()
 	gActor->release();
 }
 
-void ComponentRigidBody::Update() {}
+void ComponentRigidActor::Update() {}
 
-void ComponentRigidBody::OnUniqueEditor()
+void ComponentRigidActor::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 	// Geometry type
@@ -62,34 +62,58 @@ void ComponentRigidBody::OnUniqueEditor()
 	{
 	case GeometryTypes::GeometryTypeSphere:
 
-		if (ImGui::InputFloat("Radius", &geometry->geometrySphere.radius))
+		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##SphereRadius", ImGuiDataType_Float, (void*)&geometry->geometrySphere.radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometrySphere.radius <= 0.0f)
+				geometry->geometrySphere.radius = 0.5f;
 			updateShape = true;
+		}
 
 		break;
 
 	case GeometryTypes::GeometryTypeCapsule:
 
-		if (ImGui::InputFloat("Radius", &geometry->geometryCapsule.radius))
+		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##CapsuleRadius", ImGuiDataType_Float, (void*)&geometry->geometryCapsule.radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometryCapsule.radius <= 0.0f)
+				geometry->geometryCapsule.radius = 0.5f;
 			updateShape = true;
-		if (ImGui::InputFloat("Half height", &geometry->geometryCapsule.halfHeight))
+		}
+		ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##CapsuleHalfHeight", ImGuiDataType_Float, (void*)&geometry->geometryCapsule.halfHeight, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometryCapsule.halfHeight <= 0.0f)
+				geometry->geometryCapsule.halfHeight = 0.5f;
 			updateShape = true;
+		}
 
 		break;
 
 	case GeometryTypes::GeometryTypeBox:
 
-		ImGui::Text("Half extents");
-		ImGui::PushItemWidth(50.0f);
-		if (ImGui::DragScalar("##CenterX", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
+		ImGui::Text("Half extents"); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##BoxHalfExtentsX", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.x, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometryBox.halfExtents.x <= 0.0f)
+				geometry->geometryBox.halfExtents.x = 0.5f;
 			updateShape = true;
-		ImGui::SameLine();
-		ImGui::PushItemWidth(50.0f);
-		if (ImGui::DragScalar("##CenterY", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
+		}
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##BoxHalfExtentsY", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.y, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometryBox.halfExtents.y <= 0.0f)
+				geometry->geometryBox.halfExtents.y = 0.5f;
 			updateShape = true;
-		ImGui::SameLine();
-		ImGui::PushItemWidth(50.0f);
-		if (ImGui::DragScalar("##CenterZ", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f))
+		}
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragScalar("##BoxHalfExtentsZ", ImGuiDataType_Float, (void*)&geometry->geometryBox.halfExtents.z, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+		{
+			if (geometry->geometryBox.halfExtents.z <= 0.0f)
+				geometry->geometryBox.halfExtents.z = 0.5f;
 			updateShape = true;
+		}
 
 		break;
 	}
@@ -98,26 +122,26 @@ void ComponentRigidBody::OnUniqueEditor()
 #endif
 }
 
-void ComponentRigidBody::ResetGeometry() const
+void ComponentRigidActor::ResetGeometry() const
 {
 	switch (geometry->geometryType)
 	{
 	case GeometryTypes::GeometryTypeSphere:
-		geometry->geometrySphere.radius = 1.0f;
+		geometry->geometrySphere.radius = 0.5f;
 		break;
 
 	case GeometryTypes::GeometryTypeCapsule:
-		geometry->geometryCapsule.radius = 1.0f;
-		geometry->geometryCapsule.halfHeight = 1.0f;
+		geometry->geometryCapsule.radius = 0.5f;
+		geometry->geometryCapsule.halfHeight = 0.5f;
 		break;
 
 	case GeometryTypes::GeometryTypeBox:
-		geometry->geometryBox.halfExtents = math::float3::one;
+		geometry->geometryBox.halfExtents = math::float3(0.5f, 0.5f, 0.5f);
 		break;
 	}
 }
 
-void ComponentRigidBody::UpdateShape()
+void ComponentRigidActor::UpdateShape()
 {
 	PxShape* gShape = nullptr;
 
@@ -157,7 +181,7 @@ void ComponentRigidBody::UpdateShape()
 		gActor->attachShape(*gShape);
 }
 
-void ComponentRigidBody::UpdateTransform() const
+void ComponentRigidActor::UpdateTransform() const
 {
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	gActor->setGlobalPose(PxTransform(PxMat44(globalMatrix.Transposed().ptr())));

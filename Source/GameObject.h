@@ -15,7 +15,7 @@ class ComponentTransform;
 class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
-class ComponentRigidBody;
+class ComponentRigidActor;
 
 class GameObject
 {
@@ -91,7 +91,7 @@ public:
 	ComponentCamera* camera = nullptr;
 
 	// Physics
-	ComponentRigidBody* rigidBody = nullptr;
+	ComponentRigidActor* rigidActor = nullptr;
 
 	math::AABB boundingBox;
 

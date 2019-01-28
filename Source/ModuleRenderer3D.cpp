@@ -258,8 +258,20 @@ update_status ModuleRenderer3D::PostUpdate()
 					}
 						break;
 					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
 						break;
 					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
 						break;
 					}
 				}
@@ -292,8 +304,20 @@ update_status ModuleRenderer3D::PostUpdate()
 					}
 						break;
 					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
 						break;
 					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
 						break;
 					}
 				}

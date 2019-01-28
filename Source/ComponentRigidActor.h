@@ -1,5 +1,5 @@
-#ifndef __COMPONENT_RIGID_BODY_H__
-#define __COMPONENT_RIGID_BODY_H__
+#ifndef __COMPONENT_RIGID_ACTOR_H__
+#define __COMPONENT_RIGID_ACTOR_H__
 
 #include "Component.h"
 
@@ -11,13 +11,13 @@
 
 using namespace physx;
 
-class ComponentRigidBody : public Component
+class ComponentRigidActor : public Component
 {
 public:
 
-	ComponentRigidBody(GameObject* parent, ComponentTypes componentType);
-	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
-	~ComponentRigidBody();
+	ComponentRigidActor(GameObject* parent, ComponentTypes componentType);
+	//ComponentRigidActor(const ComponentRigidActor& componentRigidActor);
+	~ComponentRigidActor();
 
 	void Update();
 

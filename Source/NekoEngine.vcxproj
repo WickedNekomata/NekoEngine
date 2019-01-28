@@ -158,7 +158,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMesh.h" />
-    <ClInclude Include="ComponentRigidBody.h" />
+    <ClInclude Include="ComponentRigidActor.h" />
     <ClInclude Include="ComponentRigidStatic.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
@@ -496,7 +496,7 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
-    <ClCompile Include="ComponentRigidBody.cpp" />
+    <ClCompile Include="ComponentRigidActor.cpp" />
     <ClCompile Include="ComponentRigidStatic.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />

@@ -4,7 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
-#include "ComponentRigidBody.h"
+#include "ComponentRigidActor.h"
 #include "ComponentRigidDynamic.h"
 #include "ComponentRigidStatic.h"
 #include "ResourceMesh.h"
@@ -233,12 +233,12 @@ Component* GameObject::AddComponent(ComponentTypes type)
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	case ComponentTypes::RigidDynamicComponent:
-		assert(rigidBody == nullptr);
-		newComponent = rigidBody = new ComponentRigidDynamic(this);
+		assert(rigidActor == nullptr);
+		newComponent = rigidActor = new ComponentRigidDynamic(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
-		assert(rigidBody == nullptr);
-		newComponent = rigidBody = new ComponentRigidStatic(this);
+		assert(rigidActor == nullptr);
+		newComponent = rigidActor = new ComponentRigidStatic(this);
 		break;
 	default:
 		break;
@@ -282,7 +282,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	case ComponentTypes::RigidDynamicComponent:
 	case ComponentTypes::RigidStaticComponent:
-		rigidBody = nullptr;
+		rigidActor = nullptr;
 		break;
 	}
 

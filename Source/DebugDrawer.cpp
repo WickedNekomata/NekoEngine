@@ -35,7 +35,7 @@ void DebugDrawer::DebugDraw(const math::AABB& aabb, const Color& color, const ma
 	static math::float3 corners[8];
 	aabb.GetCornerPoints(corners);
 
-	DebugDrawCube(corners, color, globalTransform);
+	DebugDrawBox(corners, color, globalTransform);
 }
 
 void DebugDrawer::DebugDraw(const math::Frustum& frustum, const Color& color, const math::float4x4& globalTransform) const
@@ -43,10 +43,10 @@ void DebugDrawer::DebugDraw(const math::Frustum& frustum, const Color& color, co
 	static math::float3 corners[8];
 	frustum.GetCornerPoints(corners);
 
-	DebugDrawCube(corners, color, globalTransform);
+	DebugDrawBox(corners, color, globalTransform);
 }
 
-void DebugDrawer::DebugDrawCube(const math::float3* vertices, const Color& color, const math::float4x4& globalTransform) const
+void DebugDrawer::DebugDrawBox(const math::float3* vertices, const Color& color, const math::float4x4& globalTransform) const
 {
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
@@ -87,7 +87,48 @@ void DebugDrawer::DebugDrawCube(const math::float3* vertices, const Color& color
 	glPopMatrix();
 }
 
-#define SPHERE_SIDES 10
+void DebugDrawer::DebugDrawBox(const math::float3& halfExtents, const Color& color, const math::float4x4& globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	glBegin(GL_QUADS);
+	glVertex3f(-halfExtents.x, -halfExtents.y, halfExtents.z);
+	glVertex3f(halfExtents.x, -halfExtents.y, halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, halfExtents.z);
+	glVertex3f(-halfExtents.x, halfExtents.y, halfExtents.z);
+
+	glVertex3f(halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(-halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(-halfExtents.x, halfExtents.y, -halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, -halfExtents.z);
+
+	glVertex3f(halfExtents.x, -halfExtents.y, halfExtents.z);
+	glVertex3f(halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, -halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, halfExtents.z);
+
+	glVertex3f(-halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(-halfExtents.x, -halfExtents.y, halfExtents.z);
+	glVertex3f(-halfExtents.x, halfExtents.y, halfExtents.z);
+	glVertex3f(-halfExtents.x, halfExtents.y, -halfExtents.z);
+
+	glVertex3f(-halfExtents.x, halfExtents.y, halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, halfExtents.z);
+	glVertex3f(halfExtents.x, halfExtents.y, -halfExtents.z);
+	glVertex3f(-halfExtents.x, halfExtents.y, -halfExtents.z);
+
+	glVertex3f(-halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(halfExtents.x, -halfExtents.y, -halfExtents.z);
+	glVertex3f(halfExtents.x, -halfExtents.y, halfExtents.z);
+	glVertex3f(-halfExtents.x, -halfExtents.y, halfExtents.z);
+	glEnd();
+
+	glPopMatrix();
+}
+
+#define SPHERE_SIDES 30
 
 void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::float4x4& globalTransform) const
 {
@@ -110,6 +151,69 @@ void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::
 	glBegin(GL_LINE_LOOP);
 	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
 		glVertex3f(0.0f, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
+	glEnd();
+
+	glPopMatrix();
+}
+
+#define CAPSULE_SIDES 30
+
+void DebugDrawer::DebugDrawCapsule(float radius, float halfHeight, const Color& color, const math::float4x4& globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	float deltaAngle = 360.0f / (float)SPHERE_SIDES;
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), halfHeight, radius * sinf(DEGTORAD * angle));
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), -halfHeight, radius * sinf(DEGTORAD * angle));
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	for (float angle = 0.0f; angle <= 180.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), halfHeight + radius * sinf(DEGTORAD * angle), 0.0f);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	for (float angle = 0.0f; angle <= 180.0f; angle += deltaAngle)
+		glVertex3f(0.0f, halfHeight + radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	for (float angle = 180.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), -halfHeight + radius * sinf(DEGTORAD * angle), 0.0f);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	for (float angle = 180.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(0.0f, -halfHeight + radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(radius, halfHeight, 0.0f);
+	glVertex3f(radius, -halfHeight, 0.0f);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(-radius, halfHeight, 0.0f);
+	glVertex3f(-radius, -halfHeight, 0.0f);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0.0f, halfHeight, radius);
+	glVertex3f(0.0f, -halfHeight, radius);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0.0f, halfHeight, -radius);
+	glVertex3f(0.0f, -halfHeight, -radius);
 	glEnd();
 
 	glPopMatrix();

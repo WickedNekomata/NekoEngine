@@ -128,7 +128,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		if (gameObject->rigidBody == nullptr) {
+		if (gameObject->rigidActor == nullptr) {
 			if (ImGui::Selectable("RigidStatic")) {
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
 				ImGui::CloseCurrentPopup();

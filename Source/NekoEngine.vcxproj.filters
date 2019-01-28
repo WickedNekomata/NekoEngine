@@ -1270,13 +1270,13 @@
     <ClInclude Include="ComponentRigidDynamic.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRigidBody.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentRigidStatic.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidActor.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1557,10 +1557,10 @@
     <ClCompile Include="ComponentRigidDynamic.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRigidBody.cpp">
+    <ClCompile Include="ComponentRigidStatic.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRigidStatic.cpp">
+    <ClCompile Include="ComponentRigidActor.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
   </ItemGroup>

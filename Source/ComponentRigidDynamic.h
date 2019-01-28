@@ -2,9 +2,9 @@
 #define __COMPONENT_RIGID_DYNAMIC_H__
 
 #include "Component.h"
-#include "ComponentRigidBody.h"
+#include "ComponentRigidActor.h"
 
-class ComponentRigidDynamic : public ComponentRigidBody
+class ComponentRigidDynamic : public ComponentRigidActor
 {
 public:
 

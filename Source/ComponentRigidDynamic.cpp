@@ -8,7 +8,7 @@
 
 #include "imgui\imgui.h"
 
-ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidBody(parent, ComponentTypes::RigidDynamicComponent) 
+ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidDynamicComponent)
 {
 	gActor = App->physics->CreateRigidDynamic(PxTransform(PxIDENTITY()), *App->physics->CreateShape(PxSphereGeometry(1.0f), *App->physics->GetDefaultMaterial()), 10.0f);
 	UpdateTransform();
@@ -30,7 +30,7 @@ void ComponentRigidDynamic::OnUniqueEditor()
 	if (ImGui::Checkbox("Kinematic", &isKinematic))
 		ToggleKinematic();
 
-	ComponentRigidBody::OnUniqueEditor();
+	ComponentRigidActor::OnUniqueEditor();
 #endif
 }
 

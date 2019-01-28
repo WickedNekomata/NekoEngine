@@ -337,9 +337,9 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 	return PHYSFS_isDirectory(file);
 }
 
-bool ModuleFileSystem::Exists(const char* file) const
+bool ModuleFileSystem::Exists(std::string file) const
 {
-	return PHYSFS_exists(file);
+	return PHYSFS_exists(file.data());
 }
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
@@ -542,20 +542,20 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 	return ret;
 }
 
-uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName, true);
+	GetFileName(file.data(), fileName, true);
 
-	bool exists = Exists(file);
+	bool exists = Exists(file.data());
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
-		filehandle = PHYSFS_openAppend(file);
+		filehandle = PHYSFS_openAppend(file.data());
 	else
-		filehandle = PHYSFS_openWrite(file);
+		filehandle = PHYSFS_openWrite(file.data());
 
 	if (filehandle != nullptr)
 	{
@@ -587,18 +587,18 @@ uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool appe
 	return objCount;
 }
 
-uint ModuleFileSystem::Load(const char* file, char** buffer) const
+uint ModuleFileSystem::Load(std::string file, char** buffer) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName, true);
+	GetFileName(file.data(), fileName, true);
 
 	bool exists = Exists(file);
 
 	if (exists)
 	{
-		PHYSFS_file* filehandle = PHYSFS_openRead(file);
+		PHYSFS_file* filehandle = PHYSFS_openRead(file.data());
 
 		if (filehandle != nullptr)
 		{

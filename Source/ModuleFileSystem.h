@@ -90,7 +90,7 @@ public:
 	int GetLastModificationTime(const char* file) const;
 
 	bool IsDirectory(const char* file) const;
-	bool Exists(const char* file) const;
+	bool Exists(std::string file) const;
 	bool RecursiveExists(const char* fileName, const char* dir, std::string& path) const;
 
 	void GetFileName(const char* file, std::string& fileName, bool extension = false) const;
@@ -101,9 +101,9 @@ public:
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;
 
 	uint SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile, bool overwrite = false) const;
-	uint Save(const char* file, char* buffer, uint size, bool append = false) const;
+	uint Save(std::string file, char* buffer, uint size, bool append = false) const;
 
-	uint Load(const char* file, char** buffer) const;
+	uint Load(std::string file, char** buffer) const;
 
 	bool AddMeta(const char* metaFile, int lastModTime);
 	bool DeleteMeta(const char* metaFile);

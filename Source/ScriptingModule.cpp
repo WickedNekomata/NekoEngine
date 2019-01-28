@@ -15,6 +15,7 @@
 #include "ModuleFileSystem.h"
 #include "ModuleInput.h"
 #include "ModuleTimeManager.h"
+#include "ModuleResourceManager.h"
 
 bool exec(const char* cmd, std::string& error)
 {
@@ -241,7 +242,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 	if (createCS)
 	{
-		App->fs->OpenRead("Internal/SampleScript/SampleScript.cs", &buffer, size);
+		size = App->fs->Load("Internal/SampleScript/SampleScript.cs", &buffer);
 
 		std::string scriptStream = buffer;
 		scriptStream.resize(size);
@@ -251,20 +252,36 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 			scriptStream = scriptStream.replace(scriptStream.find("SampleScript"), 12, scriptName);
 		}
 
-		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
+		App->fs->Save("Assets/Scripts/" + scriptName + ".cs", (char*)scriptStream.c_str(), scriptStream.size());
 
 		IncludeCSFiles();
 
 		delete buffer;
 	}
 
-	ResourceScript* scriptRes = (ResourceScript*)App->resources->FindByFile("Assets/Scripts/" + scriptName + ".cs");
+	ResourceScript* scriptRes = nullptr;
+
+	if (App->fs->Exists("Assets/Scripts/" + scriptName + ".cs.meta"))
+	{
+		char* metaBuffer;
+		uint metaSize;
+
+		metaSize = App->fs->Load("Assets/Scripts/" + scriptName + ".cs.meta", &metaBuffer);
+
+		uint32_t UID;
+		memcpy(&UID, metaBuffer, sizeof(uint32_t));
+
+		scriptRes = (ResourceScript*)App->res->GetResource(UID);
+
+		delete metaBuffer;
+	}
+	
 	if (!scriptRes)
 	{
 		//Here we have to reference a new ResourceScript with the .cs we have created, but the ResourceManager will still be sending file created events, and we would have data duplication.
 		//We disable this behavior and control the script creation only with this method, so we do not care for external files out-of-engine created.
 		scriptRes = new ResourceScript();
-		scriptRes->setFile("Assets/Scripts/" + scriptName + ".cs");
+		scriptRes->file = "Assets/Scripts/" + scriptName + ".cs";
 		scriptRes->scriptName = scriptName;
 
 		//Create the .meta, to make faster the search in the map storing the uid.
@@ -273,12 +290,13 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		char* cursor = buffer;
 		scriptRes->SerializeToMeta(cursor);
 
-		App->fs->OpenWriteBuffer("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
+		App->fs->Save("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
 		delete buffer;
 
 		scriptRes->Compile();
-		App->resources->PushResourceScript(scriptRes);
+
+		App->res->InsertResource(scriptRes);
 	}
 
 	script->scriptRes = scriptRes;

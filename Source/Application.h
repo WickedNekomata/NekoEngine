@@ -14,6 +14,7 @@
 
 #include "PCG\pcg_variants.h"
 
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -91,6 +92,7 @@ public:
 	bool IsEditor() const;
 
 	uint GenerateRandomNumber() const;
+	math::LCG GetLCGRandomMath() const;
 
 	void SaveState() const;
 	void LoadState() const;
@@ -161,6 +163,7 @@ private:
 	mutable bool		load = false;
 
 	engine_states engineState = engine_states::ENGINE_EDITOR;
+	math::LCG randomMathLCG;
 };
 
 extern Application* App;

@@ -15,6 +15,7 @@ class ComponentTransform;
 class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
+class ComponentEmitter;
 
 class GameObject
 {
@@ -89,6 +90,7 @@ public:
 	ComponentMaterial* materialRenderer = nullptr;
 	ComponentMesh* meshRenderer = nullptr;
 	ComponentCamera* camera = nullptr;
+	ComponentEmitter* emitter = nullptr;
 
 	math::AABB boundingBox;
 

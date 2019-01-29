@@ -1,8 +1,9 @@
 #ifndef __Particle_H__
 #define __Particle_H__
 
-#include "ParticlePlane.h"
+#include "Primitive.h"
 #include"MathGeoLib/include/Math/float4.h"
+#include"MathGeoLib/include/Math/Quat.h"
 
 class ComponentEmitter;
 

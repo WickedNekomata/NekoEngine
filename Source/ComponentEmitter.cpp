@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include "ModuleGOs.h"
 #include "ComponentEmitter.h"
 #include "Application.h"
 #include "ModuleTimeManager.h"
@@ -13,11 +14,11 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
-	timer.Start();
-	burstTime.Start();
+//	timer.Start();
+//	burstTime.Start();
 	App->scene->quadtree.Insert(gameObject);
 }
-
+/*
 ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : Component(gameObject, EmitterComponent)
 {
 	if (info)
@@ -83,7 +84,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : 
 	//SetNewAnimation(textureRows, textureColumns);
 	App->scene->quadtree.Insert(gameObject);
 }
-
+*/
 
 ComponentEmitter::~ComponentEmitter()
 {
@@ -111,19 +112,20 @@ void ComponentEmitter::StartEmitter()
 	}
 }
 
-void ComponentEmitter::ChangeGameState(engine_states state)
+/*void ComponentEmitter::ChangeGameState(engine_states state)
 {
 	simulatedGame = state;
-	if (state == GameState_PLAYING)
-		state = GameState_NONE;
-	else if (state == GameState_STOP)
+	if (state == ENGINE_PLAY)
+		state = ENGINE_EDITOR;
+	else if (state == ENGINE_WANTS_EDITOR)
 		ClearEmitter();
 
-	if (subEmitter && subEmitter->HasComponent(ComponentType_EMITTER))
-		((ComponentEmitter*)(subEmitter->GetComponent(ComponentType_EMITTER)))->ChangeGameState(state);
+	ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
+	if (subEmitter && compEmitter)
+		compEmitter->ChangeGameState(state);
 }
 
-
+*/
 void ComponentEmitter::Update()
 {
 	if (rateOverTime > 0)
@@ -131,7 +133,7 @@ void ComponentEmitter::Update()
 		float time = timer.ReadSec();
 		if (time > timeToParticle && (loop || loopTimer.ReadSec() < duration))
 		{
-			if (App->GetEngineState() == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->GetEngineState() == GameState_TICK)
+			if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
 			{
 				int particlesToCreate = (time / (1.0f / rateOverTime));
 				CreateParticles(particlesToCreate, normalShapeType,math::float3::zero);
@@ -146,13 +148,12 @@ void ComponentEmitter::Update()
 	float burstT = burstTime.ReadSec();
 	if (burst && burstT > repeatTime)
 	{
-		if (App->GetEngineState() == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->GetEngineState() == GameState_TICK)
+		if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
 		{
 			int particlesToCreate = minPart;
 			if (minPart != maxPart)
 				particlesToCreate = (rand() % (maxPart - minPart)) + minPart;
 			CreateParticles(particlesToCreate, burstType, math::float3::zero);
-			//LOG("%i", particlesToCreate);
 		}
 		burstTime.Start();
 	}
@@ -214,7 +215,7 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 			math::float3 spawnPos = pos;
 			spawnPos += RandPos(shapeType);
 
-			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, &texture, &particleAnimation.textureIDs, animationSpeed);
+			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, &texture, /*&particleAnimation.textureIDs,*/ animationSpeed);
 
 			App->particle->allParticles[particleId].owner = this;
 			particles.push_back(&App->particle->allParticles[particleId]);
@@ -233,30 +234,30 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	switch (shapeType)
 	{
 	case ShapeType_BOX:
-		spawn = boxCreation.RandomPointInside(App->GenerateRandomNumber());
-		startValues.particleDirection = (math::float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
+		spawn = boxCreation.RandomPointInside(App->GetLCGRandomMath());
+		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
-		spawn = sphereCreation.RandomPointInside(App->randomMath);
+		spawn = sphereCreation.RandomPointInside(App->GetLCGRandomMath());
 		startValues.particleDirection = spawn.Normalized();
 		break;
 
 	case ShapeType_SPHERE_CENTER:
-		startValues.particleDirection = sphereCreation.RandomPointInside(App->randomMath).Normalized();
+		startValues.particleDirection = sphereCreation.RandomPointInside(App->GetLCGRandomMath()).Normalized();
 		break;
 
 	case ShapeType_SPHERE_BORDER:
-		spawn = sphereCreation.RandomPointOnSurface(App->randomMath);
+		spawn = sphereCreation.RandomPointOnSurface(App->GetLCGRandomMath());
 		startValues.particleDirection = spawn.Normalized();
 		break;
 
 	case ShapeType_CONE:
 
-		angle = (2*pi) * pcg32_random() / MAXUINT;
-		centerDist = (float)pcg32_random() / MAXUINT;
+		angle = (2*PI) * (float)App->GenerateRandomNumber() / MAXUINT;
+		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
-		circleCreation.pos = (math::float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
+		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
 		circleCreation.normal = -circleCreation.pos;
 		startValues.particleDirection = (circleCreation.GetPoint(angle,centerDist)).Normalized();
 		break;
@@ -265,13 +266,13 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	}
 
 	math::float3 global = math::float3::zero;
-	if (gameObject)
-		global = gameObject->GetGlobalPos();
+	if (parent)
+		parent->transform->GetGlobalMatrix().Decompose(global,math::Quat(),math::float3());
 
 	return spawn + global;
 }
 
-void ComponentEmitter::Inspector()
+void ComponentEmitter::OnUniqueEditor()
 {
 	if (ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -285,12 +286,12 @@ void ComponentEmitter::Inspector()
 
 		ParticleAABB();
 
-		ParticleTexture();
+		//ParticleTexture();
 
 		ParticleSubEmitter();
 
-		if (ImGui::Button("Remove Particles", ImVec2(150, 25)))
-			toDelete = true;
+		//if (ImGui::Button("Remove Particles", ImVec2(150, 25)))
+		//	toDelete = true;
 	}
 }
 
@@ -484,22 +485,16 @@ void ComponentEmitter::ParticleAABB()
 		ImGui::Checkbox("Bounding Box", &drawAABB);
 		if (drawAABB)
 		{
-			math::float3 size = gameObject->transform->originalBoundingBox.Size();
+			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-			{
-				gameObject->transform->originalBoundingBox.SetFromCenterAndSize(posDifAABB, size);
-				gameObject->transform->UpdateBoundingBox();
-			}
+				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
 
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-			{
-				gameObject->transform->originalBoundingBox.SetFromCenterAndSize(posDifAABB, size);
-				gameObject->transform->UpdateBoundingBox();
-			}
+				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
 		}
 	}
 }
-
+/*
 void ComponentEmitter::ParticleTexture()
 {
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
@@ -591,7 +586,7 @@ void ComponentEmitter::ParticleTexture()
 		ImGui::Separator();
 	}
 }
-
+*/
 void ComponentEmitter::ParticleSubEmitter()
 {
 	if (ImGui::Checkbox("SubEmitter", &startValues.subEmitterActive))
@@ -599,21 +594,18 @@ void ComponentEmitter::ParticleSubEmitter()
 		if (startValues.subEmitterActive)
 		{
 			if (subEmitter)
-				subEmitter->SetActive(true);
+				subEmitter->ToggleIsActive();
 			else
 			{
-				subEmitter = App->gameObject->CreateGameObject(math::float3::zero, math::Quat::identity, math::float3::one, gameObject, "SubEmition");
-				EmitterInfo info;
-				info.isSubEmitter = true;
-				subEmitter->AddComponent(ComponentType_EMITTER, &info);
-				math::AABB boundingBox = math::AABB();
-				boundingBox.SetFromCenterAndSize(subEmitter->GetPos(), math::float3::one);
-				subEmitter->SetABB(boundingBox);
-				App->sceneIntro->octree.Insert(subEmitter);
+				subEmitter = App->GOs->CreateGameObject("SubEmition",parent);
+				subEmitter->AddComponent(EmitterComponent);
+				((ComponentEmitter*)subEmitter->GetComponentByType(EmitterComponent))->isSubEmitter = true;
+				subEmitter->boundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
+				App->scene->quadtree.Insert(subEmitter);
 			}
 		}
 		else
-			subEmitter->SetActive(false);
+			subEmitter->ToggleIsActive();
 	}
 	ImGui::Separator();
 }
@@ -698,9 +690,9 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 {
 	json_object_set_number(parent, "Type", this->type);
 
-	json_object_set_number(parent, "UUID", GetUUID());
+	json_object_set_number(parent, "UUID", this->parent->GetUUID());
 
-	json_object_set_number(parent, "Time Created", GetTime());
+	//json_object_set_number(parent, "Time Created", GetTime());
 
 	json_object_set_boolean(parent, "checkLife", checkLife);
 	json_object_set_boolean(parent, "checkSpeed", checkSpeed);
@@ -803,9 +795,9 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 
 	json_object_set_number(parent, "shapeType", normalShapeType);
 
-	if (texture)
+	/*if (texture)
 	json_object_set_string(parent, "texture", texture->file.data());
-	else
+	else*/
 	json_object_set_string(parent, "texture", "noTexture");
 
 	json_object_set_number(parent, "textureRows", textureRows);
@@ -819,12 +811,12 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 	
 	json_object_set_boolean(parent, "isSubEmitter", isSubEmitter);
 	if(subEmitter)
-	json_object_set_number(parent, "SubEmitter", subEmitter->GetUID());
+	json_object_set_number(parent, "SubEmitter", subEmitter->GetUUID());
 
 
-	if (gameObject && gameObject->transform)
+	if (this->parent && this->parent->transform)
 	{
-		math::float3 bb = gameObject->transform->originalBoundingBox.Size();
+		math::float3 bb = this->parent->boundingBox.Size();
 
 		json_object_set_number(parent, "originalBoundingBoxSizeX", bb.x);
 		json_object_set_number(parent, "originalBoundingBoxSizeY", bb.y);

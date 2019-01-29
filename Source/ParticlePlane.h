@@ -2,6 +2,8 @@
 #define __ParticlePlane_H__
 
 #include "Globals.h"
+#include"MathGeoLib/include/Math/float4.h"
+#include"MathGeoLib/include/Math/float4x4.h"
 
 class ResourceTexture;
 

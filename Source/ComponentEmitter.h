@@ -13,6 +13,8 @@
 #include "MathGeoLib/include/Geometry/Sphere.h"
 #include "MathGeoLib/include/Geometry/Circle.h"
 
+#include "ImGui\imgui.h"
+
 #include <list>
 #include <queue>
 enum ShapeType {
@@ -23,6 +25,13 @@ enum ShapeType {
 	ShapeType_CONE
 };
 
+enum SimulatedGame
+{
+	SimulatedGame_NONE,
+	SimulatedGame_PLAY,
+	SimulatedGame_PAUSE,
+	SimulatedGame_STOP,
+};
 struct ColorTime
 {
 	math::float4 color = math::float4::one;
@@ -64,6 +73,7 @@ struct StartValues
 	}
 };
 
+/*
 struct EmitterInfo : ComponentInfo
 {
 
@@ -114,21 +124,21 @@ struct EmitterInfo : ComponentInfo
 
 	math::float3 sizeOBB = math::float3::zero;
 };
-
+*/
 class ComponentEmitter : public Component
 {
 public:
 	ComponentEmitter(GameObject* gameObject);
-	ComponentEmitter(GameObject* gameObject, EmitterInfo* info);
+	//ComponentEmitter(GameObject* gameObject, EmitterInfo* info);
 	~ComponentEmitter();
 
 	void StartEmitter();
-	void ChangeGameState(engine_states state);
+	//void ChangeGameState(engine_states state);
 
 	void Update();
 
-	void Inspector();
-	void ParticleTexture();
+	void OnUniqueEditor();
+	//void ParticleTexture();
 	void ParticleAABB();
 	void ParticleSubEmitter();
 	void ParticleBurst();
@@ -163,7 +173,7 @@ public:
 
 	bool emitterActive = true;
 
-	engine_states simulatedGame = ENGINE_EDITOR;
+	SimulatedGame simulatedGame = SimulatedGame_NONE;
 	GameTimer timeSimulating;
 
 	bool dieOnAnimation = false;

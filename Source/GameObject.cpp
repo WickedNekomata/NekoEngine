@@ -4,6 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentEmitter.h"
 #include "ResourceMesh.h"
 #include "ModuleResourceManager.h"
 
@@ -227,6 +228,9 @@ Component* GameObject::AddComponent(ComponentType type)
 	case CameraComponent:
 		assert(camera == NULL);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
+		break;
+	case EmitterComponent:
+		newComponent = emitter = new ComponentEmitter(this);
 		break;
 	default:
 		break;

@@ -3,6 +3,7 @@
 
 #include "Module.h"
 
+#include <list>
 #define MAX_TIME_SCALE 2.0f
 
 class GameTimer;
@@ -12,6 +13,8 @@ public:
 
 	ModuleTimeManager(bool start_enabled = true);
 	~ModuleTimeManager();
+
+	bool CleanUp();
 
 	void PrepareUpdate();
 

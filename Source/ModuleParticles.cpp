@@ -100,7 +100,7 @@ void ModuleParticle::DrawParticles()
 	for (int i = 0; i < partVec.size(); ++i)
 	{
 		//TODO Particles: Need boolean canDraw??
-		if (partVec[i]->owner && partVec[i]->owner->GetParent()->canDraw)
+		if (partVec[i]->owner /*&& partVec[i]->owner->GetParent()->canDraw*/)
 			partVec[i]->Draw();
 	}
 }

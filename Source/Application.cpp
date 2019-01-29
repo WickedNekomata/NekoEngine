@@ -548,6 +548,11 @@ uint Application::GenerateRandomNumber() const
 	return pcg32_random_r(&(App->rng));
 }
 
+math::LCG Application::GetLCGRandomMath() const
+{
+	return randomMathLCG;
+}
+
 void Application::SaveState() const
 {
 	save = true;

@@ -185,7 +185,7 @@ float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoi
 	float num = edges.x;
 	if (edges.x < edges.y)
 	{
-		float random = (float)pcg32_random();	
+		float random = App->GenerateRandomNumber();	
 		num = ((edges.y - edges.x) * random / (float)MAXUINT) + edges.x;
 	}
 	return num;

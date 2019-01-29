@@ -26,7 +26,7 @@ bool exec(const char* cmd, std::string& error = std::string());
 class ScriptingModule : public Module
 {
 public:
-	ScriptingModule(bool start_enabled = true) : Module("ScriptingModule", start_enabled) {}
+	ScriptingModule(bool start_enabled = true) : Module(start_enabled) { name = "ScriptingModule"; }
 	~ScriptingModule() {}
 
 	bool Init();

@@ -2,6 +2,7 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
+#include "GameObject.h"
 #include "ModuleInput.h"
 
 #include <mono/metadata/assembly.h>
@@ -16,6 +17,8 @@
 #include "ModuleInput.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
+#include "ModuleRenderer3D.h"
+#include "ModuleGOs.h"
 
 bool exec(const char* cmd, std::string& error)
 {
@@ -363,7 +366,8 @@ GameObject* ScriptingModule::GameObjectFrom(_MonoObject* monoObject)
 
 void ScriptingModule::GameCameraChanged()
 {
-	GameObject* mainCamera = App->camera->gameCamera;
+	ComponentCamera* mainCamera = App->renderer3D->GetCurrentCamera();
+	GameObject* mainCameraObject = mainCamera->GetParent();
 	if (mainCamera == nullptr)
 	{
 		MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
@@ -375,7 +379,7 @@ void ScriptingModule::GameCameraChanged()
 
 	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
 	{
-		if (App->scripting->gameObjectsMap[i].first == mainCamera)
+		if (App->scripting->gameObjectsMap[i].first == mainCameraObject)
 		{
 			MonoObject* monoObject = mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second);
 
@@ -383,6 +387,7 @@ void ScriptingModule::GameCameraChanged()
 			MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
 			MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
 
+			//TODO: Test this, I think this should not work.
 			mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
 
 			return;
@@ -390,7 +395,7 @@ void ScriptingModule::GameCameraChanged()
 	}
 
 	//This gameObject is not saved in the map
-	MonoObject* monoObject = MonoObjectFrom(mainCamera);
+	MonoObject* monoObject = MonoObjectFrom(mainCameraObject);
 	MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
 	MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
 	MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
@@ -456,13 +461,13 @@ void ScriptingModule::ExecuteScriptingProject()
 
 void ScriptingModule::IncludeCSFiles()
 {
-	Directory scripts = App->fs->getDirFiles("Assets/Scripts");
+	Directory scripts = App->fs->RecursiveGetFilesFromDir("Assets/Scripts");
 
 	//Modify the project settings file, stored in a xml
 
 	char* buffer;
-	int size;
-	if (!App->fs->OpenRead("Assembly-CSharp.csproj", &buffer, size))
+	int size = App->fs->Load("Assembly-CSharp.csproj", &buffer);
+	if (size <= 0)
 		return;
 
 	pugi::xml_document configFile;
@@ -489,14 +494,16 @@ void ScriptingModule::IncludeCSFiles()
 
 	std::ostringstream stream;
 	configFile.save(stream, "\r\n");
-	App->fs->OpenWriteBuffer("Assembly-CSharp.csproj", (char*)stream.str().data(), stream.str().size());	
+	App->fs->Save("Assembly-CSharp.csproj", (char*)stream.str().data(), stream.str().size());	
 }
 
 void ScriptingModule::IncludeCSFiles(pugi::xml_node& nodeToAppend, const Directory& dir)
 {
 	for (int i = 0; i < dir.files.size(); ++i)
 	{
-		if (App->fs->getExt(dir.files[i].name) != ".cs")
+		std::string extension;
+		App->fs->GetExtension(dir.files[i].name.data(), extension);
+		if (extension != ".cs")
 			continue;
 
 		nodeToAppend.append_child("Compile").append_attribute("Include").set_value(std::string("Assets\\Scripts\\" + dir.files[i].name).data());
@@ -565,7 +572,7 @@ void ScriptingModule::GameObjectChanged(GameObject* gameObject)
 
 			//SetUp the name
 			MonoClassField* name = mono_class_get_field_from_name(gameObjectClass, "name");
-			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->name.data());
+			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->GetName());
 			mono_field_set_value(monoObject, name, (void*)nameCS);
 
 			//SetUp the transform
@@ -642,7 +649,7 @@ void ScriptingModule::MonoObjectChanged(uint32_t handleID)
 
 			MonoString* name = (MonoString*)mono_field_get_value_object(domain, nameCS, monoObject);
 			char* newName = mono_string_to_utf8(name);
-			gameObject->name = newName;
+			gameObject->SetName(newName);
 
 			//SetUp the transform
 			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
@@ -740,7 +747,8 @@ void DebugLogTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	Debug.Log(string);
+	//TODO: Implement this using the new Log System
+	//Debug.Log(string);
 
 	mono_free(string);
 }
@@ -753,7 +761,8 @@ void DebugLogWarningTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	Debug.LogWarning(string);
+	//TODO: Implement this using the new Log System
+	//Debug.LogWarning(string);
 
 	mono_free(string);
 }
@@ -766,12 +775,17 @@ void DebugLogErrorTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	Debug.LogError(string);
+	//TODO: Implement this using the new Log System
+	//Debug.LogError(string);
 
 	mono_free(string);
 }
 
-void ClearConsole() { Debug.Clear(); }
+void ClearConsole() 
+{ 
+	//TODO: Implement this using the new Log System
+	//Debug.Clear(); 
+}
 
 int32_t GetKeyStateCS(int32_t key)
 {
@@ -814,7 +828,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 	{
 		//Instantiate an empty GameObject and returns the MonoObject
 
-		GameObject* instance = App->scene->CreateGameObject(App->scene->getRootNode(), false);
+		GameObject* instance = App->GOs->CreateGameObject("default", App->GOs->getRoot());
 
 		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
@@ -852,13 +866,14 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		{
 			//The user may be trying to instantiate a GameObject created through script. 
 			//This feature is not implemented for now.
-			Debug.LogError(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
-							"Instantiating from a GameObject created through script is not supported for now.\n");
+			/*Debug.LogError(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
+							"Instantiating from a GameObject created through script is not supported for now.\n");*/
 			return nullptr;
 		}
 
-		GameObject* goInstance = new GameObject(App->scene->getRootNode());
-		App->scene->AddGameObject(goInstance);
+		GameObject* goInstance = new GameObject("default", App->GOs->getRoot());
+
+		App->GOs->AddGameObject(goInstance);
 
 		*goInstance = *templateGO;
 		goInstance->ReGenerate();

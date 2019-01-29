@@ -27,6 +27,7 @@ public:
 	bool OnEditorMode();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
+	inline void AddGameObject(GameObject* gameObject){	gameObjects.push_back(gameObject); }
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
 
@@ -42,6 +43,9 @@ public:
 	void GetGameObjects(std::vector<GameObject*>& gameObjects) const;
 	void GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const;
 	void GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const;
+	
+	//TODO: Ask if this is right
+	inline GameObject* getRoot() const { return gameObjects[0]; }
 
 	void ReorderGameObjects(GameObject* source, GameObject* target);
 

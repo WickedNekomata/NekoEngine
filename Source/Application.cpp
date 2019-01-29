@@ -15,6 +15,7 @@
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "ScriptingModule.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -33,6 +34,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
+	scripting = new ScriptingModule();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -56,6 +58,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(window);
 	AddModule(input);
 	AddModule(scene);
+	AddModule(scripting);
 
 	// Renderer last!
 	AddModule(renderer3D);

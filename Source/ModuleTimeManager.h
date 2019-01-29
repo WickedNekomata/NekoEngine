@@ -5,6 +5,7 @@
 
 #define MAX_TIME_SCALE 2.0f
 
+class GameTimer;
 class ModuleTimeManager : public Module
 {
 public:
@@ -24,6 +25,7 @@ public:
 	float GetRealTime() const;
 	float GetRealDt() const;
 
+	std::list<GameTimer*> GetGameTimerList() const;
 private:
 
 	// Game Clock
@@ -35,6 +37,8 @@ private:
 	int frameCount = 0; // App graphics frames since game start
 	float realTime = 0.0f; // Seconds since game start
 	float realDt = 0.0f; // Last frame time expressed in seconds
+
+	std::list<GameTimer*> gameTimerList;
 };
 
 #endif

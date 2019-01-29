@@ -1,9 +1,10 @@
 #include "ModuleParticles.h"
-#include <algorithm>
+#include "ModuleTimeManager.h"
+#include "ModuleInput.h"
 
 #include "Brofiler/Brofiler.h"
-
-ModuleParticle::ModuleParticle(Application* app, bool start_enabled) : Module(app, start_enabled)
+#include <algorithm>
+ModuleParticle::ModuleParticle(bool start_enabled) : Module(start_enabled)
 {
 
 }
@@ -22,7 +23,7 @@ update_status ModuleParticle::Update()
 		if (firework)
 		{
 			firework->StartEmitter();
-			LOG("Firework comming!");
+			CONSOLE_LOG("Module Particle: Firework Comming");
 		}
 	}
 
@@ -35,10 +36,10 @@ update_status ModuleParticle::Update()
 	int count = 0;
 
 	float dt;
-	if(App->time->gameState == GameState_NONE)
-		dt = App->time->Getdt();
+	if(App->GetEngineState() == ENGINE_EDITOR)
+		dt = App->timeManager->GetRealDt();
 	else
-		dt = App->time->GetdtGame();
+		dt = App->timeManager->GetDt();
 
 	partVec.resize(activeParticles);
 	

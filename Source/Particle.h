@@ -1,28 +1,27 @@
 #ifndef __Particle_H__
 #define __Particle_H__
 
-#include "MathGeoLib/Math/MathAll.h"
-
 #include "ParticlePlane.h"
+#include"MathGeoLib/include/Math/float4.h"
 
 class ComponentEmitter;
 
 struct StartValues;
 struct ColorTime;
+
 struct ParticleTrans
 {
-	float3 position = float3::zero;
-	Quat rotation = Quat::identity;
-	float3 scale = float3::one;
+	math::float3 position = math::float3::zero;
+	math::Quat rotation = math::Quat::identity;
+	math::float3 scale = math::float3::one;
 
-	//AABB colision = AABB(-float3::one,float3::one);
-	float4x4 GetMatrix() const;
+	math::float4x4 GetMatrix() const;
 };
 
 class Particle
 {
 public:
-	Particle(float3 pos, StartValues data, ResourceTexture** texture);
+	Particle(math::float3 pos, StartValues data, ResourceTexture** texture);
 	Particle();
 	~Particle();
 
@@ -31,7 +30,7 @@ public:
 		return camDistance < particle2.camDistance;
 	}
 
-	void SetActive(float3 pos, StartValues data, ResourceTexture ** texture, std::vector<uint>* animation, float animationSpeed);
+	void SetActive(math::float3 pos, StartValues data, ResourceTexture ** texture, /*std::vector<uint>* animation, */float animationSpeed);
 
 	bool Update(float dt);
 
@@ -43,7 +42,7 @@ public:
 	void SetCamDistance();
 	void Draw() const;
 
-	float CreateRandomNum(float2 edges);
+	float CreateRandomNum(math::float2 edges);
 
 
 public:
@@ -59,7 +58,7 @@ private:
 
 	float speed = 0.0f;
 	float acceleration = 0.0f;
-	float3 direction = float3::zero; 
+	math::float3 direction = math::float3::zero;
 
 	float rotationSpeed = 0.0f;
 	float angularVelocity = 0.0f;
@@ -71,7 +70,8 @@ private:
 	std::vector<ColorTime> color;
 	int index = 0;
 	bool multicolor = false;
-	float4 currentColor = float4::one;
+
+	math::float4 currentColor = math::float4::one;
 
 	ParticleTrans transform;
 

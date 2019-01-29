@@ -47,6 +47,7 @@ struct ModuleRenderer3D;
 struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
+struct ModuleParticle;
 struct DebugDrawer;
 
 class Application
@@ -113,6 +114,7 @@ public:
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
 	ShaderImporter*			shaderImporter;
+	ModuleParticle*			particle;
 
 #ifndef GAMEMODE	
 	ModuleCameraEditor*		camera;

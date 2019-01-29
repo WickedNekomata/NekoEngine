@@ -74,3 +74,8 @@ float ModuleTimeManager::GetRealDt() const
 {
 	return realDt;
 }
+
+std::list<GameTimer*> ModuleTimeManager::GetGameTimerList() const
+{
+	return std::list<GameTimer*>();
+}

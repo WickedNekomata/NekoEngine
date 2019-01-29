@@ -3,6 +3,7 @@
 
 #define MAX_PARTICLES 20000
 
+#include "Module.h"
 #include "Application.h"
 
 #include <queue>
@@ -13,7 +14,7 @@
 class ModuleParticle : public Module
 {
 public:
-	ModuleParticle(Application* app, bool start_enabled = true);
+	ModuleParticle(bool start_enabled = true);
 	~ModuleParticle();
 
 	update_status Update();
@@ -34,7 +35,7 @@ public:
 
 	Particle allParticles[MAX_PARTICLES];
 
-	ParticleUV particleAnimation;
+	//ParticleUV particleAnimation;
 
 
 	ParticlePlane* plane = nullptr;

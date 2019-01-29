@@ -1,11 +1,14 @@
 #include "Application.h"
 #include "Particle.h"
-#include "Geometry.h"
+#include "Primitive.h"
 #include "ComponentEmitter.h"
 #include "ModuleParticles.h"
-#include "pcg-c-basic-0.9/pcg_basic.h"
+#include "MathGeoLib/include/Math/Quat.h"
+#include "MathGeoLib/include/Math/float3.h"
 
-Particle::Particle(float3 pos, StartValues data, ResourceTexture** texture)
+//#include "pcg-c-basic-0.9/pcg_basic.h"
+
+Particle::Particle(math::float3 pos, StartValues data, ResourceTexture** texture)
 {}
 
 Particle::Particle()
@@ -18,7 +21,7 @@ Particle::~Particle()
 	//delete plane;
 }
 
-void Particle::SetActive(float3 pos, StartValues data, ResourceTexture ** texture, std::vector<uint>* animation, float animationSpeed)
+void Particle::SetActive(math::float3 pos, StartValues data, ResourceTexture ** texture, /*std::vector<uint>* animation,*/ float animationSpeed)
 {
 	color.clear();
 	plane = App->particle->plane;
@@ -38,8 +41,8 @@ void Particle::SetActive(float3 pos, StartValues data, ResourceTexture ** textur
 	sizeOverTime = CreateRandomNum(data.sizeOverTime);
 
 	transform.position = pos;
-	transform.rotation = Quat::FromEulerXYZ(0, 0, 0); //Start rotation
-	transform.scale = float3::one * CreateRandomNum(data.size);
+	transform.rotation = math::Quat::FromEulerXYZ(0, 0, 0); //Start rotation
+	transform.scale = math::float3::one * CreateRandomNum(data.size);
 
 	//LOG("life %f", lifeTime);
 	//LOG("size %f", transform.scale.x);
@@ -65,7 +68,7 @@ void Particle::SetActive(float3 pos, StartValues data, ResourceTexture ** textur
 
 bool Particle::Update(float dt)
 {
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 	bool ret = true;
 	if (owner->simulatedGame == GameState_PAUSE)
 		dt = 0;
@@ -104,7 +107,7 @@ bool Particle::Update(float dt)
 
 		angularVelocity += angularAcceleration * dt;
 		angle += angularVelocity * dt;
-		transform.rotation = transform.rotation.Mul(Quat::RotateZ(angle));
+		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
 		animationTime += dt;
 		if (animationTime > animationSpeed)
@@ -133,7 +136,7 @@ bool Particle::Update(float dt)
 
 void Particle::EndParticle(bool &ret)
 {
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 	if (subEmitterActive && owner->subEmitter && owner->subEmitter->HasComponent(ComponentType_EMITTER))
 	{
 		ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponent(ComponentType_EMITTER);
@@ -147,11 +150,11 @@ void Particle::EndParticle(bool &ret)
 
 void Particle::LookAtCamera()
 {
-	float3 zAxis = -App->renderer3D->currentCam->frustum.front;
-	float3 yAxis = App->renderer3D->currentCam->frustum.up;
-	float3 xAxis = yAxis.Cross(zAxis).Normalized();
+	math::float3 zAxis = -App->renderer3D->currentCam->frustum.front;
+	math::float3 yAxis = App->renderer3D->currentCam->frustum.up;
+	math::float3 xAxis = yAxis.Cross(zAxis).Normalized();
 
-	transform.rotation.Set(float3x3(xAxis, yAxis, zAxis));
+	transform.rotation.Set(math::float3x3(xAxis, yAxis, zAxis));
 }
 
 float Particle::GetCamDistance() const
@@ -171,7 +174,7 @@ void Particle::Draw() const
 }
 
 
-float Particle::CreateRandomNum(float2 edges)//.x = minPoint & .y = maxPoint
+float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoint
 {
 	float num = edges.x;
 	if (edges.x < edges.y)
@@ -183,7 +186,7 @@ float Particle::CreateRandomNum(float2 edges)//.x = minPoint & .y = maxPoint
 }
 
 //Particle transform
-float4x4 ParticleTrans::GetMatrix() const
+math::float4x4 ParticleTrans::GetMatrix() const
 {
-	return  float4x4::FromTRS(position, rotation, scale).Transposed();
+	return  math::float4x4::FromTRS(position, rotation, scale).Transposed();
 }

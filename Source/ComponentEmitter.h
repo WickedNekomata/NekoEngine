@@ -9,6 +9,10 @@
 
 #include "Particle.h"
 
+#include "MathGeoLib/include/Math/float2.h"
+#include "MathGeoLib/include/Geometry/Sphere.h"
+#include "MathGeoLib/include/Geometry/Circle.h"
+
 #include <list>
 #include <queue>
 enum ShapeType {
@@ -21,7 +25,7 @@ enum ShapeType {
 
 struct ColorTime
 {
-	float4 color = float4::one;
+	math::float4 color = math::float4::one;
 	float position = 0.0f;
 	std::string name = " ";
 	//open window for change particle color
@@ -36,19 +40,19 @@ struct ColorTime
 struct StartValues
 {
 	// Start values
-	float2 life = float2(5.0f, 5.0f);
-	float2 speed = float2(3.0f, 3.0f);
-	float2 acceleration = float2(0.0f, 0.0f);
-	float2 sizeOverTime = float2(0.0f, 0.0f);
-	float2 size = float2(1.0f, 1.0f);
-	float2 rotation = float2(0.0f, 0.0f);
-	float2 angularAcceleration = float2(0.0f, 0.0f);
-	float2 angularVelocity = float2(0.0f, 0.0f);
+	math::float2 life = math::float2(5.0f, 5.0f);
+	math::float2 speed = math::float2(3.0f, 3.0f);
+	math::float2 acceleration = math::float2(0.0f, 0.0f);
+	math::float2 sizeOverTime = math::float2(0.0f, 0.0f);
+	math::float2 size = math::float2(1.0f, 1.0f);
+	math::float2 rotation = math::float2(0.0f, 0.0f);
+	math::float2 angularAcceleration = math::float2(0.0f, 0.0f);
+	math::float2 angularVelocity = math::float2(0.0f, 0.0f);
 
 	std::list<ColorTime> color;
 	bool timeColor = false;
 
-	float3 particleDirection = float3::unitY;
+	math::float3 particleDirection = math::float3::unitY;
 
 	bool subEmitterActive = false;
 
@@ -73,10 +77,10 @@ struct EmitterInfo : ComponentInfo
 	float repeatTime = 1.0f;
 
 	bool drawAABB = false;
-	float3 posDifAABB = float3::zero;
+	math::float3 posDifAABB = math::float3::zero;
 	float gravity = 0.0f;
 
-	AABB boxCreation = AABB(float3(-0.5f, -0.5f, -0.5f), float3(0.5f, 0.5f, 0.5f));
+	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
 	float SphereCreationRad = 1.0f;
 	float circleCreationRad = 1.0f;
 
@@ -108,7 +112,7 @@ struct EmitterInfo : ComponentInfo
 	int rateOverTime = 10;
 	bool subEmitterActive = false;
 
-	float3 sizeOBB = float3::zero;
+	math::float3 sizeOBB = math::float3::zero;
 };
 
 class ComponentEmitter : public Component
@@ -119,7 +123,7 @@ public:
 	~ComponentEmitter();
 
 	void StartEmitter();
-	void ChangeGameState(GameState state);
+	void ChangeGameState(engine_states state);
 
 	void Update();
 
@@ -131,16 +135,16 @@ public:
 	void ParticleColor();
 	void ParticleValues();
 	void ParticleShape();
-	void SetNewAnimation(int row, int col);
-	float3 RandPos(ShapeType shapeType);
-	void ShowFloatValue(float2 & value, bool checkBox, const char * name, float v_speed, float v_min, float v_max);
-	void CheckMinMax(float2 & value);
+	//void SetNewAnimation(int row, int col);
+	math::float3 RandPos(ShapeType shapeType);
+	void ShowFloatValue(math::float2 & value, bool checkBox, const char * name, float v_speed, float v_min, float v_max);
+	void CheckMinMax(math::float2 & value);
 	void ClearEmitter();
 	void SoftClearEmitter();
-	void CreateParticles(int particlesToCreate, ShapeType shapeType, const float3& pos = float3::zero);
+	void CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos = math::float3::zero);
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
 
-	ImVec4 EqualsFloat4(const float4 float4D);
+	ImVec4 EqualsFloat4(const math::float4 float4D);
 
 	void SaveComponent(JSON_Object * parent);
 
@@ -159,7 +163,7 @@ public:
 
 	bool emitterActive = true;
 
-	GameState simulatedGame = GameState_NONE;
+	engine_states simulatedGame = ENGINE_EDITOR;
 	GameTimer timeSimulating;
 
 	bool dieOnAnimation = false;
@@ -168,7 +172,7 @@ public:
 	uint subEmitterUUID = 0u;
 	ShapeType normalShapeType = ShapeType_BOX;
 
-	std::list<float3> newPositions;
+	std::list<math::float3> newPositions;
 
 	StartValues startValues;
 
@@ -203,19 +207,19 @@ private:
 	int maxPart = 10;
 	float repeatTime = 1.0f;
 
-	float3 posDifAABB = float3::zero;
+	math::float3 posDifAABB = math::float3::zero;
 	float gravity = 0.0f;
 
 	//Posibility space where particle is created
-	AABB boxCreation = AABB(float3(-0.5f, -0.5f, -0.5f), float3(0.5f, 0.5f, 0.5f));
-	Sphere sphereCreation = Sphere(float3::zero, 1.0f);
-	Circle circleCreation = Circle(float3::unitY, float3::unitY, 1.0f);
+	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
+	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
+	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
 
 	ShapeType burstType = ShapeType_BOX;
 	std::string burstTypeName = "Box Burst";
 
 	int nextPos = 100;
-	float4 nextColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	math::float4 nextColor = math::float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//---------------------------------------
 
@@ -226,7 +230,7 @@ private:
 	float timeToParticle = 0.0f;
 	//---------------------------------------
 
-	ParticleUV particleAnimation;
+	//ParticleUV particleAnimation;
 	float animationSpeed = 0.1f;
 
 	int textureRows = 1;

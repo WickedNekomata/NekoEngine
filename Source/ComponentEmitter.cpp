@@ -2,21 +2,23 @@
 
 #include "ComponentEmitter.h"
 #include "Application.h"
-#include "ModuleTime.h"
+#include "ModuleTimeManager.h"
+#include "ModuleScene.h"
 
 #include <vector>
-#include "pcg-c-basic-0.9/pcg_basic.h"
+//#include "pcg-c-basic-0.9/pcg_basic.h"
 
 #include "ModuleParticles.h"
+#include "imgui\imgui.h"
 
-ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, ComponentType_EMITTER)
+ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
 	timer.Start();
 	burstTime.Start();
-	App->sceneIntro->octree.Insert(gameObject);
+	App->scene->quadtree.Insert(gameObject);
 }
 
-ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : Component(gameObject, ComponentType_EMITTER)
+ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : Component(gameObject, EmitterComponent)
 {
 	if (info)
 	{
@@ -73,17 +75,13 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : 
 
 		startValues.subEmitterActive = info->subEmitterActive;
 
-		if (gameObject && gameObject->transform)
-		{
-			gameObject->transform->originalBoundingBox = AABB::FromCenterAndSize(info->posDifAABB, info->sizeOBB);
-			gameObject->transform->UpdateBoundingBox();
-		}
-
+		//TODO Particle: Make sure that this is necesary
+		if (gameObject)
+			gameObject->boundingBox = math::AABB::FromCenterAndSize(info->posDifAABB, info->sizeOBB);
 
 	}
-	gameObject->transform->UpdateBoundingBox();
-	SetNewAnimation(textureRows, textureColumns);
-	App->sceneIntro->octree.Insert(gameObject);
+	//SetNewAnimation(textureRows, textureColumns);
+	App->scene->quadtree.Insert(gameObject);
 }
 
 
@@ -91,10 +89,10 @@ ComponentEmitter::~ComponentEmitter()
 {
 	if (App)
 	{
-		App->time->gameTimerList.remove(&timer);
-		App->time->gameTimerList.remove(&burstTime);
-		App->time->gameTimerList.remove(&loopTimer);
-		App->time->gameTimerList.remove(&timeSimulating);
+		App->timeManager->GetGameTimerList().remove(&timer);
+		App->timeManager->GetGameTimerList().remove(&burstTime);
+		App->timeManager->GetGameTimerList().remove(&loopTimer);
+		App->timeManager->GetGameTimerList().remove(&timeSimulating);
 
 		App->particle->RemoveEmitter(this);
 	}			
@@ -113,7 +111,7 @@ void ComponentEmitter::StartEmitter()
 	}
 }
 
-void ComponentEmitter::ChangeGameState(GameState state)
+void ComponentEmitter::ChangeGameState(engine_states state)
 {
 	simulatedGame = state;
 	if (state == GameState_PLAYING)
@@ -133,10 +131,10 @@ void ComponentEmitter::Update()
 		float time = timer.ReadSec();
 		if (time > timeToParticle && (loop || loopTimer.ReadSec() < duration))
 		{
-			if (App->time->gameState == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->time->gameState == GameState_TICK)
+			if (App->GetEngineState() == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->GetEngineState() == GameState_TICK)
 			{
 				int particlesToCreate = (time / (1.0f / rateOverTime));
-				CreateParticles(particlesToCreate, normalShapeType,float3::zero);
+				CreateParticles(particlesToCreate, normalShapeType,math::float3::zero);
 
 				timeToParticle = (1.0f / rateOverTime);
 				
@@ -148,12 +146,12 @@ void ComponentEmitter::Update()
 	float burstT = burstTime.ReadSec();
 	if (burst && burstT > repeatTime)
 	{
-		if (App->time->gameState == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->time->gameState == GameState_TICK)
+		if (App->GetEngineState() == GameState_PLAYING || simulatedGame == GameState_PLAYING || App->GetEngineState() == GameState_TICK)
 		{
 			int particlesToCreate = minPart;
 			if (minPart != maxPart)
 				particlesToCreate = (rand() % (maxPart - minPart)) + minPart;
-			CreateParticles(particlesToCreate, burstType, float3::zero);
+			CreateParticles(particlesToCreate, burstType, math::float3::zero);
 			//LOG("%i", particlesToCreate);
 		}
 		burstTime.Start();
@@ -162,7 +160,7 @@ void ComponentEmitter::Update()
 	//Used for SubEmitter. Create particles from ParticleEmiter death (On Emiter update because need to resize before Particle update)
 	if (!newPositions.empty())
 	{
-		for (std::list<float3>::const_iterator iterator = newPositions.begin(); iterator != newPositions.end(); ++iterator)
+		for (std::list<math::float3>::const_iterator iterator = newPositions.begin(); iterator != newPositions.end(); ++iterator)
 		{
 			CreateParticles(rateOverTime, normalShapeType, *iterator);
 		}
@@ -203,7 +201,7 @@ void ComponentEmitter::SoftClearEmitter()
 }
 
 
-void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeType, const float3& pos)
+void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos)
 {
 	if (particlesToCreate == 0)
 		++particlesToCreate;
@@ -213,7 +211,7 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 		int particleId = 0;
 		if (App->particle->GetParticle(particleId))
 		{
-			float3 spawnPos = pos;
+			math::float3 spawnPos = pos;
 			spawnPos += RandPos(shapeType);
 
 			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, &texture, &particleAnimation.textureIDs, animationSpeed);
@@ -226,9 +224,9 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 	}
 }
 
-float3 ComponentEmitter::RandPos(ShapeType shapeType)
+math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 {
-	float3 spawn = float3::zero;
+	math::float3 spawn = math::float3::zero;
 	float angle = 0.0f;
 	float centerDist = 0.0f;
 
@@ -236,7 +234,7 @@ float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	{
 	case ShapeType_BOX:
 		spawn = boxCreation.RandomPointInside(App->randomMath);
-		startValues.particleDirection = (float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
+		startValues.particleDirection = (math::float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
@@ -258,7 +256,7 @@ float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		angle = (2*pi) * pcg32_random() / MAXUINT;
 		centerDist = (float)pcg32_random() / MAXUINT;
 
-		circleCreation.pos = (float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
+		circleCreation.pos = (math::float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
 		circleCreation.normal = -circleCreation.pos;
 		startValues.particleDirection = (circleCreation.GetPoint(angle,centerDist)).Normalized();
 		break;
@@ -266,7 +264,7 @@ float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		break;
 	}
 
-	float3 global = float3::zero;
+	math::float3 global = math::float3::zero;
 	if (gameObject)
 		global = gameObject->GetGlobalPos();
 
@@ -352,7 +350,7 @@ void ComponentEmitter::ParticleShape()
 		}
 
 
-		float3 pos;
+		math::float3 pos;
 		switch (normalShapeType)
 		{
 		case ShapeType_BOX:
@@ -486,7 +484,7 @@ void ComponentEmitter::ParticleAABB()
 		ImGui::Checkbox("Bounding Box", &drawAABB);
 		if (drawAABB)
 		{
-			float3 size = gameObject->transform->originalBoundingBox.Size();
+			math::float3 size = gameObject->transform->originalBoundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
 			{
 				gameObject->transform->originalBoundingBox.SetFromCenterAndSize(posDifAABB, size);
@@ -604,12 +602,12 @@ void ComponentEmitter::ParticleSubEmitter()
 				subEmitter->SetActive(true);
 			else
 			{
-				subEmitter = App->gameObject->CreateGameObject(float3::zero, Quat::identity, float3::one, gameObject, "SubEmition");
+				subEmitter = App->gameObject->CreateGameObject(math::float3::zero, math::Quat::identity, math::float3::one, gameObject, "SubEmition");
 				EmitterInfo info;
 				info.isSubEmitter = true;
 				subEmitter->AddComponent(ComponentType_EMITTER, &info);
-				AABB boundingBox = AABB();
-				boundingBox.SetFromCenterAndSize(subEmitter->GetPos(), float3::one);
+				math::AABB boundingBox = math::AABB();
+				boundingBox.SetFromCenterAndSize(subEmitter->GetPos(), math::float3::one);
 				subEmitter->SetABB(boundingBox);
 				App->sceneIntro->octree.Insert(subEmitter);
 			}
@@ -619,7 +617,7 @@ void ComponentEmitter::ParticleSubEmitter()
 	}
 	ImGui::Separator();
 }
-
+/*
 void ComponentEmitter::SetNewAnimation(int row, int col)
 {
 	particleAnimation = App->resources->LoadTextureUV(row, col);
@@ -628,8 +626,8 @@ void ComponentEmitter::SetNewAnimation(int row, int col)
 		(*iterator)->currentFrame = 0;
 	}
 }
-
-void ComponentEmitter::ShowFloatValue(float2& value, bool checkBox, const char* name, float v_speed, float v_min, float v_max)
+*/
+void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const char* name, float v_speed, float v_min, float v_max)
 {
 	ImGui::SameLine();
 	if (checkBox)
@@ -653,7 +651,7 @@ void ComponentEmitter::ShowFloatValue(float2& value, bool checkBox, const char* 
 	ImGui::PopItemWidth();
 }
 
-void ComponentEmitter::CheckMinMax(float2& value)
+void ComponentEmitter::CheckMinMax(math::float2& value)
 {
 	if (value.x > value.y)
 		value.y = value.x;
@@ -686,7 +684,7 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 	return ret;
 }
 
-ImVec4 ComponentEmitter::EqualsFloat4(const float4 float4D)
+ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 {
 	ImVec4 vec;
 	vec.x = float4D.x;
@@ -826,7 +824,7 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 
 	if (gameObject && gameObject->transform)
 	{
-		float3 bb = gameObject->transform->originalBoundingBox.Size();
+		math::float3 bb = gameObject->transform->originalBoundingBox.Size();
 
 		json_object_set_number(parent, "originalBoundingBoxSizeX", bb.x);
 		json_object_set_number(parent, "originalBoundingBoxSizeY", bb.y);

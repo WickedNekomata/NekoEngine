@@ -9,7 +9,7 @@
 
 ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::CapsuleColliderComponent)
 {
-	PxCapsuleGeometry gCapsuleGeometry(radius, halfHeight);
+	physx::PxCapsuleGeometry gCapsuleGeometry(radius, halfHeight);
 	gShape = App->physics->CreateShape(gCapsuleGeometry, *gMaterial);
 	assert(gShape != nullptr);
 
@@ -18,14 +18,14 @@ ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : Compone
 	case CapsuleDirection::CapsuleDirectionYAxis:
 	{
 		math::float3 dir = math::float3(0.0f, 0.0f, 1.0f);
-		PxTransform relativePose(PxQuat(PxHalfPi, PxVec3(dir.x, dir.y, dir.z)));
+		physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
 		gShape->setLocalPose(relativePose);
 	}
 	break;
 	case CapsuleDirection::CapsuleDirectionZAxis:
 	{
 		math::float3 dir = math::float3(0.0f, 1.0f, 0.0f);
-		PxTransform relativePose(PxQuat(PxHalfPi, PxVec3(dir.x, dir.y, dir.z)));
+		physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
 		gShape->setLocalPose(relativePose);
 	}
 	break;

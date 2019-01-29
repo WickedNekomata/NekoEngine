@@ -9,7 +9,7 @@
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
-	PxSphereGeometry gSphereGeometry(radius);
+	physx::PxSphereGeometry gSphereGeometry(radius);
 	gShape = App->physics->CreateShape(gSphereGeometry, *gMaterial);
 	assert(gShape != nullptr);
 }

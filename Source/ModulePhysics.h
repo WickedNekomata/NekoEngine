@@ -9,15 +9,16 @@
 
 #include <vector>
 
-using namespace physx;
+class ComponentCollider;
+enum ComponentTypes;
 
-class DefaultErrorCallback : public PxErrorCallback
+class DefaultErrorCallback : public physx::PxErrorCallback
 {
 public:
 	DefaultErrorCallback();
 	~DefaultErrorCallback();
 
-	void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line);
+	void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line);
 };
 
 class ModulePhysics : public Module
@@ -34,27 +35,35 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PxRigidStatic* CreateRigidStatic(const PxTransform& transform, PxShape& shape) const;
-	PxRigidDynamic* CreateRigidDynamic(const PxTransform& transform, PxShape& shape, float density, bool isKinematic = false) const;
+	physx::PxRigidStatic* CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const;
+	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;
 
-	PxShape* CreateShape(const PxGeometry& geometry, const PxMaterial& material, bool isExclusive = true) const;
+	physx::PxShape* CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive = true) const;
 
-	void RemoveActor(PxActor& actor) const;
+	ComponentCollider* CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType);
+	bool AddColliderComponent(ComponentCollider* toAdd);
+	bool EraseColliderComponent(ComponentCollider* toErase);
 
-	PxMaterial* GetDefaultMaterial() const;
+	void RemoveActor(physx::PxActor& actor) const;
 
-	std::vector<PxRigidActor*> GetRigidStatics() const;
-	std::vector<PxRigidActor*> GetRigidDynamics() const;
+	physx::PxMaterial* GetDefaultMaterial() const;
+
+	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
+	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;
+
+	std::vector<ComponentCollider*> GetColliderComponents() const;
 
 private:
 
-	PxFoundation* gFoundation = nullptr;
-	PxPhysics* gPhysics = nullptr;
-	PxScene* gScene = nullptr;
-	PxDefaultCpuDispatcher*	gDispatcher = nullptr;
-	PxMaterial*	gMaterial = nullptr;
+	physx::PxFoundation* gFoundation = nullptr;
+	physx::PxPhysics* gPhysics = nullptr;
+	physx::PxScene* gScene = nullptr;
+	physx::PxDefaultCpuDispatcher*	gDispatcher = nullptr;
+	physx::PxMaterial*	gMaterial = nullptr;
 
 	float gAccumulator = 0.0f;
+
+	std::vector<ComponentCollider*> colliderComponents;
 };
 
 #endif

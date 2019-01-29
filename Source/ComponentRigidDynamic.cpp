@@ -15,15 +15,13 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	float minPointRadius = (parent->boundingBox.minPoint - parent->transform->position).Length();
 	float maxPointRadius = (parent->boundingBox.maxPoint - parent->transform->position).Length();
 	float radius = maxPointRadius >= minPointRadius ? maxPointRadius : minPointRadius;
-	PxShape* gShape = App->physics->CreateShape(PxSphereGeometry(radius / 2.0f), *App->physics->GetDefaultMaterial());
+	physx::PxShape* gShape = App->physics->CreateShape(physx::PxSphereGeometry(radius / 2.0f), *App->physics->GetDefaultMaterial());
 
-	gActor = App->physics->CreateRigidDynamic(PxTransform(PxIDENTITY()), *gShape, 10.0f);
+	gActor = App->physics->CreateRigidDynamic(physx::PxTransform(physx::PxIDENTITY()), *gShape, 10.0f);
 	//UpdateTransform();
 }
 
 ComponentRigidDynamic::~ComponentRigidDynamic() {}
-
-void ComponentRigidDynamic::Update() {}
 
 void ComponentRigidDynamic::OnUniqueEditor()
 {
@@ -40,5 +38,5 @@ void ComponentRigidDynamic::OnUniqueEditor()
 
 void ComponentRigidDynamic::ToggleKinematic() const
 {
-	gActor->is<PxRigidBody>()->setRigidBodyFlag(PxRigidBodyFlag::Enum::eKINEMATIC, isKinematic);
+	gActor->is<physx::PxRigidBody>()->setRigidBodyFlag(physx::PxRigidBodyFlag::Enum::eKINEMATIC, isKinematic);
 }

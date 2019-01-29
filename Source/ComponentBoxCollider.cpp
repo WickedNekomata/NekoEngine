@@ -9,7 +9,7 @@
 
 ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::BoxColliderComponent)
 {
-	PxBoxGeometry gBoxGeometry(halfSize.x, halfSize.y, halfSize.z);
+	physx::PxBoxGeometry gBoxGeometry(halfSize.x, halfSize.y, halfSize.z);
 	gShape = App->physics->CreateShape(gBoxGeometry, *gMaterial);
 	assert(gShape != nullptr);
 }

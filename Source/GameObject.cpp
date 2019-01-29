@@ -205,13 +205,13 @@ bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) con
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentTypes type)
+Component* GameObject::AddComponent(ComponentTypes componentType)
 {
-	Component* newComponent;
+	Component* newComponent = nullptr;
 
 	bool createMaterial = false;
 
-	switch (type)
+	switch (componentType)
 	{
 	case ComponentTypes::NoComponentType:
 		break;
@@ -244,16 +244,10 @@ Component* GameObject::AddComponent(ComponentTypes type)
 		newComponent = rigidActor = new ComponentRigidStatic(this);
 		break;
 	case ComponentTypes::BoxColliderComponent:
-		assert(collider == nullptr);
-		newComponent = collider = new ComponentBoxCollider(this);
-		break;
 	case ComponentTypes::SphereColliderComponent:
-		assert(collider == nullptr);
-		newComponent = collider = new ComponentSphereCollider(this);
-		break;
 	case ComponentTypes::CapsuleColliderComponent:
 		assert(collider == nullptr);
-		newComponent = collider = new ComponentCapsuleCollider(this);
+		newComponent = collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
 	default:
 		break;
@@ -301,6 +295,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
+		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;
 	}

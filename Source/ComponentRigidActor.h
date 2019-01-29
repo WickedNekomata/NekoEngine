@@ -7,8 +7,6 @@
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
 
-using namespace physx;
-
 class ComponentRigidActor : public Component
 {
 public:
@@ -33,7 +31,7 @@ protected:
 	float angularDrag = 0.05f;
 	bool useGravity = false;
 
-	PxRigidActor* gActor = nullptr;
+	physx::PxRigidActor* gActor = nullptr;
 };
 
 #endif

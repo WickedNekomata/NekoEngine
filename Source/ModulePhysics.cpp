@@ -3,6 +3,11 @@
 #include "Application.h"
 #include "ModuleTimeManager.h"
 
+#include "ComponentCollider.h"
+#include "ComponentBoxCollider.h"
+#include "ComponentSphereCollider.h"
+#include "ComponentCapsuleCollider.h"
+
 #include <assert.h>
 
 #ifdef _DEBUG
@@ -27,39 +32,39 @@ DefaultErrorCallback::DefaultErrorCallback() {}
 
 DefaultErrorCallback::~DefaultErrorCallback() {}
 
-void DefaultErrorCallback::reportError(PxErrorCode::Enum code, const char* message, const char* file, int line)
+void DefaultErrorCallback::reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
 	std::string errorCode;
 	switch (code)
 	{
-	case PxErrorCode::Enum::eNO_ERROR:
+	case physx::PxErrorCode::Enum::eNO_ERROR:
 		errorCode = "eNO_ERROR";
 		break;
-	case PxErrorCode::Enum::eDEBUG_INFO: //! \brief An informational message
+	case physx::PxErrorCode::Enum::eDEBUG_INFO: //! \brief An informational message
 		errorCode = "eDEBUG_INFO";
 		break;
-	case PxErrorCode::Enum::eDEBUG_WARNING: //! \brief a warning message for the user to help with debugging
+	case physx::PxErrorCode::Enum::eDEBUG_WARNING: //! \brief a warning message for the user to help with debugging
 		errorCode = "eDEBUG_WARNING";
 		break;
-	case PxErrorCode::Enum::eINVALID_PARAMETER: //! \brief method called with invalid parameter(s)
+	case physx::PxErrorCode::Enum::eINVALID_PARAMETER: //! \brief method called with invalid parameter(s)
 		errorCode = "eINVALID_PARAMETER";
 		break;
-	case PxErrorCode::Enum::eINVALID_OPERATION: //! \brief method was called at a time when an operation is not possible
+	case physx::PxErrorCode::Enum::eINVALID_OPERATION: //! \brief method was called at a time when an operation is not possible
 		errorCode = "eINVALID_OPERATION";
 		break;
-	case PxErrorCode::Enum::eOUT_OF_MEMORY: //! \brief method failed to allocate some memory
+	case physx::PxErrorCode::Enum::eOUT_OF_MEMORY: //! \brief method failed to allocate some memory
 		errorCode = "eOUT_OF_MEMORY";
 		break;
-	case PxErrorCode::Enum::eINTERNAL_ERROR: //! \brief The library failed for some reason. Possibly you have passed invalid values like NaNs, which are not checked for
+	case physx::PxErrorCode::Enum::eINTERNAL_ERROR: //! \brief The library failed for some reason. Possibly you have passed invalid values like NaNs, which are not checked for
 		errorCode = "eINTERNAL_ERROR";
 		break;
-	case PxErrorCode::Enum::eABORT: //! \brief An unrecoverable error, execution should be halted and log output flushed
+	case physx::PxErrorCode::Enum::eABORT: //! \brief An unrecoverable error, execution should be halted and log output flushed
 		errorCode = "eABORT";
 		break;
-	case PxErrorCode::Enum::ePERF_WARNING: //! \brief The SDK has determined that an operation may result in poor performance
+	case physx::PxErrorCode::Enum::ePERF_WARNING: //! \brief The SDK has determined that an operation may result in poor performance
 		errorCode = "ePERF_WARNING";
 		break;
-	case PxErrorCode::Enum::eMASK_ALL: //! \brief A bit mask for including all errors
+	case physx::PxErrorCode::Enum::eMASK_ALL: //! \brief A bit mask for including all errors
 		errorCode = "eMASK_ALL";
 		break;
 	}
@@ -83,8 +88,8 @@ bool ModulePhysics::Init(JSON_Object* jObject)
 	return true;
 }
 
-PxDefaultAllocator		gAllocator;
-DefaultErrorCallback	gErrorCallback;
+physx::PxDefaultAllocator	gAllocator;
+DefaultErrorCallback		gErrorCallback;
 
 bool ModulePhysics::Start()
 {
@@ -94,25 +99,25 @@ bool ModulePhysics::Start()
 
 	// Physics
 	bool recordMemoryAllocations = true; // whether to perform memory profiling
-	PxTolerancesScale scale;
+	physx::PxTolerancesScale scale;
 	scale.length = 100; // typical length of an object
 	scale.speed = 981; // typical speed of an object
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, recordMemoryAllocations);
 	assert(gPhysics != nullptr && "MODULE PHYSICS: PxCreatePhysics failed!");
 
 	// Scene
-	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = PxDefaultCpuDispatcherCreate(1);
+	physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	// Ground
-	PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *gMaterial);
 	gScene->addActor(*groundPlane);
 
 	return true;
@@ -145,6 +150,8 @@ update_status ModulePhysics::PostUpdate()
 
 bool ModulePhysics::CleanUp()
 {
+	colliderComponents.clear();
+
 	gScene->release();
 	gScene = nullptr;
 
@@ -159,61 +166,117 @@ bool ModulePhysics::CleanUp()
 
 // ----------------------------------------------------------------------------------------------------
 
-PxRigidStatic* ModulePhysics::CreateRigidStatic(const PxTransform& transform, PxShape& shape) const
+physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const
 {
-	PxRigidStatic* rigidStatic = PxCreateStatic(*gPhysics, transform, shape);
+	physx::PxRigidStatic* rigidStatic = physx::PxCreateStatic(*gPhysics, transform, shape);
 
 	gScene->addActor(*rigidStatic);
 
 	return rigidStatic;
 }
 
-PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const PxTransform& transform, PxShape& shape, float density, bool isKinematic) const
+physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic) const
 {
-	PxRigidDynamic* rigidDynamic = nullptr;
+	physx::PxRigidDynamic* rigidDynamic = nullptr;
 	if (isKinematic)
-		rigidDynamic = PxCreateKinematic(*gPhysics, transform, shape, density);
+		rigidDynamic = physx::PxCreateKinematic(*gPhysics, transform, shape, density);
 	else
-		rigidDynamic = PxCreateDynamic(*gPhysics, transform, shape, density); // gPhysics->createRigidDynamic(transform);
+		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density); // gPhysics->createRigidDynamic(transform);
 
 	gScene->addActor(*rigidDynamic);
 
 	return rigidDynamic;
 }
 
-PxShape* ModulePhysics::CreateShape(const PxGeometry& geometry, const PxMaterial& material, bool isExclusive) const
+physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive) const
 {
 	return gPhysics->createShape(geometry, material, isExclusive);
 }
 
-void ModulePhysics::RemoveActor(PxActor& actor) const
+ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType)
+{
+	ComponentCollider* newComponent = nullptr;
+	switch (componentColliderType)
+	{
+	case ComponentTypes::BoxColliderComponent:
+		newComponent = new ComponentBoxCollider(parent);
+		break;
+	case ComponentTypes::SphereColliderComponent:
+		newComponent = new ComponentSphereCollider(parent);
+		break;
+	case ComponentTypes::CapsuleColliderComponent:
+		newComponent = new ComponentCapsuleCollider(parent);
+		break;
+	}
+	assert(newComponent != nullptr);
+
+	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), newComponent);
+	assert(it == colliderComponents.end());
+
+	colliderComponents.push_back(newComponent);
+
+	return newComponent;
+}
+
+bool ModulePhysics::AddColliderComponent(ComponentCollider* toAdd)
+{
+	bool ret = true;
+
+	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), toAdd);
+	ret = it == colliderComponents.end();
+
+	if (ret)
+		colliderComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), toErase);
+	ret = it != colliderComponents.end();
+
+	if (ret)
+		colliderComponents.erase(it);
+
+	return ret;
+}
+
+void ModulePhysics::RemoveActor(physx::PxActor& actor) const
 {
 	gScene->removeActor(actor);
 }
 
-PxMaterial* ModulePhysics::GetDefaultMaterial() const
+physx::PxMaterial* ModulePhysics::GetDefaultMaterial() const
 {
 	return gMaterial;
 }
 
-std::vector<PxRigidActor*> ModulePhysics::GetRigidStatics() const
+std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidStatics() const
 {
-	uint nbStaticActors = gScene->getNbActors(PxActorTypeFlag::Enum::eRIGID_STATIC);
-	std::vector<PxRigidActor*> staticActors(nbStaticActors);
+	uint nbStaticActors = gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC);
+	std::vector<physx::PxRigidActor*> staticActors(nbStaticActors);
 	
 	if (nbStaticActors > 0)
-		gScene->getActors(PxActorTypeFlag::Enum::eRIGID_STATIC, reinterpret_cast<PxActor**>(&staticActors[0]), nbStaticActors);
+		gScene->getActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC, reinterpret_cast<physx::PxActor**>(&staticActors[0]), nbStaticActors);
 
 	return staticActors;
 }
 
-std::vector<PxRigidActor*> ModulePhysics::GetRigidDynamics() const
+std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidDynamics() const
 {
-	uint nbDynamicActors = gScene->getNbActors(PxActorTypeFlag::Enum::eRIGID_DYNAMIC);
-	std::vector<PxRigidActor*> dynamicActors(nbDynamicActors);
+	uint nbDynamicActors = gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC);
+	std::vector<physx::PxRigidActor*> dynamicActors(nbDynamicActors);
 	
 	if (nbDynamicActors > 0)
-		gScene->getActors(PxActorTypeFlag::Enum::eRIGID_DYNAMIC, reinterpret_cast<PxActor**>(&dynamicActors[0]), nbDynamicActors);
+		gScene->getActors(physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC, reinterpret_cast<physx::PxActor**>(&dynamicActors[0]), nbDynamicActors);
 
 	return dynamicActors;
+}
+
+std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const
+{
+	return colliderComponents;
 }

@@ -9,13 +9,11 @@
 
 ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidStaticComponent)
 {
-	gActor = App->physics->CreateRigidStatic(PxTransform(PxIDENTITY()), *App->physics->CreateShape(PxSphereGeometry(parent->boundingBox.HalfDiagonal().Length()), *App->physics->GetDefaultMaterial()));
+	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *App->physics->CreateShape(physx::PxSphereGeometry(parent->boundingBox.HalfDiagonal().Length()), *App->physics->GetDefaultMaterial()));
 	//UpdateTransform();
 }
 
 ComponentRigidStatic::~ComponentRigidStatic() {}
-
-void ComponentRigidStatic::Update() {}
 
 void ComponentRigidStatic::OnUniqueEditor()
 {

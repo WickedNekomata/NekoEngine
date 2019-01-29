@@ -19,6 +19,8 @@ public:
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 
+	physx::PxShape* GetShape() const;
+
 protected:
 
 	bool isTrigger = false;

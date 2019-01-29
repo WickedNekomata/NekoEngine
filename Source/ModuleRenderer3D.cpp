@@ -19,6 +19,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "ComponentCollider.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -232,8 +233,52 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		if (drawColliders)// boundingBoxesColor = Green, DarkGreen
 		{
-			Color collidersColor = Blue;
+			Color collidersColor = Green;
 
+			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
+			for (uint i = 0; i < colliderComponents.size(); ++i)
+			{
+				physx::PxShape* gShape = colliderComponents[i]->GetShape();
+				if (gShape == nullptr)
+					continue;
+
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(colliderComponents[i]->GetParent()->transform->position.x, colliderComponents[i]->GetParent()->transform->position.y, colliderComponents[i]->GetParent()->transform->position.z),
+																			physx::PxQuat(colliderComponents[i]->GetParent()->transform->rotation.x, colliderComponents[i]->GetParent()->transform->rotation.y, colliderComponents[i]->GetParent()->transform->rotation.z, colliderComponents[i]->GetParent()->transform->rotation.w));
+				physx::PxTransform gTransform = gameObjectTransform * gShape->getLocalPose();
+
+				math::float4x4 globalMatrix(math::Quat(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w),
+											math::float3(gTransform.p.x, gTransform.p.y, gTransform.p.z));
+
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+				}
+				break;
+				}
+			}
+
+			/*
 			std::vector<PxRigidActor*> staticActors = App->physics->GetRigidStatics();
 			for (uint i = 0; i < staticActors.size(); ++i)
 			{
@@ -321,7 +366,7 @@ update_status ModuleRenderer3D::PostUpdate()
 						break;
 					}
 				}
-			}
+			}*/
 		}
 
 		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue

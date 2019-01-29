@@ -48,3 +48,8 @@ void ComponentCollider::OnUniqueEditor()
 	}
 #endif
 }
+
+physx::PxShape* ComponentCollider::GetShape() const
+{
+	return gShape;
+}

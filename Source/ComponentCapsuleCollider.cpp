@@ -9,27 +9,7 @@
 
 ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::CapsuleColliderComponent)
 {
-	physx::PxCapsuleGeometry gCapsuleGeometry(radius, halfHeight);
-	gShape = App->physics->CreateShape(gCapsuleGeometry, *gMaterial);
-	assert(gShape != nullptr);
-
-	switch (direction)
-	{
-	case CapsuleDirection::CapsuleDirectionYAxis:
-	{
-		math::float3 dir = math::float3(0.0f, 0.0f, 1.0f);
-		physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
-		gShape->setLocalPose(relativePose);
-	}
-	break;
-	case CapsuleDirection::CapsuleDirectionZAxis:
-	{
-		math::float3 dir = math::float3(0.0f, 1.0f, 0.0f);
-		physx::PxTransform relativePose(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
-		gShape->setLocalPose(relativePose);
-	}
-	break;
-	}
+	RecalculateShape();
 }
 
 ComponentCapsuleCollider::~ComponentCapsuleCollider() {}
@@ -42,24 +22,16 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 
 	ComponentCollider::OnUniqueEditor();
 
-	bool updateShape = false;
+	bool recalculateShape = false;
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragScalar("##CapsuleRadius", ImGuiDataType_Float, (void*)&radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
-	{
-		if (radius <= 0.0f)
-			radius = 0.0f;
-		updateShape = true;
-	}
+		recalculateShape = true;
 
 	ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragScalar("##CapsuleHalfHeight", ImGuiDataType_Float, (void*)&halfHeight, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
-	{
-		if (halfHeight <= 0.0f)
-			halfHeight = 0.0f;
-		updateShape = true;
-	}
+		recalculateShape = true;
 
 	const char* capsuleDirection[] = { "X-Axis", "Y-Axis", "Z-Axis" };
 	int currentCapsuleDirection = direction;
@@ -67,7 +39,48 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 	if (ImGui::Combo("Direction", &currentCapsuleDirection, capsuleDirection, IM_ARRAYSIZE(capsuleDirection)))
 	{
 		direction = (CapsuleDirection)currentCapsuleDirection;
-		updateShape = true;
+		recalculateShape = true;
 	}
+
+	if (recalculateShape)
+		RecalculateShape();
 #endif
+}
+
+void ComponentCapsuleCollider::RecalculateShape()
+{
+	ClearShape();
+
+	float r = radius;
+	r = std::abs(r);
+	float hH = halfHeight;
+	hH = std::abs(hH);
+
+	physx::PxCapsuleGeometry gCapsuleGeometry(r, hH);
+	gShape = App->physics->CreateShape(gCapsuleGeometry, *gMaterial);
+	if (gShape == nullptr)
+		return;
+
+	switch (direction)
+	{
+	case CapsuleDirection::CapsuleDirectionXAxis:
+	{
+		physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
+		gShape->setLocalPose(relativePose);
+	}
+	case CapsuleDirection::CapsuleDirectionYAxis:
+	{
+		math::float3 dir = math::float3(0.0f, 0.0f, 1.0f);
+		physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
+		gShape->setLocalPose(relativePose);
+	}
+	break;
+	case CapsuleDirection::CapsuleDirectionZAxis:
+	{
+		math::float3 dir = math::float3(0.0f, 1.0f, 0.0f);
+		physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z), physx::PxQuat(physx::PxHalfPi, physx::PxVec3(dir.x, dir.y, dir.z)));
+		gShape->setLocalPose(relativePose);
+	}
+	break;
+	}
 }

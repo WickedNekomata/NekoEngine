@@ -9,9 +9,7 @@
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
-	physx::PxSphereGeometry gSphereGeometry(radius);
-	gShape = App->physics->CreateShape(gSphereGeometry, *gMaterial);
-	assert(gShape != nullptr);
+	RecalculateShape();
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
@@ -24,15 +22,32 @@ void ComponentSphereCollider::OnUniqueEditor()
 
 	ComponentCollider::OnUniqueEditor();
 
-	bool updateShape = false;
+	bool recalculateShape = false;
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragScalar("##SphereRadius", ImGuiDataType_Float, (void*)&radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
-	{
-		if (radius <= 0.0f)
-			radius = 0.0f;
-		updateShape = true;
-	}
+		recalculateShape = true;
+
+	if (recalculateShape)
+		RecalculateShape();
 #endif
+}
+
+void ComponentSphereCollider::RecalculateShape()
+{
+	ClearShape();
+
+	float r = radius;
+	r = std::abs(r);
+
+	physx::PxSphereGeometry gSphereGeometry(r);
+	gShape = App->physics->CreateShape(gSphereGeometry, *gMaterial);
+	if (gShape == nullptr)
+		return;
+
+	// ----------
+
+	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
+	gShape->setLocalPose(relativePose);
 }

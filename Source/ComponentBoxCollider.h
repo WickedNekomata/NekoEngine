@@ -16,6 +16,8 @@ public:
 
 	void OnUniqueEditor();
 
+	void RecalculateShape();
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

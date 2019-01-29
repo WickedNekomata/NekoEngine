@@ -5,8 +5,11 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentRigidActor.h"
-#include "ComponentRigidDynamic.h"
 #include "ComponentRigidStatic.h"
+#include "ComponentRigidDynamic.h"
+#include "ComponentBoxCollider.h"
+#include "ComponentSphereCollider.h"
+#include "ComponentCapsuleCollider.h"
 #include "ResourceMesh.h"
 
 #include "Application.h"
@@ -240,6 +243,18 @@ Component* GameObject::AddComponent(ComponentTypes type)
 		assert(rigidActor == nullptr);
 		newComponent = rigidActor = new ComponentRigidStatic(this);
 		break;
+	case ComponentTypes::BoxColliderComponent:
+		assert(collider == nullptr);
+		newComponent = collider = new ComponentBoxCollider(this);
+		break;
+	case ComponentTypes::SphereColliderComponent:
+		assert(collider == nullptr);
+		newComponent = collider = new ComponentSphereCollider(this);
+		break;
+	case ComponentTypes::CapsuleColliderComponent:
+		assert(collider == nullptr);
+		newComponent = collider = new ComponentCapsuleCollider(this);
+		break;
 	default:
 		break;
 	}
@@ -283,6 +298,10 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	case ComponentTypes::RigidDynamicComponent:
 	case ComponentTypes::RigidStaticComponent:
 		rigidActor = nullptr;
+	case ComponentTypes::BoxColliderComponent:
+	case ComponentTypes::SphereColliderComponent:
+	case ComponentTypes::CapsuleColliderComponent:
+		collider = nullptr;
 		break;
 	}
 

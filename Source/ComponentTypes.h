@@ -11,7 +11,11 @@ enum ComponentTypes
 
 	// Physics
 	RigidStaticComponent,
-	RigidDynamicComponent
+	RigidDynamicComponent,
+	BoxColliderComponent,
+	SphereColliderComponent,
+	CapsuleColliderComponent
+
 };
 
 #endif

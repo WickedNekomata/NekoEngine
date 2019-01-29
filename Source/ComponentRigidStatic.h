@@ -12,15 +12,10 @@ public:
 	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
 	~ComponentRigidStatic();
 
-	void Update();
-
 	void OnUniqueEditor();
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
-
-private:
-
 };
 
 #endif

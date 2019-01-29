@@ -5,19 +5,23 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
 
 #include "imgui\imgui.h"
 
 ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidDynamicComponent)
 {
-	gActor = App->physics->CreateRigidDynamic(PxTransform(PxIDENTITY()), *App->physics->CreateShape(PxSphereGeometry(1.0f), *App->physics->GetDefaultMaterial()), 10.0f);
-	UpdateTransform();
+	float minPointRadius = (parent->boundingBox.minPoint - parent->transform->position).Length();
+	float maxPointRadius = (parent->boundingBox.maxPoint - parent->transform->position).Length();
+	float radius = maxPointRadius >= minPointRadius ? maxPointRadius : minPointRadius;
+	PxShape* gShape = App->physics->CreateShape(PxSphereGeometry(radius / 2.0f), *App->physics->GetDefaultMaterial());
+
+	gActor = App->physics->CreateRigidDynamic(PxTransform(PxIDENTITY()), *gShape, 10.0f);
+	//UpdateTransform();
 }
 
-ComponentRigidDynamic::~ComponentRigidDynamic() 
-{
-
-}
+ComponentRigidDynamic::~ComponentRigidDynamic() {}
 
 void ComponentRigidDynamic::Update() {}
 

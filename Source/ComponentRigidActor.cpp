@@ -9,15 +9,10 @@
 
 ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType)
 {
-	geometry = new Geometry();
-	geometry->geometryType = GeometryTypes::GeometryTypeSphere;
-	ResetGeometry();
 }
 
 ComponentRigidActor::~ComponentRigidActor()
 {
-	RELEASE(geometry);
-
 	// Detach current shape
 	/*
 	uint nbShapes = gActor->getNbShapes();
@@ -39,10 +34,8 @@ ComponentRigidActor::~ComponentRigidActor()
 	gActor->release();
 }
 
-void ComponentRigidActor::Update() {}
-
 void ComponentRigidActor::OnUniqueEditor()
-{
+{/*
 #ifndef GAMEMODE
 	// Geometry type
 	const char* geometryType[] = { "Sphere", "Capsule", "Box" };
@@ -129,9 +122,9 @@ void ComponentRigidActor::OnUniqueEditor()
 	}
 	if (updateShape)
 		UpdateShape();
-#endif
+#endif*/
 }
-
+/*
 void ComponentRigidActor::ResetGeometry() const
 {
 	switch (geometry->geometryType)
@@ -216,4 +209,4 @@ void ComponentRigidActor::UpdateTransform() const
 {
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	gActor->setGlobalPose(PxTransform(PxMat44(globalMatrix.Transposed().ptr())));
-}
+}*/

@@ -12,8 +12,6 @@ public:
 	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
 	~ComponentRigidDynamic();
 
-	void Update();
-
 	void OnUniqueEditor();
 
 	void ToggleKinematic() const;

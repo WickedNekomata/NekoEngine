@@ -21,6 +21,8 @@
 
 #define STEP_SIZE 1.0f / 60.0f
 
+// TODO: Physics Manager like Unity (custom options)
+
 DefaultErrorCallback::DefaultErrorCallback() {}
 
 DefaultErrorCallback::~DefaultErrorCallback() {}
@@ -172,7 +174,7 @@ PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const PxTransform& transform, 
 	if (isKinematic)
 		rigidDynamic = PxCreateKinematic(*gPhysics, transform, shape, density);
 	else
-		rigidDynamic = PxCreateDynamic(*gPhysics, transform, shape, density);
+		rigidDynamic = PxCreateDynamic(*gPhysics, transform, shape, density); // gPhysics->createRigidDynamic(transform);
 
 	gScene->addActor(*rigidDynamic);
 

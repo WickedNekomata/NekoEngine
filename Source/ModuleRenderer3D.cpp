@@ -230,7 +230,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawColliders)// boundingBoxesColor = Blue, DarkBlue
+		if (drawColliders)// boundingBoxesColor = Green, DarkGreen
 		{
 			Color collidersColor = Blue;
 
@@ -324,7 +324,7 @@ update_status ModuleRenderer3D::PostUpdate()
 			}
 		}
 
-		if (drawQuadtree) // quadtreeColor = Green, DarkGreen
+		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
 		App->debugDrawer->EndDebugDraw();
@@ -896,10 +896,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 {
-	App->debugDrawer->DebugDraw(node->boundingBox, Green);
+	App->debugDrawer->DebugDraw(node->boundingBox, Blue);
 
 	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
-		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkGreen);
+		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkBlue);
 
 	if (!node->IsLeaf())
 	{

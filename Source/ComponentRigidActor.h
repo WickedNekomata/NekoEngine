@@ -3,8 +3,6 @@
 
 #include "Component.h"
 
-#include "Geometry.h"
-
 #include "physx/include/PxPhysicsAPI.h"
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
@@ -17,23 +15,25 @@ public:
 
 	ComponentRigidActor(GameObject* parent, ComponentTypes componentType);
 	//ComponentRigidActor(const ComponentRigidActor& componentRigidActor);
-	~ComponentRigidActor();
+	virtual ~ComponentRigidActor();
 
-	void Update();
+	virtual void OnUniqueEditor();
 
-	void OnUniqueEditor();
-
-	void ResetGeometry() const;
-	void UpdateShape();
-	void UpdateTransform() const;
+	//void ResetGeometry() const;
+	//void UpdateShape();
+	//void UpdateTransform() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 
 protected:
 
+	float mass = 1.0f;
+	float drag = 0.0f;
+	float angularDrag = 0.05f;
+	bool useGravity = false;
+
 	PxRigidActor* gActor = nullptr;
-	Geometry* geometry = nullptr;
 };
 
 #endif

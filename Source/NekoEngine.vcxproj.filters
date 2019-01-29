@@ -1273,10 +1273,19 @@
     <ClInclude Include="ComponentRigidStatic.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry.h">
+    <ClInclude Include="ComponentRigidActor.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRigidActor.h">
+    <ClInclude Include="ComponentCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSphereCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBoxCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCapsuleCollider.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1561,6 +1570,18 @@
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
     <ClCompile Include="ComponentRigidActor.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSphereCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBoxCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCapsuleCollider.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
   </ItemGroup>

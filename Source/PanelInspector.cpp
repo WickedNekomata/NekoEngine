@@ -129,12 +129,26 @@ void PanelInspector::ShowGameObjectInspector() const
 			}
 		}
 		if (gameObject->rigidActor == nullptr) {
-			if (ImGui::Selectable("RigidStatic")) {
+			if (ImGui::Selectable("Rigid Static")) {
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if (ImGui::Selectable("RigidDynamic")) {
+			else if (ImGui::Selectable("Rigid Dynamic")) {
 				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		if (gameObject->collider == nullptr) {
+			if (ImGui::Selectable("Box Collider")) {
+				gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Sphere Collider")) {
+				gameObject->AddComponent(ComponentTypes::SphereColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Capsule Collider")) {
+				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}

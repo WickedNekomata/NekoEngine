@@ -100,8 +100,8 @@ bool ModulePhysics::Start()
 	// Physics
 	bool recordMemoryAllocations = true; // whether to perform memory profiling
 	physx::PxTolerancesScale scale;
-	scale.length = 100; // typical length of an object
-	scale.speed = 981; // typical speed of an object
+	scale.length = 100.0f; // typical length of an object
+	scale.speed = 981.0f; // typical speed of an object
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, recordMemoryAllocations);
 	assert(gPhysics != nullptr && "MODULE PHYSICS: PxCreatePhysics failed!");
 

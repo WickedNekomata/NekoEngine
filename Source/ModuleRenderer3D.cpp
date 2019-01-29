@@ -242,12 +242,17 @@ update_status ModuleRenderer3D::PostUpdate()
 				if (gShape == nullptr)
 					continue;
 
-				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(colliderComponents[i]->GetParent()->transform->position.x, colliderComponents[i]->GetParent()->transform->position.y, colliderComponents[i]->GetParent()->transform->position.z),
-																			physx::PxQuat(colliderComponents[i]->GetParent()->transform->rotation.x, colliderComponents[i]->GetParent()->transform->rotation.y, colliderComponents[i]->GetParent()->transform->rotation.z, colliderComponents[i]->GetParent()->transform->rotation.w));
-				physx::PxTransform gTransform = gameObjectTransform * gShape->getLocalPose();
+				math::float4x4 gameObjectGlobalMatrix = colliderComponents[i]->GetParent()->transform->GetGlobalMatrix();
+				math::float3 position = math::float3::zero;
+				math::Quat rotation = math::Quat::identity;
+				math::float3 scale = math::float3::one;
+				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+																			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
-				math::float4x4 globalMatrix(math::Quat(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w),
-											math::float3(gTransform.p.x, gTransform.p.y, gTransform.p.z));
+				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
+				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
+											math::float3(transform.p.x, transform.p.y, transform.p.z));
 
 				switch (gShape->getGeometryType())
 				{

@@ -6,9 +6,22 @@
 #include "ComponentTransform.h"
 
 #include "imgui\imgui.h"
+#include "MathGeoLib/include/Math/float4.h"
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
+	if (parent->boundingBox.IsFinite())
+	{
+		math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+		math::float3 position = math::float3::zero;
+		math::Quat rotation = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+		globalMatrix.Decompose(position, rotation, scale);
+
+		center = parent->boundingBox.CenterPoint() - position;
+		radius = parent->boundingBox.HalfDiagonal().Length();
+	}
+
 	RecalculateShape();
 }
 

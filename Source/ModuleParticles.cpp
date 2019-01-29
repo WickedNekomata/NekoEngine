@@ -99,7 +99,8 @@ void ModuleParticle::DrawParticles()
 
 	for (int i = 0; i < partVec.size(); ++i)
 	{
-		if (partVec[i]->owner && partVec[i]->owner->gameObject->canDraw)
+		//TODO Particles: Need boolean canDraw??
+		if (partVec[i]->owner && partVec[i]->owner->GetParent()->canDraw)
 			partVec[i]->Draw();
 	}
 }
@@ -161,7 +162,7 @@ void ModuleParticle::RemoveEmitter(ComponentEmitter * emitter)
 	{
 		for (std::list<ComponentEmitter*>::iterator iterator = emitters.begin(); iterator != emitters.end(); ++iterator)
 		{
-			if ((*iterator)->subEmitter == emitter->gameObject)
+			if ((*iterator)->subEmitter == emitter->GetParent())
 			{
 				(*iterator)->startValues.subEmitterActive = false;
 				(*iterator)->subEmitter = nullptr;

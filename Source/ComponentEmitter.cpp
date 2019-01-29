@@ -233,7 +233,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	switch (shapeType)
 	{
 	case ShapeType_BOX:
-		spawn = boxCreation.RandomPointInside(App->randomMath);
+		spawn = boxCreation.RandomPointInside(App->GenerateRandomNumber());
 		startValues.particleDirection = (math::float3::unitY * gameObject->transform->GetRotation().ToFloat3x3()).Normalized();
 		break;
 

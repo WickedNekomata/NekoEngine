@@ -3,6 +3,7 @@
 #include "Primitive.h"
 #include "ComponentEmitter.h"
 #include "ModuleParticles.h"
+#include "ModuleRenderer3D.h"
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float3.h"
 
@@ -54,6 +55,7 @@ void Particle::SetActive(math::float3 pos, StartValues data, ResourceTexture ** 
 	this->texture = texture;
 
 
+	//TODO Particle: Active Particle
 	this->animation = animation;
 	this->animationSpeed = animationSpeed;
 	animationTime = 0.0f;
@@ -70,7 +72,7 @@ bool Particle::Update(float dt)
 {
 	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 	bool ret = true;
-	if (owner->simulatedGame == GameState_PAUSE)
+	if (owner->simulatedGame == ENGINE_PAUSE)
 		dt = 0;
 	life += dt;
 	if (life < lifeTime || owner->dieOnAnimation)
@@ -137,10 +139,14 @@ bool Particle::Update(float dt)
 void Particle::EndParticle(bool &ret)
 {
 	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
-	if (subEmitterActive && owner->subEmitter && owner->subEmitter->HasComponent(ComponentType_EMITTER))
+
+	ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponentByType(EmitterComponent);
+
+	if (subEmitterActive && owner->subEmitter && emitter)
 	{
-		ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponent(ComponentType_EMITTER);
-		emitter->newPositions.push_back((transform.position - owner->subEmitter->transform->GetGlobalPos()));
+		math::float3 globalPos;
+		owner->subEmitter->transform->GetGlobalMatrix().Decompose(globalPos, math::Quat(), math::float3());
+		emitter->newPositions.push_back(transform.position - globalPos);
 	}
 	active = false;
 	ret = false;
@@ -150,8 +156,8 @@ void Particle::EndParticle(bool &ret)
 
 void Particle::LookAtCamera()
 {
-	math::float3 zAxis = -App->renderer3D->currentCam->frustum.front;
-	math::float3 yAxis = App->renderer3D->currentCam->frustum.up;
+	math::float3 zAxis = -App->renderer3D->GetCurrentCamera()->frustum.front;
+	math::float3 yAxis = App->renderer3D->GetCurrentCamera()->frustum.up;
 	math::float3 xAxis = yAxis.Cross(zAxis).Normalized();
 
 	transform.rotation.Set(math::float3x3(xAxis, yAxis, zAxis));
@@ -159,12 +165,12 @@ void Particle::LookAtCamera()
 
 float Particle::GetCamDistance() const
 {
-	return App->renderer3D->currentCam->GetPos().DistanceSq(transform.position);
+	return App->renderer3D->GetCurrentCamera()->frustum.pos.DistanceSq(transform.position);
 }
 
 void Particle::SetCamDistance()
 {
-	 camDistance = App->renderer3D->currentCam->GetPos().DistanceSq(transform.position);
+	 camDistance = App->renderer3D->GetCurrentCamera()->frustum.pos.DistanceSq(transform.position);
 }
 
 void Particle::Draw() const
@@ -173,7 +179,7 @@ void Particle::Draw() const
 		plane->Render(transform.GetMatrix(), *texture, animation->at(currentFrame), currentColor);
 }
 
-
+//TODO Particle: Random APP
 float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoint
 {
 	float num = edges.x;

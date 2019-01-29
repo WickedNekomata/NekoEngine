@@ -309,6 +309,18 @@ Component* GameObject::GetComponent(uint index) const
 	return components[index];
 }
 
+Component* GameObject::GetComponentByType(ComponentType type) const
+{
+	Component* comp = nullptr;
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			comp = components[i];
+	}
+	return comp;
+}
+
 // Get the index of the component from the gameobject's components vector. If the component cannot be found, returns -1
 int GameObject::GetComponentIndexOnComponents(Component* component) const
 {

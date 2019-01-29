@@ -19,8 +19,12 @@ ComponentRigidActor::~ComponentRigidActor()
 void ComponentRigidActor::OnUniqueEditor()
 {
 #ifndef GAMEMODE
+	if (ImGui::Checkbox("Use Gravity", &useGravity))
+		SetUseGravity(useGravity);
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::UpdateShape()
 {
@@ -59,6 +63,15 @@ void ComponentRigidActor::UpdateGameObjectTransform() const
 	math::float4x4 globalMatrix(rotation, position);
 	parent->transform->SetMatrixFromGlobal(globalMatrix);
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidActor::SetUseGravity(bool useGravity) const
+{
+	gActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, useGravity);
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 physx::PxRigidActor* ComponentRigidActor::GetActor() const
 {

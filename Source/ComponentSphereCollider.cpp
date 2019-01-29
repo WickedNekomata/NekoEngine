@@ -38,6 +38,7 @@ void ComponentSphereCollider::OnUniqueEditor()
 	bool recalculateShape = false;
 	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
+	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragScalar("##SphereRadius", ImGuiDataType_Float, (void*)&radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
 		recalculateShape = true;

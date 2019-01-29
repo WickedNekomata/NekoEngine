@@ -151,6 +151,10 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
+			else if (ImGui::Selectable("Plane Collider")) {
+				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
 		}
 		ImGui::EndPopup();
 	}

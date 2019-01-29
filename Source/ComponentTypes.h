@@ -14,7 +14,8 @@ enum ComponentTypes
 	RigidDynamicComponent,
 	BoxColliderComponent,
 	SphereColliderComponent,
-	CapsuleColliderComponent
+	CapsuleColliderComponent,
+	PlaneColliderComponent
 
 };
 

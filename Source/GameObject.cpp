@@ -243,6 +243,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
 		assert(collider == nullptr);
 		newComponent = collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
@@ -293,6 +294,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
 		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;

@@ -11,10 +11,12 @@ ModuleTimeManager::~ModuleTimeManager() {}
 
 void ModuleTimeManager::PrepareUpdate()
 {
+	// Frames
 	frameCount++;
 
 	// Dt
 	realDt = App->GetDt();
+	dt = 0.0f;
 
 	// Time
 	realTime += realDt;
@@ -29,10 +31,6 @@ void ModuleTimeManager::PrepareUpdate()
 
 	case engine_states::ENGINE_EDITOR:
 		time = 0.0f;
-		break;
-
-	case engine_states::ENGINE_PAUSE:
-		dt = 0.0f;
 		break;
 	}
 }

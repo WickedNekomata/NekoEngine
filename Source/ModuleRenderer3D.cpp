@@ -279,6 +279,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
 				}
+				case physx::PxGeometryType::Enum::ePLANE:
+					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), collidersColor, globalMatrix);
 				break;
 				}
 			}

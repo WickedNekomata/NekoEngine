@@ -1288,6 +1288,9 @@
     <ClInclude Include="ComponentCapsuleCollider.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentPlaneCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1582,6 +1585,9 @@
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCapsuleCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPlaneCollider.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClCompile>
   </ItemGroup>

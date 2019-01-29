@@ -7,6 +7,7 @@
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
+#include "ComponentPlaneCollider.h"
 #include "ComponentRigidActor.h"
 #include "ComponentRigidStatic.h"
 #include "ComponentRigidDynamic.h"
@@ -266,6 +267,9 @@ ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, Co
 		break;
 	case ComponentTypes::CapsuleColliderComponent:
 		newComponent = new ComponentCapsuleCollider(parent);
+		break;
+	case ComponentTypes::PlaneColliderComponent:
+		newComponent = new ComponentPlaneCollider(parent);
 		break;
 	}
 	assert(newComponent != nullptr);

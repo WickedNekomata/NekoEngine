@@ -161,6 +161,7 @@
     <ClInclude Include="ComponentCapsuleCollider.h" />
     <ClInclude Include="ComponentCollider.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentPlaneCollider.h" />
     <ClInclude Include="ComponentRigidActor.h" />
     <ClInclude Include="ComponentRigidStatic.h" />
     <ClInclude Include="ComponentSphereCollider.h" />
@@ -502,6 +503,7 @@
     <ClCompile Include="ComponentCollider.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentPlaneCollider.cpp" />
     <ClCompile Include="ComponentRigidActor.cpp" />
     <ClCompile Include="ComponentRigidStatic.cpp" />
     <ClCompile Include="ComponentSphereCollider.cpp" />

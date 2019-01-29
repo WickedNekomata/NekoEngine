@@ -21,6 +21,8 @@ public:
 	void UpdateTransform() const;
 	void UpdateGameObjectTransform() const;
 
+	void SetUseGravity(bool useGravity) const;
+
 	physx::PxRigidActor* GetActor() const;
 
 	//void OnInternalSave(JSON_Object* file);
@@ -28,10 +30,7 @@ public:
 
 protected:
 
-	float mass = 1.0f;
-	float drag = 0.0f;
-	float angularDrag = 0.05f;
-	bool useGravity = false;
+	bool useGravity = true;
 
 	physx::PxRigidActor* gActor = nullptr;
 };

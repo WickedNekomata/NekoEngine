@@ -3,14 +3,26 @@
 #include "Application.h"
 #include "ModulePhysics.h"
 #include "GameObject.h"
-#include "ComponentTransform.h"
 
 #include "imgui\imgui.h"
 
 ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidStaticComponent)
 {
-	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *App->physics->CreateShape(physx::PxSphereGeometry(parent->boundingBox.HalfDiagonal().Length()), *App->physics->GetDefaultMaterial()));
-	//UpdateTransform();
+	physx::PxShape* gShape = nullptr;
+	if (parent->boundingBox.IsFinite())
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+	else
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(0.5f, 0.5f, 0.5f), *App->physics->GetDefaultMaterial());
+
+	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *gShape);
+	if (gActor == nullptr)
+		return;
+
+	// ----------
+
+	if (parent->collider != nullptr)
+		UpdateShape();
+	UpdateTransform();
 }
 
 ComponentRigidStatic::~ComponentRigidStatic() {}
@@ -18,7 +30,7 @@ ComponentRigidStatic::~ComponentRigidStatic() {}
 void ComponentRigidStatic::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("RigidStatic");
+	ImGui::Text("Rigid Static");
 	ImGui::Spacing();
 
 	ComponentRigidActor::OnUniqueEditor();

@@ -7,6 +7,9 @@
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
+#include "ComponentRigidActor.h"
+#include "ComponentRigidStatic.h"
+#include "ComponentRigidDynamic.h"
 
 #include <assert.h>
 
@@ -99,10 +102,10 @@ bool ModulePhysics::Start()
 
 	// Physics
 	bool recordMemoryAllocations = true; // whether to perform memory profiling
-	physx::PxTolerancesScale scale;
-	scale.length = 100.0f; // typical length of an object
-	scale.speed = 981.0f; // typical speed of an object
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, recordMemoryAllocations);
+	//physx::PxTolerancesScale scale;
+	//scale.length = 100.0f; // typical length of an object
+	//scale.speed = 981.0f; // typical speed of an object
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), recordMemoryAllocations);
 	assert(gPhysics != nullptr && "MODULE PHYSICS: PxCreatePhysics failed!");
 
 	// Scene
@@ -119,6 +122,7 @@ bool ModulePhysics::Start()
 	// Ground
 	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *gMaterial);
 	gScene->addActor(*groundPlane);
+	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return true;
 }
@@ -145,6 +149,12 @@ update_status ModulePhysics::Update()
 
 update_status ModulePhysics::PostUpdate()
 {
+	for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+	{
+		if ((*it)->GetType() == ComponentTypes::RigidDynamicComponent && !(*it)->GetActor()->is<physx::PxRigidDynamic>()->isSleeping())
+			(*it)->UpdateGameObjectTransform();
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -171,6 +181,7 @@ physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform&
 	physx::PxRigidStatic* rigidStatic = physx::PxCreateStatic(*gPhysics, transform, shape);
 
 	gScene->addActor(*rigidStatic);
+	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return rigidStatic;
 }
@@ -184,6 +195,7 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density); // gPhysics->createRigidDynamic(transform);
 
 	gScene->addActor(*rigidDynamic);
+	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return rigidDynamic;
 }
@@ -191,6 +203,54 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive) const
 {
 	return gPhysics->createShape(geometry, material, isExclusive);
+}
+
+ComponentRigidActor* ModulePhysics::CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType)
+{
+	ComponentRigidActor* newComponent = nullptr;
+	switch (componentRigidActorType)
+	{
+	case ComponentTypes::RigidStaticComponent:
+		newComponent = new ComponentRigidStatic(parent);
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+		newComponent = new ComponentRigidDynamic(parent);
+		break;
+	}
+	assert(newComponent != nullptr);
+
+	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), newComponent);
+	assert(it == rigidActorComponents.end());
+
+	rigidActorComponents.push_back(newComponent);
+
+	return newComponent;
+}
+
+bool ModulePhysics::AddRigidActorComponent(ComponentRigidActor* toAdd)
+{
+	bool ret = true;
+
+	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), toAdd);
+	ret = it == rigidActorComponents.end();
+
+	if (ret)
+		rigidActorComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModulePhysics::EraseRigidActorComponent(ComponentRigidActor* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), toErase);
+	ret = it != rigidActorComponents.end();
+
+	if (ret)
+		rigidActorComponents.erase(it);
+
+	return ret;
 }
 
 ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType)

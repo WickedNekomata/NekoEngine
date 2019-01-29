@@ -235,13 +235,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
+	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:
 		assert(rigidActor == nullptr);
-		newComponent = rigidActor = new ComponentRigidDynamic(this);
-		break;
-	case ComponentTypes::RigidStaticComponent:
-		assert(rigidActor == nullptr);
-		newComponent = rigidActor = new ComponentRigidStatic(this);
+		newComponent = rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
 		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
@@ -291,6 +288,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	case ComponentTypes::RigidDynamicComponent:
 	case ComponentTypes::RigidStaticComponent:
+		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
 		rigidActor = nullptr;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:

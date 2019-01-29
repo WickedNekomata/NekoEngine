@@ -9,6 +9,7 @@
 
 #include <vector>
 
+class ComponentRigidActor;
 class ComponentCollider;
 enum ComponentTypes;
 
@@ -40,6 +41,10 @@ public:
 
 	physx::PxShape* CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive = true) const;
 
+	ComponentRigidActor* CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType);
+	bool AddRigidActorComponent(ComponentRigidActor* toAdd);
+	bool EraseRigidActorComponent(ComponentRigidActor* toErase);
+
 	ComponentCollider* CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType);
 	bool AddColliderComponent(ComponentCollider* toAdd);
 	bool EraseColliderComponent(ComponentCollider* toErase);
@@ -63,6 +68,7 @@ private:
 
 	float gAccumulator = 0.0f;
 
+	std::vector<ComponentRigidActor*> rigidActorComponents;
 	std::vector<ComponentCollider*> colliderComponents;
 };
 

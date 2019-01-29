@@ -16,7 +16,7 @@ public:
 	virtual void Activate() {};
 	virtual ~Component();
 
-	void Update();
+	virtual void Update();
 
 	virtual void OnEditor();
 

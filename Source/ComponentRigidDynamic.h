@@ -15,7 +15,11 @@ public:
 	void OnUniqueEditor();
 
 	void ToggleKinematic() const;
-
+	
+	void SetMass(float mass) const;
+	void SetLinearVelocity(math::float3 linearVelocity) const;
+	void SetAngularDamping(float angularDamping) const;
+	
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

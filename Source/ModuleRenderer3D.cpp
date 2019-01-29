@@ -231,7 +231,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawColliders)// boundingBoxesColor = Green, DarkGreen
+		if (drawColliders) // boundingBoxesColor = Green, DarkGreen
 		{
 			Color collidersColor = Green;
 

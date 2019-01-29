@@ -17,9 +17,11 @@ public:
 
 	virtual void OnUniqueEditor();
 
-	//void ResetGeometry() const;
-	//void UpdateShape();
-	//void UpdateTransform() const;
+	void UpdateShape();
+	void UpdateTransform() const;
+	void UpdateGameObjectTransform() const;
+
+	physx::PxRigidActor* GetActor() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);

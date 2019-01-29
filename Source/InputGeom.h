@@ -3,6 +3,8 @@
 
 struct BuildSettings
 {
+	// Dont reorder the elements cause of memcpy at panel navmesh. If required, you would also reorder cs at p_navmesh.
+
 	// Cell size in world units
 	float cellSize;
 	// Cell height in world units
@@ -32,19 +34,23 @@ struct BuildSettings
 	float detailSampleMaxError;
 	// Partition type, see SamplePartitionType
 	int partitionType;
-	// Bounds of the area to mesh
-	float navMeshBMin[3];
-	float navMeshBMax[3];
 	// Size of the tiles in voxels
 	float tileSize;
+
+	inline void Init()
+	{
+		
+	}
 };
 
 class InputGeom
 {
 public:
 	BuildSettings m_buildSettings;
-	class ResourceMesh* m_mesh;
-
+	float* m_verts;
+	int* m_tris;
+	int m_nverts;
+	int m_ntris;
 	float* bMin[3], bMax[3];
 };
 

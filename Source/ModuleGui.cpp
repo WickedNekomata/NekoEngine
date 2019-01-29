@@ -132,6 +132,12 @@ update_status ModuleGui::Update()
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
 
+#ifdef _DEBUG
+	static bool imguiDemo = false;
+	if (imguiDemo)
+		ImGui::ShowDemoWindow();
+#endif // _DEBUG
+
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
@@ -177,6 +183,10 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
 			if (ImGui::MenuItem("NavMesh")) { panelDebugDraw->OnOff(); }
 
+#ifdef _DEBUG
+			if (ImGui::MenuItem("ImGui Demo")) { imguiDemo = !imguiDemo; }
+#endif
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Others"))
@@ -209,6 +219,7 @@ update_status ModuleGui::Update()
 		ImGui::OpenPopup("Load Scene");
 		LoadScenePopUp();
 	}
+
 
 	return UPDATE_CONTINUE;
 }

@@ -22,11 +22,14 @@ public:
 	ResourceMesh(ResourceType type, uint uuid);
 	~ResourceMesh();
 
-	void GetTris(int* tris);
-	void GetVerts(float* verts);
-	void GetNormals(float* normals);
-	int  GetVertsCount();
-	int  GetTrisCount();
+	void GetIndices(int* indices) const;
+	void GetVerts(float* verts) const;
+	void GetNormals(float* normals) const;
+	int  GetVertsCount() const;
+	int  GetIndicesCount() const;
+	uint GetVBO() const;
+	uint GetIBO() const;
+	uint GetVAO() const;
 
 private:
 
@@ -37,7 +40,7 @@ private:
 	void GenerateIBO();
 	void GenerateVAO();
 
-public:
+public: //TODO: set this to private and fix errors
 
 	Vertex* vertices = nullptr;
 	uint verticesSize = 0;

@@ -43,7 +43,7 @@ void SoloMesh_Query::SetInputGeom(InputGeom& inputGeom)
 
 bool SoloMesh_Query::HandleBuild()
 {
-	if (!m_geom || !m_geom->m_mesh)
+	if (!m_geom)
 	{
 		CONSOLE_LOG("buildNavigation: Input mesh is not specified.");
 		return false;
@@ -53,28 +53,28 @@ bool SoloMesh_Query::HandleBuild()
 
 	const float* bmin = (const float*)m_geom->bMin;
 	const float* bmax = (const float*)m_geom->bMax;
-	const int nverts = m_geom->m_mesh->GetVertsCount();
+	const int nverts = m_geom->m_nverts;
 	float* verts = new float[nverts * 3];
-	m_geom->m_mesh->GetVerts(verts);
+	memcpy(verts, m_geom->m_verts, sizeof(float) * nverts * 3);
 
-	const int ntris = m_geom->m_mesh->GetTrisCount();
+	const int ntris = m_geom->m_ntris;
 	int* tris = new int[ntris * 3];
-	m_geom->m_mesh->GetTris(tris);
+	memcpy(tris, m_geom->m_tris, sizeof(int) * ntris * 3);
 
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	m_cfg.cs = 0.3f;
-	m_cfg.ch = 0.2f;
-	m_cfg.walkableSlopeAngle = 45.0f;
-	m_cfg.walkableHeight = (int)ceilf(2.0f / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(0.9f / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(0.6 / m_cfg.cs);
-	m_cfg.maxEdgeLen = (int)(12.0f / 0.3f);
-	m_cfg.maxSimplificationError = 1.3f;
-	m_cfg.minRegionArea = (int)rcSqr(8.0f);		// Note: area = size*size
-	m_cfg.mergeRegionArea = (int)rcSqr(20.0f);	// Note: area = size*size
-	m_cfg.maxVertsPerPoly = (int)6.0f;
-	m_cfg.detailSampleDist = 6.0f < 0.9f ? 0 : 0.3f * 6.0f;
-	m_cfg.detailSampleMaxError = 0.2f * 1.0f;
+	m_cfg.cs = m_geom->m_buildSettings.cellSize;
+	m_cfg.ch = m_geom->m_buildSettings.cellHeight;
+	m_cfg.walkableSlopeAngle = m_geom->m_buildSettings.agentMaxSlope;
+	m_cfg.walkableHeight = (int)ceilf(m_geom->m_buildSettings.agentHeight / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(m_geom->m_buildSettings.agentMaxClimb / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(m_geom->m_buildSettings.agentRadius / m_cfg.cs);
+	m_cfg.maxEdgeLen = (int)(m_geom->m_buildSettings.edgeMaxLen / m_geom->m_buildSettings.cellSize);
+	m_cfg.maxSimplificationError = m_geom->m_buildSettings.edgeMaxError;
+	m_cfg.minRegionArea = (int)rcSqr(m_geom->m_buildSettings.regionMinSize);		// Note: area = size*size
+	m_cfg.mergeRegionArea = (int)rcSqr(m_geom->m_buildSettings.regionMergeSize);	// Note: area = size*size
+	m_cfg.maxVertsPerPoly = (int)m_geom->m_buildSettings.vertsPerPoly;
+	m_cfg.detailSampleDist = m_geom->m_buildSettings.detailSampleDist < 0.9f ? 0 : m_geom->m_buildSettings.cellSize * m_geom->m_buildSettings.detailSampleDist;
+	m_cfg.detailSampleMaxError = m_geom->m_buildSettings.cellHeight * m_geom->m_buildSettings.detailSampleMaxError;
 
 	// area could be specified by an user defined box, etc.
 	rcVcopy(m_cfg.bmin, bmin);

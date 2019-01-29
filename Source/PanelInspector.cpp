@@ -171,32 +171,34 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Spacing();
 
 	ImGui::Text("VBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Vertices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	float nVerts = resourceMesh->GetVertsCount();
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Normals:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Colors:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Texture Coordinates:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 
 	ImGui::Spacing();
 
 	ImGui::Text("VAO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VAO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 
 	ImGui::Spacing();
 
 	ImGui::Text("IBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->IBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetIBO());
+	float nIndices = resourceMesh->GetIndicesCount();
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Indices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
+	ImGui::TextColored(BLUE, "%u", nIndices);
 
 	ImGui::Spacing();
 
 	ImGui::Text("Triangles:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
+	ImGui::TextColored(BLUE, "%u", nIndices / 3);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const

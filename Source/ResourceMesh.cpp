@@ -121,12 +121,12 @@ void ResourceMesh::GenerateVAO()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ResourceMesh::GetTris(int* tris)
+void ResourceMesh::GetIndices(int* out_indices) const
 {
-	memcpy(tris, indices, indicesSize * sizeof(int));
+	memcpy(out_indices, indices, indicesSize * sizeof(int));
 }
 
-void ResourceMesh::GetVerts(float* verts)
+void ResourceMesh::GetVerts(float* verts) const
 {
 	for (int i = 0, j = 0; i < verticesSize; ++i)
 	{
@@ -136,7 +136,7 @@ void ResourceMesh::GetVerts(float* verts)
 	}
 }
 
-void ResourceMesh::GetNormals(float* normals)
+void ResourceMesh::GetNormals(float* normals) const
 {
 	for (int i = 0, j = 0; i < verticesSize; ++i)
 	{
@@ -146,12 +146,27 @@ void ResourceMesh::GetNormals(float* normals)
 	}
 }
 
-int ResourceMesh::GetVertsCount()
+int ResourceMesh::GetVertsCount() const
 {
 	return verticesSize;
 }
 
-int ResourceMesh::GetTrisCount()
+int ResourceMesh::GetIndicesCount() const
 {
-	return indicesSize / 3;
+	return indicesSize;
+}
+
+uint ResourceMesh::GetVBO() const
+{
+	return VBO;
+}
+
+uint ResourceMesh::GetIBO() const
+{
+	return IBO;
+}
+
+uint ResourceMesh::GetVAO() const
+{
+	return VAO;
 }

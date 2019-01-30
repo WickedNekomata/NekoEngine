@@ -238,6 +238,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		break;
 	case EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
+		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:
 		assert(rigidActor == nullptr);

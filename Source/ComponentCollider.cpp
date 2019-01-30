@@ -23,7 +23,12 @@ ComponentCollider::~ComponentCollider()
 void ComponentCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Checkbox("Is Trigger", &isTrigger);
+	if (ImGui::Checkbox("Is Trigger", &isTrigger))
+		SetIsTrigger(isTrigger);	
+	if (ImGui::Checkbox("Contact Tests", &participateInContactTests))
+		ParticipateInContactTests(participateInContactTests);
+	if (ImGui::Checkbox("Scene Queries", &participateInSceneQueries))
+		ParticipateInSceneQueries(participateInSceneQueries);
 
 	// TODO: gMaterial (drag and drop)
 
@@ -47,12 +52,36 @@ void ComponentCollider::OnUniqueEditor()
 #endif
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCollider::ClearShape()
 {
 	if (gShape != nullptr)
 		gShape->release();
 	gShape = nullptr;
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentCollider::SetIsTrigger(bool isTrigger)
+{
+	this->isTrigger = isTrigger;
+	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
+}
+
+void ComponentCollider::ParticipateInContactTests(bool participateInContactTests)
+{
+	this->participateInContactTests = participateInContactTests;
+	gShape->setFlag(physx::PxShapeFlag::Enum::eSIMULATION_SHAPE, participateInContactTests);
+}
+
+void ComponentCollider::ParticipateInSceneQueries(bool participateInSceneQueries)
+{
+	this->participateInSceneQueries = participateInSceneQueries;
+	gShape->setFlag(physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE, participateInSceneQueries);
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 physx::PxShape* ComponentCollider::GetShape() const
 {

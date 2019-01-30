@@ -30,8 +30,20 @@ public:
 	SimulationEventCallback();
 	~SimulationEventCallback();
 
+	// Happen before fetchResults() (swaps the buffers)
+	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) {}
+	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
+	void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
+
+	void onAdvance(const physx::PxRigidBody*const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count) {}
+
+	// Happen after fetchResults() (swaps the buffers)
 	void onWake(physx::PxActor** actors, physx::PxU32 count);
 	void onSleep(physx::PxActor** actors, physx::PxU32 count);
+
+private:
+
+	Module* callback = nullptr;
 };
 
 class ModulePhysics : public Module
@@ -48,11 +60,14 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	// Create elements
 	physx::PxRigidStatic* CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const;
 	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;
+	void RemoveActor(physx::PxActor& actor) const;
 
 	physx::PxShape* CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive = true) const;
 
+	// Create components
 	ComponentRigidActor* CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType);
 	bool AddRigidActorComponent(ComponentRigidActor* toAdd);
 	bool EraseRigidActorComponent(ComponentRigidActor* toErase);
@@ -61,7 +76,10 @@ public:
 	bool AddColliderComponent(ComponentCollider* toAdd);
 	bool EraseColliderComponent(ComponentCollider* toErase);
 
-	void RemoveActor(physx::PxActor& actor) const;
+	// Callbacks
+
+
+	// ----------
 
 	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
 	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;

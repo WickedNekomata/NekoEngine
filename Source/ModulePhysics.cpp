@@ -82,6 +82,16 @@ SimulationEventCallback::SimulationEventCallback() {}
 
 SimulationEventCallback::~SimulationEventCallback() {}
 
+void SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
+{
+
+}
+
+void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
+{
+
+}
+
 void SimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 {
 	physx::PxActor** actor;
@@ -162,6 +172,7 @@ bool ModulePhysics::Start()
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
+	gScene->setSimulationEventCallback(new SimulationEventCallback());
 
 	// Default material
 	defaultMaterial = gPhysics->createMaterial(DEFAULT_MATERIAL_STATIC_FRICTION, DEFAULT_MATERIAL_DYNAMIC_FRICTION, DEFAULT_MATERIAL_RESTITUTION);
@@ -245,6 +256,11 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return rigidDynamic;
+}
+
+void ModulePhysics::RemoveActor(physx::PxActor& actor) const
+{
+	gScene->removeActor(actor);
 }
 
 physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive) const
@@ -352,11 +368,6 @@ bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
 		colliderComponents.erase(it);
 
 	return ret;
-}
-
-void ModulePhysics::RemoveActor(physx::PxActor& actor) const
-{
-	gScene->removeActor(actor);
 }
 
 std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidStatics() const

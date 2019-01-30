@@ -276,26 +276,22 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 void ComponentEmitter::OnUniqueEditor()
 {
-	ImGui::Text("Particle Emitter");
+	ImGui::Text("Particle System");
 	ImGui::Spacing();
 
-	if (ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ParticleValues();
+	ParticleValues();
 
-		ParticleShape();
+	ParticleShape();
 
-		ParticleColor();
+	ParticleColor();
 
-		ParticleBurst();
+	ParticleBurst();
 
-		ParticleAABB();
+	ParticleAABB();
 
-		//ParticleTexture();
+	//ParticleTexture();
 
-		ParticleSubEmitter();
-
-	}
+	ParticleSubEmitter();
 }
 
 void ComponentEmitter::ParticleValues()
@@ -328,6 +324,7 @@ void ComponentEmitter::ParticleValues()
 		ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
 
+		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Emition", &rateOverTime, 1.0f, 0.0f, 300.0f, "%.2f");
 
 		ImGui::Separator();
@@ -631,7 +628,7 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 	ImGui::SameLine();
 	if (checkBox)
 	{
-		ImGui::PushItemWidth(70.0f);
+		ImGui::PushItemWidth(42.0f);
 		std::string str = "##";
 		str.append(name);
 		str.append("min");
@@ -643,7 +640,7 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 	}
 	else
 	{
-		ImGui::PushItemWidth(148.0f);
+		ImGui::PushItemWidth(100.0f);
 		if (ImGui::DragFloat(name, &value.x, v_speed, v_min, v_max, "%.2f"))
 			value.y = value.x;
 	}

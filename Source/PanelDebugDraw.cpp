@@ -7,7 +7,7 @@
 
 #include "ImGui\imgui.h"
 
-PanelDebugDraw::PanelDebugDraw(char* name) : Panel(name) {}
+PanelDebugDraw::PanelDebugDraw(const char* name) : Panel(name) {}
 
 PanelDebugDraw::~PanelDebugDraw() {}
 
@@ -42,6 +42,11 @@ bool PanelDebugDraw::Draw()
 
 			bool drawCamerasFrustum = App->renderer3D->GetDrawCamerasFrustum();
 			if (ImGui::Checkbox("Cameras Frustum", &drawCamerasFrustum)) { App->renderer3D->SetDrawCamerasFrustum(drawCamerasFrustum); }
+
+			ImGui::SameLine();
+
+			bool drawColliders = App->renderer3D->GetDrawColliders();
+			if (ImGui::Checkbox("Colliders", &drawColliders)) { App->renderer3D->SetDrawColliders(drawColliders); }
 
 			ImGui::SameLine();
 

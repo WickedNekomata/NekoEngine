@@ -1,14 +1,22 @@
 #ifndef COMPONENT_TYPES_H
 #define COMPONENT_TYPES_H
 
-enum ComponentType 
+enum ComponentTypes
 { 
 	NoComponentType,
 	TransformComponent,
 	MeshComponent,
 	MaterialComponent,
 	CameraComponent,
-	EmitterComponent
+	EmitterComponent,
+
+	// Physics
+	RigidStaticComponent,
+	RigidDynamicComponent,
+	BoxColliderComponent,
+	SphereColliderComponent,
+	CapsuleColliderComponent,
+	PlaneColliderComponent
 };
 
 #endif

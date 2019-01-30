@@ -9,7 +9,7 @@ class PanelEdit : public Panel
 {
 public:
 
-	PanelEdit(char* name);
+	PanelEdit(const char* name);
 	~PanelEdit();
 
 	bool Draw();

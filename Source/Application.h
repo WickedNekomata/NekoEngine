@@ -50,6 +50,7 @@ struct ModuleGOs;
 struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
+struct ModulePhysics;
 
 class Application
 {
@@ -132,6 +133,7 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ModulePhysics*			physics;
 
 	DebugDrawer*			debugDrawer;
 
@@ -147,7 +149,7 @@ private:
 	double				lastFrameMs = 0;
 	double				dt = 0;
 	double				fps = 0;
-	bool				capFrames = 0;
+	bool				capFrames = false;
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 

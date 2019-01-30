@@ -10,7 +10,7 @@
 
 // Allows the modification of an existing shader object
 
-PanelCodeEditor::PanelCodeEditor(char* name) : Panel(name)
+PanelCodeEditor::PanelCodeEditor(const char* name) : Panel(name)
 {
 	editor;
 	auto lang = TextEditor::LanguageDefinition::GLSLCustom();

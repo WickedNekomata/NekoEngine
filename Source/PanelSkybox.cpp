@@ -10,7 +10,7 @@
 
 #include "imgui/imgui.h"
 
-PanelSkybox::PanelSkybox(char* name) : Panel(name) {}
+PanelSkybox::PanelSkybox(const char* name) : Panel(name) {}
 
 PanelSkybox::~PanelSkybox() {}
 

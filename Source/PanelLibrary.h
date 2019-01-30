@@ -15,7 +15,7 @@ class PanelLibrary : public Panel
 {
 public:
 
-	PanelLibrary(char* name);
+	PanelLibrary(const char* name);
 	~PanelLibrary();
 
 	bool Draw();

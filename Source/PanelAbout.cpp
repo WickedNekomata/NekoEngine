@@ -14,7 +14,7 @@
 #include "ImGui\imgui.h"
 #include "physfs\include\physfs.h"
 
-PanelAbout::PanelAbout(char* name) : Panel(name) {}
+PanelAbout::PanelAbout(const char* name) : Panel(name) {}
 
 PanelAbout::~PanelAbout() {}
 

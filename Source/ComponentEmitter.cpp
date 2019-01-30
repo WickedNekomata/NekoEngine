@@ -76,7 +76,6 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : 
 
 		startValues.subEmitterActive = info->subEmitterActive;
 
-		//TODO Particle: Make sure that this is necesary
 		if (gameObject)
 			gameObject->boundingBox = math::AABB::FromCenterAndSize(info->posDifAABB, info->sizeOBB);
 
@@ -112,20 +111,22 @@ void ComponentEmitter::StartEmitter()
 	}
 }
 
-/*void ComponentEmitter::ChangeGameState(engine_states state)
+void ComponentEmitter::ChangeGameState(SimulatedGame state)
 {
 	simulatedGame = state;
-	if (state == ENGINE_PLAY)
-		state = ENGINE_EDITOR;
-	else if (state == ENGINE_WANTS_EDITOR)
+	if (state == SimulatedGame_PLAY)
+		state = SimulatedGame_STOP;
+	else if (state == SimulatedGame_STOP)
 		ClearEmitter();
 
-	ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
-	if (subEmitter && compEmitter)
-		compEmitter->ChangeGameState(state);
+	if (subEmitter)
+	{
+		ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
+		if (compEmitter)
+			compEmitter->ChangeGameState(state);
+	}
 }
 
-*/
 void ComponentEmitter::Update()
 {
 	if (rateOverTime > 0)
@@ -274,6 +275,9 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 void ComponentEmitter::OnUniqueEditor()
 {
+	ImGui::Text("Particle Emitter");
+	ImGui::Spacing();
+
 	if (ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ParticleValues();
@@ -290,8 +294,6 @@ void ComponentEmitter::OnUniqueEditor()
 
 		ParticleSubEmitter();
 
-		//if (ImGui::Button("Remove Particles", ImVec2(150, 25)))
-		//	toDelete = true;
 	}
 }
 

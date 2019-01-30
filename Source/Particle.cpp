@@ -179,7 +179,6 @@ void Particle::Draw() const
 		plane->Render(transform.GetMatrix(), *texture, animation->at(currentFrame), currentColor);
 }
 
-//TODO Particle: Random APP
 float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoint
 {
 	float num = edges.x;

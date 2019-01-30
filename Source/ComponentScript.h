@@ -23,7 +23,7 @@ public:
 
 	void OnInspector();
 
-	static uint bytesToSerialize() { return sizeof(UID) * 3 + (sizeof(bool)); }
+	static uint bytesToSerialize() { return sizeof(uint32_t) * 3 + (sizeof(bool)); }
 	uint bytesToSerializePublicVars() const;
 
 	void Serialize(char*& cursor) const;

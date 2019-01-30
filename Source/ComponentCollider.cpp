@@ -61,6 +61,15 @@ void ComponentCollider::ClearShape()
 	gShape = nullptr;
 }
 
+void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask)
+{
+	physx::PxFilterData filterData;
+	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word1 = filterMask; // word 1 = ID mask to filter pairs that trigger a contact callback
+	
+	gShape->setSimulationFilterData(filterData);
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentCollider::SetIsTrigger(bool isTrigger)

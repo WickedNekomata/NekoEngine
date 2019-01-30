@@ -11,23 +11,45 @@
 
 #include <vector>
 
-class ComponentRigidActor;
-class ComponentCollider;
-enum ComponentTypes;
-
 class DefaultErrorCallback : public physx::PxErrorCallback
 {
 public:
+
 	DefaultErrorCallback();
 	~DefaultErrorCallback();
 
 	void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line);
 };
 
+// ----------------------------------------------------------------------------------------------------
+
+class ModulePhysics;
+
+enum SimulationEventTypes
+{
+	SimulationEventOnWake,
+	SimulationEventOnSleep,
+	SimulationEventOnContact,
+	SimulationEventOnTrigger
+};
+
+class Collision
+{
+	Collision();
+	~Collision();
+
+private:
+
+	physx::PxActor* gActor = nullptr; // actor
+	physx::PxShape* gShape = nullptr; // collider
+
+};
+
 class SimulationEventCallback : public physx::PxSimulationEventCallback
 {
 public:
-	SimulationEventCallback();
+
+	SimulationEventCallback(ModulePhysics* callback);
 	~SimulationEventCallback();
 
 	// Happen before fetchResults() (swaps the buffers)
@@ -43,8 +65,14 @@ public:
 
 private:
 
-	Module* callback = nullptr;
+	ModulePhysics* callback = nullptr;
 };
+
+// ----------------------------------------------------------------------------------------------------
+
+class ComponentRigidActor;
+class ComponentCollider;
+enum ComponentTypes;
 
 class ModulePhysics : public Module
 {
@@ -77,14 +105,12 @@ public:
 	bool EraseColliderComponent(ComponentCollider* toErase);
 
 	// Callbacks
-	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB) const;
-
+	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB, SimulationEventTypes simulationEventType) const;
+	//void OnCollision(physx::)
 	// ----------
 
-	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
-	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;
-
 	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
+	ComponentRigidActor* GetRigidActorComponentFromActor(physx::PxActor* actor) const;
 	std::vector<ComponentCollider*> GetColliderComponents() const;
 
 	// General configuration values

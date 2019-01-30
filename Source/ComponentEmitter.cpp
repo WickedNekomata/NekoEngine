@@ -135,11 +135,11 @@ void ComponentEmitter::Update()
 		float time = timer.ReadSec();
 		if (time > timeToParticle && (loop || loopTimer.ReadSec() < duration))
 		{
-			if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
+ 			if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
 			{
 				int particlesToCreate = (time / (1.0f / rateOverTime));
 				CreateParticles(particlesToCreate, normalShapeType,math::float3::zero);
-
+				//CONSOLE_LOG("COMPONENT EMITTER: particles to create : %i", particlesToCreate);
 				timeToParticle = (1.0f / rateOverTime);
 				
 				timer.Start();
@@ -408,7 +408,7 @@ void ComponentEmitter::ParticleColor()
 			//TODO: they must be able to change position
 			if ((iter) == startValues.color.begin())
 			{//Cant delete 1st color
-				
+				ImGui::PushItemWidth(150.0f);
 				if (!EditColor(*iter))
 					break;
 				iter++;
@@ -466,6 +466,7 @@ void ComponentEmitter::ParticleBurst()
 			}
 			ImGui::End();
 		}
+		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Min particles", &minPart, 1.0f, 0, 100);
 		if (minPart > maxPart)
 			maxPart = minPart;

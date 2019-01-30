@@ -19,6 +19,7 @@
 #include "ModuleGOs.h"
 #include "ModuleScene.h"
 #include "ModulePhysics.h"
+#include "ModuleParticles.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -238,6 +239,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		break;
 	case EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
+		App->particle->emitters.push_back((ComponentEmitter*)newComponent);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

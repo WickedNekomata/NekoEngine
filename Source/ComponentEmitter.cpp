@@ -90,10 +90,10 @@ ComponentEmitter::~ComponentEmitter()
 {
 	if (App)
 	{
-		App->timeManager->GetGameTimerList().remove(&timer);
-		App->timeManager->GetGameTimerList().remove(&burstTime);
-		App->timeManager->GetGameTimerList().remove(&loopTimer);
-		App->timeManager->GetGameTimerList().remove(&timeSimulating);
+		App->timeManager->RemoveGameTimer(&timer);
+		App->timeManager->RemoveGameTimer(&burstTime);
+		App->timeManager->RemoveGameTimer(&loopTimer);
+		App->timeManager->RemoveGameTimer(&timeSimulating);
 
 		App->particle->RemoveEmitter(this);
 	}			

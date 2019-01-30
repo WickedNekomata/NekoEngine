@@ -18,7 +18,7 @@ struct _MonoImage;
 struct _MonoClass;
 struct _MonoClassField;
 struct MonoVTable;
-struct Directory;
+struct Directory; 
 
 
 bool exec(const char* cmd, std::string& error = std::string());

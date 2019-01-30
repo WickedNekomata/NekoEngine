@@ -7,7 +7,9 @@ enum ComponentType
 	TransformComponent,
 	MeshComponent,
 	MaterialComponent,
-	CameraComponent
+	CameraComponent,
+	EmitterComponent,
+	ScriptComponent
 };
 
 #endif

@@ -94,6 +94,12 @@
     <Filter Include="Sources\3rd Party\ImGuiColorTextEdit">
       <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Particles">
+      <UniqueIdentifier>{9a4bede6-50fc-4d49-93bc-caa1f6ff8fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\pugi">
+      <UniqueIdentifier>{9fb6a77b-3d8f-4216-b125-cb5da782adcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -640,14 +646,35 @@
     <ClInclude Include="PanelSkybox.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleParticles.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentEmitter.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugiconfig.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugixml.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
     <ClInclude Include="ResourceScript.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
     <ClInclude Include="ScriptingModule.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentScript.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    <ClInclude Include="imgui\imgui_stl.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -921,14 +948,32 @@
     <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleParticles.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentEmitter.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="pugui\pugixml.cpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
     <ClCompile Include="ResourceScript.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="ScriptingModule.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentScript.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    <ClCompile Include="imgui\imgui_stl.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

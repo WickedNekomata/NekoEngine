@@ -594,7 +594,7 @@ uint ModuleFileSystem::Load(std::string file, char** buffer) const
 	std::string fileName;
 	GetFileName(file.data(), fileName, true);
 
-	bool exists = Exists(file);
+	bool exists = Exists(file.data());
 
 	if (exists)
 	{
@@ -811,7 +811,7 @@ bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, c
 		destinationWithoutRoot = destinationWithoutRoot.substr(destinationWithoutRoot.find_first_of("/") + 1);
 
 		std::string realDestination = keepRoot ? destinationWithRoot : destinationWithoutRoot;
-	
+
 		if (Save(realDestination, buffer, size) <= 0)
 		{
 			delete buffer;

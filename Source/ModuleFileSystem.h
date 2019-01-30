@@ -154,102 +154,79 @@ struct Directory
 	/*void Serialize(char*& cursor) const
 	//{
 	//	uint fullPathLength = fullPath.size();
-
 	//	uint bytes = sizeof(uint);
 	//	memcpy(cursor, &fullPathLength, bytes);
 	//	cursor += bytes;
-
 	//	bytes = fullPathLength;
 	//	memcpy(cursor, fullPath.c_str(), bytes);
 	//	cursor += bytes;
-
 	//	bytes = sizeof(uint);
 	//	uint nameLenght = name.size();
 	//	memcpy(cursor, &nameLenght, bytes);
 	//	cursor += bytes;
-
 	//	bytes = nameLenght;
 	//	memcpy(cursor, name.c_str(), bytes);
 	//	cursor += bytes;
-
 	//	uint numFiles = files.size(), numDirs = directories.size();
 	//	bytes = sizeof(uint);
-
 	//	memcpy(cursor, &numFiles, bytes);
 	//	cursor += bytes;
-
 	//	memcpy(cursor, &numDirs, bytes);
 	//	cursor += bytes;
-
 	//	for (int i = 0; i < files.size(); ++i)
 	//	{
 	//		files[i].Serialize(cursor);
 	//	}
-
 	//	for (int i = 0; i < directories.size(); ++i)
 	//	{
 	//		directories[i].Serialize(cursor);
 	//	}
 	//}
-
 	//void DeSerialize(char*& cursor)
 	//{
 	//	uint bytes = sizeof(uint);
 	//	uint fullPathLenght;
 	//	memcpy(&fullPathLenght, cursor, bytes);
 	//	cursor += bytes;
-
 	//	fullPath.resize(fullPathLenght);
 	//	memcpy((char*)fullPath.c_str(), cursor, fullPathLenght);
 	//	cursor += fullPathLenght;
-
 	//	bytes = sizeof(uint);
 	//	uint nameLenght;
 	//	memcpy(&nameLenght, cursor, bytes);
 	//	cursor += bytes;
-
 	//	name.resize(nameLenght);
 	//	bytes = nameLenght;
 	//	memcpy((char*)name.c_str(), cursor, bytes);
-
 	//	cursor += bytes;
-
 	//	uint numFiles;
 	//	bytes = sizeof(uint);
-
 	//	memcpy(&numFiles, cursor, bytes);
 	//	cursor += bytes;
-
 	//	uint numDirs;
 	//	memcpy(&numDirs, cursor, bytes);
 	//	cursor += bytes;
-
 	//	files.resize(numFiles);
 	//	directories.resize(numDirs);
-
 	//	for (int i = 0; i < files.size(); ++i)
 	//	{
 	//		files[i].DeSerialize(cursor);
 	//	}
-
 	//	for (int i = 0; i < directories.size(); ++i)
 	//	{
 	//		directories[i].DeSerialize(cursor);
 	//	}
 	//}
-
 	//uint bytesToSerialize() const
 	//{
 	//	uint ret =
 	//		sizeof(uint) + fullPath.size() +	//Fullpath lenght + fullpath
 	//		sizeof(uint) + name.size() +		//Name lenght + Name
 	//		sizeof(uint) * 2;					//Num files / directories
-
 	//	for (int i = 0; i < files.size(); ++i)
 	//	{
 	//		ret += files[i].bytesToSerialize();
 	//	}
-
 	//	for (int i = 0; i < directories.size(); ++i)
 	//	{
 	//		ret += directories[i].bytesToSerialize();

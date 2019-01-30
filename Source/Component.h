@@ -26,14 +26,14 @@ public:
 	inline bool IsTreeActive()
 	{
 		bool active = isActive;
-		
+
 		GameObject* itGO = parent;
 		while (active && itGO)
 		{
 			active = itGO->IsActive();
 			itGO = itGO->GetParent();
 		}
-		
+
 		return active;
 	}
 

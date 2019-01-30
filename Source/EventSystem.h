@@ -42,12 +42,6 @@ struct ResourceEvent
 	Resource* resource;
 };
 
-struct GameObjectEvent
-{
-	System_Event_Type type;
-	GameObject* gameObject;
-};
-
 union System_Event
 {
 	System_Event_Type type;      /**< Event type, shared with all events */

@@ -337,9 +337,9 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 	return PHYSFS_isDirectory(file);
 }
 
-bool ModuleFileSystem::Exists(std::string file) const
+bool ModuleFileSystem::Exists(const char* file) const
 {
-	return PHYSFS_exists(file.data());
+	return PHYSFS_exists(file);
 }
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
@@ -542,20 +542,20 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 	return ret;
 }
 
-uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file.data(), fileName, true);
+	GetFileName(file, fileName, true);
 
-	bool exists = Exists(file.data());
+	bool exists = Exists(file);
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
-		filehandle = PHYSFS_openAppend(file.data());
+		filehandle = PHYSFS_openAppend(file);
 	else
-		filehandle = PHYSFS_openWrite(file.data());
+		filehandle = PHYSFS_openWrite(file);
 
 	if (filehandle != nullptr)
 	{
@@ -587,18 +587,18 @@ uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool appe
 	return objCount;
 }
 
-uint ModuleFileSystem::Load(std::string file, char** buffer) const
+uint ModuleFileSystem::Load(const char* file, char** buffer) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file.data(), fileName, true);
+	GetFileName(file, fileName, true);
 
 	bool exists = Exists(file);
 
 	if (exists)
 	{
-		PHYSFS_file* filehandle = PHYSFS_openRead(file.data());
+		PHYSFS_file* filehandle = PHYSFS_openRead(file);
 
 		if (filehandle != nullptr)
 		{
@@ -741,157 +741,4 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			}
 		}
 	}
-}
-
-std::string ModuleFileSystem::getAppPath()
-{
-	std::string baseDir = PHYSFS_getBaseDir();
-
-	PHYSFS_unmount(".");
-
-	AddPath((char*)baseDir.data(), "");
-
-	if (Exists("physfs.dll"))
-	{
-		PHYSFS_unmount(baseDir.data());
-		PHYSFS_mount(".", "", 0);
-		return PHYSFS_getBaseDir();
-	}
-
-	else
-	{
-		PHYSFS_unmount(baseDir.data());
-
-		for (int i = 0; i < 2; ++i)
-		{
-			baseDir = baseDir.substr(0, baseDir.find_last_of("\\"));
-		}
-
-		baseDir += "\\Game\\";
-
-		AddPath((char*)baseDir.data(), "");
-
-		std::string moretemp = baseDir + "physfs.dll";
-
-		if (Exists("physfs.dll"))
-		{
-			PHYSFS_unmount(baseDir.data());
-			PHYSFS_mount(".", "", 0);
-			return baseDir;
-		}
-
-		PHYSFS_unmount(baseDir.data());
-	}
-
-	PHYSFS_unmount(baseDir.data());
-
-	PHYSFS_mount(".", "", 0);
-
-	return "";
-}
-
-bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot)
-{
-	Directory originDir = RecursiveGetFilesFromDir((char*)origin.data());
-
-	for (int i = 0; i < originDir.files.size(); ++i)
-	{
-		std::string file = originDir.files[i].name;
-
-		char* buffer;
-		int size;
-
-		size = Load(origin + "/" + file, &buffer);
-		if (size <= 0)
-			return false;
-
-		std::string destinationWithRoot = destination + "/" + originDir.name + "/" + file;
-
-		std::string destinationWithoutRoot = destinationWithRoot.at(0) == '/' ? destinationWithRoot.substr(1) : destinationWithRoot;
-		destinationWithoutRoot = destinationWithoutRoot.substr(destinationWithoutRoot.find_first_of("/") + 1);
-
-		std::string realDestination = keepRoot ? destinationWithRoot : destinationWithoutRoot;
-	
-		if (Save(realDestination, buffer, size) <= 0)
-		{
-			delete buffer;
-			return false;
-		}
-
-		delete buffer;
-	}
-
-	for (int i = 0; i < originDir.directories.size(); ++i)
-	{
-		bool success = CopyDirectoryAndContentsInto(originDir.directories[i].fullPath, destination + "/" + originDir.name, keepRoot);
-		if (!success)
-			return false;
-	}
-
-	return true;
-}
-
-Directory ModuleFileSystem::RecursiveGetFilesFromDir(char* dir) const
-{
-	Directory ret;
-	ret.fullPath = dir;
-	std::string dirstr(dir);
-	std::string name;
-	int pos = dirstr.find_last_of("/");
-	if (pos != std::string::npos)
-	{
-		name = dirstr.substr(pos + 1, std::string::npos);
-	}
-	else
-	{
-		name = dirstr;
-	}
-
-	ret.name = name;
-
-	char** files = PHYSFS_enumerateFiles(dir);
-	for (int i = 0; files[i] != nullptr; ++i)
-	{
-		std::string fulldir(dir + std::string("/") + std::string(files[i]));
-
-		//First, check if PHYSFS can recognize this file as a real file or a directory. If a UNKNOWN_TYPE is thrown, then search the extension and use it to detect. This may fail sometimes.
-		PHYSFS_Stat stats;
-		PHYSFS_stat(fulldir.data(), &stats);
-
-		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_OTHER)
-		{
-			//Here use the extension as recognition-method.
-			//Debug.LogWarning("Physfs could not recognize if \"%s\" is a file or a directory. Using the extension as recognition-method. Weird behaviors may happen.", files[i]);
-
-			std::string file(files[i]);
-			if (file.find(".") == std::string::npos) //It's a directory, have not extension
-			{
-				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY;
-				//Debug.LogWarning("File \"%s\" was recognized as a directory", files[i]);
-			}
-			else
-			{
-				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR;
-				//Debug.LogWarning("File \"%s\" was recognized as a regular file", files[i]);
-			}
-		}
-
-		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY)
-		{
-			Directory child = RecursiveGetFilesFromDir((char*)fulldir.data());
-			child.fullPath = fulldir;
-			ret.directories.push_back(child);
-		}
-		else if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR)
-		{
-			File file;
-			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
-			file.name = files[i];
-			ret.files.push_back(file);
-		}
-
-	}
-	PHYSFS_freeList(files);
-
-	return ret;
 }

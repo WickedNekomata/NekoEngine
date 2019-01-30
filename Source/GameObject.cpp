@@ -4,6 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentEmitter.h"
 #include "ResourceMesh.h"
 #include "ModuleResourceManager.h"
 
@@ -228,6 +229,9 @@ Component* GameObject::AddComponent(ComponentType type)
 		assert(camera == NULL);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
+	case EmitterComponent:
+		newComponent = emitter = new ComponentEmitter(this);
+		break;
 	default:
 		break;
 	}
@@ -238,18 +242,6 @@ Component* GameObject::AddComponent(ComponentType type)
 		AddComponent(ComponentType::MaterialComponent);
 
 	return newComponent;
-}
-
-void GameObject::ClearComponent(Component* component)
-{
-	for (int i = 0; i < components.size(); ++i)
-	{
-		if (components[i] == component)
-		{
-			components.erase(components.begin() + i);
-			break;
-		}
-	}
 }
 
 void GameObject::MarkToDeleteComponent(uint index)
@@ -319,6 +311,18 @@ uint GameObject::GetComponenetsLength() const
 Component* GameObject::GetComponent(uint index) const
 {
 	return components[index];
+}
+
+Component* GameObject::GetComponentByType(ComponentType type) const
+{
+	Component* comp = nullptr;
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			comp = components[i];
+	}
+	return comp;
 }
 
 // Get the index of the component from the gameobject's components vector. If the component cannot be found, returns -1

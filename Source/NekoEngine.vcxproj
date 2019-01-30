@@ -54,9 +54,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\Game\Mono\include\mono-2.0</IncludePath>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -153,8 +151,8 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
+    <ClInclude Include="ComponentEmitter.h" />
     <ClInclude Include="ComponentMesh.h" />
-    <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="CurrentSelection.h" />
@@ -170,6 +168,7 @@
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameTimer.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />
     <ClInclude Include="glew\include\GL\glew.h" />
     <ClInclude Include="glew\include\GL\glxew.h" />
@@ -249,18 +248,19 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="ModuleParticles.h" />
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelShaderEditor.h" />
     <ClInclude Include="PanelSkybox.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
-    <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceShaderObject.h" />
     <ClInclude Include="ResourceShaderProgram.h" />
     <ClInclude Include="ResourceTexture.h" />
@@ -290,7 +290,6 @@
     <ClInclude Include="physfs\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
-    <ClInclude Include="ScriptingModule.h" />
     <ClInclude Include="ShaderImporter.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -299,12 +298,13 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
+    <ClCompile Include="ComponentEmitter.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
-    <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -349,18 +349,19 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="ModuleParticles.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="PanelSkybox.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
-    <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceShaderObject.cpp" />
     <ClCompile Include="ResourceShaderProgram.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
@@ -385,7 +386,6 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
-    <ClCompile Include="ScriptingModule.cpp" />
     <ClCompile Include="ShaderImporter.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

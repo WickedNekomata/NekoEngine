@@ -64,8 +64,6 @@ public:
 	const Resource* GetResource(uint UUID) const;
 	static ResourceType GetResourceTypeByExtension(const char* extension);
 
-	void InsertResource(Resource* resource);
-
 	bool FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
 	bool FindResourcesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
 

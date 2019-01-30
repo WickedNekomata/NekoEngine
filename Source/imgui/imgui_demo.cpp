@@ -120,7 +120,7 @@ static void ShowExampleAppCustomRendering(bool* p_open);
 static void ShowExampleMenuFile();
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
-void ImGui::ShowHelpMarker(const char* desc)
+static void ShowHelpMarker(const char* desc)
 {
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
@@ -3368,7 +3368,7 @@ static void ShowExampleAppPropertyEditor(bool* p_open)
         return;
     }
 
-    ImGui::ShowHelpMarker("This example shows how you may implement a property editor using two columns.\nAll objects/fields data are dummies here.\nRemember that in many simple cases, you can use ImGui::SameLine(xxx) to position\nyour cursor horizontally instead of using the Columns() API.");
+    ShowHelpMarker("This example shows how you may implement a property editor using two columns.\nAll objects/fields data are dummies here.\nRemember that in many simple cases, you can use ImGui::SameLine(xxx) to position\nyour cursor horizontally instead of using the Columns() API.");
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2,2));
     ImGui::Columns(2);
@@ -3809,7 +3809,7 @@ void ShowExampleAppDockSpace(bool* p_open)
                 *p_open = false;
             ImGui::EndMenu();
         }
-        ImGui::ShowHelpMarker(
+        ShowHelpMarker(
             "You can _always_ dock _any_ window into another by holding the SHIFT key while moving a window. Try it now!" "\n"
             "This demo app has nothing to do with it!" "\n\n"
             "This demo app only demonstrate the use of ImGui::DockSpace() which allows you to manually create a docking node _within_ another window. This is useful so you can decorate your main application window (e.g. with a menu bar)." "\n\n"

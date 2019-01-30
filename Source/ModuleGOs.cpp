@@ -282,6 +282,15 @@ void ModuleGOs::GetStaticGameObjects(std::vector<GameObject*>& gameObjects) cons
 	}
 }
 
+void ModuleGOs::GetMeshComponentsFromStaticGameObjects(std::vector<ComponentMesh*>& gameObjects) const
+{
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		if (this->gameObjects[i]->IsStatic() && this->gameObjects[i]->meshRenderer)
+			gameObjects.push_back(this->gameObjects[i]->meshRenderer);
+	}
+}
+
 void ModuleGOs::GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const
 {
 	for (uint i = 0; i < this->gameObjects.size(); ++i)

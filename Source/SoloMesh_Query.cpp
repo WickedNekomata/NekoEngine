@@ -53,28 +53,21 @@ bool SoloMesh_Query::HandleBuild()
 
 	const float* bmin = (const float*)m_geom->bMin;
 	const float* bmax = (const float*)m_geom->bMax;
-	const int nverts = m_geom->m_nverts;
-	float* verts = new float[nverts * 3];
-	memcpy(verts, m_geom->m_verts, sizeof(float) * nverts * 3);
-
-	const int ntris = m_geom->m_ntris;
-	int* tris = new int[ntris * 3];
-	memcpy(tris, m_geom->m_tris, sizeof(int) * ntris * 3);
 
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	m_cfg.cs = m_geom->m_buildSettings.cellSize;
-	m_cfg.ch = m_geom->m_buildSettings.cellHeight;
-	m_cfg.walkableSlopeAngle = m_geom->m_buildSettings.agentMaxSlope;
-	m_cfg.walkableHeight = (int)ceilf(m_geom->m_buildSettings.agentHeight / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(m_geom->m_buildSettings.agentMaxClimb / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(m_geom->m_buildSettings.agentRadius / m_cfg.cs);
-	m_cfg.maxEdgeLen = (int)(m_geom->m_buildSettings.edgeMaxLen / m_geom->m_buildSettings.cellSize);
-	m_cfg.maxSimplificationError = m_geom->m_buildSettings.edgeMaxError;
-	m_cfg.minRegionArea = (int)rcSqr(m_geom->m_buildSettings.regionMinSize);		// Note: area = size*size
-	m_cfg.mergeRegionArea = (int)rcSqr(m_geom->m_buildSettings.regionMergeSize);	// Note: area = size*size
-	m_cfg.maxVertsPerPoly = (int)m_geom->m_buildSettings.vertsPerPoly;
-	m_cfg.detailSampleDist = m_geom->m_buildSettings.detailSampleDist < 0.9f ? 0 : m_geom->m_buildSettings.cellSize * m_geom->m_buildSettings.detailSampleDist;
-	m_cfg.detailSampleMaxError = m_geom->m_buildSettings.cellHeight * m_geom->m_buildSettings.detailSampleMaxError;
+	m_cfg.cs = m_geom->i_buildSettings.cellSize;
+	m_cfg.ch = m_geom->i_buildSettings.cellHeight;
+	m_cfg.walkableSlopeAngle = m_geom->i_buildSettings.agentMaxSlope;
+	m_cfg.walkableHeight = (int)ceilf(m_geom->i_buildSettings.agentHeight / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(m_geom->i_buildSettings.agentMaxClimb / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(m_geom->i_buildSettings.agentRadius / m_cfg.cs);
+	m_cfg.maxEdgeLen = (int)(m_geom->i_buildSettings.edgeMaxLen / m_geom->i_buildSettings.cellSize);
+	m_cfg.maxSimplificationError = m_geom->i_buildSettings.edgeMaxError;
+	m_cfg.minRegionArea = (int)rcSqr(m_geom->i_buildSettings.regionMinSize);		// Note: area = size*size
+	m_cfg.mergeRegionArea = (int)rcSqr(m_geom->i_buildSettings.regionMergeSize);	// Note: area = size*size
+	m_cfg.maxVertsPerPoly = (int)m_geom->i_buildSettings.vertsPerPoly;
+	m_cfg.detailSampleDist = m_geom->i_buildSettings.detailSampleDist < 0.9f ? 0 : m_geom->i_buildSettings.cellSize * m_geom->i_buildSettings.detailSampleDist;
+	m_cfg.detailSampleMaxError = m_geom->i_buildSettings.cellHeight * m_geom->i_buildSettings.detailSampleMaxError;
 
 	// area could be specified by an user defined box, etc.
 	rcVcopy(m_cfg.bmin, bmin);
@@ -94,21 +87,26 @@ bool SoloMesh_Query::HandleBuild()
 	}
 
 	// allocate n_tris
-	m_triareas = new unsigned char[ntris];
+	m_triareas = new unsigned char[m_geom->i_ntris];
 	if (!m_triareas)
 	{
 		CONSOLE_LOG("buildNavigation: Out of memory 'm_triareas' (%d).", 0);
 		return false;
 	}
 
-	memset(m_triareas, 0, ntris * sizeof(unsigned char));
+	memset(m_triareas, 0, m_geom->i_ntris * sizeof(unsigned char));
 
-	// Getting each triangle using tris(indices) and vertices extract face normal and check if walkable
-	rcMarkWalkableTriangles(&ctx, m_cfg.walkableSlopeAngle, verts, nverts, tris, ntris, m_triareas);
-	if (!rcRasterizeTriangles(&ctx, verts, nverts, tris, m_triareas, ntris, *m_solid, m_cfg.walkableClimb))
+	for (int i = 0; i < m_geom->i_nmeshes; ++i)
 	{
-		CONSOLE_LOG("buildNavigation: Could not rasterize triangles.");
-		return false;
+		// Getting each triangle using tris(indices) and vertices extract face normal and check if walkable
+		rcMarkWalkableTriangles(&ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+		m_geom->i_meshes[i].m_tris, m_geom->i_meshes[i].m_ntris, m_triareas);
+		if (!rcRasterizeTriangles(&ctx, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+			m_geom->i_meshes[i].m_tris, m_triareas, m_geom->i_meshes[i].m_ntris, *m_solid, m_cfg.walkableClimb))
+		{
+			CONSOLE_LOG("buildNavigation: Could not rasterize triangles.");
+			return false;
+		}
 	}
 
 	bool m_keepInterResults = false;

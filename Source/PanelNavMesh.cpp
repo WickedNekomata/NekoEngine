@@ -108,53 +108,50 @@ void PanelNavMesh::ResetCommonSettings()
 
 void PanelNavMesh::HandleInputMeshes() const
 {
-	std::vector<GameObject*> statics;
-	App->GOs->GetStaticGameObjects(statics);
+	std::vector<ComponentMesh*> statics;
+	App->GOs->GetMeshComponentsFromStaticGameObjects(statics);
 
 	InputGeom p_inputGeom;
+	math::AABB aabb;
+	aabb.SetNegativeInfinity();
+
 	memset(&p_inputGeom, 0, sizeof(InputGeom));
 
 	for (int i = 0; i < statics.size(); ++i)
 	{
-		if (!statics[i]->meshRenderer)
-			continue;
-		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->meshRenderer->res);
+		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->res);
 		if (!res)
 			continue;
-		p_inputGeom.m_nverts += res->GetVertsCount();
-		p_inputGeom.m_ntris += res->GetIndicesCount() / 3;
+		p_inputGeom.i_nmeshes += 1;
+		aabb.Enclose(statics[i]->GetParent()->boundingBox);
 	}
 
-	p_inputGeom.m_verts = new float[p_inputGeom.m_nverts * 3];
-	p_inputGeom.m_tris = new int[p_inputGeom.m_ntris * 3];
-
-	float* v_cursor = p_inputGeom.m_verts;
-	int* t_cursor = p_inputGeom.m_tris;
-
-	math::AABB aabb;
-	aabb.SetNegativeInfinity();
+	p_inputGeom.i_meshes = new M_Mesh[p_inputGeom.i_nmeshes];
 
 	for (int i = 0; i < statics.size(); ++i)
 	{
-		if (!statics[i]->meshRenderer)
-			continue;
-		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->meshRenderer->res);
-		if (!res)
-			continue;
-
-		res->GetVerts(v_cursor);
-		v_cursor += res->GetVertsCount() * 3;
-		res->GetIndices(t_cursor);
-		t_cursor += res->GetIndicesCount();
-
-		aabb.Enclose(statics[i]->boundingBox);
+		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->res);
+		if (res)
+		{
+			p_inputGeom.i_meshes[i].m_ntris = res->GetIndicesCount() / 3;
+			p_inputGeom.i_ntris += p_inputGeom.i_meshes[i].m_ntris;
+			p_inputGeom.i_meshes[i].m_nverts = res->GetVertsCount();
+			p_inputGeom.i_meshes[i].m_tris = new int[p_inputGeom.i_meshes[i].m_ntris * 3];
+			p_inputGeom.i_meshes[i].m_verts = new float[p_inputGeom.i_meshes[i].m_nverts * 3];
+			res->GetIndices(p_inputGeom.i_meshes[i].m_tris);
+			res->GetVerts(p_inputGeom.i_meshes[i].m_verts);
+		}
 	}
-	memcpy(&p_inputGeom + offsetof(InputGeom, m_buildSettings), &cs, sizeof(CommonSettings));
+	memcpy(&p_inputGeom + offsetof(InputGeom, i_buildSettings), &cs, sizeof(CommonSettings));
 	memcpy(p_inputGeom.bMin, aabb.minPoint.ptr(), sizeof(math::float3));
 	memcpy(p_inputGeom.bMax, aabb.maxPoint.ptr(), sizeof(math::float3));
 	App->soloMeshQuery->SetInputGeom(p_inputGeom);
 	App->soloMeshQuery->HandleBuild();
 
-	delete[] p_inputGeom.m_verts;
-	delete[] p_inputGeom.m_tris;
+	for (int i = 0; i < p_inputGeom.i_nmeshes; ++i)
+	{
+		delete[] p_inputGeom.i_meshes[i].m_tris;
+		delete[] p_inputGeom.i_meshes[i].m_verts;
+	}
+	delete[] p_inputGeom.i_meshes;
 }

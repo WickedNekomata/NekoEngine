@@ -36,21 +36,23 @@ struct BuildSettings
 	int partitionType;
 	// Size of the tiles in voxels
 	float tileSize;
+};
 
-	inline void Init()
-	{
-		
-	}
+struct M_Mesh
+{
+	float* m_verts;
+	int* m_tris;
+	int m_nverts;
+	int m_ntris;
 };
 
 class InputGeom
 {
 public:
-	BuildSettings m_buildSettings;
-	float* m_verts;
-	int* m_tris;
-	int m_nverts;
-	int m_ntris;
+	BuildSettings i_buildSettings;
+	M_Mesh* i_meshes;
+	int i_nmeshes;
+	int i_ntris;
 	float* bMin[3], bMax[3];
 };
 

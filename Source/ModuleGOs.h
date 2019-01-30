@@ -41,6 +41,7 @@ public:
 	GameObject* GetGameObjectByUUID(uint UUID) const;
 	void GetGameObjects(std::vector<GameObject*>& gameObjects) const;
 	void GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const;
+	void GetMeshComponentsFromStaticGameObjects(std::vector<class ComponentMesh*>& components) const;
 	void GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const;
 
 	void ReorderGameObjects(GameObject* source, GameObject* target);

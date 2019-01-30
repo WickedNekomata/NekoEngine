@@ -5,9 +5,10 @@
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "ModuleScene.h"
+#include "ResourceTexture.h"
+#include "ModuleResourceManager.h"
 
 #include <vector>
-//#include "pcg-c-basic-0.9/pcg_basic.h"
 
 #include "ModuleParticles.h"
 #include "imgui\imgui.h"
@@ -507,20 +508,22 @@ void ComponentEmitter::ParticleTexture()
 			name = name.substr(name.find_last_of("\\") + 1);
 
 			ImGui::Text("Loaded texture '%s'", name.data());
-			ImGui::Text("Texture used %i times", texture->usage);
+			//ImGui::Text("Texture used %i times", texture->usage);
 
-			ImGui::Image((void*)(intptr_t)texture->GetID(), ImVec2(256.0f, 256.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+			ImGui::Image((void*)(intptr_t)texture->id, ImVec2(256.0f, 256.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 			if (ImGui::BeginMenu("Change Texture"))
 			{
 				std::vector<Resource*> resource;
-				App->resources->GetResources(resource, ResourceType::texture);
+				App->res->GetResources(resource, ResourceType::TextureResource);
 
 				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
 				{
-					if (ImGui::MenuItem((*iterator)->name.data()))
+					std::string textName;
+					textName.append((*iterator)->GetName());
+					if (ImGui::MenuItem(textName.data()))
 					{
-						App->resources->Remove(texture);
+						App->res->Remove(texture);
 						texture = nullptr;
 
 						texture = ((ResourceTexture*)(*iterator));
@@ -531,7 +534,7 @@ void ComponentEmitter::ParticleTexture()
 			}
 			if (ImGui::Button("Remove Texture", ImVec2(125, 25)))
 			{
-				App->resources->Remove(texture);
+				App->res->Remove(texture);
 				texture = nullptr;
 			}
 
@@ -542,11 +545,13 @@ void ComponentEmitter::ParticleTexture()
 			if (ImGui::BeginMenu("Add new Texture"))
 			{
 				std::vector<Resource*> resource;
-				App->resources->GetResources(resource, ResourceType::texture);
+				App->res->GetResources(resource, ResourceType::TextureResource);
 
 				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
 				{
-					if (ImGui::MenuItem((*iterator)->name.data()))
+					std::string textName;
+					textName.append((*iterator)->GetName());
+					if (ImGui::MenuItem(textName.data()))
 					{
 						texture = ((ResourceTexture*)(*iterator));
 						texture->usage++;
@@ -614,7 +619,7 @@ void ComponentEmitter::ParticleSubEmitter()
 /*
 void ComponentEmitter::SetNewAnimation(int row, int col)
 {
-	particleAnimation = App->resources->LoadTextureUV(row, col);
+	particleAnimation = App->res->LoadTextureUV(row, col);
 	for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
 	{
 		(*iterator)->currentFrame = 0;

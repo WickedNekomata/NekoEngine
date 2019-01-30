@@ -8,7 +8,7 @@ enum ComponentTypes
 	MeshComponent,
 	MaterialComponent,
 	CameraComponent,
-	EmitterComponent
+	EmitterComponent,
 
 	// Physics
 	RigidStaticComponent,

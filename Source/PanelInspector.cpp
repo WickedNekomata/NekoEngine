@@ -128,7 +128,7 @@ void PanelInspector::ShowGameObjectInspector() const
 			}
 		if (gameObject->emitter == nullptr)
 			if (ImGui::Selectable("Particle Emitter")) {
-				gameObject->AddComponent(ComponentType::EmitterComponent);
+				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		if (gameObject->rigidActor == nullptr) {

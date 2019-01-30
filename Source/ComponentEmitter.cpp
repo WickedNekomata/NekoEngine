@@ -688,7 +688,7 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 
 void ComponentEmitter::SaveComponent(JSON_Object* parent)
 {
-	json_object_set_number(parent, "Type", this->type);
+	json_object_set_number(parent, "Type", this->componentType);
 
 	json_object_set_number(parent, "UUID", this->parent->GetUUID());
 

@@ -340,7 +340,7 @@ Component* GameObject::GetComponent(uint index) const
 	return components[index];
 }
 
-Component* GameObject::GetComponentByType(ComponentType type) const
+Component* GameObject::GetComponentByType(ComponentTypes type) const
 {
 	Component* comp = nullptr;
 

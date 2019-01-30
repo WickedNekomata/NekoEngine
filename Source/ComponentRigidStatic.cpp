@@ -17,6 +17,7 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *gShape);
 	if (gActor == nullptr)
 		return;
+	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 
 	// ----------
 

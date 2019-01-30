@@ -22,6 +22,7 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	gActor = App->physics->CreateRigidDynamic(physx::PxTransform(physx::PxIDENTITY()), *gShape, density, isKinematic);
 	if (gActor == nullptr)
 		return;
+	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 
 	// ----------
 

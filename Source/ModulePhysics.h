@@ -24,6 +24,16 @@ public:
 	void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line);
 };
 
+class SimulationEventCallback : public physx::PxSimulationEventCallback
+{
+public:
+	SimulationEventCallback();
+	~SimulationEventCallback();
+
+	void onWake(physx::PxActor** actors, physx::PxU32 count);
+	void onSleep(physx::PxActor** actors, physx::PxU32 count);
+};
+
 class ModulePhysics : public Module
 {
 public:
@@ -56,6 +66,7 @@ public:
 	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
 	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;
 
+	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
 	std::vector<ComponentCollider*> GetColliderComponents() const;
 
 	// General configuration values

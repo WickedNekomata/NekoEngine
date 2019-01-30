@@ -25,6 +25,9 @@ public:
 
 	physx::PxRigidActor* GetActor() const;
 
+	void OnWake();
+	void OnSleep();
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

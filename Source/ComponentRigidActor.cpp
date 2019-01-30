@@ -79,3 +79,15 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 {
 	return gActor;
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidActor::OnWake()
+{
+	CONSOLE_LOG("I'm awake");
+}
+
+void ComponentRigidActor::OnSleep()
+{
+	CONSOLE_LOG("I'm asleep");
+}

@@ -30,8 +30,6 @@
 
 #define STEP_SIZE 1.0f / 60.0f
 
-// TODO: Physics Manager like Unity (custom options)
-
 DefaultErrorCallback::DefaultErrorCallback() {}
 
 DefaultErrorCallback::~DefaultErrorCallback() {}
@@ -75,6 +73,43 @@ void DefaultErrorCallback::reportError(physx::PxErrorCode::Enum code, const char
 	errorCode.append(": ");
 
 	CONSOLE_LOG("%s""%s", errorCode.data(), message);
+}
+
+// ----------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
+
+SimulationEventCallback::SimulationEventCallback() {}
+
+SimulationEventCallback::~SimulationEventCallback() {}
+
+void SimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
+{
+	physx::PxActor** actor;
+	std::vector<ComponentRigidActor*> rigidActorComponents = App->physics->GetRigidActorComponents();
+
+	for (actor = actors; *actor != nullptr; ++actor)
+	{
+		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+		{
+			if ((*it)->GetActor() == *actor)
+				(*it)->OnWake();
+		}
+	}
+}
+
+void SimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
+{
+	physx::PxActor** actor;
+	std::vector<ComponentRigidActor*> rigidActorComponents = App->physics->GetRigidActorComponents();
+
+	for (actor = actors; *actor != nullptr; ++actor)
+	{
+		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+		{
+			if ((*it)->GetActor() == *actor)
+				(*it)->OnSleep();
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -344,6 +379,11 @@ std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidDynamics() const
 		gScene->getActors(physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC, reinterpret_cast<physx::PxActor**>(&dynamicActors[0]), nbDynamicActors);
 
 	return dynamicActors;
+}
+
+std::vector<ComponentRigidActor*> ModulePhysics::GetRigidActorComponents() const
+{
+	return rigidActorComponents;
 }
 
 std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const

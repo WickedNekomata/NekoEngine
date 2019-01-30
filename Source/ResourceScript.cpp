@@ -8,6 +8,10 @@
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/debug-helpers.h>
 
+#include "ScriptingModule.h"
+
+ResourceScript::ResourceScript() : Resource(ResourceType::ScriptResource, App->GenerateRandomNumber()) {}
+
 ResourceScript::~ResourceScript()
 {
 	
@@ -82,15 +86,15 @@ bool ResourceScript::preCompileErrors()
 	std::string temp(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput);
 	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput).data(), error))
 	{
-		Debug.LogError("Error compiling the script %s:", fileName.data());
+		//Debug.LogError("Error compiling the script %s:", fileName.data());
 
-		char* buffer; int size;
-		App->fs->OpenRead("LogError.txt", &buffer, size, false);
+		char* buffer; 
+		int size = App->fs->Load("LogError.txt", &buffer);
 
 		std::string outPut(buffer);
 		outPut.resize(size);
 
-		Debug.LogError(outPut.data());
+		//Debug.LogError(outPut.data());
 
 		delete buffer;
 

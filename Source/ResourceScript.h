@@ -40,7 +40,7 @@ public:
 		
 	} state = ScriptState::NO_COMPILED;
 
-	ResourceScript() : Resource(ResourceType::ScriptResource, App->GenerateRandomNumber()) {}
+	ResourceScript();
 	virtual ~ResourceScript();
 
 	bool LoadInMemory() override { return true; }

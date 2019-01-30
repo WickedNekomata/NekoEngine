@@ -12,6 +12,10 @@
 
 #include <mono/metadata/attrdefs.h>
 
+#include "ScriptingModule.h"
+#include "Application.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 ComponentScript::~ComponentScript()
 {
@@ -31,7 +35,7 @@ void ComponentScript::Awake()
 	{
 		awaked = true;
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -55,7 +59,7 @@ void ComponentScript::Start()
 	if (scriptRes && scriptRes->startMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -79,7 +83,7 @@ void ComponentScript::PreUpdate()
 	if (scriptRes && scriptRes->preUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -103,7 +107,7 @@ void ComponentScript::Update()
 	if (scriptRes && scriptRes->updateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -127,7 +131,7 @@ void ComponentScript::PostUpdate()
 	if (scriptRes && scriptRes->postUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -151,7 +155,7 @@ void ComponentScript::OnEnableMethod()
 	if (scriptRes && scriptRes->enableMethod)
 	{
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->enableMethod, classInstance, NULL, &exc);
 			if (exc)
@@ -197,7 +201,7 @@ void ComponentScript::OnStop()
 	{
 		awaked = false;
 		MonoObject* exc = nullptr;
-		if (isActive() && gameObject->areParentsActives())
+		if (IsTreeActive())
 		{
 			mono_runtime_invoke(scriptRes->stopMethod, classInstance, NULL, &exc);
 			if (exc)

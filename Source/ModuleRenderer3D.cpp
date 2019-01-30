@@ -9,6 +9,7 @@
 #include "ModulePhysics.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
+#include "ModuleParticles.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
@@ -184,6 +185,11 @@ update_status ModuleRenderer3D::PreUpdate()
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
 {
+	//Draw All particles
+	glDepthMask(GL_FALSE);
+	App->particle->Draw();
+	glDepthMask(GL_TRUE);
+
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif

@@ -20,6 +20,8 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleGOs.h"
 
+#include "MathGeoLib/include/MathGeoLib.h"
+
 bool exec(const char* cmd, std::string& error)
 {
 	std::array<char, 128> buffer;
@@ -875,20 +877,25 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		App->GOs->AddGameObject(goInstance);
 
-		*goInstance = *templateGO;
-		goInstance->ReGenerate();
-		goInstance->initAABB();
-		goInstance->transformAABB();
+		//TODO: IMPLEMENT THE NEW PREFAB / INSTANTIATION SYSTEM
 
-		goInstance->parent = App->scene->getRootNode();
+		//*goInstance = *templateGO;
+		//goInstance->ReGenerate();
+		//goInstance->initAABB();
+		//goInstance->transformAABB();
 
-		//App->scene->UpdateQuadtree();
+		//goInstance->parent = App->scene->getRootNode();
 
-		MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
+		////App->scene->UpdateQuadtree();
 
-		goInstance->InstantiateEvents();
+		//MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
 
-		return moInstance;
+		//goInstance->InstantiateEvents();
+
+		//return moInstance;
+		
+		//Temp
+		return nullptr;
 	}
 }
 
@@ -911,7 +918,12 @@ void DestroyObj(MonoObject* obj)
 
 			App->scripting->gameObjectsMap.erase(App->scripting->gameObjectsMap.begin() + i);
 
-			App->scene->DestroyGameObject(toDelete);
+			//Send the event to destroy this gameObject
+
+			System_Event event;
+			event.goEvent.type = System_Event_Type::GameObjectDestroyed;
+			event.goEvent.gameObject = toDelete;
+			App->PushSystemEvent(event);
 
 			break;
 		}
@@ -920,13 +932,13 @@ void DestroyObj(MonoObject* obj)
 
 MonoArray* QuatMult(MonoArray* q1, MonoArray* q2)
 {
-	Quat _q1(mono_array_get(q1, float, 0), mono_array_get(q1, float, 1), mono_array_get(q1, float, 2), mono_array_get(q1, float, 3));
-	Quat _q2(mono_array_get(q2, float, 0), mono_array_get(q2, float, 1), mono_array_get(q2, float, 2), mono_array_get(q2, float, 3));
+	math::Quat _q1(mono_array_get(q1, float, 0), mono_array_get(q1, float, 1), mono_array_get(q1, float, 2), mono_array_get(q1, float, 3));
+	math::Quat _q2(mono_array_get(q2, float, 0), mono_array_get(q2, float, 1), mono_array_get(q2, float, 2), mono_array_get(q2, float, 3));
 
 	_q1.Normalize();
 	_q2.Normalize();
 
-	Quat result = _q1 * _q2;
+	math::Quat result = _q1 * _q2;
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
 	mono_array_set(ret, float, 0, result.x);
@@ -939,12 +951,12 @@ MonoArray* QuatMult(MonoArray* q1, MonoArray* q2)
 
 MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
 {
-	Quat _q(mono_array_get(q, float, 0), mono_array_get(q, float, 1), mono_array_get(q, float, 2), mono_array_get(q, float, 3));
+	math::Quat _q(mono_array_get(q, float, 0), mono_array_get(q, float, 1), mono_array_get(q, float, 2), mono_array_get(q, float, 3));
 	_q.Normalize();
 
-	float3 _vec(mono_array_get(vec, float, 0), mono_array_get(vec, float, 1), mono_array_get(vec, float, 2));
+	math::float3 _vec(mono_array_get(vec, float, 0), mono_array_get(vec, float, 1), mono_array_get(vec, float, 2));
 
-	float3 res = _q * _vec;
+	math::float3 res = _q * _vec;
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
 	mono_array_set(ret, float, 0, res.x);
@@ -956,13 +968,13 @@ MonoArray* QuatVec3(MonoArray* q, MonoArray* vec)
 
 MonoArray* ToEuler(MonoArray* quat)
 {
-	Quat _q(mono_array_get(quat, float, 0), mono_array_get(quat, float, 1), mono_array_get(quat, float, 2), mono_array_get(quat, float, 3));
+	math::Quat _q(mono_array_get(quat, float, 0), mono_array_get(quat, float, 1), mono_array_get(quat, float, 2), mono_array_get(quat, float, 3));
 
-	float3 axis;
+	math::float3 axis;
 	float angle;
 	_q.ToAxisAngle(axis, angle);
 
-	float3 euler = axis * RadToDeg(angle);
+	math::float3 euler = axis * math::RadToDeg(angle);
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
 	mono_array_set(ret, float, 0, euler.x);
@@ -974,11 +986,11 @@ MonoArray* ToEuler(MonoArray* quat)
 
 MonoArray* RotateAxisAngle(MonoArray* axis, float deg)
 {
-	float3 _axis({ mono_array_get(axis, float, 0), mono_array_get(axis, float, 1), mono_array_get(axis, float, 2)});
+	math::float3 _axis({ mono_array_get(axis, float, 0), mono_array_get(axis, float, 1), mono_array_get(axis, float, 2)});
 
-	float rad = DegToRad(deg);
+	float rad = math::DegToRad(deg);
 
-	Quat rotation = Quat::RotateAxisAngle(_axis, rad);
+	math::Quat rotation = math::Quat::RotateAxisAngle(_axis, rad);
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
 	mono_array_set(ret, float, 0, rotation.x);
@@ -1006,12 +1018,15 @@ MonoArray* GetGlobalPos(MonoObject* monoObject)
 	if (!gameObject)
 		return nullptr;
 
-	ComponentTransform global = gameObject->transform->getGlobal();
+	math::float3 position, scale;
+	math::Quat rotation;
+
+	gameObject->transform->GetGlobalMatrix().Decompose(position, rotation, scale);
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
-	mono_array_set(ret, float, 0, global.position.x);
-	mono_array_set(ret, float, 1, global.position.y);
-	mono_array_set(ret, float, 2, global.position.z);
+	mono_array_set(ret, float, 0, position.x);
+	mono_array_set(ret, float, 1, position.y);
+	mono_array_set(ret, float, 2, position.z);
 
 	return ret;
 }
@@ -1032,13 +1047,16 @@ MonoArray* GetGlobalRotation(MonoObject* monoObject)
 	if (!gameObject)
 		return nullptr;
 
-	ComponentTransform global = gameObject->transform->getGlobal();
+	math::float3 position, scale;
+	math::Quat rotation;
+
+	gameObject->transform->GetGlobalMatrix().Decompose(position, rotation, scale);
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
-	mono_array_set(ret, float, 0, global.rotation.x);
-	mono_array_set(ret, float, 1, global.rotation.y);
-	mono_array_set(ret, float, 2, global.rotation.z);
-	mono_array_set(ret, float, 3, global.rotation.w);
+	mono_array_set(ret, float, 0, rotation.x);
+	mono_array_set(ret, float, 1, rotation.y);
+	mono_array_set(ret, float, 2, rotation.z);
+	mono_array_set(ret, float, 3, rotation.w);
 
 	return ret;
 }
@@ -1066,8 +1084,8 @@ void ScriptingModule::CreateDomain()
 	domain = nextDom;
 
 	char* buffer;
-	int size;
-	if (!App->fs->OpenRead("FlanCS.dll", &buffer, size, false))
+	int size = App->fs->Load("FlanCS.dll", &buffer);
+	if(size <= 0)
 		return;
 
 	//Loading assemblies from data instead of from file

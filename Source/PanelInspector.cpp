@@ -26,7 +26,7 @@
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
 
-PanelInspector::PanelInspector(char* name) : Panel(name) {}
+PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
 PanelInspector::~PanelInspector() {}
 

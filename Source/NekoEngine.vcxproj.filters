@@ -1291,6 +1291,9 @@
     <ClInclude Include="ComponentPlaneCollider.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="PanelPhysics.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1589,6 +1592,9 @@
     </ClCompile>
     <ClCompile Include="ComponentPlaneCollider.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelPhysics.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

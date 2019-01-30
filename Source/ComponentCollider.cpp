@@ -28,17 +28,19 @@ void ComponentCollider::OnUniqueEditor()
 	// TODO: gMaterial (drag and drop)
 
 	bool recalculateShape = false;
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Center"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##CenterX", ImGuiDataType_Float, (void*)&center.x, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##CenterX", &center.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##CenterY", ImGuiDataType_Float, (void*)&center.y, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##CenterY", &center.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##CenterZ", ImGuiDataType_Float, (void*)&center.z, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##CenterZ", &center.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 
 	if (recalculateShape)
 		RecalculateShape();

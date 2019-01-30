@@ -87,8 +87,18 @@ ModulePhysics::ModulePhysics(bool start_enabled) : Module(start_enabled)
 
 ModulePhysics::~ModulePhysics() {}
 
+#define DEFAULT_GRAVITY_X 0.0f
+#define DEFAULT_GRAVITY_Y -9.81f
+#define DEFAULT_GRAVITY_Z 0.0f
+
+#define DEFAULT_MATERIAL_STATIC_FRICTION 0.5f
+#define DEFAULT_MATERIAL_DYNAMIC_FRICTION 0.5f
+#define DEFAULT_MATERIAL_RESTITUTION 0.6f
+
 bool ModulePhysics::Init(JSON_Object* jObject)
 {
+	gravity = math::float3(DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y, DEFAULT_GRAVITY_Z);
+
 	return true;
 }
 
@@ -111,17 +121,18 @@ bool ModulePhysics::Start()
 
 	// Scene
 	physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = physx::PxVec3(gravity.x, gravity.y, gravity.z);
 	gDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
 
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	// Default material
+	defaultMaterial = gPhysics->createMaterial(DEFAULT_MATERIAL_STATIC_FRICTION, DEFAULT_MATERIAL_DYNAMIC_FRICTION, DEFAULT_MATERIAL_RESTITUTION);
 
 	// Ground
-	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *gMaterial);
+	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *defaultMaterial);
 	gScene->addActor(*groundPlane);
 	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
@@ -193,7 +204,7 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 	if (isKinematic)
 		rigidDynamic = physx::PxCreateKinematic(*gPhysics, transform, shape, density);
 	else
-		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density); // gPhysics->createRigidDynamic(transform);
+		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density);
 
 	gScene->addActor(*rigidDynamic);
 	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
@@ -313,11 +324,6 @@ void ModulePhysics::RemoveActor(physx::PxActor& actor) const
 	gScene->removeActor(actor);
 }
 
-physx::PxMaterial* ModulePhysics::GetDefaultMaterial() const
-{
-	return gMaterial;
-}
-
 std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidStatics() const
 {
 	uint nbStaticActors = gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC);
@@ -343,4 +349,28 @@ std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidDynamics() const
 std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const
 {
 	return colliderComponents;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ModulePhysics::SetGravity(math::float3 gravity)
+{
+	this->gravity = gravity;
+
+	gScene->setGravity(physx::PxVec3(gravity.x, gravity.y, gravity.z));
+}
+
+math::float3 ModulePhysics::GetGravity() const
+{
+	return gravity;
+}
+
+void ModulePhysics::SetDefaultMaterial(physx::PxMaterial* material)
+{
+	defaultMaterial = material;
+}
+
+physx::PxMaterial* ModulePhysics::GetDefaultMaterial() const
+{
+	return defaultMaterial;
 }

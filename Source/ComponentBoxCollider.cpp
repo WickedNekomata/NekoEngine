@@ -23,17 +23,19 @@ void ComponentBoxCollider::OnUniqueEditor()
 	ComponentCollider::OnUniqueEditor();
 
 	bool recalculateShape = false;
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::Text("Half size"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##HalfSizeX", ImGuiDataType_Float, (void*)&halfSize.x, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##HalfSizeX", &halfSize.x, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##HalfSizeY", ImGuiDataType_Float, (void*)&halfSize.y, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##HalfSizeY", &halfSize.y, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##HalfSizeZ", ImGuiDataType_Float, (void*)&halfSize.z, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##HalfSizeZ", &halfSize.z, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 
 	if (recalculateShape)
 		RecalculateShape();
@@ -44,10 +46,7 @@ void ComponentBoxCollider::RecalculateShape()
 {
 	ClearShape();
 
-	math::float3 hS = halfSize;
-	hS = math::Abs(hS);
-
-	physx::PxBoxGeometry gBoxGeometry(hS.x, hS.y, hS.z);
+	physx::PxBoxGeometry gBoxGeometry(halfSize.x, halfSize.y, halfSize.z);
 	gShape = App->physics->CreateShape(gBoxGeometry, *gMaterial);
 	if (gShape == nullptr)
 		return;

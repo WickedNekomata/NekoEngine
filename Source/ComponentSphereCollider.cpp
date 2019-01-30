@@ -36,12 +36,12 @@ void ComponentSphereCollider::OnUniqueEditor()
 	ComponentCollider::OnUniqueEditor();
 
 	bool recalculateShape = false;
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##SphereRadius", ImGuiDataType_Float, (void*)&radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##SphereRadius", &radius, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 
 	if (recalculateShape)
 		RecalculateShape();
@@ -52,10 +52,7 @@ void ComponentSphereCollider::RecalculateShape()
 {
 	ClearShape();
 
-	float r = radius;
-	r = std::abs(r);
-
-	physx::PxSphereGeometry gSphereGeometry(r);
+	physx::PxSphereGeometry gSphereGeometry(radius);
 	gShape = App->physics->CreateShape(gSphereGeometry, *gMaterial);
 	if (gShape == nullptr)
 		return;

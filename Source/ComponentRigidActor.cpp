@@ -21,6 +21,7 @@ void ComponentRigidActor::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::Checkbox("Use Gravity", &useGravity))
 		SetUseGravity(useGravity);
+	// TODO: interpolate & collision detection
 #endif
 }
 
@@ -66,9 +67,10 @@ void ComponentRigidActor::UpdateGameObjectTransform() const
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidActor::SetUseGravity(bool useGravity) const
+void ComponentRigidActor::SetUseGravity(bool useGravity)
 {
-	gActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, useGravity);
+	this->useGravity = useGravity;
+	gActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, !useGravity);
 }
 
 // ----------------------------------------------------------------------------------------------------

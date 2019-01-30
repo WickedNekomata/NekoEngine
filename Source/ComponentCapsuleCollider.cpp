@@ -23,17 +23,18 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 	ComponentCollider::OnUniqueEditor();
 
 	bool recalculateShape = false;
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
 
 	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##CapsuleRadius", ImGuiDataType_Float, (void*)&radius, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);	
+	if (ImGui::DragFloat("##CapsuleRadius", &radius, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##CapsuleHalfHeight", ImGuiDataType_Float, (void*)&halfHeight, 0.01f, &f64_lo_a, &f64_hi_a, "%.2f", 1.0f))
+	if (ImGui::DragFloat("##CapsuleHalfHeight", &halfHeight, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
 		recalculateShape = true;
+	ImGui::PopItemWidth();
 
 	const char* capsuleDirection[] = { "X-Axis", "Y-Axis", "Z-Axis" };
 	int currentCapsuleDirection = direction;
@@ -43,6 +44,7 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 		direction = (CapsuleDirection)currentCapsuleDirection;
 		recalculateShape = true;
 	}
+	ImGui::PopItemWidth();
 
 	if (recalculateShape)
 		RecalculateShape();
@@ -53,12 +55,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 {
 	ClearShape();
 
-	float r = radius;
-	r = std::abs(r);
-	float hH = halfHeight;
-	hH = std::abs(hH);
-
-	physx::PxCapsuleGeometry gCapsuleGeometry(r, hH);
+	physx::PxCapsuleGeometry gCapsuleGeometry(radius, halfHeight);
 	gShape = App->physics->CreateShape(gCapsuleGeometry, *gMaterial);
 	if (gShape == nullptr)
 		return;

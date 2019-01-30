@@ -264,6 +264,7 @@
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelLibrary.h" />
+    <ClInclude Include="PanelPhysics.h" />
     <ClInclude Include="PanelShaderEditor.h" />
     <ClInclude Include="PanelSkybox.h" />
     <ClInclude Include="physx\include\characterkinematic\PxBoxController.h" />
@@ -559,6 +560,7 @@
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
+    <ClCompile Include="PanelPhysics.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="PanelSkybox.cpp" />
     <ClCompile Include="Raycaster.cpp" />

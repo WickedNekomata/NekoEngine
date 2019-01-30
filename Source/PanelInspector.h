@@ -13,7 +13,7 @@ class PanelInspector : public Panel
 {
 public:
 
-	PanelInspector(char* name);
+	PanelInspector(const char* name);
 	~PanelInspector();
 
 	bool Draw();

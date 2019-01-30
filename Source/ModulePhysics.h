@@ -7,6 +7,8 @@
 #include "physx/include/extensions/PxDefaultAllocator.h"
 #include "physx/include/extensions/PxDefaultCpuDispatcher.h"
 
+#include "MathGeoLib/include/Math/float3.h"
+
 #include <vector>
 
 class ComponentRigidActor;
@@ -51,25 +53,33 @@ public:
 
 	void RemoveActor(physx::PxActor& actor) const;
 
-	physx::PxMaterial* GetDefaultMaterial() const;
-
 	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
 	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;
 
 	std::vector<ComponentCollider*> GetColliderComponents() const;
+
+	// General configuration values
+	void SetGravity(math::float3 gravity);
+	math::float3 GetGravity() const;
+
+	void SetDefaultMaterial(physx::PxMaterial* material);
+	physx::PxMaterial* GetDefaultMaterial() const;
 
 private:
 
 	physx::PxFoundation* gFoundation = nullptr;
 	physx::PxPhysics* gPhysics = nullptr;
 	physx::PxScene* gScene = nullptr;
-	physx::PxDefaultCpuDispatcher*	gDispatcher = nullptr;
-	physx::PxMaterial*	gMaterial = nullptr;
+	physx::PxDefaultCpuDispatcher* gDispatcher = nullptr;
 
 	float gAccumulator = 0.0f;
 
 	std::vector<ComponentRigidActor*> rigidActorComponents;
 	std::vector<ComponentCollider*> colliderComponents;
+
+	// General configuration values
+	math::float3 gravity = math::float3::zero;
+	physx::PxMaterial* defaultMaterial = nullptr;
 };
 
 #endif

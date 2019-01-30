@@ -21,7 +21,7 @@ public:
 	void UpdateTransform() const;
 	void UpdateGameObjectTransform() const;
 
-	void SetUseGravity(bool useGravity) const;
+	void SetUseGravity(bool useGravity);
 
 	physx::PxRigidActor* GetActor() const;
 

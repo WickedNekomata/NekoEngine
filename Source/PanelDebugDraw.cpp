@@ -7,7 +7,7 @@
 
 #include "ImGui\imgui.h"
 
-PanelDebugDraw::PanelDebugDraw(char* name) : Panel(name) {}
+PanelDebugDraw::PanelDebugDraw(const char* name) : Panel(name) {}
 
 PanelDebugDraw::~PanelDebugDraw() {}
 

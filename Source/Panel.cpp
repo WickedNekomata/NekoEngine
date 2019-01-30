@@ -2,7 +2,7 @@
 
 #ifndef GAMEMODE
 
-Panel::Panel(char* name) : name(name) {}
+Panel::Panel(const char* name) : name(name) {}
 
 Panel::~Panel() {}
 

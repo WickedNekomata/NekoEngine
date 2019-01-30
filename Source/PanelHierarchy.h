@@ -13,7 +13,7 @@ class PanelHierarchy : public Panel
 {
 public:
 
-	PanelHierarchy(char* name);
+	PanelHierarchy(const char* name);
 	~PanelHierarchy();
 
 	bool Draw();

@@ -26,6 +26,7 @@
 #include "PanelCodeEditor.h"
 #include "PanelShaderEditor.h"
 #include "PanelSkybox.h"
+#include "PanelPhysics.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -56,6 +57,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 	panelSkybox = new PanelSkybox("Skybox");
+	panelPhysics = new PanelPhysics("Physics");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -69,6 +71,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelShaderEditor);
 	panels.push_back(panelSkybox);
+	panels.push_back(panelPhysics);
 
 	LoadStatus(jObject);
 
@@ -159,6 +162,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Edit", "ALT+E")) { panelEdit->OnOff(); }
 			if (ImGui::MenuItem("Skybox")) { panelSkybox->OnOff(); }
 			if (ImGui::MenuItem("Shader Editor")) { panelShaderEditor->OnOff(); }
+			if (ImGui::MenuItem("Physics")) { panelPhysics->OnOff(); }
 
 			ImGui::EndMenu();
 		}

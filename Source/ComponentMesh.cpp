@@ -9,9 +9,9 @@
 
 #include "imgui\imgui.h"
 
-ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentType::MeshComponent) {}
+ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTypes::MeshComponent) {}
 
-ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentType::MeshComponent)
+ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
 {
 	SetResource(componentMesh.res);
 }

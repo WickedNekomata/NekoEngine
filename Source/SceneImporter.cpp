@@ -238,7 +238,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 		if (!broken)
 		{
-			gameObject->AddComponent(ComponentType::MeshComponent);
+			gameObject->AddComponent(ComponentTypes::MeshComponent);
 			if (UUIDs.size() > 0)
 			{
 				gameObject->meshRenderer->res = UUIDs.front();

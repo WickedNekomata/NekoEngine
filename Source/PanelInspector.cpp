@@ -26,7 +26,7 @@
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
 
-PanelInspector::PanelInspector(char* name) : Panel(name) {}
+PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
 PanelInspector::~PanelInspector() {}
 
@@ -118,23 +118,48 @@ void PanelInspector::ShowGameObjectInspector() const
 	{
 		if (gameObject->meshRenderer == nullptr) 
 			if (ImGui::Selectable("Mesh")) {
-				gameObject->AddComponent(ComponentType::MeshComponent);
+				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		
 		if (gameObject->camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
-				gameObject->AddComponent(ComponentType::CameraComponent);
+				gameObject->AddComponent(ComponentTypes::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
-
-		if (gameObject->emitter == nullptr) 
+		if (gameObject->emitter == nullptr)
 			if (ImGui::Selectable("Particle Emitter")) {
 				gameObject->AddComponent(ComponentType::EmitterComponent);
 				ImGui::CloseCurrentPopup();
-			}	
-
-		ImGui::EndPopup();		
+			}
+		if (gameObject->rigidActor == nullptr) {
+			if (ImGui::Selectable("Rigid Static")) {
+				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Rigid Dynamic")) {
+				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		if (gameObject->collider == nullptr) {
+			if (ImGui::Selectable("Box Collider")) {
+				gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Sphere Collider")) {
+				gameObject->AddComponent(ComponentTypes::SphereColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Capsule Collider")) {
+				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Plane Collider")) {
+				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndPopup();
 	}
 }
 

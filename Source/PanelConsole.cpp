@@ -8,7 +8,7 @@
 
 #include "Globals.h"
 
-PanelConsole::PanelConsole(char* name) : Panel(name) {}
+PanelConsole::PanelConsole(const char* name) : Panel(name) {}
 
 PanelConsole::~PanelConsole()
 {

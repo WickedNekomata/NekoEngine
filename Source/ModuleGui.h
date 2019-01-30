@@ -24,6 +24,7 @@ class PanelEdit;
 class PanelCodeEditor;
 class PanelShaderEditor;
 class PanelSkybox;
+class PanelPhysics;
 
 class ModuleGui : public Module
 {
@@ -71,6 +72,7 @@ public:
 	PanelCodeEditor*	panelCodeEditor = nullptr;
 	PanelShaderEditor*  panelShaderEditor = nullptr;
 	PanelSkybox*		panelSkybox = nullptr;
+	PanelPhysics*		panelPhysics = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 

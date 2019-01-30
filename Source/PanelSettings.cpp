@@ -20,7 +20,7 @@
 
 #include "glew\include\GL\glew.h"
 
-PanelSettings::PanelSettings(char* name) : Panel(name) {}
+PanelSettings::PanelSettings(const char* name) : Panel(name) {}
 
 PanelSettings::~PanelSettings() {}
 

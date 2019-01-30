@@ -19,7 +19,7 @@ class PanelSettings : public Panel
 {
 public:
 
-	PanelSettings(char* name);
+	PanelSettings(const char* name);
 	~PanelSettings();
 
 	bool Draw();

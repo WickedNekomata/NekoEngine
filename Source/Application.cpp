@@ -16,6 +16,7 @@
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "ModulePhysics.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -35,6 +36,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
 	particle = new ModuleParticle();
+	physics = new ModulePhysics();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -46,7 +48,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 	AddModule(res);
-
 	AddModule(timeManager);
 	AddModule(particle);
 
@@ -54,6 +55,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(camera);
 	AddModule(gui);
 #endif // GAME
+
+	AddModule(physics);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);

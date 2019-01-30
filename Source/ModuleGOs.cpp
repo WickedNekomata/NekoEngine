@@ -429,7 +429,7 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::vector<std::str
 		{
 			cObject = json_array_get_object(jsonComponents, i);
 
-			if ((ComponentType)(int)json_object_get_number(cObject, "Type") == ComponentType::MeshComponent)
+			if ((ComponentTypes)(int)json_object_get_number(cObject, "Type") == ComponentTypes::MeshComponent)
 			{
 				meshes.push_back(json_object_get_string(gObject, "Name"));
 				UUIDs.push_back(json_object_get_number(cObject, "ResourceMesh"));

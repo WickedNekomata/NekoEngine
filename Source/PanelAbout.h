@@ -11,7 +11,7 @@ class PanelAbout : public Panel
 {
 public:
 
-	PanelAbout(char* name);
+	PanelAbout(const char* name);
 	~PanelAbout();
 
 	bool Draw();

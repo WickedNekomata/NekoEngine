@@ -12,18 +12,18 @@ class Component
 {
 public:
 
-	Component(GameObject* parent, ComponentType type = ComponentType::NoComponentType);
+	Component(GameObject* parent, ComponentTypes componentType = ComponentTypes::NoComponentType);
 	virtual void Activate() {};
 	virtual ~Component();
 
-	void Update();
+	virtual void Update();
 
 	virtual void OnEditor();
 
 	void ToggleIsActive();
 	bool IsActive() const;
 
-	ComponentType GetType() const;
+	ComponentTypes GetType() const;
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent() const;
@@ -42,7 +42,7 @@ private:
 
 protected:
 
-	ComponentType type;
+	ComponentTypes componentType;
 	GameObject* parent = nullptr;
 
 public:

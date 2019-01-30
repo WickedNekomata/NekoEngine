@@ -16,6 +16,8 @@ class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
 class ComponentEmitter;
+class ComponentRigidActor;
+class ComponentCollider;
 
 class GameObject
 {
@@ -45,7 +47,7 @@ public:
 	GameObject* GetChild(uint index) const;
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
-	Component* AddComponent(ComponentType type);
+	Component* AddComponent(ComponentTypes componentType);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteComponentByValue(Component* component);
 	void MarkToDeleteAllComponents();
@@ -91,6 +93,10 @@ public:
 	ComponentMesh* meshRenderer = nullptr;
 	ComponentCamera* camera = nullptr;
 	ComponentEmitter* emitter = nullptr;
+
+	// Physics
+	ComponentRigidActor* rigidActor = nullptr;
+	ComponentCollider* collider = nullptr;
 
 	math::AABB boundingBox;
 

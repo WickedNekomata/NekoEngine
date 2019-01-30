@@ -268,6 +268,8 @@ physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, co
 	return gPhysics->createShape(geometry, material, isExclusive);
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 ComponentRigidActor* ModulePhysics::CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType)
 {
 	ComponentRigidActor* newComponent = nullptr;
@@ -369,6 +371,15 @@ bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
 
 	return ret;
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ModulePhysics::OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB) const
+{
+
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 std::vector<physx::PxRigidActor*> ModulePhysics::GetRigidStatics() const
 {

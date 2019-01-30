@@ -77,7 +77,7 @@ public:
 	bool EraseColliderComponent(ComponentCollider* toErase);
 
 	// Callbacks
-
+	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB) const;
 
 	// ----------
 

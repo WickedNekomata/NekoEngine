@@ -1110,6 +1110,9 @@
     <ClCompile Include="M_DebugDraw.cpp">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </ClCompile>
+    <ClCompile Include="BuildContext.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">
@@ -1159,6 +1162,9 @@
     </None>
     <None Include="Uniforms.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </None>
+    <None Include="BuildContext.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
     </None>
   </ItemGroup>
 </Project>

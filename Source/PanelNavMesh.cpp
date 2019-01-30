@@ -8,6 +8,7 @@
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentTransform.h"
 
 #include "ResourceMesh.h"
 #include "ModuleResourceManager.h"
@@ -58,11 +59,11 @@ bool PanelNavMesh::Draw()
 		uint partition = cs.p_partitionType;
 		
 		if (ImGui::RadioButton("Watershed (recommended)", cs.p_partitionType == 0))
-			cs.p_partitionType = 0;
+			cs.p_partitionType = 0; // Watershed
 		if (ImGui::RadioButton("Monotone", cs.p_partitionType == 1))
-			cs.p_partitionType = 1;
+			cs.p_partitionType = 1; // Monotone
 		if (ImGui::RadioButton("Layers", cs.p_partitionType == 2))
-			cs.p_partitionType = 2;
+			cs.p_partitionType = 2; // Layers
 	}
 
 	if (ImGui::CollapsingHeader("Polygonitzation"))
@@ -79,9 +80,12 @@ bool PanelNavMesh::Draw()
 	}
 
 	if (ImGui::Button("Bake"))
-	{
 		HandleInputMeshes();
-	}	
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Delete Navmesh"))
+		App->soloMeshQuery->CleanUp();
 
 	ImGui::End();
 
@@ -111,6 +115,12 @@ void PanelNavMesh::HandleInputMeshes() const
 	std::vector<ComponentMesh*> statics;
 	App->GOs->GetMeshComponentsFromStaticGameObjects(statics);
 
+	if (statics.size() <= 0)
+	{
+		CONSOLE_LOG("Rc: No static gameobjects");
+		return;
+	}
+
 	InputGeom p_inputGeom;
 	math::AABB aabb;
 	aabb.SetNegativeInfinity();
@@ -124,6 +134,12 @@ void PanelNavMesh::HandleInputMeshes() const
 			continue;
 		p_inputGeom.i_nmeshes += 1;
 		aabb.Enclose(statics[i]->GetParent()->boundingBox);
+	}
+
+	if (p_inputGeom.i_nmeshes <= 0)
+	{
+		CONSOLE_LOG("rc: No meshes in static gameobjects");
+		return;
 	}
 
 	p_inputGeom.i_meshes = new M_Mesh[p_inputGeom.i_nmeshes];
@@ -140,8 +156,21 @@ void PanelNavMesh::HandleInputMeshes() const
 			p_inputGeom.i_meshes[i].m_verts = new float[p_inputGeom.i_meshes[i].m_nverts * 3];
 			res->GetIndices(p_inputGeom.i_meshes[i].m_tris);
 			res->GetVerts(p_inputGeom.i_meshes[i].m_verts);
+
+			/*for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
+			{
+				math::float3 globalVert = (statics[i]->GetParent()->transform->GetGlobalMatrix().Inverse() *
+					math::float4(p_inputGeom.i_meshes[i].m_verts[j],
+						p_inputGeom.i_meshes[i].m_verts[j + 1],
+						p_inputGeom.i_meshes[i].m_verts[j + 2],
+						1)).xyz();
+
+				memcpy(&p_inputGeom.i_meshes[i].m_verts[j], globalVert.ptr(), sizeof(float) * 3);
+			}
+			*/
 		}
 	}
+
 	memcpy(&p_inputGeom + offsetof(InputGeom, i_buildSettings), &cs, sizeof(CommonSettings));
 	memcpy(p_inputGeom.bMin, aabb.minPoint.ptr(), sizeof(math::float3));
 	memcpy(p_inputGeom.bMax, aabb.maxPoint.ptr(), sizeof(math::float3));

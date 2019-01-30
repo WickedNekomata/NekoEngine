@@ -1,6 +1,14 @@
 #ifndef __INPUTGEOM_H__
 #define __INPUTGEOM_H__
 
+enum RecastPartitionType
+{
+	SAMPLE_PARTITION_WATERSHED,
+	SAMPLE_PARTITION_MONOTONE,
+	SAMPLE_PARTITION_LAYERS,
+};
+
+
 struct BuildSettings
 {
 	// Dont reorder the elements cause of memcpy at panel navmesh. If required, you would also reorder cs at p_navmesh.
@@ -33,7 +41,7 @@ struct BuildSettings
 	// Detail sample max error in voxel heights.
 	float detailSampleMaxError;
 	// Partition type, see SamplePartitionType
-	int partitionType;
+	RecastPartitionType partitionType;
 	// Size of the tiles in voxels
 	float tileSize;
 };

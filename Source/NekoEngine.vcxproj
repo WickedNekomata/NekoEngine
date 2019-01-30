@@ -373,6 +373,7 @@
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="M_DebugDraw.cpp" />
     <ClCompile Include="PanelNavMesh.cpp" />
+    <ClCompile Include="BuildContext.cpp" />
     <ClCompile Include="SoloMesh_Query.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
@@ -456,6 +457,7 @@
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\include\Math\Matrix.inl" />
+    <None Include="BuildContext.h" />
     <None Include="Uniforms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

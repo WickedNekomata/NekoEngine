@@ -31,12 +31,29 @@ SoloMesh_Query::~SoloMesh_Query()
 void SoloMesh_Query::CleanUp()
 {
 	if (m_triareas) delete[] m_triareas;
+	if (m_geom) delete m_geom;
 	m_triareas = 0;
+	m_geom = 0;
+
+	rcFreeHeightField(m_solid);
+	m_solid = 0;
+	rcFreeCompactHeightfield(m_chf);
+	m_chf = 0;
+	rcFreeContourSet(m_cset);
+	m_cset = 0;
+	rcFreePolyMesh(m_pmesh);
+	m_pmesh = 0;
+	rcFreePolyMeshDetail(m_dmesh);
+	m_dmesh = 0;
+	dtFreeNavMesh(m_navMesh);
+	m_navMesh = 0;
+
+	patata = false;
 }
 
 void SoloMesh_Query::SetInputGeom(InputGeom& inputGeom)
 {
-	if (m_geom) delete m_geom;
+	CleanUp();
 	m_geom = new InputGeom();
 	memcpy(m_geom, &inputGeom, sizeof(InputGeom));
 }
@@ -45,15 +62,14 @@ bool SoloMesh_Query::HandleBuild()
 {
 	if (!m_geom)
 	{
-		CONSOLE_LOG("buildNavigation: Input mesh is not specified.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Input mesh is not specified.");
 		return false;
 	}
 
-	CleanUp();
+	bool m_keepInterResults = false;
 
-	const float* bmin = (const float*)m_geom->bMin;
-	const float* bmax = (const float*)m_geom->bMax;
-
+	m_ctx = new BuildContext();
+	// Set all input settings to recast
 	memset(&m_cfg, 0, sizeof(m_cfg));
 	m_cfg.cs = m_geom->i_buildSettings.cellSize;
 	m_cfg.ch = m_geom->i_buildSettings.cellHeight;
@@ -69,20 +85,21 @@ bool SoloMesh_Query::HandleBuild()
 	m_cfg.detailSampleDist = m_geom->i_buildSettings.detailSampleDist < 0.9f ? 0 : m_geom->i_buildSettings.cellSize * m_geom->i_buildSettings.detailSampleDist;
 	m_cfg.detailSampleMaxError = m_geom->i_buildSettings.cellHeight * m_geom->i_buildSettings.detailSampleMaxError;
 
-	// area could be specified by an user defined box, etc.
-	rcVcopy(m_cfg.bmin, bmin);
-	rcVcopy(m_cfg.bmax, bmax);
+	rcVcopy(m_cfg.bmin, (const float*)m_geom->bMin);
+	rcVcopy(m_cfg.bmax, (const float*)m_geom->bMax);
 	rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
+
+	RecastPartitionType partition = m_geom->i_buildSettings.partitionType;
 
 	m_solid = rcAllocHeightfield();
 	if (!m_solid)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'solid'.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
 		return false;
 	}
-	if (!rcCreateHeightfield(&ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+	if (!rcCreateHeightfield(m_ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
 	{
-		CONSOLE_LOG("buildNavigation: Could not create solid heightfield.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
 		return false;
 	}
 
@@ -90,38 +107,41 @@ bool SoloMesh_Query::HandleBuild()
 	m_triareas = new unsigned char[m_geom->i_ntris];
 	if (!m_triareas)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'm_triareas' (%d).", 0);
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'm_triareas' (%d).", m_geom->i_ntris);
 		return false;
 	}
 
 	memset(m_triareas, 0, m_geom->i_ntris * sizeof(unsigned char));
 
+	// For each mesh:
+	// Getting each triangle using tris(indices) and vertices extract face normal and check if walkable
+	// Rasterize all triangles from the mesh into the heightfield
 	for (int i = 0; i < m_geom->i_nmeshes; ++i)
 	{
-		// Getting each triangle using tris(indices) and vertices extract face normal and check if walkable
-		rcMarkWalkableTriangles(&ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+		rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
 		m_geom->i_meshes[i].m_tris, m_geom->i_meshes[i].m_ntris, m_triareas);
-		if (!rcRasterizeTriangles(&ctx, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+		if (!rcRasterizeTriangles(m_ctx, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
 			m_geom->i_meshes[i].m_tris, m_triareas, m_geom->i_meshes[i].m_ntris, *m_solid, m_cfg.walkableClimb))
 		{
-			CONSOLE_LOG("buildNavigation: Could not rasterize triangles.");
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not rasterize triangles.");
 			return false;
 		}
 	}
 
-	bool m_keepInterResults = false;
 	if (!m_keepInterResults)
 	{
 		delete[] m_triareas;
 		m_triareas = 0;
+		delete m_geom;
+		m_geom = 0;
 	}
 
 	// Once all geoemtry is rasterized, we do initial pass of filtering to
 	// remove unwanted overhangs caused by the conservative rasterization
 	// as well as filter spans where the character cannot possibly stand.
-	rcFilterLowHangingWalkableObstacles(&ctx, m_cfg.walkableClimb, *m_solid);
-	rcFilterLedgeSpans(&ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid);
-	rcFilterWalkableLowHeightSpans(&ctx, m_cfg.walkableHeight, *m_solid);
+	rcFilterLowHangingWalkableObstacles(m_ctx, m_cfg.walkableClimb, *m_solid);
+	rcFilterLedgeSpans(m_ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid);
+	rcFilterWalkableLowHeightSpans(m_ctx, m_cfg.walkableHeight, *m_solid);
 
 	//
 	// Step 4. Partition walkable surface to simple regions.
@@ -133,12 +153,12 @@ bool SoloMesh_Query::HandleBuild()
 	m_chf = rcAllocCompactHeightfield();
 	if (!m_chf)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'chf'.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'chf'.");
 		return false;
 	}
-	if (!rcBuildCompactHeightfield(&ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid, *m_chf))
+	if (!rcBuildCompactHeightfield(m_ctx, m_cfg.walkableHeight, m_cfg.walkableClimb, *m_solid, *m_chf))
 	{
-		CONSOLE_LOG("buildNavigation: Could not build compact data.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build compact data.");
 		return false;
 	}
 
@@ -149,77 +169,86 @@ bool SoloMesh_Query::HandleBuild()
 	}
 
 	// Erode the walkable area by agent radius.
-	if (!rcErodeWalkableArea(&ctx, m_cfg.walkableRadius, *m_chf))
+	if (!rcErodeWalkableArea(m_ctx, m_cfg.walkableRadius, *m_chf))
 	{
-		CONSOLE_LOG("buildNavigation: Could not erode.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not erode.");
 		return false;
 	}
 
-	// (Optional) Mark areas.
-	//const ConvexVolume* vols = m_geom->getConvexVolumes();
-	//for (int i = 0; i < m_geom->getConvexVolumeCount(); ++i)
-		//rcMarkConvexPolyArea(NULL, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned char)vols[i].area, *m_chf);
-
-	// Prepare for region partitioning, by calculating distance field along the walkable surface.
-	if (!rcBuildDistanceField(&ctx, *m_chf))
+	if (partition == SAMPLE_PARTITION_WATERSHED)
 	{
-		CONSOLE_LOG("buildNavigation: Could not build distance field.");
-		return false;
+		// Prepare for region partitioning, by calculating distance field along the walkable surface.
+		if (!rcBuildDistanceField(m_ctx, *m_chf))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build distance field.");
+			return false;
+		}
+
+		// Partition the walkable surface into simple regions without holes.
+		if (!rcBuildRegions(m_ctx, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build watershed regions.");
+			return false;
+		}
+	}
+	else if (partition == SAMPLE_PARTITION_MONOTONE)
+	{
+		// Partition the walkable surface into simple regions without holes.
+		// Monotone partitioning does not need distancefield.
+		if (!rcBuildRegionsMonotone(m_ctx, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build monotone regions.");
+			return false;
+		}
+	}
+	else // SAMPLE_PARTITION_LAYERS
+	{
+		// Partition the walkable surface into simple regions without holes.
+		if (!rcBuildLayerRegions(m_ctx, *m_chf, 0, m_cfg.minRegionArea))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build layer regions.");
+			return false;
+		}
 	}
 
-	// Partition the walkable surface into simple regions without holes.
-	if (!rcBuildRegions(&ctx, *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
-	{
-		CONSOLE_LOG("buildNavigation: Could not build watershed regions.");
-		return false;
-	}
 
-	//
 	// Step 5. Trace and simplify region contours.
-	//
-
-	// Create contours.
 	m_cset = rcAllocContourSet();
 	if (!m_cset)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'cset'.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'cset'.");
 		return false;
 	}
-	if (!rcBuildContours(&ctx, *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_cset))
+	if (!rcBuildContours(m_ctx, *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_cset))
 	{
-		CONSOLE_LOG("buildNavigation: Could not create contours.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
 		return false;
 	}
 
 	// Step 6. Build polygons mesh from contours.
-	//
-
-	// Build polygon navmesh from the contours.
 	m_pmesh = rcAllocPolyMesh();
 	if (!m_pmesh)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'pmesh'.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'pmesh'.");
 		return false;
 	}
-	if (!rcBuildPolyMesh(&ctx, *m_cset, m_cfg.maxVertsPerPoly, *m_pmesh))
+	if (!rcBuildPolyMesh(m_ctx, *m_cset, m_cfg.maxVertsPerPoly, *m_pmesh))
 	{
-		CONSOLE_LOG("buildNavigation: Could not triangulate contours.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not triangulate contours.");
 		return false;
 	}
 
 	// Step 7. Create detail mesh which allows to access approximate height on each polygon.
-	//
-
 	m_dmesh = rcAllocPolyMeshDetail();
 	if (!m_dmesh)
 	{
-		CONSOLE_LOG("buildNavigation: Out of memory 'pmdtl'.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'pmdtl'.");
 		return false;
 	}
 
-	if (!rcBuildPolyMeshDetail(&ctx, *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_dmesh))
+	if (!rcBuildPolyMeshDetail(m_ctx, *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_dmesh))
 	{
-		CONSOLE_LOG("buildNavigation: Could not build detail mesh.");
+		m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
 		return false;
 	}
 
@@ -259,9 +288,9 @@ bool SoloMesh_Query::HandleBuild()
 		params.offMeshConFlags = NULL;
 		params.offMeshConUserID = NULL;
 		params.offMeshConCount = NULL;
-		params.walkableHeight = 2.0f;
-		params.walkableRadius = 0.6f;
-		params.walkableClimb = 0.9f;
+		params.walkableHeight = m_cfg.walkableHeight;
+		params.walkableRadius = m_cfg.walkableRadius;
+		params.walkableClimb = m_cfg.walkableClimb;
 		rcVcopy(params.bmin, m_pmesh->bmin);
 		rcVcopy(params.bmax, m_pmesh->bmax);
 		params.cs = m_cfg.cs;
@@ -303,8 +332,10 @@ bool SoloMesh_Query::HandleBuild()
 		}	
 		*/
 	}
-
 	patata = true;
+
+	delete m_ctx;
+	m_ctx = NULL;
 
 	return true;
 }
@@ -314,8 +345,6 @@ void SoloMesh_Query::Draw()
 	if (patata)
 	{
 		M_DebugDraw dd;
-		//for (int i = 0; i < m_pmesh->npolys; ++i)
-			duDebugDrawNavMesh(&dd, *m_navMesh, 0);
-			//duDebugDrawNavMeshPoly(&dd, *m_navMesh, m_pmesh->polys[i], duRGBA(0, 0, 0, 128));
+		duDebugDrawNavMesh(&dd, *m_navMesh, 0);
 	}
 }

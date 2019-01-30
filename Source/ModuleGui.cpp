@@ -181,7 +181,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "ALT+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "ALT+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
-			if (ImGui::MenuItem("NavMesh")) { panelDebugDraw->OnOff(); }
+			if (ImGui::MenuItem("NavMesh")) { panelNavMesh->OnOff(); }
 
 #ifdef _DEBUG
 			if (ImGui::MenuItem("ImGui Demo")) { imguiDemo = !imguiDemo; }
@@ -317,6 +317,7 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelDebugDraw->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
+		ImGui::DockBuilderDockWindow(panelNavMesh->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);

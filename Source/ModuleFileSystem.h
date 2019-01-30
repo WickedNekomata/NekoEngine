@@ -316,8 +316,11 @@ public:
 
 	std::string getAppPath();
 
+	bool MoveFileInto(const std::string& file, const std::string& newLocation);
 	bool CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot = true);
 	Directory RecursiveGetFilesFromDir(char* dir) const;
+	bool deleteFile(const std::string& filePath) const;
+	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
 
 private:
 

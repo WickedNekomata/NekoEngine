@@ -138,15 +138,15 @@ bool ResourceScript::Compile()
 		{
 			firstCompiled = false;
 			
-			Debug.LogError("Error compiling the script %s:", fileName.data());
+			//Debug.LogError("Error compiling the script %s:", fileName.data());
 
-			char* buffer; int size;
-			App->fs->OpenRead("LogError.txt", &buffer, size, false);
+			char* buffer; 
+			int size = App->fs->Load("LogError.txt", &buffer);
 
 			std::string outPut(buffer);
 			outPut.resize(size);
 
-			Debug.LogError(outPut.data());
+			//Debug.LogError(outPut.data());
 
 			delete buffer;
 		}
@@ -167,7 +167,7 @@ bool ResourceScript::Compile()
 		std::string fileNameNoExt = file.substr(file.find_last_of("/") + 1);
 		fileNameNoExt = fileNameNoExt.substr(0, fileNameNoExt.find("."));
 
-		if (!App->fs->MoveFileInto(dllPath, ("Library/Scripts/" + fileNameNoExt + ".dll").data(), false))
+		if (!App->fs->MoveFileInto(dllPath, "Library/Scripts/" + fileNameNoExt + ".dll"))
 			return false;
 		
 		referenceMethods();
@@ -187,15 +187,15 @@ bool ResourceScript::referenceMethods()
 
 	//Referencing the assembly from memory
 	char* buffer;
-	int size;
-	if (!App->fs->OpenRead(exportedFile, &buffer, size, false))
+	int size = App->fs->Load(exportedFile, &buffer);
+	if(size <= 0)
 		return false;
 
 	//Loading assemblies from data instead of from file
 	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
 	image = mono_image_open_from_data(buffer, size, 1, &status);
 
-	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(uuid)).data(), &status, false);
+	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(GetUUID())).data(), &status, false);
 
 	delete buffer;
 

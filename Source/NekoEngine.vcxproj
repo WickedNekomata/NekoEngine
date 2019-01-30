@@ -108,6 +108,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\jit\jit.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\appdomain.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\assembly.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\attrdefs.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\blob.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\class.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\debug-helpers.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\debug-mono-symfile.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\environment.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\exception.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\image.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\loader.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\metadata.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-config.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-debug.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-gc.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\object-forward.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\object.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\opcodes.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\profiler-events.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\profiler.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\reflection.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\row-indexes.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\sgen-bridge.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\threads.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\tokentype.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\verify.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-counters.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-dl-fallback.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-error.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-jemalloc.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-logger.h" />
+    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-publib.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
     <ClInclude Include="Assimp\include\anim.h" />
@@ -403,6 +436,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Game\Mono\include\mono-2.0\mono\cil\opcode.def" />
     <None Include="Assimp\include\.editorconfig" />
     <None Include="Assimp\include\color4.inl" />
     <None Include="Assimp\include\config.h.in" />

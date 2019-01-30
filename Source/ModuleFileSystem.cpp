@@ -790,6 +790,36 @@ std::string ModuleFileSystem::getAppPath()
 	return "";
 }
 
+bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string& newLocation)
+{
+	char* buffer;
+	int size = Load(file, &buffer);
+	if (size <= 0) 
+	{
+		//Debug.LogError("Couldn't move the file");
+		return false;
+	}
+
+	if (Save(newLocation, buffer, size) <= 0)
+	{
+		//Debug.LogError("Couldn't move the file");
+		delete buffer;
+		return false;
+	}
+
+	if (!deleteFile(file))
+	{
+		//Debug.LogError("Couldn't move the file");
+		delete buffer;
+		return false;
+	}
+
+	//Debug.Log("File %s moved succesfully to %s.", file.data(), newLocation.data());
+
+	delete buffer;
+	return true;
+}
+
 bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot)
 {
 	Directory originDir = RecursiveGetFilesFromDir((char*)origin.data());
@@ -894,4 +924,29 @@ Directory ModuleFileSystem::RecursiveGetFilesFromDir(char* dir) const
 	PHYSFS_freeList(files);
 
 	return ret;
+}
+
+bool ModuleFileSystem::deleteFile(const std::string& filePath) const
+{
+	return PHYSFS_delete(filePath.c_str()) != 0;
+}
+
+bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& extension) const
+{
+	Directory directory = RecursiveGetFilesFromDir((char*)root.c_str());
+
+	for (int i = 0; i < directory.files.size(); ++i)
+	{
+		std::string fileExt; GetExtension(directory.files[i].name.data(), fileExt);
+
+		if (fileExt == extension)
+			PHYSFS_delete(std::string(directory.fullPath + "/" + directory.files[i].name).c_str());
+	}
+
+	for (int i = 0; i < directory.directories.size(); ++i)
+	{
+		deleteFiles(directory.directories[i].fullPath, extension);
+	}
+
+	return true;
 }

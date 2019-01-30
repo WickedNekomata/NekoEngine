@@ -71,6 +71,20 @@ bool Component::IsActive() const
 	return isActive;
 }
 
+bool Component::IsTreeActive()
+{
+	bool active = isActive;
+
+	GameObject* itGO = parent;
+	while (active && itGO)
+	{
+		active = itGO->IsActive();
+		itGO = itGO->GetParent();
+	}
+
+	return active;
+}
+
 ComponentType Component::GetType() const
 {
 	return type;

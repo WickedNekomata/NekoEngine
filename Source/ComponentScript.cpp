@@ -1,7 +1,13 @@
+#include "Application.h"
+#include "ModuleInput.h"
+#include "ModuleResourceManager.h"
+#include "ScriptingModule.h"
+
 #include "ComponentScript.h"
 #include "ResourceScript.h"
-#include "ResourcePrefab.h"
+//#include "ResourcePrefab.h"
 
+#include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_stl.h"
 
@@ -9,18 +15,12 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/debug-helpers.h>
-
 #include <mono/metadata/attrdefs.h>
-
-#include "ScriptingModule.h"
-#include "Application.h"
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
 
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)
-		scriptRes->deReferenced();
+		scriptRes->UnloadMemory();
 
 	if (handleID != 0)
 	{
@@ -40,14 +40,14 @@ void ComponentScript::Awake()
 			mono_runtime_invoke(scriptRes->awakeMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -64,14 +64,14 @@ void ComponentScript::Start()
 			mono_runtime_invoke(scriptRes->startMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -88,14 +88,14 @@ void ComponentScript::PreUpdate()
 			mono_runtime_invoke(scriptRes->preUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -112,14 +112,14 @@ void ComponentScript::Update()
 			mono_runtime_invoke(scriptRes->updateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -136,14 +136,14 @@ void ComponentScript::PostUpdate()
 			mono_runtime_invoke(scriptRes->postUpdateMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -160,14 +160,14 @@ void ComponentScript::OnEnableMethod()
 			mono_runtime_invoke(scriptRes->enableMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -182,14 +182,14 @@ void ComponentScript::OnDisableMethod()
 		mono_runtime_invoke(scriptRes->disableMethod, classInstance, NULL, &exc);
 		if (exc)
 		{
-			Event event;
-			event.type = EventType::PAUSE;
-			App->SendEvent(event);
-			App->time->paused = true;
+			System_Event event;
+			event.type = System_Event_Type::Pause;
+			App->PushSystemEvent(event);
+			App->Pause();
 
 			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			Debug.LogError(toLogMessage);
+			//Debug.LogError(toLogMessage);
 			mono_free(toLogMessage);
 		}
 	}
@@ -206,21 +206,21 @@ void ComponentScript::OnStop()
 			mono_runtime_invoke(scriptRes->stopMethod, classInstance, NULL, &exc);
 			if (exc)
 			{
-				Event event;
-				event.type = EventType::PAUSE;
-				App->SendEvent(event);
-				App->time->paused = true;
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				Debug.LogError(toLogMessage);
+				//Debug.LogError(toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
 	}
 }
 
-void ComponentScript::onEnable()
+void ComponentScript::OnEnable()
 {
 	App->scripting->UpdateMonoObjects();
 
@@ -229,7 +229,7 @@ void ComponentScript::onEnable()
 	App->scripting->UpdateGameObjects();
 }
 
-void ComponentScript::onDisable()
+void ComponentScript::OnDisable()
 {
 	App->scripting->UpdateMonoObjects();
 
@@ -240,16 +240,16 @@ void ComponentScript::onDisable()
 
 void ComponentScript::OnInspector()
 {
-	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &this->active))
+	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 	{
-		if (this->isActive())
+		if (isActive)
 		{
-			if (IN_GAME)
+			if (App->GetEngineState() == engine_states::ENGINE_PLAY)
 				this->OnEnableMethod();
 		}
 		else
 		{
-			if (IN_GAME)
+			if (App->GetEngineState() == engine_states::ENGINE_PLAY)
 				this->OnDisableMethod();
 		}
 	}
@@ -272,10 +272,10 @@ void ComponentScript::OnInspector()
 	{
 		if (ImGui::MenuItem("Delete Component"))
 		{
-			Event event;
-			event.type = EventType::COMPONENT_DESTROYED;
+			System_Event event;
+			event.compEvent.type = System_Event_Type::ComponentDestroyed;
 			event.compEvent.component = this;
-			App->SendEvent(event);
+			App->PushSystemEvent(event);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -322,14 +322,14 @@ void ComponentScript::OnInspector()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->getFile().data());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->file);
 			ImGui::EndTooltip();
 		}		
 
 		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
 
 		//Calculate the text fitting the button rect
-		std::string originalText = scriptRes ? scriptRes->getFile().data() : "";
+		std::string originalText = scriptRes ? scriptRes->file : "";
 		std::string clampedText;
 
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
@@ -651,7 +651,10 @@ void ComponentScript::OnInspector()
 						if (payload)
 						{
 							Resource* resource = *(Resource**)payload->Data;
-							if (resource->getType() == Resource::ResourceType::PREFAB)
+
+							//TODO: IMPLEMENT PREFABS
+
+							/*if (resource->getType() == Resource::ResourceType::PREFAB)
 							{
 								if (ImGui::IsMouseReleased(0))
 								{
@@ -660,7 +663,7 @@ void ComponentScript::OnInspector()
 									MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
 									mono_field_set_value(classInstance, field, monoObject);
 								}
-							}						
+							}	*/					
 						}
 						ImGui::EndDragDropTarget();
 					}
@@ -700,9 +703,12 @@ void ComponentScript::OnInspector()
 							char* nameCpp = mono_string_to_utf8(goName);
 
 							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
-							if (gameObject->prefab)
+
+							//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+
+							/*if (gameObject->prefab)
 								text = nameCpp + std::string(" (Prefab)");
-							else
+							else*/
 								text = nameCpp + std::string(" (GameObject)");
 
 							mono_free(nameCpp);
@@ -956,14 +962,14 @@ uint ComponentScript::bytesToSerializePublicVars() const
 				varType = VarType::GAMEOBJECT;
 
 				uint nameLenght = fieldName.length();
-				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(UID));
+				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(uint32_t));
 			}
 			else if (typeName == "FlanEngine.Transform")
 			{
 				varType = VarType::TRANSFORM;
 
 				uint nameLenght = fieldName.length();
-				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(UID));
+				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(uint32_t));
 			}
 		}
 		field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
@@ -973,48 +979,49 @@ uint ComponentScript::bytesToSerializePublicVars() const
 
 void ComponentScript::Serialize(char*& cursor) const
 {
-	uint bytes = sizeof(UID);
-	memcpy(cursor, &gameObject->uuid, bytes);
+	uint bytes = sizeof(uint32_t);
+	uint32_t parentUUID = parent->GetUUID();
+	memcpy(cursor, &parentUUID, bytes);
 	cursor += bytes;
 
 	memcpy(cursor, &UUID, bytes);
 	cursor += bytes;
 
-	UID resUID = scriptRes ? scriptRes->getUUID() : 0;
+	uint32_t resUID = scriptRes ? scriptRes->GetUUID() : 0;
 	memcpy(cursor, &resUID, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(bool);
-	memcpy(cursor, &active, bytes);
+	memcpy(cursor, &isActive, bytes);
 	cursor += bytes;
 }
 
 void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
 {
-	uint bytes = sizeof(UID);
+	uint bytes = sizeof(uint32_t);
 	memcpy(&goUUID, cursor, bytes);
 	cursor += bytes;
 
 	memcpy(&UUID, cursor, bytes);
 	cursor += bytes;
 
-	UID resUID;
+	uint32_t resUID;
 	memcpy(&resUID, cursor, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(bool);
-	memcpy(&active, cursor, bytes);
+	memcpy(&isActive, cursor, bytes);
 	cursor += bytes;
 
 	//Reference the ScriptResource
-	scriptRes = (ResourceScript*)App->resources->Get(resUID);
+	scriptRes = (ResourceScript*)App->res->GetResource(resUID);
 
 	if (scriptRes)
 	{
 		scriptName = scriptRes->scriptName;
 	}		
-	else
-		Debug.LogError("A ComponentScript lost his ResourceScript reference!");
+	/*else
+		Debug.LogError("A ComponentScript lost his ResourceScript reference!");*/
 }
 
 void ComponentScript::SerializePublicVars(char*& cursor) const
@@ -1429,8 +1436,8 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 				cursor += bytes;
 
 				//Here save the UID of the gameObject you have referenced
-				UID uid = serializableGO ? serializableGO->uuid : 0;
-				bytes = sizeof(UID);
+				uint32_t uid = serializableGO ? serializableGO->GetUUID() : 0;
+				bytes = sizeof(uint32_t);
 				memcpy(cursor, &uid, bytes);
 				cursor += bytes;
 
@@ -1464,8 +1471,8 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 				cursor += bytes;
 
 				//Here save the UID of the transform->gameObject you have referenced
-				UID uid = serializableGO ? serializableGO->uuid : 0;
-				bytes = sizeof(UID);
+				uint32_t uid = serializableGO ? serializableGO->GetUUID() : 0;
+				bytes = sizeof(uint32_t);
 				memcpy(cursor, &uid, bytes);
 				cursor += bytes;
 			}
@@ -1884,8 +1891,8 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 		}
 		case VarType::GAMEOBJECT:	
 		{
-			bytes = sizeof(UID);
-			UID uid;
+			bytes = sizeof(uint32_t);
+			uint32_t uid;
 			memcpy(&uid, cursor, bytes);
 			cursor += bytes;
 			
@@ -1893,7 +1900,9 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 
 			if (uid != 0)
 			{
-				go = App->resources->FindPrefabGObyID(uid);
+				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+
+				/*go = App->resources->FindPrefabGObyID(uid);
 
 				if (!go)
 				{
@@ -1902,7 +1911,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					{
 						Debug.LogError("A Script lost a Gameobject reference");
 					}
-				}
+				}*/
 			}
 
 			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
@@ -1933,8 +1942,8 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 		}
 		case VarType::TRANSFORM:
 		{
-			bytes = sizeof(UID);
-			UID uid;
+			bytes = sizeof(uint32_t);
+			uint32_t uid;
 			memcpy(&uid, cursor, bytes);
 			cursor += bytes;
 
@@ -1942,7 +1951,9 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 
 			if (uid != 0)
 			{
-				go = App->resources->FindPrefabGObyID(uid);
+				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+
+				/*go = App->resources->FindPrefabGObyID(uid);
 
 				if (!go)
 				{
@@ -1951,7 +1962,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					{
 						Debug.LogError("A Script lost a Transform reference");
 					}
-				}
+				}*/
 			}
 
 			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
@@ -2005,7 +2016,7 @@ void ComponentScript::InstanceClass()
 	mono_runtime_object_init(classInstance);
 
 	//Reference the gameObject var with the MonoObject relative to this GameObject
-	MonoObject* monoGO = App->scripting->MonoObjectFrom(gameObject);
+	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);
 
 	//SetUp this monoGO inside the class Instance
 	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");

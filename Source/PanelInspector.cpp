@@ -116,17 +116,24 @@ void PanelInspector::ShowGameObjectInspector() const
 	ImGui::Button("Add Component");
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->meshRenderer == nullptr) {
+		if (gameObject->meshRenderer == nullptr) 
 			if (ImGui::Selectable("Mesh")) {
 				gameObject->AddComponent(ComponentType::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		}
+		
 		if (gameObject->camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
 				gameObject->AddComponent(ComponentType::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
+
+		if (gameObject->emitter == nullptr) 
+			if (ImGui::Selectable("Particle Emitter")) {
+				gameObject->AddComponent(ComponentType::EmitterComponent);
+				ImGui::CloseCurrentPopup();
+			}	
+
 		ImGui::EndPopup();		
 	}
 }

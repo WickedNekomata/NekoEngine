@@ -94,6 +94,9 @@
     <Filter Include="Sources\3rd Party\ImGuiColorTextEdit">
       <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\Particles">
+      <UniqueIdentifier>{9a4bede6-50fc-4d49-93bc-caa1f6ff8fee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -640,6 +643,7 @@
     <ClInclude Include="PanelSkybox.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+
     <ClInclude Include="ResourceScript.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
@@ -649,6 +653,20 @@
     <ClInclude Include="ComponentScript.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+
+    <ClInclude Include="Particle.h">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleParticles.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentEmitter.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -921,6 +939,7 @@
     <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
+
     <ClCompile Include="ResourceScript.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
@@ -930,6 +949,20 @@
     <ClCompile Include="ComponentScript.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
+
+    <ClCompile Include="Particle.cpp">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleParticles.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentEmitter.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">

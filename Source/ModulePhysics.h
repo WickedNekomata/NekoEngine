@@ -45,6 +45,18 @@ private:
 
 };
 
+// Collision filtering example
+/*
+enum FilterGroup
+{
+	eSUBMARINE = (1 << 0),
+	eMINE_HEAD = (1 << 1),
+	eMINE_LINK = (1 << 2),
+	eCRAB = (1 << 3),
+	eHEIGHTFIELD = (1 << 4),
+};
+*/
+
 class SimulationEventCallback : public physx::PxSimulationEventCallback
 {
 public:

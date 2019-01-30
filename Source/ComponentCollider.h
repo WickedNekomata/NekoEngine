@@ -17,21 +17,27 @@ public:
 	virtual void OnUniqueEditor();
 
 	virtual void ClearShape();
-
 	virtual void RecalculateShape() = 0;
+
+	void SetIsTrigger(bool isTrigger);
+	void ParticipateInContactTests(bool participateInContactTests);
+	void ParticipateInSceneQueries(bool participateInSceneQueries);
+
+	physx::PxShape* GetShape() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 
-	physx::PxShape* GetShape() const;
-
 protected:
 
 	bool isTrigger = false;
+	bool participateInContactTests = true;
+	bool participateInSceneQueries = true;
 	physx::PxMaterial* gMaterial = nullptr;
 	math::float3 center = math::float3::zero;
 
 	physx::PxShape* gShape = nullptr;
+
 };
 
 #endif

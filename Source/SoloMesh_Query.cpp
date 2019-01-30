@@ -22,10 +22,12 @@
 
 SoloMesh_Query::SoloMesh_Query()
 {
+	m_navQuery = dtAllocNavMeshQuery();
 }
 
 SoloMesh_Query::~SoloMesh_Query()
 {
+	dtFreeNavMeshQuery(m_navQuery);
 }
 
 void SoloMesh_Query::CleanUp()
@@ -299,7 +301,7 @@ bool SoloMesh_Query::HandleBuild()
 
 		if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
 		{
-			//m_ctx->log(RC_LOG_ERROR, "Could not build Detour navmesh.");
+			m_ctx->log(RC_LOG_ERROR, "Could not build Detour navmesh.");
 			return false;
 		}
 
@@ -307,7 +309,7 @@ bool SoloMesh_Query::HandleBuild()
 		if (!m_navMesh)
 		{
 			dtFree(navData);
-			//m_ctx->log(RC_LOG_ERROR, "Could not create Detour navmesh");
+			m_ctx->log(RC_LOG_ERROR, "Could not create Detour navmesh");
 			return false;
 		}
 
@@ -317,20 +319,16 @@ bool SoloMesh_Query::HandleBuild()
 		if (dtStatusFailed(status))
 		{
 			dtFree(navData);
-		//	m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh");
+			m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh");
 			return false;
 		}
 
-
-		// Next Step
-		/*
 		status = m_navQuery->init(m_navMesh, 2048);
 		if (dtStatusFailed(status))
 		{
-			//m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
+			m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
 			return false;
 		}	
-		*/
 	}
 	patata = true;
 

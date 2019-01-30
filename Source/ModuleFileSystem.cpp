@@ -22,7 +22,11 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
 
-	PHYSFS_init(nullptr);
+	if (PHYSFS_init(nullptr) == 0)
+	{
+		const char* error = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+		CONSOLE_LOG("Could not initialize PHYSFS. Error: %s", error);
+	}
 
 	AddPath(".");
 #ifndef GAMEMODE

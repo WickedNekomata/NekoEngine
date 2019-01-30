@@ -679,105 +679,6 @@
     <ClInclude Include="imgui\imgui_stl.h">
       <Filter>Sources\3rd Party\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\appdomain.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\assembly.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\attrdefs.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\blob.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\class.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\debug-helpers.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\debug-mono-symfile.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\environment.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\exception.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\image.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\loader.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\metadata.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-config.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-debug.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\mono-gc.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\object.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\object-forward.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\opcodes.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\profiler.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\profiler-events.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\reflection.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\row-indexes.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\sgen-bridge.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\threads.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\tokentype.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\metadata\verify.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-counters.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-dl-fallback.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-error.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-jemalloc.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-logger.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\utils\mono-publib.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Game\Mono\include\mono-2.0\mono\jit\jit.h">
-      <Filter>Sources\3rd Party\Mono</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1126,9 +1027,6 @@
     </None>
     <None Include="Uniforms.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
-    </None>
-    <None Include="..\Game\Mono\include\mono-2.0\mono\cil\opcode.def">
-      <Filter>Sources\3rd Party\Mono</Filter>
     </None>
   </ItemGroup>
 </Project>

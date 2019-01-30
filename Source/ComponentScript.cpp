@@ -20,7 +20,7 @@
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)
-		scriptRes->UnloadMemory();
+		App->res->SetAsUnused(scriptRes->GetUUID());
 
 	if (handleID != 0)
 	{

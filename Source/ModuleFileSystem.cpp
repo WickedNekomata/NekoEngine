@@ -16,7 +16,7 @@
 
 #include <assert.h>
 
-#pragma comment(lib, "physfs\\libx86\\physfs.lib")
+#pragma comment(lib, "physfs/libx86/physfs.lib")
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {

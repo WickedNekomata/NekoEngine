@@ -52,7 +52,7 @@ bool exec(const char* cmd, std::string& error)
 	return result;
 }
 
-bool ScriptingModule::Init()
+bool ScriptingModule::Init(JSON_Object* data)
 {
 	//Locate the lib and etc folders in the mono installation
 	std::string MonoLib, MonoEtc, gamePath = App->fs->getAppPath();
@@ -118,7 +118,9 @@ bool ScriptingModule::CleanUp()
 	}
 	scripts.clear();
 
-	mono_jit_cleanup(domain);
+	if(domain)
+		mono_jit_cleanup(domain);
+
 	domain = nullptr;
 
 	return true;
@@ -1093,7 +1095,7 @@ void ScriptingModule::CreateDomain()
 	internalImage = mono_image_open_from_data(buffer, size, 1, &status);
 	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
 
-	delete buffer;
+	delete[] buffer;
 
 	timeClass = mono_class_from_name(internalImage, "FlanEngine", "Time");
 	deltaTime = mono_class_get_field_from_name(timeClass, "deltaTime");

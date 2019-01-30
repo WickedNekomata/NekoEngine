@@ -29,7 +29,7 @@ public:
 	ScriptingModule(bool start_enabled = true) : Module(start_enabled) { name = "ScriptingModule"; }
 	~ScriptingModule() {}
 
-	bool Init();
+	bool Init(JSON_Object* data) override;
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();

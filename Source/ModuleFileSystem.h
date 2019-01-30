@@ -273,6 +273,7 @@ public:
 
 	ModuleFileSystem(bool start_enabled = true);
 	~ModuleFileSystem();
+
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event event);

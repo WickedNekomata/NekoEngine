@@ -15,7 +15,6 @@ class ComponentTransform;
 class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
-class ComponentEmitter;
 
 class GameObject
 {
@@ -46,6 +45,7 @@ public:
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
 	Component* AddComponent(ComponentType type);
+	void ClearComponent(Component* component);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteComponentByValue(Component* component);
 	void MarkToDeleteAllComponents();
@@ -54,7 +54,6 @@ public:
 	bool HasComponents() const;
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;
-	Component * GetComponentByType(ComponentType type) const;
 	int GetComponentIndexOnComponents(Component* component) const;
 	void SwapComponents(Component* firstComponent, Component* secondComponent);
 	void ReorderComponents(Component* source, Component* target);
@@ -90,7 +89,6 @@ public:
 	ComponentMaterial* materialRenderer = nullptr;
 	ComponentMesh* meshRenderer = nullptr;
 	ComponentCamera* camera = nullptr;
-	ComponentEmitter* emitter = nullptr;
 
 	math::AABB boundingBox;
 

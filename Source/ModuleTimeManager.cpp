@@ -1,5 +1,4 @@
 #include "ModuleTimeManager.h"
-#include "GameTimer.h"
 
 #include "Application.h"
 
@@ -9,13 +8,6 @@ ModuleTimeManager::ModuleTimeManager(bool start_enabled) : Module(start_enabled)
 }
 
 ModuleTimeManager::~ModuleTimeManager() {}
-
-// Called before quitting
-bool ModuleTimeManager::CleanUp()
-{
-	gameTimerList.clear();
-	return true;
-}
 
 void ModuleTimeManager::PrepareUpdate()
 {
@@ -43,15 +35,6 @@ void ModuleTimeManager::PrepareUpdate()
 		dt = 0.0f;
 		break;
 	}
-
-	for (std::list<GameTimer*>::iterator it = gameTimerList.begin(); it != gameTimerList.end(); ++it)
-	{
-		if (App->IsEditor())
-			(*it)->Update(realDt);
-		else
-			(*it)->Update(dt);
-	}
-
 }
 
 void ModuleTimeManager::SetTimeScale(float timeScale)
@@ -90,9 +73,4 @@ float ModuleTimeManager::GetRealTime() const
 float ModuleTimeManager::GetRealDt() const
 {
 	return realDt;
-}
-
-std::list<GameTimer*> ModuleTimeManager::GetGameTimerList() const
-{
-	return gameTimerList;
 }

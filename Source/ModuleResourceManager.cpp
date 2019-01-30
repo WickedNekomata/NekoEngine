@@ -890,6 +890,11 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	return ResourceType::NoResourceType;
 }
 
+void ModuleResourceManager::InsertResource(Resource* resource)
+{
+	resources.insert(std::pair<uint, Resource*>(resource->GetUUID(), resource));
+}
+
 // Returns the UUID(s) associated to the resource(s) of the file
 bool ModuleResourceManager::FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const
 {

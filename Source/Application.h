@@ -14,7 +14,6 @@
 
 #include "PCG\pcg_variants.h"
 
-#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -48,8 +47,8 @@ struct ModuleRenderer3D;
 struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
-struct ModuleParticle;
 struct DebugDrawer;
+struct ScriptingModule;
 
 class Application
 {
@@ -92,7 +91,6 @@ public:
 	bool IsEditor() const;
 
 	uint GenerateRandomNumber() const;
-	math::LCG GetLCGRandomMath() const;
 
 	void SaveState() const;
 	void LoadState() const;
@@ -116,7 +114,6 @@ public:
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
 	ShaderImporter*			shaderImporter;
-	ModuleParticle*			particle;
 
 #ifndef GAMEMODE	
 	ModuleCameraEditor*		camera;
@@ -132,6 +129,7 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ScriptingModule*		scripting;
 
 	DebugDrawer*			debugDrawer;
 
@@ -163,7 +161,6 @@ private:
 	mutable bool		load = false;
 
 	engine_states engineState = engine_states::ENGINE_EDITOR;
-	math::LCG randomMathLCG;
 };
 
 extern Application* App;

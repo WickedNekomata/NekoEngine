@@ -23,6 +23,20 @@ public:
 	void ToggleIsActive();
 	bool IsActive() const;
 
+	inline bool IsTreeActive()
+	{
+		bool active = isActive;
+		
+		GameObject* itGO = parent;
+		while (active && itGO)
+		{
+			active = itGO->IsActive();
+			itGO = itGO->GetParent();
+		}
+		
+		return active;
+	}
+
 	ComponentType GetType() const;
 
 	void SetParent(GameObject* parent);

@@ -10,12 +10,12 @@
 #include "ModuleGOs.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
-#include "ModuleParticles.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
+#include "ScriptingModule.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -34,7 +34,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
-	particle = new ModuleParticle();
+	scripting = new ScriptingModule();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -48,7 +48,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(res);
 
 	AddModule(timeManager);
-	AddModule(particle);
 
 #ifndef GAMEMODE
 	AddModule(camera);
@@ -59,6 +58,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(window);
 	AddModule(input);
 	AddModule(scene);
+	AddModule(scripting);
 
 	// Renderer last!
 	AddModule(renderer3D);
@@ -546,11 +546,6 @@ bool Application::IsEditor() const
 uint Application::GenerateRandomNumber() const
 {
 	return pcg32_random_r(&(App->rng));
-}
-
-math::LCG Application::GetLCGRandomMath() const
-{
-	return randomMathLCG;
 }
 
 void Application::SaveState() const

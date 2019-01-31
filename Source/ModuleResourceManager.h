@@ -32,6 +32,8 @@
 #define ASCIIFSH 1213417006
 #define ASCIIpsh 1752395822
 #define ASCIIPSH 1213419566
+#define ASCIIcs  7562030
+#define ASCIICS  5456686
 
 struct ImportSettings;
 class Resource;

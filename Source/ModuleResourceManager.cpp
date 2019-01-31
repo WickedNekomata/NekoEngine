@@ -5,6 +5,7 @@
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
+#include "ScriptingModule.h"
 #include "PanelShaderEditor.h"
 #include "PanelCodeEditor.h"
 
@@ -17,6 +18,7 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
+#include "ResourceScript.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -156,12 +158,62 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
-		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
+		std::string extension;
+		App->fs->GetExtension(fileInAssets.data(), extension);
 
-		// Reimport
-		uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+		ResourceType type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+			case ResourceType::ScriptResource:
+			{
+				//Find the .meta to get the UUID.
+				char* metaBuffer;
+				uint size = App->fs->Load(event.fileEvent.metaFile, &metaBuffer);
+				if (size <= 0)
+					return; //ResourceScript without meta
 
-		RELEASE_ARRAY(event.fileEvent.metaFile);
+				//Get the UUID
+				uint32_t UUID;
+				memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+				//Get the ResourceScript whose file has changed
+				if (resources.find(UUID) == resources.end())
+					return; //Resource not found
+				ResourceScript* scriptRes = (ResourceScript*)resources.at(UUID);
+
+				//Check if the new .cs version has errors. If it has, keep running the old successful script.
+				bool errors = scriptRes->preCompileErrors();
+				if (!errors)
+				{
+					//ReCreate the Domain, recompile all the ResourceScripts and reInstance all the monoInstance's references in all the stored ComponentScript
+
+					App->scripting->CreateDomain();
+
+					std::map<uint32_t, Resource*>::iterator it;
+					for (it = resources.begin(); it != resources.end(); ++it)
+					{
+						Resource* res = it->second;
+						if (res->GetType() == ResourceType::ScriptResource)
+						{
+							ResourceScript* toRecompile = (ResourceScript*)res;
+							toRecompile->Compile();
+						}
+					}
+
+					App->scripting->ReInstance();
+				}
+				break;
+			}
+
+			default:
+			{
+				DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
+				// Reimport
+				uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+
+				RELEASE_ARRAY(event.fileEvent.metaFile);
+			}
+		}
 
 		System_Event newEvent;
 		newEvent.type = System_Event_Type::RefreshFiles;
@@ -512,8 +564,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	App->fs->GetExtension(fileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
-	// If the file has no file(s) in Libray or its import settings have changed, import or reimport the file
-	if (exportedFile == nullptr && (type == ResourceType::MeshResource || type == ResourceType::TextureResource))
+	// If the file has no file(s) in Library or its import settings have changed, import or reimport the file
+	if (exportedFile == nullptr && (type == ResourceType::MeshResource || type == ResourceType::TextureResource || type == ResourceType::ScriptResource))
 	{
 		// Initialize the import settings to the default import settings
 		switch (type)
@@ -884,6 +936,9 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 		break;
 	case ASCIIpsh: case ASCIIPSH:
 		return ResourceType::ShaderProgramResource;
+		break;
+	case ASCIIcs: case ASCIICS:
+		return ResourceType::ScriptResource;
 		break;
 	}
 

@@ -36,7 +36,7 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	void ReceiveEvent(System_Event event);
+	void OnSystemEvent(System_Event event) override;
 
 public:
 	ComponentScript* CreateScriptComponent(std::string scriptName, bool createCS = true);
@@ -84,6 +84,7 @@ public:
 private:
 	std::vector<ComponentScript*> scripts;
 
+	//TODO: DELETE THOSE
 	MonoVTable* timeVTable = nullptr;
 	_MonoClassField* deltaTime = nullptr;
 	_MonoClassField* realDeltaTime = nullptr;

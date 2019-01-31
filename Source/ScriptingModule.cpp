@@ -116,6 +116,7 @@ bool ScriptingModule::CleanUp()
 	{
 		delete scripts[i];
 	}
+
 	scripts.clear();
 
 	if(domain)
@@ -126,7 +127,7 @@ bool ScriptingModule::CleanUp()
 	return true;
 }
 
-void ScriptingModule::ReceiveEvent(System_Event event)
+void ScriptingModule::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{

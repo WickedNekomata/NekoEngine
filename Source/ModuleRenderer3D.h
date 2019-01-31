@@ -98,7 +98,6 @@ public:
 
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
-	void DrawPlane(ComponentEmitter* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 	void ClearSkybox();

@@ -41,7 +41,7 @@ public:
 
 	float GetCamDistance() const;
 	void SetCamDistance();
-	void Draw() const;
+	void Draw();
 
 	float CreateRandomNum(math::float2 edges);
 

@@ -240,6 +240,8 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 	case EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
 		App->particle->emitters.push_back((ComponentEmitter*)newComponent);
+		if (materialRenderer == nullptr)
+			createMaterial = true;
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

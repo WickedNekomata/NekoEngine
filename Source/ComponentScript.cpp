@@ -268,6 +268,8 @@ void ComponentScript::OnEditor()
 	ImGuiWindowFlags wflags = 0;
 	wflags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
 
+	bool deleted = false;
+
 	if (ImGui::BeginPopup(std::string("##Script" + std::to_string(UUID)).data(), wflags))
 	{
 		if (ImGui::MenuItem("Delete Component"))
@@ -276,10 +278,17 @@ void ComponentScript::OnEditor()
 			event.compEvent.type = System_Event_Type::ComponentDestroyed;
 			event.compEvent.component = this;
 			App->PushSystemEvent(event);
+			
+			parent->ClearComponent(this);
+			delete this;
+			deleted = true;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
+
+	if (deleted)
+		return;
 
 	ImGuiDragDropFlags flags = 0;
 	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;

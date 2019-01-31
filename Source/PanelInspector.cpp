@@ -155,8 +155,9 @@ void PanelInspector::ShowGameObjectInspector() const
 		ImGui::OpenPopup("AddingScript");
 	}
 
-	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 350 / 2, ImGui::GetCursorScreenPos().y });
-	ImGui::SetNextWindowSize({ 350, 55 });
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 55 });
 	if (ImGui::BeginPopup("AddingScript"))
 	{
 		static std::string scriptName;

@@ -874,7 +874,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
 	float skyboxVertices[] = {
-		// positions          
+        
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -930,6 +930,44 @@ void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void SceneImporter::LoadPrimitivePlane()
+{
+	uint verticesSize = 12;
+	Vertex* vertices = new Vertex[verticesSize];
+
+	float verticesPosition[12]
+	{
+		-0.5f, -0.5f, 0.0f, // a
+		 0.5f, -0.5f, 0.0f, // b
+		-0.5f,  0.5f, 0.0f, // c
+		 0.5f,  0.5f, 0.0f, // d
+	};
+
+	defaultPlaneIndicesSize = 6;
+	uint indices[6]
+	{
+		// Front
+		0, 1, 2, // ABC
+		1, 3, 2, // BDC
+	};
+
+	// Vertices
+	/// Position
+	float* cursor = verticesPosition;
+	for (uint i = 0; i < verticesSize; ++i)
+	{
+		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	// -----
+
+	GLuint VBO = 0;
+	ResourceMesh::GenerateVBO(VBO, vertices, verticesSize);
+	ResourceMesh::GenerateIBO(defaultPlaneIBO, indices, defaultPlaneIndicesSize);
+	ResourceMesh::GenerateVAO(defaultPlaneVAO, VBO);
+}
+
 uint SceneImporter::GetAssimpMajorVersion() const
 {
 	return aiGetVersionMajor();
@@ -943,4 +981,11 @@ uint SceneImporter::GetAssimpMinorVersion() const
 uint SceneImporter::GetAssimpRevisionVersion() const
 {
 	return aiGetVersionRevision();
+}
+
+void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO, uint& defaultPlaneIndicesSize) const
+{
+	defaultPlaneVAO = this->defaultPlaneVAO;
+	defaultPlaneIBO = this->defaultPlaneIBO;
+	defaultPlaneIndicesSize = this->defaultPlaneIndicesSize;
 }

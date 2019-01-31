@@ -18,6 +18,7 @@ public:
 
 	virtual void ClearShape();
 	virtual void RecalculateShape() = 0;
+	void SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask);
 
 	void SetIsTrigger(bool isTrigger);
 	void ParticipateInContactTests(bool participateInContactTests);

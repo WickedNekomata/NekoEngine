@@ -21,6 +21,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 #include "ComponentCollider.h"
+#include "ComponentEmitter.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -159,6 +160,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	skyboxTextures = App->materialImporter->GetSkyboxTextures();
 	skyboxTexture = App->materialImporter->GetSkyboxTexture();
 	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
+
+	// Load primitives
+	App->sceneImporter->LoadPrimitivePlane();
 
 #ifndef GAMEMODE
 	// Editor camera
@@ -947,6 +951,50 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
+void ModuleRenderer3D::DrawPlane(ComponentEmitter* toDraw) const
+{
+	// Shader
+	GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+
+	glUseProgram(shaderProgram);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
+
+	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix(); // particle matrix
+	model_matrix = model_matrix.Transposed();
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+	math::float4x4 normal_matrix = model_matrix;
+	normal_matrix.Inverse();
+	normal_matrix.Transpose();
+
+	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+	uint defaultPlaneVAO = 0;
+	uint defaultPlaneIBO = 0;
+	uint defaultPlaneIndicesSize = 0;
+	App->sceneImporter->GetDefaultPlane(defaultPlaneVAO, defaultPlaneIBO, defaultPlaneIndicesSize);
+
+	glBindVertexArray(defaultPlaneVAO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, defaultPlaneIBO);
+	glDrawElements(GL_TRIANGLES, defaultPlaneIndicesSize, GL_UNSIGNED_INT, NULL);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

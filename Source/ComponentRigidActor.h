@@ -27,6 +27,12 @@ public:
 
 	void OnWake();
 	void OnSleep();
+	void OnCollisionEnter(physx::PxActor* other);
+	void OnCollisionStay(physx::PxActor* other);;
+	void OnCollisionExit(physx::PxActor* other);
+	void OnTriggerEnter(physx::PxActor* other);
+	void OnTriggerStay(physx::PxActor* other);
+	void OnTriggerExit(physx::PxActor* other);
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);

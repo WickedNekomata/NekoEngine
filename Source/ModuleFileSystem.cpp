@@ -34,6 +34,9 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 #endif
 	AddPath("./Settings/", "Settings");
 
+	//Internal Directory: Engine stuff
+	AddPath("./internal.f", "Internal");
+
 	if (PHYSFS_setWriteDir(".") == 0)
 		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
@@ -42,6 +45,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	CreateDir(DIR_ASSETS_SHADERS);
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
+	CreateDir(DIR_ASSETS_SCRIPTS);
 #endif
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -49,6 +53,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }
 
@@ -807,20 +812,20 @@ bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string&
 	if (Save(newLocation, buffer, size) <= 0)
 	{
 		//Debug.LogError("Couldn't move the file");
-		delete buffer;
+		delete[] buffer;
 		return false;
 	}
 
 	if (!deleteFile(file))
 	{
 		//Debug.LogError("Couldn't move the file");
-		delete buffer;
+		delete[] buffer;
 		return false;
 	}
 
 	//Debug.Log("File %s moved succesfully to %s.", file.data(), newLocation.data());
 
-	delete buffer;
+	delete[] buffer;
 	return true;
 }
 
@@ -848,11 +853,11 @@ bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, c
 
 		if (Save(realDestination, buffer, size) <= 0)
 		{
-			delete buffer;
+			delete[] buffer;
 			return false;
 		}
 
-		delete buffer;
+		delete[] buffer;
 	}
 
 	for (int i = 0; i < originDir.directories.size(); ++i)

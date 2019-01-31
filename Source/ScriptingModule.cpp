@@ -114,6 +114,7 @@ bool ScriptingModule::CleanUp()
 {
 	for (int i = 0; i < scripts.size(); ++i)
 	{
+		scripts[i]->GetParent()->ClearComponent(scripts[i]);
 		delete scripts[i];
 	}
 
@@ -264,7 +265,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		IncludeCSFiles();
 
-		delete buffer;
+		delete[] buffer;
 	}
 
 	ResourceScript* scriptRes = nullptr;
@@ -281,7 +282,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		scriptRes = (ResourceScript*)App->res->GetResource(UID);
 
-		delete metaBuffer;
+		delete[] metaBuffer;
 	}
 	
 	if (!scriptRes)
@@ -300,13 +301,16 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		App->fs->Save("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
-		delete buffer;
+		delete[] buffer;
+
+		App->fs->AddMeta(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data(), App->fs->GetLastModificationTime(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data()));
 
 		scriptRes->Compile();
 
 		App->res->InsertResource(scriptRes);
 	}
 
+	App->res->SetAsUsed(scriptRes->GetUUID());
 	script->scriptRes = scriptRes;
 
 	scripts.push_back(script);

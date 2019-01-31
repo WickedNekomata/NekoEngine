@@ -148,7 +148,7 @@ bool ResourceScript::Compile()
 
 			//Debug.LogError(outPut.data());
 
-			delete buffer;
+			delete[] buffer;
 		}
 
 		ret = false;
@@ -197,7 +197,7 @@ bool ResourceScript::referenceMethods()
 
 	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(GetUUID())).data(), &status, false);
 
-	delete buffer;
+	delete[] buffer;
 
 	if (!assembly || !image)
 	{

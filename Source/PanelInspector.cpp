@@ -13,9 +13,12 @@
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
+#include "ScriptingModule.h"
+#include "ModuleFileSystem.h"
 
 #include "GameObject.h"
 #include "Component.h"
+#include "ComponentScript.h"
 
 #include "Resource.h"
 #include "ResourceMesh.h"
@@ -25,6 +28,8 @@
 
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
+
+#include "imgui/imgui_stl.h"
 
 PanelInspector::PanelInspector(char* name) : Panel(name) {}
 
@@ -114,6 +119,7 @@ void PanelInspector::ShowGameObjectInspector() const
 	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
 
 	ImGui::Button("Add Component");
+	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
 		if (gameObject->meshRenderer == nullptr) 
@@ -132,9 +138,61 @@ void PanelInspector::ShowGameObjectInspector() const
 			if (ImGui::Selectable("Particle Emitter")) {
 				gameObject->AddComponent(ComponentType::EmitterComponent);
 				ImGui::CloseCurrentPopup();
-			}	
+			}
+
+		if (ImGui::Selectable("Script")) 
+		{
+			//Open new Popup, with input text and autocompletion to select scripts by name
+			scriptSelected = true;
+			ImGui::CloseCurrentPopup();
+		}
 
 		ImGui::EndPopup();		
+	}
+
+	if (scriptSelected)
+	{
+		ImGui::OpenPopup("AddingScript");
+	}
+
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x + ImGui::GetWindowSize().x / 2 - 350 / 2, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ 350, 55 });
+	if (ImGui::BeginPopup("AddingScript"))
+	{
+		static std::string scriptName;
+		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			App->scripting->clearSpaces(scriptName);
+
+			//Find the ResourceScript with this name, extracting the UUID from the .meta
+
+			ResourceScript* res = nullptr;
+
+			if (App->fs->Exists("Assets/Scripts/" + scriptName + ".meta"))
+			{
+				char* metaBuffer;
+				uint size = App->fs->Load("Assets/Scripts/" + scriptName + ".meta", &metaBuffer);
+				if (size > 0)
+				{
+					uint32_t UUID;
+					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+					res = (ResourceScript*)App->res->GetResource(UUID);
+					
+					delete metaBuffer;
+				}			
+			}
+
+			CONSOLE_LOG("New Script Created: %s", scriptName.data());
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+
+			scriptName = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 }
 

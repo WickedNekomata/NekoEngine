@@ -238,7 +238,7 @@ void ComponentScript::OnDisable()
 	App->scripting->UpdateGameObjects();
 }
 
-void ComponentScript::OnInspector()
+void ComponentScript::OnEditor()
 {
 	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 	{
@@ -322,7 +322,7 @@ void ComponentScript::OnInspector()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->file);
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->file.data());
 			ImGui::EndTooltip();
 		}		
 

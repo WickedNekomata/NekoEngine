@@ -12,11 +12,13 @@
 #define DIR_LIBRARY_MESHES "Library/Meshes"
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_LIBRARY_SHADERS "Library/Shaders"
+#define DIR_LIBRARY_SCRIPTS "Library/Scripts"
 #define DIR_ASSETS "Assets"
 #define DIR_ASSETS_SCENES "Assets/Scenes"
 #define DIR_ASSETS_SHADERS "Assets/Shaders"
 #define DIR_ASSETS_SHADERS_OBJECTS "Assets/Shaders/Objects"
 #define DIR_ASSETS_SHADERS_PROGRAMS "Assets/Shaders/Programs"
+#define DIR_ASSETS_SCRIPTS "Assets/Scripts"
 
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0

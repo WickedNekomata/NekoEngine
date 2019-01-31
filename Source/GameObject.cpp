@@ -244,6 +244,11 @@ Component* GameObject::AddComponent(ComponentType type)
 	return newComponent;
 }
 
+void GameObject::AddComponent(Component* component)
+{
+	components.push_back(component);
+}
+
 void GameObject::ClearComponent(Component* component)
 {
 	for (int i = 0; i < components.size(); ++i)

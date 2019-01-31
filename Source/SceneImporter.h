@@ -61,10 +61,19 @@ public:
 	bool Load(const void* buffer, uint size, ResourceMesh* outputMesh) const;
 
 	void LoadCubemap(uint& VBO, uint& VAO) const;
+	void LoadPrimitivePlane();
 
 	uint GetAssimpMajorVersion() const;
 	uint GetAssimpMinorVersion() const;
 	uint GetAssimpRevisionVersion() const;
+
+	void GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO, uint& defaultPlaneIndicesSize) const;
+
+private:
+
+	uint defaultPlaneVAO = 0;
+	uint defaultPlaneIBO = 0;
+	uint defaultPlaneIndicesSize = 0;
 };
 
 #endif

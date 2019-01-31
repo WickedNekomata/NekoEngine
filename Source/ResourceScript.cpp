@@ -170,6 +170,8 @@ bool ResourceScript::Compile()
 		if (!App->fs->MoveFileInto(dllPath, "Library/Scripts/" + fileNameNoExt + ".dll"))
 			return false;
 		
+		exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
+
 		referenceMethods();
 	}
 

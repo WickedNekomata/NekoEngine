@@ -303,8 +303,6 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		delete[] buffer;
 
-		App->fs->AddMeta(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data(), App->fs->GetLastModificationTime(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data()));
-
 		scriptRes->Compile();
 
 		App->res->InsertResource(scriptRes);
@@ -314,6 +312,8 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	script->scriptRes = scriptRes;
 
 	scripts.push_back(script);
+
+	App->fs->AddMeta(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data(), App->fs->GetLastModificationTime(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data()));
 
 	return script;
 }
@@ -717,6 +717,56 @@ void ScriptingModule::ClearMap()
 		mono_gchandle_free(gameObjectsMap[i].second);
 	}
 	gameObjectsMap.clear();
+}
+
+bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* metaFile, const char* exportedFile)
+{
+	std::string file = fileAssets;
+
+	std::string scriptName = file.substr(file.find_last_of("/") + 1);
+	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
+
+	//Creating script resource
+	ResourceScript* scriptRes = new ResourceScript();
+	scriptRes->scriptName = scriptName;
+	scriptRes->file = file;
+
+	if (!metaFile)
+	{
+		//Create the .meta
+		uint bytes = scriptRes->bytesToSerializeMeta();
+		char* buffer = new char[bytes];
+		char* cursor = buffer;
+		scriptRes->SerializeToMeta(cursor);
+
+		App->fs->Save(file + ".meta", buffer, bytes);
+
+		delete[] buffer;
+	}
+	else
+	{
+		char* metaBuffer;
+		uint size = App->fs->Load(metaFile, &metaBuffer);
+		if (size > 0)
+		{
+			char* cursor = metaBuffer;
+			scriptRes->DeSerializeFromMeta(cursor);
+			delete[] metaBuffer;
+		}
+	}
+
+	if (!exportedFile)
+		scriptRes->Compile();
+	else
+	{
+		scriptRes->referenceMethods();
+		scriptRes->exportedFile = exportedFile;
+	}
+		
+
+	App->res->InsertResource(scriptRes);
+
+	return true;
 }
 
 void ScriptingModule::UpdateMethods()

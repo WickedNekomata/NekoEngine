@@ -169,10 +169,10 @@ void PanelInspector::ShowGameObjectInspector() const
 
 			ResourceScript* res = nullptr;
 
-			if (App->fs->Exists("Assets/Scripts/" + scriptName + ".meta"))
+			if (App->fs->Exists("Assets/Scripts/" + scriptName + ".cs.meta"))
 			{
 				char* metaBuffer;
-				uint size = App->fs->Load("Assets/Scripts/" + scriptName + ".meta", &metaBuffer);
+				uint size = App->fs->Load("Assets/Scripts/" + scriptName + ".cs.meta", &metaBuffer);
 				if (size > 0)
 				{
 					uint32_t UUID;
@@ -180,7 +180,7 @@ void PanelInspector::ShowGameObjectInspector() const
 
 					res = (ResourceScript*)App->res->GetResource(UUID);
 					
-					delete metaBuffer;
+					delete[] metaBuffer;
 				}			
 			}
 

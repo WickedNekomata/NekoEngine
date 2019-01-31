@@ -279,9 +279,9 @@ void ComponentScript::OnEditor()
 			event.compEvent.component = this;
 			App->PushSystemEvent(event);
 			
-			parent->ClearComponent(this);
-			delete this;
+			parent->ClearComponent(this);		
 			deleted = true;
+			App->scripting->DestroyScript(this);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

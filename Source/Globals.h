@@ -61,3 +61,4 @@ enum update_status
 #define EXTENSION_FRAGMENT_SHADER_OBJECT ".fsh"
 #define EXTENSION_SHADER_PROGRAM ".psh"
 #define EXTENSION_META ".meta"
+#define EXTENSION_SCRIPT ".dll"

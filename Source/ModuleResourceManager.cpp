@@ -506,11 +506,18 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			}
 		}
 		break;
-
 		case ResourceType::ShaderObjectResource:
 		case ResourceType::ShaderProgramResource:
 			entries = true;
 			break;
+		case ResourceType::ScriptResource:
+		{
+			std::string fileName;
+			App->fs->GetFileName(fileInAssets, fileName);
+			sprintf_s(exportedFile, "%s/%s%s", DIR_LIBRARY_SCRIPTS, fileName.data(), EXTENSION_SCRIPT);
+			entries = App->fs->Exists(exportedFile);
+			break;
+		}
 		}
 
 		// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
@@ -600,6 +607,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			break;
 		case ResourceType::TextureResource:
 			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
+			break;
+		case ResourceType::ScriptResource:
+			imported = App->scripting->ImportScriptResource(fileInAssets, metaFile, exportedFile);
 			break;
 		}
 	}
@@ -839,6 +849,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
+			break;
+		}
+
+		case ResourceType::ScriptResource:
+		{
+			App->scripting->ImportScriptResource(fileInAssets, metaFile, exportedFile);
+			break;
 		}
 		break;
 		}

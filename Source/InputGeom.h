@@ -52,6 +52,7 @@ struct M_Mesh
 	int* m_tris;
 	int m_nverts;
 	int m_ntris;
+	bool walkable;
 };
 
 class InputGeom

@@ -28,6 +28,9 @@ public:
 public:
 
 	uint res = 0;
+
+	// navmesh utility
+	bool nv_walkable = true;
 };
 
 #endif

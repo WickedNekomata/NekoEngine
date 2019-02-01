@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 
 #include "Application.h"
+#include "ModuleScene.h"
 #include "SoloMesh_Query.h"
 #include "InputGeom.h"
 #include "ModuleGOs.h"
@@ -28,6 +29,29 @@ bool PanelNavMesh::Draw()
 {
 	ImGui::Begin(name, &enabled);
 
+	if (App->scene->selectedObject == CurrentSelection::SelectedType::gameObject)
+	{
+		GameObject* curr = (GameObject*)App->scene->selectedObject.Get();
+
+		if (curr->meshRenderer) {
+			ImGui::Text("Object");
+
+			bool isStatic = curr->IsStatic();
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Static");
+			ImGui::SameLine();
+			if (ImGui::Checkbox("##Static", &isStatic))
+			{
+				// swap to dynamic
+			}
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Walkable");
+			ImGui::SameLine();
+			ImGui::Checkbox("##Walkability", &curr->meshRenderer->nv_walkable);
+		}
+	}
+
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Build Settings");
 	ImGui::SameLine();
@@ -36,7 +60,7 @@ bool PanelNavMesh::Draw()
 
 	if (ImGui::CollapsingHeader("Rasteritzation"))
 	{
-		ImGui::SliderFloat("##CellSize", &cs.p_cellSize, 0.10f, 1.0f, "Cell Size	 %.01f");
+		ImGui::SliderFloat("##CellSize", &cs.p_cellSize, 0.10f, 1.0f, "Cell Size %.01f");
 		ImGui::SliderFloat("##CellHeight", &cs.p_cellHeight, 0.10f, 1.0f, "Cell Height %.01f");
 	}
 
@@ -50,8 +74,8 @@ bool PanelNavMesh::Draw()
 
 	if (ImGui::CollapsingHeader("Region"))
 	{
-		ImGui::SliderFloat("##MinRegion", &cs.p_regionMinSize, 0, 150, "Min Region Size %d");
-		ImGui::SliderFloat("#MaxRegiom", &cs.p_regionMergeSize, 0, 150, "Merged Region Size %d");
+		ImGui::SliderFloat("##MinRegion", &cs.p_regionMinSize, 0, 150, "Min Region Size %1.0f");
+		ImGui::SliderFloat("#MaxRegiom", &cs.p_regionMergeSize, 0, 150, "Merged Region Size %1.0f");
 	}
 
 	if (ImGui::CollapsingHeader("Partitioning"))
@@ -68,15 +92,15 @@ bool PanelNavMesh::Draw()
 
 	if (ImGui::CollapsingHeader("Polygonitzation"))
 	{
-		ImGui::SliderFloat("##MaxEdgeLength", &cs.p_edgeMaxLen, 0, 50, "Max Edge Length %d");
+		ImGui::SliderFloat("##MaxEdgeLength", &cs.p_edgeMaxLen, 0, 50, "Max Edge Length %1.0f");
 		ImGui::SliderFloat("##MaxEdgeError", &cs.p_edgeMaxError, 0.1f, 3.0f, "Max Edge Error %.1f");
-		ImGui::SliderFloat("##VertsPerPoly", &cs.p_vertsPerPoly, 3, 12, "Verts Per Poly %d");
+		ImGui::SliderFloat("##VertsPerPoly", &cs.p_vertsPerPoly, 3, 12, "Verts Per Poly %1.0f");
 	}
 
 	if (ImGui::CollapsingHeader("Detail Mesh"))
 	{
-		ImGui::SliderFloat("##SampleDistance", &cs.p_detailSampleDist, 0, 16, "Sample Distance %d");
-		ImGui::SliderFloat("##SampleError", &cs.p_detailSampleMaxError, 0, 16, "Max Sample Error %d");
+		ImGui::SliderFloat("##SampleDistance", &cs.p_detailSampleDist, 0, 16, "Sample Distance %1.0f");
+		ImGui::SliderFloat("##SampleError", &cs.p_detailSampleMaxError, 0, 16, "Max Sample Error %1.0f");
 	}
 
 	if (ImGui::Button("Bake"))
@@ -112,10 +136,10 @@ void PanelNavMesh::ResetCommonSettings()
 
 void PanelNavMesh::HandleInputMeshes() const
 {
-	std::vector<ComponentMesh*> statics;
-	App->GOs->GetMeshComponentsFromStaticGameObjects(statics);
+	std::vector<ComponentMesh*> staticsMeshComp;
+	App->GOs->GetMeshComponentsFromStaticGameObjects(staticsMeshComp);
 
-	if (statics.size() <= 0)
+	if (staticsMeshComp.size() <= 0)
 	{
 		CONSOLE_LOG("Rc: No static gameobjects");
 		return;
@@ -127,13 +151,13 @@ void PanelNavMesh::HandleInputMeshes() const
 
 	memset(&p_inputGeom, 0, sizeof(InputGeom));
 
-	for (int i = 0; i < statics.size(); ++i)
+	for (int i = 0; i < staticsMeshComp.size(); ++i)
 	{
-		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->res);
+		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(staticsMeshComp[i]->res);
 		if (!res)
 			continue;
 		p_inputGeom.i_nmeshes += 1;
-		aabb.Enclose(statics[i]->GetParent()->boundingBox);
+		aabb.Enclose(staticsMeshComp[i]->GetParent()->boundingBox);
 	}
 
 	if (p_inputGeom.i_nmeshes <= 0)
@@ -144,9 +168,9 @@ void PanelNavMesh::HandleInputMeshes() const
 
 	p_inputGeom.i_meshes = new M_Mesh[p_inputGeom.i_nmeshes];
 
-	for (int i = 0; i < statics.size(); ++i)
+	for (int i = 0; i < staticsMeshComp.size(); ++i)
 	{
-		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(statics[i]->res);
+		const ResourceMesh* res = (const ResourceMesh*)App->res->GetResource(staticsMeshComp[i]->res);
 		if (res)
 		{
 			p_inputGeom.i_meshes[i].m_ntris = res->GetIndicesCount() / 3;
@@ -156,6 +180,8 @@ void PanelNavMesh::HandleInputMeshes() const
 			p_inputGeom.i_meshes[i].m_verts = new float[p_inputGeom.i_meshes[i].m_nverts * 3];
 			res->GetIndices(p_inputGeom.i_meshes[i].m_tris);
 			res->GetVerts(p_inputGeom.i_meshes[i].m_verts);
+
+			p_inputGeom.i_meshes[i].walkable = staticsMeshComp[i]->nv_walkable;
 
 			/*for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
 			{

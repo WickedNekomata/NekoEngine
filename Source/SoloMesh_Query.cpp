@@ -120,7 +120,8 @@ bool SoloMesh_Query::HandleBuild()
 	// Rasterize all triangles from the mesh into the heightfield
 	for (int i = 0; i < m_geom->i_nmeshes; ++i)
 	{
-		rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+		if (m_geom->i_meshes[i].walkable)
+			rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
 		m_geom->i_meshes[i].m_tris, m_geom->i_meshes[i].m_ntris, m_triareas);
 		if (!rcRasterizeTriangles(m_ctx, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
 			m_geom->i_meshes[i].m_tris, m_triareas, m_geom->i_meshes[i].m_ntris, *m_solid, m_cfg.walkableClimb))

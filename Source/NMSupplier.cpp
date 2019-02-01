@@ -120,9 +120,12 @@ bool NMSupplier::HandleBuild()
 	// Rasterize all triangles from the mesh into the heightfield
 	for (int i = 0; i < m_geom->i_nmeshes; ++i)
 	{
-		if (m_geom->i_meshes[i].walkable)
-			rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
-		m_geom->i_meshes[i].m_tris, m_geom->i_meshes[i].m_ntris, m_triareas);
+
+		// method edited see this: https://groups.google.com/forum/#!searchin/recastnavigation/no$20walkable%7Csort:date/recastnavigation/Pj4zgOvhZCU/fnAK6zT3CwAJ
+		//						   http://masagroup.github.io/recastdetour/group__recast.html#ga1346288993c8ab565bee3e212e9c9890
+		rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
+					m_geom->i_meshes[i].m_tris, m_geom->i_meshes[i].m_ntris, m_triareas, /* new argument*/ m_geom->i_meshes[i].walkable ? 63 : 0);
+
 		if (!rcRasterizeTriangles(m_ctx, m_geom->i_meshes[i].m_verts, m_geom->i_meshes[i].m_nverts,
 			m_geom->i_meshes[i].m_tris, m_triareas, m_geom->i_meshes[i].m_ntris, *m_solid, m_cfg.walkableClimb))
 		{

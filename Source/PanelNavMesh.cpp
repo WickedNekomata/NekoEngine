@@ -185,7 +185,7 @@ void PanelNavMesh::HandleInputMeshes() const
 
 			/*for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
 			{
-				math::float3 globalVert = (statics[i]->GetParent()->transform->GetGlobalMatrix().Inverse() *
+				math::float3 globalVert = (staticsMeshComp[i]->GetParent()->transform->GetGlobalMatrix() *
 					math::float4(p_inputGeom.i_meshes[i].m_verts[j],
 						p_inputGeom.i_meshes[i].m_verts[j + 1],
 						p_inputGeom.i_meshes[i].m_verts[j + 2],

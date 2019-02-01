@@ -17,6 +17,7 @@
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 #include "ScriptingModule.h"
+#include "ModuleEvents.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -37,6 +38,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	shaderImporter = new ShaderImporter();
 	particle = new ModuleParticle();
 	scripting = new ScriptingModule();
+	events = new ModuleEvents();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -65,6 +67,9 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	// Renderer last!
 	AddModule(renderer3D);
+
+	//No, I'm last ;)
+	AddModule(events);
 }
 
 Application::~Application()

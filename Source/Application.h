@@ -51,6 +51,7 @@ struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
 struct ScriptingModule;
+struct ModuleEvents;
 
 class Application
 {
@@ -134,6 +135,7 @@ public:
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
 	ScriptingModule*		scripting;
+	ModuleEvents*			events;
 
 	DebugDrawer*			debugDrawer;
 

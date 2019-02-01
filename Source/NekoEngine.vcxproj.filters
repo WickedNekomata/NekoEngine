@@ -679,6 +679,9 @@
     <ClInclude Include="imgui\imgui_stl.h">
       <Filter>Sources\3rd Party\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleEvents.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -978,6 +981,7 @@
     <ClCompile Include="imgui\imgui_stl.cpp">
       <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">

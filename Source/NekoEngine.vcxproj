@@ -260,6 +260,7 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
+    <ClInclude Include="ModuleEvents.h" />
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="ModuleParticles.h" />
     <ClInclude Include="PanelCodeEditor.h" />
@@ -367,6 +368,7 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
+    <ClCompile Include="ModuleEvents.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="ModuleParticles.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />

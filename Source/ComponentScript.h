@@ -7,7 +7,7 @@ class ResourceScript;
 class ComponentScript : public Component
 {
 public:
-	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr) : scriptName(scriptName), Component(gameObject, ComponentType::ScriptComponent) { }
+	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent) { }
 	virtual ~ComponentScript();
 
 	void Awake();

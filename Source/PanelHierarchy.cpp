@@ -15,7 +15,7 @@
 
 #include "ComponentTransform.h"
 
-PanelHierarchy::PanelHierarchy(char* name) : Panel(name) {}
+PanelHierarchy::PanelHierarchy(const char* name) : Panel(name) {}
 
 PanelHierarchy::~PanelHierarchy() {}
 

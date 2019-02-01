@@ -14,7 +14,7 @@
 
 #include "imgui\imgui.h"
 
-ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentType::MaterialComponent) 
+ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, ComponentTypes::MaterialComponent)
 {
 	if (MAX_TEXTURES <= App->renderer3D->GetMaxTextureUnits())
 	{
@@ -28,7 +28,7 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 	}
 }
 
-ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentType::MaterialComponent)
+ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentTypes::MaterialComponent)
 {
 	res = componentMaterial.res;
 

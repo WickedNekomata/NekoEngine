@@ -133,7 +133,7 @@ public:
 	~ComponentEmitter();
 
 	void StartEmitter();
-	//void ChangeGameState(engine_states state);
+	void ChangeGameState(SimulatedGame state);
 
 	void Update();
 

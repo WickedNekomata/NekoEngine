@@ -73,6 +73,9 @@ public:
 	void SetDrawCamerasFrustum(bool drawCamerasFrustum);
 	bool GetDrawCamerasFrustum() const;
 
+	void SetDrawColliders(bool drawColliders);
+	bool GetDrawColliders() const;
+
 	void SetDrawQuadtree(bool drawQuadtree);
 	bool GetDrawQuadtree() const;
 
@@ -95,6 +98,7 @@ public:
 
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
+	void DrawPlane(ComponentEmitter* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 	void ClearSkybox();
@@ -127,6 +131,7 @@ public:
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
 	bool drawCamerasFrustum = true;
+	bool drawColliders = true;
 	bool drawQuadtree = false;
 };
 

@@ -9,7 +9,7 @@ class PanelDebugDraw : public Panel
 {
 public:
 
-	PanelDebugDraw(char* name);
+	PanelDebugDraw(const char* name);
 	~PanelDebugDraw();
 
 	bool Draw();

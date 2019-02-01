@@ -111,21 +111,24 @@ bool Particle::Update(float dt)
 		angle += angularVelocity * dt;
 		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
-		animationTime += dt;
-		if (animationTime > animationSpeed)
+		if (animation)
 		{
-			if (animation->size() > currentFrame + 1)
+			animationTime += dt;
+			if (animationTime > animationSpeed)
 			{
-				currentFrame++;
-			}
-			else if (owner->dieOnAnimation)
-			{
-				EndParticle(ret);
-			}
-			else
-				currentFrame = 0;
+				if (animation->size() > currentFrame + 1)
+				{
+					currentFrame++;
+				}
+				else if (owner->dieOnAnimation)
+				{
+					EndParticle(ret);
+				}
+				else
+					currentFrame = 0;
 
-			animationTime = 0.0f;
+				animationTime = 0.0f;
+			}
 		}
 	}
 	else
@@ -140,18 +143,20 @@ void Particle::EndParticle(bool &ret)
 {
 	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 
-	ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponentByType(EmitterComponent);
-
-	if (subEmitterActive && owner->subEmitter && emitter)
+	if (owner && owner->subEmitter)
 	{
-		math::float3 globalPos;
-		owner->subEmitter->transform->GetGlobalMatrix().Decompose(globalPos, math::Quat(), math::float3());
-		emitter->newPositions.push_back(transform.position - globalPos);
+		ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponentByType(EmitterComponent);
+		if (subEmitterActive && emitter)
+		{
+			math::float3 globalPos;
+			owner->subEmitter->transform->GetGlobalMatrix().Decompose(globalPos, math::Quat(), math::float3());
+			emitter->newPositions.push_back(transform.position - globalPos);
+		}
+		active = false;
+		ret = false;
+		owner->particles.remove(this);
+		App->particle->activeParticles--;
 	}
-	active = false;
-	ret = false;
-	owner->particles.remove(this);
-	App->particle->activeParticles--;
 }
 
 void Particle::LookAtCamera()
@@ -175,11 +180,10 @@ void Particle::SetCamDistance()
 
 void Particle::Draw() const
 {
-	if (plane && texture && animation->size() >currentFrame)
-		plane->Render(transform.GetMatrix(), *texture, animation->at(currentFrame), currentColor);
+	if (plane /*&& texture && animation->size() >currentFrame*/)
+		plane->Render(transform.GetMatrix(), *texture, /*animation->at(currentFrame),*/ currentColor);
 }
 
-//TODO Particle: Random APP
 float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoint
 {
 	float num = edges.x;

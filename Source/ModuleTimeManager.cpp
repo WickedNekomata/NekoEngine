@@ -19,10 +19,12 @@ bool ModuleTimeManager::CleanUp()
 
 void ModuleTimeManager::PrepareUpdate()
 {
+	// Frames
 	frameCount++;
 
 	// Dt
 	realDt = App->GetDt();
+	dt = 0.0f;
 
 	// Time
 	realTime += realDt;
@@ -37,10 +39,6 @@ void ModuleTimeManager::PrepareUpdate()
 
 	case engine_states::ENGINE_EDITOR:
 		time = 0.0f;
-		break;
-
-	case engine_states::ENGINE_PAUSE:
-		dt = 0.0f;
 		break;
 	}
 
@@ -92,7 +90,18 @@ float ModuleTimeManager::GetRealDt() const
 	return realDt;
 }
 
-std::list<GameTimer*> ModuleTimeManager::GetGameTimerList() const
+//Game Timer List
+bool ModuleTimeManager::TimerInGameList(GameTimer* timer)
 {
-	return gameTimerList;
+	if (timer != nullptr)
+		if (std::find(gameTimerList.begin(), gameTimerList.end(), timer) == gameTimerList.end())
+			gameTimerList.push_back(timer);
+	return true;
+}
+
+bool ModuleTimeManager::RemoveGameTimer(GameTimer* timer)
+{
+	if(timer != nullptr)
+		gameTimerList.remove(timer);
+	return true;
 }

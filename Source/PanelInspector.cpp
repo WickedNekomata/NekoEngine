@@ -31,7 +31,7 @@
 
 #include "imgui/imgui_stl.h"
 
-PanelInspector::PanelInspector(char* name) : Panel(name) {}
+PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
 PanelInspector::~PanelInspector() {}
 
@@ -75,7 +75,7 @@ bool PanelInspector::Draw()
 		}
 	}
 	ImGui::End();
-	
+
 	return true;
 }
 
@@ -122,32 +122,58 @@ void PanelInspector::ShowGameObjectInspector() const
 	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->meshRenderer == nullptr) 
+		if (gameObject->meshRenderer == nullptr)
 			if (ImGui::Selectable("Mesh")) {
-				gameObject->AddComponent(ComponentType::MeshComponent);
+				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		
 		if (gameObject->camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
-				gameObject->AddComponent(ComponentType::CameraComponent);
+				gameObject->AddComponent(ComponentTypes::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
-
-		if (gameObject->emitter == nullptr) 
+		if (gameObject->emitter == nullptr)
 			if (ImGui::Selectable("Particle Emitter")) {
-				gameObject->AddComponent(ComponentType::EmitterComponent);
+				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
 			}
 
-		if (ImGui::Selectable("Script")) 
+		if (ImGui::Selectable("Script"))
 		{
 			//Open new Popup, with input text and autocompletion to select scripts by name
 			scriptSelected = true;
 			ImGui::CloseCurrentPopup();
 		}
 
-		ImGui::EndPopup();		
+		if (gameObject->rigidActor == nullptr) {
+			if (ImGui::Selectable("Rigid Static")) {
+				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Rigid Dynamic")) {
+				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		if (gameObject->collider == nullptr) {
+			if (ImGui::Selectable("Box Collider")) {
+				gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Sphere Collider")) {
+				gameObject->AddComponent(ComponentTypes::SphereColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Capsule Collider")) {
+				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+			else if (ImGui::Selectable("Plane Collider")) {
+				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndPopup();
 	}
 
 	if (scriptSelected)
@@ -179,9 +205,9 @@ void PanelInspector::ShowGameObjectInspector() const
 					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
 
 					res = (ResourceScript*)App->res->GetResource(UUID);
-					
+
 					delete[] metaBuffer;
-				}			
+				}
 			}
 
 			CONSOLE_LOG("New Script Created: %s", scriptName.data());
@@ -223,7 +249,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::TextColored(BLUE, "%s", resourceMesh->exportedFile.data());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUUID());
-	
+
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceMesh->IsInMemory();
 	ImGui::Checkbox("In memory", &inMemory);
@@ -479,8 +505,8 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
+	if (ImGui::Button("REIMPORT"))
+	{
 		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile.data(), meshImportSettings);
 
 		// Reimport Mesh file
@@ -541,10 +567,10 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
-		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings); 
-		
+	if (ImGui::Button("REIMPORT"))
+	{
+		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings);
+
 		// Reimport Texture file
 		System_Event newEvent;
 		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
@@ -576,7 +602,7 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::PushItemWidth(150.0f);
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
-	{	
+	{
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
 		strcpy_s(metaFile, strlen(shaderObject->file.data()) + 1, shaderObject->file.data()); // file

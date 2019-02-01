@@ -52,6 +52,7 @@ struct ModuleParticle;
 struct DebugDrawer;
 struct ScriptingModule;
 struct ModuleEvents;
+struct ModulePhysics;
 
 class Application
 {
@@ -120,7 +121,7 @@ public:
 	ShaderImporter*			shaderImporter;
 	ModuleParticle*			particle;
 
-#ifndef GAMEMODE	
+#ifndef GAMEMODE
 	ModuleCameraEditor*		camera;
 	ModuleGui*				gui;
 
@@ -136,6 +137,7 @@ public:
 	ModuleTimeManager*		timeManager;
 	ScriptingModule*		scripting;
 	ModuleEvents*			events;
+	ModulePhysics*			physics;
 
 	DebugDrawer*			debugDrawer;
 
@@ -151,7 +153,7 @@ private:
 	double				lastFrameMs = 0;
 	double				dt = 0;
 	double				fps = 0;
-	bool				capFrames = 0;
+	bool				capFrames = false;
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 

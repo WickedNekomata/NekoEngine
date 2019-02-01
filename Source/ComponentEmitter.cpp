@@ -5,9 +5,10 @@
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "ModuleScene.h"
+#include "ResourceTexture.h"
+#include "ModuleResourceManager.h"
 
 #include <vector>
-//#include "pcg-c-basic-0.9/pcg_basic.h"
 
 #include "ModuleParticles.h"
 #include "imgui\imgui.h"
@@ -76,7 +77,6 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : 
 
 		startValues.subEmitterActive = info->subEmitterActive;
 
-		//TODO Particle: Make sure that this is necesary
 		if (gameObject)
 			gameObject->boundingBox = math::AABB::FromCenterAndSize(info->posDifAABB, info->sizeOBB);
 
@@ -90,10 +90,10 @@ ComponentEmitter::~ComponentEmitter()
 {
 	if (App)
 	{
-		App->timeManager->GetGameTimerList().remove(&timer);
-		App->timeManager->GetGameTimerList().remove(&burstTime);
-		App->timeManager->GetGameTimerList().remove(&loopTimer);
-		App->timeManager->GetGameTimerList().remove(&timeSimulating);
+		App->timeManager->RemoveGameTimer(&timer);
+		App->timeManager->RemoveGameTimer(&burstTime);
+		App->timeManager->RemoveGameTimer(&loopTimer);
+		App->timeManager->RemoveGameTimer(&timeSimulating);
 
 		App->particle->RemoveEmitter(this);
 	}			
@@ -112,20 +112,22 @@ void ComponentEmitter::StartEmitter()
 	}
 }
 
-/*void ComponentEmitter::ChangeGameState(engine_states state)
+void ComponentEmitter::ChangeGameState(SimulatedGame state)
 {
 	simulatedGame = state;
-	if (state == ENGINE_PLAY)
-		state = ENGINE_EDITOR;
-	else if (state == ENGINE_WANTS_EDITOR)
+	if (state == SimulatedGame_PLAY)
+		state = SimulatedGame_STOP;
+	else if (state == SimulatedGame_STOP)
 		ClearEmitter();
 
-	ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
-	if (subEmitter && compEmitter)
-		compEmitter->ChangeGameState(state);
+	if (subEmitter)
+	{
+		ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
+		if (compEmitter)
+			compEmitter->ChangeGameState(state);
+	}
 }
 
-*/
 void ComponentEmitter::Update()
 {
 	if (rateOverTime > 0)
@@ -133,11 +135,11 @@ void ComponentEmitter::Update()
 		float time = timer.ReadSec();
 		if (time > timeToParticle && (loop || loopTimer.ReadSec() < duration))
 		{
-			if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
+ 			if (App->IsPlay() || simulatedGame == SimulatedGame_PLAY || App->IsStep())
 			{
 				int particlesToCreate = (time / (1.0f / rateOverTime));
 				CreateParticles(particlesToCreate, normalShapeType,math::float3::zero);
-
+				//CONSOLE_LOG("COMPONENT EMITTER: particles to create : %i", particlesToCreate);
 				timeToParticle = (1.0f / rateOverTime);
 				
 				timer.Start();
@@ -274,25 +276,22 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 void ComponentEmitter::OnUniqueEditor()
 {
-	if (ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ParticleValues();
+	ImGui::Text("Particle System");
+	ImGui::Spacing();
 
-		ParticleShape();
+	ParticleValues();
 
-		ParticleColor();
+	ParticleShape();
 
-		ParticleBurst();
+	ParticleColor();
 
-		ParticleAABB();
+	ParticleBurst();
 
-		//ParticleTexture();
+	ParticleAABB();
 
-		ParticleSubEmitter();
+	//ParticleTexture();
 
-		//if (ImGui::Button("Remove Particles", ImVec2(150, 25)))
-		//	toDelete = true;
-	}
+	ParticleSubEmitter();
 }
 
 void ComponentEmitter::ParticleValues()
@@ -325,6 +324,7 @@ void ComponentEmitter::ParticleValues()
 		ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
 
+		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Emition", &rateOverTime, 1.0f, 0.0f, 300.0f, "%.2f");
 
 		ImGui::Separator();
@@ -408,7 +408,7 @@ void ComponentEmitter::ParticleColor()
 			//TODO: they must be able to change position
 			if ((iter) == startValues.color.begin())
 			{//Cant delete 1st color
-				
+				ImGui::PushItemWidth(150.0f);
 				if (!EditColor(*iter))
 					break;
 				iter++;
@@ -466,6 +466,7 @@ void ComponentEmitter::ParticleBurst()
 			}
 			ImGui::End();
 		}
+		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Min particles", &minPart, 1.0f, 0, 100);
 		if (minPart > maxPart)
 			maxPart = minPart;
@@ -505,20 +506,22 @@ void ComponentEmitter::ParticleTexture()
 			name = name.substr(name.find_last_of("\\") + 1);
 
 			ImGui::Text("Loaded texture '%s'", name.data());
-			ImGui::Text("Texture used %i times", texture->usage);
+			//ImGui::Text("Texture used %i times", texture->usage);
 
-			ImGui::Image((void*)(intptr_t)texture->GetID(), ImVec2(256.0f, 256.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+			ImGui::Image((void*)(intptr_t)texture->id, ImVec2(256.0f, 256.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
 			if (ImGui::BeginMenu("Change Texture"))
 			{
 				std::vector<Resource*> resource;
-				App->resources->GetResources(resource, ResourceType::texture);
+				App->res->GetResources(resource, ResourceType::TextureResource);
 
 				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
 				{
-					if (ImGui::MenuItem((*iterator)->name.data()))
+					std::string textName;
+					textName.append((*iterator)->GetName());
+					if (ImGui::MenuItem(textName.data()))
 					{
-						App->resources->Remove(texture);
+						App->res->Remove(texture);
 						texture = nullptr;
 
 						texture = ((ResourceTexture*)(*iterator));
@@ -529,7 +532,7 @@ void ComponentEmitter::ParticleTexture()
 			}
 			if (ImGui::Button("Remove Texture", ImVec2(125, 25)))
 			{
-				App->resources->Remove(texture);
+				App->res->Remove(texture);
 				texture = nullptr;
 			}
 
@@ -540,11 +543,13 @@ void ComponentEmitter::ParticleTexture()
 			if (ImGui::BeginMenu("Add new Texture"))
 			{
 				std::vector<Resource*> resource;
-				App->resources->GetResources(resource, ResourceType::texture);
+				App->res->GetResources(resource, ResourceType::TextureResource);
 
 				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
 				{
-					if (ImGui::MenuItem((*iterator)->name.data()))
+					std::string textName;
+					textName.append((*iterator)->GetName());
+					if (ImGui::MenuItem(textName.data()))
 					{
 						texture = ((ResourceTexture*)(*iterator));
 						texture->usage++;
@@ -612,7 +617,7 @@ void ComponentEmitter::ParticleSubEmitter()
 /*
 void ComponentEmitter::SetNewAnimation(int row, int col)
 {
-	particleAnimation = App->resources->LoadTextureUV(row, col);
+	particleAnimation = App->res->LoadTextureUV(row, col);
 	for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
 	{
 		(*iterator)->currentFrame = 0;
@@ -624,7 +629,7 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 	ImGui::SameLine();
 	if (checkBox)
 	{
-		ImGui::PushItemWidth(70.0f);
+		ImGui::PushItemWidth(42.0f);
 		std::string str = "##";
 		str.append(name);
 		str.append("min");
@@ -636,7 +641,7 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 	}
 	else
 	{
-		ImGui::PushItemWidth(148.0f);
+		ImGui::PushItemWidth(100.0f);
 		if (ImGui::DragFloat(name, &value.x, v_speed, v_min, v_max, "%.2f"))
 			value.y = value.x;
 	}
@@ -688,7 +693,7 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 
 void ComponentEmitter::SaveComponent(JSON_Object* parent)
 {
-	json_object_set_number(parent, "Type", this->type);
+	json_object_set_number(parent, "Type", this->componentType);
 
 	json_object_set_number(parent, "UUID", this->parent->GetUUID());
 

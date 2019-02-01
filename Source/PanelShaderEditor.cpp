@@ -16,7 +16,7 @@
 
 // Allows the modification of an existing shader program or the creation of a new shader program
 
-PanelShaderEditor::PanelShaderEditor(char* name) : Panel(name) 
+PanelShaderEditor::PanelShaderEditor(const char* name) : Panel(name)
 {
 	strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
 }

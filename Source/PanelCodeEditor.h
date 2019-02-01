@@ -18,7 +18,7 @@ class PanelCodeEditor : public Panel
 {
 public:
 
-	PanelCodeEditor(char* name);
+	PanelCodeEditor(const char* name);
 	~PanelCodeEditor();
 
 	bool Draw();

@@ -5,13 +5,21 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentEmitter.h"
+#include "ComponentRigidActor.h"
+#include "ComponentRigidStatic.h"
+#include "ComponentRigidDynamic.h"
+#include "ComponentBoxCollider.h"
+#include "ComponentSphereCollider.h"
+#include "ComponentCapsuleCollider.h"
 #include "ResourceMesh.h"
-#include "ModuleResourceManager.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleResourceManager.h"
 #include "ModuleGOs.h"
 #include "ModuleScene.h"
+#include "ModulePhysics.h"
+#include "ModuleParticles.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -27,7 +35,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 		parent->AddChild(this);
 
 		if (!disableTransform)
-			AddComponent(ComponentType::TransformComponent);
+			AddComponent(ComponentTypes::TransformComponent);
 	}
 
 	boundingBox.SetNegativeInfinity();
@@ -199,47 +207,58 @@ bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) con
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentType type)
+Component* GameObject::AddComponent(ComponentTypes componentType)
 {
-	Component* newComponent;
+	Component* newComponent = nullptr;
 
 	bool createMaterial = false;
 
-	switch (type)
+	switch (componentType)
 	{
-	case NoComponentType:
+	case ComponentTypes::NoComponentType:
 		break;
-	case TransformComponent:
-		assert(transform == NULL);
+	case ComponentTypes::TransformComponent:
+		assert(transform == nullptr);
 		newComponent = transform = new ComponentTransform(this);
 		break;
-	case MeshComponent:
-		assert(meshRenderer == NULL);
+	case ComponentTypes::MeshComponent:
+		assert(meshRenderer == nullptr);
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
 		break;
-	case MaterialComponent:
+	case ComponentTypes::MaterialComponent:
 		if (materialRenderer != nullptr)
 			return nullptr;
-		assert(materialRenderer == NULL);
+		assert(materialRenderer == nullptr);
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
-	case CameraComponent:
-		assert(camera == NULL);
+	case ComponentTypes::CameraComponent:
+		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	case EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
+		App->particle->emitters.push_back((ComponentEmitter*)newComponent);
 		break;
-	default:
+	case ComponentTypes::RigidStaticComponent:
+	case ComponentTypes::RigidDynamicComponent:
+		assert(rigidActor == nullptr);
+		newComponent = rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
+		break;
+	case ComponentTypes::BoxColliderComponent:
+	case ComponentTypes::SphereColliderComponent:
+	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
+		assert(collider == nullptr);
+		newComponent = collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
 	}
 	
 	components.push_back(newComponent);
 
 	if (createMaterial)
-		AddComponent(ComponentType::MaterialComponent);
+		AddComponent(ComponentTypes::MaterialComponent);
 
 	return newComponent;
 }
@@ -281,13 +300,24 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 {
 	switch (toDelete->GetType())
 	{
-	case ComponentType::MeshComponent:
+	case ComponentTypes::MeshComponent:
 		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
 		meshRenderer = nullptr;
 		break;
-	case ComponentType::CameraComponent:
+	case ComponentTypes::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
 		materialRenderer = nullptr;
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+	case ComponentTypes::RigidStaticComponent:
+		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
+		rigidActor = nullptr;
+	case ComponentTypes::BoxColliderComponent:
+	case ComponentTypes::SphereColliderComponent:
+	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
+		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
+		collider = nullptr;
 		break;
 	}
 
@@ -301,10 +331,10 @@ void GameObject::InternallyDeleteComponents()
 	{   
 		switch (components[i]->GetType())
 		{
-		case ComponentType::MeshComponent:
+		case ComponentTypes::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
 			break;
-		case ComponentType::CameraComponent:
+		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
 		}		
@@ -330,7 +360,7 @@ Component* GameObject::GetComponent(uint index) const
 	return components[index];
 }
 
-Component* GameObject::GetComponentByType(ComponentType type) const
+Component* GameObject::GetComponentByType(ComponentTypes type) const
 {
 	Component* comp = nullptr;
 
@@ -502,7 +532,7 @@ void GameObject::OnLoad(JSON_Object* file)
 	
 	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
 		cObject = json_array_get_object(jsonComponents, i);
-		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
+		Component* newComponent = AddComponent((ComponentTypes)(int)json_object_get_number(cObject, "Type"));
 		// material special case cause of its bonunding property to mesh component
 		if (newComponent == nullptr)
 			materialRenderer->OnLoad(cObject);

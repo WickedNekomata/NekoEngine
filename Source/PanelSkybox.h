@@ -14,7 +14,7 @@ class PanelSkybox : public Panel
 {
 public:
 
-	PanelSkybox(char* name);
+	PanelSkybox(const char* name);
 	~PanelSkybox();
 
 	bool Draw();

@@ -9,7 +9,7 @@
 
 #include "ImGui\imgui.h"
 
-PanelEdit::PanelEdit(char* name) : Panel(name) {}
+PanelEdit::PanelEdit(const char* name) : Panel(name) {}
 
 PanelEdit::~PanelEdit() {}
 

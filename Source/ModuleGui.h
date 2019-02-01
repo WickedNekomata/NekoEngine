@@ -23,7 +23,9 @@ class PanelDebugDraw;
 class PanelEdit;
 class PanelCodeEditor;
 class PanelShaderEditor;
+class PanelSimulatedTime;
 class PanelSkybox;
+class PanelPhysics;
 
 class ModuleGui : public Module
 {
@@ -71,6 +73,8 @@ public:
 	PanelCodeEditor*	panelCodeEditor = nullptr;
 	PanelShaderEditor*  panelShaderEditor = nullptr;
 	PanelSkybox*		panelSkybox = nullptr;
+	PanelSimulatedTime*	panelSimulatedTime = nullptr;
+	PanelPhysics*		panelPhysics = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 

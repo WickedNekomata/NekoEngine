@@ -6,8 +6,10 @@
 #include "ModuleCameraEditor.h"
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
+#include "ModulePhysics.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
+#include "ModuleParticles.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
@@ -18,6 +20,8 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "ComponentCollider.h"
+#include "ComponentEmitter.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -157,6 +161,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	skyboxTexture = App->materialImporter->GetSkyboxTexture();
 	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
 
+	// Load primitives
+	App->sceneImporter->LoadPrimitivePlane();
+
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
@@ -182,6 +189,11 @@ update_status ModuleRenderer3D::PreUpdate()
 // PostUpdate: present buffer to screen
 update_status ModuleRenderer3D::PostUpdate()
 {
+	//Draw All particles
+	glDepthMask(GL_FALSE);
+	App->particle->Draw();
+	glDepthMask(GL_TRUE);
+
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
@@ -213,19 +225,169 @@ update_status ModuleRenderer3D::PostUpdate()
 	{
 		App->debugDrawer->StartDebugDraw();
 
-		if (drawBoundingBoxes)
+		if (drawBoundingBoxes) // boundingBoxesColor = Yellow
 		{
+			Color boundingBoxesColor = Yellow;
+
 			for (uint i = 0; i < meshComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, Yellow);
+				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, boundingBoxesColor);
 		}
 
-		if (drawCamerasFrustum)
+		if (drawCamerasFrustum) // boundingBoxesColor = Grey
 		{
+			Color camerasFrustumColor = Grey;
+
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, Grey);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawQuadtree)
+		if (drawColliders) // boundingBoxesColor = Green, DarkGreen
+		{
+			Color collidersColor = Green;
+
+			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
+			for (uint i = 0; i < colliderComponents.size(); ++i)
+			{
+				physx::PxShape* gShape = colliderComponents[i]->GetShape();
+				if (gShape == nullptr)
+					continue;
+
+				math::float4x4 gameObjectGlobalMatrix = colliderComponents[i]->GetParent()->transform->GetGlobalMatrix();
+				math::float3 position = math::float3::zero;
+				math::Quat rotation = math::Quat::identity;
+				math::float3 scale = math::float3::one;
+				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+																			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+
+				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
+				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
+											math::float3(transform.p.x, transform.p.y, transform.p.z));
+
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::ePLANE:
+					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), collidersColor, globalMatrix);
+				break;
+				}
+			}
+
+			/*
+			std::vector<PxRigidActor*> staticActors = App->physics->GetRigidStatics();
+			for (uint i = 0; i < staticActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				staticActors[i]->getShapes(&gShape, 1);
+
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 globalMatrix(q, p);
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
+						break;
+					}
+				}
+			}
+
+			std::vector<PxRigidActor*> dynamicActors = App->physics->GetRigidDynamics();
+			for (uint i = 0; i < dynamicActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				dynamicActors[i]->getShapes(&gShape, 1);
+
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 globalMatrix(q, p);
+
+				if (dynamicActors[i]->is<PxRigidDynamic>()->isSleeping())
+					collidersColor = DarkBlue;
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
+						break;
+					}
+				}
+			}*/
+		}
+
+		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
 		App->debugDrawer->EndDebugDraw();
@@ -422,6 +584,16 @@ void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
 bool ModuleRenderer3D::GetDrawCamerasFrustum() const
 {
 	return drawCamerasFrustum;
+}
+
+void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
+{
+	this->drawColliders = drawColliders;
+}
+
+bool ModuleRenderer3D::GetDrawColliders() const
+{
+	return drawColliders;
 }
 
 void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)
@@ -785,12 +957,56 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glUseProgram(0);
 }
 
+void ModuleRenderer3D::DrawPlane(ComponentEmitter* toDraw) const
+{
+	// Shader
+	GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+
+	glUseProgram(shaderProgram);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
+
+	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix(); // particle matrix
+	model_matrix = model_matrix.Transposed();
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+	math::float4x4 normal_matrix = model_matrix;
+	normal_matrix.Inverse();
+	normal_matrix.Transpose();
+
+	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+	uint defaultPlaneVAO = 0;
+	uint defaultPlaneIBO = 0;
+	uint defaultPlaneIndicesSize = 0;
+	App->sceneImporter->GetDefaultPlane(defaultPlaneVAO, defaultPlaneIBO, defaultPlaneIndicesSize);
+
+	glBindVertexArray(defaultPlaneVAO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, defaultPlaneIBO);
+	glDrawElements(GL_TRIANGLES, defaultPlaneIndicesSize, GL_UNSIGNED_INT, NULL);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 {
-	App->debugDrawer->DebugDraw(node->boundingBox, Green);
+	App->debugDrawer->DebugDraw(node->boundingBox, Blue);
 
 	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
-		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkGreen);
+		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkBlue);
 
 	if (!node->IsLeaf())
 	{

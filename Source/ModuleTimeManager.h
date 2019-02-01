@@ -28,7 +28,9 @@ public:
 	float GetRealTime() const;
 	float GetRealDt() const;
 
-	std::list<GameTimer*> GetGameTimerList() const;
+	bool TimerInGameList(GameTimer * timer);
+	bool RemoveGameTimer(GameTimer * timer);
+
 private:
 
 	// Game Clock

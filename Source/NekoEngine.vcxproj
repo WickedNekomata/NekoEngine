@@ -183,7 +183,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Importer.h" />
-    <ClInclude Include="InputGeom.h" />
+    <ClInclude Include="NMInputGeom.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
@@ -247,9 +247,9 @@
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
-    <ClInclude Include="M_DebugDraw.h" />
+    <ClInclude Include="NMDebugDraw.h" />
     <ClInclude Include="PanelNavMesh.h" />
-    <ClInclude Include="SoloMesh_Query.h" />
+    <ClInclude Include="NMSupplier.h" />
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
@@ -371,10 +371,10 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
-    <ClCompile Include="M_DebugDraw.cpp" />
+    <ClCompile Include="NMDebugDraw.cpp" />
     <ClCompile Include="PanelNavMesh.cpp" />
-    <ClCompile Include="BuildContext.cpp" />
-    <ClCompile Include="SoloMesh_Query.cpp" />
+    <ClCompile Include="NMBuildContext.cpp" />
+    <ClCompile Include="NMSupplier.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
@@ -457,7 +457,7 @@
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\include\Math\Matrix.inl" />
-    <None Include="BuildContext.h" />
+    <None Include="NMBuildContext.h" />
     <None Include="Uniforms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

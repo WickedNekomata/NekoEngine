@@ -1,19 +1,19 @@
-#ifndef __SOLOMESH_QUERY_H__
-#define __SOLOMESH_QUERY_H__
+#ifndef __NM_SUPPLIER_H__
+#define __NM_SUPPLIER_H__
 
 #include "Recast&Detour/Recast/Include/Recast.h"
-#include "BuildContext.h"
+#include "NMBuildContext.h"
 
-class SoloMesh_Query
+class NMSupplier
 {
 public:
-	SoloMesh_Query();
-	virtual ~SoloMesh_Query();
+	NMSupplier();
+	virtual ~NMSupplier();
 
-	void SetInputGeom(class InputGeom& inputGeom);
+	void SetInputGeom(class NMInputGeom& inputGeom);
 
 protected:
-	class InputGeom* m_geom = nullptr;
+	class NMInputGeom* m_geom = nullptr;
 	class dtNavMesh* m_navMesh = nullptr;
 	class dtNavMeshQuery* m_navQuery;
 	class dtCrowd* m_crowd;
@@ -26,7 +26,7 @@ protected:
 	rcConfig m_cfg;
 	rcPolyMeshDetail* m_dmesh = nullptr;
 
-	BuildContext* m_ctx = nullptr;
+	NMBuildContext* m_ctx = nullptr;
 
 	bool patata = false;
 

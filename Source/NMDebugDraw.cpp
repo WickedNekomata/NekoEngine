@@ -1,13 +1,13 @@
-#include "M_DebugDraw.h"
+#include "NMDebugDraw.h"
 
 #include "glew\include\GL\glew.h"
 
-void M_DebugDraw::depthMask(bool state)
+void NMDebugDraw::depthMask(bool state)
 {
 	glDepthMask(state ? GL_TRUE : GL_FALSE);
 }
 
-void M_DebugDraw::begin(duDebugDrawPrimitives prim, float size)
+void NMDebugDraw::begin(duDebugDrawPrimitives prim, float size)
 {
 	switch (prim)
 	{
@@ -28,33 +28,33 @@ void M_DebugDraw::begin(duDebugDrawPrimitives prim, float size)
 	};
 }
 
-void M_DebugDraw::vertex(const float* pos, unsigned int color)
+void NMDebugDraw::vertex(const float* pos, unsigned int color)
 {
 	glColor4ubv((GLubyte*)&color);
 	glVertex3fv(pos);
 }
 
-void M_DebugDraw::vertex(const float x, const float y, const float z, unsigned int color)
+void NMDebugDraw::vertex(const float x, const float y, const float z, unsigned int color)
 {
 	glColor4ubv((GLubyte*)&color);
 	glVertex3f(x, y, z);
 }
 
-void M_DebugDraw::vertex(const float* pos, unsigned int color, const float* uv)
+void NMDebugDraw::vertex(const float* pos, unsigned int color, const float* uv)
 {
 	glColor4ubv((GLubyte*)&color);
 	glTexCoord2fv(uv);
 	glVertex3fv(pos);
 }
 
-void M_DebugDraw::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
+void NMDebugDraw::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
 {
 	glColor4ubv((GLubyte*)&color);
 	glTexCoord2f(u, v);
 	glVertex3f(x, y, z);
 }
 
-void M_DebugDraw::end()
+void NMDebugDraw::end()
 {
 	glEnd();
 	glLineWidth(1.0f);

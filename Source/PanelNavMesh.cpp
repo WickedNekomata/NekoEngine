@@ -4,8 +4,8 @@
 
 #include "Application.h"
 #include "ModuleScene.h"
-#include "SoloMesh_Query.h"
-#include "InputGeom.h"
+#include "NMSupplier.h"
+#include "NMInputGeom.h"
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -109,7 +109,7 @@ bool PanelNavMesh::Draw()
 	ImGui::SameLine();
 
 	if (ImGui::Button("Delete Navmesh"))
-		App->soloMeshQuery->CleanUp();
+		App->nmSupplier->CleanUp();
 
 	ImGui::End();
 
@@ -145,11 +145,11 @@ void PanelNavMesh::HandleInputMeshes() const
 		return;
 	}
 
-	InputGeom p_inputGeom;
+	NMInputGeom p_inputGeom;
 	math::AABB aabb;
 	aabb.SetNegativeInfinity();
 
-	memset(&p_inputGeom, 0, sizeof(InputGeom));
+	memset(&p_inputGeom, 0, sizeof(NMInputGeom));
 
 	for (int i = 0; i < staticsMeshComp.size(); ++i)
 	{
@@ -197,11 +197,11 @@ void PanelNavMesh::HandleInputMeshes() const
 		}
 	}
 
-	memcpy(&p_inputGeom + offsetof(InputGeom, i_buildSettings), &cs, sizeof(CommonSettings));
+	memcpy(&p_inputGeom + offsetof(NMInputGeom, i_buildSettings), &cs, sizeof(CommonSettings));
 	memcpy(p_inputGeom.bMin, aabb.minPoint.ptr(), sizeof(math::float3));
 	memcpy(p_inputGeom.bMax, aabb.maxPoint.ptr(), sizeof(math::float3));
-	App->soloMeshQuery->SetInputGeom(p_inputGeom);
-	App->soloMeshQuery->HandleBuild();
+	App->nmSupplier->SetInputGeom(p_inputGeom);
+	App->nmSupplier->HandleBuild();
 
 	for (int i = 0; i < p_inputGeom.i_nmeshes; ++i)
 	{

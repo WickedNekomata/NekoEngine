@@ -15,7 +15,7 @@
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
-#include "SoloMesh_Query.h"
+#include "NMSupplier.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -34,7 +34,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
-	soloMeshQuery = new SoloMesh_Query();
+	nmSupplier = new NMSupplier();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();

@@ -1,5 +1,5 @@
-#ifndef __INPUTGEOM_H__
-#define __INPUTGEOM_H__
+#ifndef __NMINPUTGEOM_H__
+#define __NMINPUTGEOM_H__
 
 enum RecastPartitionType
 {
@@ -55,7 +55,7 @@ struct M_Mesh
 	bool walkable;
 };
 
-class InputGeom
+class NMInputGeom
 {
 public:
 	BuildSettings i_buildSettings;

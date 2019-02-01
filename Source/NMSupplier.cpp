@@ -1,6 +1,6 @@
-#include "SoloMesh_Query.h"
-#include "InputGeom.h"
-#include "M_DebugDraw.h"
+#include "NMSupplier.h"
+#include "NMInputGeom.h"
+#include "NMDebugDraw.h"
 
 #include "Recast&Detour/Detour/Include/DetourNavMesh.h"
 #include "Recast&Detour/Detour/Include/DetourNavMeshBuilder.h"
@@ -20,17 +20,17 @@
 
 // Heightfields explanation -> http://www.critterai.org/projects/nmgen_study/heightfields.html
 
-SoloMesh_Query::SoloMesh_Query()
+NMSupplier::NMSupplier()
 {
 	m_navQuery = dtAllocNavMeshQuery();
 }
 
-SoloMesh_Query::~SoloMesh_Query()
+NMSupplier::~NMSupplier()
 {
 	dtFreeNavMeshQuery(m_navQuery);
 }
 
-void SoloMesh_Query::CleanUp()
+void NMSupplier::CleanUp()
 {
 	if (m_triareas) delete[] m_triareas;
 	if (m_geom) delete m_geom;
@@ -53,14 +53,14 @@ void SoloMesh_Query::CleanUp()
 	patata = false;
 }
 
-void SoloMesh_Query::SetInputGeom(InputGeom& inputGeom)
+void NMSupplier::SetInputGeom(NMInputGeom& inputGeom)
 {
 	CleanUp();
-	m_geom = new InputGeom();
-	memcpy(m_geom, &inputGeom, sizeof(InputGeom));
+	m_geom = new NMInputGeom();
+	memcpy(m_geom, &inputGeom, sizeof(NMInputGeom));
 }
 
-bool SoloMesh_Query::HandleBuild()
+bool NMSupplier::HandleBuild()
 {
 	if (!m_geom)
 	{
@@ -70,7 +70,7 @@ bool SoloMesh_Query::HandleBuild()
 
 	bool m_keepInterResults = false;
 
-	m_ctx = new BuildContext();
+	m_ctx = new NMBuildContext();
 	// Set all input settings to recast
 	memset(&m_cfg, 0, sizeof(m_cfg));
 	m_cfg.cs = m_geom->i_buildSettings.cellSize;
@@ -339,11 +339,11 @@ bool SoloMesh_Query::HandleBuild()
 	return true;
 }
 
-void SoloMesh_Query::Draw()
+void NMSupplier::Draw()
 {
 	if (patata)
 	{
-		M_DebugDraw dd;
+		NMDebugDraw dd;
 		duDebugDrawNavMesh(&dd, *m_navMesh, 0);
 	}
 }

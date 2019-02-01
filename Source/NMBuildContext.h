@@ -1,14 +1,14 @@
-#ifndef __BUILD_CONTEXT_H__
-#define __BUILD_CONTEXT_H__
+#ifndef __NM_BUILD_CONTEXT_H__
+#define __NM_BUILD_CONTEXT_H__
 
 #include "Recast&Detour/Recast/Include/Recast.h"
 #include "PerfTimer.h"
 
-class BuildContext : public rcContext
+class NMBuildContext : public rcContext
 {
 
 public:
-	BuildContext();
+	NMBuildContext();
 
 protected:
 	/// Virtual functions for custom implementations.

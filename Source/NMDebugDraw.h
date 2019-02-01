@@ -1,9 +1,9 @@
-#ifndef __M_DEBUG_DRAW_H__
-#define __M_DEBUG_DRAW_H__
+#ifndef __NM_DEBUG_DRAW_H__
+#define __NM_DEBUG_DRAW_H__
 
 #include "Recast&Detour/DebugUtils/Include/DebugDraw.h"
 
-class M_DebugDraw : public duDebugDraw
+class NMDebugDraw : public duDebugDraw
 {
 public:
 	virtual void depthMask(bool state);

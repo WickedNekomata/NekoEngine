@@ -377,6 +377,7 @@ physx::PxFilterFlags FilterShader(
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
 {
+	// TODO: check PxDefaultSimulationFilterShader
 	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
 	{
 		// Let triggers through

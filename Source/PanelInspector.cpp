@@ -3,6 +3,7 @@
 #ifndef GAMEMODE
 
 #include "Globals.h"
+#include "Layers.h"
 
 #include "Application.h"
 #include "ModuleScene.h"
@@ -103,6 +104,14 @@ void PanelInspector::ShowGameObjectInspector() const
 	if (ImGui::Checkbox("##static", &isStatic)) { gameObject->ToggleIsStatic(); }
 	ImGui::SameLine();
 	ImGui::Text("Static");
+
+	// Layer
+	const char* layers[MAX_NUM_LAYERS];
+	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+		layers[i] = App->layers->NumberToName(i);
+	ImGui::PushItemWidth(150.0f);
+	ImGui::Combo("Layer", (int*)&gameObject->layer, layers, MAX_NUM_LAYERS);
+	ImGui::PopItemWidth();
 
 	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 	{

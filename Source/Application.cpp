@@ -17,6 +17,7 @@
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 #include "ModulePhysics.h"
+#include "Layers.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -37,6 +38,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	shaderImporter = new ShaderImporter();
 	particle = new ModuleParticle();
 	physics = new ModulePhysics();
+	layers = new Layers();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -83,6 +85,7 @@ Application::~Application()
 	RELEASE(materialImporter);
 	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
+	RELEASE(layers);
 }
 
 bool Application::Init()

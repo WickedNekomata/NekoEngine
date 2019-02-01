@@ -100,6 +100,9 @@ public:
 
 	math::AABB boundingBox;
 
+	// Layer
+	uint layer = 0; // in the range [0...31]
+
 private:
 
 	const char* name = nullptr;

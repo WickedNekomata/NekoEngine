@@ -267,6 +267,7 @@
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
+    <ClInclude Include="PanelLayers.h" />
     <ClInclude Include="PanelSimulatedTime.h" />
     <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelPhysics.h" />
@@ -569,6 +570,7 @@
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
+    <ClCompile Include="PanelLayers.cpp" />
     <ClCompile Include="PanelSimulatedTime.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelPhysics.cpp" />

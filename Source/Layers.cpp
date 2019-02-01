@@ -6,7 +6,7 @@
 
 Layer::Layer() {}
 
-Layer::Layer(uint value, std::string name) :number(number), name(name) {}
+Layer::Layer(uint number) :number(number) {}
 
 Layer::~Layer() {}
 
@@ -29,9 +29,10 @@ Layers::Layers()
 	layers.shrink_to_fit();
 
 	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
-		layers.push_back(new Layer(i, ""));
+		layers.push_back(new Layer(i));
 
 	layers[0]->name = "Default";
+	layers[0]->builtin = true;
 }
 
 Layers::~Layers() {}
@@ -51,6 +52,13 @@ const char* Layers::NumberToName(uint layerNumber) const
 	return layers[layerNumber]->name.data();
 }
 
+// Returns whether the layer is builtin
+bool Layers::NumberToBuiltin(uint layerNumber) const
+{
+	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
+	return layers[layerNumber]->builtin;
+}
+
 // Returns the number of the layer. -1 if error
 int Layers::NameToNumber(const char* layerName) const
 {
@@ -59,6 +67,19 @@ int Layers::NameToNumber(const char* layerName) const
 	{
 		if (layers[i]->name.data() == layerName)
 			return i;
+	}
+
+	return -1;
+}
+
+// Returns whether the layer is builtin. -1 if error
+int Layers::NameToBuiltin(const char* layerName) const
+{
+	assert(layerName != nullptr);
+	for (uint i = 0; i < layers.size(); ++i)
+	{
+		if (layers[i]->name.data() == layerName)
+			return layers[i]->builtin;
 	}
 
 	return -1;

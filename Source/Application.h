@@ -51,6 +51,7 @@ struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
 struct ModulePhysics;
+struct Layers;
 
 class Application
 {
@@ -136,6 +137,7 @@ public:
 	ModulePhysics*			physics;
 
 	DebugDrawer*			debugDrawer;
+	Layers*					layers;
 
 	pcg32_random_t			rng;
 

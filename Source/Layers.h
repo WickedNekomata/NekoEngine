@@ -13,7 +13,7 @@ class Layer
 public:
 
 	Layer();
-	Layer(uint value, std::string name);
+	Layer(uint number);
 	~Layer();
 
 	uint GetNumber() const;
@@ -21,7 +21,8 @@ public:
 
 public:
 
-	std::string name;
+	std::string name = "";
+	bool builtin = false;
 
 private:
 
@@ -38,7 +39,9 @@ public:
 	void SetLayerName(uint layerNumber, const char* layerName) const;
 
 	const char* NumberToName(uint layerNumber) const;
+	bool NumberToBuiltin(uint layerNumber) const;
 	int NameToNumber(const char* layerName) const;
+	int NameToBuiltin(const char* layerName) const;
 
 	uint GetMask(std::vector<uint> layerNumbers) const;
 	uint GetMask(std::vector<const char*> layerNames) const;

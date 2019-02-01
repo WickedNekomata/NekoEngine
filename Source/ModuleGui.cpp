@@ -28,6 +28,7 @@
 #include "PanelSkybox.h"
 #include "PanelSimulatedTime.h"
 #include "PanelPhysics.h"
+#include "PanelLayers.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -60,6 +61,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelSkybox = new PanelSkybox("Skybox");
 	panelSimulatedTime = new PanelSimulatedTime("Simulated Time");
 	panelPhysics = new PanelPhysics("Physics");
+	panelLayers = new PanelLayers("Layers");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -75,6 +77,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelSkybox);
 	panels.push_back(panelSimulatedTime);
 	panels.push_back(panelPhysics);
+	panels.push_back(panelLayers);
 
 	LoadStatus(jObject);
 
@@ -142,7 +145,8 @@ update_status ModuleGui::Update()
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN) { panelAssets->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { panelDebugDraw->OnOff(); }
-
+	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) { panelLayers->OnOff(); }
+	
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -179,6 +183,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "ALT+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "ALT+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
+			if (ImGui::MenuItem("Layers", "ALT+L")) { panelLayers->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -231,14 +236,20 @@ bool ModuleGui::CleanUp()
 
 	panelInspector = nullptr;
 	panelAbout = nullptr;
+	panelConsole = nullptr;
 	panelSettings = nullptr;
 	panelHierarchy = nullptr;
-	panelConsole = nullptr;
 	panelAssets = nullptr;
 	panelLibrary = nullptr;
-	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
-
+	panelEdit = nullptr;
+	panelCodeEditor = nullptr;
+	panelShaderEditor = nullptr;
+	panelSkybox = nullptr;
+	panelSimulatedTime = nullptr;
+	panelPhysics = nullptr;
+	panelLayers = nullptr;
+	
 	RELEASE(atlas);
 
 	CONSOLE_LOG("Cleaning up ImGui");

@@ -135,7 +135,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	CONSOLE_LOG("Application Start --------------");
+	DEPRECATED_LOG("Application Start --------------");
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 		ret = (*item)->Start();
 

@@ -210,7 +210,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				}
 			}
 
-			CONSOLE_LOG("New Script Created: %s", scriptName.data());
+			DEPRECATED_LOG("New Script Created: %s", scriptName.data());
 			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
 			gameObject->AddComponent(script);
 			script->SetParent(gameObject);

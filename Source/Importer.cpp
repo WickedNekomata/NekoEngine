@@ -21,7 +21,7 @@ bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModT
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -41,11 +41,11 @@ bool Importer::SetLastModificationTimeToMeta(const char* metaFile, int& lastModT
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its last modification time", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its last modification time", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its last modification time", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its last modification time", metaFile);
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool Importer::GetLastModificationTimeFromMeta(const char* metaFile, int& lastMo
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 

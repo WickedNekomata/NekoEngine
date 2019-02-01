@@ -25,7 +25,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	if (PHYSFS_init(nullptr) == 0)
 	{
 		const char* error = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-		CONSOLE_LOG("Could not initialize PHYSFS. Error: %s", error);
+		DEPRECATED_LOG("Could not initialize PHYSFS. Error: %s", error);
 	}
 
 	AddPath(".");
@@ -38,7 +38,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	AddPath("./internal.f", "Internal");
 
 	if (PHYSFS_setWriteDir(".") == 0)
-		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
+		DEPRECATED_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
 #ifndef GAMEMODE
 	CreateDir(DIR_ASSETS_SCENES);
@@ -61,7 +61,7 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::CleanUp()
 {
-	CONSOLE_LOG("Freeing File System subsystem");
+	DEPRECATED_LOG("Freeing File System subsystem");
 	PHYSFS_deinit();
 
 	return true;
@@ -118,10 +118,10 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 
 	if (ret)
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
+		DEPRECATED_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
 
 	return ret;
 }
@@ -133,7 +133,7 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint) const
 	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
 		
 	return ret;
 }
@@ -145,7 +145,7 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 	if (PHYSFS_delete(path) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
 
 	return ret;
 }
@@ -488,19 +488,19 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 			size = Save(outputFile.data(), buffer, size);
 			if (size > 0)
 			{
-				CONSOLE_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
+				DEPRECATED_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
 			}
 			else
-				CONSOLE_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
+				DEPRECATED_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'", file);
+			DEPRECATED_LOG("FILE SYSTEM: Could not read from file '%s'", file);
 
 		RELEASE_ARRAY(buffer);
 		fclose(filehandle);
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
+		DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
 
 	return size;
 }
@@ -576,22 +576,22 @@ uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool appe
 			{
 				if (append)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
+					DEPRECATED_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
 				}
 				else
-					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
+					DEPRECATED_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
 			}			
 			else
-				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
+				DEPRECATED_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 		if (PHYSFS_close(filehandle) == 0)
-			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 	return objCount;
 }
@@ -625,18 +625,18 @@ uint ModuleFileSystem::Load(std::string file, char** buffer) const
 				else
 				{
 					RELEASE(buffer);
-					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+					DEPRECATED_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 				}
 
 				if (PHYSFS_close(filehandle) == 0)
-					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+					DEPRECATED_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 			}
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
+		DEPRECATED_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
 
 	return objCount;
 }
@@ -649,7 +649,7 @@ bool ModuleFileSystem::AddMeta(const char* metaFile, int lastModTime)
 		return false;
 	}
 
-	CONSOLE_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
+	DEPRECATED_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
 	metas[metaFile] = lastModTime;
 
 	return true;
@@ -667,12 +667,12 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 	if (metas.find(metaFile) != metas.end())
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
+		DEPRECATED_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
 		metas.erase(metaFile);
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
+		DEPRECATED_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
 
 	return ret;
 }

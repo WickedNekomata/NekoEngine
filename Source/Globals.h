@@ -8,9 +8,17 @@
 #include <stdio.h>
 #include "parson/parson.h"
 
-#define CONSOLE_LOG(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
+enum class LogTypes
+{
+	Normal,
+	Warning,
+	Error
+};
 
-void Log(const char file[], int line, const char* format, ...);
+#define DEPRECATED_LOG(format, ...) Log(__FILE__, __LINE__, format, LogTypes::Normal, __VA_ARGS__);
+#define CONSOLE_LOG(format, mode, ...) Log(__FILE__, __LINE__, format, mode, __VA_ARGS__);
+
+void Log(const char file[], int line, const char* format, LogTypes mode = LogTypes::Normal, ...);
 
 void OpenInBrowser(char* url);
 

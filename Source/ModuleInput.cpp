@@ -31,7 +31,7 @@ ModuleInput::~ModuleInput()
 
 bool ModuleInput::Init(JSON_Object* jObject)
 {
-	CONSOLE_LOG("Init SDL input event system");
+	DEPRECATED_LOG("Init SDL input event system");
 
 	bool ret = true;
 
@@ -39,7 +39,7 @@ bool ModuleInput::Init(JSON_Object* jObject)
 
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
-		CONSOLE_LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
+		DEPRECATED_LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -182,7 +182,7 @@ bool ModuleInput::CleanUp()
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Quitting SDL input event subsystem");
+	DEPRECATED_LOG("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 
 	return ret;

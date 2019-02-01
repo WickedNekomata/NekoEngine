@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include "Application.h"
 
-void Log(const char file[], int line, const char* format, ...)
+void Log(const char file[], int line, const char* format, LogTypes mode, ...)
 {
 	static char tmp_string[MAX_BUF_SIZE];
 	static char tmp_string2[MAX_BUF_SIZE];
@@ -20,6 +20,33 @@ void Log(const char file[], int line, const char* format, ...)
 	if (App != nullptr)
 	{
 		sprintf_s(tmp_string2, MAX_BUF_SIZE, "%s\n", tmp_string);
+
+		switch ((LogTypes)mode)
+		{
+			case LogTypes::Warning:
+			{
+				if (strstr(tmp_string2, "Warning: ") == nullptr)
+				{
+					strcpy(tmp_string, tmp_string2);
+					strcpy(tmp_string2, "");
+					strcat(tmp_string2, "Warning: ");
+					strcat(tmp_string2, tmp_string);
+				}
+				break;
+			}
+			case LogTypes::Error:
+			{
+				if (strstr(tmp_string2, "Error: ") == nullptr)
+				{
+					strcpy(tmp_string, tmp_string2);
+					strcpy(tmp_string2, "");
+					strcat(tmp_string2, "Error: ");
+					strcat(tmp_string2, tmp_string);
+				}
+				break;
+			}
+		}
+
 		App->LogGui(tmp_string2);
 	}
 }

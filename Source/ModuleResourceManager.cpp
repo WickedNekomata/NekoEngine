@@ -74,7 +74,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		if (GetResourceTypeByExtension(extension.data()) != ResourceType::NoResourceType)
 		{
-			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
+			DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
 			// Copy
 			std::string outputFile;
@@ -91,7 +91,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::NewFile:
 	{
-		CONSOLE_LOG("RESOURCE MANAGER: A new file '%s' has been added", event.fileEvent.file);
+		DEPRECATED_LOG("RESOURCE MANAGER: A new file '%s' has been added", event.fileEvent.file);
 
 		// Import
 		ImportFile(event.fileEvent.file);
@@ -112,7 +112,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		if (found != std::string::npos)
 			fileInAssets = fileInAssets.substr(0, found);
 
-		CONSOLE_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
+		DEPRECATED_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
 
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
@@ -132,7 +132,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::FileRemoved:
 	{
-		CONSOLE_LOG("RESOURCE MANAGER: The file with the meta '%s' has been removed", event.fileEvent.metaFile);
+		DEPRECATED_LOG("RESOURCE MANAGER: The file with the meta '%s' has been removed", event.fileEvent.metaFile);
 
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
@@ -156,7 +156,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		if (found != std::string::npos)
 			fileInAssets = fileInAssets.substr(0, found);
 
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
+		DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
 		std::string extension;
 		App->fs->GetExtension(fileInAssets.data(), extension);
@@ -458,7 +458,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 	if (!App->fs->Exists(metaFile))
 	{
 		// Import the file (using the default import settings)
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
+		DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
 		ret = ImportFile(fileInAssets, nullptr, nullptr);
 	}
 	else
@@ -524,7 +524,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 		if (!entries)
 		{
 			// Reimport the file (using the import settings from the meta)
-			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
+			DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
 			ret = ImportFile(fileInAssets, metaFile, nullptr);
 		}
 		else
@@ -538,7 +538,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			if (!resources)
 			{
 				// Create the resources
-				CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
+				DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
 				ret = ImportFile(fileInAssets, metaFile, exportedFile);
 			}
 		}

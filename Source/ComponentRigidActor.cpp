@@ -84,40 +84,40 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 
 void ComponentRigidActor::OnWake()
 {
-	CONSOLE_LOG("OnWake");
+	DEPRECATED_LOG("OnWake");
 }
 
 void ComponentRigidActor::OnSleep()
 {
-	CONSOLE_LOG("OnSleep");
+	DEPRECATED_LOG("OnSleep");
 }
 
 void ComponentRigidActor::OnCollisionEnter(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnCollisionEnter");
+	DEPRECATED_LOG("OnCollisionEnter");
 }
 
 void ComponentRigidActor::OnCollisionStay(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnCollisionStay");
+	DEPRECATED_LOG("OnCollisionStay");
 }
 
 void ComponentRigidActor::OnCollisionExit(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnCollisionExit");
+	DEPRECATED_LOG("OnCollisionExit");
 }
 
 void ComponentRigidActor::OnTriggerEnter(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnTriggerEnter");
+	DEPRECATED_LOG("OnTriggerEnter");
 }
 
 void ComponentRigidActor::OnTriggerStay(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnTriggerStay");
+	DEPRECATED_LOG("OnTriggerStay");
 }
 
 void ComponentRigidActor::OnTriggerExit(physx::PxActor* other)
 {
-	CONSOLE_LOG("OnTriggerExit");
+	DEPRECATED_LOG("OnTriggerExit");
 }

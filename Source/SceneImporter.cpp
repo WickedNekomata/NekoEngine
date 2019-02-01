@@ -32,7 +32,7 @@
 
 void myCallback(const char* msg, char* userData)
 {
-	CONSOLE_LOG("%s", msg);
+	DEPRECATED_LOG("%s", msg);
 }
 
 SceneImporter::SceneImporter()
@@ -70,12 +70,12 @@ bool SceneImporter::Import(const char* importFile, std::string& outputFile, cons
 	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
 		ret = Import(buffer, size, outputFile, importSettings, metaFile);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
 
 	return ret;
 }
@@ -285,7 +285,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				{
 					if (nodeMesh->mFaces[j].mNumIndices != 3)
 					{
-						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
+						DEPRECATED_LOG("WARNING, geometry face with != 3 indices!");
 					}
 					else
 						memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
@@ -442,10 +442,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFileName) > 0)
 			{
-				CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
+				DEPRECATED_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 			}
 			else
-				CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
+				DEPRECATED_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
 
 			RELEASE_ARRAY(data);
 			RELEASE_ARRAY(vertices);
@@ -526,11 +526,11 @@ bool SceneImporter::GenerateMeta(std::list<Resource*> resources, std::string& ou
 	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 
@@ -556,7 +556,7 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUI
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -580,11 +580,11 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUI
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
 		return false;
 	}
 
@@ -610,7 +610,7 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -644,7 +644,7 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -682,11 +682,11 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
 		return false;
 	}
 
@@ -712,7 +712,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -760,12 +760,12 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh) con
 	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
 
 	return ret;
 }
@@ -866,7 +866,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	outputMesh->indices = new GLuint[outputMesh->indicesSize];
 	memcpy(outputMesh->indices, cursor, bytes);
 
-	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
+	DEPRECATED_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
 
 	return true;
 }

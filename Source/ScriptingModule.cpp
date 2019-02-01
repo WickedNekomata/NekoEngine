@@ -102,6 +102,10 @@ update_status ScriptingModule::Update()
 	{
 		UpdateMethods();
 	}
+
+	CONSOLE_LOG("SCRIPTING UPDATE", LogTypes::Warning);
+	CONSOLE_LOG("SCRIPTING UPDATE", LogTypes::Error);
+
 	return UPDATE_CONTINUE;
 }
 

@@ -230,8 +230,6 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 {
 	math::float3 spawn = math::float3::zero;
-	float angle = 0.0f;
-	float centerDist = 0.0f;
 
 	switch (shapeType)
 	{
@@ -255,21 +253,25 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		break;
 
 	case ShapeType_CONE:
+	{
+		float angle = 0.0f;
+		float centerDist = 0.0f;
 
-		angle = (2*PI) * (float)App->GenerateRandomNumber() / MAXUINT;
+		angle = (2 * PI) * (float)App->GenerateRandomNumber() / MAXUINT;
 		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
 		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
 		circleCreation.normal = -circleCreation.pos;
-		startValues.particleDirection = (circleCreation.GetPoint(angle,centerDist)).Normalized();
+		startValues.particleDirection = (circleCreation.GetPoint(angle, centerDist)).Normalized();
 		break;
+	}
 	default:
 		break;
 	}
 
 	math::float3 global = math::float3::zero;
 	if (parent)
-		parent->transform->GetGlobalMatrix().Decompose(global,math::Quat(),math::float3());
+		global = parent->transform->position;
 
 	return spawn + global;
 }

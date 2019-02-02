@@ -47,14 +47,14 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Creating 3D Renderer context");
+	DEPRECATED_LOG("Creating 3D Renderer context");
 	
 	// Create context
 	context = SDL_GL_CreateContext(App->window->window);
 
 	if (context == NULL)
 	{
-		CONSOLE_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		DEPRECATED_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -66,7 +66,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		GLenum error = glewInit();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing glew! %s\n", glewGetErrorString(error));
+			DEPRECATED_LOG("Error initializing glew! %s\n", glewGetErrorString(error));
 			ret = false;
 		}
 
@@ -78,7 +78,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -90,7 +90,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -108,7 +108,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -418,7 +418,7 @@ bool ModuleRenderer3D::CleanUp()
 	App->window->GetScreenSize(x, y);
 	glViewport(0, 0, x, y);
 
-	CONSOLE_LOG("Destroying 3D Renderer");
+	DEPRECATED_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 
 	return ret;
@@ -490,7 +490,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(1) == -1)
 		{
 			ret = false;
-			CONSOLE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			DEPRECATED_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 	else {
@@ -498,7 +498,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(0) == -1) 
 		{
 			ret = false;
-			CONSOLE_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
+			DEPRECATED_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 
@@ -706,11 +706,11 @@ bool ModuleRenderer3D::RecalculateMainCamera()
 
 	if (multipleMainCameras)
 	{
-		CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
+		DEPRECATED_LOG("Warning! More than 1 Main Camera is defined");
 	}
 	else if (mainCamera == nullptr)
 	{
-		CONSOLE_LOG("Warning! No Main Camera is defined");
+		DEPRECATED_LOG("Warning! No Main Camera is defined");
 	}
 
 	ret = SetMainCamera(mainCamera);
@@ -725,7 +725,7 @@ bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 	if (ret)
 		this->mainCamera = mainCamera;
 	else
-		CONSOLE_LOG("Main Camera could not be set");
+		DEPRECATED_LOG("Main Camera could not be set");
 
 	return ret;
 }
@@ -740,7 +740,7 @@ bool ModuleRenderer3D::SetCurrentCamera()
 		SetMeshComponentsSeenLastFrame(!currentCamera->HasFrustumCulling());
 	}
 	else
-		CONSOLE_LOG("Current Camera could not be set");
+		DEPRECATED_LOG("Current Camera could not be set");
 
 	return ret;
 }

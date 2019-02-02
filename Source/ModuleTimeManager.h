@@ -27,6 +27,7 @@ public:
 	int GetFrameCount() const;
 	float GetRealTime() const;
 	float GetRealDt() const;
+	float GetGameTime() const;
 
 	bool TimerInGameList(GameTimer * timer);
 	bool RemoveGameTimer(GameTimer * timer);
@@ -36,6 +37,9 @@ private:
 	// Game Clock
 	float timeScale = 1.0f; // Scale at which time is passing
 	float time = 0.0f; // Seconds since game start
+
+	float gameTime = 0.0f;
+
 	float dt = 0.0f; // Last frame time expressed in seconds
 	
 	// Real Time Clock

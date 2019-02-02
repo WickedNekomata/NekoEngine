@@ -134,7 +134,7 @@ void ComponentMaterial::OnUniqueEditor()
 				shaderProgramUUID = payload_n->GetUUID();
 			}
 			else
-				CONSOLE_LOG("Invalid shader program");
+				DEPRECATED_LOG("Invalid shader program");
 		}
 		ImGui::EndDragDropTarget();
 	}

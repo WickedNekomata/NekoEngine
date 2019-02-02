@@ -85,7 +85,7 @@ bool ModuleGui::Start()
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Starting ImGui");
+	DEPRECATED_LOG("Starting ImGui");
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -241,7 +241,7 @@ bool ModuleGui::CleanUp()
 
 	RELEASE(atlas);
 
-	CONSOLE_LOG("Cleaning up ImGui");
+	DEPRECATED_LOG("Cleaning up ImGui");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -391,6 +391,12 @@ void ModuleGui::LogConsole(const char* log) const
 {
 	if (panelConsole != nullptr)
 		panelConsole->AddLog(log);
+}
+
+void ModuleGui::ClearConsole() const
+{
+	if (panelConsole != nullptr)
+		panelConsole->Clear();
 }
 
 void ModuleGui::AddInput(uint key, uint state) const

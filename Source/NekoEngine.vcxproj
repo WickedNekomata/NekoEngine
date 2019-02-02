@@ -5,8 +5,12 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="GAME|Win32">
-      <Configuration>GAME</Configuration>
+    <ProjectConfiguration Include="Game|Win32">
+      <Configuration>Game</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="IN_GAME|Win32">
+      <Configuration>IN_GAME</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -34,7 +38,14 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
@@ -50,11 +61,26 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)$(Configuration)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -68,6 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -90,9 +117,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
@@ -101,7 +129,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GAMEMODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,6 +137,27 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>GAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -165,6 +214,7 @@
     <ClInclude Include="ComponentPlaneCollider.h" />
     <ClInclude Include="ComponentRigidActor.h" />
     <ClInclude Include="ComponentRigidStatic.h" />
+    <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentSphereCollider.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
@@ -194,6 +244,7 @@
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imgui_stl.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
@@ -260,6 +311,7 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
+    <ClInclude Include="ModuleEvents.h" />
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="ModuleParticles.h" />
     <ClInclude Include="ModulePhysics.h" />
@@ -461,11 +513,14 @@
     <ClInclude Include="physx\include\vehicle\PxVehicleUtilSetup.h" />
     <ClInclude Include="physx\include\vehicle\PxVehicleUtilTelemetry.h" />
     <ClInclude Include="physx\include\vehicle\PxVehicleWheels.h" />
+    <ClInclude Include="pugui\pugiconfig.hpp" />
+    <ClInclude Include="pugui\pugixml.hpp" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
+    <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceShaderObject.h" />
     <ClInclude Include="ResourceShaderProgram.h" />
     <ClInclude Include="ResourceTexture.h" />
@@ -495,6 +550,7 @@
     <ClInclude Include="physfs\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
+    <ClInclude Include="ScriptingModule.h" />
     <ClInclude Include="ShaderImporter.h" />
     <ClInclude Include="ComponentRigidDynamic.h" />
     <ClInclude Include="Timer.h" />
@@ -513,6 +569,7 @@
     <ClCompile Include="ComponentPlaneCollider.cpp" />
     <ClCompile Include="ComponentRigidActor.cpp" />
     <ClCompile Include="ComponentRigidStatic.cpp" />
+    <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentSphereCollider.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
@@ -525,6 +582,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_impl_sdl.cpp" />
+    <ClCompile Include="imgui\imgui_stl.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -561,6 +619,7 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
+    <ClCompile Include="ModuleEvents.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="ModuleParticles.cpp" />
     <ClCompile Include="ModulePhysics.cpp" />
@@ -573,11 +632,13 @@
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="PanelSkybox.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="pugui\pugixml.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceShaderObject.cpp" />
     <ClCompile Include="ResourceShaderProgram.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
@@ -602,6 +663,7 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
+    <ClCompile Include="ScriptingModule.cpp" />
     <ClCompile Include="ShaderImporter.cpp" />
     <ClCompile Include="ComponentRigidDynamic.cpp" />
     <ClCompile Include="Timer.cpp" />

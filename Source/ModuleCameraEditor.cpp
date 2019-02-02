@@ -45,7 +45,7 @@ bool ModuleCameraEditor::Start()
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Setting up the camera");
+	DEPRECATED_LOG("Setting up the camera");
 
 	camera->frustum.pos = { 0.0f,1.0f,-5.0f };
 
@@ -151,7 +151,7 @@ update_status ModuleCameraEditor::Update()
 
 bool ModuleCameraEditor::CleanUp()
 {
-	CONSOLE_LOG("Cleaning camera");
+	DEPRECATED_LOG("Cleaning camera");
 
 	return true;
 }

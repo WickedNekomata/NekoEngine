@@ -154,6 +154,9 @@
     <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics">
       <UniqueIdentifier>{e8d12beb-7c4b-407e-a1c5-60c3d1ce4b57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\pugi">
+      <UniqueIdentifier>{ff358738-4a78-4841-a66b-bfc97da50d40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1312,6 +1315,27 @@
     <ClInclude Include="PanelPhysics.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugiconfig.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugixml.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingModule.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceScript.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEvents.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stl.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1628,6 +1652,24 @@
     </ClCompile>
     <ClCompile Include="PanelPhysics.cpp">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingModule.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="pugui\pugixml.cpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEvents.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stl.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

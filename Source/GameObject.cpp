@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <mono/jit/jit.h>
+
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
@@ -265,6 +267,23 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 	return newComponent;
 }
 
+void GameObject::AddComponent(Component* component)
+{
+	components.push_back(component);
+}
+
+void GameObject::ClearComponent(Component* component)
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+		{
+			components.erase(components.begin() + i);
+			break;
+		}
+	}
+}
+
 void GameObject::MarkToDeleteComponent(uint index)
 {
 	App->GOs->SetComponentToDelete(components[index]);
@@ -452,6 +471,11 @@ void GameObject::SetSeenLastFrame(bool seenLastFrame)
 bool GameObject::GetSeenLastFrame() const
 {
 	return seenLastFrame;
+}
+
+MonoObject* GameObject::GetMonoObject()
+{
+	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
 }
 
 void GameObject::RecursiveRecalculateBoundingBoxes()

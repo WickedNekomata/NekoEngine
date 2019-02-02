@@ -72,7 +72,7 @@ void DefaultErrorCallback::reportError(physx::PxErrorCode::Enum code, const char
 	}
 	errorCode.append(": ");
 
-	CONSOLE_LOG("%s""%s", errorCode.data(), message);
+	DEPRECATED_LOG("%s""%s", errorCode.data(), message);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ bool ModulePhysics::Start()
 	// Ground
 	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *defaultMaterial);
 	gScene->addActor(*groundPlane);
-	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return true;
 }
@@ -237,7 +237,7 @@ physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform&
 	physx::PxRigidStatic* rigidStatic = physx::PxCreateStatic(*gPhysics, transform, shape);
 
 	gScene->addActor(*rigidStatic);
-	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return rigidStatic;
 }
@@ -251,7 +251,7 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density);
 
 	gScene->addActor(*rigidDynamic);
-	CONSOLE_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 
 	return rigidDynamic;
 }

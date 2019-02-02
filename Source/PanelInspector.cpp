@@ -13,9 +13,12 @@
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
+#include "ScriptingModule.h"
+#include "ModuleFileSystem.h"
 
 #include "GameObject.h"
 #include "Component.h"
+#include "ComponentScript.h"
 
 #include "Resource.h"
 #include "ResourceMesh.h"
@@ -25,6 +28,8 @@
 
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
+
+#include "imgui/imgui_stl.h"
 
 PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
@@ -70,7 +75,7 @@ bool PanelInspector::Draw()
 		}
 	}
 	ImGui::End();
-	
+
 	return true;
 }
 
@@ -114,9 +119,10 @@ void PanelInspector::ShowGameObjectInspector() const
 	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
 
 	ImGui::Button("Add Component");
+	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->meshRenderer == nullptr) 
+		if (gameObject->meshRenderer == nullptr)
 			if (ImGui::Selectable("Mesh")) {
 				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
@@ -131,6 +137,14 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
 			}
+
+		if (ImGui::Selectable("Script"))
+		{
+			//Open new Popup, with input text and autocompletion to select scripts by name
+			scriptSelected = true;
+			ImGui::CloseCurrentPopup();
+		}
+
 		if (gameObject->rigidActor == nullptr) {
 			if (ImGui::Selectable("Rigid Static")) {
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
@@ -158,6 +172,52 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
+		}
+		ImGui::EndPopup();
+	}
+
+	if (scriptSelected)
+	{
+		ImGui::OpenPopup("AddingScript");
+	}
+
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 55 });
+	if (ImGui::BeginPopup("AddingScript"))
+	{
+		static std::string scriptName;
+		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			App->scripting->clearSpaces(scriptName);
+
+			//Find the ResourceScript with this name, extracting the UUID from the .meta
+
+			ResourceScript* res = nullptr;
+
+			if (App->fs->Exists("Assets/Scripts/" + scriptName + ".cs.meta"))
+			{
+				char* metaBuffer;
+				uint size = App->fs->Load("Assets/Scripts/" + scriptName + ".cs.meta", &metaBuffer);
+				if (size > 0)
+				{
+					uint32_t UUID;
+					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+					res = (ResourceScript*)App->res->GetResource(UUID);
+
+					delete[] metaBuffer;
+				}
+			}
+
+			DEPRECATED_LOG("New Script Created: %s", scriptName.data());
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+
+			scriptName = "";
+			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
@@ -189,7 +249,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::TextColored(BLUE, "%s", resourceMesh->exportedFile.data());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUUID());
-	
+
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceMesh->IsInMemory();
 	ImGui::Checkbox("In memory", &inMemory);
@@ -445,8 +505,8 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
+	if (ImGui::Button("REIMPORT"))
+	{
 		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile.data(), meshImportSettings);
 
 		// Reimport Mesh file
@@ -507,10 +567,10 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
-		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings); 
-		
+	if (ImGui::Button("REIMPORT"))
+	{
+		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings);
+
 		// Reimport Texture file
 		System_Event newEvent;
 		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
@@ -542,7 +602,7 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::PushItemWidth(150.0f);
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
-	{	
+	{
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
 		strcpy_s(metaFile, strlen(shaderObject->file.data()) + 1, shaderObject->file.data()); // file

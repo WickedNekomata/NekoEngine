@@ -53,6 +53,8 @@ public:
 	void HideAllWindows();
 
 	void LogConsole(const char* log) const;
+	void ClearConsole() const;
+
 	void AddInput(uint key, uint state) const;
 
 	bool IsMouseHoveringAnyWindow();

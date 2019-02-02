@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include <mono/metadata/object.h>
+
 class Component;
 class ComponentTransform;
 class ComponentMaterial;
@@ -47,6 +49,8 @@ public:
 	GameObject* GetChild(uint index) const;
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
+	void AddComponent(Component* component);
+	void ClearComponent(Component* component);
 	Component* AddComponent(ComponentTypes componentType);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteComponentByValue(Component* component);
@@ -77,6 +81,9 @@ public:
 
 	void SetSeenLastFrame(bool seenLastFrame);
 	bool GetSeenLastFrame() const;
+
+	MonoObject* GetMonoObject();
+	inline void SetMonoObject(uint32_t monoObjectHandle) { this->monoObjectHandle = monoObjectHandle; };
 
 	void RecursiveRecalculateBoundingBoxes();
 
@@ -111,6 +118,8 @@ private:
 	uint parentUUID = 0;
 
 	std::vector<GameObject*> children;
+
+	uint32_t monoObjectHandle = 0;
 
 	bool isActive = true;
 	bool isStatic = true;

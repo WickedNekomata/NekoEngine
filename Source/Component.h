@@ -23,6 +23,8 @@ public:
 	void ToggleIsActive();
 	bool IsActive() const;
 
+	bool IsTreeActive();
+
 	ComponentTypes GetType() const;
 
 	void SetParent(GameObject* parent);
@@ -31,19 +33,19 @@ public:
 	virtual void OnSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file) {};
 
+	virtual void OnEnable() {}
+	virtual void OnDisable() {}
+
 private:
 
 	virtual void OnInternalSave(JSON_Object* file) {};
 	virtual void OnUniqueEditor();
 
-private:
-
-	bool isActive = true;
-
 protected:
 
 	ComponentTypes componentType;
 	GameObject* parent = nullptr;
+	bool isActive = true;
 
 public:
 

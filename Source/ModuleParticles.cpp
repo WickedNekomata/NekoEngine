@@ -23,7 +23,7 @@ update_status ModuleParticle::Update()
 		if (firework)
 		{
 			firework->StartEmitter();
-			CONSOLE_LOG("Module Particle: Firework Comming");
+			DEPRECATED_LOG("Module Particle: Firework Comming");
 		}
 	}
 

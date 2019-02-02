@@ -276,6 +276,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 void ComponentEmitter::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Particle System");
 	ImGui::Spacing();
 
@@ -292,10 +293,12 @@ void ComponentEmitter::OnUniqueEditor()
 	//ParticleTexture();
 
 	ParticleSubEmitter();
+#endif
 }
 
 void ComponentEmitter::ParticleValues()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Values", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::ShowHelpMarker("Active checkBox if you want a random number");
@@ -332,10 +335,12 @@ void ComponentEmitter::ParticleValues()
 			loopTimer.Start();
 		ImGui::DragFloat("Duration", &duration, 0.5f, 0.5f, 20.0f, "%.2f");
 	}
+#endif
 }
 
 void ComponentEmitter::ParticleShape()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Shape"))
 	{
 		ImGui::Separator();
@@ -390,10 +395,12 @@ void ComponentEmitter::ParticleShape()
 			break;
 		}
 	}
+#endif
 }
 
 void ComponentEmitter::ParticleColor()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Color"))
 
 	{
@@ -440,10 +447,12 @@ void ComponentEmitter::ParticleColor()
 			}
 		}
 	}
+#endif
 }
 
 void ComponentEmitter::ParticleBurst()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Burst"))
 	{
 		ImGui::Checkbox("Burst", &burst);
@@ -477,10 +486,13 @@ void ComponentEmitter::ParticleBurst()
 
 		ImGui::Separator();
 	}
+#endif
 }
 
 void ComponentEmitter::ParticleAABB()
 {
+#ifndef GAMEMODE
+
 	if (ImGui::CollapsingHeader("Particle BoundingBox"))
 	{
 		ImGui::Checkbox("Bounding Box", &drawAABB);
@@ -494,6 +506,7 @@ void ComponentEmitter::ParticleAABB()
 				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
 		}
 	}
+#endif
 }
 /*
 void ComponentEmitter::ParticleTexture()
@@ -594,6 +607,7 @@ void ComponentEmitter::ParticleTexture()
 */
 void ComponentEmitter::ParticleSubEmitter()
 {
+#ifndef GAMEMODE
 	if (ImGui::Checkbox("SubEmitter", &startValues.subEmitterActive))
 	{
 		if (startValues.subEmitterActive)
@@ -613,6 +627,7 @@ void ComponentEmitter::ParticleSubEmitter()
 			subEmitter->ToggleIsActive();
 	}
 	ImGui::Separator();
+#endif
 }
 /*
 void ComponentEmitter::SetNewAnimation(int row, int col)
@@ -626,6 +641,7 @@ void ComponentEmitter::SetNewAnimation(int row, int col)
 */
 void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const char* name, float v_speed, float v_min, float v_max)
 {
+#ifndef GAMEMODE
 	ImGui::SameLine();
 	if (checkBox)
 	{
@@ -646,6 +662,7 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 			value.y = value.x;
 	}
 	ImGui::PopItemWidth();
+#endif
 }
 
 void ComponentEmitter::CheckMinMax(math::float2& value)
@@ -657,6 +674,11 @@ void ComponentEmitter::CheckMinMax(math::float2& value)
 bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 {
 	bool ret = true;
+
+#ifndef GAMEMODE
+
+
+
 	ImVec4 color = EqualsFloat4(colorTime.color);
 	if (ImGui::ColorButton(colorTime.name.data(), color, ImGuiColorEditFlags_None, ImVec2(100, 20)))
 		colorTime.changingColor = !colorTime.changingColor;
@@ -678,9 +700,12 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 	}
 	else
 		ImGui::ColorEdit4(colorTime.name.data(), &colorTime.color.x, ImGuiColorEditFlags_AlphaBar);
+
+#endif
 	return ret;
 }
 
+#ifndef GAMEMODE
 ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 {
 	ImVec4 vec;
@@ -690,6 +715,7 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 	vec.w = float4D.w;
 	return vec;
 }
+#endif
 
 void ComponentEmitter::SaveComponent(JSON_Object* parent)
 {

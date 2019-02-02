@@ -50,6 +50,8 @@ struct ModuleGOs;
 struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
+struct ScriptingModule;
+struct ModuleEvents;
 struct ModulePhysics;
 
 class Application
@@ -119,7 +121,7 @@ public:
 	ShaderImporter*			shaderImporter;
 	ModuleParticle*			particle;
 
-#ifndef GAMEMODE	
+#ifndef GAMEMODE
 	ModuleCameraEditor*		camera;
 	ModuleGui*				gui;
 
@@ -133,6 +135,8 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ScriptingModule*		scripting;
+	ModuleEvents*			events;
 	ModulePhysics*			physics;
 
 	DebugDrawer*			debugDrawer;

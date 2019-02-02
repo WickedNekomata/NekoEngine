@@ -33,12 +33,14 @@ void ModuleTimeManager::PrepareUpdate()
 	{
 	case engine_states::ENGINE_PLAY:
 	case engine_states::ENGINE_WANTS_PAUSE:
-		time += realDt;
 		dt = realDt * timeScale;
+		time += realDt;
+		gameTime += dt;
 		break;
 
 	case engine_states::ENGINE_EDITOR:
 		time = 0.0f;
+		gameTime = 0.0f;
 		break;
 	}
 
@@ -88,6 +90,11 @@ float ModuleTimeManager::GetRealTime() const
 float ModuleTimeManager::GetRealDt() const
 {
 	return realDt;
+}
+
+float ModuleTimeManager::GetGameTime() const
+{
+	return gameTime;
 }
 
 //Game Timer List

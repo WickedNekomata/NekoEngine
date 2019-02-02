@@ -2,13 +2,14 @@
 #define COMPONENT_TYPES_H
 
 enum ComponentTypes
-{ 
+{
 	NoComponentType,
 	TransformComponent,
 	MeshComponent,
 	MaterialComponent,
 	CameraComponent,
 	EmitterComponent,
+	ScriptComponent,
 
 	// Physics
 	RigidStaticComponent,

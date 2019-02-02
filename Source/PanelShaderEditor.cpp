@@ -207,7 +207,7 @@ bool PanelShaderEditor::Draw()
 					}
 				}
 				else
-					CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
+					DEPRECATED_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 			}
 		}
 
@@ -337,7 +337,7 @@ bool PanelShaderEditor::TryLink() const
 		ResourceShaderProgram::DeleteShaderProgram(tryLink);
 	}
 	else
-		CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
+		DEPRECATED_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 
 	return ret;
 }

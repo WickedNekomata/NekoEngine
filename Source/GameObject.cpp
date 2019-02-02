@@ -75,6 +75,12 @@ GameObject::GameObject(const GameObject& gameObject)
 		components.push_back(camera);
 	}
 
+	if (gameObject.emitter != nullptr)
+	{
+		emitter = new ComponentEmitter(*gameObject.emitter);
+		emitter->SetParent(this);
+		components.push_back(emitter);
+	}
 	boundingBox = gameObject.boundingBox;
 
 	isActive = gameObject.isActive;

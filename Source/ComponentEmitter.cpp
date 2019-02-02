@@ -15,76 +15,68 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
-//	timer.Start();
-//	burstTime.Start();
 	App->scene->quadtree.Insert(gameObject);
 }
-/*
-ComponentEmitter::ComponentEmitter(GameObject* gameObject, EmitterInfo* info) : Component(gameObject, EmitterComponent)
+
+ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
 {
-	if (info)
+	duration = componentEmitter.duration;
+
+	loop = componentEmitter.loop;
+
+	burst = componentEmitter.burst;
+	minPart = componentEmitter.minPart;
+	maxPart = componentEmitter.maxPart;
+	repeatTime = componentEmitter.repeatTime;
+
+	// posDifAABB
+	posDifAABB = componentEmitter.posDifAABB;
+	gravity = componentEmitter.gravity;
+
+	// boxCreation
+	boxCreation = componentEmitter.boxCreation;
+	// SphereCreation
+	sphereCreation.r = componentEmitter.sphereCreation.r;
+
+	circleCreation.r = componentEmitter.circleCreation.r;
+
+	normalShapeType = componentEmitter.normalShapeType;
+	texture = componentEmitter.texture;
+
+	startValues = componentEmitter.startValues;
+
+	checkLife = componentEmitter.checkLife;
+	checkSpeed = componentEmitter.checkSpeed;
+	checkAcceleration = componentEmitter.checkAcceleration;
+	checkSize = componentEmitter.checkSize;
+	checkRotation = componentEmitter.checkRotation;
+	checkAngularAcceleration = componentEmitter.checkAngularAcceleration;
+	checkSizeOverTime = componentEmitter.checkSizeOverTime;
+	checkAngularVelocity = componentEmitter.checkAngularVelocity;
+
+	isParticleAnimated = componentEmitter.isParticleAnimated;
+	if (isParticleAnimated)
 	{
-		duration = info->duration;
-
-		loop = info->loop;
-
-		burst = info->burst;
-		minPart = info->minPart;
-		maxPart = info->maxPart;
-		repeatTime = info->repeatTime;
-
-		// posDifAABB
-		posDifAABB = info->posDifAABB;
-		gravity = info->gravity;
-
-		// boxCreation
-		boxCreation = info->boxCreation;
-		// SphereCreation
-		sphereCreation.r = info->SphereCreationRad;
-
-		circleCreation.r = info->circleCreationRad;
-
-		normalShapeType = info->shapeType;
-		texture = info->texture;
-
-		startValues = info->startValues;
-
-		checkLife = info->checkLife;
-		checkSpeed = info->checkSpeed;
-		checkAcceleration = info->checkAcceleration;
-		checkSize = info->checkSize;
-		checkRotation = info->checkRotation;
-		checkAngularAcceleration = info->checkAngularAcceleration;
-		checkSizeOverTime = info->checkSizeOverTime;
-		checkAngularVelocity = info->checkAngularVelocity;
-
-		isParticleAnimated = info->isParticleAnimated;
-		if (isParticleAnimated)
-		{
-			textureRows = info->textureRows;
-			textureColumns = info->textureColumns;
-			animationSpeed = info->animationSpeed;
-		}
-		dieOnAnimation = info->dieOnAnimation;
-
-		drawAABB = info->drawAABB;
-
-		isSubEmitter = info->isSubEmitter;
-		subEmitter = info->subEmitter;
-		subEmitterUUID = info->subEmitterUUID;
-
-		rateOverTime = info->rateOverTime;
-
-		startValues.subEmitterActive = info->subEmitterActive;
-
-		if (gameObject)
-			gameObject->boundingBox = math::AABB::FromCenterAndSize(info->posDifAABB, info->sizeOBB);
-
+		textureRows = componentEmitter.textureRows;
+		textureColumns = componentEmitter.textureColumns;
+		animationSpeed = componentEmitter.animationSpeed;
 	}
-	//SetNewAnimation(textureRows, textureColumns);
-	App->scene->quadtree.Insert(gameObject);
+	dieOnAnimation = componentEmitter.dieOnAnimation;
+
+	drawAABB = componentEmitter.drawAABB;
+
+	isSubEmitter = componentEmitter.isSubEmitter;
+	subEmitter = componentEmitter.subEmitter;
+	subEmitterUUID = componentEmitter.subEmitterUUID;
+
+	rateOverTime = componentEmitter.rateOverTime;
+
+	if (parent)
+	//	parent->boundingBox = math::AABB::FromCenterAndSize(posDifAABB, sizeOBB);
+	App->scene->quadtree.Insert(parent);
+
 }
-*/
+
 
 ComponentEmitter::~ComponentEmitter()
 {
@@ -169,17 +161,6 @@ void ComponentEmitter::Update()
 		}
 
 		newPositions.clear();
-	}
-
-	// Use this condition to remove all particles from the component Emitter
-	if (!emitterActive)
-	{
-		for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
-		{
-			(*iterator)->active = false;
-		}
-
-		particles.clear();
 	}
 }
 
@@ -735,7 +716,7 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 }
 #endif
 
-void ComponentEmitter::SaveComponent(JSON_Object* parent)
+void ComponentEmitter::OnInternalSave(JSON_Object* parent)
 {
 	json_object_set_number(parent, "Type", this->componentType);
 
@@ -806,8 +787,6 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 	// TODO: save colors
 	json_object_set_number(parent, "timeColor", startValues.timeColor);
 
-	json_object_set_boolean(parent, "subEmitterActive", startValues.subEmitterActive);
-
 	json_object_set_number(parent, "particleDirectionX", startValues.particleDirection.x);
 	json_object_set_number(parent, "particleDirectionY", startValues.particleDirection.y);
 	json_object_set_number(parent, "particleDirectionZ", startValues.particleDirection.z);
@@ -871,6 +850,128 @@ void ComponentEmitter::SaveComponent(JSON_Object* parent)
 		json_object_set_number(parent, "originalBoundingBoxSizeY", bb.y);
 		json_object_set_number(parent, "originalBoundingBoxSizeZ", bb.z);
 	}
+}
+
+void ComponentEmitter::OnLoad(JSON_Object* info)
+{
+
+	duration = json_object_get_number(info, "duration");
+
+	loop = json_object_get_number(info, "loop");
+
+	burst = json_object_get_number(info, "burst");
+	minPart = json_object_get_number(info, "minPart");
+	maxPart = json_object_get_number(info, "maxPart");
+	repeatTime = json_object_get_number(info, "repeatTime");
+
+	isSubEmitter = json_object_get_boolean(info, "isSubEmitter");
+
+	// posDifAABB
+	math::float3 posDifAABB = math::float3(
+		json_object_get_number(info, "posDifAABBX"),
+		json_object_get_number(info, "posDifAABBY"),
+		json_object_get_number(info, "posDifAABBZ"));
+	posDifAABB = posDifAABB;
+
+	gravity = json_object_get_number(info, "gravity");
+
+	// boxCreation
+	math::float3 boxMin = math::float3(
+		json_object_get_number(info, "boxCreationMinX"),
+		json_object_get_number(info, "boxCreationMinY"),
+		json_object_get_number(info, "boxCreationMinZ"));
+
+	math::float3 boxMax = math::float3(
+		json_object_get_number(info, "boxCreationMaxX"),
+		json_object_get_number(info, "boxCreationMaxY"),
+		json_object_get_number(info, "boxCreationMaxZ"));
+
+	boxCreation = math::AABB(boxMin, boxMax);
+
+	sphereCreation.r = json_object_get_number(info, "SphereCreationRad");
+
+	circleCreation.r = json_object_get_number(info, "circleCreationRad");
+
+	normalShapeType = (ShapeType)(int)json_object_get_number(info, "shapeType");
+	//texture = App->resources->LoadTexture(json_object_get_string(info, "texture"));
+
+	isParticleAnimated = json_object_get_boolean(info, "isParticleAnimated");
+	dieOnAnimation = json_object_get_boolean(info, "dieOnAnimation");
+	textureColumns = json_object_get_number(info, "textureColumns");
+	textureRows = json_object_get_number(info, "textureRows");
+	animationSpeed = json_object_get_number(info, "animationSpeed");
+
+	//AABB Colision
+	drawAABB = json_object_get_boolean(info, "drawAABB");
+
+	checkLife = json_object_get_boolean(info, "checkLife");
+	checkSpeed = json_object_get_boolean(info, "checkSpeed");
+	checkAcceleration = json_object_get_boolean(info, "checkAcceleration");
+	checkSize = json_object_get_boolean(info, "checkSize");
+	checkSizeOverTime = json_object_get_boolean(info, "checkSizeOverTime");
+	checkRotation = json_object_get_boolean(info, "checkRotation");
+	checkAngularAcceleration = json_object_get_boolean(info, "checkAngularAcceleration");
+	checkAngularVelocity = json_object_get_boolean(info, "checkAngularVelocity");
+
+	subEmitterUUID = json_object_get_number(info, "SubEmitter");
+
+	rateOverTime = json_object_get_number(info, "rateOverTime");
+
+	startValues.subEmitterActive = json_object_get_boolean(info, "subEmitterActive");
+
+	startValues.life.x = json_object_get_number(info, "lifeMin");
+	startValues.life.y = json_object_get_number(info, "lifeMax");
+
+	startValues.speed.x = json_object_get_number(info, "speedMin");
+	startValues.speed.y = json_object_get_number(info, "speedMax");
+
+	startValues.acceleration.x = json_object_get_number(info, "accelerationMin");
+	startValues.acceleration.y = json_object_get_number(info, "accelerationMax");
+
+	startValues.size.x = json_object_get_number(info, "sizeMin");
+	startValues.size.y = json_object_get_number(info, "sizeMax");
+
+	startValues.rotation.x = json_object_get_number(info, "rotationMin");
+	startValues.rotation.y = json_object_get_number(info, "rotationMax");
+
+	startValues.angularVelocity.x = json_object_get_number(info, "angularVelocityMin");
+	startValues.angularVelocity.y = json_object_get_number(info, "angularVelocityMax");
+
+	startValues.angularAcceleration.x = json_object_get_number(info, "angularAccelerationMin");
+	startValues.angularAcceleration.y = json_object_get_number(info, "angularAccelerationMax");
+
+	startValues.sizeOverTime.x = json_object_get_number(info, "sizeOverTimeMin");
+	startValues.sizeOverTime.y = json_object_get_number(info, "sizeOverTimeMax");
+
+	JSON_Array* colorArray = json_object_get_array(info, "Colors");
+
+	int numColors = json_array_get_count(colorArray);
+
+	startValues.color.clear();
+	startValues.color.resize(numColors);
+	int i = 0;
+	for (std::list<ColorTime>::iterator iterator = startValues.color.begin(); iterator != startValues.color.end(); ++iterator, ++i)
+	{
+		JSON_Object* currCol = json_array_get_object(colorArray, i);
+
+		(*iterator).color = math::float4(
+			json_object_get_number(currCol, "colorX"),
+			json_object_get_number(currCol, "colorY"),
+			json_object_get_number(currCol, "colorZ"),
+			json_object_get_number(currCol, "colorW")
+		);
+
+		(*iterator).position = json_object_get_number(currCol, "position");
+
+		(*iterator).name = json_object_get_string(currCol, "name");
+	}
+
+
+	startValues.timeColor = json_object_get_number(info, "timeColor");
+
+	startValues.particleDirection.x = json_object_get_number(info, "particleDirectionX");
+	startValues.particleDirection.y = json_object_get_number(info, "particleDirectionY");
+	startValues.particleDirection.x = json_object_get_number(info, "particleDirectionZ");
 }
 
 int ComponentEmitter::GetEmition() const

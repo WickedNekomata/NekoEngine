@@ -129,7 +129,7 @@ class ComponentEmitter : public Component
 {
 public:
 	ComponentEmitter(GameObject* gameObject);
-	//ComponentEmitter(GameObject* gameObject, EmitterInfo* info);
+	ComponentEmitter(const ComponentEmitter & componentEmitter);
 	~ComponentEmitter();
 
 	void StartEmitter();
@@ -159,7 +159,8 @@ public:
 	ImVec4 EqualsFloat4(const math::float4 float4D);
 #endif
 
-	void SaveComponent(JSON_Object * parent);
+	void OnInternalSave(JSON_Object * parent);
+	void OnLoad(JSON_Object * info);
 
 	int GetEmition() const;
 public:
@@ -173,8 +174,6 @@ public:
 
 	// Emitter particles
 	std::list<Particle*> particles;
-
-	bool emitterActive = true;
 
 	SimulatedGame simulatedGame = SimulatedGame_NONE;
 	GameTimer timeSimulating;

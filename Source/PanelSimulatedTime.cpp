@@ -26,7 +26,6 @@ bool PanelSimulatedTime::Draw()
 
 				if (ImGui::Button("Play", { 50,25 }))
 				{
-					emitter->emitterActive = true;
 					if (emitter->simulatedGame == SimulatedGame_PAUSE)
 						emitter->timeSimulating.Continue();
 					else

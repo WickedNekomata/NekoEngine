@@ -36,7 +36,7 @@ update_status ModuleParticle::Update()
 	int count = 0;
 
 	float dt;
-	if(App->GetEngineState() == ENGINE_EDITOR)
+	if(App->IsEditor())
 		dt = App->timeManager->GetRealDt();
 	else
 		dt = App->timeManager->GetDt();

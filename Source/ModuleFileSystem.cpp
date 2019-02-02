@@ -805,25 +805,25 @@ bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string&
 	int size = Load(file, &buffer);
 	if (size <= 0) 
 	{
-		//Debug.LogError("Couldn't move the file");
+		CONSOLE_LOG("Couldn't move the file", LogTypes::Error);
 		return false;
 	}
 
 	if (Save(newLocation, buffer, size) <= 0)
 	{
-		//Debug.LogError("Couldn't move the file");
+		CONSOLE_LOG("Couldn't move the file", LogTypes::Error);
 		delete[] buffer;
 		return false;
 	}
 
 	if (!deleteFile(file))
 	{
-		//Debug.LogError("Couldn't move the file");
+		CONSOLE_LOG("Couldn't move the file", LogTypes::Error);
 		delete[] buffer;
 		return false;
 	}
 
-	//Debug.Log("File %s moved succesfully to %s.", file.data(), newLocation.data());
+	CONSOLE_LOG("File %s moved succesfully to %s.", LogTypes::Normal, file.data(), newLocation.data());
 
 	delete[] buffer;
 	return true;
@@ -900,18 +900,18 @@ Directory ModuleFileSystem::RecursiveGetFilesFromDir(char* dir) const
 		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_OTHER)
 		{
 			//Here use the extension as recognition-method.
-			//Debug.LogWarning("Physfs could not recognize if \"%s\" is a file or a directory. Using the extension as recognition-method. Weird behaviors may happen.", files[i]);
+			CONSOLE_LOG("Physfs could not recognize if \"%s\" is a file or a directory. Using the extension as recognition-method. Weird behaviors may happen.", LogTypes::Warning, files[i]);
 
 			std::string file(files[i]);
 			if (file.find(".") == std::string::npos) //It's a directory, have not extension
 			{
 				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY;
-				//Debug.LogWarning("File \"%s\" was recognized as a directory", files[i]);
+				CONSOLE_LOG("File \"%s\" was recognized as a directory", LogTypes::Warning, files[i]);
 			}
 			else
 			{
 				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR;
-				//Debug.LogWarning("File \"%s\" was recognized as a regular file", files[i]);
+				CONSOLE_LOG("File \"%s\" was recognized as a regular file", LogTypes::Warning, files[i]);
 			}
 		}
 

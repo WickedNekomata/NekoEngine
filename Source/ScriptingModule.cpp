@@ -19,6 +19,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleGOs.h"
+#include "ModuleGui.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
@@ -807,8 +808,7 @@ void DebugLogTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	//TODO: Implement this using the new Log System
-	//Debug.Log(string);
+	CONSOLE_LOG(string, LogTypes::Normal);
 
 	mono_free(string);
 }
@@ -821,8 +821,7 @@ void DebugLogWarningTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	//TODO: Implement this using the new Log System
-	//Debug.LogWarning(string);
+	CONSOLE_LOG(string, LogTypes::Warning);
 
 	mono_free(string);
 }
@@ -835,16 +834,14 @@ void DebugLogErrorTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	//TODO: Implement this using the new Log System
-	//Debug.LogError(string);
+	CONSOLE_LOG(string, LogTypes::Error)
 
 	mono_free(string);
 }
 
 void ClearConsole() 
 { 
-	//TODO: Implement this using the new Log System
-	//Debug.Clear(); 
+	App->gui->ClearConsole();
 }
 
 int32_t GetKeyStateCS(int32_t key)
@@ -926,8 +923,8 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		{
 			//The user may be trying to instantiate a GameObject created through script. 
 			//This feature is not implemented for now.
-			/*Debug.LogError(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
-							"Instantiating from a GameObject created through script is not supported for now.\n");*/
+			CONSOLE_LOG(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
+							"Instantiating from a GameObject created through script is not supported for now.\n", LogTypes::Error);
 			return nullptr;
 		}
 

@@ -393,6 +393,12 @@ void ModuleGui::LogConsole(const char* log) const
 		panelConsole->AddLog(log);
 }
 
+void ModuleGui::ClearConsole() const
+{
+	if (panelConsole != nullptr)
+		panelConsole->Clear();
+}
+
 void ModuleGui::AddInput(uint key, uint state) const
 {
 	static char input[INPUT_BUF_SIZE];

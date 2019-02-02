@@ -1,7 +1,8 @@
 #include "Component.h"
 #include "GameObject.h"
 
-struct _MonoObject;
+#include <mono/metadata/object.h>
+
 class ResourceScript;
 
 class ComponentScript : public Component
@@ -42,5 +43,5 @@ public:
 	ResourceScript* scriptRes = nullptr;
 
 	uint32_t handleID = 0;
-	_MonoObject* classInstance = nullptr;
+	MonoObject* classInstance = nullptr;
 };

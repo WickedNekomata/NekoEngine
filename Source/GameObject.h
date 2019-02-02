@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include <mono/metadata/object.h>
+
 class Component;
 class ComponentTransform;
 class ComponentMaterial;
@@ -80,6 +82,9 @@ public:
 	void SetSeenLastFrame(bool seenLastFrame);
 	bool GetSeenLastFrame() const;
 
+	MonoObject* GetMonoObject();
+	inline void SetMonoObject(uint32_t monoObjectHandle) { this->monoObjectHandle = monoObjectHandle; };
+
 	void RecursiveRecalculateBoundingBoxes();
 
 	void OnSave(JSON_Object* file) const;
@@ -113,6 +118,8 @@ private:
 	uint parentUUID = 0;
 
 	std::vector<GameObject*> children;
+
+	uint32_t monoObjectHandle = 0;
 
 	bool isActive = true;
 	bool isStatic = true;

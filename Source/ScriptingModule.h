@@ -9,17 +9,12 @@
 
 #include "pugui/pugixml.hpp"
 
-class ComponentScript;
-struct _MonoDomain;
-struct _MonoAssembly;
-class ResourceScript;
-struct _MonoObject;
-struct _MonoImage;
-struct _MonoClass;
-struct _MonoClassField;
-struct MonoVTable;
-struct Directory;
+#include <mono/metadata/object.h>
 
+class ComponentScript;
+class ResourceScript;
+
+struct Directory;
 
 bool exec(const char* cmd, std::string& error = std::string());
 
@@ -42,9 +37,9 @@ public:
 	ComponentScript* CreateScriptComponent(std::string scriptName, bool createCS = true);
 	bool DestroyScript(ComponentScript* script);
 	inline void AddScriptComponent(ComponentScript* script){scripts.push_back(script);}
-	_MonoObject* MonoObjectFrom(GameObject* gameObject);
-	GameObject* GameObjectFrom(_MonoObject* monoObject);
-	void GameCameraChanged();
+
+	MonoObject* MonoObjectFrom(GameObject* gameObject);
+	GameObject* GameObjectFrom(MonoObject* monoObject);
 
 	bool alreadyCreated(std::string scriptName);
 
@@ -62,12 +57,6 @@ public:
 	void CreateDomain();
 	void ReInstance();
 
-	void UpdateMonoObjects();
-	void GameObjectChanged(GameObject* gameObject);
-
-	void UpdateGameObjects();
-	void MonoObjectChanged(uint32_t handleID);
-
 	void ClearMap();
 
 	bool ImportScriptResource(const char* fileAssets, const char* metaFile, const char* exportedFile);
@@ -80,19 +69,11 @@ public:
 	_MonoAssembly* internalAssembly = nullptr;
 	_MonoImage* internalImage = nullptr;
 
-	//The relationship between the actual GameObjects and their CSharp representation
-	std::vector<std::pair<GameObject*, uint32_t>> gameObjectsMap;
+	std::vector<uint32_t> monoObjectHandles;
 
 private:
-	std::vector<ComponentScript*> scripts;
 
-	//TODO: DELETE THOSE
-	MonoVTable* timeVTable = nullptr;
-	_MonoClassField* deltaTime = nullptr;
-	_MonoClassField* realDeltaTime = nullptr;
-	_MonoClassField* time = nullptr;
-	_MonoClassField* realTime = nullptr;
-	_MonoClass* timeClass = nullptr;
+	std::vector<ComponentScript*> scripts;
 };
 
 #endif

@@ -92,8 +92,6 @@ update_status ScriptingModule::PreUpdate()
 	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		CreateInternalCSProject();
 
-	//TODO: MAKE ALL CSHARP TIME STUFF PROPERTIES WITH GET AND SET, AND ASK FOR THE C++ REAL VALUES INSTEAD OF UPDATING COPIES.
-
 	return UPDATE_CONTINUE;
 }
 
@@ -138,8 +136,6 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 		{
 			//Check if some files have compile errors and don't let the user hit the play.
 
-			UpdateMonoObjects();
-
 			for (int i = 0; i < scripts.size(); ++i)
 			{
 				if (scripts[i]->IsTreeActive())
@@ -158,16 +154,12 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					scripts[i]->Start();
 			}
 		
-			UpdateGameObjects();
-
 			//Call the Awake and Start for all the Enabled script in the Play instant.
 			break;
 		}
 	
 		case System_Event_Type::Stop:
 		{
-			UpdateMonoObjects();
-
 			for (int i = 0; i < scripts.size(); ++i)
 			{
 				if (scripts[i]->IsTreeActive())
@@ -175,8 +167,6 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					scripts[i]->OnStop();
 				}
 			}
-
-			UpdateGameObjects();
 
 			ClearMap();
 
@@ -206,9 +196,15 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 
 		case System_Event_Type::GameObjectDestroyed:
 		{
-			for (int i = 0; i < gameObjectsMap.size(); ++i)
+			for (int i = 0; i < monoObjectHandles.size(); ++i)
 			{
-				GameObject* gameObject = gameObjectsMap[i].first;
+				MonoObject* monoObject = mono_gchandle_get_target(monoObjectHandles[i]);
+
+				int address;
+				mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+				GameObject* gameObject = (GameObject*)address;
+
 				bool destroyed = false;
 				while (gameObject)
 				{
@@ -222,7 +218,6 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 
 				if (destroyed)				
 				{
-					MonoObject* monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
 					MonoClass* monoObjectClass = mono_object_get_class(monoObject);
 
 					MonoClassField* deletedField = mono_class_get_field_from_name(monoObjectClass, "destroyed");
@@ -230,9 +225,9 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					bool temp = true;
 					mono_field_set_value(monoObject, deletedField, &temp);
 
-					mono_gchandle_free(gameObjectsMap[i].second);
+					mono_gchandle_free(monoObjectHandles[i]);
 
-					gameObjectsMap.erase(gameObjectsMap.begin() + i);
+					monoObjectHandles.erase(monoObjectHandles.begin() + i);
 					i--;
 				}
 			}			
@@ -337,80 +332,35 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 {
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		if (gameObjectsMap[i].first == gameObject)
-		{
-			MonoObject* ret = mono_gchandle_get_target(gameObjectsMap[i].second);
-			GameObjectChanged(gameObject);
-			return ret;
-		}
-	}
+	MonoObject* monoObject = gameObject->GetMonoObject();
 
-	MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
-	MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
-	mono_runtime_object_init(monoInstance);
+	if (monoObject)
+		return monoObject;
 
-	uint32_t handleID = mono_gchandle_new(monoInstance, true);
+	MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
+	monoObject = mono_object_new(domain, gameObjectClass);
+	mono_runtime_object_init(monoObject);
 
-	App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(gameObject, handleID));
+	int address = (int)gameObject;
+	mono_field_set_value(monoObject, mono_class_get_field_from_name(gameObjectClass, "cppAddress"), &address);
 
-	App->scripting->GameObjectChanged(gameObject);
+	uint32_t handleID = mono_gchandle_new(monoObject, true);
 
-	return monoInstance;
+	gameObject->SetMonoObject(handleID);
+
+	monoObjectHandles.push_back(handleID);
+
+	return monoObject;
 }
 
-GameObject* ScriptingModule::GameObjectFrom(_MonoObject* monoObject)
+GameObject* ScriptingModule::GameObjectFrom(MonoObject* monoObject)
 {
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		uint32_t handleID = gameObjectsMap[i].second;
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
 
-		if (mono_gchandle_get_target(handleID) == monoObject)
-		{
-			GameObject* ret = gameObjectsMap[i].first;
-			return ret;
-		}
-	}
-	return nullptr;
-}
-
-void ScriptingModule::GameCameraChanged()
-{
-	ComponentCamera* mainCamera = App->renderer3D->GetCurrentCamera();
-	GameObject* mainCameraObject = mainCamera->GetParent();
-	if (mainCamera == nullptr)
-	{
-		MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
-		MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
-		MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
-		mono_field_static_set_value(cameraClassvTable, mainCamField, NULL);
-		return;
-	}
-
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-	{
-		if (App->scripting->gameObjectsMap[i].first == mainCameraObject)
-		{
-			MonoObject* monoObject = mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second);
-
-			MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
-			MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
-			MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
-
-			//TODO: Test this, I think this should not work.
-			mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
-
-			return;
-		}
-	}
-
-	//This gameObject is not saved in the map
-	MonoObject* monoObject = MonoObjectFrom(mainCameraObject);
-	MonoClass* cameraClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Camera");
-	MonoClassField* mainCamField = mono_class_get_field_from_name(cameraClass, "main");
-	MonoVTable* cameraClassvTable = mono_class_vtable(App->scripting->domain, cameraClass);
-	mono_field_static_set_value(cameraClassvTable, mainCamField, monoObject);
+	return (GameObject*)address;
+	
+	//We only can create MonoObjects though a GameObject*, not viceversa.
 }
 
 bool ScriptingModule::alreadyCreated(std::string scriptName)
@@ -556,169 +506,13 @@ void ScriptingModule::ReInstance()
 	}
 }
 
-void ScriptingModule::UpdateMonoObjects()
-{
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-	{
-		App->scripting->GameObjectChanged(App->scripting->gameObjectsMap[i].first);
-	}
-}
-
-void ScriptingModule::GameObjectChanged(GameObject* gameObject)
-{
-	MonoObject* monoObject = nullptr;
-	//Find for a pair coincidence in the map
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		if (gameObjectsMap[i].first == gameObject)
-		{
-			monoObject = mono_gchandle_get_target(gameObjectsMap[i].second);
-
-			if (!monoObject)
-				continue;
-
-			//SetUp all the GameObject* fields to the MonoObject
-
-			MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
-
-			//SetUp the name
-			MonoClassField* name = mono_class_get_field_from_name(gameObjectClass, "name");
-			MonoString* nameCS = mono_string_new(App->scripting->domain, gameObject->GetName());
-			mono_field_set_value(monoObject, name, (void*)nameCS);
-
-			//SetUp the transform
-			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
-			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
-
-			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
-			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
-			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
-
-			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
-			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
-			
-			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
-			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
-			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
-
-			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
-			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
-			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
-			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
-
-			MonoObject* transformOBJ;
-			mono_field_get_value(monoObject, transformField, &transformOBJ);
-
-			MonoObject* positionOBJ; mono_field_get_value(transformOBJ, positionField, &positionOBJ);
-			mono_field_set_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
-			mono_field_set_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
-			mono_field_set_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
-
-			MonoObject* rotationOBJ; mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
-			mono_field_set_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
-			mono_field_set_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
-			mono_field_set_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
-			mono_field_set_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
-
-			MonoObject* scaleOBJ; mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
-			mono_field_set_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
-			mono_field_set_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
-			mono_field_set_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
-
-			//TODO: CONTINUE UPDATING THINGS
-			break;
-		}
-	}
-}
-
-void ScriptingModule::UpdateGameObjects()
-{
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-	{
-		App->scripting->MonoObjectChanged(App->scripting->gameObjectsMap[i].second);
-	}
-}
-
-void ScriptingModule::MonoObjectChanged(uint32_t handleID)
-{
-	//Find for a coincidence in the map.
-
-	GameObject* gameObject = nullptr;
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		if (gameObjectsMap[i].second == handleID)
-		{
-			MonoObject* monoObject = mono_gchandle_get_target(handleID);
-			if (!monoObject)
-				continue;
-
-			gameObject = gameObjectsMap[i].first;
-
-			//SetUp the name
-			MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
-			MonoClassField* nameCS = mono_class_get_field_from_name(gameObjectClass, "name");
-
-			MonoString* name = (MonoString*)mono_field_get_value_object(domain, nameCS, monoObject);
-			char* newName = mono_string_to_utf8(name);
-			gameObject->SetName(newName);
-
-			//SetUp the transform
-			MonoClassField* transformField = mono_class_get_field_from_name(gameObjectClass, "transform");
-			MonoClass* transformClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Transform");
-
-			MonoClassField* positionField = mono_class_get_field_from_name(transformClass, "position");
-			MonoClassField* rotationField = mono_class_get_field_from_name(transformClass, "rotation");
-			MonoClassField* scaleField = mono_class_get_field_from_name(transformClass, "scale");
-
-			MonoClass* vector3Class = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Vector3");
-			MonoClass* quaternionClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "Quaternion");
-
-			MonoClassField* vector3_x_Field = mono_class_get_field_from_name(vector3Class, "x");
-			MonoClassField* vector3_y_Field = mono_class_get_field_from_name(vector3Class, "y");
-			MonoClassField* vector3_z_Field = mono_class_get_field_from_name(vector3Class, "z");
-
-			MonoClassField* quat_x_Field = mono_class_get_field_from_name(quaternionClass, "x");
-			MonoClassField* quat_y_Field = mono_class_get_field_from_name(quaternionClass, "y");
-			MonoClassField* quat_z_Field = mono_class_get_field_from_name(quaternionClass, "z");
-			MonoClassField* quat_w_Field = mono_class_get_field_from_name(quaternionClass, "w");
-
-			MonoObject* transformOBJ; 
-			mono_field_get_value(monoObject, transformField, &transformOBJ);
-
-			MonoObject* positionOBJ;
-			mono_field_get_value(transformOBJ, positionField, &positionOBJ);
-
-			mono_field_get_value(positionOBJ, vector3_x_Field, &gameObject->transform->position.x);
-			mono_field_get_value(positionOBJ, vector3_y_Field, &gameObject->transform->position.y);
-			mono_field_get_value(positionOBJ, vector3_z_Field, &gameObject->transform->position.z);
-
-			MonoObject* rotationOBJ;
-			mono_field_get_value(transformOBJ, rotationField, &rotationOBJ);
-
-			mono_field_get_value(rotationOBJ, quat_x_Field, &gameObject->transform->rotation.x);
-			mono_field_get_value(rotationOBJ, quat_y_Field, &gameObject->transform->rotation.y);
-			mono_field_get_value(rotationOBJ, quat_z_Field, &gameObject->transform->rotation.z);
-			mono_field_get_value(rotationOBJ, quat_w_Field, &gameObject->transform->rotation.w);
-
-			MonoObject* scaleOBJ;
-			mono_field_get_value(transformOBJ, scaleField, &scaleOBJ);
-
-			mono_field_get_value(scaleOBJ, vector3_x_Field, &gameObject->transform->scale.x);
-			mono_field_get_value(scaleOBJ, vector3_y_Field, &gameObject->transform->scale.y);
-			mono_field_get_value(scaleOBJ, vector3_z_Field, &gameObject->transform->scale.z);
-
-			//TODO: CONTINUE UPDATING THINGS
-		}
-	}
-}
-
 void ScriptingModule::ClearMap()
 {
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
+	for (int i = 0; i < monoObjectHandles.size(); ++i)
 	{
-		mono_gchandle_free(gameObjectsMap[i].second);
+		mono_gchandle_free(monoObjectHandles[i]);
 	}
-	gameObjectsMap.clear();
+	monoObjectHandles.clear();
 }
 
 bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* metaFile, const char* exportedFile)
@@ -765,7 +559,6 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* m
 		scriptRes->exportedFile = exportedFile;
 	}
 		
-
 	App->res->InsertResource(scriptRes);
 
 	return true;
@@ -773,10 +566,6 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* m
 
 void ScriptingModule::UpdateMethods()
 {
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		GameObjectChanged(gameObjectsMap[i].first);
-	}
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->PreUpdate();
@@ -790,11 +579,6 @@ void ScriptingModule::UpdateMethods()
 	for (int i = 0; i < scripts.size(); ++i)
 	{
 		scripts[i]->PostUpdate();
-	}
-
-	for (int i = 0; i < gameObjectsMap.size(); ++i)
-	{
-		MonoObjectChanged(gameObjectsMap[i].second);
 	}
 }
 
@@ -893,9 +677,12 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
-		App->scripting->gameObjectsMap.push_back(std::pair<GameObject*, uint32_t>(instance, handleID));
+		instance->SetMonoObject(handleID);
 
-		App->scripting->GameObjectChanged(instance);
+		int address = (int)instance;
+		mono_field_set_value(monoInstance, mono_class_get_field_from_name(gameObjectClass, "cppAddress"), &instance);
+
+		App->scripting->monoObjectHandles.push_back(handleID);
 
 		return monoInstance;
 	}
@@ -907,14 +694,16 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		GameObject* templateGO = nullptr;
 
-		for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+		for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
 		{
-			uint32_t handleID = App->scripting->gameObjectsMap[i].second;
+			uint32_t handleID = App->scripting->monoObjectHandles[i];
 			MonoObject* temp = mono_gchandle_get_target(handleID);
 
 			if (temp == templateMO)
 			{
-				templateGO = App->scripting->gameObjectsMap[i].first;
+				int address;
+				mono_field_get_value(temp, mono_class_get_field_from_name(mono_object_get_class(temp), "cppAddress"), &address);
+				templateGO = (GameObject*)address;
 				break;
 			}
 		}
@@ -928,11 +717,11 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 			return nullptr;
 		}
 
-		GameObject* goInstance = new GameObject("default", App->GOs->getRoot());
-
-		App->GOs->AddGameObject(goInstance);
-
 		//TODO: IMPLEMENT THE NEW PREFAB / INSTANTIATION SYSTEM
+
+		/*GameObject* goInstance = new GameObject("default", App->GOs->getRoot());
+
+		App->GOs->AddGameObject(goInstance);*/
 
 		//*goInstance = *templateGO;
 		//goInstance->ReGenerate();
@@ -957,9 +746,9 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 void DestroyObj(MonoObject* obj)
 {
 	bool found = false;
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
+	for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
 	{
-		if (obj == mono_gchandle_get_target(App->scripting->gameObjectsMap[i].second))
+		if (obj == mono_gchandle_get_target(App->scripting->monoObjectHandles[i]))
 		{
 			found = true;
 
@@ -967,11 +756,14 @@ void DestroyObj(MonoObject* obj)
 			MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
 			mono_field_set_value(obj, destroyed, &found);
 
-			GameObject* toDelete = App->scripting->gameObjectsMap[i].first;
+			int address;
+			mono_field_get_value(obj, mono_class_get_field_from_name(monoClass, "cppAddress"), &address);
 
-			mono_gchandle_free(App->scripting->gameObjectsMap[i].second);
+			GameObject* toDelete = (GameObject*)address;
 
-			App->scripting->gameObjectsMap.erase(App->scripting->gameObjectsMap.begin() + i);
+			mono_gchandle_free(App->scripting->monoObjectHandles[i]);
+
+			App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
 
 			//Send the event to destroy this gameObject
 
@@ -1060,15 +852,10 @@ MonoArray* GetGlobalPos(MonoObject* monoObject)
 {
 	GameObject* gameObject = nullptr;
 
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-	{
-		uint32_t handleID = App->scripting->gameObjectsMap[i].second;		
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
 
-		if (monoObject == mono_gchandle_get_target(handleID))
-		{
-			gameObject = App->scripting->gameObjectsMap[i].first;
-		}
-	}
+	gameObject = (GameObject*)address;
 
 	if (!gameObject)
 		return nullptr;
@@ -1090,14 +877,10 @@ MonoArray* GetGlobalRotation(MonoObject* monoObject)
 {
 	GameObject* gameObject = nullptr;
 
-	for (int i = 0; i < App->scripting->gameObjectsMap.size(); ++i)
-	{
-		uint32_t handleID = App->scripting->gameObjectsMap[i].second;
-		if (mono_gchandle_get_target(handleID) == monoObject)
-		{
-			gameObject = App->scripting->gameObjectsMap[i].first;
-		}
-	}
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	gameObject = (GameObject*)address;
 
 	if (!gameObject)
 		return nullptr;
@@ -1114,6 +897,54 @@ MonoArray* GetGlobalRotation(MonoObject* monoObject)
 	mono_array_set(ret, float, 3, rotation.w);
 
 	return ret;
+}
+
+MonoString* GetGOName(MonoObject* monoObject)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	return mono_string_new(App->scripting->domain, gameObject->GetName());
+}
+
+void SetGOName(MonoObject* monoObject, MonoString* monoString)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return;
+
+	char* newName = mono_string_to_utf8(monoString);
+	gameObject->SetName(newName);
+	mono_free(newName);
+}
+
+float GetDeltaTime()
+{
+	return App->timeManager->GetDt();
+}
+
+float GetRealDeltaTime()
+{
+	return App->timeManager->GetRealDt();
+}
+
+float GetTime()
+{
+	return App->timeManager->GetGameTime();
+}
+
+float GetRealTime()
+{
+	return App->timeManager->GetRealTime();
 }
 
 //---------------------------------
@@ -1134,7 +965,6 @@ void ScriptingModule::CreateDomain()
 	{
 		mono_domain_unload(domain);		
 	}
-		
 
 	domain = nextDom;
 
@@ -1149,13 +979,6 @@ void ScriptingModule::CreateDomain()
 	internalAssembly = mono_assembly_load_from(internalImage, "InternalAssembly", &status);
 
 	delete[] buffer;
-
-	timeClass = mono_class_from_name(internalImage, "FlanEngine", "Time");
-	deltaTime = mono_class_get_field_from_name(timeClass, "deltaTime");
-	realDeltaTime = mono_class_get_field_from_name(timeClass, "realDeltaTime");
-	time = mono_class_get_field_from_name(timeClass, "time");
-	realTime = mono_class_get_field_from_name(timeClass, "realTime");
-	timeVTable = mono_class_vtable(domain, timeClass);
 
 	//SetUp Internal Calls
 	mono_add_internal_call("FlanEngine.Debug::Log", (const void*)&DebugLogTranslator);
@@ -1175,6 +998,12 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
 	mono_add_internal_call("FlanEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
 	mono_add_internal_call("FlanEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
+	mono_add_internal_call("FlanEngine.GameObject::getName", (const void*)&GetGOName);
+	mono_add_internal_call("FlanEngine.GameObject::setName", (const void*)&SetGOName);
+	mono_add_internal_call("FlanEngine.Time::getDeltaTime", (const void*)&GetDeltaTime);
+	mono_add_internal_call("FlanEngine.Time::getRealDeltaTime", (const void*)&GetRealDeltaTime);
+	mono_add_internal_call("FlanEngine.Time::getTime", (const void*)&GetTime);
+	mono_add_internal_call("FlanEngine.Time::getRealTime", (const void*)&GetRealTime);
 
 	ClearMap();
 

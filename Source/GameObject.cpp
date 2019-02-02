@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <mono/jit/jit.h>
+
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
 	this->name = new char[DEFAULT_BUF_SIZE];
@@ -467,6 +469,11 @@ void GameObject::SetSeenLastFrame(bool seenLastFrame)
 bool GameObject::GetSeenLastFrame() const
 {
 	return seenLastFrame;
+}
+
+MonoObject* GameObject::GetMonoObject()
+{
+	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
 }
 
 void GameObject::RecursiveRecalculateBoundingBoxes()

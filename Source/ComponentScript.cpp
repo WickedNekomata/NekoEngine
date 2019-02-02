@@ -222,20 +222,12 @@ void ComponentScript::OnStop()
 
 void ComponentScript::OnEnable()
 {
-	App->scripting->UpdateMonoObjects();
-
 	OnEnableMethod();
-
-	App->scripting->UpdateGameObjects();
 }
 
 void ComponentScript::OnDisable()
 {
-	App->scripting->UpdateMonoObjects();
-
 	OnDisableMethod();
-
-	App->scripting->UpdateGameObjects();
 }
 
 void ComponentScript::OnEditor()

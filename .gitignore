@@ -354,6 +354,9 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 
+#Engine Files
+**/Game/*.exe
+
 # Scripting Files
 [Ii]nternal/
 **/[Mm]ono/

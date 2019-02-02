@@ -16,6 +16,8 @@ public:
 
 	virtual void OnUniqueEditor();
 
+	virtual void Update();
+
 	virtual void ClearShape();
 	virtual void RecalculateShape() = 0;
 	void SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask);
@@ -25,6 +27,13 @@ public:
 	void ParticipateInSceneQueries(bool participateInSceneQueries);
 
 	physx::PxShape* GetShape() const;
+
+	void OnCollisionEnter();
+	void OnCollisionStay();
+	void OnCollisionExit();
+	void OnTriggerEnter();
+	void OnTriggerStay();
+	void OnTriggerExit();
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
@@ -39,6 +48,9 @@ protected:
 
 	physx::PxShape* gShape = nullptr;
 
+private:
+
+	bool triggerEnter, triggerExit = false;
 };
 
 #endif

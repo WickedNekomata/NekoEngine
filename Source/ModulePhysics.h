@@ -11,6 +11,12 @@
 
 #include <vector>
 
+class ModulePhysics;
+class ComponentRigidActor;
+class ComponentCollider;
+class GameObject;
+enum ComponentTypes;
+
 class DefaultErrorCallback : public physx::PxErrorCallback
 {
 public:
@@ -23,8 +29,6 @@ public:
 
 // ----------------------------------------------------------------------------------------------------
 
-class ModulePhysics;
-
 enum SimulationEventTypes
 {
 	SimulationEventOnWake,
@@ -33,29 +37,57 @@ enum SimulationEventTypes
 	SimulationEventOnTrigger
 };
 
-class Collision
+enum CollisionTypes
 {
-	Collision();
-	~Collision();
+	OnCollisionEnter,
+	OnCollisionStay,
+	OnCollisionExit,
+	OnTriggerEnter,
+	OnTriggerStay,
+	OnTriggerExit
+};
+
+class ContactPoint
+{
+public:
+
+	ContactPoint();
+	ContactPoint(math::float3 point, math::float3 normal, float separation);
+	~ContactPoint();
+
+	math::float3 GetPoint() const;
+	math::float3 GetNormal() const;
+	float GetSeparation() const;
 
 private:
 
-	physx::PxActor* gActor = nullptr; // actor
-	physx::PxShape* gShape = nullptr; // collider
-
+	math::float3 point = math::float3::zero;
+	math::float3 normal = math::float3::zero;
+	float separation = 0.0f;
 };
 
-// Collision filtering example
-/*
-enum FilterGroup
+class Collision
 {
-	eSUBMARINE = (1 << 0),
-	eMINE_HEAD = (1 << 1),
-	eMINE_LINK = (1 << 2),
-	eCRAB = (1 << 3),
-	eHEIGHTFIELD = (1 << 4),
+public:
+
+	Collision();
+	Collision(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 impulse, std::vector<ContactPoint> contactPoints);
+	~Collision();
+
+	GameObject* GetGameObject() const;
+	ComponentCollider* GetCollider() const;
+	ComponentRigidActor* GetActor() const;
+	math::float3 GetImpulse() const;
+	std::vector<ContactPoint> GetContactPoints() const;
+
+private:
+
+	GameObject* gameObject = nullptr; // the game object we hit
+	ComponentCollider* collider = nullptr; // the collider we hit
+	ComponentRigidActor* actor = nullptr; // the actor we hit
+	math::float3 impulse = math::float3::zero;
+	std::vector<ContactPoint> contactPoints;
 };
-*/
 
 class SimulationEventCallback : public physx::PxSimulationEventCallback
 {
@@ -82,10 +114,6 @@ private:
 
 // ----------------------------------------------------------------------------------------------------
 
-class ComponentRigidActor;
-class ComponentCollider;
-enum ComponentTypes;
-
 class ModulePhysics : public Module
 {
 public:
@@ -99,6 +127,9 @@ public:
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
+
+	bool OnGameMode();
+	bool OnEditorMode();
 
 	// Create elements
 	physx::PxRigidStatic* CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const;
@@ -118,12 +149,14 @@ public:
 
 	// Callbacks
 	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB, SimulationEventTypes simulationEventType) const;
-	//void OnCollision(physx::)
+	void OnCollision(Collision& collision, CollisionTypes collisionType) const;
+
 	// ----------
 
 	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
-	ComponentRigidActor* GetRigidActorComponentFromActor(physx::PxActor* actor) const;
+	ComponentRigidActor* FindRigidActorComponentByActor(physx::PxActor* actor) const;
 	std::vector<ComponentCollider*> GetColliderComponents() const;
+	ComponentCollider* FindColliderComponentByShape(physx::PxShape* shape) const;
 
 	// General configuration values
 	void SetGravity(math::float3 gravity);

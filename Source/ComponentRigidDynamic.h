@@ -16,6 +16,8 @@ public:
 
 	void OnUniqueEditor();
 	
+	void Update();
+
 	void SetDensity(float density);
 	void UpdateMassAndInertia();
 	void SetMass(float mass);

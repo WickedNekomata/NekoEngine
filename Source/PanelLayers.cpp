@@ -27,7 +27,7 @@ bool PanelLayers::Draw()
 		{
 			if (App->layers->NumberToBuiltin(i))
 			{
-				ImGui::TextColored(disabledTextColor, "Builtin Layer %i", i); ImGui::SameLine(100.0f);
+				ImGui::TextColored(disabledTextColor, "Builtin Layer %i", i); ImGui::SameLine(150.0f);
 				strcpy_s(layerName, INPUT_BUF_SIZE, App->layers->NumberToName(i));
 				sprintf_s(id, DEFAULT_BUF_SIZE, "##BuiltinLayer%i", i);
 				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -38,7 +38,7 @@ bool PanelLayers::Draw()
 			}
 			else
 			{
-				ImGui::Text("User Layer %i", i); ImGui::SameLine(100.0f);
+				ImGui::Text("User Layer %i", i); ImGui::SameLine(150.0f);
 				strcpy_s(layerName, INPUT_BUF_SIZE, App->layers->NumberToName(i));
 				sprintf_s(id, DEFAULT_BUF_SIZE, "##UserLayer%i", i);
 				ImGui::PushItemWidth(200.0f);

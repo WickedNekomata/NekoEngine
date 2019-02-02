@@ -293,6 +293,14 @@ void ComponentRigidDynamic::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
+void ComponentRigidDynamic::Update()
+{
+	if (!gActor->is<physx::PxRigidDynamic>()->isSleeping())
+		UpdateGameObjectTransform();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidDynamic::SetDensity(float density)
 {
 	this->density = density;

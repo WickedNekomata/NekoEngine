@@ -54,6 +54,17 @@ void ComponentCollider::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
+void ComponentCollider::Update()
+{
+	if (isTrigger)
+	{
+		if (triggerEnter && !triggerExit)
+			OnTriggerStay();
+	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCollider::ClearShape()
 {
 	if (gShape != nullptr)
@@ -64,7 +75,7 @@ void ComponentCollider::ClearShape()
 void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask)
 {
 	physx::PxFilterData filterData;
-	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word0 = filterGroup; // word 0 = own ID
 	filterData.word1 = filterMask; // word 1 = ID mask to filter pairs that trigger a contact callback
 	
 	gShape->setSimulationFilterData(filterData);
@@ -95,4 +106,40 @@ void ComponentCollider::ParticipateInSceneQueries(bool participateInSceneQueries
 physx::PxShape* ComponentCollider::GetShape() const
 {
 	return gShape;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentCollider::OnCollisionEnter()
+{
+	CONSOLE_LOG("OnCollisionEnter");
+}
+
+void ComponentCollider::OnCollisionStay()
+{
+	CONSOLE_LOG("OnCollisionStay");
+}
+
+void ComponentCollider::OnCollisionExit()
+{
+	CONSOLE_LOG("OnCollisionExit");
+}
+
+void ComponentCollider::OnTriggerEnter()
+{
+	CONSOLE_LOG("OnTriggerEnter");
+	triggerEnter = true;
+	triggerExit = false;
+}
+
+void ComponentCollider::OnTriggerStay()
+{
+	CONSOLE_LOG("OnTriggerStay");
+}
+
+void ComponentCollider::OnTriggerExit()
+{
+	CONSOLE_LOG("OnTriggerExit");
+	triggerExit = true;
+	triggerEnter = false;
 }

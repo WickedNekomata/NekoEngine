@@ -808,7 +808,7 @@ void DebugLogTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	CONSOLE_LOG(string, LogTypes::Normal);
+	CONSOLE_LOG(LogTypes::Normal, string);
 
 	mono_free(string);
 }
@@ -821,7 +821,7 @@ void DebugLogWarningTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	CONSOLE_LOG(string, LogTypes::Warning);
+	CONSOLE_LOG(LogTypes::Warning, string);
 
 	mono_free(string);
 }
@@ -834,7 +834,7 @@ void DebugLogErrorTranslator(MonoString* msg)
 	if (!mono_error_ok(&error))
 		return;
 
-	CONSOLE_LOG(string, LogTypes::Error)
+	CONSOLE_LOG(LogTypes::Error, string)
 
 	mono_free(string);
 }
@@ -923,8 +923,8 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		{
 			//The user may be trying to instantiate a GameObject created through script. 
 			//This feature is not implemented for now.
-			CONSOLE_LOG(	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
-							"Instantiating from a GameObject created through script is not supported for now.\n", LogTypes::Error);
+			CONSOLE_LOG(LogTypes::Error,	"Missing GameObject/MonoObject pair when instantiating from a MonoObject template.\n"
+											"Instantiating from a GameObject created through script is not supported for now.\n");
 			return nullptr;
 		}
 

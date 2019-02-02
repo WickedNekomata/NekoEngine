@@ -86,7 +86,7 @@ bool ResourceScript::preCompileErrors()
 	std::string temp(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput);
 	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + App->scripting->getReferencePath() + redirectOutput).data(), error))
 	{
-		CONSOLE_LOG("Error compiling the script %s:", LogTypes::Error, fileName.data());
+		CONSOLE_LOG(LogTypes::Error, "Error compiling the script %s:", fileName.data());
 
 		char* buffer; 
 		int size = App->fs->Load("LogError.txt", &buffer);
@@ -94,7 +94,7 @@ bool ResourceScript::preCompileErrors()
 		std::string outPut(buffer);
 		outPut.resize(size);
 
-		CONSOLE_LOG(outPut.data(), LogTypes::Error);
+		CONSOLE_LOG(LogTypes::Error, outPut.data());
 
 		delete buffer;
 

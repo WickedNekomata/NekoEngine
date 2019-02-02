@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include "Application.h"
 
-void Log(const char file[], int line, const char* format, LogTypes mode, ...)
+void Log(const char file[], int line, LogTypes mode, const char* format, ...)
 {
 	static char tmp_string[MAX_BUF_SIZE];
 	static char tmp_string2[MAX_BUF_SIZE];

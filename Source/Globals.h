@@ -15,10 +15,10 @@ enum class LogTypes
 	Error
 };
 
-#define DEPRECATED_LOG(format, ...) Log(__FILE__, __LINE__, format, LogTypes::Normal, __VA_ARGS__);
-#define CONSOLE_LOG(format, mode, ...) Log(__FILE__, __LINE__, format, mode, __VA_ARGS__);
+#define DEPRECATED_LOG(format, ...) Log(__FILE__, __LINE__, LogTypes::Normal, format, __VA_ARGS__);
+#define CONSOLE_LOG(mode, format, ...) Log(__FILE__, __LINE__, mode, format, __VA_ARGS__);
 
-void Log(const char file[], int line, const char* format, LogTypes mode = LogTypes::Normal, ...);
+void Log(const char file[], int line, LogTypes mode, const char* format, ...);
 
 void OpenInBrowser(char* url);
 

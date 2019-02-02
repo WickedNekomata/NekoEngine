@@ -47,7 +47,7 @@ void ComponentScript::Awake()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -71,7 +71,7 @@ void ComponentScript::Start()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -95,7 +95,7 @@ void ComponentScript::PreUpdate()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -119,7 +119,7 @@ void ComponentScript::Update()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -143,7 +143,7 @@ void ComponentScript::PostUpdate()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -167,7 +167,7 @@ void ComponentScript::OnEnableMethod()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -189,7 +189,7 @@ void ComponentScript::OnDisableMethod()
 
 			MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 			char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-			CONSOLE_LOG(toLogMessage, LogTypes::Error);
+			CONSOLE_LOG(LogTypes::Error, toLogMessage);
 			mono_free(toLogMessage);
 		}
 	}
@@ -213,7 +213,7 @@ void ComponentScript::OnStop()
 
 				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
 				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
-				CONSOLE_LOG(toLogMessage, LogTypes::Error);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
 				mono_free(toLogMessage);
 			}
 		}
@@ -1030,7 +1030,7 @@ void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
 		scriptName = scriptRes->scriptName;
 	}		
 	else
-		CONSOLE_LOG("A ComponentScript lost his ResourceScript reference!", LogTypes::Error);
+		CONSOLE_LOG(LogTypes::Error, "A ComponentScript lost his ResourceScript reference!");
 }
 
 void ComponentScript::SerializePublicVars(char*& cursor) const

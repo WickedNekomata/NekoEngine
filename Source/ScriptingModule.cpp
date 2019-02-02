@@ -947,6 +947,40 @@ float GetRealTime()
 	return App->timeManager->GetRealTime();
 }
 
+MonoArray* GetLocalPosition(MonoObject* monoObject)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+
+	mono_array_set(ret, float, 0, gameObject->transform->position.x);
+	mono_array_set(ret, float, 1, gameObject->transform->position.y);
+	mono_array_set(ret, float, 2, gameObject->transform->position.z);
+
+	return ret;
+}
+
+void SetLocalPosition(MonoObject* monoObject, MonoArray* position)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return;
+
+	gameObject->transform->position.x = mono_array_get(position, float, 0);
+	gameObject->transform->position.y = mono_array_get(position, float, 1);
+	gameObject->transform->position.z = mono_array_get(position, float, 2);
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1004,6 +1038,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Time::getRealDeltaTime", (const void*)&GetRealDeltaTime);
 	mono_add_internal_call("FlanEngine.Time::getTime", (const void*)&GetTime);
 	mono_add_internal_call("FlanEngine.Time::getRealTime", (const void*)&GetRealTime);
+	mono_add_internal_call("FlanEngine.Transform::getLocalPosition", (const void*)&GetLocalPosition);
+	mono_add_internal_call("FlanEngine.Transform::setLocalPosition", (const void*)&SetLocalPosition);
 
 	ClearMap();
 

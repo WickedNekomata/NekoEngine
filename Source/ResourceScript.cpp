@@ -96,7 +96,7 @@ bool ResourceScript::preCompileErrors()
 
 		CONSOLE_LOG(LogTypes::Error, outPut.data());
 
-		delete buffer;
+		delete[] buffer;
 
 		state = ScriptState::COMPILED_WITH_ERRORS;
 

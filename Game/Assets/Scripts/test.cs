@@ -3,6 +3,8 @@ using FlanEngine;
 
 public class test : FlanScript
 {
+    public float speed = 1f;
+
     //Use this method for initialization
     public override void Awake()
     {
@@ -17,6 +19,12 @@ public class test : FlanScript
         Debug.Log("Real DT: " + Time.realDeltaTime);
         Debug.Log("Game Time: " + Time.time);
         Debug.Log("Real Time: " + Time.realTime);
+
+        Debug.Log("PrevPos: " + transform.position.ToString());
+
+        transform.position += Vector3.forward * Time.deltaTime * speed;
+
+        Debug.Log("PostPos: " + transform.position.ToString());
     }
 }
 

@@ -20,11 +20,8 @@ public class test : FlanScript
         Debug.Log("Game Time: " + Time.time);
         Debug.Log("Real Time: " + Time.realTime);
 
-        Debug.Log("PrevPos: " + transform.position.ToString());
-
         transform.position += Vector3.forward * Time.deltaTime * speed;
-
-        Debug.Log("PostPos: " + transform.position.ToString());
+        transform.rotation = transform.rotation.Rotate(Vector3.up, speed);     
     }
 }
 

@@ -981,6 +981,76 @@ void SetLocalPosition(MonoObject* monoObject, MonoArray* position)
 	gameObject->transform->position.z = mono_array_get(position, float, 2);
 }
 
+MonoArray* GetLocalRotation(MonoObject* monoObject)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+
+	mono_array_set(ret, float, 0, gameObject->transform->rotation.x);
+	mono_array_set(ret, float, 1, gameObject->transform->rotation.y);
+	mono_array_set(ret, float, 2, gameObject->transform->rotation.z);
+	mono_array_set(ret, float, 3, gameObject->transform->rotation.w);
+
+	return ret;
+}
+
+void SetLocalRotation(MonoObject* monoObject, MonoArray* rotation)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return;
+
+	gameObject->transform->rotation.x = mono_array_get(rotation, float, 0);
+	gameObject->transform->rotation.y = mono_array_get(rotation, float, 1);
+	gameObject->transform->rotation.z = mono_array_get(rotation, float, 2);
+	gameObject->transform->rotation.w = mono_array_get(rotation, float, 3);
+}
+
+MonoArray* GetLocalScale(MonoObject* monoObject)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+
+	mono_array_set(ret, float, 0, gameObject->transform->scale.x);
+	mono_array_set(ret, float, 1, gameObject->transform->scale.y);
+	mono_array_set(ret, float, 2, gameObject->transform->scale.z);
+
+	return ret;
+}
+
+void SetLocalScale(MonoObject* monoObject, MonoArray* scale)
+{
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	GameObject* gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return;
+
+	gameObject->transform->scale.x = mono_array_get(scale, float, 0);
+	gameObject->transform->position.y = mono_array_get(scale, float, 1);
+	gameObject->transform->scale.z = mono_array_get(scale, float, 2);
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1040,6 +1110,10 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("FlanEngine.Time::getRealTime", (const void*)&GetRealTime);
 	mono_add_internal_call("FlanEngine.Transform::getLocalPosition", (const void*)&GetLocalPosition);
 	mono_add_internal_call("FlanEngine.Transform::setLocalPosition", (const void*)&SetLocalPosition);
+	mono_add_internal_call("FlanEngine.Transform::getLocalRotation", (const void*)&GetLocalRotation);
+	mono_add_internal_call("FlanEngine.Transform::setLocalRotation", (const void*)&SetLocalRotation);
+	mono_add_internal_call("FlanEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
+	mono_add_internal_call("FlanEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
 
 	ClearMap();
 

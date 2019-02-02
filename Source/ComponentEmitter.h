@@ -154,7 +154,9 @@ public:
 	void CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos = math::float3::zero);
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
 
+#ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
+#endif
 
 	void SaveComponent(JSON_Object * parent);
 

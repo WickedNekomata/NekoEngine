@@ -625,7 +625,9 @@ void DebugLogErrorTranslator(MonoString* msg)
 
 void ClearConsole() 
 { 
+#ifndef GAMEMODE
 	App->gui->ClearConsole();
+#endif
 }
 
 int32_t GetKeyStateCS(int32_t key)

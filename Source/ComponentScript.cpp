@@ -232,6 +232,7 @@ void ComponentScript::OnDisable()
 
 void ComponentScript::OnEditor()
 {
+#ifndef GAMEMODE
 	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 	{
 		if (isActive)
@@ -834,6 +835,7 @@ void ComponentScript::OnEditor()
 		}
 		ImGui::NewLine();
 	}
+#endif
 }
 
 uint ComponentScript::bytesToSerializePublicVars() const

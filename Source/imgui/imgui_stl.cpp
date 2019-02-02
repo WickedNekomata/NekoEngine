@@ -9,6 +9,8 @@
 #include "imgui.h"
 #include "imgui_stl.h"
 
+#ifndef GAMEMODE
+
 struct InputTextCallback_UserData
 {
     std::string*            Str;
@@ -59,3 +61,5 @@ bool ImGui::InputTextMultiline(const char* label, std::string* str, const ImVec2
     cb_user_data.ChainCallbackUserData = user_data;
     return InputTextMultiline(label, (char*)str->c_str(), str->capacity() + 1, size, flags, InputTextCallback, &cb_user_data);
 }
+
+#endif

@@ -148,6 +148,7 @@ public:
 	//void SetNewAnimation(int row, int col);
 	math::float3 RandPos(ShapeType shapeType);
 	void ShowFloatValue(math::float2 & value, bool checkBox, const char * name, float v_speed, float v_min, float v_max);
+	void EqualsMinMaxValues(math::float2 & value);
 	void CheckMinMax(math::float2 & value);
 	void ClearEmitter();
 	void SoftClearEmitter();

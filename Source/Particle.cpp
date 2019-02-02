@@ -74,8 +74,8 @@ void Particle::SetActive(math::float3 pos, StartValues data, ResourceTexture ** 
 bool Particle::Update(float dt)
 {
 	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
-	bool ret = true;
-	if (owner->simulatedGame == ENGINE_PAUSE)
+
+	if (owner->simulatedGame == SimulatedGame_PAUSE || App->IsPause())
 		dt = 0;
 	life += dt;
 	if (life < lifeTime || owner->dieOnAnimation)
@@ -124,7 +124,7 @@ bool Particle::Update(float dt)
 				}
 				else if (owner->dieOnAnimation)
 				{
-					EndParticle(ret);
+					EndParticle();
 				}
 				else
 					currentFrame = 0;
@@ -135,17 +135,19 @@ bool Particle::Update(float dt)
 	}
 	else
 	{
-		EndParticle(ret);
+		EndParticle();
 	}
 
-	return ret;
+	return true;
 }
 
-void Particle::EndParticle(bool &ret)
+void Particle::EndParticle()
 {
 	//BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
-
-	if (owner && owner->subEmitter)
+	active = false;
+	owner->particles.remove(this);
+	App->particle->activeParticles--;
+	if (owner->subEmitter)
 	{
 		ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponentByType(EmitterComponent);
 		if (subEmitterActive && emitter)
@@ -154,10 +156,6 @@ void Particle::EndParticle(bool &ret)
 			owner->subEmitter->transform->GetGlobalMatrix().Decompose(globalPos, math::Quat(), math::float3());
 			emitter->newPositions.push_back(transform.position - globalPos);
 		}
-		active = false;
-		ret = false;
-		owner->particles.remove(this);
-		App->particle->activeParticles--;
 	}
 }
 
@@ -182,55 +180,55 @@ void Particle::SetCamDistance()
 
 void Particle::Draw()
 {
-	//if (plane /*&& texture && animation->size() >currentFrame*/)
-	//	plane->Render(transform.GetMatrix(), *texture, /*animation->at(currentFrame),*/ currentColor);
+	if (active)
+	{
+		// Shader
+		GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 
-	// Shader
-	GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+		glUseProgram(shaderProgram);
 
-	glUseProgram(shaderProgram);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
 
 
-	//TODO PARTICLES
-	/*glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
-	glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
-	glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
-	*/
-	math::float4x4 model_matrix = transform.GetMatrix();// particle matrix
-	model_matrix = model_matrix.Transposed();
-	math::float4x4 view_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
-	math::float4x4 proj_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
-	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
-	math::float4x4 normal_matrix = model_matrix;
-	normal_matrix.Inverse();
-	normal_matrix.Transpose();
+		//TODO PARTICLES
+		/*glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
+		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
+		glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
+		*/
+		math::float4x4 model_matrix = transform.GetMatrix();// particle matrix
+		model_matrix = model_matrix.Transposed();
+		math::float4x4 view_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
+		math::float4x4 proj_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
+		math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+		math::float4x4 normal_matrix = model_matrix;
+		normal_matrix.Inverse();
+		normal_matrix.Transpose();
 
-	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "normal_matrix");
-	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+		uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+		glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+		location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+		glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+		location = glGetUniformLocation(shaderProgram, "normal_matrix");
+		glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
 
-	uint defaultPlaneVAO = 0;
-	uint defaultPlaneIBO = 0;
-	uint defaultPlaneIndicesSize = 0;
-	App->sceneImporter->GetDefaultPlane(defaultPlaneVAO, defaultPlaneIBO, defaultPlaneIndicesSize);
+		uint defaultPlaneVAO = 0;
+		uint defaultPlaneIBO = 0;
+		uint defaultPlaneIndicesSize = 0;
+		App->sceneImporter->GetDefaultPlane(defaultPlaneVAO, defaultPlaneIBO, defaultPlaneIndicesSize);
 
-	glBindVertexArray(defaultPlaneVAO);
+		glBindVertexArray(defaultPlaneVAO);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, defaultPlaneIBO);
-	glDrawElements(GL_TRIANGLES, defaultPlaneIndicesSize, GL_UNSIGNED_INT, NULL);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, defaultPlaneIBO);
+		glDrawElements(GL_TRIANGLES, defaultPlaneIndicesSize, GL_UNSIGNED_INT, NULL);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	glUseProgram(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		glUseProgram(0);
+	}
 }
 
 float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoint

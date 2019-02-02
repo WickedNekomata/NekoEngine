@@ -305,28 +305,36 @@ void ComponentEmitter::ParticleValues()
 	{
 		ImGui::ShowHelpMarker("Active checkBox if you want a random number");
 
-		ImGui::Checkbox("##Speed", &checkSpeed);
+		if (ImGui::Checkbox("##Speed", &checkSpeed))
+			EqualsMinMaxValues(startValues.speed);
 		ShowFloatValue(startValues.speed, checkSpeed, "Speed", 0.25f, 0.25f, 20.0f);
 
-		ImGui::Checkbox("##Acceleration", &checkAcceleration);
+		if (ImGui::Checkbox("##Acceleration", &checkAcceleration))
+			EqualsMinMaxValues(startValues.acceleration);
 		ShowFloatValue(startValues.acceleration, checkAcceleration, "Acceleration", 0.25f, -5.0f, 5.0f);
 
-		ImGui::Checkbox("##Rotation", &checkRotation);
+		if (ImGui::Checkbox("##Rotation", &checkRotation))
+			EqualsMinMaxValues(startValues.rotation);
 		ShowFloatValue(startValues.rotation, checkRotation, "Initial Rotation", 0.25f, -360.0f, 360.0f);
 
-		ImGui::Checkbox("##AngularVelocity", &checkAngularVelocity);
+		if (ImGui::Checkbox("##AngularVelocity", &checkAngularVelocity))
+			EqualsMinMaxValues(startValues.angularVelocity);
 		ShowFloatValue(startValues.angularVelocity, checkAngularVelocity, "Angular Velocity", 0.25f, -45.0f, 45.0f);
 
-		ImGui::Checkbox("##AngularAcceleration", &checkAngularAcceleration);
+		if (ImGui::Checkbox("##AngularAcceleration", &checkAngularAcceleration))
+			EqualsMinMaxValues(startValues.angularAcceleration);
 		ShowFloatValue(startValues.angularAcceleration, checkAngularAcceleration, "Angular Acceleration", 0.25f, -45.0f, 45.0f);
 
-		ImGui::Checkbox("##Lifetime", &checkLife);
+		if (ImGui::Checkbox("##Lifetime", &checkLife))
+			EqualsMinMaxValues(startValues.life);
 		ShowFloatValue(startValues.life, checkLife, "Lifetime", 0.5f, 1.0f, 20.0f);
 
-		ImGui::Checkbox("##Size", &checkSize);
+		if (ImGui::Checkbox("##Size", &checkSize))
+			EqualsMinMaxValues(startValues.size);
 		ShowFloatValue(startValues.size, checkSize, "Size", 0.1f, 0.1f, 5.0f);
-
-		ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime);
+		
+		if (ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime))
+			EqualsMinMaxValues(startValues.sizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
 
 		ImGui::PushItemWidth(100.0f);
@@ -664,6 +672,14 @@ void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const 
 			value.y = value.x;
 	}
 	ImGui::PopItemWidth();
+#endif
+}
+
+void ComponentEmitter::EqualsMinMaxValues(math::float2 & value)
+{
+#ifndef GAMEMODE
+	if(value[1] != value[0])
+		value[1] = value[0];
 #endif
 }
 

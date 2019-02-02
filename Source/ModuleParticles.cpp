@@ -51,7 +51,6 @@ update_status ModuleParticle::Update()
 			allParticles[i].Update(dt); //Particles can be created here, they sould not be updated yet
 			++count;
 			allParticles[i].SetCamDistance();
-			//partQueue.push(&allParticles[i]);
 			partVec[j++] = &allParticles[i];
 		}
 		else

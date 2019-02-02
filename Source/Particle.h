@@ -35,7 +35,7 @@ public:
 
 	bool Update(float dt);
 
-	void EndParticle(bool &ret);
+	void EndParticle();
 
 	void LookAtCamera();
 

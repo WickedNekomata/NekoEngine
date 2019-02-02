@@ -144,6 +144,7 @@ public:
 	pcg32_random_t			rng;
 
 	bool firstFrame = true;
+	math::LCG randomMathLCG; //Cant be private with const Get
 
 private:
 
@@ -169,7 +170,6 @@ private:
 	mutable bool		load = false;
 
 	engine_states engineState = engine_states::ENGINE_EDITOR;
-	math::LCG randomMathLCG;
 };
 
 extern Application* App;

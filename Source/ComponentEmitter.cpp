@@ -234,21 +234,21 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	switch (shapeType)
 	{
 	case ShapeType_BOX:
-		spawn = boxCreation.RandomPointInside(App->GetLCGRandomMath());
+		spawn = boxCreation.RandomPointInside(App->randomMathLCG);
 		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
-		spawn = sphereCreation.RandomPointInside(App->GetLCGRandomMath());
+		spawn = sphereCreation.RandomPointInside(App->randomMathLCG);
 		startValues.particleDirection = spawn.Normalized();
 		break;
 
 	case ShapeType_SPHERE_CENTER:
-		startValues.particleDirection = sphereCreation.RandomPointInside(App->GetLCGRandomMath()).Normalized();
+		startValues.particleDirection = sphereCreation.RandomPointInside(App->randomMathLCG).Normalized();
 		break;
 
 	case ShapeType_SPHERE_BORDER:
-		spawn = sphereCreation.RandomPointOnSurface(App->GetLCGRandomMath());
+		spawn = sphereCreation.RandomPointOnSurface(App->randomMathLCG);
 		startValues.particleDirection = spawn.Normalized();
 		break;
 

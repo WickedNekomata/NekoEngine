@@ -164,11 +164,11 @@ void Particle::EndParticle(bool &ret)
 
 void Particle::LookAtCamera()
 {
-	math::float3 zAxis = -App->renderer3D->GetCurrentCamera()->frustum.front;
+	/*math::float3 zAxis = -App->renderer3D->GetCurrentCamera()->frustum.front;
 	math::float3 yAxis = App->renderer3D->GetCurrentCamera()->frustum.up;
 	math::float3 xAxis = yAxis.Cross(zAxis).Normalized();
 
-	transform.rotation.Set(math::float3x3(xAxis, yAxis, zAxis));
+	transform.rotation.Set(math::float3x3(xAxis, yAxis, zAxis));*/
 }
 
 float Particle::GetCamDistance() const
@@ -194,7 +194,14 @@ void Particle::Draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
 
-	math::float4x4 model_matrix = transform.GetMatrix(); // particle matrix
+
+	//TODO PARTICLES
+	/*glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
+	*/
+	math::float4x4 model_matrix = owner->GetParent()->transform->GetGlobalMatrix();
+		//transform.GetMatrix();math::float4x4::identity; // particle matrix
 	model_matrix = model_matrix.Transposed();
 	math::float4x4 view_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
 	math::float4x4 proj_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();

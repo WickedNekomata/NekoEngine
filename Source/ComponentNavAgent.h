@@ -15,6 +15,10 @@ public:
 
 	void OnUniqueEditor();
 
+	void AddAgent();
+
+	void SetDestination();
+
 	virtual void OnInternalSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file);
 };

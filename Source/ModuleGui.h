@@ -57,7 +57,7 @@ public:
 	class PanelCodeEditor*		panelCodeEditor = nullptr;
 	class PanelShaderEditor*	panelShaderEditor = nullptr;
 	class PanelSkybox*			panelSkybox = nullptr;
-	class PanelNavMesh*			panelNavMesh = nullptr;
+	class PanelNavigation*		panelNavigation = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 

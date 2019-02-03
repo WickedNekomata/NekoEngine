@@ -26,7 +26,7 @@
 #include "PanelCodeEditor.h"
 #include "PanelShaderEditor.h"
 #include "PanelSkybox.h"
-#include "PanelNavMesh.h"
+#include "PanelNavigation.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -57,7 +57,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 	panelSkybox = new PanelSkybox("Skybox");
-	panelNavMesh = new PanelNavMesh("NavMesh");
+	panelNavigation = new PanelNavigation("Navigation");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -71,7 +71,7 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelShaderEditor);
 	panels.push_back(panelSkybox);
-	panels.push_back(panelNavMesh);
+	panels.push_back(panelNavigation);
 
 	LoadStatus(jObject);
 
@@ -181,7 +181,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Hierarchy", "ALT+H")) { panelHierarchy->OnOff(); }
 			if (ImGui::MenuItem("Assets", "ALT+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
-			if (ImGui::MenuItem("NavMesh")) { panelNavMesh->OnOff(); }
+			if (ImGui::MenuItem("NavMesh")) { panelNavigation->OnOff(); }
 
 #ifdef _DEBUG
 			if (ImGui::MenuItem("ImGui Demo")) { imguiDemo = !imguiDemo; }
@@ -317,7 +317,7 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelDebugDraw->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
-		ImGui::DockBuilderDockWindow(panelNavMesh->GetName(), dock_id_right);
+		ImGui::DockBuilderDockWindow(panelNavigation->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);

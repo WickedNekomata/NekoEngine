@@ -1,5 +1,5 @@
-#ifndef __PANEL_NAV_MESH_H__
-#define __PANEL_NAV_MESH_H__
+#ifndef __PANEL_NAVIGATION_H__
+#define __PANEL_NAVIGATION_H__
 
 #include "GameMode.h"
 
@@ -27,12 +27,12 @@ struct CommonSettings
 	int	  p_partitionType;
 };
 
-class PanelNavMesh : public Panel
+class PanelNavigation : public Panel
 {
 public:
 
-	PanelNavMesh(char* name);
-	~PanelNavMesh();
+	PanelNavigation(char* name);
+	~PanelNavigation();
 
 	bool Draw();
 

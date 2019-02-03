@@ -53,9 +53,11 @@ void Component::OnEditor()
 
 	bool isActive = IsActive();
 	if (ImGui::Checkbox(itemName, &isActive)) { ToggleIsActive(); }
-	ImGui::SameLine();
 
-	OnUniqueEditor();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##treeNode%u", UUID);
+
+	if (ImGui::CollapsingHeader(itemName, ImGuiTreeNodeFlags_DefaultOpen))
+		OnUniqueEditor();
 #endif
 }
 

@@ -733,9 +733,6 @@
     <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClInclude>
-    <ClInclude Include="PanelNavMesh.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="NMSupplier.h">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </ClInclude>
@@ -747,6 +744,9 @@
     </ClInclude>
     <ClInclude Include="ComponentNavAgent.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelNavigation.h">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1104,9 +1104,6 @@
     <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClCompile>
-    <ClCompile Include="PanelNavMesh.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="NMSupplier.cpp">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </ClCompile>
@@ -1118,6 +1115,9 @@
     </ClCompile>
     <ClCompile Include="ComponentNavAgent.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelNavigation.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

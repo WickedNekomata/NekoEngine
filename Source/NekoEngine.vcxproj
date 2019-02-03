@@ -249,7 +249,7 @@
     <ClInclude Include="mmgr\nommgr.h" />
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="NMDebugDraw.h" />
-    <ClInclude Include="PanelNavMesh.h" />
+    <ClInclude Include="PanelNavigation.h" />
     <ClInclude Include="NMSupplier.h" />
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
@@ -374,7 +374,7 @@
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
     <ClCompile Include="NMDebugDraw.cpp" />
-    <ClCompile Include="PanelNavMesh.cpp" />
+    <ClCompile Include="PanelNavigation.cpp" />
     <ClCompile Include="NMBuildContext.cpp" />
     <ClCompile Include="NMSupplier.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />

@@ -1,4 +1,4 @@
-#include "PanelNavMesh.h"
+#include "PanelNavigation.h"
 
 #include "imgui/imgui.h"
 
@@ -16,16 +16,16 @@
 
 #include "MathGeoLib/include/Math/float4.h"
 
-PanelNavMesh::PanelNavMesh(char* name) : Panel(name)
+PanelNavigation::PanelNavigation(char* name) : Panel(name)
 {
 	ResetCommonSettings();
 }
 
-PanelNavMesh::~PanelNavMesh()
+PanelNavigation::~PanelNavigation()
 {
 }
 
-bool PanelNavMesh::Draw()
+bool PanelNavigation::Draw()
 {
 	ImGui::Begin(name, &enabled);
 
@@ -116,7 +116,7 @@ bool PanelNavMesh::Draw()
 	return true;
 }
 
-void PanelNavMesh::ResetCommonSettings()
+void PanelNavigation::ResetCommonSettings()
 {
 	cs.p_cellSize = 0.3f;
 	cs.p_cellHeight = 0.2f;
@@ -134,7 +134,7 @@ void PanelNavMesh::ResetCommonSettings()
 	cs.p_detailSampleMaxError = 1.0f;
 }
 
-void PanelNavMesh::HandleInputMeshes() const
+void PanelNavigation::HandleInputMeshes() const
 {
 	std::vector<ComponentMesh*> staticsMeshComp;
 	App->GOs->GetMeshComponentsFromStaticGameObjects(staticsMeshComp);
@@ -183,13 +183,13 @@ void PanelNavMesh::HandleInputMeshes() const
 
 			p_inputGeom.i_meshes[i].walkable = staticsMeshComp[i]->nv_walkable;
 
-			for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
+			math::float4x4 gMatrix = staticsMeshComp[i]->GetParent()->transform->GetGlobalMatrix();
+			for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts * 3; j += 3)
 			{
-				math::float3 globalVert = (staticsMeshComp[i]->GetParent()->transform->GetGlobalMatrix().Inverted().Transposed() *
-									       math::float4(p_inputGeom.i_meshes[i].m_verts[j],
-														p_inputGeom.i_meshes[i].m_verts[j + 1],
-														p_inputGeom.i_meshes[i].m_verts[j + 2],
-														1)).xyz();
+				math::float3 globalVert = (gMatrix * math::float4(p_inputGeom.i_meshes[i].m_verts[j],
+																  p_inputGeom.i_meshes[i].m_verts[j + 1],
+																  p_inputGeom.i_meshes[i].m_verts[j + 2],
+																  1)).xyz();
 
 				memcpy(&p_inputGeom.i_meshes[i].m_verts[j], globalVert.ptr(), sizeof(float) * 3);
 			}

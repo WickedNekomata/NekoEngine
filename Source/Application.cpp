@@ -241,7 +241,14 @@ void Application::PrepareUpdate()
 		}
 
 		if (ret)
+		{
 			engineState = engine_states::ENGINE_PLAY;
+
+			System_Event event;
+			event.type = System_Event_Type::Play;
+			PushSystemEvent(event);
+		}
+			
 		break;
 	}
 	case engine_states::ENGINE_WANTS_PAUSE:
@@ -265,7 +272,14 @@ void Application::PrepareUpdate()
 		}
 
 		if (ret)
+		{
 			engineState = engine_states::ENGINE_EDITOR;
+
+			System_Event event;
+			event.type = System_Event_Type::Stop;
+			PushSystemEvent(event);
+		}
+			
 		break;
 	}
 	case engine_states::ENGINE_WANTS_STEP:

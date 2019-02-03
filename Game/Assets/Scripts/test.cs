@@ -14,14 +14,8 @@ public class test : FlanScript
     //Called every frame
     public override void Update()
     {
-        Debug.ClearConsole();
-        Debug.Log("Game DT: " + Time.deltaTime);
-        Debug.Log("Real DT: " + Time.realDeltaTime);
-        Debug.Log("Game Time: " + Time.time);
-        Debug.Log("Real Time: " + Time.realTime);
-
         transform.position += Vector3.forward * Time.deltaTime * speed;
-        transform.rotation = transform.rotation.Rotate(Vector3.up, speed);     
+        transform.rotation = transform.rotation.Rotate(Vector3.up, speed);
     }
 }
 

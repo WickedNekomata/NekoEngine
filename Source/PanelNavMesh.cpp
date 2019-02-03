@@ -183,17 +183,16 @@ void PanelNavMesh::HandleInputMeshes() const
 
 			p_inputGeom.i_meshes[i].walkable = staticsMeshComp[i]->nv_walkable;
 
-			/*for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
+			for (int j = 0; j < p_inputGeom.i_meshes[i].m_nverts; j += 3)
 			{
-				math::float3 globalVert = (staticsMeshComp[i]->GetParent()->transform->GetGlobalMatrix() *
-					math::float4(p_inputGeom.i_meshes[i].m_verts[j],
-						p_inputGeom.i_meshes[i].m_verts[j + 1],
-						p_inputGeom.i_meshes[i].m_verts[j + 2],
-						1)).xyz();
+				math::float3 globalVert = (staticsMeshComp[i]->GetParent()->transform->GetGlobalMatrix().Inverted().Transposed() *
+									       math::float4(p_inputGeom.i_meshes[i].m_verts[j],
+														p_inputGeom.i_meshes[i].m_verts[j + 1],
+														p_inputGeom.i_meshes[i].m_verts[j + 2],
+														1)).xyz();
 
 				memcpy(&p_inputGeom.i_meshes[i].m_verts[j], globalVert.ptr(), sizeof(float) * 3);
 			}
-			*/
 		}
 	}
 

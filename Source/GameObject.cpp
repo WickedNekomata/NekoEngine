@@ -4,6 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentNavAgent.h"
 #include "ResourceMesh.h"
 #include "ModuleResourceManager.h"
 
@@ -228,6 +229,9 @@ Component* GameObject::AddComponent(ComponentType type)
 		assert(camera == NULL);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
+	case NavAgentComponent:
+		newComponent = new ComponentNavAgent(this);
+		break;
 	default:
 		break;
 	}
@@ -266,7 +270,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	case ComponentType::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
-		materialRenderer = nullptr;
+		camera = nullptr;
 		break;
 	}
 

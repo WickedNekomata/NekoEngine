@@ -122,11 +122,17 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		if (gameObject->camera == nullptr)
+		if (gameObject->camera == nullptr) {
 			if (ImGui::Selectable("Camera")) {
 				gameObject->AddComponent(ComponentType::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
+		}
+
+		if (ImGui::Selectable("Nav Agent")) {
+			gameObject->AddComponent(ComponentType::NavAgentComponent);
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();		
 	}
 }

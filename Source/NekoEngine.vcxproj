@@ -152,6 +152,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentNavAgent.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
     <ClInclude Include="CurrentSelection.h" />
@@ -324,6 +325,7 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentNavAgent.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
     <ClCompile Include="GameObject.cpp" />

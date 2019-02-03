@@ -1,8 +1,8 @@
 [
     {
         "Name": "$$$___magic___$$$.",
-        "UUID": 2200768140,
-        "Parent UUID": 3686863342,
+        "UUID": 3519328162,
+        "Parent UUID": 807555212,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "Name": "nav_test.obj",
-        "UUID": 3755421785,
-        "Parent UUID": 2200768140,
+        "UUID": 3242616034,
+        "Parent UUID": 3519328162,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -41,8 +41,8 @@
     },
     {
         "Name": "Generic",
-        "UUID": 2130845894,
-        "Parent UUID": 2200768140,
+        "UUID": 3240715194,
+        "Parent UUID": 3519328162,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -59,7 +59,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 881689847
+                "ResourceMesh": 951517753
             },
             {
                 "Type": 3,
@@ -117,8 +117,8 @@
     },
     {
         "Name": "Cube",
-        "UUID": 818847348,
-        "Parent UUID": 2200768140,
+        "UUID": 3831002329,
+        "Parent UUID": 3519328162,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -135,7 +135,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1540583862
+                "ResourceMesh": 4057550409
             },
             {
                 "Type": 3,
@@ -193,8 +193,8 @@
     },
     {
         "Name": "Generic",
-        "UUID": 3327570800,
-        "Parent UUID": 2200768140,
+        "UUID": 3695066938,
+        "Parent UUID": 3519328162,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -211,7 +211,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2056636773
+                "ResourceMesh": 3586776412
             },
             {
                 "Type": 3,
@@ -269,8 +269,8 @@
     },
     {
         "Name": "Cube",
-        "UUID": 1917310083,
-        "Parent UUID": 2200768140,
+        "UUID": 954954546,
+        "Parent UUID": 3519328162,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -287,7 +287,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2676885887
+                "ResourceMesh": 834187337
             },
             {
                 "Type": 3,

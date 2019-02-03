@@ -49,6 +49,7 @@ struct ModuleGOs;
 struct ModuleTimeManager;
 struct DebugDrawer;
 struct NMSupplier;
+struct ModuleNavigation;
 
 class Application
 {
@@ -131,6 +132,7 @@ public:
 	ModuleTimeManager*		timeManager;
 	DebugDrawer*			debugDrawer;
 	NMSupplier*				nmSupplier;
+	ModuleNavigation*		navigation;
 
 	pcg32_random_t			rng;
 

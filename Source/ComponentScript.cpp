@@ -611,7 +611,7 @@ void ComponentScript::OnEditor()
 
 					mono_free(convertedString);
 				}
-				else if (typeName == "FlanEngine.GameObject")
+				else if (typeName == "JellyBitEngine.GameObject")
 				{
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
 
@@ -732,7 +732,7 @@ void ComponentScript::OnEditor()
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
 				}
-				else if (typeName == "FlanEngine.Transform")
+				else if (typeName == "JellyBitEngine.Transform")
 				{
 					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
 
@@ -960,14 +960,14 @@ uint ComponentScript::bytesToSerializePublicVars() const
 
 				mono_free(cString);
 			}
-			else if (typeName == "FlanEngine.GameObject")
+			else if (typeName == "JellyBitEngine.GameObject")
 			{
 				varType = VarType::GAMEOBJECT;
 
 				uint nameLenght = fieldName.length();
 				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(uint32_t));
 			}
-			else if (typeName == "FlanEngine.Transform")
+			else if (typeName == "JellyBitEngine.Transform")
 			{
 				varType = VarType::TRANSFORM;
 
@@ -1414,7 +1414,7 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 
 				mono_free(cString);
 			}
-			else if (typeName == "FlanEngine.GameObject")
+			else if (typeName == "JellyBitEngine.GameObject")
 			{
 				varType = VarType::GAMEOBJECT;
 									
@@ -1445,7 +1445,7 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 				cursor += bytes;
 
 			}
-			else if (typeName == "FlanEngine.Transform")
+			else if (typeName == "JellyBitEngine.Transform")
 			{
 				varType = VarType::TRANSFORM;
 
@@ -1931,7 +1931,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					std::string typeName = mono_type_full_name(type);
 					std::string fieldName = mono_field_get_name(field);
 
-					if (typeName == "FlanEngine.GameObject" && fieldName == varName)
+					if (typeName == "JellyBitEngine.GameObject" && fieldName == varName)
 					{
 						
 						mono_field_set_value(classInstance, field, monoObject);
@@ -1982,7 +1982,7 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 					std::string typeName = mono_type_full_name(type);
 					std::string fieldName = mono_field_get_name(field);
 
-						if (typeName == "FlanEngine.Transform" && fieldName == varName)
+						if (typeName == "JellyBitEngine.Transform" && fieldName == varName)
 						{
 							if (monoObject)
 							{

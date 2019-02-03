@@ -337,7 +337,7 @@ MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 	if (monoObject)
 		return monoObject;
 
-	MonoClass* gameObjectClass = mono_class_from_name(internalImage, "FlanEngine", "GameObject");
+	MonoClass* gameObjectClass = mono_class_from_name(internalImage, "JellyBitEngine", "GameObject");
 	monoObject = mono_object_new(domain, gameObjectClass);
 	mono_runtime_object_init(monoObject);
 
@@ -478,15 +478,15 @@ void ScriptingModule::IncludeCSFiles(pugi::xml_node& nodeToAppend, const Directo
 
 void ScriptingModule::CreateInternalCSProject()
 {
-	if (App->fs->Exists("FlanCS"))
+	if (App->fs->Exists("JellyBitCS"))
 		return;
 
-	App->fs->CopyDirectoryAndContentsInto("Internal/FlanCS", "", true);
+	App->fs->CopyDirectoryAndContentsInto("Internal/JellyBitCS", "", true);
 }
 
 std::string ScriptingModule::getReferencePath() const
 {
-	return std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("FlanCS.dll\" ");
+	return std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("JellyBitCS.dll\" ");
 }
 
 std::string ScriptingModule::clearSpaces(std::string& scriptName)
@@ -673,7 +673,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		GameObject* instance = App->GOs->CreateGameObject("default", App->GOs->getRoot());
 
-		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "FlanEngine", "GameObject");
+		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "GameObject");
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 		mono_runtime_object_init(monoInstance);
 
@@ -1075,7 +1075,7 @@ void ScriptingModule::CreateDomain()
 	domain = nextDom;
 
 	char* buffer;
-	int size = App->fs->Load("FlanCS.dll", &buffer);
+	int size = App->fs->Load("JellyBitCS.dll", &buffer);
 	if(size <= 0)
 		return;
 
@@ -1087,35 +1087,35 @@ void ScriptingModule::CreateDomain()
 	delete[] buffer;
 
 	//SetUp Internal Calls
-	mono_add_internal_call("FlanEngine.Debug::Log", (const void*)&DebugLogTranslator);
-	mono_add_internal_call("FlanEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
-	mono_add_internal_call("FlanEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
-	mono_add_internal_call("FlanEngine.Debug::ClearConsole", (const void*)&ClearConsole);
-	mono_add_internal_call("FlanEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
-	mono_add_internal_call("FlanEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
-	mono_add_internal_call("FlanEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
-	mono_add_internal_call("FlanEngine.Input::GetMousePos", (const void*)&GetMousePosCS);
-	mono_add_internal_call("FlanEngine.Input::GetWheelMovement", (const void*)&GetWheelMovementCS);
-	mono_add_internal_call("FlanEngine.Input::GetMouseDeltaPos", (const void*)&GetMouseDeltaPosCS);
-	mono_add_internal_call("FlanEngine.Object::Destroy", (const void*)&DestroyObj);
-	mono_add_internal_call("FlanEngine.Quaternion::quatMult", (const void*)&QuatMult);
-	mono_add_internal_call("FlanEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
-	mono_add_internal_call("FlanEngine.Quaternion::toEuler", (const void*)&ToEuler);
-	mono_add_internal_call("FlanEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
-	mono_add_internal_call("FlanEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
-	mono_add_internal_call("FlanEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
-	mono_add_internal_call("FlanEngine.GameObject::getName", (const void*)&GetGOName);
-	mono_add_internal_call("FlanEngine.GameObject::setName", (const void*)&SetGOName);
-	mono_add_internal_call("FlanEngine.Time::getDeltaTime", (const void*)&GetDeltaTime);
-	mono_add_internal_call("FlanEngine.Time::getRealDeltaTime", (const void*)&GetRealDeltaTime);
-	mono_add_internal_call("FlanEngine.Time::getTime", (const void*)&GetTime);
-	mono_add_internal_call("FlanEngine.Time::getRealTime", (const void*)&GetRealTime);
-	mono_add_internal_call("FlanEngine.Transform::getLocalPosition", (const void*)&GetLocalPosition);
-	mono_add_internal_call("FlanEngine.Transform::setLocalPosition", (const void*)&SetLocalPosition);
-	mono_add_internal_call("FlanEngine.Transform::getLocalRotation", (const void*)&GetLocalRotation);
-	mono_add_internal_call("FlanEngine.Transform::setLocalRotation", (const void*)&SetLocalRotation);
-	mono_add_internal_call("FlanEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
-	mono_add_internal_call("FlanEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
+	mono_add_internal_call("JellyBitEngine.Debug::Log", (const void*)&DebugLogTranslator);
+	mono_add_internal_call("JellyBitEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
+	mono_add_internal_call("JellyBitEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
+	mono_add_internal_call("JellyBitEngine.Debug::ClearConsole", (const void*)&ClearConsole);
+	mono_add_internal_call("JellyBitEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
+	mono_add_internal_call("JellyBitEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
+	mono_add_internal_call("JellyBitEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
+	mono_add_internal_call("JellyBitEngine.Input::GetMousePos", (const void*)&GetMousePosCS);
+	mono_add_internal_call("JellyBitEngine.Input::GetWheelMovement", (const void*)&GetWheelMovementCS);
+	mono_add_internal_call("JellyBitEngine.Input::GetMouseDeltaPos", (const void*)&GetMouseDeltaPosCS);
+	mono_add_internal_call("JellyBitEngine.Object::Destroy", (const void*)&DestroyObj);
+	mono_add_internal_call("JellyBitEngine.Quaternion::quatMult", (const void*)&QuatMult);
+	mono_add_internal_call("JellyBitEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
+	mono_add_internal_call("JellyBitEngine.Quaternion::toEuler", (const void*)&ToEuler);
+	mono_add_internal_call("JellyBitEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
+	mono_add_internal_call("JellyBitEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
+	mono_add_internal_call("JellyBitEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
+	mono_add_internal_call("JellyBitEngine.GameObject::getName", (const void*)&GetGOName);
+	mono_add_internal_call("JellyBitEngine.GameObject::setName", (const void*)&SetGOName);
+	mono_add_internal_call("JellyBitEngine.Time::getDeltaTime", (const void*)&GetDeltaTime);
+	mono_add_internal_call("JellyBitEngine.Time::getRealDeltaTime", (const void*)&GetRealDeltaTime);
+	mono_add_internal_call("JellyBitEngine.Time::getTime", (const void*)&GetTime);
+	mono_add_internal_call("JellyBitEngine.Time::getRealTime", (const void*)&GetRealTime);
+	mono_add_internal_call("JellyBitEngine.Transform::getLocalPosition", (const void*)&GetLocalPosition);
+	mono_add_internal_call("JellyBitEngine.Transform::setLocalPosition", (const void*)&SetLocalPosition);
+	mono_add_internal_call("JellyBitEngine.Transform::getLocalRotation", (const void*)&GetLocalRotation);
+	mono_add_internal_call("JellyBitEngine.Transform::setLocalRotation", (const void*)&SetLocalRotation);
+	mono_add_internal_call("JellyBitEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
+	mono_add_internal_call("JellyBitEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
 
 	ClearMap();
 

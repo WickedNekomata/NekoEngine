@@ -31,10 +31,8 @@ public:
 
 enum SimulationEventTypes
 {
-	SimulationEventOnWake,
-	SimulationEventOnSleep,
-	SimulationEventOnContact,
-	SimulationEventOnTrigger
+	OnWake,
+	OnSleep
 };
 
 enum CollisionTypes
@@ -148,8 +146,8 @@ public:
 	bool EraseColliderComponent(ComponentCollider* toErase);
 
 	// Callbacks
-	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB, SimulationEventTypes simulationEventType) const;
-	void OnCollision(Collision& collision, CollisionTypes collisionType) const;
+	void OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const;
+	void OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const;
 
 	// ----------
 

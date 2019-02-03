@@ -6,6 +6,8 @@
 #include "physx/include/PxPhysicsAPI.h"
 #include "MathGeoLib/include/Math/float3.h"
 
+#include "ModulePhysics.h"
+
 class ComponentCollider : public Component
 {
 public:
@@ -28,12 +30,12 @@ public:
 
 	physx::PxShape* GetShape() const;
 
-	void OnCollisionEnter();
-	void OnCollisionStay();
-	void OnCollisionExit();
-	void OnTriggerEnter();
-	void OnTriggerStay();
-	void OnTriggerExit();
+	void OnCollisionEnter(Collision& collision);
+	void OnCollisionStay(Collision& collision);
+	void OnCollisionExit(Collision& collision);
+	void OnTriggerEnter(Collision& collision);
+	void OnTriggerStay(Collision& collision);
+	void OnTriggerExit(Collision& collision);
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
@@ -50,7 +52,9 @@ protected:
 
 private:
 
-	bool triggerEnter, triggerExit = false;
+	bool triggerEnter = false;
+	bool triggerExit = false;
+	Collision collision;
 };
 
 #endif

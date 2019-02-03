@@ -179,18 +179,35 @@ void SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHe
 				}
 			}
 
-			ComponentCollider* collider = callback->FindColliderComponentByShape(pairs[i].shapes[0]);
-			ComponentRigidActor* actor = callback->FindRigidActorComponentByActor(pairHeader.actors[0]);
-			GameObject* gameObject = actor->GetParent();
+			// Collision A
+			ComponentCollider* colliderA = callback->FindColliderComponentByShape(contactPair.shapes[1]);
+			ComponentRigidActor* actorA = callback->FindRigidActorComponentByActor(pairHeader.actors[1]);
+			GameObject* gameObjectA = actorA->GetParent();
+			Collision collisionA(gameObjectA, colliderA, actorA, totalImpulse, contactPoints);
+			ComponentCollider* thisColliderA = callback->FindColliderComponentByShape(contactPair.shapes[0]);
 
-			Collision collision(gameObject, collider, actor, totalImpulse, contactPoints);
+			// Collision B
+			ComponentCollider* colliderB = callback->FindColliderComponentByShape(contactPair.shapes[0]);
+			ComponentRigidActor* actorB = callback->FindRigidActorComponentByActor(pairHeader.actors[0]);
+			GameObject* gameObjectB = actorB->GetParent();
+			Collision collisionB(gameObjectB, colliderB, actorB, totalImpulse, contactPoints);
+			ComponentCollider* thisColliderB = callback->FindColliderComponentByShape(contactPair.shapes[1]);
 
 			if (contactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
-				callback->OnCollision(collision, CollisionTypes::OnCollisionEnter);
+			{			
+				callback->OnCollision(thisColliderA, collisionA, CollisionTypes::OnCollisionEnter);
+				callback->OnCollision(thisColliderB, collisionB, CollisionTypes::OnCollisionEnter);
+			}
 			else if (contactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
-				callback->OnCollision(collision, CollisionTypes::OnCollisionStay);
+			{
+				callback->OnCollision(thisColliderA, collisionA, CollisionTypes::OnCollisionStay);
+				callback->OnCollision(thisColliderB, collisionB, CollisionTypes::OnCollisionStay);
+			}
 			else if (contactPair.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-				callback->OnCollision(collision, CollisionTypes::OnCollisionExit);
+			{
+				callback->OnCollision(thisColliderA, collisionA, CollisionTypes::OnCollisionExit);
+				callback->OnCollision(thisColliderB, collisionB, CollisionTypes::OnCollisionExit);
+			}
 		}
 	}
 }
@@ -199,20 +216,38 @@ void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU3
 {
 	for (physx::PxU32 i = 0; i < count; ++i)
 	{
-		const physx::PxTriggerPair& tp = pairs[i];
+		const physx::PxTriggerPair& triggerPair = pairs[i];
 
-		if (tp.flags &
+		if (triggerPair.flags &
 			(physx::PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER
 				| physx::PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
 			continue;
 		else
 		{
-			Collision collision;
+			// Collision A
+			ComponentCollider* colliderA = callback->FindColliderComponentByShape(triggerPair.triggerShape);
+			ComponentRigidActor* actorA = callback->FindRigidActorComponentByActor(triggerPair.triggerActor);
+			GameObject* gameObjectA = actorA->GetParent();
+			Collision collisionA(gameObjectA, colliderA, actorA, math::float3::zero, std::vector<ContactPoint>());
+			ComponentCollider* thisColliderA = callback->FindColliderComponentByShape(triggerPair.otherShape);
 
-			if (tp.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
-				callback->OnCollision(collision, CollisionTypes::OnTriggerEnter);
-			else if (tp.status & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-				callback->OnCollision(collision, CollisionTypes::OnTriggerExit);
+			// Collision B
+			ComponentCollider* colliderB = callback->FindColliderComponentByShape(triggerPair.otherShape);
+			ComponentRigidActor* actorB = callback->FindRigidActorComponentByActor(triggerPair.otherActor);
+			GameObject* gameObjectB = actorB->GetParent();
+			Collision collisionB(gameObjectB, colliderB, actorB, math::float3::zero, std::vector<ContactPoint>());
+			ComponentCollider* thisColliderB = callback->FindColliderComponentByShape(triggerPair.triggerShape);
+
+			if (triggerPair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+			{
+				callback->OnCollision(thisColliderA, collisionA, CollisionTypes::OnTriggerEnter);
+				callback->OnCollision(thisColliderB, collisionB, CollisionTypes::OnTriggerEnter);
+			}
+			else if (triggerPair.status & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+			{
+				callback->OnCollision(thisColliderA, collisionA, CollisionTypes::OnTriggerExit);
+				callback->OnCollision(thisColliderB, collisionB, CollisionTypes::OnTriggerExit);
+			}
 		}
 	}
 }
@@ -220,13 +255,13 @@ void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU3
 void SimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 {
 	for (physx::PxActor** actor = actors; *actor != nullptr; ++actor)
-		callback->OnSimulationEvent(*actor, *actor, SimulationEventTypes::SimulationEventOnWake);
+		callback->OnSimulationEvent(callback->FindRigidActorComponentByActor(*actor), SimulationEventTypes::OnWake);
 }
 
 void SimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
 {
 	for (physx::PxActor** actor = actors; *actor != nullptr; ++actor)
-		callback->OnSimulationEvent(*actor, *actor, SimulationEventTypes::SimulationEventOnSleep);
+		callback->OnSimulationEvent(callback->FindRigidActorComponentByActor(*actor), SimulationEventTypes::OnSleep);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -241,7 +276,7 @@ physx::PxFilterFlags FilterShader(
 		!(filterData0.word0 & filterData1.word1 || filterData1.word0 & filterData0.word1))
 		return physx::PxFilterFlag::eSUPPRESS;
 
-		// Let triggers through
+	// Let triggers through
 	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 	else
@@ -539,43 +574,42 @@ bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
 
 // ----------------------------------------------------------------------------------------------------
 
-void ModulePhysics::OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB, SimulationEventTypes simulationEventType) const
+void ModulePhysics::OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const
 {
-	ComponentRigidActor* componentRigidActorA = FindRigidActorComponentByActor(actorA);
-	ComponentRigidActor* componentRigidActorB = FindRigidActorComponentByActor(actorB);
+	if (actor == nullptr)
+		return;
 
 	switch (simulationEventType)
 	{
-	case SimulationEventTypes::SimulationEventOnWake:
-		if (componentRigidActorA != nullptr)
-			componentRigidActorA->OnWake();
+	case SimulationEventTypes::OnWake:
+		actor->OnWake();
 		break;
-	case SimulationEventTypes::SimulationEventOnSleep:
-		if (componentRigidActorA != nullptr)
-			componentRigidActorA->OnSleep();
-		break;
-	case SimulationEventTypes::SimulationEventOnContact:
-		break;
-	case SimulationEventTypes::SimulationEventOnTrigger:
+	case SimulationEventTypes::OnSleep:
+		actor->OnSleep();
 		break;
 	}
 }
 
-void ModulePhysics::OnCollision(Collision& collision, CollisionTypes collisionType) const
+void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const
 {
+	assert(collider != nullptr);
+
 	switch (collisionType)
 	{
 	case OnCollisionEnter:
+		collider->OnCollisionEnter(collision);
 		break;
 	case OnCollisionStay:
+		collider->OnCollisionStay(collision);
 		break;
 	case OnCollisionExit:
+		collider->OnCollisionExit(collision);
 		break;
 	case OnTriggerEnter:
-		break;
-	case OnTriggerStay:
+		collider->OnTriggerEnter(collision);
 		break;
 	case OnTriggerExit:
+		collider->OnTriggerExit(collision);
 		break;
 	}
 }

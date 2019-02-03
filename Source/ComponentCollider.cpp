@@ -59,7 +59,7 @@ void ComponentCollider::Update()
 	if (isTrigger)
 	{
 		if (triggerEnter && !triggerExit)
-			OnTriggerStay();
+			OnTriggerStay(collision);
 	}
 }
 
@@ -86,6 +86,7 @@ void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filt
 void ComponentCollider::SetIsTrigger(bool isTrigger)
 {
 	this->isTrigger = isTrigger;
+	gShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !isTrigger); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
 }
 
@@ -110,36 +111,40 @@ physx::PxShape* ComponentCollider::GetShape() const
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentCollider::OnCollisionEnter()
+void ComponentCollider::OnCollisionEnter(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionEnter");
+	CONSOLE_LOG("OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
 }
 
-void ComponentCollider::OnCollisionStay()
+void ComponentCollider::OnCollisionStay(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionStay");
+	CONSOLE_LOG("OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
 }
 
-void ComponentCollider::OnCollisionExit()
+void ComponentCollider::OnCollisionExit(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionExit");
+	CONSOLE_LOG("OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
 }
 
-void ComponentCollider::OnTriggerEnter()
+void ComponentCollider::OnTriggerEnter(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerEnter");
+	CONSOLE_LOG("OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
+
 	triggerEnter = true;
 	triggerExit = false;
+	this->collision = collision;
 }
 
-void ComponentCollider::OnTriggerStay()
+void ComponentCollider::OnTriggerStay(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerStay");
+	CONSOLE_LOG("OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
 }
 
-void ComponentCollider::OnTriggerExit()
+void ComponentCollider::OnTriggerExit(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerExit");
+	CONSOLE_LOG("OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
+
 	triggerExit = true;
 	triggerEnter = false;
+	this->collision = collision;
 }

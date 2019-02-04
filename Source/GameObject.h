@@ -54,7 +54,7 @@ public:
 	void InternallyDeleteComponent(Component* index);
 	void InternallyDeleteComponents();
 	bool HasComponents() const;
-	uint GetComponenetsLength() const;
+	uint GetComponentsLength() const;
 	Component* GetComponent(uint index) const;
 	Component * GetComponentByType(ComponentTypes type) const;
 	int GetComponentIndexOnComponents(Component* component) const;

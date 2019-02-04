@@ -6,7 +6,7 @@
 #include "ModulePhysics.h"
 #include "Layers.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
 
 PanelPhysics::PanelPhysics(const char* name) : Panel(name) {}
 
@@ -80,6 +80,7 @@ bool PanelPhysics::Draw()
 
 				pos_x += 27.0f;
 			}
+			activeLayers.shrink_to_fit();
 
 			int size = activeLayers.size();
 			for (int i = activeLayers.size() - 1; i >= 0; --i)

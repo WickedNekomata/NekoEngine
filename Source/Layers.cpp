@@ -1,5 +1,8 @@
 #include "Layers.h"
 
+#include "Application.h"
+#include "EventSystem.h"
+
 #include <assert.h>
 
 Layer::Layer() {}
@@ -37,24 +40,27 @@ Layers::~Layers() {}
 
 void Layers::SetLayerName(uint layerNumber, const char* layerName) const
 {
-	if (NameToNumber(layerName) > -1)
+	assert(layerName != nullptr
+		&& layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
+
+	if (strcmp(layerName, "") == 0)
+	{
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::LayerReset;
+		newEvent.layerEvent.layer = layerNumber;
+		App->PushSystemEvent(newEvent);
+	}
+	else if (NameToNumber(layerName) > -1)
 		CONSOLE_LOG("Warning! A layer with the name '%s' is already registered", layerName);
 
 	layers[layerNumber]->name = layerName;
 }
 
-// Returns the name of the layer
+// Returns the name of the layer. "" means no name
 const char* Layers::NumberToName(uint layerNumber) const
 {
 	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
 	return layers[layerNumber]->name.data();
-}
-
-// Returns whether the layer is builtin
-bool Layers::NumberToBuiltin(uint layerNumber) const
-{
-	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
-	return layers[layerNumber]->builtin;
 }
 
 // Returns the number of the layer. -1 if error
@@ -70,46 +76,12 @@ int Layers::NameToNumber(const char* layerName) const
 	return -1;
 }
 
-// Returns whether the layer is builtin
-bool Layers::NameToBuiltin(const char* layerName) const
+// ----------------------------------------------------------------------------------------------------
+
+Layer* Layers::GetLayer(uint layerNumber) const
 {
-	assert(layerName != nullptr);
-	for (uint i = 0; i < layers.size(); ++i)
-	{
-		if (strcmp(layers[i]->name.data(), layerName) == 0)
-			return layers[i]->builtin;
-	}
-
-	return false;
-}
-
-// Returns the mask
-int Layers::GetMask(std::vector<uint> layerNumbers) const
-{
-	uint mask = 0;
-
-	for (uint i = 0; i < layerNumbers.size(); ++i)
-	{
-		assert(layerNumbers[i] >= 0 && layerNumbers[i] < MAX_NUM_LAYERS);
-		mask |= BIT_SHIFT(layerNumbers[i]);
-	}
-
-	return mask;
-}
-
-// Returns the mask
-int Layers::GetMask(std::vector<const char*> layerNames) const
-{
-	uint mask = 0;
-
-	for (uint i = 0; i < layerNames.size(); ++i)
-	{
-		int layerNumber = NameToNumber(layerNames[i]);
-		assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
-		mask |= BIT_SHIFT(layerNumber);
-	}
-
-	return mask;
+	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
+	return layers[layerNumber];
 }
 
 std::vector<Layer*> Layers::GetLayers() const

@@ -44,13 +44,9 @@ public:
 	void SetLayerName(uint layerNumber, const char* layerName) const;
 
 	const char* NumberToName(uint layerNumber) const;
-	bool NumberToBuiltin(uint layerNumber) const;
 	int NameToNumber(const char* layerName) const;
-	bool NameToBuiltin(const char* layerName) const;
 
-	int GetMask(std::vector<uint> layerNumbers) const;
-	int GetMask(std::vector<const char*> layerNames) const;
-
+	Layer* GetLayer(uint layerNumber) const;
 	std::vector<Layer*> GetLayers() const;
 
 private:

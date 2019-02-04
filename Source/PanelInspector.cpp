@@ -106,21 +106,35 @@ void PanelInspector::ShowGameObjectInspector() const
 	ImGui::Text("Static");
 
 	// Layer
-	const char* layers[MAX_NUM_LAYERS];
+	std::vector<const char*> layers;
+	int currentLayer = 0;
 	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
-		layers[i] = App->layers->NumberToName(i);
+	{
+		const char* layerName = App->layers->NumberToName(i);
+		if (strcmp(layerName, "") == 0)
+			continue;
+
+		layers.push_back(layerName);
+		if (i == gameObject->layer)
+			currentLayer = layers.size() - 1;
+	}
+	layers.shrink_to_fit();
+
 	ImGui::PushItemWidth(150.0f);
-	ImGui::Combo("Layer", (int*)&gameObject->layer, layers, MAX_NUM_LAYERS);
+	if (ImGui::Combo("Layer", &currentLayer, &layers[0], layers.size()))
+		gameObject->layer = App->layers->NameToNumber(layers[currentLayer]);
 	ImGui::PopItemWidth();
 
-	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
+	// -----
+
+	for (int i = 0; i < gameObject->GetComponentsLength(); ++i)
 	{
 		ImGui::Separator();
 		DragnDropSeparatorTarget(gameObject->GetComponent(i));
 		gameObject->GetComponent(i)->OnEditor();
 	}
 	ImGui::Separator();
-	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
+	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponentsLength() - 1));
 
 	ImGui::Button("Add Component");
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))

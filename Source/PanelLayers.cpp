@@ -5,7 +5,7 @@
 #include "Application.h"
 #include "Layers.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
 
 PanelLayers::PanelLayers(const char* name) : Panel(name) {}
@@ -25,7 +25,7 @@ bool PanelLayers::Draw()
 
 		for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 		{
-			if (App->layers->NumberToBuiltin(i))
+			if (App->layers->GetLayer(i)->builtin)
 			{
 				ImGui::TextColored(disabledTextColor, "Builtin Layer %i", i); ImGui::SameLine(150.0f);
 				strcpy_s(layerName, INPUT_BUF_SIZE, App->layers->NumberToName(i));

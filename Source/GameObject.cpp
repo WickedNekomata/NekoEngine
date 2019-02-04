@@ -333,7 +333,7 @@ bool GameObject::HasComponents() const
 	return components.size() > 0;
 }
 
-uint GameObject::GetComponenetsLength() const
+uint GameObject::GetComponentsLength() const
 {
 	return components.size();
 }

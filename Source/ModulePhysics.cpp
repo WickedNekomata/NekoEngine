@@ -410,10 +410,8 @@ bool ModulePhysics::OnGameMode()
 	// Set filtering
 	for (uint i = 0; i < colliderComponents.size(); ++i)
 	{
-		std::vector<uint> layers;
-		layers.push_back(colliderComponents[i]->GetParent()->layer);
-		uint mask = App->layers->GetMask(layers);
-		colliderComponents[i]->SetFiltering(mask, mask);
+		Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->layer);
+		colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->filterMask);
 	}
 
 	// -----

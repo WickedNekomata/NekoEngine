@@ -25,6 +25,7 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
+#include "ResourceScript.h"
 
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -183,11 +184,52 @@ void PanelInspector::ShowGameObjectInspector() const
 
 	ImVec2 inspectorSize = ImGui::GetWindowSize();
 	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
-	ImGui::SetNextWindowSize({ inspectorSize.x, 55 });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 0 });
 	if (ImGui::BeginPopup("AddingScript"))
 	{
+		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();
+
+		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, scriptNames.size() * 30.0f}, true);
+	
+		for (int i = 0; i < scriptNames.size(); ++i)
+		{
+			if(ImGui::Selectable(scriptNames[i].data()))
+			{
+				ResourceScript* res = nullptr;
+
+				if (App->fs->Exists("Assets/Scripts/" + scriptNames[i] + ".cs.meta"))
+				{
+					char* metaBuffer;
+					uint size = App->fs->Load("Assets/Scripts/" + scriptNames[i] + ".cs.meta", &metaBuffer);
+					if (size > 0)
+					{
+						uint32_t UUID;
+						memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+						res = (ResourceScript*)App->res->GetResource(UUID);
+
+						delete[] metaBuffer;
+					}
+				}
+
+				DEPRECATED_LOG("New Script Created: %s", scriptNames[i].data());
+				ComponentScript* script = App->scripting->CreateScriptComponent(scriptNames[i], res == nullptr);
+				gameObject->AddComponent(script);
+				script->SetParent(gameObject);
+				script->InstanceClass();
+
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::EndChild();
+
 		static std::string scriptName;
-		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue))
+
+		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
+		ImGui::PushItemWidth(inspectorSize.x - ImGui::CalcTextSize("Script Name").x - 30);
+		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank))
 		{
 			App->scripting->clearSpaces(scriptName);
 
@@ -219,6 +261,9 @@ void PanelInspector::ShowGameObjectInspector() const
 			scriptName = "";
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::PopItemWidth();
+
+		ImGui::PopStyleColor();
 		ImGui::EndPopup();
 	}
 }

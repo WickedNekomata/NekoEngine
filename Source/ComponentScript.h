@@ -22,7 +22,7 @@ public:
 	void OnEnable() override;
 	void OnDisable() override;
 
-	void OnEditor() override;
+	void OnUniqueEditor() override;
 
 	static uint bytesToSerialize() { return sizeof(uint32_t) * 3 + (sizeof(bool)); }
 	uint bytesToSerializePublicVars() const;

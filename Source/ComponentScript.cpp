@@ -230,10 +230,13 @@ void ComponentScript::OnDisable()
 	OnDisableMethod();
 }
 
-void ComponentScript::OnEditor()
+void ComponentScript::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
+
+	//TODO: RECEIVE THOSE EVENTS THOUGH THE PARENT ONEDITOR()
+
+	/*if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 	{
 		if (isActive)
 		{
@@ -246,7 +249,7 @@ void ComponentScript::OnEditor()
 				this->OnDisableMethod();
 		}
 	}
-	ImGui::SameLine();
+	ImGui::SameLine();*/
 
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();
@@ -603,11 +606,16 @@ void ComponentScript::OnEditor()
 					char* convertedString = mono_string_to_utf8(varState);
 
 					std::string stringToModify = convertedString;
+
+					ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
 					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
 					{
 						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
 						mono_field_set_value(classInstance, field, newString);
 					}
+
+					ImGui::PopStyleColor();
 
 					mono_free(convertedString);
 				}

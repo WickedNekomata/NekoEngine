@@ -733,9 +733,6 @@
     <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
     </ClInclude>
-    <ClInclude Include="NMSupplier.h">
-      <Filter>Sources\Helpers\NavMesh</Filter>
-    </ClInclude>
     <ClInclude Include="NMDebugDraw.h">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </ClInclude>
@@ -1106,9 +1103,6 @@
     </ClCompile>
     <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp">
       <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
-    </ClCompile>
-    <ClCompile Include="NMSupplier.cpp">
-      <Filter>Sources\Helpers\NavMesh</Filter>
     </ClCompile>
     <ClCompile Include="NMDebugDraw.cpp">
       <Filter>Sources\Helpers\NavMesh</Filter>

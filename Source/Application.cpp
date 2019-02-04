@@ -15,7 +15,6 @@
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
-#include "NMSupplier.h"
 #include "ModuleNavigation.h"
 
 #include "parson\parson.h"
@@ -35,7 +34,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
-	nmSupplier = new NMSupplier();
 	navigation = new ModuleNavigation();
 
 #ifndef GAMEMODE

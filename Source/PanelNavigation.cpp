@@ -4,7 +4,7 @@
 
 #include "Application.h"
 #include "ModuleScene.h"
-#include "NMSupplier.h"
+#include "ModuleNavigation.h"
 #include "NMInputGeom.h"
 #include "ModuleGOs.h"
 #include "GameObject.h"
@@ -109,7 +109,7 @@ bool PanelNavigation::Draw()
 	ImGui::SameLine();
 
 	if (ImGui::Button("Delete Navmesh"))
-		App->nmSupplier->CleanUp();
+		App->navigation->CleanUp();
 
 	ImGui::End();
 
@@ -199,8 +199,8 @@ void PanelNavigation::HandleInputMeshes() const
 	memcpy(&p_inputGeom + offsetof(NMInputGeom, i_buildSettings), &cs, sizeof(CommonSettings));
 	memcpy(p_inputGeom.bMin, aabb.minPoint.ptr(), sizeof(math::float3));
 	memcpy(p_inputGeom.bMax, aabb.maxPoint.ptr(), sizeof(math::float3));
-	App->nmSupplier->SetInputGeom(p_inputGeom);
-	App->nmSupplier->HandleBuild();
+	App->navigation->SetInputGeom(p_inputGeom);
+	App->navigation->HandleBuild();
 
 	for (int i = 0; i < p_inputGeom.i_nmeshes; ++i)
 	{

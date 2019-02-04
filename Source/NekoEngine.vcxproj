@@ -184,7 +184,6 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Importer.h" />
-    <ClInclude Include="ModuleNavigation.h" />
     <ClInclude Include="NMInputGeom.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ComponentMaterial.h" />
@@ -251,7 +250,7 @@
     <ClInclude Include="ModuleGOs.h" />
     <ClInclude Include="NMDebugDraw.h" />
     <ClInclude Include="PanelNavigation.h" />
-    <ClInclude Include="NMSupplier.h" />
+    <ClInclude Include="ModuleNavigation.h" />
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
@@ -374,11 +373,10 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
-    <ClCompile Include="ModuleNavigation.cpp" />
     <ClCompile Include="NMDebugDraw.cpp" />
     <ClCompile Include="PanelNavigation.cpp" />
     <ClCompile Include="NMBuildContext.cpp" />
-    <ClCompile Include="NMSupplier.cpp" />
+    <ClCompile Include="ModuleNavigation.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />

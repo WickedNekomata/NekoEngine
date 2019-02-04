@@ -23,7 +23,7 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderProgram.h"
 
-#include "NMSupplier.h"
+#include "ModuleNavigation.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -211,7 +211,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 #ifndef GAMEMODE
 
-	App->nmSupplier->Draw();
+	App->navigation->Draw();
 
 	// 2. Debug geometry
 	if (debugDraw)

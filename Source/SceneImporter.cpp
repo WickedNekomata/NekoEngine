@@ -955,10 +955,10 @@ void SceneImporter::LoadPrimitivePlane()
 	uint normalSize = 12;
 	float normalPosition[12]
 	{
-		-0.5f, -0.5f, 0.0f, // a
-		 0.5f, -0.5f, 0.0f, // b
-		-0.5f,  0.5f, 0.0f, // c
-		 0.5f,  0.5f, 0.0f, // d
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
 	};
 
 	defaultPlaneIndicesSize = 6;
@@ -980,7 +980,7 @@ void SceneImporter::LoadPrimitivePlane()
 
 	///Normals
 	cursor = normalPosition;
-	for (uint i = 0; i < normalSize / 2; ++i)
+	for (uint i = 0; i < normalSize / 3; ++i)
 	{
 		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
 		cursor += 3;

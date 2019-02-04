@@ -10,6 +10,8 @@ enum ComponentTypes
 	CameraComponent,
 	EmitterComponent,
 	ScriptComponent,
+	BoneComponent,
+	AnimationComponent,
 
 	// Physics
 	RigidStaticComponent,

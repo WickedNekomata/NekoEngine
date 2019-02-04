@@ -40,7 +40,7 @@ public:
 		
 	} state = ScriptState::NO_COMPILED;
 
-	ResourceScript();
+	ResourceScript(std::string name);
 	virtual ~ResourceScript();
 
 	bool LoadInMemory() override { return true; }
@@ -55,8 +55,11 @@ public:
 	bool Compile();
 	bool referenceMethods();
 
+	static std::vector<std::string> getScriptNames() { return scriptNames; }
+
 private:
 	std::string pathToWindowsNotation(const std::string& path) const;
+	uint getBytes() const;
 
 public:
 
@@ -78,7 +81,8 @@ public:
 
 private:
 	bool firstCompiled = true;
-	uint getBytes() const;
+	static std::vector<std::string> scriptNames;
+
 };
 
 #endif

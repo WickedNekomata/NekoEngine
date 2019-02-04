@@ -242,11 +242,7 @@ void Application::PrepareUpdate()
 
 		if (ret)
 		{
-			engineState = engine_states::ENGINE_PLAY;
-
-			System_Event event;
-			event.type = System_Event_Type::Play;
-			PushSystemEvent(event);
+			engineState = engine_states::ENGINE_PLAY;			
 		}
 			
 		break;
@@ -485,17 +481,28 @@ void Application::Play()
 	{
 	case engine_states::ENGINE_PLAY:
 	case engine_states::ENGINE_PAUSE:
-
+	{
 		// Enter editor mode
 		engineState = engine_states::ENGINE_WANTS_EDITOR;
+
+		System_Event event;
+		event.type = System_Event_Type::Stop;
+		PushSystemEvent(event);
+
 		break;
-
+	}
+	
 	case engine_states::ENGINE_EDITOR:
-
+	{
 		// Enter play mode
 		engineState = engine_states::ENGINE_WANTS_PLAY;
-		break;
 
+		System_Event event;
+		event.type = System_Event_Type::Play;
+		PushSystemEvent(event);
+		break;
+	}
+		
 	default:
 		break;
 	}

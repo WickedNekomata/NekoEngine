@@ -10,11 +10,17 @@
 
 #include "ScriptingModule.h"
 
-ResourceScript::ResourceScript() : Resource(ResourceType::ScriptResource, App->GenerateRandomNumber()) {}
+std::vector<std::string>ResourceScript::scriptNames;
+
+ResourceScript::ResourceScript(std::string name) : Resource(ResourceType::ScriptResource, App->GenerateRandomNumber()) { scriptNames.push_back(name); scriptName = name; }
 
 ResourceScript::~ResourceScript()
 {
-	
+	for (int i = 0; i < scriptNames.size(); ++i)
+	{
+		if (scriptNames[i] == scriptName)
+			scriptNames.erase(scriptNames.begin() + i);
+	}
 }
 
 void ResourceScript::SerializeToMeta(char*& cursor) const

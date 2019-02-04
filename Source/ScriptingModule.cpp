@@ -286,9 +286,8 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	{
 		//Here we have to reference a new ResourceScript with the .cs we have created, but the ResourceManager will still be sending file created events, and we would have data duplication.
 		//We disable this behavior and control the script creation only with this method, so we do not care for external files out-of-engine created.
-		scriptRes = new ResourceScript();
+		scriptRes = new ResourceScript(scriptName);
 		scriptRes->file = "Assets/Scripts/" + scriptName + ".cs";
-		scriptRes->scriptName = scriptName;
 
 		//Create the .meta, to make faster the search in the map storing the uid.
 		uint bytes = scriptRes->bytesToSerializeMeta();
@@ -523,8 +522,7 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* m
 	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
 	//Creating script resource
-	ResourceScript* scriptRes = new ResourceScript();
-	scriptRes->scriptName = scriptName;
+	ResourceScript* scriptRes = new ResourceScript(scriptName);
 	scriptRes->file = file;
 
 	if (!metaFile)

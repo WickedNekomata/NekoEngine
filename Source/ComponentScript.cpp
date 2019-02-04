@@ -230,10 +230,13 @@ void ComponentScript::OnDisable()
 	OnDisableMethod();
 }
 
-void ComponentScript::OnEditor()
+void ComponentScript::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
+
+	//TODO: RECEIVE THOSE EVENTS THOUGH THE PARENT ONEDITOR()
+
+	/*if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 	{
 		if (isActive)
 		{
@@ -246,7 +249,7 @@ void ComponentScript::OnEditor()
 				this->OnDisableMethod();
 		}
 	}
-	ImGui::SameLine();
+	ImGui::SameLine();*/
 
 	float PosX = ImGui::GetCursorPosX();
 	bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();

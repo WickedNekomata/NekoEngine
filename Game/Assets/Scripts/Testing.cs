@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using JellyBitEngine;
+using System;
 
 public class Testing : JellyScript
 {
@@ -15,7 +16,8 @@ public class Testing : JellyScript
     public override void Update()
     {
         transform.position += Vector3.forward * speed * Time.deltaTime;
-        transform.rotation = transform.rotation.Rotate(Vector3.up, speed * Time.deltaTime * 20f);
+        transform.rotation *= Quaternion.Rotate(Vector3.up, speed * Time.deltaTime * 20f);
+       
     }
 }
 

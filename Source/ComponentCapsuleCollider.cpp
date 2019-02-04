@@ -14,6 +14,8 @@ ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : Compone
 
 ComponentCapsuleCollider::~ComponentCapsuleCollider() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCapsuleCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -51,6 +53,8 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 #endif
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCapsuleCollider::RecalculateShape()
 {
 	ClearShape();
@@ -67,6 +71,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 		physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 		gShape->setLocalPose(relativePose);
 	}
+	break;
 	case CapsuleDirection::CapsuleDirectionYAxis:
 	{
 		math::float3 dir = math::float3(0.0f, 0.0f, 1.0f);

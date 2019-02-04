@@ -61,6 +61,7 @@ public:
 	class PanelSkybox*			panelSkybox = nullptr;
 	class PanelNavigation*		panelNavigation = nullptr;
 	class PanelSimulatedTime*	panelSimulatedTime = nullptr;
+	class PanelLayers*			panelLayers = nullptr;
 	class PanelPhysics*			panelPhysics = nullptr;
 
 	ResourceTexture* atlas = nullptr;

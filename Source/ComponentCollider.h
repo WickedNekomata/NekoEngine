@@ -3,8 +3,11 @@
 
 #include "Component.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-#include "MathGeoLib/include/Math/float3.h"
+#include "physx\include\PxPhysicsAPI.h"
+
+#include "MathGeoLib\include\Math\float3.h"
+
+#include "SimulationEvents.h"
 
 class ComponentCollider : public Component
 {
@@ -16,6 +19,8 @@ public:
 
 	virtual void OnUniqueEditor();
 
+	virtual void Update();
+
 	virtual void ClearShape();
 	virtual void RecalculateShape() = 0;
 	void SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask);
@@ -25,6 +30,13 @@ public:
 	void ParticipateInSceneQueries(bool participateInSceneQueries);
 
 	physx::PxShape* GetShape() const;
+
+	void OnCollisionEnter(Collision& collision);
+	void OnCollisionStay(Collision& collision);
+	void OnCollisionExit(Collision& collision);
+	void OnTriggerEnter(Collision& collision);
+	void OnTriggerStay(Collision& collision);
+	void OnTriggerExit(Collision& collision);
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
@@ -39,6 +51,11 @@ protected:
 
 	physx::PxShape* gShape = nullptr;
 
+private:
+
+	bool triggerEnter = false;
+	bool triggerExit = false;
+	Collision collision;
 };
 
 #endif

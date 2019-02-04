@@ -33,9 +33,9 @@
 /** \addtogroup geomutils
 @{
 */
-#include "foundation/PxPlane.h"
-#include "foundation/PxTransform.h"
-#include "geometry/PxGeometry.h"
+#include "../foundation/PxPlane.h"
+#include "../foundation/PxTransform.h"
+#include "../geometry/PxGeometry.h"
 
 #if !PX_DOXYGEN
 namespace physx

@@ -14,7 +14,8 @@ enum System_Event_Type
 	Stop,
 	ResourceDestroyed,
 	GameObjectDestroyed,
-	ComponentDestroyed
+	ComponentDestroyed,
+	LayerReset // LayerEvent
 };
 
 class GameObject;
@@ -52,6 +53,12 @@ struct ComponentEvent
 	Component* component;
 };
 
+struct LayerEvent
+{
+	System_Event_Type type;
+	uint layer;
+};
+
 union System_Event
 {
 	System_Event_Type type;      /**< Event type, shared with all events */
@@ -60,6 +67,7 @@ union System_Event
 	ShaderEvent shaderEvent;
 	ResourceEvent resEvent;
 	ComponentEvent compEvent;
+	LayerEvent layerEvent;
 
 	/* This is necessary for ABI compatibility between Visual C++ and GCC
 	   Visual C++ will respect the push pack pragma and use 52 bytes for

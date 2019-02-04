@@ -178,6 +178,9 @@
     <Filter Include="Sources\3rd Party\pugi">
       <UniqueIdentifier>{ff358738-4a78-4841-a66b-bfc97da50d40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Helpers\Physics">
+      <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1453,6 +1456,18 @@
     <ClInclude Include="ComponentBone.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+    <ClInclude Include="PanelLayers.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Layers.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationEvents.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConstants.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1895,6 +1910,15 @@
     </ClCompile>
     <ClCompile Include="ComponentBone.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelLayers.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Layers.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationEvents.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

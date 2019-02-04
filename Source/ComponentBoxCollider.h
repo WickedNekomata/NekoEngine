@@ -4,8 +4,6 @@
 #include "Component.h"
 #include "ComponentCollider.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-
 class ComponentBoxCollider : public ComponentCollider
 {
 public:

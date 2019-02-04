@@ -19,6 +19,7 @@ public:
 	void OnEnableMethod();
 	void OnDisableMethod();
 	void OnStop();
+
 	void OnEnable() override;
 	void OnDisable() override;
 

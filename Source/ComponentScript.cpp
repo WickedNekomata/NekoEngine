@@ -222,12 +222,14 @@ void ComponentScript::OnStop()
 
 void ComponentScript::OnEnable()
 {
-	OnEnableMethod();
+	if(App->GetEngineState() == engine_states::ENGINE_PLAY)
+		OnEnableMethod();
 }
 
 void ComponentScript::OnDisable()
 {
-	OnDisableMethod();
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
+		OnDisableMethod();
 }
 
 void ComponentScript::OnUniqueEditor()

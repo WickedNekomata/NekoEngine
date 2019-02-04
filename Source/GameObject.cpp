@@ -330,12 +330,12 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;
-		case ComponentTypes::ScriptComponent:
-		{
-			App->scripting->DestroyScript((ComponentScript*)toDelete);
-			components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
-			return;
-		}
+	case ComponentTypes::ScriptComponent:
+	{
+		App->scripting->DestroyScript((ComponentScript*)toDelete);
+		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+		return;
+	}
 	}
 
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
@@ -452,6 +452,8 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::ToggleIsActive()
 {
 	isActive = !isActive;
+
+	isActive ? OnEnable() : OnDisable();
 }
 
 bool GameObject::IsActive() const
@@ -596,4 +598,30 @@ void GameObject::RecursiveForceAllResources(uint forceRes) const
 
 	for (int i = 0; i < children.size(); ++i)
 		children[i]->RecursiveForceAllResources(forceRes);
+}
+
+void GameObject::OnEnable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnEnable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnEnable();
+	}
+}
+
+void GameObject::OnDisable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnDisable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnDisable();
+	}
 }

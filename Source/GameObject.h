@@ -93,6 +93,9 @@ public:
 
 	void RecursiveForceAllResources(uint forceRes) const;
 
+	void OnEnable();
+	void OnDisable();
+
 public:
 
 	ComponentTransform* transform = nullptr;

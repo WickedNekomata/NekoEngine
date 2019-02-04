@@ -205,6 +205,7 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentBone.h" />
     <ClInclude Include="ComponentBoxCollider.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentEmitter.h" />
@@ -561,6 +562,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentBone.cpp" />
     <ClCompile Include="ComponentBoxCollider.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentEmitter.cpp" />

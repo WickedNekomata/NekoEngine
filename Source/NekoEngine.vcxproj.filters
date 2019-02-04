@@ -1339,6 +1339,12 @@
     <ClInclude Include="ResourceAnimation.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceBone.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBone.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1676,6 +1682,12 @@
     </ClCompile>
     <ClCompile Include="ResourceAnimation.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBone.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBone.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

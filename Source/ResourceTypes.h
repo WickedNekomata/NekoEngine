@@ -11,7 +11,8 @@ enum ResourceType
 	ShaderObjectResource,
 	ShaderProgramResource,
 	ScriptResource,
-	AnimationResource
+	AnimationResource,
+	BoneResource
 };
 
 #endif

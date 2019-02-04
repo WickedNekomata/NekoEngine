@@ -1339,6 +1339,9 @@
     <ClInclude Include="ResourceAnimation.h">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceBone.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1675,6 +1678,9 @@
       <Filter>Sources\3rd Party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBone.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
   </ItemGroup>

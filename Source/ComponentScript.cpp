@@ -17,6 +17,11 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/attrdefs.h>
 
+ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent)
+{
+	UUID = App->GenerateRandomNumber();
+}
+
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)

@@ -110,6 +110,29 @@ void PanelInspector::ShowGameObjectInspector() const
 	ImGui::SameLine();
 	ImGui::Text("Static");
 
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+	ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+	ImGui::Dummy(inspectorSize);
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_RESOURCE"))
+		{
+			ResourceScript* scriptRes = *(ResourceScript**)payload->Data;
+
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptRes->scriptName);
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(cursorPos);
+
 	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 	{
 		ImGui::Separator();
@@ -182,9 +205,9 @@ void PanelInspector::ShowGameObjectInspector() const
 		ImGui::OpenPopup("AddingScript");
 	}
 
-	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	inspectorSize = ImGui::GetWindowSize();
 	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
-	ImGui::SetNextWindowSize({ inspectorSize.x, 0 });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 0.0f });
 	if (ImGui::BeginPopup("AddingScript"))
 	{
 		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();

@@ -38,7 +38,8 @@ void Component::OnEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	if (componentType != ComponentTypes::MaterialComponent) {
+	if (componentType != ComponentTypes::MaterialComponent) 
+	{
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
 
 		ImGui::SameLine();

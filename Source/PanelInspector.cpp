@@ -189,15 +189,19 @@ void PanelInspector::ShowGameObjectInspector() const
 	{
 		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();
 
-		float totalHeight = 16.0f;
+		float totalHeight = 0;
+
+		float windowPaddingY = ImGui::GetCurrentWindow()->WindowPadding.y - 2;
 
 		for (int i = 0; i < scriptNames.size(); ++i)
 		{
-			totalHeight += ImGui::CalcTextSize(scriptNames[i].data()).y + 2.7;
+			totalHeight += ImGui::CalcTextSize(scriptNames[i].data()).y + 4;
 		}
 
+		ImGui::SetNextWindowContentSize({ 0, totalHeight});
+
 		//TODO: Add a maximum height, fix the totalHeight calculation
-		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, totalHeight}, true);
+		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, totalHeight + windowPaddingY * 2}, true);
 	
 		for (int i = 0; i < scriptNames.size(); ++i)
 		{

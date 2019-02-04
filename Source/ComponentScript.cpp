@@ -606,11 +606,16 @@ void ComponentScript::OnUniqueEditor()
 					char* convertedString = mono_string_to_utf8(varState);
 
 					std::string stringToModify = convertedString;
+
+					ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
 					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
 					{
 						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
 						mono_field_set_value(classInstance, field, newString);
 					}
+
+					ImGui::PopStyleColor();
 
 					mono_free(convertedString);
 				}

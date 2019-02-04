@@ -943,6 +943,24 @@ void SceneImporter::LoadPrimitivePlane()
 		 0.5f,  0.5f, 0.0f, // d
 	};
 
+	uint textCordsSize = 8;
+	float textCordsPosition[8]
+	{
+		 0.0f,  0.0f, // a
+		 1.0f,  0.0f, // b
+		 0.0f,  1.0f, // c
+		 1.0f,  1.0f, // d
+	};
+
+	uint normalSize = 12;
+	float normalPosition[12]
+	{
+		-0.5f, -0.5f, 0.0f, // a
+		 0.5f, -0.5f, 0.0f, // b
+		-0.5f,  0.5f, 0.0f, // c
+		 0.5f,  0.5f, 0.0f, // d
+	};
+
 	defaultPlaneIndicesSize = 6;
 	uint indices[6]
 	{
@@ -954,12 +972,27 @@ void SceneImporter::LoadPrimitivePlane()
 	// Vertices
 	/// Position
 	float* cursor = verticesPosition;
-	for (uint i = 0; i < verticesSize; ++i)
+	for (uint i = 0; i < verticesSize/3; ++i)
 	{
 		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
 		cursor += 3;
 	}
 
+	///Normals
+	cursor = normalPosition;
+	for (uint i = 0; i < normalSize / 2; ++i)
+	{
+		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	///TextCords
+	cursor = textCordsPosition;
+	for (uint i = 0; i < textCordsSize/2; ++i)
+	{
+		memcpy(vertices[i].texCoord, cursor, sizeof(float) * 2);
+		cursor += 2;
+	}
 	// -----
 
 	GLuint VBO = 0;

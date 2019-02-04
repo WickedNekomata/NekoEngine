@@ -133,7 +133,6 @@ void ComponentEmitter::Update()
 			{
 				int particlesToCreate = (time / (1.0f / rateOverTime));
 				CreateParticles(particlesToCreate, normalShapeType,math::float3::zero);
-				//CONSOLE_LOG("COMPONENT EMITTER: particles to create : %i", particlesToCreate);
 				timeToParticle = (1.0f / rateOverTime);
 				
 				timer.Start();
@@ -164,11 +163,6 @@ void ComponentEmitter::Update()
 
 		newPositions.clear();
 	}
-
-	if (App->GetEngineState() == ENGINE_WANTS_PLAY)
-		StartEmitter();
-	else if (App->GetEngineState() == ENGINE_WANTS_EDITOR)
-		ClearEmitter();
 }
 
 void ComponentEmitter::ClearEmitter()

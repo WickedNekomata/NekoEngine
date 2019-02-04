@@ -95,7 +95,6 @@ public:
 	bool IsEditor() const;
 
 	uint GenerateRandomNumber() const;
-	math::LCG GetLCGRandomMath() const;
 
 	void SaveState() const;
 	void LoadState() const;

@@ -153,6 +153,23 @@ void ModuleParticle::ClearEmitters()
 	lastUsedParticle = 0;
 }
 
+void ModuleParticle::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::Play:
+		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
+		{
+			(*emitter)->StartEmitter();
+		}
+	case System_Event_Type::Stop:
+		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
+		{
+			(*emitter)->ClearEmitter();
+		}
+	}
+}
+
 void ModuleParticle::RemoveEmitter(ComponentEmitter * emitter)
 {
 	emitters.remove(emitter);

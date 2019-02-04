@@ -189,12 +189,10 @@ void Particle::Draw()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
 
-
-		//TODO PARTICLES
-		/*glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
+		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
-		*/
+		
 		math::float4x4 model_matrix = transform.GetMatrix();// particle matrix
 		model_matrix = model_matrix.Transposed();
 		math::float4x4 view_matrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
@@ -210,6 +208,15 @@ void Particle::Draw()
 		glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
 		location = glGetUniformLocation(shaderProgram, "normal_matrix");
 		glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+		location = glGetUniformLocation(shaderProgram, "light.direction");
+		glUniform3fv(location, 1, App->renderer3D->directionalLight.direction.ptr());
+		location = glGetUniformLocation(shaderProgram, "light.ambient");
+		glUniform3fv(location, 1, App->renderer3D->directionalLight.ambient.ptr());
+		location = glGetUniformLocation(shaderProgram, "light.diffuse");
+		glUniform3fv(location, 1, App->renderer3D->directionalLight.diffuse.ptr());
+		location = glGetUniformLocation(shaderProgram, "light.specular");
+		glUniform3fv(location, 1, App->renderer3D->directionalLight.specular.ptr());
 
 		uint defaultPlaneVAO = 0;
 		uint defaultPlaneIBO = 0;

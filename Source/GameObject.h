@@ -58,7 +58,7 @@ public:
 	void InternallyDeleteComponent(Component* index);
 	void InternallyDeleteComponents();
 	bool HasComponents() const;
-	uint GetComponenetsLength() const;
+	uint GetComponentsLength() const;
 	Component* GetComponent(uint index) const;
 	Component * GetComponentByType(ComponentTypes type) const;
 	int GetComponentIndexOnComponents(Component* component) const;
@@ -109,6 +109,9 @@ public:
 	ComponentCollider* collider = nullptr;
 
 	math::AABB boundingBox;
+
+	// Layer
+	uint layer = 0; // in the range [0...31]
 
 private:
 

@@ -16,13 +16,19 @@ ComponentPlaneCollider::ComponentPlaneCollider(GameObject* parent) : ComponentCo
 
 ComponentPlaneCollider::~ComponentPlaneCollider() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentPlaneCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 	ImGui::Text("Plane Collider");
 	ImGui::Spacing();
+
+	ComponentCollider::OnUniqueEditor();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentPlaneCollider::RecalculateShape()
 {

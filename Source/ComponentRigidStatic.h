@@ -14,6 +14,8 @@ public:
 
 	void OnUniqueEditor();
 
+	void Update();
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 };

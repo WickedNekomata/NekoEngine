@@ -2,6 +2,8 @@
 
 #include "Application.h"
 #include "ModuleTimeManager.h"
+#include "GameObject.h"
+#include "Layers.h"
 
 #include "ComponentCollider.h"
 #include "ComponentBoxCollider.h"
@@ -11,6 +13,9 @@
 #include "ComponentRigidActor.h"
 #include "ComponentRigidStatic.h"
 #include "ComponentRigidDynamic.h"
+
+#include "SimulationEvents.h"
+#include "PhysicsConstants.h"
 
 #include <assert.h>
 
@@ -78,46 +83,29 @@ void DefaultErrorCallback::reportError(physx::PxErrorCode::Enum code, const char
 // ----------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------
 
-SimulationEventCallback::SimulationEventCallback(ModulePhysics* callback) : callback(callback) 
+physx::PxFilterFlags FilterShader(
+	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
 {
-	assert(callback != nullptr);
-}
+	if ((filterData0.word0 != 0 || filterData1.word0 != 0) &&
+		!(filterData0.word0 & filterData1.word1 || filterData1.word0 & filterData0.word1))
+		return physx::PxFilterFlag::eSUPPRESS;
 
-SimulationEventCallback::~SimulationEventCallback() {}
-
-void SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
-{
-	for (physx::PxU32 i = 0; i < nbPairs; ++i)
+	// Let triggers through
+	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+	else
 	{
-		const physx::PxContactPair& cp = pairs[i];
-
-		if (cp.events
-			& physx::PxPairFlag::eCONTACT_DEFAULT
-			& physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-			& physx::PxPairFlag::eSOLVE_CONTACT
-			& physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
-			& physx::PxPairFlag::eNOTIFY_CONTACT_POINTS)
-		{
-			// TODO
-		}
+		// Generate contacts for all that were not filtered above
+		pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+		pairFlags |= physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
 	}
-}
 
-void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
-{
-
-}
-
-void SimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
-{
-	for (physx::PxActor** actor = actors; *actor != nullptr; ++actor)
-		callback->OnSimulationEvent(*actor, *actor, SimulationEventTypes::SimulationEventOnWake);
-}
-
-void SimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
-{
-	for (physx::PxActor** actor = actors; *actor != nullptr; ++actor)
-		callback->OnSimulationEvent(*actor, *actor, SimulationEventTypes::SimulationEventOnSleep);
+	return physx::PxFilterFlags();
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -129,14 +117,6 @@ ModulePhysics::ModulePhysics(bool start_enabled) : Module(start_enabled)
 }
 
 ModulePhysics::~ModulePhysics() {}
-
-#define DEFAULT_GRAVITY_X 0.0f
-#define DEFAULT_GRAVITY_Y -9.81f
-#define DEFAULT_GRAVITY_Z 0.0f
-
-#define DEFAULT_MATERIAL_STATIC_FRICTION 0.5f
-#define DEFAULT_MATERIAL_DYNAMIC_FRICTION 0.5f
-#define DEFAULT_MATERIAL_RESTITUTION 0.6f
 
 bool ModulePhysics::Init(JSON_Object* jObject)
 {
@@ -167,18 +147,21 @@ bool ModulePhysics::Start()
 	sceneDesc.gravity = physx::PxVec3(gravity.x, gravity.y, gravity.z);
 	gDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = FilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
 	gScene->setSimulationEventCallback(new SimulationEventCallback(this));
 
 	// Default material
-	defaultMaterial = gPhysics->createMaterial(DEFAULT_MATERIAL_STATIC_FRICTION, DEFAULT_MATERIAL_DYNAMIC_FRICTION, DEFAULT_MATERIAL_RESTITUTION);
+	defaultMaterial = gPhysics->createMaterial(DEFAULT_STATIC_FRICTION, DEFAULT_DYNAMIC_FRICTION, DEFAULT_RESTITUTION);
 
 	// Ground
-	physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f), *defaultMaterial);
-	gScene->addActor(*groundPlane);
-	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	physx::PxShape* planeShape = CreateShape(physx::PxPlaneGeometry(), *defaultMaterial);
+	physx::PxFilterData filterData;
+	filterData.word0 = App->layers->GetLayer(0)->GetFilterGroup();
+	filterData.word1 = App->layers->GetLayer(0)->filterMask;
+	planeShape->setSimulationFilterData(filterData);
+	physx::PxRigidStatic* groundPlane = CreateRigidStatic(physx::PxTransformFromPlaneEquation(physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f)), *planeShape);
 
 	return true;
 }
@@ -198,6 +181,14 @@ update_status ModulePhysics::Update()
 
 		gScene->simulate(STEP_SIZE); // moves all objects in the scene forward by STEP_SIZE
 		gScene->fetchResults(true); // allows the simulation to finish and return the results
+
+		// Update colliders
+		for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
+			(*it)->Update();
+
+		// Update rigid actors
+		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+			(*it)->Update();
 	}
 
 	return UPDATE_CONTINUE;
@@ -205,18 +196,13 @@ update_status ModulePhysics::Update()
 
 update_status ModulePhysics::PostUpdate()
 {
-	for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
-	{
-		if ((*it)->GetType() == ComponentTypes::RigidDynamicComponent && !(*it)->GetActor()->is<physx::PxRigidDynamic>()->isSleeping())
-			(*it)->UpdateGameObjectTransform();
-	}
-
 	return UPDATE_CONTINUE;
 }
 
 bool ModulePhysics::CleanUp()
 {
 	colliderComponents.clear();
+	rigidActorComponents.clear();
 
 	gScene->release();
 	gScene = nullptr;
@@ -230,14 +216,43 @@ bool ModulePhysics::CleanUp()
 	return true;
 }
 
+void ModulePhysics::OnSystemEvent(System_Event event)
+{
+	// TODO: on game mode, on editor mode, etc.
+}
+
+bool ModulePhysics::OnGameMode()
+{
+	// Set filtering
+	for (uint i = 0; i < colliderComponents.size(); ++i)
+	{
+		Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->layer);
+		colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->filterMask);
+	}
+
+	// -----
+
+	return true;
+}
+
+bool ModulePhysics::OnEditorMode()
+{
+	// Reset filtering
+	for (uint i = 0; i < colliderComponents.size(); ++i)
+		colliderComponents[i]->SetFiltering(0, 0);
+
+	// -----
+
+	return true;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const
 {
 	physx::PxRigidStatic* rigidStatic = physx::PxCreateStatic(*gPhysics, transform, shape);
 
-	gScene->addActor(*rigidStatic);
-	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	AddActor(*rigidStatic);
 
 	return rigidStatic;
 }
@@ -250,15 +265,21 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 	else
 		rigidDynamic = physx::PxCreateDynamic(*gPhysics, transform, shape, density);
 
-	gScene->addActor(*rigidDynamic);
-	DEPRECATED_LOG("gScene actors: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	AddActor(*rigidDynamic);
 
 	return rigidDynamic;
+}
+
+void ModulePhysics::AddActor(physx::PxActor& actor) const
+{
+	gScene->addActor(actor);
+	CONSOLE_LOG("gScene actors after adding an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 }
 
 void ModulePhysics::RemoveActor(physx::PxActor& actor) const
 {
 	gScene->removeActor(actor);
+	CONSOLE_LOG("gScene actors after removing an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 }
 
 physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive) const
@@ -316,6 +337,25 @@ bool ModulePhysics::EraseRigidActorComponent(ComponentRigidActor* toErase)
 	return ret;
 }
 
+std::vector<ComponentRigidActor*> ModulePhysics::GetRigidActorComponents() const
+{
+	return rigidActorComponents;
+}
+
+ComponentRigidActor* ModulePhysics::FindRigidActorComponentByActor(physx::PxActor* actor) const
+{
+	if (actor == nullptr)
+		return nullptr;
+
+	for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+	{
+		if ((*it)->GetActor() == actor)
+			return *it;
+	}
+
+	return nullptr;
+}
+
 ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType)
 {
 	ComponentCollider* newComponent = nullptr;
@@ -370,80 +410,65 @@ bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
 	return ret;
 }
 
-// ----------------------------------------------------------------------------------------------------
-
-physx::PxFilterFlags FilterShader(
-	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
-	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
-	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const
 {
-	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
-	{
-		// Let triggers through
-		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
-			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
-		else
-		{
-			// Generate contacts for all that were not filtered above
-			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
-			pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND;
-			pairFlags |= physx::PxPairFlag::eSOLVE_CONTACT;
-			pairFlags |= physx::PxPairFlag::eDETECT_DISCRETE_CONTACT;
-			pairFlags |= physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
-		}
-
-		return physx::PxFilterFlag::eDEFAULT;
-	}
-	else
-		return physx::PxFilterFlag::eKILL;
+	return colliderComponents;
 }
 
-void ModulePhysics::OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB, SimulationEventTypes simulationEventType) const
+ComponentCollider* ModulePhysics::FindColliderComponentByShape(physx::PxShape* shape) const
 {
-	ComponentRigidActor* componentRigidActorA = GetRigidActorComponentFromActor(actorA);
-	ComponentRigidActor* componentRigidActorB = GetRigidActorComponentFromActor(actorB);
-
-	switch (simulationEventType)
-	{
-	case SimulationEventTypes::SimulationEventOnWake:
-		if (componentRigidActorA != nullptr)
-			componentRigidActorA->OnWake();
-		break;
-	case SimulationEventTypes::SimulationEventOnSleep:
-		if (componentRigidActorA != nullptr)
-			componentRigidActorA->OnSleep();
-		break;
-	case SimulationEventTypes::SimulationEventOnContact:
-		break;
-	case SimulationEventTypes::SimulationEventOnTrigger:
-		break;
-	}
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-std::vector<ComponentRigidActor*> ModulePhysics::GetRigidActorComponents() const
-{
-	return rigidActorComponents;
-}
-
-ComponentRigidActor* ModulePhysics::GetRigidActorComponentFromActor(physx::PxActor* actor) const
-{
-	if (actor == nullptr)
+	if (shape == nullptr)
 		return nullptr;
 
-	for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+	for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
 	{
-		if ((*it)->GetActor() == actor)
+		if ((*it)->GetShape() == shape)
 			return *it;
 	}
 
 	return nullptr;
 }
 
-std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const
+// ----------------------------------------------------------------------------------------------------
+
+void ModulePhysics::OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const
 {
-	return colliderComponents;
+	if (actor == nullptr)
+		return;
+
+	switch (simulationEventType)
+	{
+	case SimulationEventTypes::OnWake:
+		actor->OnWake();
+		break;
+	case SimulationEventTypes::OnSleep:
+		actor->OnSleep();
+		break;
+	}
+}
+
+void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const
+{
+	assert(collider != nullptr);
+
+	switch (collisionType)
+	{
+	case OnCollisionEnter:
+		collider->OnCollisionEnter(collision);
+		break;
+	case OnCollisionStay:
+		collider->OnCollisionStay(collision);
+		break;
+	case OnCollisionExit:
+		collider->OnCollisionExit(collision);
+		break;
+	case OnTriggerEnter:
+		collider->OnTriggerEnter(collision);
+		break;
+	case OnTriggerExit:
+		collider->OnTriggerExit(collision);
+		break;
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------

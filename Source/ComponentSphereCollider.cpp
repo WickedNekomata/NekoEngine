@@ -27,6 +27,8 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentSphereCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -47,6 +49,8 @@ void ComponentSphereCollider::OnUniqueEditor()
 		RecalculateShape();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentSphereCollider::RecalculateShape()
 {

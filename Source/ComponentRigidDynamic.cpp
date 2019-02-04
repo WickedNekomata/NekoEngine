@@ -57,6 +57,8 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 
 ComponentRigidDynamic::~ComponentRigidDynamic() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidDynamic::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -289,6 +291,14 @@ void ComponentRigidDynamic::OnUniqueEditor()
 		forceMode = (physx::PxForceMode::Enum)currentForceMode;
 	ImGui::PopItemWidth();
 #endif
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidDynamic::Update()
+{
+	if (!gActor->is<physx::PxRigidDynamic>()->isSleeping())
+		UpdateGameObjectTransform();
 }
 
 // ----------------------------------------------------------------------------------------------------

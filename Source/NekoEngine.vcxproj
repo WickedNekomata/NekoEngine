@@ -203,6 +203,8 @@
     <ClInclude Include="Assimp\include\vector2.h" />
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
+    <ClInclude Include="PhysicsConstants.h" />
+    <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentBone.h" />
@@ -250,6 +252,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="Layers.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
@@ -319,6 +322,7 @@
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
+    <ClInclude Include="PanelLayers.h" />
     <ClInclude Include="PanelSimulatedTime.h" />
     <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelPhysics.h" />
@@ -560,6 +564,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentBone.cpp" />
@@ -589,6 +594,7 @@
     <ClCompile Include="imgui\imgui_stl.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="Layers.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -630,6 +636,7 @@
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
+    <ClCompile Include="PanelLayers.cpp" />
     <ClCompile Include="PanelSimulatedTime.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelPhysics.cpp" />

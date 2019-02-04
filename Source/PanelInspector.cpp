@@ -225,6 +225,9 @@ void PanelInspector::ShowGameObjectInspector() const
 		ImGui::EndChild();
 
 		static std::string scriptName;
+
+		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
 		ImGui::PushItemWidth(inspectorSize.x - ImGui::CalcTextSize("Script Name").x - 30);
 		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank))
 		{
@@ -259,6 +262,8 @@ void PanelInspector::ShowGameObjectInspector() const
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::PopItemWidth();
+
+		ImGui::PopStyleColor();
 		ImGui::EndPopup();
 	}
 }

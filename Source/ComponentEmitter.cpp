@@ -16,6 +16,7 @@
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
 	App->scene->quadtree.Insert(gameObject);
+	App->particle->emitters.push_back(this);
 }
 
 ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
@@ -75,6 +76,7 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	//	parent->boundingBox = math::AABB::FromCenterAndSize(posDifAABB, sizeOBB);
 	App->scene->quadtree.Insert(parent);
 
+	App->particle->emitters.push_back(this);
 }
 
 
@@ -162,6 +164,11 @@ void ComponentEmitter::Update()
 
 		newPositions.clear();
 	}
+
+	if (App->GetEngineState() == ENGINE_WANTS_PLAY)
+		StartEmitter();
+	else if (App->GetEngineState() == ENGINE_WANTS_EDITOR)
+		ClearEmitter();
 }
 
 void ComponentEmitter::ClearEmitter()

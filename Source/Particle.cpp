@@ -152,8 +152,7 @@ void Particle::EndParticle()
 		ComponentEmitter* emitter = (ComponentEmitter*)owner->subEmitter->GetComponentByType(EmitterComponent);
 		if (subEmitterActive && emitter)
 		{
-			math::float3 globalPos;
-			owner->subEmitter->transform->GetGlobalMatrix().Decompose(globalPos, math::Quat(), math::float3());
+			math::float3 globalPos = owner->subEmitter->transform->position;
 			emitter->newPositions.push_back(transform.position - globalPos);
 		}
 	}

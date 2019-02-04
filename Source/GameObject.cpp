@@ -247,7 +247,6 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		break;
 	case EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
-		App->particle->emitters.push_back((ComponentEmitter*)newComponent);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
 		break;

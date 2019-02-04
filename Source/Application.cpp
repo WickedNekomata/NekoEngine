@@ -53,13 +53,13 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// They will CleanUp() in reverse order
 	AddModule(res);
 	AddModule(timeManager);
-	AddModule(particle);
 
 #ifndef GAMEMODE
 	AddModule(camera);
 	AddModule(gui);
 #endif // GAME
 
+	AddModule(particle);
 	AddModule(physics);
 	AddModule(GOs);
 	AddModule(fs);

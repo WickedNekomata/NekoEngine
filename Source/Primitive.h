@@ -6,6 +6,7 @@
 
 #include "MathGeoLib\include\Math\float2.h"
 #include "MathGeoLib\include\Math\float3.h"
+#include "MathGeoLib\include\Math\float4.h"
 #include "MathGeoLib\include\Math\float4x4.h"
 
 enum PrimitiveTypes
@@ -233,4 +234,21 @@ private:
 	math::float3 endPosition = { 0.0f, 0.0f, 0.0f };
 };
 
-#endif
+class ResourceTexture;
+// Particle Plane --------------------------------------------------
+class ParticlePlane
+{
+public:
+	ParticlePlane();
+	~ParticlePlane();
+	void LoadPlaneBuffers();
+	void Render(math::float4x4 matrix, ResourceTexture* texture, /*uint textureUV, */math::float4 color) const;
+
+private:
+	void DrawPlane(ResourceTexture* texture, /*uint textureUV, */math::float4 &color) const;
+
+public:
+	uint indexID = 0u;
+	uint vertexID = 0u;
+};
+#endif //!__ParticlePlane__

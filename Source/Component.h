@@ -12,18 +12,20 @@ class Component
 {
 public:
 
-	Component(GameObject* parent, ComponentType type = ComponentType::NoComponentType);
+	Component(GameObject* parent, ComponentTypes componentType = ComponentTypes::NoComponentType);
 	virtual void Activate() {};
 	virtual ~Component();
 
-	void Update();
+	virtual void Update();
 
 	virtual void OnEditor();
 
 	void ToggleIsActive();
 	bool IsActive() const;
 
-	ComponentType GetType() const;
+	bool IsTreeActive();
+
+	ComponentTypes GetType() const;
 
 	void SetParent(GameObject* parent);
 	GameObject* GetParent() const;
@@ -31,19 +33,19 @@ public:
 	virtual void OnSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file) {};
 
+	virtual void OnEnable() {}
+	virtual void OnDisable() {}
+
 private:
 
 	virtual void OnInternalSave(JSON_Object* file) {};
 	virtual void OnUniqueEditor();
 
-private:
-
-	bool isActive = true;
-
 protected:
 
-	ComponentType type;
+	ComponentTypes componentType;
 	GameObject* parent = nullptr;
+	bool isActive = true;
 
 public:
 

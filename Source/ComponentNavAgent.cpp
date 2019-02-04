@@ -2,12 +2,12 @@
 
 #include "imgui/imgui.h"
 
-ComponentNavAgent::ComponentNavAgent(GameObject* parent) : Component(parent, ComponentType::NavAgentComponent)
+ComponentNavAgent::ComponentNavAgent(GameObject* parent) : Component(parent, ComponentTypes::NavAgentComponent)
 {
 }
 
 ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentTransform) :
-	Component(componentTransform.parent, ComponentType::NavAgentComponent)
+	Component(componentTransform.parent, ComponentTypes::NavAgentComponent)
 {
 }
 

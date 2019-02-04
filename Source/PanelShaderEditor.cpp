@@ -16,7 +16,7 @@
 
 // Allows the modification of an existing shader program or the creation of a new shader program
 
-PanelShaderEditor::PanelShaderEditor(char* name) : Panel(name) 
+PanelShaderEditor::PanelShaderEditor(const char* name) : Panel(name)
 {
 	strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
 }
@@ -207,7 +207,7 @@ bool PanelShaderEditor::Draw()
 					}
 				}
 				else
-					CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
+					DEPRECATED_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 			}
 		}
 
@@ -337,7 +337,7 @@ bool PanelShaderEditor::TryLink() const
 		ResourceShaderProgram::DeleteShaderProgram(tryLink);
 	}
 	else
-		CONSOLE_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
+		DEPRECATED_LOG("Shader Program could not be linked since one or more shader objects are null or don't exist");
 
 	return ret;
 }

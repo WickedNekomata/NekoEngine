@@ -6,19 +6,31 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include "parson/parson.h"
 
-#define CONSOLE_LOG(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
+enum class LogTypes
+{
+	Normal,
+	Warning,
+	Error
+};
 
-void Log(const char file[], int line, const char* format, ...);
+#define DEPRECATED_LOG(format, ...) Log(__FILE__, __LINE__, LogTypes::Normal, format, __VA_ARGS__);
+#define CONSOLE_LOG(mode, format, ...) Log(__FILE__, __LINE__, mode, format, __VA_ARGS__);
+
+void Log(const char file[], int line, LogTypes mode, const char* format, ...);
 
 void OpenInBrowser(char* url);
 
 void OpenInExplorer();
 
+void SaveNumberArray(JSON_Object * parent, char * name, float * numbers, int size);
+
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)
 
 #define DEGTORAD 0.0174532925199432957f
 #define RADTODEG 57.295779513082320876f
+#define PI 3.14159265358979323846264338327950288
 
 #define MSTOSECONDS 0.001
 
@@ -57,3 +69,4 @@ enum update_status
 #define EXTENSION_FRAGMENT_SHADER_OBJECT ".fsh"
 #define EXTENSION_SHADER_PROGRAM ".psh"
 #define EXTENSION_META ".meta"
+#define EXTENSION_SCRIPT ".dll"

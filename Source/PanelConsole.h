@@ -13,14 +13,12 @@ class PanelConsole : public Panel
 {
 public:
 
-	PanelConsole(char* name);
+	PanelConsole(const char* name);
 	~PanelConsole();
 
 	bool Draw();
 
 	void AddLog(const char* log);
-
-private:
 
 	void Clear();
 

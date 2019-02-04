@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "imgui\imgui.h"
 
-Component::Component(GameObject* parent, ComponentType type) : parent(parent), type(type)
+Component::Component(GameObject* parent, ComponentTypes componentType) : parent(parent), componentType(componentType)
 {
 	if (parent != nullptr)
 		UUID = App->GenerateRandomNumber();
@@ -38,13 +38,13 @@ void Component::OnEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	if (type != ComponentType::MaterialComponent) {
+	if (componentType != ComponentTypes::MaterialComponent) {
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
 
 		ImGui::SameLine();
 		if (ImGui::Button(itemName)) {
 			GetParent()->MarkToDeleteComponentByValue(this);
-			if (type == ComponentType::MeshComponent)
+			if (componentType == ComponentTypes::MeshComponent)
 				GetParent()->MarkToDeleteComponentByValue((Component*)GetParent()->materialRenderer);
 		}
 	}
@@ -73,9 +73,23 @@ bool Component::IsActive() const
 	return isActive;
 }
 
-ComponentType Component::GetType() const
+bool Component::IsTreeActive()
 {
-	return type;
+	bool active = isActive;
+
+	GameObject* itGO = parent;
+	while (active && itGO)
+	{
+		active = itGO->IsActive();
+		itGO = itGO->GetParent();
+	}
+
+	return active;
+}
+
+ComponentTypes Component::GetType() const
+{
+	return componentType;
 }
 
 void Component::SetParent(GameObject* parent)
@@ -90,6 +104,6 @@ GameObject* Component::GetParent() const
 
 void Component::OnSave(JSON_Object* file)
 {
-	json_object_set_number(file, "Type", type);
+	json_object_set_number(file, "Type", componentType);
 	OnInternalSave(file);
 }

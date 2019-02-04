@@ -10,11 +10,16 @@
 
 #include <vector>
 
+#include <mono/metadata/object.h>
+
 class Component;
 class ComponentTransform;
 class ComponentMaterial;
 class ComponentMesh;
 class ComponentCamera;
+class ComponentEmitter;
+class ComponentRigidActor;
+class ComponentCollider;
 
 class GameObject
 {
@@ -44,7 +49,9 @@ public:
 	GameObject* GetChild(uint index) const;
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
-	Component* AddComponent(ComponentType type);
+	void AddComponent(Component* component);
+	void ClearComponent(Component* component);
+	Component* AddComponent(ComponentTypes componentType);
 	void MarkToDeleteComponent(uint index);
 	void MarkToDeleteComponentByValue(Component* component);
 	void MarkToDeleteAllComponents();
@@ -53,6 +60,7 @@ public:
 	bool HasComponents() const;
 	uint GetComponenetsLength() const;
 	Component* GetComponent(uint index) const;
+	Component * GetComponentByType(ComponentTypes type) const;
 	int GetComponentIndexOnComponents(Component* component) const;
 	void SwapComponents(Component* firstComponent, Component* secondComponent);
 	void ReorderComponents(Component* source, Component* target);
@@ -74,6 +82,9 @@ public:
 	void SetSeenLastFrame(bool seenLastFrame);
 	bool GetSeenLastFrame() const;
 
+	MonoObject* GetMonoObject();
+	inline void SetMonoObject(uint32_t monoObjectHandle) { this->monoObjectHandle = monoObjectHandle; };
+
 	void RecursiveRecalculateBoundingBoxes();
 
 	void OnSave(JSON_Object* file) const;
@@ -82,12 +93,20 @@ public:
 
 	void RecursiveForceAllResources(uint forceRes) const;
 
+	void OnEnable();
+	void OnDisable();
+
 public:
 
 	ComponentTransform* transform = nullptr;
 	ComponentMaterial* materialRenderer = nullptr;
 	ComponentMesh* meshRenderer = nullptr;
 	ComponentCamera* camera = nullptr;
+	ComponentEmitter* emitter = nullptr;
+
+	// Physics
+	ComponentRigidActor* rigidActor = nullptr;
+	ComponentCollider* collider = nullptr;
 
 	math::AABB boundingBox;
 
@@ -102,6 +121,8 @@ private:
 	uint parentUUID = 0;
 
 	std::vector<GameObject*> children;
+
+	uint32_t monoObjectHandle = 0;
 
 	bool isActive = true;
 	bool isStatic = true;

@@ -15,7 +15,7 @@
 
 #include "Resource.h"
 
-PanelAssets::PanelAssets(char* name) : Panel(name) {}
+PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
 PanelAssets::~PanelAssets() {}
 

@@ -5,17 +5,30 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentNavAgent.h"
+#include "ComponentEmitter.h"
+#include "ComponentRigidActor.h"
+#include "ComponentRigidStatic.h"
+#include "ComponentRigidDynamic.h"
+#include "ComponentBoxCollider.h"
+#include "ComponentSphereCollider.h"
+#include "ComponentCapsuleCollider.h"
+
 #include "ResourceMesh.h"
-#include "ModuleResourceManager.h"
 
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleResourceManager.h"
 #include "ModuleGOs.h"
 #include "ModuleScene.h"
+#include "ModulePhysics.h"
+#include "ModuleParticles.h"
+#include "ScriptingModule.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
 #include <algorithm>
+
+#include <mono/jit/jit.h>
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
@@ -27,7 +40,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 		parent->AddChild(this);
 
 		if (!disableTransform)
-			AddComponent(ComponentType::TransformComponent);
+			AddComponent(ComponentTypes::TransformComponent);
 	}
 
 	boundingBox.SetNegativeInfinity();
@@ -65,6 +78,12 @@ GameObject::GameObject(const GameObject& gameObject)
 		components.push_back(camera);
 	}
 
+	if (gameObject.emitter != nullptr)
+	{
+		emitter = new ComponentEmitter(*gameObject.emitter);
+		emitter->SetParent(this);
+		components.push_back(emitter);
+	}
 	boundingBox = gameObject.boundingBox;
 
 	isActive = gameObject.isActive;
@@ -199,49 +218,82 @@ bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) con
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentType type)
+Component* GameObject::AddComponent(ComponentTypes componentType)
 {
-	Component* newComponent;
+	Component* newComponent = nullptr;
 
 	bool createMaterial = false;
 
-	switch (type)
+	switch (componentType)
 	{
-	case NoComponentType:
+	case ComponentTypes::NoComponentType:
 		break;
-	case TransformComponent:
-		assert(transform == NULL);
+	case ComponentTypes::TransformComponent:
+		assert(transform == nullptr);
 		newComponent = transform = new ComponentTransform(this);
 		break;
-	case MeshComponent:
-		assert(meshRenderer == NULL);
+	case ComponentTypes::MeshComponent:
+		assert(meshRenderer == nullptr);
 		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
 		break;
-	case MaterialComponent:
+	case ComponentTypes::MaterialComponent:
 		if (materialRenderer != nullptr)
 			return nullptr;
-		assert(materialRenderer == NULL);
+		assert(materialRenderer == nullptr);
 		newComponent = materialRenderer = new ComponentMaterial(this);
 		break;
-	case CameraComponent:
-		assert(camera == NULL);
+	case ComponentTypes::CameraComponent:
+		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
-	case NavAgentComponent:
+	case ComponentTypes::NavAgentComponent:
 		newComponent = new ComponentNavAgent(this);
 		break;
-	default:
+	case ComponentTypes::EmitterComponent:
+		newComponent = emitter = new ComponentEmitter(this);
+		App->particle->emitters.push_back((ComponentEmitter*)newComponent);
+		if (materialRenderer == nullptr)
+			createMaterial = true;
+		break;
+	case ComponentTypes::RigidStaticComponent:
+	case ComponentTypes::RigidDynamicComponent:
+		assert(rigidActor == nullptr);
+		newComponent = rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
+		break;
+	case ComponentTypes::BoxColliderComponent:
+	case ComponentTypes::SphereColliderComponent:
+	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
+		assert(collider == nullptr);
+		newComponent = collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
 	}
 	
 	components.push_back(newComponent);
 
 	if (createMaterial)
-		AddComponent(ComponentType::MaterialComponent);
+		AddComponent(ComponentTypes::MaterialComponent);
 
 	return newComponent;
+}
+
+void GameObject::AddComponent(Component* component)
+{
+	components.push_back(component);
+}
+
+void GameObject::ClearComponent(Component* component)
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+		{
+			components.erase(components.begin() + i);
+			break;
+		}
+	}
 }
 
 void GameObject::MarkToDeleteComponent(uint index)
@@ -264,14 +316,31 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 {
 	switch (toDelete->GetType())
 	{
-	case ComponentType::MeshComponent:
+	case ComponentTypes::MeshComponent:
 		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
 		meshRenderer = nullptr;
 		break;
-	case ComponentType::CameraComponent:
+	case ComponentTypes::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
 		camera = nullptr;
 		break;
+	case ComponentTypes::RigidDynamicComponent:
+	case ComponentTypes::RigidStaticComponent:
+		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
+		rigidActor = nullptr;
+	case ComponentTypes::BoxColliderComponent:
+	case ComponentTypes::SphereColliderComponent:
+	case ComponentTypes::CapsuleColliderComponent:
+	case ComponentTypes::PlaneColliderComponent:
+		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
+		collider = nullptr;
+		break;
+	case ComponentTypes::ScriptComponent:
+	{
+		App->scripting->DestroyScript((ComponentScript*)toDelete);
+		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+		return;
+	}
 	}
 
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
@@ -284,12 +353,15 @@ void GameObject::InternallyDeleteComponents()
 	{   
 		switch (components[i]->GetType())
 		{
-		case ComponentType::MeshComponent:
+		case ComponentTypes::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
 			break;
-		case ComponentType::CameraComponent:
+		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
+		case ComponentTypes::ScriptComponent:
+			App->scripting->DestroyScript((ComponentScript*)components[i]);
+			continue;
 		}		
 
 		RELEASE(components[i]);
@@ -311,6 +383,18 @@ uint GameObject::GetComponenetsLength() const
 Component* GameObject::GetComponent(uint index) const
 {
 	return components[index];
+}
+
+Component* GameObject::GetComponentByType(ComponentTypes type) const
+{
+	Component* comp = nullptr;
+
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			comp = components[i];
+	}
+	return comp;
 }
 
 // Get the index of the component from the gameobject's components vector. If the component cannot be found, returns -1
@@ -373,6 +457,8 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::ToggleIsActive()
 {
 	isActive = !isActive;
+
+	isActive ? OnEnable() : OnDisable();
 }
 
 bool GameObject::IsActive() const
@@ -408,6 +494,11 @@ void GameObject::SetSeenLastFrame(bool seenLastFrame)
 bool GameObject::GetSeenLastFrame() const
 {
 	return seenLastFrame;
+}
+
+MonoObject* GameObject::GetMonoObject()
+{
+	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
 }
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
@@ -467,7 +558,7 @@ void GameObject::OnLoad(JSON_Object* file)
 	
 	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
 		cObject = json_array_get_object(jsonComponents, i);
-		Component* newComponent = AddComponent((ComponentType)(int)json_object_get_number(cObject, "Type"));
+		Component* newComponent = AddComponent((ComponentTypes)(int)json_object_get_number(cObject, "Type"));
 		// material special case cause of its bonunding property to mesh component
 		if (newComponent == nullptr)
 			materialRenderer->OnLoad(cObject);
@@ -506,4 +597,30 @@ void GameObject::RecursiveForceAllResources(uint forceRes) const
 
 	for (int i = 0; i < children.size(); ++i)
 		children[i]->RecursiveForceAllResources(forceRes);
+}
+
+void GameObject::OnEnable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnEnable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnEnable();
+	}
+}
+
+void GameObject::OnDisable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnDisable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnDisable();
+	}
 }

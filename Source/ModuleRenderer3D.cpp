@@ -6,8 +6,10 @@
 #include "ModuleCameraEditor.h"
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
+#include "ModulePhysics.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
+#include "ModuleParticles.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
@@ -18,6 +20,8 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "ComponentCollider.h"
+#include "ComponentEmitter.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -45,14 +49,14 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Creating 3D Renderer context");
+	DEPRECATED_LOG("Creating 3D Renderer context");
 	
 	// Create context
 	context = SDL_GL_CreateContext(App->window->window);
 
 	if (context == NULL)
 	{
-		CONSOLE_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		DEPRECATED_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -64,7 +68,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		GLenum error = glewInit();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing glew! %s\n", glewGetErrorString(error));
+			DEPRECATED_LOG("Error initializing glew! %s\n", glewGetErrorString(error));
 			ret = false;
 		}
 
@@ -76,7 +80,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -88,7 +92,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -106,7 +110,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			CONSOLE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			DEPRECATED_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -159,6 +163,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	skyboxTexture = App->materialImporter->GetSkyboxTexture();
 	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
 
+	// Load primitives
+	App->sceneImporter->LoadPrimitivePlane();
+
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;
@@ -208,6 +215,10 @@ update_status ModuleRenderer3D::PostUpdate()
 				DrawMesh(meshComponents[i]);
 		}
 	}
+	//Draw All particles
+	//glDepthMask(GL_FALSE);
+	App->particle->Draw();
+	//glDepthMask(GL_TRUE);
 
 #ifndef GAMEMODE
 
@@ -218,19 +229,169 @@ update_status ModuleRenderer3D::PostUpdate()
 	{
 		App->debugDrawer->StartDebugDraw();
 
-		if (drawBoundingBoxes)
+		if (drawBoundingBoxes) // boundingBoxesColor = Yellow
 		{
+			Color boundingBoxesColor = Yellow;
+
 			for (uint i = 0; i < meshComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, Yellow);
+				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, boundingBoxesColor);
 		}
 
-		if (drawCamerasFrustum)
+		if (drawCamerasFrustum) // boundingBoxesColor = Grey
 		{
+			Color camerasFrustumColor = Grey;
+
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, Grey);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawQuadtree)
+		if (drawColliders) // boundingBoxesColor = Green, DarkGreen
+		{
+			Color collidersColor = Green;
+
+			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
+			for (uint i = 0; i < colliderComponents.size(); ++i)
+			{
+				physx::PxShape* gShape = colliderComponents[i]->GetShape();
+				if (gShape == nullptr)
+					continue;
+
+				math::float4x4 gameObjectGlobalMatrix = colliderComponents[i]->GetParent()->transform->GetGlobalMatrix();
+				math::float3 position = math::float3::zero;
+				math::Quat rotation = math::Quat::identity;
+				math::float3 scale = math::float3::one;
+				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+																			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+
+				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
+				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
+											math::float3(transform.p.x, transform.p.y, transform.p.z));
+
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::ePLANE:
+					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), collidersColor, globalMatrix);
+				break;
+				}
+			}
+
+			/*
+			std::vector<PxRigidActor*> staticActors = App->physics->GetRigidStatics();
+			for (uint i = 0; i < staticActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				staticActors[i]->getShapes(&gShape, 1);
+
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 globalMatrix(q, p);
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
+						break;
+					}
+				}
+			}
+
+			std::vector<PxRigidActor*> dynamicActors = App->physics->GetRigidDynamics();
+			for (uint i = 0; i < dynamicActors.size(); ++i)
+			{
+				PxShape* gShape = nullptr;
+				dynamicActors[i]->getShapes(&gShape, 1);
+
+				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
+				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+				math::float4x4 globalMatrix(q, p);
+
+				if (dynamicActors[i]->is<PxRigidDynamic>()->isSleeping())
+					collidersColor = DarkBlue;
+
+				if (gShape != nullptr)
+				{
+					switch (gShape->getGeometryType())
+					{
+					case PxGeometryType::Enum::eSPHERE:
+					{
+						PxSphereGeometry gSphereGeometry;
+						gShape->getSphereGeometry(gSphereGeometry);
+
+						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eCAPSULE:
+					{
+						PxCapsuleGeometry gCapsuleGeometry;
+						gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
+					}
+						break;
+					case PxGeometryType::Enum::eBOX:
+					{
+						PxBoxGeometry gBoxGeometry;
+						gShape->getBoxGeometry(gBoxGeometry);
+
+						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
+					}
+						break;
+					}
+				}
+			}*/
+		}
+
+		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
 		App->debugDrawer->EndDebugDraw();
@@ -262,7 +423,7 @@ bool ModuleRenderer3D::CleanUp()
 	App->window->GetScreenSize(x, y);
 	glViewport(0, 0, x, y);
 
-	CONSOLE_LOG("Destroying 3D Renderer");
+	DEPRECATED_LOG("Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 
 	return ret;
@@ -334,7 +495,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(1) == -1)
 		{
 			ret = false;
-			CONSOLE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			DEPRECATED_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 	else {
@@ -342,7 +503,7 @@ bool ModuleRenderer3D::SetVSync(bool vsync)
 		if (SDL_GL_SetSwapInterval(0) == -1) 
 		{
 			ret = false;
-			CONSOLE_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
+			DEPRECATED_LOG("Warning: Unable to set immediate updates! SDL Error: %s\n", SDL_GetError());
 		}
 	}
 
@@ -427,6 +588,16 @@ void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
 bool ModuleRenderer3D::GetDrawCamerasFrustum() const
 {
 	return drawCamerasFrustum;
+}
+
+void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
+{
+	this->drawColliders = drawColliders;
+}
+
+bool ModuleRenderer3D::GetDrawColliders() const
+{
+	return drawColliders;
 }
 
 void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)
@@ -540,11 +711,11 @@ bool ModuleRenderer3D::RecalculateMainCamera()
 
 	if (multipleMainCameras)
 	{
-		CONSOLE_LOG("Warning! More than 1 Main Camera is defined");
+		DEPRECATED_LOG("Warning! More than 1 Main Camera is defined");
 	}
 	else if (mainCamera == nullptr)
 	{
-		CONSOLE_LOG("Warning! No Main Camera is defined");
+		DEPRECATED_LOG("Warning! No Main Camera is defined");
 	}
 
 	ret = SetMainCamera(mainCamera);
@@ -559,7 +730,7 @@ bool ModuleRenderer3D::SetMainCamera(ComponentCamera* mainCamera)
 	if (ret)
 		this->mainCamera = mainCamera;
 	else
-		CONSOLE_LOG("Main Camera could not be set");
+		DEPRECATED_LOG("Main Camera could not be set");
 
 	return ret;
 }
@@ -574,7 +745,7 @@ bool ModuleRenderer3D::SetCurrentCamera()
 		SetMeshComponentsSeenLastFrame(!currentCamera->HasFrustumCulling());
 	}
 	else
-		CONSOLE_LOG("Current Camera could not be set");
+		DEPRECATED_LOG("Current Camera could not be set");
 
 	return ret;
 }
@@ -792,10 +963,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 {
-	App->debugDrawer->DebugDraw(node->boundingBox, Green);
+	App->debugDrawer->DebugDraw(node->boundingBox, Blue);
 
 	for (std::list<GameObject*>::const_iterator it = node->objects.begin(); it != node->objects.end(); ++it)
-		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkGreen);
+		App->debugDrawer->DebugDraw((*it)->boundingBox, DarkBlue);
 
 	if (!node->IsLeaf())
 	{

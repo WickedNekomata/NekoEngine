@@ -10,7 +10,7 @@
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
 
-PanelLibrary::PanelLibrary(char* name) : Panel(name) {}
+PanelLibrary::PanelLibrary(const char* name) : Panel(name) {}
 
 PanelLibrary::~PanelLibrary() {}
 

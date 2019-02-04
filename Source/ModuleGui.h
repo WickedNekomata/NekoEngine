@@ -37,6 +37,8 @@ public:
 	void HideAllWindows();
 
 	void LogConsole(const char* log) const;
+	void ClearConsole() const;
+
 	void AddInput(uint key, uint state) const;
 
 	bool IsMouseHoveringAnyWindow();
@@ -58,6 +60,8 @@ public:
 	class PanelShaderEditor*	panelShaderEditor = nullptr;
 	class PanelSkybox*			panelSkybox = nullptr;
 	class PanelNavigation*		panelNavigation = nullptr;
+	class PanelSimulatedTime*	panelSimulatedTime = nullptr;
+	class PanelPhysics*			panelPhysics = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 

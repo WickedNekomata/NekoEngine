@@ -97,12 +97,12 @@ GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
 		GLchar* infoLog = new GLchar[logSize];
 		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
 
-		CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+		DEPRECATED_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
 
 		DeleteShaderProgram(shaderProgram);
 	}
 	else
-		CONSOLE_LOG("Successfully linked Shader Program");
+		DEPRECATED_LOG("Successfully linked Shader Program");
 
 	return shaderProgram;
 }
@@ -172,10 +172,10 @@ bool ResourceShaderProgram::IsProgramValid() const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
 
-		CONSOLE_LOG("Shader Program is not valid. ERROR: %s", infoLog);
+		DEPRECATED_LOG("Shader Program is not valid. ERROR: %s", infoLog);
 	}
 	else
-		CONSOLE_LOG("Shader Program is valid");
+		DEPRECATED_LOG("Shader Program is valid");
 
 	return success;
 }
@@ -193,10 +193,10 @@ bool ResourceShaderProgram::IsProgramLinked(bool comment) const
 		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
 
 		if (comment)
-			CONSOLE_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+			DEPRECATED_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
 	}
 	else if (comment)
-		CONSOLE_LOG("Successfully linked Shader Program");
+		DEPRECATED_LOG("Successfully linked Shader Program");
 
 	return success;
 }

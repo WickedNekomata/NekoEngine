@@ -27,6 +27,8 @@
 #include "PanelShaderEditor.h"
 #include "PanelSkybox.h"
 #include "PanelNavigation.h"
+#include "PanelSimulatedTime.h"
+#include "PanelPhysics.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -58,6 +60,8 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 	panelSkybox = new PanelSkybox("Skybox");
 	panelNavigation = new PanelNavigation("Navigation");
+	panelSimulatedTime = new PanelSimulatedTime("Simulated Time");
+	panelPhysics = new PanelPhysics("Physics");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -72,6 +76,8 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelShaderEditor);
 	panels.push_back(panelSkybox);
 	panels.push_back(panelNavigation);
+	panels.push_back(panelSimulatedTime);
+	panels.push_back(panelPhysics);
 
 	LoadStatus(jObject);
 
@@ -82,7 +88,7 @@ bool ModuleGui::Start()
 {
 	bool ret = true;
 
-	CONSOLE_LOG("Starting ImGui");
+	DEPRECATED_LOG("Starting ImGui");
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -168,6 +174,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Edit", "ALT+E")) { panelEdit->OnOff(); }
 			if (ImGui::MenuItem("Skybox")) { panelSkybox->OnOff(); }
 			if (ImGui::MenuItem("Shader Editor")) { panelShaderEditor->OnOff(); }
+			if (ImGui::MenuItem("Physics")) { panelPhysics->OnOff(); }
 
 			ImGui::EndMenu();
 		}
@@ -249,7 +256,7 @@ bool ModuleGui::CleanUp()
 
 	RELEASE(atlas);
 
-	CONSOLE_LOG("Cleaning up ImGui");
+	DEPRECATED_LOG("Cleaning up ImGui");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -400,6 +407,12 @@ void ModuleGui::LogConsole(const char* log) const
 {
 	if (panelConsole != nullptr)
 		panelConsole->AddLog(log);
+}
+
+void ModuleGui::ClearConsole() const
+{
+	if (panelConsole != nullptr)
+		panelConsole->Clear();
 }
 
 void ModuleGui::AddInput(uint key, uint state) const

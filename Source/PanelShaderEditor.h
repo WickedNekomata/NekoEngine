@@ -15,7 +15,7 @@ class PanelShaderEditor : public Panel
 {
 public:
 
-	PanelShaderEditor(char* name);
+	PanelShaderEditor(const char* name);
 	~PanelShaderEditor();
 
 	bool Draw();

@@ -14,6 +14,7 @@
 
 #include "PCG\pcg_variants.h"
 
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -47,8 +48,12 @@ struct ModuleRenderer3D;
 struct ModuleFileSystem;
 struct ModuleGOs;
 struct ModuleTimeManager;
+struct ModuleParticle;
 struct DebugDrawer;
 struct ModuleNavigation;
+struct ScriptingModule;
+struct ModuleEvents;
+struct ModulePhysics;
 
 class Application
 {
@@ -91,6 +96,7 @@ public:
 	bool IsEditor() const;
 
 	uint GenerateRandomNumber() const;
+	math::LCG GetLCGRandomMath() const;
 
 	void SaveState() const;
 	void LoadState() const;
@@ -114,8 +120,9 @@ public:
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
 	ShaderImporter*			shaderImporter;
+	ModuleParticle*			particle;
 
-#ifndef GAMEMODE	
+#ifndef GAMEMODE
 	ModuleCameraEditor*		camera;
 	ModuleGui*				gui;
 
@@ -129,12 +136,16 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ScriptingModule*		scripting;
+	ModuleEvents*			events;
+	ModulePhysics*			physics;
 	DebugDrawer*			debugDrawer;
 	ModuleNavigation*		navigation;
 
 	pcg32_random_t			rng;
 
 	bool firstFrame = true;
+	math::LCG randomMathLCG; //Cant be private with const Get
 
 private:
 
@@ -144,7 +155,7 @@ private:
 	double				lastFrameMs = 0;
 	double				dt = 0;
 	double				fps = 0;
-	bool				capFrames = 0;
+	bool				capFrames = false;
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 

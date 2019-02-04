@@ -10,12 +10,16 @@
 #include "ModuleGOs.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
+#include "ModuleParticles.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 #include "ModuleNavigation.h"
+#include "ScriptingModule.h"
+#include "ModuleEvents.h"
+#include "ModulePhysics.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -35,10 +39,14 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
 	navigation = new ModuleNavigation();
+	particle = new ModuleParticle();
+	scripting = new ScriptingModule();
+	events = new ModuleEvents();
+	physics = new ModulePhysics();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
-	gui = new ModuleGui();	
+	gui = new ModuleGui();
 	raycaster = new Raycaster();
 #endif // GAME
 
@@ -46,21 +54,27 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 	AddModule(res);
-
 	AddModule(timeManager);
+	AddModule(particle);
 
 #ifndef GAMEMODE
 	AddModule(camera);
 	AddModule(gui);
 #endif // GAME
+
+	AddModule(physics);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);
 	AddModule(input);
 	AddModule(scene);
+	AddModule(scripting);
 
 	// Renderer last!
 	AddModule(renderer3D);
+
+	//No, I'm last ;)
+	AddModule(events);
 }
 
 Application::~Application()
@@ -123,8 +137,8 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	CONSOLE_LOG("Application Start --------------");
-	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)	
+	DEPRECATED_LOG("Application Start --------------");
+	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end() && ret; ++item)
 		ret = (*item)->Start();
 
 	firstFrame = false;
@@ -229,7 +243,10 @@ void Application::PrepareUpdate()
 		}
 
 		if (ret)
-			engineState = engine_states::ENGINE_PLAY;
+		{
+			engineState = engine_states::ENGINE_PLAY;			
+		}
+			
 		break;
 	}
 	case engine_states::ENGINE_WANTS_PAUSE:
@@ -253,7 +270,14 @@ void Application::PrepareUpdate()
 		}
 
 		if (ret)
+		{
 			engineState = engine_states::ENGINE_EDITOR;
+
+			System_Event event;
+			event.type = System_Event_Type::Stop;
+			PushSystemEvent(event);
+		}
+			
 		break;
 	}
 	case engine_states::ENGINE_WANTS_STEP:
@@ -307,7 +331,7 @@ void Application::Load()
 		JSON_Object* data = json_value_get_object(rootValue);
 
 		JSON_Object* modulejObject = json_object_get_object(data, "Application");
-		
+
 		SetAppName(json_object_get_string(modulejObject, "Title"));
 		window->SetTitle(GetAppName());
 		SetOrganizationName(json_object_get_string(modulejObject, "Organization"));
@@ -343,7 +367,7 @@ void Application::Save() const
 
 	// Saving Modules Data
 	for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-	{		
+	{
 		newValue = json_value_init_object();
 		objModule = json_value_get_object(newValue);
 		json_object_set_value(rootObject, (*item)->GetName(), newValue);
@@ -386,7 +410,7 @@ void Application::SetAppName(const char* name)
 		window->SetTitle(name);
 }
 
-const char* Application::GetAppName() const 
+const char* Application::GetAppName() const
 {
 	return appName;
 }
@@ -412,12 +436,12 @@ bool Application::GetCapFrames() const
 	return capFrames;
 }
 
-void Application::SetMaxFramerate(uint maxFramerate) 
+void Application::SetMaxFramerate(uint maxFramerate)
 {
 	this->maxFramerate = maxFramerate;
 }
 
-uint Application::GetMaxFramerate() const 
+uint Application::GetMaxFramerate() const
 {
 	return this->maxFramerate;
 }
@@ -435,7 +459,7 @@ std::vector<float> Application::GetFramerateTrack() const
 	return fpsTrack;
 }
 
-void Application::AddMsToTrack(float ms) 
+void Application::AddMsToTrack(float ms)
 {
 	for (uint i = msTrack.size() - 1; i > 0; --i)
 		msTrack[i] = msTrack[i - 1];
@@ -443,7 +467,7 @@ void Application::AddMsToTrack(float ms)
 	msTrack[0] = ms;
 }
 
-std::vector<float> Application::GetMsTrack() const 
+std::vector<float> Application::GetMsTrack() const
 {
 	return msTrack;
 }
@@ -459,17 +483,28 @@ void Application::Play()
 	{
 	case engine_states::ENGINE_PLAY:
 	case engine_states::ENGINE_PAUSE:
-
+	{
 		// Enter editor mode
 		engineState = engine_states::ENGINE_WANTS_EDITOR;
+
+		System_Event event;
+		event.type = System_Event_Type::Stop;
+		PushSystemEvent(event);
+
 		break;
-
+	}
+	
 	case engine_states::ENGINE_EDITOR:
-
+	{
 		// Enter play mode
 		engineState = engine_states::ENGINE_WANTS_PLAY;
-		break;
 
+		System_Event event;
+		event.type = System_Event_Type::Play;
+		PushSystemEvent(event);
+		break;
+	}
+		
 	default:
 		break;
 	}

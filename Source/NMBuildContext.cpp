@@ -14,13 +14,13 @@ void NMBuildContext::doLog(const rcLogCategory category, const char* msg, const 
 	switch (category)
 	{
 	case RC_LOG_PROGRESS:
-		CONSOLE_LOG("RC Progress: %s", msg);
+		DEPRECATED_LOG("RC Progress: %s", msg);
 		break;
 	case RC_LOG_WARNING:
-		CONSOLE_LOG("RC Warning: %s", msg);
+		DEPRECATED_LOG("RC Warning: %s", msg);
 		break;
 	case RC_LOG_ERROR:
-		CONSOLE_LOG("RC Error: %s", msg);
+		DEPRECATED_LOG("RC Error: %s", msg);
 		break;
 	}
 }

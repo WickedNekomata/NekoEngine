@@ -9,7 +9,10 @@ enum ResourceType
 	TextureResource,
 
 	ShaderObjectResource,
-	ShaderProgramResource
+	ShaderProgramResource,
+	ScriptResource,
+	AnimationResource,
+	BoneResource
 };
 
 #endif

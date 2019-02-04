@@ -87,6 +87,13 @@ public:
 		return cur == rhs;
 	}
 
+	GameObject* GetCurrGameObject()
+	{
+		if (type == SelectedType::gameObject)
+			return (GameObject*)cur;
+		else
+			return nullptr;
+	}
 	//-----------// RESOURCES //----------//
 
 	CurrentSelection& operator=(const Resource* newSelection)

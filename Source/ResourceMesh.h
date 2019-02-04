@@ -31,6 +31,10 @@ public:
 	uint GetIBO() const;
 	uint GetVAO() const;
 
+	static void GenerateVBO(GLuint& VBO, Vertex* vertices, uint verticesSize);
+	static void GenerateIBO(GLuint& IBO, GLuint* indices, uint indicesSize);
+	static void GenerateVAO(GLuint& VAO, GLuint& VBO);
+
 private:
 
 	bool LoadInMemory();

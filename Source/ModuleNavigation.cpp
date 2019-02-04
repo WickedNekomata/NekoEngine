@@ -72,7 +72,7 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 bool ModuleNavigation::OnGameMode()
 {
 	if (m_navMesh)
-		return;
+		return false;
 
 	m_navQuery = dtAllocNavMeshQuery();
 
@@ -81,7 +81,7 @@ bool ModuleNavigation::OnGameMode()
 	status = m_navQuery->init(m_navMesh, 2048);
 	if (dtStatusFailed(status))
 	{
-		CONSOLE_LOG("Could not init Detour navmesh query");
+		DEPRECATED_LOG("Could not init Detour navmesh query");
 		return false;
 	}
 
@@ -135,7 +135,7 @@ bool ModuleNavigation::OnGameMode()
 bool ModuleNavigation::OnEditorMode()
 {
 	if (m_navMesh)
-		return;
+		return false;
 
 	dtFreeNavMeshQuery(m_navQuery);
 	dtFreeCrowd(m_crowd);

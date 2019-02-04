@@ -15,7 +15,7 @@
 
 #include "ComponentTransform.h"
 
-PanelHierarchy::PanelHierarchy(char* name) : Panel(name) {}
+PanelHierarchy::PanelHierarchy(const char* name) : Panel(name) {}
 
 PanelHierarchy::~PanelHierarchy() {}
 
@@ -194,7 +194,7 @@ void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target) const
 				payload_n->transform->SetMatrixFromGlobal(globalMatrix);
 			}
 			else
-				CONSOLE_LOG("ERROR: Invalid Target. Don't be so badass ;)");
+				DEPRECATED_LOG("ERROR: Invalid Target. Don't be so badass ;)");
 		}
 		ImGui::EndDragDropTarget();
 	}

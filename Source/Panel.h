@@ -11,7 +11,7 @@ class Panel
 {
 public:
 
-	Panel(char* title);
+	Panel(const char* name);
 	virtual ~Panel();
 
 	virtual bool Draw() = 0;
@@ -19,12 +19,12 @@ public:
 	virtual inline void OnOff();
 	virtual inline void SetOnOff(bool set) { enabled = set; }
 	virtual inline bool IsEnabled() const;
-	virtual inline char* GetName() const { return name; }
+	virtual inline const char* GetName() const { return name; }
 
 protected:
 
 	bool enabled = false;
-	char* name = nullptr;
+	const char* name = nullptr;
 };
 
 #endif

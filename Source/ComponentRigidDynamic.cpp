@@ -2,16 +2,15 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
-
-#include "Application.h"
-#include "ModulePhysics.h"
 #include "GameObject.h"
+
+#include "PhysicsConstants.h"
 
 #include "imgui\imgui.h"
 
 ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidDynamicComponent)
 {
-	density = DEFAULT_DENSITY;
+	density = DENSITY;
 
 	physx::PxShape* gShape = nullptr;
 	if (parent->boundingBox.IsFinite())

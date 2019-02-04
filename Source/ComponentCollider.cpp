@@ -115,22 +115,22 @@ physx::PxShape* ComponentCollider::GetShape() const
 
 void ComponentCollider::OnCollisionEnter(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionStay(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionExit(Collision& collision)
 {
-	CONSOLE_LOG("OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerEnter(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
 
 	triggerEnter = true;
 	triggerExit = false;
@@ -139,12 +139,12 @@ void ComponentCollider::OnTriggerEnter(Collision& collision)
 
 void ComponentCollider::OnTriggerStay(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerExit(Collision& collision)
 {
-	CONSOLE_LOG("OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
 
 	triggerExit = true;
 	triggerEnter = false;

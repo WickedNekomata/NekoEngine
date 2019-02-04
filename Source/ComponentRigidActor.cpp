@@ -91,10 +91,10 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 
 void ComponentRigidActor::OnWake()
 {
-	CONSOLE_LOG("OnWake", LogTypes::Normal);
+	CONSOLE_LOG(LogTypes::Normal, "OnWake", LogTypes::Normal);
 }
 
 void ComponentRigidActor::OnSleep()
 {
-	CONSOLE_LOG("OnSleep", LogTypes::Normal);
+	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
 }

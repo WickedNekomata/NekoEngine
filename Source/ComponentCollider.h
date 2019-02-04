@@ -3,9 +3,9 @@
 
 #include "Component.h"
 
-#include "physx/include/PxPhysicsAPI.h"
+#include "physx\include\PxPhysicsAPI.h"
 
-#include "MathGeoLib/include/Math/float3.h"
+#include "MathGeoLib\include\Math\float3.h"
 
 #include "SimulationEvents.h"
 

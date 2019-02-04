@@ -58,7 +58,7 @@ void Layers::SetLayerName(uint layerNumber, const char* layerName) const
 		App->PushSystemEvent(newEvent);
 	}
 	else if (NameToNumber(layerName) > -1)
-		CONSOLE_LOG("Warning! A layer with the name '%s' is already registered", layerName);
+		CONSOLE_LOG(LogTypes::Warning, "A layer with the name '%s' is already registered", layerName);
 
 	layers[layerNumber]->name = layerName;
 }

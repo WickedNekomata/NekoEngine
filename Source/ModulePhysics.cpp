@@ -120,7 +120,7 @@ ModulePhysics::~ModulePhysics() {}
 
 bool ModulePhysics::Init(JSON_Object* jObject)
 {
-	gravity = math::float3(DEFAULT_GRAVITY_X, DEFAULT_GRAVITY_Y, DEFAULT_GRAVITY_Z);
+	gravity = math::float3(GRAVITY_X, GRAVITY_Y, GRAVITY_Z);
 
 	return true;
 }
@@ -153,7 +153,7 @@ bool ModulePhysics::Start()
 	gScene->setSimulationEventCallback(new SimulationEventCallback(this));
 
 	// Default material
-	defaultMaterial = gPhysics->createMaterial(DEFAULT_STATIC_FRICTION, DEFAULT_DYNAMIC_FRICTION, DEFAULT_RESTITUTION);
+	defaultMaterial = gPhysics->createMaterial(STATIC_FRICTION, DYNAMIC_FRICTION, RESTITUTION);
 
 	// Ground
 	physx::PxShape* planeShape = CreateShape(physx::PxPlaneGeometry(), *defaultMaterial);
@@ -273,13 +273,13 @@ physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransfor
 void ModulePhysics::AddActor(physx::PxActor& actor) const
 {
 	gScene->addActor(actor);
-	CONSOLE_LOG("gScene actors after adding an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	CONSOLE_LOG(LogTypes::Normal, "gScene actors after adding an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 }
 
 void ModulePhysics::RemoveActor(physx::PxActor& actor) const
 {
 	gScene->removeActor(actor);
-	CONSOLE_LOG("gScene actors after removing an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
+	CONSOLE_LOG(LogTypes::Normal, "gScene actors after removing an actor: %i", gScene->getNbActors(physx::PxActorTypeFlag::Enum::eRIGID_STATIC | physx::PxActorTypeFlag::Enum::eRIGID_DYNAMIC));
 }
 
 physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive) const

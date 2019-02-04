@@ -20,9 +20,6 @@ public:
 
 	void OnSystemEvent(System_Event e);
 
-	bool OnGameMode();
-	bool OnEditorMode();
-
 	void Draw();
 	void SetInputGeom(class NMInputGeom& inputGeom);
 	int  AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed,
@@ -38,6 +35,7 @@ public:
 private:
 
 	void cleanup();
+	void InitCrowd();
 
 protected:
 

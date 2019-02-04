@@ -56,35 +56,39 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 {
 	switch (e.type)
 	{
-		/*
-		case EnterPlayMode
+	case System_Event_Type::Play:
+	{
+		if (m_navMesh)
+			return;
 
-		maybe init here navmesh query too?
-		m_crowd = dtAllocCrowd();
-		init crowd
-		
-		add agents
-		
-		*/
+		m_navQuery = dtAllocNavMeshQuery();
+
+		dtStatus status;
+
+		status = m_navQuery->init(m_navMesh, 2048);
+		if (dtStatusFailed(status))
+		{
+			DEPRECATED_LOG("Could not init Detour navmesh query");
+			return;
+		}
+
+		InitCrowd();
+		break;
+	}
+	case System_Event_Type::Stop:
+	{
+		if (m_navMesh)
+			return;
+
+		dtFreeNavMeshQuery(m_navQuery);
+		dtFreeCrowd(m_crowd);
+	}
+		break;
 	}
 }
 
-bool ModuleNavigation::OnGameMode()
+void ModuleNavigation::InitCrowd()
 {
-	if (m_navMesh)
-		return false;
-
-	m_navQuery = dtAllocNavMeshQuery();
-
-	dtStatus status;
-
-	status = m_navQuery->init(m_navMesh, 2048);
-	if (dtStatusFailed(status))
-	{
-		DEPRECATED_LOG("Could not init Detour navmesh query");
-		return false;
-	}
-
 	m_crowd = dtAllocCrowd();
 
 	//args 1- Max agents, 2- radius agent, 3- navmesh
@@ -99,7 +103,7 @@ bool ModuleNavigation::OnGameMode()
 
 	// check mikkos answer to understand local avoidance params
 	// https://groups.google.com/forum/#!searchin/recastnavigation/local$20avoidance%7Csort:date/recastnavigation/3hFcUXb-Cjc/XeC7t2CPMCYJ
-	
+
 	// Low (11)
 	params.velBias = 0.5f;
 	params.adaptiveDivs = 5;
@@ -128,18 +132,6 @@ bool ModuleNavigation::OnGameMode()
 	params.adaptiveDepth = 3;
 
 	m_crowd->setObstacleAvoidanceParams(3, &params);
-
-	return true;
-}
-
-bool ModuleNavigation::OnEditorMode()
-{
-	if (m_navMesh)
-		return false;
-
-	dtFreeNavMeshQuery(m_navQuery);
-	dtFreeCrowd(m_crowd);
-	return true;
 }
 
 void ModuleNavigation::Draw()

@@ -5,6 +5,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
+#define BIT_SHIFT(x) 1 << x
 
 constexpr uint MAX_NUM_LAYERS(32);
 
@@ -17,12 +20,14 @@ public:
 	~Layer();
 
 	uint GetNumber() const;
-	uint GetValue() const;
+	uint GetFilterGroup() const;
 
 public:
 
 	std::string name = "";
 	bool builtin = false;
+
+	uint filterMask = 0;
 
 private:
 
@@ -41,10 +46,12 @@ public:
 	const char* NumberToName(uint layerNumber) const;
 	bool NumberToBuiltin(uint layerNumber) const;
 	int NameToNumber(const char* layerName) const;
-	int NameToBuiltin(const char* layerName) const;
+	bool NameToBuiltin(const char* layerName) const;
 
-	uint GetMask(std::vector<uint> layerNumbers) const;
-	uint GetMask(std::vector<const char*> layerNames) const;
+	int GetMask(std::vector<uint> layerNumbers) const;
+	int GetMask(std::vector<const char*> layerNames) const;
+
+	std::vector<Layer*> GetLayers() const;
 
 private:
 

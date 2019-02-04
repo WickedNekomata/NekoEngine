@@ -2,8 +2,6 @@
 
 #include <assert.h>
 
-#define BIT_SHIFT(x) 1 << x
-
 Layer::Layer() {}
 
 Layer::Layer(uint number) :number(number) {}
@@ -15,7 +13,7 @@ uint Layer::GetNumber() const
 	return number;
 }
 
-uint Layer::GetValue() const
+uint Layer::GetFilterGroup() const
 {
 	return BIT_SHIFT(number);
 }
@@ -39,7 +37,7 @@ Layers::~Layers() {}
 
 void Layers::SetLayerName(uint layerNumber, const char* layerName) const
 {
-	if (layers[layerNumber]->name.data() != nullptr)
+	if (NameToNumber(layerName) > -1)
 		CONSOLE_LOG("Warning! A layer with the name '%s' is already registered", layerName);
 
 	layers[layerNumber]->name = layerName;
@@ -65,28 +63,28 @@ int Layers::NameToNumber(const char* layerName) const
 	assert(layerName != nullptr);
 	for (uint i = 0; i < layers.size(); ++i)
 	{
-		if (layers[i]->name.data() == layerName)
+		if (strcmp(layers[i]->name.data(), layerName) == 0)
 			return i;
 	}
 
 	return -1;
 }
 
-// Returns whether the layer is builtin. -1 if error
-int Layers::NameToBuiltin(const char* layerName) const
+// Returns whether the layer is builtin
+bool Layers::NameToBuiltin(const char* layerName) const
 {
 	assert(layerName != nullptr);
 	for (uint i = 0; i < layers.size(); ++i)
 	{
-		if (layers[i]->name.data() == layerName)
+		if (strcmp(layers[i]->name.data(), layerName) == 0)
 			return layers[i]->builtin;
 	}
 
-	return -1;
+	return false;
 }
 
 // Returns the mask
-uint Layers::GetMask(std::vector<uint> layerNumbers) const
+int Layers::GetMask(std::vector<uint> layerNumbers) const
 {
 	uint mask = 0;
 
@@ -100,7 +98,7 @@ uint Layers::GetMask(std::vector<uint> layerNumbers) const
 }
 
 // Returns the mask
-uint Layers::GetMask(std::vector<const char*> layerNames) const
+int Layers::GetMask(std::vector<const char*> layerNames) const
 {
 	uint mask = 0;
 
@@ -112,4 +110,9 @@ uint Layers::GetMask(std::vector<const char*> layerNames) const
 	}
 
 	return mask;
+}
+
+std::vector<Layer*> Layers::GetLayers() const
+{
+	return layers;
 }

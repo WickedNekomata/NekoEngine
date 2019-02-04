@@ -1,1 +1,4 @@
 Mono\
+*.iobj
+*.ipdb
+*.pdb

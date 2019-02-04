@@ -156,12 +156,13 @@ void PanelInspector::ShowGameObjectInspector() const
 
 	ImGui::SetCursorScreenPos(cursorPos);
 
-	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
+	for (int i = 0; i < gameObject->GetComponentsLength(); ++i)
 	{
 		ImGui::Separator();
 		DragnDropSeparatorTarget(gameObject->GetComponent(i));
 		gameObject->GetComponent(i)->OnEditor();
 	}
+	
 	ImGui::Separator();
 	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponentsLength() - 1));
 

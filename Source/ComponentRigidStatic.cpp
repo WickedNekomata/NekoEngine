@@ -28,6 +28,8 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 
 ComponentRigidStatic::~ComponentRigidStatic() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidStatic::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -37,3 +39,7 @@ void ComponentRigidStatic::OnUniqueEditor()
 	ComponentRigidActor::OnUniqueEditor();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidStatic::Update() {}

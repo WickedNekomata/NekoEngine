@@ -4,8 +4,6 @@
 #include "Component.h"
 
 #include "physx/include/PxPhysicsAPI.h"
-#include "MathGeoLib/include/Math/float3.h"
-#include "MathGeoLib/include/Math/float4x4.h"
 
 class ComponentRigidActor : public Component
 {

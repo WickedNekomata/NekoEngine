@@ -57,6 +57,8 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 
 ComponentRigidDynamic::~ComponentRigidDynamic() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidDynamic::OnUniqueEditor()
 {
 #ifndef GAMEMODE

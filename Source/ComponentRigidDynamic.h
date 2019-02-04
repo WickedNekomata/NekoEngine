@@ -4,6 +4,8 @@
 #include "Component.h"
 #include "ComponentRigidActor.h"
 
+#include "MathGeoLib/include/Math/float3.h"
+
 #define DEFAULT_DENSITY 10.0f
 
 class ComponentRigidDynamic : public ComponentRigidActor

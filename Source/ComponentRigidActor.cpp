@@ -16,6 +16,8 @@ ComponentRigidActor::~ComponentRigidActor()
 	gActor->release();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidActor::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -27,10 +29,7 @@ void ComponentRigidActor::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidActor::Update()
-{
-
-}
+void ComponentRigidActor::Update() {}
 
 // ----------------------------------------------------------------------------------------------------
 

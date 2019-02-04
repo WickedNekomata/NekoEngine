@@ -20,6 +20,8 @@ ComponentCollider::~ComponentCollider()
 	gMaterial = nullptr;
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE

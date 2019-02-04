@@ -4,9 +4,10 @@
 #include "Component.h"
 
 #include "physx/include/PxPhysicsAPI.h"
+
 #include "MathGeoLib/include/Math/float3.h"
 
-#include "ModulePhysics.h"
+#include "SimulationEvents.h"
 
 class ComponentCollider : public Component
 {

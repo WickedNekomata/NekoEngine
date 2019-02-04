@@ -154,6 +154,7 @@
     <ClInclude Include="Assimp\include\vector2.h" />
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
+    <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />

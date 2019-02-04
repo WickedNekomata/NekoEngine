@@ -1324,6 +1324,9 @@
     <ClInclude Include="SimulationEvents.h">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsConstants.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">

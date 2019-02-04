@@ -14,6 +14,8 @@ ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollid
 
 ComponentBoxCollider::~ComponentBoxCollider() {}
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentBoxCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -41,6 +43,8 @@ void ComponentBoxCollider::OnUniqueEditor()
 		RecalculateShape();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentBoxCollider::RecalculateShape()
 {

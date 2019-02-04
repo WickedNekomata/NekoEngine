@@ -20,6 +20,7 @@
 #include "ModuleScene.h"
 #include "ModulePhysics.h"
 #include "ModuleParticles.h"
+#include "ScriptingModule.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -329,6 +330,12 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;
+		case ComponentTypes::ScriptComponent:
+		{
+			App->scripting->DestroyScript((ComponentScript*)toDelete);
+			components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+			return;
+		}
 	}
 
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
@@ -347,6 +354,9 @@ void GameObject::InternallyDeleteComponents()
 		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
 			break;
+		case ComponentTypes::ScriptComponent:
+			App->scripting->DestroyScript((ComponentScript*)components[i]);
+			continue;
 		}		
 
 		RELEASE(components[i]);

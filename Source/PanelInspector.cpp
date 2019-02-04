@@ -133,7 +133,30 @@ void PanelInspector::ShowGameObjectInspector() const
 
 	// -----
 
-	for (int i = 0; i < gameObject->GetComponentsLength(); ++i)
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+	ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+	ImGui::Dummy(inspectorSize);
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_RESOURCE"))
+		{
+			ResourceScript* scriptRes = *(ResourceScript**)payload->Data;
+
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptRes->scriptName);
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(cursorPos);
+
+	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
 	{
 		ImGui::Separator();
 		DragnDropSeparatorTarget(gameObject->GetComponent(i));
@@ -210,9 +233,9 @@ void PanelInspector::ShowGameObjectInspector() const
 		ImGui::OpenPopup("AddingScript");
 	}
 
-	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	inspectorSize = ImGui::GetWindowSize();
 	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
-	ImGui::SetNextWindowSize({ inspectorSize.x, 0 });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 0.0f });
 	if (ImGui::BeginPopup("AddingScript"))
 	{
 		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();
@@ -230,7 +253,7 @@ void PanelInspector::ShowGameObjectInspector() const
 
 		//TODO: Add a maximum height, fix the totalHeight calculation
 		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, totalHeight + windowPaddingY * 2}, true);
-	
+
 		for (int i = 0; i < scriptNames.size(); ++i)
 		{
 			if(ImGui::Selectable(scriptNames[i].data()))
@@ -261,7 +284,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		
+
 		ImGui::EndChild();
 
 		static std::string scriptName;

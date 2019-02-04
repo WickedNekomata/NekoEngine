@@ -262,8 +262,21 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 				uint UUID = 0;
 				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
 				file->resource = App->res->GetResource(UUID);
+				break;
 			}
-			break;
+			case ResourceType::ScriptResource:
+			{				
+				char* metaBuffer;
+				uint size = App->fs->Load(metaFile, &metaBuffer);
+				if (size > 0)
+				{
+					uint32_t UUID = 0;
+					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+					file->resource = App->res->GetResource(UUID);
+				}
+				break;
+			}			
 			}
 
 			assetsFiles[file->path] = file->lastModTime;

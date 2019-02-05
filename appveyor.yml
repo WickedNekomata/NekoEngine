@@ -1,0 +1,111 @@
+version: 0.{build}
+image: Visual Studio 2017
+platform: x86
+configuration: Release
+skip_tags: true
+build:
+  verbosity: minimal
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+    - releases
+    - master
+    - game
+
+before_build:
+  
+  - 7z x "Mono.zip" -o"%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\"
+
+for:
+-
+  branches:
+    only:
+      - releases
+  configuration: Release
+
+  after_build:
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine /EXCLUDE:gameExcluded.md
+    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Release\JellyBitEngine.exe" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    - 7z a JellyBitEngine.zip %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    
+  artifacts:  
+  - path: "JellyBitEngine.zip"
+  - path: "Mono.zip"
+
+  deploy:
+  - provider: GitHub
+    release: "JellyBitEngine-Release-v$(appveyor_build_version)"
+    artifact: "JellyBitEngine.zip, Mono.zip"
+    auth_token:
+      secure: mpvv4JtzhxltjCtSxrbMFASqOmfq91aRldyjg+pOeUsbbuVwv6cWGvGuX6TAz9e+
+    draft: false
+    prerelease: false
+    on:
+      appveyor_repo_tag: false
+
+  notifications:
+    - provider: Email
+      on_build_success: true
+      on_build_failure: false
+      on_build_status_changed: false
+      to:
+        - jony635molina@gmail.com
+      subject: 'Success release {{buildVersion}}'
+      message: "Good Job!"
+-
+  branches:
+    only:
+      - game
+  configuration: Game
+
+  after_build:
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit /EXCLUDE:gameExcluded.md
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    - 7z a Alita_JellyBit.zip %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    
+  artifacts:  
+  - path: "Alita_JellyBit.zip"
+  - path: "Mono.zip"
+
+  deploy:
+  - provider: GitHub
+    release: "Alita_JellyBit-Release-v$(appveyor_build_version)"
+    artifact: "Alita_JellyBit.zip, Mono.zip"
+    auth_token:
+      secure: mpvv4JtzhxltjCtSxrbMFASqOmfq91aRldyjg+pOeUsbbuVwv6cWGvGuX6TAz9e+
+    draft: false
+    prerelease: false
+    on:
+      appveyor_repo_tag: false
+
+  notifications:
+    - provider: Email
+      on_build_success: true
+      on_build_failure: false
+      on_build_status_changed: false
+      to:
+        - jony635molina@gmail.com
+      subject: 'Success release {{buildVersion}}'
+      message: "Good Job!"
+
+-
+  branches:
+    only:
+      - master
+  notifications:    
+      - provider: Email
+        on_build_success: false
+        on_build_failure: true
+        on_build_status_changed: false
+        to:
+          - '{{commitAuthorEmail}}'
+        subject: 'Failed commit: {{commitId}}'
+        message: "Check it!"

@@ -157,7 +157,6 @@ bool ModulePhysics::Start()
 
 	// Scene
 	simulationEventCallback = new SimulationEventCallback(this);
-	queryFilterCallback = new QueryFilterCallback();
 
 	physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(gravity.x, gravity.y, gravity.z);
@@ -259,7 +258,6 @@ bool ModulePhysics::CleanUp()
 	defaultMaterial = nullptr;
 
 	RELEASE(simulationEventCallback);
-	RELEASE(queryFilterCallback);
 
 	return true;
 }
@@ -521,8 +519,6 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
-	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
-	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)
@@ -535,11 +531,15 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 		maxDistance, hitsBuffer, hitFlags, filterData);
 	
 	// Hit
-	if (hitsBuffer.hasBlock)
+	if (status) 
 	{
+		//if (hitsBuffer.hasBlock)
+		//{
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
-		GameObject* gameObject = actor->GetParent();
+		GameObject* gameObject = nullptr;
+		if (actor != nullptr)
+			gameObject = actor->GetParent();
 
 		hitInfo.SetCollider(collider);
 		hitInfo.SetActor(actor);
@@ -552,6 +552,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 			hitInfo.SetTexCoord(math::float2(hitsBuffer.block.u, hitsBuffer.block.v));
 		hitInfo.SetDistance(hitsBuffer.block.distance);
 		hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
+		//}
 	}
 
 	// Touches
@@ -593,8 +594,6 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
-	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
-	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	filterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
@@ -642,8 +641,6 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
-	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
-	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	filterData.flags |= physx::PxQueryFlag::eNO_BLOCK;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
@@ -693,8 +690,6 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // sweep against this filter mask
-	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
-	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)
@@ -734,8 +729,6 @@ bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& tra
 {
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // overlap against this filter mask
-	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
-	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)

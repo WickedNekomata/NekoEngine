@@ -216,20 +216,3 @@ uint OverlapHit::GetFaceIndex() const
 {
 	return faceIndex;
 }
-
-// ----------------------------------------------------------------------------------------------------
-// ----------------------------------------------------------------------------------------------------
-
-QueryFilterCallback::QueryFilterCallback() {}
-
-QueryFilterCallback::~QueryFilterCallback() {}
-
-physx::PxQueryHitType::Enum QueryFilterCallback::preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags)
-{
-	return physx::PxQueryHitType::eNONE;
-}
-
-physx::PxQueryHitType::Enum QueryFilterCallback::postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit)
-{
-	return physx::PxQueryHitType::eNONE;
-}

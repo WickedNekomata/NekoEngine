@@ -1,8 +1,8 @@
 [
     {
         "Name": "RootNode",
-        "UUID": 1773736652,
-        "Parent UUID": 1084698295,
+        "UUID": 3545086787,
+        "Parent UUID": 1949137071,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "Name": "Tank",
-        "UUID": 1042493957,
-        "Parent UUID": 1773736652,
+        "UUID": 2170635841,
+        "Parent UUID": 3545086787,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -41,8 +41,8 @@
     },
     {
         "Name": "TankRenderers",
-        "UUID": 2706562450,
-        "Parent UUID": 1042493957,
+        "UUID": 2992285465,
+        "Parent UUID": 2170635841,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -61,8 +61,8 @@
     },
     {
         "Name": "TankTurret",
-        "UUID": 2407780873,
-        "Parent UUID": 2706562450,
+        "UUID": 3932212801,
+        "Parent UUID": 2992285465,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -79,7 +79,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 82988895
+                "ResourceMesh": 2295483376
             },
             {
                 "Type": 3,
@@ -137,8 +137,8 @@
     },
     {
         "Name": "TankTracksLeft",
-        "UUID": 3031544456,
-        "Parent UUID": 2706562450,
+        "UUID": 117525623,
+        "Parent UUID": 2992285465,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -155,7 +155,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1758062240
+                "ResourceMesh": 456882826
             },
             {
                 "Type": 3,
@@ -213,8 +213,8 @@
     },
     {
         "Name": "TankTracksRight",
-        "UUID": 955331746,
-        "Parent UUID": 2706562450,
+        "UUID": 1375856765,
+        "Parent UUID": 2992285465,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -231,7 +231,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3112356557
+                "ResourceMesh": 197663983
             },
             {
                 "Type": 3,
@@ -289,8 +289,8 @@
     },
     {
         "Name": "TankChassis",
-        "UUID": 428144974,
-        "Parent UUID": 2706562450,
+        "UUID": 2466339554,
+        "Parent UUID": 2992285465,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -307,7 +307,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 424485258
+                "ResourceMesh": 3405838226
             },
             {
                 "Type": 3,

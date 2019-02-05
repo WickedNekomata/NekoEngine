@@ -21,6 +21,7 @@ class Collision;
 class RaycastHit;
 class SweepHit;
 class OverlapHit;
+class SimulationEventCallback;
 enum ComponentTypes;
 enum SimulationEventTypes;
 enum CollisionTypes;
@@ -115,7 +116,6 @@ private:
 	physx::PxDefaultCpuDispatcher* gDispatcher = nullptr;
 
 	SimulationEventCallback* simulationEventCallback = nullptr;
-	QueryFilterCallback* queryFilterCallback = nullptr;
 
 	float gAccumulator = 0.0f;
 

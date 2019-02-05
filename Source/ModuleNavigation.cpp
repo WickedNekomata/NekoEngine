@@ -2,6 +2,10 @@
 #include "NMInputGeom.h"
 #include "NMDebugDraw.h"
 
+#include "ModuleGOs.h"
+#include "GameObject.h"
+#include "ComponentNavAgent.h"
+
 #include "Recast&Detour/Detour/Include/DetourNavMesh.h"
 #include "Recast&Detour/Detour/Include/DetourNavMeshBuilder.h"
 #include "Recast&Detour/DebugUtils/Include/DetourDebugDraw.h"
@@ -73,6 +77,13 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 		}
 
 		InitCrowd();
+
+		std::vector<GameObject*> gameobjects;
+		App->GOs->GetGameObjects(gameobjects);
+
+		for (int i = 0; i < gameobjects.size(); ++i)
+			gameobjects[i]->navAgent->AddAgent();
+
 		break;
 	}
 	case System_Event_Type::Stop:
@@ -80,8 +91,9 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 		if (m_navMesh)
 			return;
 
-		dtFreeNavMeshQuery(m_navQuery);
 		dtFreeCrowd(m_crowd);
+		dtFreeNavMeshQuery(m_navQuery);
+		
 	}
 		break;
 	}

@@ -4,6 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Layers.h"
 
 #include "imgui\imgui.h"
 
@@ -12,6 +13,9 @@
 ComponentPlaneCollider::ComponentPlaneCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::PlaneColliderComponent)
 {
 	RecalculateShape();
+
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 }
 
 ComponentPlaneCollider::~ComponentPlaneCollider() {}

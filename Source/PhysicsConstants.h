@@ -8,5 +8,6 @@ constexpr float STATIC_FRICTION(0.5f);
 constexpr float DYNAMIC_FRICTION(0.5f);
 constexpr float RESTITUTION(0.6f);
 constexpr float DENSITY(10.0f);
+constexpr uint MAX_HITS(256);
 
 #endif

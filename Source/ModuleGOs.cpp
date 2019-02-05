@@ -134,7 +134,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 		break;
 
-	case System_Event_Type::LayerReset:
+	case System_Event_Type::LayerNameReset:
 
 		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
 		{

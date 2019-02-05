@@ -4,6 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Layers.h"
 
 #include "imgui\imgui.h"
 
@@ -24,6 +25,9 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 	}
 
 	RecalculateShape();
+
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}

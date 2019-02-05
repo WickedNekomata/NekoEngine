@@ -3,11 +3,14 @@
 
 #include "Module.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-#include "physx/include/extensions/PxDefaultAllocator.h"
-#include "physx/include/extensions/PxDefaultCpuDispatcher.h"
+#include "Layers.h"
 
-#include "MathGeoLib/include/Math/float3.h"
+#include "physx\include\PxPhysicsAPI.h"
+#include "physx\include\extensions\PxDefaultAllocator.h"
+#include "physx\include\extensions\PxDefaultCpuDispatcher.h"
+
+#include "MathGeoLib\include\Math\float3.h"
+#include "MathGeoLib\include\Math\MathConstants.h"
 
 #include <vector>
 
@@ -15,6 +18,9 @@ class ComponentRigidActor;
 class ComponentCollider;
 class GameObject;
 class Collision;
+class RaycastHit;
+class SweepHit;
+class OverlapHit;
 enum ComponentTypes;
 enum SimulationEventTypes;
 enum CollisionTypes;
@@ -48,9 +54,6 @@ public:
 
 	void OnSystemEvent(System_Event event);
 
-	bool OnGameMode();
-	bool OnEditorMode();
-
 	// ----------------------------------------------------------------------------------------------------
 
 	// Physic elements
@@ -80,14 +83,25 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 
-	// Callbacks
+	// Simulation events
 	void OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const;
 	void OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const;
+	
+	// ----------------------------------------------------------------------------------------------------
+
+	// Scene queries
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	
+	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = math::inf, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	
+	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 
 	// ----------------------------------------------------------------------------------------------------
 
 	// General configuration values
-	void SetGravity(math::float3 gravity);
+	void SetGravity(math::float3& gravity);
 	math::float3 GetGravity() const;
 
 	void SetDefaultMaterial(physx::PxMaterial* material);

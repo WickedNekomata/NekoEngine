@@ -1468,6 +1468,9 @@
     <ClInclude Include="PhysicsConstants.h">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="SceneQueries.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1918,6 +1921,9 @@
       <Filter>Sources\Helpers\Physics</Filter>
     </ClCompile>
     <ClCompile Include="SimulationEvents.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneQueries.cpp">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClCompile>
   </ItemGroup>

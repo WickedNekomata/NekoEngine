@@ -15,7 +15,8 @@ enum System_Event_Type
 	ResourceDestroyed,
 	GameObjectDestroyed,
 	ComponentDestroyed,
-	LayerReset // LayerEvent
+	LayerNameReset, // LayerEvent
+	LayerFilterMaskChanged // LayerEvent
 };
 
 class GameObject;

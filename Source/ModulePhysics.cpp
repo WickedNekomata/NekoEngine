@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "GameObject.h"
-#include "Layers.h"
 
 #include "ComponentCollider.h"
 #include "ComponentBoxCollider.h"
@@ -14,10 +13,13 @@
 #include "ComponentRigidStatic.h"
 #include "ComponentRigidDynamic.h"
 
-#include "SimulationEvents.h"
 #include "PhysicsConstants.h"
+#include "SimulationEvents.h"
+#include "SceneQueries.h"
 
 #include <assert.h>
+
+#include "MathGeoLib\include\Math\float2.h"
 
 #ifdef _DEBUG
 	#pragma comment(lib, "physx/libx86/debugx86/PhysX_32.lib")
@@ -159,7 +161,7 @@ bool ModulePhysics::Start()
 	physx::PxShape* planeShape = CreateShape(physx::PxPlaneGeometry(), *defaultMaterial);
 	physx::PxFilterData filterData;
 	filterData.word0 = App->layers->GetLayer(0)->GetFilterGroup();
-	filterData.word1 = App->layers->GetLayer(0)->filterMask;
+	filterData.word1 = App->layers->GetLayer(0)->GetFilterMask();
 	planeShape->setSimulationFilterData(filterData);
 	physx::PxRigidStatic* groundPlane = CreateRigidStatic(physx::PxTransformFromPlaneEquation(physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f)), *planeShape);
 
@@ -218,32 +220,20 @@ bool ModulePhysics::CleanUp()
 
 void ModulePhysics::OnSystemEvent(System_Event event)
 {
-	// TODO: on game mode, on editor mode, etc.
-}
-
-bool ModulePhysics::OnGameMode()
-{
-	// Set filtering
-	for (uint i = 0; i < colliderComponents.size(); ++i)
+	switch (event.type)
 	{
-		Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->layer);
-		colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->filterMask);
+	case System_Event_Type::LayerFilterMaskChanged:
+
+		// Update filtering
+		for (uint i = 0; i < colliderComponents.size(); ++i)
+		{
+			Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->layer);
+			if (layer->GetNumber() == event.layerEvent.layer)
+				colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
+		}
+
+		break;
 	}
-
-	// -----
-
-	return true;
-}
-
-bool ModulePhysics::OnEditorMode()
-{
-	// Reset filtering
-	for (uint i = 0; i < colliderComponents.size(); ++i)
-		colliderComponents[i]->SetFiltering(0, 0);
-
-	// -----
-
-	return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -473,7 +463,250 @@ void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collisio
 
 // ----------------------------------------------------------------------------------------------------
 
-void ModulePhysics::SetGravity(math::float3 gravity)
+// Raycast: traces a point along a line segment until it hits a geometry object
+// Raycast with multiple touches and a blocking hit
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+{
+	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
+	direction.Normalize();
+
+	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::eUV;
+
+	physx::PxQueryFilterData filterData;
+	filterData.data.word0 = filterMask; // raycast against this filter mask
+	if (!staticShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
+	if (!dynamicShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
+
+	physx::PxRaycastHit hitBuffer[MAX_HITS];
+	physx::PxRaycastBuffer hitsBuffer(hitBuffer, MAX_HITS);
+
+	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
+		maxDistance, hitsBuffer, hitFlags, filterData);
+	
+	// Hit
+	if (status)
+	{
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
+		GameObject* gameObject = actor->GetParent();
+
+		hitInfo.SetCollider(collider);
+		hitInfo.SetActor(actor);
+		hitInfo.SetGameObject(gameObject);
+		if (hitsBuffer.block.flags & physx::PxHitFlag::ePOSITION)
+			hitInfo.SetPoint(math::float3(hitsBuffer.block.position.x, hitsBuffer.block.position.y, hitsBuffer.block.position.z));
+		if (hitsBuffer.block.flags & physx::PxHitFlag::eNORMAL)
+			hitInfo.SetNormal(math::float3(hitsBuffer.block.normal.x, hitsBuffer.block.normal.y, hitsBuffer.block.normal.z));
+		if (hitsBuffer.block.flags & physx::PxHitFlag::eUV)
+			hitInfo.SetTexCoord(math::float2(hitsBuffer.block.u, hitsBuffer.block.v));
+		hitInfo.SetDistance(hitsBuffer.block.distance);
+		hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
+	}
+
+	// Touches
+	for (physx::PxU32 i = 0; i < hitsBuffer.nbTouches; ++i)
+	{
+		assert(hitsBuffer.touches[i].distance <= hitsBuffer.block.distance);
+		
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
+		GameObject* gameObject = actor->GetParent();
+
+		math::float3 point = math::float3::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::ePOSITION)
+			point = math::float3(hitsBuffer.touches[i].position.x, hitsBuffer.touches[i].position.y, hitsBuffer.touches[i].position.z);
+		math::float3 normal = math::float3::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eNORMAL)
+			normal = math::float3(hitsBuffer.touches[i].normal.x, hitsBuffer.touches[i].normal.y, hitsBuffer.touches[i].normal.z);
+		math::float2 texCoord = math::float2::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eUV)
+			texCoord = math::float2(hitsBuffer.touches[i].u, hitsBuffer.touches[i].v);
+
+		RaycastHit touchInfo(gameObject, collider, actor, point, normal, texCoord, hitsBuffer.touches[i].distance, hitsBuffer.touches[i].faceIndex);
+		touchesInfo.push_back(touchInfo);
+	}
+
+	hitsBuffer.finalizeQuery();
+
+	return status;
+}
+
+// Raycast with a blocking hit (first encountered hit)
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+{
+	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
+	direction.Normalize();
+
+	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::eUV;
+
+	physx::PxQueryFilterData filterData;
+	filterData.data.word0 = filterMask; // raycast against this filter mask
+	filterData.flags |= physx::PxQueryFlag::eANY_HIT;
+	if (!staticShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
+	if (!dynamicShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
+
+	physx::PxRaycastBuffer hitsBuffer;
+
+	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
+		maxDistance, hitsBuffer, hitFlags, filterData);
+
+	// Hit
+	if (status)
+	{
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
+		GameObject* gameObject = actor->GetParent();
+
+		hitInfo.SetCollider(collider);
+		hitInfo.SetActor(actor);
+		hitInfo.SetGameObject(gameObject);
+		if (hitsBuffer.block.flags & physx::PxHitFlag::ePOSITION)
+			hitInfo.SetPoint(math::float3(hitsBuffer.block.position.x, hitsBuffer.block.position.y, hitsBuffer.block.position.z));
+		if (hitsBuffer.block.flags & physx::PxHitFlag::eNORMAL)
+			hitInfo.SetNormal(math::float3(hitsBuffer.block.normal.x, hitsBuffer.block.normal.y, hitsBuffer.block.normal.z));
+		if (hitsBuffer.block.flags & physx::PxHitFlag::eUV)
+			hitInfo.SetTexCoord(math::float2(hitsBuffer.block.u, hitsBuffer.block.v));
+		hitInfo.SetDistance(hitsBuffer.block.distance);
+		hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
+	}
+
+	hitsBuffer.finalizeQuery();
+
+	return status;
+}
+
+// Raycast with multiple touches (no blocking hits)
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+{
+	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
+	direction.Normalize();
+
+	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::eUV;
+
+	physx::PxQueryFilterData filterData;
+	filterData.data.word0 = filterMask; // raycast against this filter mask
+	filterData.flags |= physx::PxQueryFlag::eNO_BLOCK;
+	if (!staticShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
+	if (!dynamicShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
+
+	physx::PxRaycastHit hitBuffer[MAX_HITS];
+	physx::PxRaycastBuffer hitsBuffer(hitBuffer, MAX_HITS);
+
+	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
+		maxDistance, hitsBuffer, hitFlags, filterData);
+
+	// Touches
+	for (physx::PxU32 i = 0; i < hitsBuffer.nbTouches; ++i)
+	{
+		assert(hitsBuffer.touches[i].distance <= hitsBuffer.block.distance);
+
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
+		GameObject* gameObject = actor->GetParent();
+
+		math::float3 point = math::float3::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::ePOSITION)
+			point = math::float3(hitsBuffer.touches[i].position.x, hitsBuffer.touches[i].position.y, hitsBuffer.touches[i].position.z);
+		math::float3 normal = math::float3::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eNORMAL)
+			normal = math::float3(hitsBuffer.touches[i].normal.x, hitsBuffer.touches[i].normal.y, hitsBuffer.touches[i].normal.z);
+		math::float2 texCoord = math::float2::zero;
+		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eUV)
+			texCoord = math::float2(hitsBuffer.touches[i].u, hitsBuffer.touches[i].v);
+
+		RaycastHit touchInfo(gameObject, collider, actor, point, normal, texCoord, hitsBuffer.touches[i].distance, hitsBuffer.touches[i].faceIndex);
+		touchesInfo.push_back(touchInfo);
+	}
+
+	hitsBuffer.finalizeQuery();
+
+	return status;
+}
+
+// Sweep: traces one geometry object through space to find the impact point on a second geometry object
+/// Transformed box, sphere, capsule or convex geometry
+bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance, float inflation, uint filterMask, bool staticShapes, bool dynamicShapes) const
+{
+	assert(direction.IsFinite());
+	direction.Normalize();
+
+	physx::PxQueryFilterData filterData;
+	filterData.data.word0 = filterMask; // sweep against this filter mask
+	if (!staticShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
+	if (!dynamicShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
+
+	physx::PxSweepBuffer hitsBuffer;
+
+	bool status = gScene->sweep(geometry, transform, physx::PxVec3(direction.x, direction.y, direction.z),
+		maxDistance, hitsBuffer, physx::PxHitFlag::eDEFAULT, filterData, (physx::PxQueryFilterCallback*)0, (physx::PxQueryCache*)0, inflation);
+
+	// Hit
+	if (status)
+	{
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
+		GameObject* gameObject = actor->GetParent();
+
+		hitInfo.SetCollider(collider);
+		hitInfo.SetActor(actor);
+		hitInfo.SetGameObject(gameObject);
+		if (hitsBuffer.block.flags & physx::PxHitFlag::ePOSITION)
+			hitInfo.SetPoint(math::float3(hitsBuffer.block.position.x, hitsBuffer.block.position.y, hitsBuffer.block.position.z));
+		if (hitsBuffer.block.flags & physx::PxHitFlag::eNORMAL)
+			hitInfo.SetNormal(math::float3(hitsBuffer.block.normal.x, hitsBuffer.block.normal.y, hitsBuffer.block.normal.z));
+		hitInfo.SetDistance(hitsBuffer.block.distance);
+		hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
+	}
+
+	hitsBuffer.finalizeQuery();
+
+	return status;
+}
+
+// Overlap: checks whether two geometry objects overlap
+/// Transformed box, sphere, capsule or convex geometry
+bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask, bool staticShapes, bool dynamicShapes) const
+{
+	physx::PxQueryFilterData filterData;
+	filterData.data.word0 = filterMask; // overlap against this filter mask
+	if (!staticShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
+	if (!dynamicShapes)
+		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
+
+	physx::PxOverlapHit hitBuffer[MAX_HITS];
+	physx::PxOverlapBuffer hitsBuffer(hitBuffer, MAX_HITS);
+
+	bool status = gScene->overlap(geometry, transform, hitsBuffer, filterData);
+
+	// Touches
+	for (physx::PxU32 i = 0; i < hitsBuffer.nbTouches; ++i)
+	{
+		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
+		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
+		GameObject* gameObject = actor->GetParent();
+
+		OverlapHit touchInfo(gameObject, collider, actor, hitsBuffer.touches[i].faceIndex);
+		touchesInfo.push_back(touchInfo);
+	}
+
+	return status;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ModulePhysics::SetGravity(math::float3& gravity)
 {
 	this->gravity = gravity;
 

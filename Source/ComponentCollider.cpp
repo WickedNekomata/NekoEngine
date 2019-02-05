@@ -81,6 +81,7 @@ void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filt
 	filterData.word1 = filterMask; // word 1 = ID mask to filter pairs that trigger a contact callback
 	
 	gShape->setSimulationFilterData(filterData);
+	gShape->setQueryFilterData(filterData);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -149,4 +150,25 @@ void ComponentCollider::OnTriggerExit(Collision& collision)
 	triggerExit = true;
 	triggerEnter = false;
 	this->collision = collision;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint)
+{
+	physx::PxVec3 gClosestPoint;
+	float distance = physx::PxGeometryQuery::pointDistance(physx::PxVec3(point.x, point.y, point.z), geometry, pose, &gClosestPoint);
+	if (gClosestPoint.isFinite())
+		closestPoint = math::float3(gClosestPoint.x, gClosestPoint.y, gClosestPoint.z);
+
+	return distance;
+}
+
+physx::PxBounds3 ComponentCollider::GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation)
+{
+	physx::PxBounds3 gBounds = physx::PxGeometryQuery::getWorldBounds(geometry, pose, inflation);
+	if (!gBounds.isValid() || !gBounds.isFinite())
+		gBounds = physx::PxBounds3::empty();
+
+	return gBounds;
 }

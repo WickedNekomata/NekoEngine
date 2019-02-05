@@ -7,6 +7,7 @@
 #include "Layers.h"
 
 #include "imgui\imgui.h"
+#include "imgui\imgui_internal.h"
 
 PanelPhysics::PanelPhysics(const char* name) : Panel(name) {}
 
@@ -95,10 +96,14 @@ bool PanelPhysics::Draw()
 				{
 					ImGui::SameLine(pos_x);
 
+					if (activeLayers[i]->builtin)
+						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 					sprintf_s(layerName, DEFAULT_BUF_SIZE, "##%i%i", i, j);
-					uint filterMask = activeLayers[i]->filterMask;
+					uint filterMask = activeLayers[i]->GetFilterMask();
 					if (ImGui::CheckboxFlags(layerName, &filterMask, activeLayers[j]->GetFilterGroup()))
-						activeLayers[i]->filterMask = filterMask;
+						activeLayers[i]->SetFilterMask(filterMask);
+					if (activeLayers[i]->builtin)
+						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 					if (ImGui::IsItemHovered())
 						ImGui::SetTooltip("%s/%s", activeLayers[i]->name.data(), activeLayers[j]->name.data());

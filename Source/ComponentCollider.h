@@ -38,6 +38,10 @@ public:
 	void OnTriggerStay(Collision& collision);
 	void OnTriggerExit(Collision& collision);
 
+	/// Transformed box, sphere, capsule or convex geometry
+	static float GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& transform, math::float3& closestPoint = math::float3::zero);
+	static physx::PxBounds3 GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation = 1.01f);
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

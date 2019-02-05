@@ -1,8 +1,8 @@
 [
     {
-        "Name": "$$$___magic___$$$.",
-        "UUID": 3797073151,
-        "Parent UUID": 3077009723,
+        "Name": "RootNode",
+        "UUID": 1773736652,
+        "Parent UUID": 1084698295,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -20,9 +20,9 @@
         ]
     },
     {
-        "Name": "nav_test.obj",
-        "UUID": 4093623309,
-        "Parent UUID": 3797073151,
+        "Name": "Tank",
+        "UUID": 1042493957,
+        "Parent UUID": 1773736652,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -40,9 +40,29 @@
         ]
     },
     {
-        "Name": "Generic",
-        "UUID": 233901364,
-        "Parent UUID": 3797073151,
+        "Name": "TankRenderers",
+        "UUID": 2706562450,
+        "Parent UUID": 1042493957,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "TankTurret",
+        "UUID": 2407780873,
+        "Parent UUID": 2706562450,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -59,7 +79,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 2273911565
+                "ResourceMesh": 82988895
             },
             {
                 "Type": 3,
@@ -116,9 +136,9 @@
         ]
     },
     {
-        "Name": "Cube",
-        "UUID": 479954336,
-        "Parent UUID": 3797073151,
+        "Name": "TankTracksLeft",
+        "UUID": 3031544456,
+        "Parent UUID": 2706562450,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -135,7 +155,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 3075365565
+                "ResourceMesh": 1758062240
             },
             {
                 "Type": 3,
@@ -192,9 +212,9 @@
         ]
     },
     {
-        "Name": "Generic",
-        "UUID": 1249632470,
-        "Parent UUID": 3797073151,
+        "Name": "TankTracksRight",
+        "UUID": 955331746,
+        "Parent UUID": 2706562450,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -211,7 +231,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 161222540
+                "ResourceMesh": 3112356557
             },
             {
                 "Type": 3,
@@ -268,9 +288,9 @@
         ]
     },
     {
-        "Name": "Cube",
-        "UUID": 3429649811,
-        "Parent UUID": 3797073151,
+        "Name": "TankChassis",
+        "UUID": 428144974,
+        "Parent UUID": 2706562450,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -287,7 +307,7 @@
             },
             {
                 "Type": 2,
-                "ResourceMesh": 1883932889
+                "ResourceMesh": 424485258
             },
             {
                 "Type": 3,

@@ -36,6 +36,9 @@ public:
 	virtual void OnEnable() {}
 	virtual void OnDisable() {}
 
+	MonoObject* GetMonoComponent();
+	inline void SetMonoComponent(uint32_t monoCompHandle) { this->monoCompHandle = monoCompHandle; };
+
 private:
 
 	virtual void OnInternalSave(JSON_Object* file) {};
@@ -47,9 +50,13 @@ protected:
 	GameObject* parent = nullptr;
 	bool isActive = true;
 
+	uint32_t monoCompHandle = 0u;
+
 public:
 
 	uint UUID = 0;
+
+
 };
 
 #endif

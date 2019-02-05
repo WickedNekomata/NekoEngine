@@ -249,7 +249,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
 	case ComponentTypes::NavAgentComponent:
-		newComponent = new ComponentNavAgent(this);
+		newComponent = navAgent = new ComponentNavAgent(this);
 		break;
 	case ComponentTypes::EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
@@ -341,9 +341,14 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 		return;
 	}
+	case ComponentTypes::NavAgentComponent:
+	{
+		RELEASE(navAgent);
+		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+		return;
+	}
 	}
 
-	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 	RELEASE(toDelete);
 }
 

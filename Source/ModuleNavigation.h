@@ -20,13 +20,16 @@ public:
 
 	void OnSystemEvent(System_Event e);
 
-	void Draw();
+	void Draw() const;
 	void SetInputGeom(class NMInputGeom& inputGeom);
 	int  AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed,
 				  float collQueryRange, float pathOptimRange, unsigned char updateFlags,
-				  unsigned char obstacleAvoidanceType, unsigned char queryFilterType);
-	void RemoveAgent(int indx);
-	void SetDestination(const float* p, int indx);
+				  unsigned char obstacleAvoidanceType) const;
+	bool UpdateAgentParams(int indx, float radius, float height, float maxAcc, float maxSpeed,
+						   float collQueryRange, float pathOptimRange, unsigned char updateFlags,
+						   unsigned char obstacleAvoidanceType) const;
+	void RemoveAgent(int indx) const;
+	void SetDestination(const float* p, int indx) const;
 
 	static void calcVel(float* vel, const float* pos, const float* tgt, const float speed);
 

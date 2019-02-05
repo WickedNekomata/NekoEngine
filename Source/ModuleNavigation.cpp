@@ -33,7 +33,7 @@ ModuleNavigation::~ModuleNavigation()
 	
 }
 
-bool ModuleNavigation::Init(JSON_Object * jObject)
+bool ModuleNavigation::Init(JSON_Object* jObject)
 {
 	return true;
 }
@@ -134,7 +134,7 @@ void ModuleNavigation::InitCrowd()
 	m_crowd->setObstacleAvoidanceParams(3, &params);
 }
 
-void ModuleNavigation::Draw()
+void ModuleNavigation::Draw() const
 {
 	if (m_navMesh)
 	{
@@ -171,7 +171,7 @@ void ModuleNavigation::SetInputGeom(NMInputGeom& inputGeom)
 	memcpy(m_geom, &inputGeom, sizeof(NMInputGeom));
 }
 
-int ModuleNavigation::AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed, float collQueryRange, float pathOptimRange, unsigned char updateFlags, unsigned char obstacleAvoidanceType, unsigned char queryFilterType)
+int ModuleNavigation::AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed, float collQueryRange, float pathOptimRange, unsigned char updateFlags, unsigned char obstacleAvoidanceType) const
 {
 	if (!m_crowd) return -1;
 
@@ -185,19 +185,37 @@ int ModuleNavigation::AddAgent(const float* p, float radius, float height, float
 	params.pathOptimizationRange = pathOptimRange;
 	params.updateFlags = updateFlags;
 	params.obstacleAvoidanceType = obstacleAvoidanceType;
-	params.queryFilterType = queryFilterType;
 
 	return m_crowd->addAgent(p, &params);
 }
 
-void ModuleNavigation::RemoveAgent(int indx)
+bool ModuleNavigation::UpdateAgentParams(int indx, float radius, float height, float maxAcc, float maxSpeed, float collQueryRange, float pathOptimRange, unsigned char updateFlags, unsigned char obstacleAvoidanceType) const
+{
+	if (!m_crowd->getAgent(indx))
+		return false;
+
+	dtCrowdAgentParams params;
+	memset(&params, 0, sizeof(dtCrowdAgentParams));
+	params.radius = radius;
+	params.height = height;
+	params.maxAcceleration = maxAcc;
+	params.maxSpeed = maxSpeed;
+	params.collisionQueryRange = collQueryRange;
+	params.pathOptimizationRange = pathOptimRange;
+	params.updateFlags = updateFlags;
+	params.obstacleAvoidanceType = obstacleAvoidanceType;
+
+	m_crowd->updateAgentParameters(indx, &params);
+}
+
+void ModuleNavigation::RemoveAgent(int indx) const
 {
 	if (!m_crowd) return;
 
 	m_crowd->removeAgent(indx);
 }
 
-void ModuleNavigation::SetDestination(const float* p, int indx)
+void ModuleNavigation::SetDestination(const float* p, int indx) const
 {
 	if (!m_navMesh || !!m_crowd) return;
 

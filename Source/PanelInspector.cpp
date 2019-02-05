@@ -193,9 +193,11 @@ void PanelInspector::ShowGameObjectInspector() const
 			ImGui::CloseCurrentPopup();
 		}
 
-		if (ImGui::Selectable("Nav Agent")) {
-			gameObject->AddComponent(ComponentTypes::NavAgentComponent);
-			ImGui::CloseCurrentPopup();
+		if (gameObject->navAgent == nullptr) {
+			if (ImGui::Selectable("Nav Agent")) {
+				gameObject->AddComponent(ComponentTypes::NavAgentComponent);
+				ImGui::CloseCurrentPopup();
+			}
 		}
 
 		if (gameObject->rigidActor == nullptr) {

@@ -10,7 +10,7 @@ public class Testing : JellyScript
     public override void Awake()
     {
         Debug.Log("I awaked");      
-        gameObject.GetComponent<GameObject>();
+        gameObject.GetComponent<NavMeshAgent>();
     }
 
     //Called every frame

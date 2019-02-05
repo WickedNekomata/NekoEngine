@@ -108,3 +108,8 @@ void Component::OnSave(JSON_Object* file)
 	json_object_set_number(file, "Type", componentType);
 	OnInternalSave(file);
 }
+
+MonoObject* Component::GetMonoComponent()
+{
+	return monoCompHandle != 0 ? mono_gchandle_get_target(monoCompHandle) : nullptr;
+}

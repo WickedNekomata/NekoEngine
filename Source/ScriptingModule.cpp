@@ -23,7 +23,7 @@
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
-#define COMPONENT_ASCII 1886220099
+#define NAVMESHAGENT_ASCII 1299603790
 
 bool exec(const char* cmd, std::string& error)
 {
@@ -1053,8 +1053,10 @@ void SetLocalScale(MonoObject* monoObject, MonoArray* scale)
 	gameObject->transform->scale.z = mono_array_get(scale, float, 2);
 }
 
-MonoObject* GetComponentByType(MonoObject* gameObject, MonoObject* type)
+MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 {
+	MonoObject* monoComp = nullptr;
+
 	const char* name2 = mono_class_get_name(mono_object_get_class(type));
 
 	union
@@ -1069,14 +1071,44 @@ MonoObject* GetComponentByType(MonoObject* gameObject, MonoObject* type)
 
 	switch (translation)
 	{
-		case COMPONENT_ASCII:
+		case NAVMESHAGENT_ASCII:
 		{
-			int a = 2;
+			int address = 0u;
+			mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+			GameObject* gameObject = (GameObject*)address;
+			if (!gameObject)
+				return nullptr;
+
+			Component* comp = gameObject->GetComponentByType(ComponentTypes::NavAgentComponent);
+
+			if (!comp)
+				return nullptr;
+
+			monoComp = comp->GetMonoComponent();
+
+			if (!monoComp)
+			{
+				monoComp = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
+				mono_runtime_object_init(monoComp);
+
+				int compAddress = (int)comp;
+
+				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObjectAddress"), &address);
+				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "componentAddress"), &compAddress);
+				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObject"), monoObject);
+
+				uint32_t compHandle = mono_gchandle_new(monoComp, true);
+				comp->SetMonoComponent(compHandle);
+			}
+			else		
+				return monoComp;
+
 			break;
 		}
 	}
 
-	return nullptr;
+	return monoComp;
 }
 
 //---------------------------------

@@ -360,7 +360,7 @@ ASALocalRun/
 # Scripting Files
 [Ii]nternal/
 **/[Mm]ono/
-**/Game/FlanCS/
+**/Game/JellyBitCS/
 
 **/Game/LogError.txt
 *.sln

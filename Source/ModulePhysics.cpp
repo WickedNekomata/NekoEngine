@@ -4,6 +4,17 @@
 #include "ModuleTimeManager.h"
 #include "GameObject.h"
 
+// *****Debug*****
+#include "ModuleWindow.h"
+#include "ModuleInput.h"
+#include "ModuleCameraEditor.h"
+#include "ComponentCamera.h"
+
+#include "MathGeoLib\include\Geometry\Frustum.h"
+#include "MathGeoLib\include\Geometry\LineSegment.h"
+#include "MathGeoLib\include\Geometry\Ray.h"
+//_*****Debug*****
+
 #include "ComponentCollider.h"
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
@@ -22,17 +33,17 @@
 #include "MathGeoLib\include\Math\float2.h"
 
 #ifdef _DEBUG
-	#pragma comment(lib, "physx/libx86/debugx86/PhysX_32.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXCommon_32.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXFoundation_32.lib")
-	#pragma comment(lib, "physx/libx86/debugx86/PhysXExtensions_static_32.lib")
+	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysX_32.lib")
+	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXCommon_32.lib")
+	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXFoundation_32.lib")
+	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXExtensions_static_32.lib")
 #endif
 
 #ifdef NDEBUG
-	#pragma comment(lib, "physx/libx86/releasex86/PhysX_32.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXCommon_32.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXFoundation_32.lib")
-	#pragma comment(lib, "physx/libx86/releasex86/PhysXExtensions_static_32.lib")
+	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysX_32.lib")
+	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXCommon_32.lib")
+	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXFoundation_32.lib")
+	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXExtensions_static_32.lib")
 #endif
 
 #define STEP_SIZE 1.0f / 60.0f
@@ -145,14 +156,17 @@ bool ModulePhysics::Start()
 	assert(gPhysics != nullptr && "MODULE PHYSICS: PxCreatePhysics failed!");
 
 	// Scene
+	simulationEventCallback = new SimulationEventCallback(this);
+	queryFilterCallback = new QueryFilterCallback();
+
 	physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(gravity.x, gravity.y, gravity.z);
 	gDispatcher = physx::PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = FilterShader;
+	sceneDesc.simulationEventCallback = simulationEventCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
-	gScene->setSimulationEventCallback(new SimulationEventCallback(this));
 
 	// Default material
 	defaultMaterial = gPhysics->createMaterial(STATIC_FRICTION, DYNAMIC_FRICTION, RESTITUTION);
@@ -175,6 +189,29 @@ update_status ModulePhysics::PreUpdate()
 
 update_status ModulePhysics::Update()
 {
+	// *****Debug*****
+	int winWidth = App->window->GetWindowWidth();
+	int winHeight = App->window->GetWindowHeight();
+	float normalizedX = -(1.0f - (float(App->input->GetMouseX()) * 2.0f) / winWidth);
+	float normalizedY = 1.0f - (float(App->input->GetMouseY()) * 2.0f) / winHeight;
+	math::Ray ray = App->camera->camera->frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		RaycastHit hitInfo;
+		std::vector<RaycastHit> touchesInfo;
+		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo))
+		{
+			// Hit
+			//CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+
+			// Touches
+			for (uint i = 0; i < touchesInfo.size(); ++i)
+				CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+		}
+	}
+	//_*****Debug*****
+
 	// Step physics
 	gAccumulator += App->timeManager->GetDt();
 	if (gAccumulator >= STEP_SIZE)
@@ -209,11 +246,20 @@ bool ModulePhysics::CleanUp()
 	gScene->release();
 	gScene = nullptr;
 
+	gDispatcher->release();
+	gDispatcher = nullptr;
+
 	gPhysics->release();
 	gPhysics = nullptr;
 
 	gFoundation->release();
 	gFoundation = nullptr;
+
+	defaultMaterial->release();
+	defaultMaterial = nullptr;
+
+	RELEASE(simulationEventCallback);
+	RELEASE(queryFilterCallback);
 
 	return true;
 }
@@ -475,6 +521,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
+	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)
@@ -487,7 +535,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 		maxDistance, hitsBuffer, hitFlags, filterData);
 	
 	// Hit
-	if (status)
+	if (hitsBuffer.hasBlock)
 	{
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
@@ -545,6 +593,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
+	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	filterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
@@ -557,7 +607,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 		maxDistance, hitsBuffer, hitFlags, filterData);
 
 	// Hit
-	if (status)
+	if (hitsBuffer.hasBlock)
 	{
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
@@ -592,6 +642,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
+	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	filterData.flags |= physx::PxQueryFlag::eNO_BLOCK;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
@@ -641,6 +693,8 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // sweep against this filter mask
+	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)
@@ -652,7 +706,7 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 		maxDistance, hitsBuffer, physx::PxHitFlag::eDEFAULT, filterData, (physx::PxQueryFilterCallback*)0, (physx::PxQueryCache*)0, inflation);
 
 	// Hit
-	if (status)
+	if (hitsBuffer.hasBlock)
 	{
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
@@ -680,6 +734,8 @@ bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& tra
 {
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // overlap against this filter mask
+	filterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	filterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	if (!staticShapes)
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!dynamicShapes)

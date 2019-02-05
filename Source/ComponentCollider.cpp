@@ -160,6 +160,8 @@ float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& po
 	float distance = physx::PxGeometryQuery::pointDistance(physx::PxVec3(point.x, point.y, point.z), geometry, pose, &gClosestPoint);
 	if (gClosestPoint.isFinite())
 		closestPoint = math::float3(gClosestPoint.x, gClosestPoint.y, gClosestPoint.z);
+	else
+		closestPoint = math::float3::zero;
 
 	return distance;
 }

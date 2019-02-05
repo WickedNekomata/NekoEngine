@@ -3,6 +3,8 @@
 
 #include "Globals.h"
 
+#include "physx\include\PxPhysicsAPI.h"
+
 #include "MathGeoLib\include\Math\float3.h"
 #include "MathGeoLib\include\Math\float2.h"
 
@@ -111,6 +113,20 @@ private:
 	ComponentCollider* collider = nullptr; // the collider that was hit
 	ComponentRigidActor* actor = nullptr; // the actor that was hit
 	uint faceIndex = 0; // only for triangle meshes
+};
+
+// ----------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
+
+class QueryFilterCallback : public physx::PxQueryFilterCallback
+{
+public:
+
+	QueryFilterCallback();
+	~QueryFilterCallback();
+
+	physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags);
+	physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit);
 };
 
 #endif

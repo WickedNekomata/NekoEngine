@@ -90,11 +90,11 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	// Scene queries
-	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
-	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
-	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = math::inf, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 	
-	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = math::inf, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 	
 	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 
@@ -113,6 +113,9 @@ private:
 	physx::PxPhysics* gPhysics = nullptr;
 	physx::PxScene* gScene = nullptr;
 	physx::PxDefaultCpuDispatcher* gDispatcher = nullptr;
+
+	SimulationEventCallback* simulationEventCallback = nullptr;
+	QueryFilterCallback* queryFilterCallback = nullptr;
 
 	float gAccumulator = 0.0f;
 

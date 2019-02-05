@@ -23,6 +23,8 @@
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
+#define COMPONENT_ASCII 1886220099
+
 bool exec(const char* cmd, std::string& error)
 {
 	std::array<char, 128> buffer;
@@ -1051,6 +1053,32 @@ void SetLocalScale(MonoObject* monoObject, MonoArray* scale)
 	gameObject->transform->scale.z = mono_array_get(scale, float, 2);
 }
 
+MonoObject* GetComponentByType(MonoObject* gameObject, MonoObject* type)
+{
+	const char* name2 = mono_class_get_name(mono_object_get_class(type));
+
+	union
+	{
+		char name[DEFAULT_BUF_SIZE];
+		uint32_t translated;
+	} dictionary;
+	
+	strcpy(dictionary.name, name2);
+
+	uint32_t translation = dictionary.translated;
+
+	switch (translation)
+	{
+		case COMPONENT_ASCII:
+		{
+			int a = 2;
+			break;
+		}
+	}
+
+	return nullptr;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1114,6 +1142,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalRotation", (const void*)&SetLocalRotation);
 	mono_add_internal_call("JellyBitEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
+	mono_add_internal_call("JellyBitEngine.GameObject::GetComponentByType", (const void*)&GetComponentByType);
 
 	ClearMap();
 

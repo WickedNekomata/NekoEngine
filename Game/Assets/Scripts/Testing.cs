@@ -9,7 +9,8 @@ public class Testing : JellyScript
     //Use this method for initialization
     public override void Awake()
     {
-
+        Debug.Log("I awaked");      
+        gameObject.GetComponent<GameObject>();
     }
 
     //Called every frame

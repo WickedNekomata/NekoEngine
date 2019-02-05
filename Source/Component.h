@@ -3,8 +3,8 @@
 
 #include "ComponentTypes.h"
 #include "parson\parson.h"
-
 #include "Globals.h"
+#include <mono/metadata/object.h>
 
 class GameObject;
 

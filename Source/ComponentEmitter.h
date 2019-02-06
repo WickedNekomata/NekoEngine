@@ -17,6 +17,9 @@
 
 #include <list>
 #include <queue>
+
+class ComponentMaterial;
+
 enum ShapeType {
 	ShapeType_BOX,
 	ShapeType_SPHERE,
@@ -189,6 +192,9 @@ public:
 	StartValues startValues;
 
 	bool isSubEmitter = false;
+
+	ComponentMaterial* material = nullptr;
+
 private:
 	// General info
 	//---------------------------------------

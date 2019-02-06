@@ -7,6 +7,8 @@
 #include "ShaderImporter.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
+#include "ComponentMaterial.h"
+
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float3.h"
 
@@ -182,12 +184,13 @@ void Particle::Draw()
 	if (active)
 	{
 		// Shader
-		GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+		GLuint shaderProgram = owner->material->shaderProgramUUID;
 
 		glUseProgram(shaderProgram);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture()); // particle texture
+
+		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].res); // particle texture
 
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);

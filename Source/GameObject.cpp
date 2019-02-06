@@ -253,8 +253,8 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		break;
 	case ComponentTypes::EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
-		if (materialRenderer == nullptr)
-			createMaterial = true;
+		//if (materialRenderer == nullptr)
+			//createMaterial = true;
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

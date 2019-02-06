@@ -8,6 +8,8 @@
 #include "ResourceTexture.h"
 #include "ModuleResourceManager.h"
 
+#include "ComponentMaterial.h"
+
 #include <vector>
 
 #include "ModuleParticles.h"
@@ -17,6 +19,9 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 {
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
+
+	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+
 }
 
 ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
@@ -77,6 +82,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	App->scene->quadtree.Insert(parent);
 
 	App->particle->emitters.push_back(this);
+
+	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
 }
 
 

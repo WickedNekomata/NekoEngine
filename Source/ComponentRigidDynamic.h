@@ -4,8 +4,6 @@
 #include "Component.h"
 #include "ComponentRigidActor.h"
 
-#include "MathGeoLib\include\Math\float3.h"
-
 class ComponentRigidDynamic : public ComponentRigidActor
 {
 public:
@@ -18,6 +16,7 @@ public:
 	
 	void Update();
 
+	// Sets
 	void SetDensity(float density);
 	void UpdateMassAndInertia();
 	void SetMass(float mass);

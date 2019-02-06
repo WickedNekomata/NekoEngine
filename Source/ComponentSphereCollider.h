@@ -16,6 +16,12 @@ public:
 
 	void RecalculateShape();
 
+	// Sets
+	void SetRadius(float radius);
+
+	// Gets
+	physx::PxSphereGeometry GetSphereGeometry() const;
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

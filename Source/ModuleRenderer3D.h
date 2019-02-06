@@ -76,6 +76,9 @@ public:
 	void SetDrawColliders(bool drawColliders);
 	bool GetDrawColliders() const;
 
+	void SetDrawRigidActors(bool drawRigidActors);
+	bool GetDrawRigidActors() const;
+
 	void SetDrawQuadtree(bool drawQuadtree);
 	bool GetDrawQuadtree() const;
 
@@ -131,6 +134,7 @@ public:
 	bool drawBoundingBoxes = true;
 	bool drawCamerasFrustum = true;
 	bool drawColliders = true;
+	bool drawRigidActors = true;
 	bool drawQuadtree = false;
 };
 

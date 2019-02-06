@@ -327,6 +327,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	case ComponentTypes::RigidStaticComponent:
 		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
 		rigidActor = nullptr;
+		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
@@ -337,17 +338,16 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 	case ComponentTypes::ScriptComponent:
 	{
 		App->scripting->DestroyScript((ComponentScript*)toDelete);
-		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 		return;
 	}
 	case ComponentTypes::NavAgentComponent:
 	{
 		RELEASE(navAgent);
-		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 		return;
 	}
 	}
 
+	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 	RELEASE(toDelete);
 }
 
@@ -359,9 +359,23 @@ void GameObject::InternallyDeleteComponents()
 		{
 		case ComponentTypes::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
+			meshRenderer = nullptr;
 			break;
 		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
+			camera = nullptr;
+			break;
+		case ComponentTypes::RigidDynamicComponent:
+		case ComponentTypes::RigidStaticComponent:
+			App->physics->EraseRigidActorComponent((ComponentRigidActor*)components[i]);
+			rigidActor = nullptr;
+			break;
+		case ComponentTypes::BoxColliderComponent:
+		case ComponentTypes::SphereColliderComponent:
+		case ComponentTypes::CapsuleColliderComponent:
+		case ComponentTypes::PlaneColliderComponent:
+			App->physics->EraseColliderComponent((ComponentCollider*)components[i]);
+			collider = nullptr;
 			break;
 		case ComponentTypes::ScriptComponent:
 			App->scripting->DestroyScript((ComponentScript*)components[i]);

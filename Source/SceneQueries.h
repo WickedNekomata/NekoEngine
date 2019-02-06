@@ -50,6 +50,14 @@ private:
 	uint faceIndex = 0; // only for triangle meshes
 };
 
+struct RaycastHitComparator
+{
+	bool operator()(const RaycastHit& a, const RaycastHit& b) const
+	{
+		return a.GetDistance() < b.GetDistance();
+	}
+};
+
 // ----------------------------------------------------------------------------------------------------
 
 class SweepHit

@@ -9,6 +9,7 @@
 #include "ModuleInput.h"
 #include "ModuleCameraEditor.h"
 #include "ComponentCamera.h"
+#include "ComponentTransform.h"
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 #include "MathGeoLib\include\Geometry\LineSegment.h"
@@ -204,7 +205,85 @@ update_status ModulePhysics::Update()
 		{
 			// Hit
 			if (hitInfo.GetGameObject() != nullptr)
+			{
 				CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+
+				// Distance (and closest point) and AABB
+				physx::PxShape* gShape = hitInfo.GetCollider()->GetShape();
+
+				math::float4x4 gameObjectGlobalMatrix = hitInfo.GetGameObject()->transform->GetGlobalMatrix();
+				math::float3 position = math::float3::zero;
+				math::Quat rotation = math::Quat::identity;
+				math::float3 scale = math::float3::one;
+				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+
+				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
+				
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gSphereGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+				
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gSphereGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gCapsuleGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+				
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gCapsuleGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gBoxGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+				
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gBoxGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::ePLANE:
+				{
+					physx::PxPlaneGeometry gPlaneGeometry;
+					gShape->getPlaneGeometry(gPlaneGeometry);
+
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gPlaneGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				}
+			}
 
 			// Touches
 			for (uint i = 0; i < touchesInfo.size(); ++i)
@@ -213,8 +292,6 @@ update_status ModulePhysics::Update()
 					CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
 			}
 		}
-
-
 	}
 	//_*****Debug*****
 

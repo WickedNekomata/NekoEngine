@@ -70,7 +70,7 @@ void ComponentSphereCollider::RecalculateShape()
 	Layer* layer = App->layers->GetLayer(parent->layer);
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
-	// ----------
+	// -----
 
 	if (parent->rigidActor != nullptr)
 		parent->rigidActor->UpdateShape(gShape);

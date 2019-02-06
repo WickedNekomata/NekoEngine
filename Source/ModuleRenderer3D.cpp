@@ -296,7 +296,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), collidersColor, globalMatrix);
+					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), collidersColor, globalMatrix);
 					break;
 				}
 			}
@@ -304,6 +304,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		if (drawRigidActors) // rigidActorsColor = Orange (static actors), Red and DarkRed (dynamic actors)
 		{
+			Color rigidActorsColor = Red;
+
 			std::vector<ComponentRigidActor*> rigidActorComponents = App->physics->GetRigidActorComponents();
 			for (uint i = 0; i < rigidActorComponents.size(); ++i)
 			{
@@ -313,11 +315,12 @@ update_status ModuleRenderer3D::PostUpdate()
 				if (gShape == nullptr)
 					continue;
 
-				Color rigidActorsColor = Red;
 				if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidStaticComponent)
 					rigidActorsColor = Orange;
 				else if (gActor->is<physx::PxRigidDynamic>()->isSleeping())
 					rigidActorsColor = DarkRed;
+				else
+					rigidActorsColor = Red;
 
 				physx::PxTransform transform = gActor->getGlobalPose();
 				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
@@ -350,7 +353,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), rigidActorsColor, globalMatrix);
+					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), rigidActorsColor, globalMatrix);
 					break;
 				}
 			}

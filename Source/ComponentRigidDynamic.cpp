@@ -336,14 +336,16 @@ void ComponentRigidDynamic::SetMass(float mass)
 	gActor->is<physx::PxRigidDynamic>()->setMass(mass);
 }
 
-void ComponentRigidDynamic::SetCMass(math::float3 cMass)
+void ComponentRigidDynamic::SetCMass(math::float3& cMass)
 {
+	assert(cMass.IsFinite());
 	this->cMass = cMass;
 	gActor->is<physx::PxRigidDynamic>()->setCMassLocalPose(physx::PxTransform(physx::PxVec3(cMass.x, cMass.y, cMass.z)));
 }
 
-void ComponentRigidDynamic::SetInertia(math::float3 inertia)
+void ComponentRigidDynamic::SetInertia(math::float3& inertia)
 {
+	assert(inertia.IsFinite());
 	// inertia = math::float3(0.0f, 0.0f, 0.0f) equals infinite inertia
 	this->inertia = inertia;
 	gActor->is<physx::PxRigidDynamic>()->setMassSpaceInertiaTensor(physx::PxVec3(inertia.x, inertia.y, inertia.z));
@@ -415,20 +417,23 @@ void ComponentRigidDynamic::SetIsKinematic(bool isKinematic)
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidDynamic::SetLinearVelocity(math::float3 linearVelocity)
+void ComponentRigidDynamic::SetLinearVelocity(math::float3& linearVelocity)
 {
+	assert(linearVelocity.IsFinite());
 	this->linearVelocity = linearVelocity;
 	gActor->is<physx::PxRigidDynamic>()->setLinearVelocity(physx::PxVec3(linearVelocity.x, linearVelocity.y, linearVelocity.z));
 }
 
-void ComponentRigidDynamic::SetAngularVelocity(math::float3 angularVelocity)
+void ComponentRigidDynamic::SetAngularVelocity(math::float3& angularVelocity)
 {
+	assert(angularVelocity.IsFinite());
 	this->angularVelocity = angularVelocity;
 	gActor->is<physx::PxRigidDynamic>()->setAngularVelocity(physx::PxVec3(angularVelocity.x, angularVelocity.y, angularVelocity.z));
 }
 
-void ComponentRigidDynamic::AddForce(math::float3 force, physx::PxForceMode::Enum forceMode)
+void ComponentRigidDynamic::AddForce(math::float3& force, physx::PxForceMode::Enum forceMode)
 {
+	assert(force.IsFinite());
 	// f = m*a (force = mass * acceleration)
 	this->force = force;
 	this->forceMode = forceMode;
@@ -441,8 +446,9 @@ void ComponentRigidDynamic::ClearForce() const
 	gActor->is<physx::PxRigidDynamic>()->clearForce();
 }
 
-void ComponentRigidDynamic::AddTorque(math::float3 torque, physx::PxForceMode::Enum forceMode)
+void ComponentRigidDynamic::AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode)
 {
+	assert(torque.IsFinite());
 	this->torque = torque;
 	this->forceMode = forceMode;
 

@@ -1,5 +1,6 @@
 #include "Color.h"
 
+Color Orange = Color(1.0f, 0.5f, 0.0f);
 Color Red = Color(1.0f, 0.0f, 0.0f);
 Color DarkRed = Color(0.3f, 0.0f, 0.0f);
 Color Green = Color(0.0f, 1.0f, 0.0f);

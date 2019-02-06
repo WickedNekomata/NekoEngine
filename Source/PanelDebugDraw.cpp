@@ -50,6 +50,11 @@ bool PanelDebugDraw::Draw()
 
 			ImGui::SameLine();
 
+			bool drawRigidActors = App->renderer3D->GetDrawRigidActors();
+			if (ImGui::Checkbox("Rigid Actors", &drawRigidActors)) { App->renderer3D->SetDrawRigidActors(drawRigidActors); }
+
+			ImGui::SameLine();
+
 			bool drawQuadtree = App->renderer3D->GetDrawQuadtree();
 			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->renderer3D->SetDrawQuadtree(drawQuadtree); }
 		}

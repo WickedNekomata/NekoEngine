@@ -6,6 +6,8 @@
 #include "ComponentTransform.h"
 #include "Layers.h"
 
+#include "ComponentRigidActor.h"
+
 #include "imgui\imgui.h"
 
 // Only for static actors
@@ -40,6 +42,19 @@ void ComponentPlaneCollider::RecalculateShape()
 
 	physx::PxPlaneGeometry gPlaneGeometry;
 	gShape = App->physics->CreateShape(gPlaneGeometry, *gMaterial);
-	if (gShape == nullptr)
-		return;
+	assert(gShape != nullptr);
+
+	// ----------
+
+	if (parent->rigidActor != nullptr)
+		parent->rigidActor->UpdateShape(gShape);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+physx::PxPlaneGeometry ComponentPlaneCollider::GetPlaneGeometry() const
+{
+	physx::PxPlaneGeometry planeGeometry;
+	gShape->getPlaneGeometry(planeGeometry);
+	return planeGeometry;
 }

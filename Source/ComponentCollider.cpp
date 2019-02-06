@@ -3,7 +3,9 @@
 #include "Application.h"
 #include "ModulePhysics.h"
 #include "GameObject.h"
-#include "ComponentTransform.h"
+#include "EventSystem.h"
+
+#include "ComponentRigidActor.h"
 
 #include "imgui\imgui.h"
 
@@ -15,6 +17,8 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 
 ComponentCollider::~ComponentCollider() 
 {
+	if (parent->rigidActor != nullptr)
+		parent->rigidActor->UpdateShape(nullptr);
 	ClearShape();
 
 	gMaterial = nullptr;

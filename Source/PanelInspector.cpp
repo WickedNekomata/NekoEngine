@@ -20,6 +20,8 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "ComponentScript.h"
+#include "ComponentRigidActor.h"
+#include "ComponentCollider.h"
 
 #include "Resource.h"
 #include "ResourceMesh.h"
@@ -205,7 +207,8 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if (ImGui::Selectable("Rigid Dynamic")) {
+			else if ((gameObject->collider == nullptr || gameObject->collider->GetType() != ComponentTypes::PlaneColliderComponent)
+				&& ImGui::Selectable("Rigid Dynamic")) {
 				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
 				ImGui::CloseCurrentPopup();
 			}
@@ -223,7 +226,8 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if (ImGui::Selectable("Plane Collider")) {
+			else if ((gameObject->rigidActor == nullptr || gameObject->rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
+				&& ImGui::Selectable("Plane Collider")) {
 				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}

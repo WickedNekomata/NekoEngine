@@ -4,6 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+
 #include "ComponentCollider.h"
 
 #include "imgui\imgui.h"
@@ -33,32 +34,26 @@ void ComponentRigidActor::Update() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidActor::UpdateShape()
+void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 {
-	physx::PxShape* gShape = nullptr;
-
 	// Detach current shape
 	uint nbShapes = gActor->getNbShapes();
 	if (nbShapes > 0)
 	{
+		physx::PxShape* gShape = nullptr;
 		gActor->getShapes(&gShape, 1);
 
 		if (gShape != nullptr)
 			gActor->detachShape(*gShape);
-		gShape = nullptr;
 	}
 
-	// Update current shape
-	gShape = parent->collider->GetShape();
-
 	// Attach current shape
-	if (gShape != nullptr)
-		gActor->attachShape(*gShape);
+	if (shape != nullptr)
+		gActor->attachShape(*shape);
 }
 
-void ComponentRigidActor::UpdateTransform() const
+void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 {
-	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	gActor->setGlobalPose(physx::PxTransform(physx::PxMat44(globalMatrix.Transposed().ptr())));
 }
 

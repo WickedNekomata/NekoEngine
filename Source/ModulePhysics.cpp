@@ -199,14 +199,18 @@ update_status ModulePhysics::Update()
 	{
 		RaycastHit hitInfo;
 		std::vector<RaycastHit> touchesInfo;
-		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo))
+		if (Raycast(ray.pos, ray.dir, hitInfo))
 		{
 			// Hit
-			//CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+			if (hitInfo.GetGameObject() != nullptr)
+				CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
 
 			// Touches
 			for (uint i = 0; i < touchesInfo.size(); ++i)
-				CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			{
+				if (touchesInfo[i].GetGameObject() != nullptr)
+					CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
 		}
 	}
 	//_*****Debug*****
@@ -242,6 +246,9 @@ bool ModulePhysics::CleanUp()
 	colliderComponents.clear();
 	rigidActorComponents.clear();
 
+	defaultMaterial->release();
+	defaultMaterial = nullptr;
+
 	gScene->release();
 	gScene = nullptr;
 
@@ -253,9 +260,6 @@ bool ModulePhysics::CleanUp()
 
 	gFoundation->release();
 	gFoundation = nullptr;
-
-	defaultMaterial->release();
-	defaultMaterial = nullptr;
 
 	RELEASE(simulationEventCallback);
 
@@ -530,52 +534,62 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
 		maxDistance, hitsBuffer, hitFlags, filterData);
 	
-	// Hit
-	if (status) 
+	if (status)
 	{
-		//if (hitsBuffer.hasBlock)
-		//{
-		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
-		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
-		GameObject* gameObject = nullptr;
-		if (actor != nullptr)
-			gameObject = actor->GetParent();
+		// Touches
+		std::vector<RaycastHit> touchesInfoDummy;
+		for (physx::PxU32 i = 0; i < hitsBuffer.nbTouches; ++i)
+		{
+			assert(hitsBuffer.touches[i].distance <= hitsBuffer.block.distance);
 
-		hitInfo.SetCollider(collider);
-		hitInfo.SetActor(actor);
-		hitInfo.SetGameObject(gameObject);
-		if (hitsBuffer.block.flags & physx::PxHitFlag::ePOSITION)
-			hitInfo.SetPoint(math::float3(hitsBuffer.block.position.x, hitsBuffer.block.position.y, hitsBuffer.block.position.z));
-		if (hitsBuffer.block.flags & physx::PxHitFlag::eNORMAL)
-			hitInfo.SetNormal(math::float3(hitsBuffer.block.normal.x, hitsBuffer.block.normal.y, hitsBuffer.block.normal.z));
-		if (hitsBuffer.block.flags & physx::PxHitFlag::eUV)
-			hitInfo.SetTexCoord(math::float2(hitsBuffer.block.u, hitsBuffer.block.v));
-		hitInfo.SetDistance(hitsBuffer.block.distance);
-		hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
-		//}
-	}
+			ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
+			ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
+			GameObject* gameObject = actor->GetParent();
 
-	// Touches
-	for (physx::PxU32 i = 0; i < hitsBuffer.nbTouches; ++i)
-	{
-		assert(hitsBuffer.touches[i].distance <= hitsBuffer.block.distance);
-		
-		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
-		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
-		GameObject* gameObject = actor->GetParent();
+			math::float3 point = math::float3::zero;
+			if (hitsBuffer.touches[i].flags & physx::PxHitFlag::ePOSITION)
+				point = math::float3(hitsBuffer.touches[i].position.x, hitsBuffer.touches[i].position.y, hitsBuffer.touches[i].position.z);
+			math::float3 normal = math::float3::zero;
+			if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eNORMAL)
+				normal = math::float3(hitsBuffer.touches[i].normal.x, hitsBuffer.touches[i].normal.y, hitsBuffer.touches[i].normal.z);
+			math::float2 texCoord = math::float2::zero;
+			if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eUV)
+				texCoord = math::float2(hitsBuffer.touches[i].u, hitsBuffer.touches[i].v);
 
-		math::float3 point = math::float3::zero;
-		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::ePOSITION)
-			point = math::float3(hitsBuffer.touches[i].position.x, hitsBuffer.touches[i].position.y, hitsBuffer.touches[i].position.z);
-		math::float3 normal = math::float3::zero;
-		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eNORMAL)
-			normal = math::float3(hitsBuffer.touches[i].normal.x, hitsBuffer.touches[i].normal.y, hitsBuffer.touches[i].normal.z);
-		math::float2 texCoord = math::float2::zero;
-		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::eUV)
-			texCoord = math::float2(hitsBuffer.touches[i].u, hitsBuffer.touches[i].v);
+			RaycastHit touchInfo(gameObject, collider, actor, point, normal, texCoord, hitsBuffer.touches[i].distance, hitsBuffer.touches[i].faceIndex);
+			touchesInfoDummy.push_back(touchInfo);
+		}
 
-		RaycastHit touchInfo(gameObject, collider, actor, point, normal, texCoord, hitsBuffer.touches[i].distance, hitsBuffer.touches[i].faceIndex);
-		touchesInfo.push_back(touchInfo);
+		// Hit
+		if (hitsBuffer.hasBlock)
+		{
+			ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
+			ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
+			GameObject* gameObject = actor != nullptr ? actor->GetParent() : nullptr;
+
+			hitInfo.SetCollider(collider);
+			hitInfo.SetActor(actor);
+			hitInfo.SetGameObject(gameObject);
+			if (hitsBuffer.block.flags & physx::PxHitFlag::ePOSITION)
+				hitInfo.SetPoint(math::float3(hitsBuffer.block.position.x, hitsBuffer.block.position.y, hitsBuffer.block.position.z));
+			if (hitsBuffer.block.flags & physx::PxHitFlag::eNORMAL)
+				hitInfo.SetNormal(math::float3(hitsBuffer.block.normal.x, hitsBuffer.block.normal.y, hitsBuffer.block.normal.z));
+			if (hitsBuffer.block.flags & physx::PxHitFlag::eUV)
+				hitInfo.SetTexCoord(math::float2(hitsBuffer.block.u, hitsBuffer.block.v));
+			hitInfo.SetDistance(hitsBuffer.block.distance);
+			hitInfo.SetFaceIndex(hitsBuffer.block.faceIndex);
+		}
+		else if (!touchesInfoDummy.empty())
+		{
+			std::sort(touchesInfoDummy.begin(), touchesInfoDummy.end(), RaycastHitComparator());
+
+			std::vector<RaycastHit>::const_iterator it = touchesInfoDummy.begin();
+			hitInfo = *it;
+			it = touchesInfoDummy.erase(it);
+
+			for (it; it != touchesInfoDummy.end(); ++it)
+				touchesInfo.push_back(*it);
+		}
 	}
 
 	hitsBuffer.finalizeQuery();
@@ -610,7 +624,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	{
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.block.shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.block.actor);
-		GameObject* gameObject = actor->GetParent();
+		GameObject* gameObject = actor != nullptr ? actor->GetParent() : nullptr;
 
 		hitInfo.SetCollider(collider);
 		hitInfo.SetActor(actor);
@@ -660,7 +674,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 
 		ComponentCollider* collider = FindColliderComponentByShape(hitsBuffer.touches[i].shape);
 		ComponentRigidActor* actor = FindRigidActorComponentByActor(hitsBuffer.touches[i].actor);
-		GameObject* gameObject = actor->GetParent();
+		GameObject* gameObject = actor != nullptr ? actor->GetParent() : nullptr;
 
 		math::float3 point = math::float3::zero;
 		if (hitsBuffer.touches[i].flags & physx::PxHitFlag::ePOSITION)

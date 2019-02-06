@@ -6,6 +6,8 @@
 #include "ComponentTransform.h"
 #include "Layers.h"
 
+#include "ComponentRigidActor.h"
+
 #include "imgui\imgui.h"
 
 ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::BoxColliderComponent)
@@ -56,11 +58,22 @@ void ComponentBoxCollider::RecalculateShape()
 
 	physx::PxBoxGeometry gBoxGeometry(halfSize.x, halfSize.y, halfSize.z);
 	gShape = App->physics->CreateShape(gBoxGeometry, *gMaterial);
-	if (gShape == nullptr)
-		return;
-
-	// ----------
+	assert(gShape != nullptr);
 
 	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 	gShape->setLocalPose(relativePose);
+
+	// ----------
+
+	if (parent->rigidActor != nullptr)
+		parent->rigidActor->UpdateShape(gShape);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+physx::PxBoxGeometry ComponentBoxCollider::GetBoxGeometry() const
+{
+	physx::PxBoxGeometry boxGeometry;
+	gShape->getBoxGeometry(boxGeometry);
+	return boxGeometry;
 }

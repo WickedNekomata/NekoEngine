@@ -6,6 +6,8 @@
 #include "ComponentTransform.h"
 #include "Layers.h"
 
+#include "ComponentRigidActor.h"
+
 #include "imgui\imgui.h"
 
 #include "MathGeoLib\include\Math\float4x4.h"
@@ -63,11 +65,22 @@ void ComponentSphereCollider::RecalculateShape()
 
 	physx::PxSphereGeometry gSphereGeometry(radius);
 	gShape = App->physics->CreateShape(gSphereGeometry, *gMaterial);
-	if (gShape == nullptr)
-		return;
-
-	// ----------
+	assert(gShape != nullptr);
 
 	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 	gShape->setLocalPose(relativePose);
+
+	// ----------
+
+	if (parent->rigidActor != nullptr)
+		parent->rigidActor->UpdateShape(gShape);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+physx::PxSphereGeometry ComponentSphereCollider::GetSphereGeometry() const
+{
+	physx::PxSphereGeometry sphereGeometry;
+	gShape->getSphereGeometry(sphereGeometry);
+	return sphereGeometry;
 }

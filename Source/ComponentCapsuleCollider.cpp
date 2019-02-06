@@ -6,6 +6,8 @@
 #include "ComponentTransform.h"
 #include "Layers.h"
 
+#include "ComponentRigidActor.h"
+
 #include "imgui\imgui.h"
 
 ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::CapsuleColliderComponent)
@@ -65,8 +67,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 
 	physx::PxCapsuleGeometry gCapsuleGeometry(radius, halfHeight);
 	gShape = App->physics->CreateShape(gCapsuleGeometry, *gMaterial);
-	if (gShape == nullptr)
-		return;
+	assert(gShape != nullptr);
 
 	switch (direction)
 	{
@@ -91,4 +92,18 @@ void ComponentCapsuleCollider::RecalculateShape()
 	}
 	break;
 	}
+
+	// ----------
+
+	if (parent->rigidActor != nullptr)
+		parent->rigidActor->UpdateShape(gShape);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+physx::PxCapsuleGeometry ComponentCapsuleCollider::GetCapsuleGeometry() const
+{
+	physx::PxCapsuleGeometry capsuleGeometry;
+	gShape->getCapsuleGeometry(capsuleGeometry);
+	return capsuleGeometry;
 }

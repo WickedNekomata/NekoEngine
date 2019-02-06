@@ -3,11 +3,11 @@
 
 #include "Component.h"
 
+#include "SimulationEvents.h"
+
 #include "physx\include\PxPhysicsAPI.h"
 
 #include "MathGeoLib\include\Math\float3.h"
-
-#include "SimulationEvents.h"
 
 class ComponentCollider : public Component
 {

@@ -16,6 +16,8 @@ public:
 
 	void RecalculateShape();
 
+	physx::PxBoxGeometry GetBoxGeometry() const;
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

@@ -23,6 +23,8 @@ public:
 
 	void RecalculateShape();
 
+	physx::PxCapsuleGeometry GetCapsuleGeometry() const;
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

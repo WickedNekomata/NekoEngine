@@ -184,13 +184,13 @@ void Particle::Draw()
 	if (active)
 	{
 		// Shader
-		GLuint shaderProgram = owner->material->shaderProgramUUID;
+		GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 
 		glUseProgram(shaderProgram);
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].res); // particle texture
+		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture
 
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);

@@ -24,6 +24,10 @@ struct MaterialResource
 	math::float4x4 matrix = math::float4x4::identity;
 	bool checkers = false;
 
+	uint id = 0;
+	uint width = 0;
+	uint height = 0;
+
 	bool operator==(const MaterialResource rhs)
 	{
 		return this->res == rhs.res && matrix.Equals(rhs.matrix);

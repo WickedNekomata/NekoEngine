@@ -289,6 +289,33 @@ update_status ModulePhysics::Update()
 			}
 		}
 	}
+	else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
+	{
+		// Sweep
+		SweepHit hitInfo;
+		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
+		if (Sweep(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), transform, ray.dir, hitInfo))
+		{
+			// Hit
+			if (hitInfo.GetGameObject() != nullptr)
+				CONSOLE_LOG(LogTypes::Normal, "The sweep hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+		}		
+	}
+	else if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_DOWN)
+	{
+		// Overlap
+		std::vector<OverlapHit> touchesInfo;
+		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
+		if (Overlap(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), transform, touchesInfo))
+		{
+			// Touches
+			for (uint i = 0; i < touchesInfo.size(); ++i)
+			{
+				if (touchesInfo[i].GetGameObject() != nullptr)
+					CONSOLE_LOG(LogTypes::Normal, "The overlap touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
+		}
+	}
 	//_*****Debug*****
 
 	// Step physics

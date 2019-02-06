@@ -4,6 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentNavAgent.h"
 #include "ComponentEmitter.h"
 #include "ComponentRigidActor.h"
 #include "ComponentRigidStatic.h"
@@ -11,6 +12,7 @@
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
+
 #include "ResourceMesh.h"
 
 #include "Application.h"
@@ -246,7 +248,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
-	case EmitterComponent:
+	case ComponentTypes::NavAgentComponent:
+		newComponent = navAgent = new ComponentNavAgent(this);
+		break;
+	case ComponentTypes::EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
 		if (materialRenderer == nullptr)
 			createMaterial = true;
@@ -316,7 +321,7 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	case ComponentTypes::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
-		materialRenderer = nullptr;
+		camera = nullptr;
 		break;
 	case ComponentTypes::RigidDynamicComponent:
 	case ComponentTypes::RigidStaticComponent:
@@ -329,15 +334,20 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;
-		case ComponentTypes::ScriptComponent:
-		{
-			App->scripting->DestroyScript((ComponentScript*)toDelete);
-			components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
-			return;
-		}
+	case ComponentTypes::ScriptComponent:
+	{
+		App->scripting->DestroyScript((ComponentScript*)toDelete);
+		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+		return;
+	}
+	case ComponentTypes::NavAgentComponent:
+	{
+		RELEASE(navAgent);
+		components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
+		return;
+	}
 	}
 
-	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
 	RELEASE(toDelete);
 }
 
@@ -369,7 +379,7 @@ bool GameObject::HasComponents() const
 	return components.size() > 0;
 }
 
-uint GameObject::GetComponenetsLength() const
+uint GameObject::GetComponentsLength() const
 {
 	return components.size();
 }
@@ -451,6 +461,8 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::ToggleIsActive()
 {
 	isActive = !isActive;
+
+	isActive ? OnEnable() : OnDisable();
 }
 
 bool GameObject::IsActive() const
@@ -501,16 +513,10 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	if (meshRenderer != nullptr && meshRenderer->res != 0) 
 	{
 		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
-
-		float* vertices = new float[meshRes->verticesSize * 3];
-		for (uint i = 0; i < meshRes->verticesSize; ++i)
-		{
-			vertices[3 * i] = meshRes->vertices[i].position[0];
-			vertices[3 * i + 1] = meshRes->vertices[i].position[1];
-			vertices[3 * i + 2] = meshRes->vertices[i].position[2];
-		}
-
-		boundingBox.Enclose((const math::float3*)vertices, meshRes->verticesSize);
+		int nVerts = meshRes->GetVertsCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetVerts(vertices);
+		boundingBox.Enclose((const math::float3*)vertices, nVerts);
 	}
 
 	// Transform bounding box (calculate OBB)
@@ -595,4 +601,30 @@ void GameObject::RecursiveForceAllResources(uint forceRes) const
 
 	for (int i = 0; i < children.size(); ++i)
 		children[i]->RecursiveForceAllResources(forceRes);
+}
+
+void GameObject::OnEnable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnEnable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnEnable();
+	}
+}
+
+void GameObject::OnDisable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnDisable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnDisable();
+	}
 }

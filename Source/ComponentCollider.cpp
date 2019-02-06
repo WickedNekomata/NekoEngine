@@ -20,6 +20,8 @@ ComponentCollider::~ComponentCollider()
 	gMaterial = nullptr;
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -54,6 +56,17 @@ void ComponentCollider::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
+void ComponentCollider::Update()
+{
+	if (isTrigger)
+	{
+		if (triggerEnter && !triggerExit)
+			OnTriggerStay(collision);
+	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCollider::ClearShape()
 {
 	if (gShape != nullptr)
@@ -64,10 +77,11 @@ void ComponentCollider::ClearShape()
 void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask)
 {
 	physx::PxFilterData filterData;
-	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word0 = filterGroup; // word 0 = own ID
 	filterData.word1 = filterMask; // word 1 = ID mask to filter pairs that trigger a contact callback
 	
 	gShape->setSimulationFilterData(filterData);
+	gShape->setQueryFilterData(filterData);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -75,6 +89,7 @@ void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filt
 void ComponentCollider::SetIsTrigger(bool isTrigger)
 {
 	this->isTrigger = isTrigger;
+	gShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !isTrigger); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
 }
 
@@ -95,4 +110,67 @@ void ComponentCollider::ParticipateInSceneQueries(bool participateInSceneQueries
 physx::PxShape* ComponentCollider::GetShape() const
 {
 	return gShape;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentCollider::OnCollisionEnter(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
+}
+
+void ComponentCollider::OnCollisionStay(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
+}
+
+void ComponentCollider::OnCollisionExit(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
+}
+
+void ComponentCollider::OnTriggerEnter(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
+
+	triggerEnter = true;
+	triggerExit = false;
+	this->collision = collision;
+}
+
+void ComponentCollider::OnTriggerStay(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
+}
+
+void ComponentCollider::OnTriggerExit(Collision& collision)
+{
+	CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
+
+	triggerExit = true;
+	triggerEnter = false;
+	this->collision = collision;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint)
+{
+	physx::PxVec3 gClosestPoint;
+	float distance = physx::PxGeometryQuery::pointDistance(physx::PxVec3(point.x, point.y, point.z), geometry, pose, &gClosestPoint);
+	if (gClosestPoint.isFinite())
+		closestPoint = math::float3(gClosestPoint.x, gClosestPoint.y, gClosestPoint.z);
+	else
+		closestPoint = math::float3::zero;
+
+	return distance;
+}
+
+physx::PxBounds3 ComponentCollider::GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation)
+{
+	physx::PxBounds3 gBounds = physx::PxGeometryQuery::getWorldBounds(geometry, pose, inflation);
+	if (!gBounds.isValid() || !gBounds.isFinite())
+		gBounds = physx::PxBounds3::empty();
+
+	return gBounds;
 }

@@ -8,6 +8,7 @@ enum ComponentTypes
 	MeshComponent,
 	MaterialComponent,
 	CameraComponent,
+	NavAgentComponent,
 	EmitterComponent,
 	ScriptComponent,
 	BoneComponent,

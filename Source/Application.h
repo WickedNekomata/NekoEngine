@@ -50,9 +50,11 @@ struct ModuleGOs;
 struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
+struct ModuleNavigation;
 struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
+struct Layers;
 
 class Application
 {
@@ -137,8 +139,9 @@ public:
 	ScriptingModule*		scripting;
 	ModuleEvents*			events;
 	ModulePhysics*			physics;
-
 	DebugDrawer*			debugDrawer;
+	ModuleNavigation*		navigation;
+	Layers*					layers;
 
 	pcg32_random_t			rng;
 

@@ -57,14 +57,14 @@ int Resource::LoadMemory()
 // Decrease number of references and returns it. In case of 0 references also unload from memory.
 int Resource::UnloadMemory()
 {
-	//assert(count > 0 && "Calls to load and unload of resource not equivalent");
+	assert(count > 0 && "Calls to load and unload of resource not equivalent");
 
 	bool result = true;
 
 	if (count <= 1)
 		result = UnloadFromMemory();
 
-	//assert(result && "Resource could not be unloaded from memory");
+	assert(result && "Resource could not be unloaded from memory");
 
 	return result ? count-- : count;
 }

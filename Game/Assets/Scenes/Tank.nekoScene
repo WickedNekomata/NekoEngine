@@ -1,0 +1,366 @@
+[
+    {
+        "Name": "RootNode",
+        "UUID": 3545086787,
+        "Parent UUID": 1949137071,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "Tank",
+        "UUID": 2170635841,
+        "Parent UUID": 3545086787,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "TankRenderers",
+        "UUID": 2992285465,
+        "Parent UUID": 2170635841,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            }
+        ]
+    },
+    {
+        "Name": "TankTurret",
+        "UUID": 3932212801,
+        "Parent UUID": 2992285465,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 2295483376
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "TankTracksLeft",
+        "UUID": 117525623,
+        "Parent UUID": 2992285465,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 456882826
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "TankTracksRight",
+        "UUID": 1375856765,
+        "Parent UUID": 2992285465,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 197663983
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    },
+    {
+        "Name": "TankChassis",
+        "UUID": 2466339554,
+        "Parent UUID": 2992285465,
+        "jsonComponents": [
+            {
+                "Type": 1,
+                "PosX": 0,
+                "PosY": 0,
+                "PosZ": 0,
+                "RotX": 0,
+                "RotY": 0,
+                "RotZ": 0,
+                "RotW": 1,
+                "ScaleX": 1,
+                "ScaleY": 1,
+                "ScaleZ": 1
+            },
+            {
+                "Type": 2,
+                "ResourceMesh": 3405838226
+            },
+            {
+                "Type": 3,
+                "VertexColor": [
+                    1,
+                    1,
+                    1,
+                    255
+                ],
+                "TexturesResources": [
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    },
+                    {
+                        "res": 0,
+                        "posX": 0,
+                        "posY": 0,
+                        "posZ": 0,
+                        "rotX": 0,
+                        "rotY": 0,
+                        "rotZ": 0,
+                        "rotW": 1,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "scaleZ": 1
+                    }
+                ],
+                "Shader": 0,
+                "Uniforms": []
+            }
+        ]
+    }
+] 

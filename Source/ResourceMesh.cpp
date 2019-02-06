@@ -121,6 +121,56 @@ void ResourceMesh::GenerateVAO()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void ResourceMesh::GetIndices(int* out_indices) const
+{
+	memcpy(out_indices, indices, indicesSize * sizeof(int));
+}
+
+void ResourceMesh::GetVerts(float* verts) const
+{
+	for (int i = 0, j = 0; i < verticesSize; ++i)
+	{
+		verts[j++] = vertices[i].position[0];
+		verts[j++] = vertices[i].position[1];
+		verts[j++] = vertices[i].position[2];
+	}
+}
+
+void ResourceMesh::GetNormals(float* normals) const
+{
+	for (int i = 0, j = 0; i < verticesSize; ++i)
+	{
+		normals[j++] = vertices[i].normal[0];
+		normals[j++] = vertices[i].normal[1];
+		normals[j++] = vertices[i].normal[2];
+	}
+}
+
+int ResourceMesh::GetVertsCount() const
+{
+	return verticesSize;
+}
+
+int ResourceMesh::GetIndicesCount() const
+{
+	return indicesSize;
+}
+
+uint ResourceMesh::GetVBO() const
+{
+	return VBO;
+}
+
+uint ResourceMesh::GetIBO() const
+{
+	return IBO;
+}
+
+uint ResourceMesh::GetVAO() const
+{
+	return VAO;
+}
+
 void ResourceMesh::GenerateVBO(GLuint& VBO, Vertex* vertices, uint verticesSize)
 {
 	assert(vertices != nullptr);

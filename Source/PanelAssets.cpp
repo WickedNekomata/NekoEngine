@@ -200,6 +200,10 @@ void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
 					if (IS_SCENE(extension.data()))
 						SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
 					break;
+
+				case ResourceType::ScriptResource:
+					SetResourceDragAndDropSource(type, 0, child->resource);
+					break;
 				}
 				ImGui::TreePop();
 			}
@@ -247,6 +251,15 @@ void PanelAssets::SetResourceDragAndDropSource(ResourceType type, uint UUID, con
 		}
 		break;
 
+	case ResourceType::ScriptResource:
+	{
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("SCRIPT_RESOURCE", &resource, sizeof(Resource*));
+			ImGui::EndDragDropSource();
+		}
+		break;
+	}
 	case ResourceType::NoResourceType:
 	{
 		std::string extension;

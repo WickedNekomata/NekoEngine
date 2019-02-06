@@ -27,6 +27,8 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderProgram.h"
 
+#include "ModuleNavigation.h"
+
 #include "Brofiler\Brofiler.h"
 
 #pragma comment(lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -219,6 +221,9 @@ update_status ModuleRenderer3D::PostUpdate()
 	//glDepthMask(GL_TRUE);
 
 #ifndef GAMEMODE
+
+	App->navigation->Draw();
+
 	// 2. Debug geometry
 	if (debugDraw)
 	{
@@ -940,10 +945,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	glBindVertexArray(mesh->VAO);
+	glBindVertexArray(mesh->GetVAO());
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->IBO);
-	glDrawElements(GL_TRIANGLES, mesh->indicesSize, GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 
 	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{

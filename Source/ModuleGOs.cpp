@@ -110,13 +110,17 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 	case System_Event_Type::RecalculateBBoxes:
+
 		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
 		{
 			if (event.goEvent.gameObject == *it)
 				(*it)->OnSystemEvent(event);
 		}
+
 		break;
+
 	case System_Event_Type::ShaderProgramChanged:
+
 		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
 		{
 			if ((*it)->materialRenderer != nullptr)
@@ -127,7 +131,16 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 					(*it)->OnSystemEvent(event);
 			}
 		}
+
 		break;
+
+	case System_Event_Type::LayerNameReset:
+
+		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		{
+			if ((*it)->layer == event.layerEvent.layer)
+				(*it)->layer = 0;
+		}
 	}
 }
 
@@ -279,6 +292,15 @@ void ModuleGOs::GetStaticGameObjects(std::vector<GameObject*>& gameObjects) cons
 	{
 		if (this->gameObjects[i]->IsStatic())
 			gameObjects.push_back(this->gameObjects[i]);
+	}
+}
+
+void ModuleGOs::GetMeshComponentsFromStaticGameObjects(std::vector<ComponentMesh*>& gameObjects) const
+{
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		if (this->gameObjects[i]->IsStatic() && this->gameObjects[i]->meshRenderer)
+			gameObjects.push_back(this->gameObjects[i]->meshRenderer);
 	}
 }
 

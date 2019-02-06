@@ -66,7 +66,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		if (resMesh == nullptr)
 			return;
 
-		for (uint j = 0; j < resMesh->indicesSize;)
+		for (uint j = 0; j < resMesh->GetIndicesCount();)
 		{
 			tri.a = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
 			tri.b = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;

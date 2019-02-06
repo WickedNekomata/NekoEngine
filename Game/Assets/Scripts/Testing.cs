@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using JellyBitEngine;
+using System;
 
 public class Testing : JellyScript
 {
@@ -8,14 +9,15 @@ public class Testing : JellyScript
     //Use this method for initialization
     public override void Awake()
     {
-
+        Debug.Log("I awaked");      
+        gameObject.GetComponent<NavMeshAgent>();
     }
 
     //Called every frame
     public override void Update()
     {
         transform.position += Vector3.forward * speed * Time.deltaTime;
-        transform.rotation = transform.rotation.Rotate(Vector3.up, speed * Time.deltaTime * 20f);
+        transform.rotation *= Quaternion.Rotate(Vector3.up, speed * Time.deltaTime * 20f);
     }
 }
 

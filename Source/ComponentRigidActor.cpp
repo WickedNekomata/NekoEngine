@@ -16,6 +16,8 @@ ComponentRigidActor::~ComponentRigidActor()
 	gActor->release();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentRigidActor::OnUniqueEditor()
 {
 #ifndef GAMEMODE
@@ -24,6 +26,10 @@ void ComponentRigidActor::OnUniqueEditor()
 	// TODO: interpolate & collision detection
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidActor::Update() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -82,42 +88,13 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 
 // ----------------------------------------------------------------------------------------------------
 
+
 void ComponentRigidActor::OnWake()
 {
-	DEPRECATED_LOG("OnWake");
+	CONSOLE_LOG(LogTypes::Normal, "OnWake", LogTypes::Normal);
 }
 
 void ComponentRigidActor::OnSleep()
 {
-	DEPRECATED_LOG("OnSleep");
-}
-
-void ComponentRigidActor::OnCollisionEnter(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnCollisionEnter");
-}
-
-void ComponentRigidActor::OnCollisionStay(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnCollisionStay");
-}
-
-void ComponentRigidActor::OnCollisionExit(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnCollisionExit");
-}
-
-void ComponentRigidActor::OnTriggerEnter(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnTriggerEnter");
-}
-
-void ComponentRigidActor::OnTriggerStay(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnTriggerStay");
-}
-
-void ComponentRigidActor::OnTriggerExit(physx::PxActor* other)
-{
-	DEPRECATED_LOG("OnTriggerExit");
+	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
 }

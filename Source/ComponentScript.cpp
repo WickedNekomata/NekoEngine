@@ -17,6 +17,11 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/attrdefs.h>
 
+ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent)
+{
+	UUID = App->GenerateRandomNumber();
+}
+
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)
@@ -222,12 +227,14 @@ void ComponentScript::OnStop()
 
 void ComponentScript::OnEnable()
 {
-	OnEnableMethod();
+	if(App->GetEngineState() == engine_states::ENGINE_PLAY)
+		OnEnableMethod();
 }
 
 void ComponentScript::OnDisable()
 {
-	OnDisableMethod();
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
+		OnDisableMethod();
 }
 
 void ComponentScript::OnUniqueEditor()

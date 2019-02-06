@@ -26,8 +26,10 @@
 #include "PanelCodeEditor.h"
 #include "PanelShaderEditor.h"
 #include "PanelSkybox.h"
+#include "PanelNavigation.h"
 #include "PanelSimulatedTime.h"
 #include "PanelPhysics.h"
+#include "PanelLayers.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl.h"
@@ -58,8 +60,10 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
 	panelSkybox = new PanelSkybox("Skybox");
+	panelNavigation = new PanelNavigation("Navigation");
 	panelSimulatedTime = new PanelSimulatedTime("Simulated Time");
 	panelPhysics = new PanelPhysics("Physics");
+	panelLayers = new PanelLayers("Layers");
 
 	panels.push_back(panelInspector);
 	panels.push_back(panelAbout);
@@ -73,8 +77,10 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelShaderEditor);
 	panels.push_back(panelSkybox);
+	panels.push_back(panelNavigation);
 	panels.push_back(panelSimulatedTime);
 	panels.push_back(panelPhysics);
+	panels.push_back(panelLayers);
 
 	LoadStatus(jObject);
 
@@ -135,6 +141,12 @@ update_status ModuleGui::Update()
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
 
+#ifdef _DEBUG
+	static bool imguiDemo = false;
+	if (imguiDemo)
+		ImGui::ShowDemoWindow();
+#endif // _DEBUG
+
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) { panelEdit->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) { panelInspector->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) { panelSettings->OnOff(); }
@@ -142,7 +154,8 @@ update_status ModuleGui::Update()
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) { panelHierarchy->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN) { panelAssets->OnOff(); }
 	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) { panelDebugDraw->OnOff(); }
-
+	if ((App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RALT) == KEY_REPEAT) && App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) { panelLayers->OnOff(); }
+	
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -180,6 +193,14 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Assets", "ALT+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
 
+			if (ImGui::MenuItem("NavMesh")) { panelNavigation->OnOff(); }
+
+#ifdef _DEBUG
+			if (ImGui::MenuItem("ImGui Demo")) { imguiDemo = !imguiDemo; }
+#endif
+
+			if (ImGui::MenuItem("Layers", "ALT+L")) { panelLayers->OnOff(); }
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Others"))
@@ -213,6 +234,7 @@ update_status ModuleGui::Update()
 		LoadScenePopUp();
 	}
 
+
 	return UPDATE_CONTINUE;
 }
 
@@ -231,14 +253,20 @@ bool ModuleGui::CleanUp()
 
 	panelInspector = nullptr;
 	panelAbout = nullptr;
+	panelConsole = nullptr;
 	panelSettings = nullptr;
 	panelHierarchy = nullptr;
-	panelConsole = nullptr;
 	panelAssets = nullptr;
 	panelLibrary = nullptr;
-	panelEdit = nullptr;
 	panelDebugDraw = nullptr;
-
+	panelEdit = nullptr;
+	panelCodeEditor = nullptr;
+	panelShaderEditor = nullptr;
+	panelSkybox = nullptr;
+	panelSimulatedTime = nullptr;
+	panelPhysics = nullptr;
+	panelLayers = nullptr;
+	
 	RELEASE(atlas);
 
 	DEPRECATED_LOG("Cleaning up ImGui");
@@ -309,6 +337,7 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelDebugDraw->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelEdit->GetName(), dock_id_up);
 		ImGui::DockBuilderDockWindow(panelHierarchy->GetName(), dock_id_left);
+		ImGui::DockBuilderDockWindow(panelNavigation->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);

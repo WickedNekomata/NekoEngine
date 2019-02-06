@@ -4,9 +4,11 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Layers.h"
 
 #include "imgui\imgui.h"
-#include "MathGeoLib/include/Math/float4.h"
+
+#include "MathGeoLib\include\Math\float4x4.h"
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
@@ -23,9 +25,14 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 	}
 
 	RecalculateShape();
+
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentSphereCollider::OnUniqueEditor()
 {
@@ -47,6 +54,8 @@ void ComponentSphereCollider::OnUniqueEditor()
 		RecalculateShape();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentSphereCollider::RecalculateShape()
 {

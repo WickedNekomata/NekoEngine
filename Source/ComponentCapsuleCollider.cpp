@@ -4,15 +4,21 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Layers.h"
 
 #include "imgui\imgui.h"
 
 ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::CapsuleColliderComponent)
 {
 	RecalculateShape();
+
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 }
 
 ComponentCapsuleCollider::~ComponentCapsuleCollider() {}
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentCapsuleCollider::OnUniqueEditor()
 {
@@ -51,6 +57,8 @@ void ComponentCapsuleCollider::OnUniqueEditor()
 #endif
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ComponentCapsuleCollider::RecalculateShape()
 {
 	ClearShape();
@@ -67,6 +75,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 		physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 		gShape->setLocalPose(relativePose);
 	}
+	break;
 	case CapsuleDirection::CapsuleDirectionYAxis:
 	{
 		math::float3 dir = math::float3(0.0f, 0.0f, 1.0f);

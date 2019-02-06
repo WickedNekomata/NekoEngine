@@ -12,15 +12,6 @@
 
 #include <mono/metadata/object.h>
 
-class Component;
-class ComponentTransform;
-class ComponentMaterial;
-class ComponentMesh;
-class ComponentCamera;
-class ComponentEmitter;
-class ComponentRigidActor;
-class ComponentCollider;
-
 class GameObject
 {
 public:
@@ -49,21 +40,21 @@ public:
 	GameObject* GetChild(uint index) const;
 	bool IsChild(const GameObject* target, bool untilTheEnd) const;
 
-	void AddComponent(Component* component);
-	void ClearComponent(Component* component);
-	Component* AddComponent(ComponentTypes componentType);
+	void AddComponent(class Component* component);
+	void ClearComponent(class Component* component);
+	class Component* AddComponent(ComponentTypes componentType);
 	void MarkToDeleteComponent(uint index);
-	void MarkToDeleteComponentByValue(Component* component);
+	void MarkToDeleteComponentByValue(class Component* component);
 	void MarkToDeleteAllComponents();
-	void InternallyDeleteComponent(Component* index);
+	void InternallyDeleteComponent(class Component* index);
 	void InternallyDeleteComponents();
 	bool HasComponents() const;
-	uint GetComponenetsLength() const;
-	Component* GetComponent(uint index) const;
-	Component * GetComponentByType(ComponentTypes type) const;
-	int GetComponentIndexOnComponents(Component* component) const;
-	void SwapComponents(Component* firstComponent, Component* secondComponent);
-	void ReorderComponents(Component* source, Component* target);
+	uint GetComponentsLength() const;
+	class Component* GetComponent(uint index) const;
+	class Component * GetComponentByType(ComponentTypes type) const;
+	int GetComponentIndexOnComponents(class Component* component) const;
+	void SwapComponents(class Component* firstComponent, class Component* secondComponent);
+	void ReorderComponents(class Component* source, class Component* target);
 
 	bool EqualsToChildrenOrMe(const void* isEqual) const;
 
@@ -93,26 +84,33 @@ public:
 
 	void RecursiveForceAllResources(uint forceRes) const;
 
+	void OnEnable();
+	void OnDisable();
+
 public:
 
-	ComponentTransform* transform = nullptr;
-	ComponentMaterial* materialRenderer = nullptr;
-	ComponentMesh* meshRenderer = nullptr;
-	ComponentCamera* camera = nullptr;
-	ComponentEmitter* emitter = nullptr;
+	class ComponentTransform* transform = nullptr;
+	class ComponentMaterial* materialRenderer = nullptr;
+	class ComponentMesh* meshRenderer = nullptr;
+	class ComponentCamera* camera = nullptr;
+	class ComponentEmitter* emitter = nullptr;
+	class ComponentNavAgent* navAgent = nullptr;
 
 	// Physics
-	ComponentRigidActor* rigidActor = nullptr;
-	ComponentCollider* collider = nullptr;
+	class ComponentRigidActor* rigidActor = nullptr;
+	class ComponentCollider* collider = nullptr;
 
 	math::AABB boundingBox;
+
+	// Layer
+	uint layer = 0; // in the range [0...31]
 
 private:
 
 	const char* name = nullptr;
 	uint UUID = 0;
 
-	std::vector<Component*> components;
+	std::vector<class Component*> components;
 
 	GameObject* parent = nullptr;
 	uint parentUUID = 0;

@@ -4,15 +4,21 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "Layers.h"
 
 #include "imgui\imgui.h"
 
 ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::BoxColliderComponent)
 {
 	RecalculateShape();
+
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 }
 
 ComponentBoxCollider::~ComponentBoxCollider() {}
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentBoxCollider::OnUniqueEditor()
 {
@@ -41,6 +47,8 @@ void ComponentBoxCollider::OnUniqueEditor()
 		RecalculateShape();
 #endif
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentBoxCollider::RecalculateShape()
 {

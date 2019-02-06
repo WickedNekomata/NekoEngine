@@ -8,7 +8,7 @@ class ResourceScript;
 class ComponentScript : public Component
 {
 public:
-	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent) { }
+	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr);
 	virtual ~ComponentScript();
 
 	void Awake();
@@ -19,6 +19,7 @@ public:
 	void OnEnableMethod();
 	void OnDisableMethod();
 	void OnStop();
+
 	void OnEnable() override;
 	void OnDisable() override;
 

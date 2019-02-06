@@ -3,6 +3,7 @@
 #ifndef GAMEMODE
 
 #include "Globals.h"
+#include "Layers.h"
 
 #include "Application.h"
 #include "ModuleScene.h"
@@ -110,14 +111,60 @@ void PanelInspector::ShowGameObjectInspector() const
 	ImGui::SameLine();
 	ImGui::Text("Static");
 
-	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
+	// Layer
+	std::vector<const char*> layers;
+	int currentLayer = 0;
+	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+	{
+		const char* layerName = App->layers->NumberToName(i);
+		if (strcmp(layerName, "") == 0)
+			continue;
+
+		layers.push_back(layerName);
+		if (i == gameObject->layer)
+			currentLayer = layers.size() - 1;
+	}
+	layers.shrink_to_fit();
+
+	ImGui::PushItemWidth(150.0f);
+	if (ImGui::Combo("Layer", &currentLayer, &layers[0], layers.size()))
+		gameObject->layer = App->layers->NameToNumber(layers[currentLayer]);
+	ImGui::PopItemWidth();
+
+	// -----
+
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+	ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+	ImGui::Dummy(inspectorSize);
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_RESOURCE"))
+		{
+			ResourceScript* scriptRes = *(ResourceScript**)payload->Data;
+
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptRes->scriptName);
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(cursorPos);
+
+	for (int i = 0; i < gameObject->GetComponentsLength(); ++i)
 	{
 		ImGui::Separator();
 		DragnDropSeparatorTarget(gameObject->GetComponent(i));
 		gameObject->GetComponent(i)->OnEditor();
 	}
+	
 	ImGui::Separator();
-	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
+	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponentsLength() - 1));
 
 	ImGui::Button("Add Component");
 	bool scriptSelected = false;
@@ -144,6 +191,13 @@ void PanelInspector::ShowGameObjectInspector() const
 			//Open new Popup, with input text and autocompletion to select scripts by name
 			scriptSelected = true;
 			ImGui::CloseCurrentPopup();
+		}
+
+		if (gameObject->navAgent == nullptr) {
+			if (ImGui::Selectable("Nav Agent")) {
+				gameObject->AddComponent(ComponentTypes::NavAgentComponent);
+				ImGui::CloseCurrentPopup();
+			}
 		}
 
 		if (gameObject->rigidActor == nullptr) {
@@ -182,9 +236,9 @@ void PanelInspector::ShowGameObjectInspector() const
 		ImGui::OpenPopup("AddingScript");
 	}
 
-	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	inspectorSize = ImGui::GetWindowSize();
 	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
-	ImGui::SetNextWindowSize({ inspectorSize.x, 0 });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 0.0f });
 	if (ImGui::BeginPopup("AddingScript"))
 	{
 		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();
@@ -202,7 +256,7 @@ void PanelInspector::ShowGameObjectInspector() const
 
 		//TODO: Add a maximum height, fix the totalHeight calculation
 		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, totalHeight + windowPaddingY * 2}, true);
-	
+
 		for (int i = 0; i < scriptNames.size(); ++i)
 		{
 			if(ImGui::Selectable(scriptNames[i].data()))
@@ -320,32 +374,34 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Spacing();
 
 	ImGui::Text("VBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Vertices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	float nVerts = resourceMesh->GetVertsCount();
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Normals:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Colors:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Texture Coordinates:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 
 	ImGui::Spacing();
 
 	ImGui::Text("VAO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VAO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 
 	ImGui::Spacing();
 
 	ImGui::Text("IBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->IBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetIBO());
+	float nIndices = resourceMesh->GetIndicesCount();
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Indices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
+	ImGui::TextColored(BLUE, "%u", nIndices);
 
 	ImGui::Spacing();
 
 	ImGui::Text("Triangles:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
+	ImGui::TextColored(BLUE, "%u", nIndices / 3);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const

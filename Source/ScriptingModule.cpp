@@ -1111,6 +1111,12 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 	return monoComp;
 }
 
+MonoObject* GetGameCamera()
+{
+	GameObject* mainCamera = App->renderer3D->GetCurrentCamera()->GetParent();
+	return App->scripting->MonoObjectFrom(mainCamera);
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1175,6 +1181,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
 	mono_add_internal_call("JellyBitEngine.GameObject::GetComponentByType", (const void*)&GetComponentByType);
+	mono_add_internal_call("JellyBitEngine.Camera::getMainCamera", (const void*)&GetGameCamera);
 
 	ClearMap();
 

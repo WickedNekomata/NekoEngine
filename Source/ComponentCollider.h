@@ -25,12 +25,16 @@ public:
 	virtual void RecalculateShape() = 0;
 	void SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask);
 
+	// Sets
 	void SetIsTrigger(bool isTrigger);
-	void ParticipateInContactTests(bool participateInContactTests);
-	void ParticipateInSceneQueries(bool participateInSceneQueries);
+	void SetParticipateInContactTests(bool participateInContactTests);
+	void SetParticipateInSceneQueries(bool participateInSceneQueries);
+	virtual void SetCenter(math::float3& center);
 
+	// Gets
 	physx::PxShape* GetShape() const;
 
+	// Callbacks
 	void OnCollisionEnter(Collision& collision);
 	void OnCollisionStay(Collision& collision);
 	void OnCollisionExit(Collision& collision);
@@ -38,7 +42,7 @@ public:
 	void OnTriggerStay(Collision& collision);
 	void OnTriggerExit(Collision& collision);
 
-	/// Transformed box, sphere, capsule or convex geometry
+	// Utils
 	static float GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& transform, math::float3& closestPoint);
 	static physx::PxBounds3 GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation = 1.01f);
 
@@ -50,8 +54,10 @@ protected:
 	bool isTrigger = false;
 	bool participateInContactTests = true;
 	bool participateInSceneQueries = true;
-	physx::PxMaterial* gMaterial = nullptr;
+	physx::PxMaterial* gMaterial = nullptr; // TODO
 	math::float3 center = math::float3::zero;
+
+	// -----
 
 	physx::PxShape* gShape = nullptr;
 

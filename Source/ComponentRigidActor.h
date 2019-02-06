@@ -23,10 +23,13 @@ public:
 	void UpdateTransform(math::float4x4& globalMatrix) const;
 	void UpdateGameObjectTransform() const;
 
+	// Sets
 	void SetUseGravity(bool useGravity);
 
+	// Gets
 	physx::PxRigidActor* GetActor() const;
 
+	// Callbacks
 	void OnWake();
 	void OnSleep();
 
@@ -36,6 +39,8 @@ public:
 protected:
 
 	bool useGravity = true;
+
+	// -----
 
 	physx::PxRigidActor* gActor = nullptr;
 };

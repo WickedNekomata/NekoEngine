@@ -40,6 +40,9 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 
 	// -----
 
+	physx::PxActorFlags actorFlags = gActor->getActorFlags();
+	useGravity = !(actorFlags & physx::PxActorFlag::eDISABLE_GRAVITY);
+
 	mass = gActor->is<physx::PxRigidDynamic>()->getMass();
 	physx::PxVec3 gCMass = gActor->is<physx::PxRigidDynamic>()->getCMassLocalPose().p;
 	cMass = math::float3(gCMass.x, gCMass.y, gCMass.z);

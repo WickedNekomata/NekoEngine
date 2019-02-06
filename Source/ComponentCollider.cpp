@@ -32,29 +32,24 @@ void ComponentCollider::OnUniqueEditor()
 	if (ImGui::Checkbox("Is Trigger", &isTrigger))
 		SetIsTrigger(isTrigger);	
 	if (ImGui::Checkbox("Contact Tests", &participateInContactTests))
-		ParticipateInContactTests(participateInContactTests);
+		SetParticipateInContactTests(participateInContactTests);
 	if (ImGui::Checkbox("Scene Queries", &participateInSceneQueries))
-		ParticipateInSceneQueries(participateInSceneQueries);
+		SetParticipateInSceneQueries(participateInSceneQueries);
 
 	// TODO: gMaterial (drag and drop)
 
-	bool recalculateShape = false;
-
 	ImGui::Text("Center"); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragFloat("##CenterX", &center.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+		SetCenter(center);
 	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragFloat("##CenterY", &center.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+		SetCenter(center);
 	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragFloat("##CenterZ", &center.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+		SetCenter(center);
 	ImGui::PopItemWidth();
-
-	if (recalculateShape)
-		RecalculateShape();
 #endif
 }
 
@@ -97,16 +92,23 @@ void ComponentCollider::SetIsTrigger(bool isTrigger)
 	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
 }
 
-void ComponentCollider::ParticipateInContactTests(bool participateInContactTests)
+void ComponentCollider::SetParticipateInContactTests(bool participateInContactTests)
 {
 	this->participateInContactTests = participateInContactTests;
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSIMULATION_SHAPE, participateInContactTests);
 }
 
-void ComponentCollider::ParticipateInSceneQueries(bool participateInSceneQueries)
+void ComponentCollider::SetParticipateInSceneQueries(bool participateInSceneQueries)
 {
 	this->participateInSceneQueries = participateInSceneQueries;
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE, participateInSceneQueries);
+}
+
+void ComponentCollider::SetCenter(math::float3& center)
+{
+	this->center = center;
+	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
+	gShape->setLocalPose(relativePose);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -158,6 +160,7 @@ void ComponentCollider::OnTriggerExit(Collision& collision)
 
 // ----------------------------------------------------------------------------------------------------
 
+/// Transformed box, sphere, capsule or convex geometry
 float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint)
 {
 	physx::PxVec3 gClosestPoint;

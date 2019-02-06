@@ -32,6 +32,11 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 		UpdateShape(parent->collider->GetShape());
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	UpdateTransform(globalMatrix);
+
+	// -----
+
+	physx::PxActorFlags actorFlags = gActor->getActorFlags();
+	useGravity = !(actorFlags & physx::PxActorFlag::eDISABLE_GRAVITY);
 }
 
 ComponentRigidStatic::~ComponentRigidStatic() {}
@@ -50,4 +55,8 @@ void ComponentRigidStatic::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidStatic::Update() {}
+void ComponentRigidStatic::Update() 
+{
+	if (useGravity)
+		UpdateGameObjectTransform();
+}

@@ -14,8 +14,10 @@ ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollid
 {
 	RecalculateShape();
 
-	Layer* layer = App->layers->GetLayer(parent->layer);
-	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
+	physx::PxShapeFlags shapeFlags = gShape->getFlags();
+	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
+	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
+	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
 }
 
 ComponentBoxCollider::~ComponentBoxCollider() {}
@@ -30,23 +32,18 @@ void ComponentBoxCollider::OnUniqueEditor()
 
 	ComponentCollider::OnUniqueEditor();
 
-	bool recalculateShape = false;
-
 	ImGui::Text("Half size"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeX", &halfSize.x, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+	if (ImGui::DragFloat("##HalfSizeX", &halfSize.x, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+		SetHalfSize(halfSize);
 	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeY", &halfSize.y, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+	if (ImGui::DragFloat("##HalfSizeY", &halfSize.y, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+		SetHalfSize(halfSize);
 	ImGui::PopItemWidth();
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeZ", &halfSize.z, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		recalculateShape = true;
+	if (ImGui::DragFloat("##HalfSizeZ", &halfSize.z, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+		SetHalfSize(halfSize);
 	ImGui::PopItemWidth();
-
-	if (recalculateShape)
-		RecalculateShape();
 #endif
 }
 
@@ -63,10 +60,21 @@ void ComponentBoxCollider::RecalculateShape()
 	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 	gShape->setLocalPose(relativePose);
 
+	Layer* layer = App->layers->GetLayer(parent->layer);
+	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
+
 	// ----------
 
 	if (parent->rigidActor != nullptr)
 		parent->rigidActor->UpdateShape(gShape);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentBoxCollider::SetHalfSize(math::float3& halfSize)
+{
+	this->halfSize = halfSize;
+	gShape->setGeometry(physx::PxBoxGeometry(halfSize.x, halfSize.y, halfSize.z));
 }
 
 // ----------------------------------------------------------------------------------------------------

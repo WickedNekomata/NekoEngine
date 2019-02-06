@@ -36,6 +36,10 @@ void ComponentRigidActor::Update() {}
 
 void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 {
+	assert(shape != nullptr);
+
+	bool attach = true;
+
 	// Detach current shape
 	uint nbShapes = gActor->getNbShapes();
 	if (nbShapes > 0)
@@ -43,18 +47,28 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 		physx::PxShape* gShape = nullptr;
 		gActor->getShapes(&gShape, 1);
 
-		if (gShape != nullptr)
+		if (gShape == shape)
+			attach = false;
+		else
 			gActor->detachShape(*gShape);
 	}
 
 	// Attach current shape
-	if (shape != nullptr)
+	if (attach)
 		gActor->attachShape(*shape);
 }
 
 void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 {
-	gActor->setGlobalPose(physx::PxTransform(physx::PxMat44(globalMatrix.Transposed().ptr())));
+	assert(globalMatrix.IsFinite());
+
+	math::float3 position = math::float3::zero;
+	math::Quat rotation = math::Quat::identity;
+	math::float3 scale = math::float3::zero;
+	globalMatrix.Decompose(position, rotation, scale);
+
+	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
+		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
 }
 
 void ComponentRigidActor::UpdateGameObjectTransform() const

@@ -55,43 +55,39 @@ DefaultErrorCallback::~DefaultErrorCallback() {}
 
 void DefaultErrorCallback::reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line)
 {
-	std::string errorCode;
 	switch (code)
 	{
 	case physx::PxErrorCode::Enum::eNO_ERROR:
-		errorCode = "eNO_ERROR";
+		CONSOLE_LOG(LogTypes::Normal, "eNO_ERROR: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eDEBUG_INFO: //! \brief An informational message
-		errorCode = "eDEBUG_INFO";
+		CONSOLE_LOG(LogTypes::Normal, "eDEBUG_INFO: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eDEBUG_WARNING: //! \brief a warning message for the user to help with debugging
-		errorCode = "eDEBUG_WARNING";
+		CONSOLE_LOG(LogTypes::Warning, "eDEBUG_WARNING: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eINVALID_PARAMETER: //! \brief method called with invalid parameter(s)
-		errorCode = "eINVALID_PARAMETER";
+		CONSOLE_LOG(LogTypes::Error, "eINVALID_PARAMETER: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eINVALID_OPERATION: //! \brief method was called at a time when an operation is not possible
-		errorCode = "eINVALID_OPERATION";
+		CONSOLE_LOG(LogTypes::Error, "eINVALID_OPERATION: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eOUT_OF_MEMORY: //! \brief method failed to allocate some memory
-		errorCode = "eOUT_OF_MEMORY";
+		CONSOLE_LOG(LogTypes::Error, "eOUT_OF_MEMORY: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eINTERNAL_ERROR: //! \brief The library failed for some reason. Possibly you have passed invalid values like NaNs, which are not checked for
-		errorCode = "eINTERNAL_ERROR";
+		CONSOLE_LOG(LogTypes::Error, "eINTERNAL_ERROR: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eABORT: //! \brief An unrecoverable error, execution should be halted and log output flushed
-		errorCode = "eABORT";
+		CONSOLE_LOG(LogTypes::Error, "eABORT: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::ePERF_WARNING: //! \brief The SDK has determined that an operation may result in poor performance
-		errorCode = "ePERF_WARNING";
+		CONSOLE_LOG(LogTypes::Warning, "ePERF_WARNING: %s", message);
 		break;
 	case physx::PxErrorCode::Enum::eMASK_ALL: //! \brief A bit mask for including all errors
-		errorCode = "eMASK_ALL";
+		CONSOLE_LOG(LogTypes::Error, "eMASK_ALL: %s", message);
 		break;
 	}
-	errorCode.append(": ");
-
-	DEPRECATED_LOG("%s""%s", errorCode.data(), message);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -368,6 +364,7 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 
 physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const
 {
+	assert(transform.isFinite());
 	physx::PxRigidStatic* rigidStatic = physx::PxCreateStatic(*gPhysics, transform, shape);
 
 	AddActor(*rigidStatic);
@@ -377,6 +374,7 @@ physx::PxRigidStatic* ModulePhysics::CreateRigidStatic(const physx::PxTransform&
 
 physx::PxRigidDynamic* ModulePhysics::CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic) const
 {
+	assert(transform.isFinite());
 	physx::PxRigidDynamic* rigidDynamic = nullptr;
 	if (isKinematic)
 		rigidDynamic = physx::PxCreateKinematic(*gPhysics, transform, shape, density);
@@ -431,6 +429,7 @@ ComponentRigidActor* ModulePhysics::CreateRigidActorComponent(GameObject* parent
 
 bool ModulePhysics::AddRigidActorComponent(ComponentRigidActor* toAdd)
 {
+	assert(toAdd != nullptr);
 	bool ret = true;
 
 	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), toAdd);
@@ -444,6 +443,7 @@ bool ModulePhysics::AddRigidActorComponent(ComponentRigidActor* toAdd)
 
 bool ModulePhysics::EraseRigidActorComponent(ComponentRigidActor* toErase)
 {
+	assert(toErase != nullptr);
 	bool ret = false;
 
 	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), toErase);
@@ -462,9 +462,7 @@ std::vector<ComponentRigidActor*> ModulePhysics::GetRigidActorComponents() const
 
 ComponentRigidActor* ModulePhysics::FindRigidActorComponentByActor(physx::PxActor* actor) const
 {
-	if (actor == nullptr)
-		return nullptr;
-
+	assert(actor != nullptr);
 	for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
 	{
 		if ((*it)->GetActor() == actor)
@@ -504,6 +502,7 @@ ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, Co
 
 bool ModulePhysics::AddColliderComponent(ComponentCollider* toAdd)
 {
+	assert(toAdd != nullptr);
 	bool ret = true;
 
 	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), toAdd);
@@ -517,6 +516,7 @@ bool ModulePhysics::AddColliderComponent(ComponentCollider* toAdd)
 
 bool ModulePhysics::EraseColliderComponent(ComponentCollider* toErase)
 {
+	assert(toErase != nullptr);
 	bool ret = false;
 
 	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), toErase);
@@ -535,9 +535,7 @@ std::vector<ComponentCollider*> ModulePhysics::GetColliderComponents() const
 
 ComponentCollider* ModulePhysics::FindColliderComponentByShape(physx::PxShape* shape) const
 {
-	if (shape == nullptr)
-		return nullptr;
-
+	assert(shape != nullptr);
 	for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
 	{
 		if ((*it)->GetShape() == shape)
@@ -568,7 +566,6 @@ void ModulePhysics::OnSimulationEvent(ComponentRigidActor* actor, SimulationEven
 void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const
 {
 	assert(collider != nullptr);
-
 	switch (collisionType)
 	{
 	case OnCollisionEnter:
@@ -779,7 +776,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 /// Transformed box, sphere, capsule or convex geometry
 bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance, float inflation, uint filterMask, bool staticShapes, bool dynamicShapes) const
 {
-	assert(direction.IsFinite());
+	assert(transform.isFinite() && direction.IsFinite());
 	direction.Normalize();
 
 	physx::PxQueryFilterData filterData;
@@ -821,6 +818,7 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 /// Transformed box, sphere, capsule or convex geometry
 bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask, bool staticShapes, bool dynamicShapes) const
 {
+	assert(transform.isFinite());
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // overlap against this filter mask
 	if (!staticShapes)
@@ -851,8 +849,8 @@ bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& tra
 
 void ModulePhysics::SetGravity(math::float3& gravity)
 {
+	assert(gravity.IsFinite());
 	this->gravity = gravity;
-
 	gScene->setGravity(physx::PxVec3(gravity.x, gravity.y, gravity.z));
 }
 
@@ -863,6 +861,7 @@ math::float3 ModulePhysics::GetGravity() const
 
 void ModulePhysics::SetDefaultMaterial(physx::PxMaterial* material)
 {
+	assert(material != nullptr);
 	defaultMaterial = material;
 }
 

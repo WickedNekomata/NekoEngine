@@ -17,7 +17,7 @@ class RaycastHit
 public:
 
 	RaycastHit();
-	RaycastHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 point, math::float3 normal, math::float2 texCoord, float distance, uint faceIndex);
+	RaycastHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& point, math::float3& normal, math::float2& texCoord, float distance, uint faceIndex);
 	~RaycastHit();
 
 	void SetGameObject(GameObject* gameObject);
@@ -65,7 +65,7 @@ class SweepHit
 public:
 
 	SweepHit();
-	SweepHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 point, math::float3 normal, float distance, uint faceIndex);
+	SweepHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& point, math::float3& normal, float distance, uint faceIndex);
 	~SweepHit();
 
 	void SetGameObject(GameObject* gameObject);

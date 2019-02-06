@@ -27,7 +27,7 @@ class ContactPoint
 public:
 
 	ContactPoint();
-	ContactPoint(math::float3 point, math::float3 normal, float separation);
+	ContactPoint(math::float3& point, math::float3& normal, float separation);
 	~ContactPoint();
 
 	math::float3 GetPoint() const;
@@ -48,7 +48,7 @@ class Collision
 public:
 
 	Collision();
-	Collision(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 impulse, std::vector<ContactPoint> contactPoints);
+	Collision(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& impulse, std::vector<ContactPoint>& contactPoints);
 	~Collision();
 
 	GameObject* GetGameObject() const;

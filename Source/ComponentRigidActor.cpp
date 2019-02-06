@@ -70,7 +70,6 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 {
 	assert(globalMatrix.IsFinite());
-
 	math::float3 position = math::float3::zero;
 	math::Quat rotation = math::Quat::identity;
 	math::float3 scale = math::float3::zero;

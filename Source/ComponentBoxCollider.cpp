@@ -63,7 +63,7 @@ void ComponentBoxCollider::RecalculateShape()
 	Layer* layer = App->layers->GetLayer(parent->layer);
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
-	// ----------
+	// -----
 
 	if (parent->rigidActor != nullptr)
 		parent->rigidActor->UpdateShape(gShape);
@@ -73,6 +73,7 @@ void ComponentBoxCollider::RecalculateShape()
 
 void ComponentBoxCollider::SetHalfSize(math::float3& halfSize)
 {
+	assert(halfSize.IsFinite());
 	this->halfSize = halfSize;
 	gShape->setGeometry(physx::PxBoxGeometry(halfSize.x, halfSize.y, halfSize.z));
 }

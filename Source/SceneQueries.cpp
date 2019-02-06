@@ -4,7 +4,7 @@
 
 RaycastHit::RaycastHit() {}
 
-RaycastHit::RaycastHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 point, math::float3 normal, math::float2 texCoord, float distance, uint faceIndex) :
+RaycastHit::RaycastHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& point, math::float3& normal, math::float2& texCoord, float distance, uint faceIndex) :
 	gameObject(gameObject), collider(collider), actor(actor), point(point), normal(normal), texCoord(texCoord), distance(distance), faceIndex(faceIndex) {}
 
 RaycastHit::~RaycastHit() {}
@@ -93,7 +93,7 @@ uint RaycastHit::GetFaceIndex() const
 
 SweepHit::SweepHit() {}
 
-SweepHit::SweepHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 point, math::float3 normal, float distance, uint faceIndex) :
+SweepHit::SweepHit(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& point, math::float3& normal, float distance, uint faceIndex) :
 	gameObject(gameObject), collider(collider), actor(actor), point(point), normal(normal), distance(distance), faceIndex(faceIndex) {}
 
 SweepHit::~SweepHit() {}

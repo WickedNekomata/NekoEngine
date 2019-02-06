@@ -38,18 +38,21 @@ void ComponentCollider::OnUniqueEditor()
 
 	// TODO: gMaterial (drag and drop)
 
-	ImGui::Text("Center"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CenterX", &center.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCenter(center);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CenterY", &center.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCenter(center);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CenterZ", &center.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCenter(center);
-	ImGui::PopItemWidth();
+	if (componentType != ComponentTypes::PlaneColliderComponent)
+	{
+		ImGui::Text("Center"); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CenterX", &center.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCenter(center);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CenterY", &center.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCenter(center);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CenterZ", &center.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCenter(center);
+		ImGui::PopItemWidth();
+	}
 #endif
 }
 
@@ -106,6 +109,7 @@ void ComponentCollider::SetParticipateInSceneQueries(bool participateInSceneQuer
 
 void ComponentCollider::SetCenter(math::float3& center)
 {
+	assert(center.IsFinite());
 	this->center = center;
 	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 	gShape->setLocalPose(relativePose);
@@ -161,8 +165,16 @@ void ComponentCollider::OnTriggerExit(Collision& collision)
 // ----------------------------------------------------------------------------------------------------
 
 /// Transformed box, sphere, capsule or convex geometry
+float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose)
+{
+	assert(point.IsFinite() && pose.isFinite());
+	return physx::PxGeometryQuery::pointDistance(physx::PxVec3(point.x, point.y, point.z), geometry, pose);
+}
+
+/// Transformed box, sphere, capsule or convex geometry
 float ComponentCollider::GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint)
 {
+	assert(point.IsFinite() && pose.isFinite());
 	physx::PxVec3 gClosestPoint;
 	float distance = physx::PxGeometryQuery::pointDistance(physx::PxVec3(point.x, point.y, point.z), geometry, pose, &gClosestPoint);
 	if (gClosestPoint.isFinite())

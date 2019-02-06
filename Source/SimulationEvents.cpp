@@ -7,7 +7,8 @@
 
 ContactPoint::ContactPoint() {}
 
-ContactPoint::ContactPoint(math::float3 point, math::float3 normal, float separation) :point(point), normal(normal), separation(separation) {}
+ContactPoint::ContactPoint(math::float3& point, math::float3& normal, float separation) :
+	point(point), normal(normal), separation(separation) {}
 
 ContactPoint::~ContactPoint() {}
 
@@ -30,7 +31,7 @@ float ContactPoint::GetSeparation() const
 
 Collision::Collision() {}
 
-Collision::Collision(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3 impulse, std::vector<ContactPoint> contactPoints) :
+Collision::Collision(GameObject* gameObject, ComponentCollider* collider, ComponentRigidActor* actor, math::float3& impulse, std::vector<ContactPoint>& contactPoints) :
 	gameObject(gameObject), collider(collider), actor(actor), impulse(impulse), contactPoints(contactPoints) {}
 
 Collision::~Collision() {}
@@ -153,14 +154,14 @@ void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU3
 			ComponentCollider* colliderA = callback->FindColliderComponentByShape(triggerPair.triggerShape);
 			ComponentRigidActor* actorA = callback->FindRigidActorComponentByActor(triggerPair.triggerActor);
 			GameObject* gameObjectA = actorA->GetParent();
-			Collision collisionA(gameObjectA, colliderA, actorA, math::float3::zero, std::vector<ContactPoint>());
+			Collision collisionA(gameObjectA, colliderA, actorA, math::float3(), std::vector<ContactPoint>());
 			ComponentCollider* thisColliderA = callback->FindColliderComponentByShape(triggerPair.otherShape);
 
 			// Collision B
 			ComponentCollider* colliderB = callback->FindColliderComponentByShape(triggerPair.otherShape);
 			ComponentRigidActor* actorB = callback->FindRigidActorComponentByActor(triggerPair.otherActor);
 			GameObject* gameObjectB = actorB->GetParent();
-			Collision collisionB(gameObjectB, colliderB, actorB, math::float3::zero, std::vector<ContactPoint>());
+			Collision collisionB(gameObjectB, colliderB, actorB, math::float3(), std::vector<ContactPoint>());
 			ComponentCollider* thisColliderB = callback->FindColliderComponentByShape(triggerPair.triggerShape);
 
 			if (triggerPair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)

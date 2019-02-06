@@ -93,7 +93,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 	Layer* layer = App->layers->GetLayer(parent->layer);
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
-	// ----------
+	// -----
 
 	if (parent->rigidActor != nullptr)
 		parent->rigidActor->UpdateShape(gShape);
@@ -103,6 +103,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 
 void ComponentCapsuleCollider::SetCenter(math::float3& center)
 {
+	assert(center.IsFinite());
 	this->center = center;
 	switch (direction)
 	{

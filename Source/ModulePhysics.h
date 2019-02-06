@@ -91,6 +91,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	// Scene queries
+	/// They require a Rigid Actor component and a Collider component
 	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
 	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;

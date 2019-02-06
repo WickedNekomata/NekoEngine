@@ -20,6 +20,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
+#include "ComponentRigidActor.h"
 #include "ComponentCollider.h"
 #include "ComponentEmitter.h"
 
@@ -245,7 +246,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
 		}
 
-		if (drawColliders) // boundingBoxesColor = Green, DarkGreen
+		if (drawColliders) // boundingBoxesColor = Green
 		{
 			Color collidersColor = Green;
 
@@ -262,11 +263,11 @@ update_status ModuleRenderer3D::PostUpdate()
 				math::float3 scale = math::float3::one;
 				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
 				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-																			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
 				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
-											math::float3(transform.p.x, transform.p.y, transform.p.z));
+					math::float3(transform.p.x, transform.p.y, transform.p.z));
 
 				switch (gShape->getGeometryType())
 				{
@@ -296,99 +297,63 @@ update_status ModuleRenderer3D::PostUpdate()
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
 					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), collidersColor, globalMatrix);
+					break;
+				}
+			}
+		}
+
+		if (drawRigidActors) // rigidActorsColor = Orange (static actors), Red and DarkRed (dynamic actors)
+		{
+			std::vector<ComponentRigidActor*> rigidActorComponents = App->physics->GetRigidActorComponents();
+			for (uint i = 0; i < rigidActorComponents.size(); ++i)
+			{
+				physx::PxRigidActor* gActor = rigidActorComponents[i]->GetActor();
+				physx::PxShape* gShape = nullptr;
+				gActor->getShapes(&gShape, 1);
+				if (gShape == nullptr)
+					continue;
+
+				Color rigidActorsColor = Red;
+				if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidStaticComponent)
+					rigidActorsColor = Orange;
+				else if (gActor->is<physx::PxRigidDynamic>()->isSleeping())
+					rigidActorsColor = DarkRed;
+
+				physx::PxTransform transform = gActor->getGlobalPose();
+				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
+					math::float3(transform.p.x, transform.p.y, transform.p.z));
+
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, rigidActorsColor, globalMatrix);
+				}
 				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, rigidActorsColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), rigidActorsColor, globalMatrix);
+				}
+				break;
+				case physx::PxGeometryType::Enum::ePLANE:
+					App->debugDrawer->DebugDrawBox(math::float3(1.0f, 0.0f, 1.0f), rigidActorsColor, globalMatrix);
+					break;
 				}
 			}
-
-			/*
-			std::vector<PxRigidActor*> staticActors = App->physics->GetRigidStatics();
-			for (uint i = 0; i < staticActors.size(); ++i)
-			{
-				PxShape* gShape = nullptr;
-				staticActors[i]->getShapes(&gShape, 1);
-
-				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
-				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
-				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
-				math::float4x4 globalMatrix(q, p);
-
-				if (gShape != nullptr)
-				{
-					switch (gShape->getGeometryType())
-					{
-					case PxGeometryType::Enum::eSPHERE:
-					{
-						PxSphereGeometry gSphereGeometry;
-						gShape->getSphereGeometry(gSphereGeometry);
-
-						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
-					}
-						break;
-					case PxGeometryType::Enum::eCAPSULE:
-					{
-						PxCapsuleGeometry gCapsuleGeometry;
-						gShape->getCapsuleGeometry(gCapsuleGeometry);
-
-						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
-					}
-						break;
-					case PxGeometryType::Enum::eBOX:
-					{
-						PxBoxGeometry gBoxGeometry;
-						gShape->getBoxGeometry(gBoxGeometry);
-
-						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
-					}
-						break;
-					}
-				}
-			}
-
-			std::vector<PxRigidActor*> dynamicActors = App->physics->GetRigidDynamics();
-			for (uint i = 0; i < dynamicActors.size(); ++i)
-			{
-				PxShape* gShape = nullptr;
-				dynamicActors[i]->getShapes(&gShape, 1);
-
-				PxTransform gTransform = staticActors[i]->getGlobalPose() * gShape->getLocalPose();
-				const math::Quat q(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
-				const math::float3 p(gTransform.p.x, gTransform.p.y, gTransform.p.z);
-				math::float4x4 globalMatrix(q, p);
-
-				if (dynamicActors[i]->is<PxRigidDynamic>()->isSleeping())
-					collidersColor = DarkBlue;
-
-				if (gShape != nullptr)
-				{
-					switch (gShape->getGeometryType())
-					{
-					case PxGeometryType::Enum::eSPHERE:
-					{
-						PxSphereGeometry gSphereGeometry;
-						gShape->getSphereGeometry(gSphereGeometry);
-
-						App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
-					}
-						break;
-					case PxGeometryType::Enum::eCAPSULE:
-					{
-						PxCapsuleGeometry gCapsuleGeometry;
-						gShape->getCapsuleGeometry(gCapsuleGeometry);
-
-						App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
-					}
-						break;
-					case PxGeometryType::Enum::eBOX:
-					{
-						PxBoxGeometry gBoxGeometry;
-						gShape->getBoxGeometry(gBoxGeometry);
-
-						App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
-					}
-						break;
-					}
-				}
-			}*/
 		}
 
 		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
@@ -598,6 +563,16 @@ void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
 bool ModuleRenderer3D::GetDrawColliders() const
 {
 	return drawColliders;
+}
+
+void ModuleRenderer3D::SetDrawRigidActors(bool drawRigidActors)
+{
+	this->drawRigidActors = drawRigidActors;
+}
+
+bool ModuleRenderer3D::GetDrawRigidActors() const
+{
+	return drawRigidActors;
 }
 
 void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)

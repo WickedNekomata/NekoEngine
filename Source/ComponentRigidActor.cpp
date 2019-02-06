@@ -4,6 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+
 #include "ComponentCollider.h"
 
 #include "imgui\imgui.h"
@@ -33,33 +34,41 @@ void ComponentRigidActor::Update() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidActor::UpdateShape()
+void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 {
-	physx::PxShape* gShape = nullptr;
+	assert(shape != nullptr);
+
+	bool attach = true;
 
 	// Detach current shape
 	uint nbShapes = gActor->getNbShapes();
 	if (nbShapes > 0)
 	{
+		physx::PxShape* gShape = nullptr;
 		gActor->getShapes(&gShape, 1);
 
-		if (gShape != nullptr)
+		if (gShape == shape)
+			attach = false;
+		else
 			gActor->detachShape(*gShape);
-		gShape = nullptr;
 	}
 
-	// Update current shape
-	gShape = parent->collider->GetShape();
-
 	// Attach current shape
-	if (gShape != nullptr)
-		gActor->attachShape(*gShape);
+	if (attach)
+		gActor->attachShape(*shape);
 }
 
-void ComponentRigidActor::UpdateTransform() const
+void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 {
-	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
-	gActor->setGlobalPose(physx::PxTransform(physx::PxMat44(globalMatrix.Transposed().ptr())));
+	assert(globalMatrix.IsFinite());
+
+	math::float3 position = math::float3::zero;
+	math::Quat rotation = math::Quat::identity;
+	math::float3 scale = math::float3::zero;
+	globalMatrix.Decompose(position, rotation, scale);
+
+	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
+		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
 }
 
 void ComponentRigidActor::UpdateGameObjectTransform() const

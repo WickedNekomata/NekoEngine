@@ -16,6 +16,12 @@ public:
 
 	void RecalculateShape();
 
+	// Sets
+	void SetHalfSize(math::float3& halfSize);
+
+	// Gets
+	physx::PxBoxGeometry GetBoxGeometry() const;
+
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

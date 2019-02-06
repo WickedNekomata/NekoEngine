@@ -197,9 +197,10 @@ update_status ModulePhysics::Update()
 
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 	{
+		// Raycast
 		RaycastHit hitInfo;
 		std::vector<RaycastHit> touchesInfo;
-		if (Raycast(ray.pos, ray.dir, hitInfo))
+		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo))
 		{
 			// Hit
 			if (hitInfo.GetGameObject() != nullptr)
@@ -212,6 +213,8 @@ update_status ModulePhysics::Update()
 					CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
 			}
 		}
+
+
 	}
 	//_*****Debug*****
 

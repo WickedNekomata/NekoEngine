@@ -7,6 +7,8 @@
 
 #include "ComponentCollider.h"
 
+#include "PhysicsConstants.h"
+
 #include "imgui\imgui.h"
 
 ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType) {}
@@ -36,8 +38,6 @@ void ComponentRigidActor::Update() {}
 
 void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 {
-	assert(shape != nullptr);
-
 	bool attach = true;
 
 	// Detach current shape
@@ -47,13 +47,22 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 		physx::PxShape* gShape = nullptr;
 		gActor->getShapes(&gShape, 1);
 
-		if (gShape == shape)
+		if (gShape == shape && shape != nullptr)
 			attach = false;
 		else
 			gActor->detachShape(*gShape);
 	}
 
 	// Attach current shape
+	if (shape == nullptr)
+	{
+		if (parent->boundingBox.IsFinite())
+			shape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+		else
+			shape = App->physics->CreateShape(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
+		assert(shape != nullptr);
+	}
+
 	if (attach)
 		gActor->attachShape(*shape);
 }
@@ -66,6 +75,12 @@ void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 	math::Quat rotation = math::Quat::identity;
 	math::float3 scale = math::float3::zero;
 	globalMatrix.Decompose(position, rotation, scale);
+
+	if (!position.IsFinite() || !rotation.IsFinite())
+	{
+		CONSOLE_LOG(LogTypes::Warning, "The rigid actor transform cannot be updated since the position or the rotation of the game object is infinite");
+		return;
+	}
 
 	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
 		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));

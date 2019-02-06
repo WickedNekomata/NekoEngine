@@ -17,14 +17,14 @@
 
 ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigidActor(parent, ComponentTypes::RigidDynamicComponent)
 {
+	density = DENSITY;
+
 	physx::PxShape* gShape = nullptr;
 	if (parent->boundingBox.IsFinite())
 		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
 	else
 		gShape = App->physics->CreateShape(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
 	assert(gShape != nullptr);
-
-	density = DENSITY;
 
 	gActor = App->physics->CreateRigidDynamic(physx::PxTransform(physx::PxIDENTITY()), *gShape, density, isKinematic);
 	assert(gActor != nullptr);

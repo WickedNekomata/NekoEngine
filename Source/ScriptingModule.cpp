@@ -20,6 +20,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
+#include "Layers.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
@@ -1178,11 +1179,6 @@ MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponen
 	MonoObject* positionObj; mono_field_get_value(ret, positionField, &positionObj);
 	MonoObject* directionObj; mono_field_get_value(ret, directionField, &directionObj);
 
-	if(App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_STATE::KEY_DOWN)
-	{
-		int a = 2;
-	}
-
 	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_x"), &ray.pos.x);
 	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_y"), &ray.pos.y);
 	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_z"), &ray.pos.z);
@@ -1192,6 +1188,19 @@ MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponen
 	mono_field_set_value(directionObj, mono_class_get_field_from_name(mono_object_get_class(directionObj), "_z"), &ray.dir.z);
 
 	return ret;
+}
+
+int LayerToBit(MonoString* layerName)
+{
+	char* layerCName = mono_string_to_utf8(layerName);
+
+	int bits = 0; 
+	int res = App->layers->NameToNumber(layerCName);
+	res != -1 ? bits |= 1 << res : bits = 0;
+
+	mono_free(layerCName);
+
+	return bits;
 }
 
 //---------------------------------
@@ -1260,6 +1269,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.GameObject::GetComponentByType", (const void*)&GetComponentByType);
 	mono_add_internal_call("JellyBitEngine.Camera::getMainCamera", (const void*)&GetGameCamera);
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
+	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 
 	ClearMap();
 

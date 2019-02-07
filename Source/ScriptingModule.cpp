@@ -21,6 +21,8 @@
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
 #include "Layers.h"
+#include "ModulePhysics.h"
+#include "SceneQueries.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
@@ -377,6 +379,14 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 		case ComponentTypes::CameraComponent:
 		{
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Camera"));			
+			break;
+		}
+		case ComponentTypes::BoxColliderComponent:
+		case ComponentTypes::CapsuleColliderComponent:
+		case ComponentTypes::PlaneColliderComponent:
+		case ComponentTypes::SphereColliderComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Collider"));
 			break;
 		}
 	}
@@ -1203,6 +1213,72 @@ int LayerToBit(MonoString* layerName)
 	return bits;
 }
 
+bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject* hitInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes)
+{
+	math::float3 originCpp{mono_array_get(origin, float, 0), mono_array_get(origin, float, 1), mono_array_get(origin, float, 2)};
+	math::float3 directionCpp{mono_array_get(direction, float, 0), mono_array_get(direction, float, 1), mono_array_get(direction, float, 2)};
+
+	RaycastHit hitInfocpp;
+	bool ret = App->physics->Raycast(originCpp, directionCpp, hitInfocpp, maxDistance, filterMask, staticShapes, dynamicShapes);
+
+	if (ret)
+	{
+		//Create the HitInfo object
+		MonoClass* raycastHitClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "RaycastHit");
+		hitInfo = mono_object_new(App->scripting->domain, raycastHitClass);
+		mono_runtime_object_init(hitInfo);
+
+		//Setup the gameObject and collider fields
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "gameObject"), App->scripting->MonoObjectFrom(hitInfocpp.GetGameObject()));
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "collider"), App->scripting->MonoComponentFrom((Component*)hitInfocpp.GetCollider()));
+
+		//Setup the point field
+		MonoClass* Vector3Class = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Vector3");
+		MonoObject* pointObj = mono_object_new(App->scripting->domain, Vector3Class);
+		mono_runtime_object_init(pointObj);
+
+		math::float3 point = hitInfocpp.GetPoint();
+		mono_field_set_value(pointObj, mono_class_get_field_from_name(Vector3Class, "_x"), &point.x);
+		mono_field_set_value(pointObj, mono_class_get_field_from_name(Vector3Class, "_y"), &point.y);
+		mono_field_set_value(pointObj, mono_class_get_field_from_name(Vector3Class, "_z"), &point.z);
+
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "point"), pointObj);
+
+		//Setup the normal field
+		MonoObject* normalObj = mono_object_new(App->scripting->domain, Vector3Class);
+		mono_runtime_object_init(normalObj);
+
+		math::float3 normal = hitInfocpp.GetNormal();
+		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector3Class, "_x"), &normal.x);
+		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector3Class, "_y"), &normal.y);
+		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector3Class, "_z"), &normal.z);
+
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "normal"), normalObj);
+
+		//Setup the texCoord field
+		MonoClass* Vector2Class = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Vector2");
+		MonoObject* texCoordObj = mono_object_new(App->scripting->domain, Vector2Class);
+		mono_runtime_object_init(texCoordObj);
+
+		math::float2 texCoord = hitInfocpp.GetTexCoord();
+		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector2Class, "x"), &texCoord.x);
+		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector2Class, "y"), &texCoord.y);
+
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "texCoord"), texCoordObj);
+
+		//Setup the distance and the faceIndex fields
+		float distance = hitInfocpp.GetDistance();
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "distance"), &distance);
+
+		uint faceIndex = hitInfocpp.GetFaceIndex();
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "faceIndex"), &faceIndex);
+	}
+	else
+		hitInfo = nullptr;
+
+	return ret;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1270,6 +1346,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Camera::getMainCamera", (const void*)&GetGameCamera);
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
 	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
+	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
 
 	ClearMap();
 

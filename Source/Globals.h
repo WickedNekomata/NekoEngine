@@ -64,6 +64,8 @@ enum update_status
 
 #define EXTENSION_MESH ".nekoMesh"
 #define EXTENSION_TEXTURE ".nekoDDS"
+#define EXTENSION_BONE ".nekoBone"
+#define EXTENSION_ANIMATION ".nekoAnimation"
 #define EXTENSION_SCENE ".nekoScene"
 #define EXTENSION_VERTEX_SHADER_OBJECT ".vsh"
 #define EXTENSION_FRAGMENT_SHADER_OBJECT ".fsh"

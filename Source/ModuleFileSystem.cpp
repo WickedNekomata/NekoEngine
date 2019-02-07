@@ -536,6 +536,16 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
 			outputFile.append(EXTENSION_TEXTURE);
 			break;
+		case FileType::BoneFile:
+			outputFile.insert(0, DIR_LIBRARY_BONES);
+			outputFile.insert(strlen(DIR_LIBRARY_BONES), "/");
+			outputFile.append(EXTENSION_BONE);
+			break;
+		case FileType::AnimationFile:
+			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
+			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
+			outputFile.append(EXTENSION_ANIMATION);
+			break;
 		case FileType::SceneFile:
 			outputFile.insert(0, DIR_ASSETS_SCENES);
 			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");

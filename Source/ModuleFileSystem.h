@@ -11,6 +11,8 @@
 #define DIR_LIBRARY "Library"
 #define DIR_LIBRARY_MESHES "Library/Meshes"
 #define DIR_LIBRARY_MATERIALS "Library/Materials"
+#define DIR_LIBRARY_BONES "Library/Bones"
+#define DIR_LIBRARY_ANIMATIONS "Library/Animations"
 #define DIR_LIBRARY_SHADERS "Library/Shaders"
 #define DIR_LIBRARY_SCRIPTS "Library/Scripts"
 #define DIR_ASSETS "Assets"
@@ -32,6 +34,9 @@ enum FileType
 
 	MeshFile,
 	TextureFile,
+
+	BoneFile,
+	AnimationFile,
 
 	SceneFile,
 

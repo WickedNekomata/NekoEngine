@@ -1471,6 +1471,9 @@
     <ClInclude Include="SceneQueries.h">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="BoneImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1925,6 +1928,9 @@
     </ClCompile>
     <ClCompile Include="SceneQueries.cpp">
       <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

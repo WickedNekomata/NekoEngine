@@ -3,6 +3,8 @@ using JellyBitEngine;
 
 public class RayCaster : JellyScript
 {
+    public LayerMask layerMask = new LayerMask();
+
     //Use this method for initialization
     public override void Awake()
     {

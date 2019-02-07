@@ -2,6 +2,7 @@
 #include "ModuleInput.h"
 #include "ModuleResourceManager.h"
 #include "ScriptingModule.h"
+#include "Layers.h"
 
 #include "ComponentScript.h"
 #include "ResourceScript.h"
@@ -843,6 +844,53 @@ void ComponentScript::OnUniqueEditor()
 
 					cursorPos = ImGui::GetCursorScreenPos();
 					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
+				}
+				else if (typeName == "JellyBitEngine.LayerMask")
+				{											
+					MonoObject* layerMask;
+					mono_field_get_value(classInstance, field, &layerMask);
+
+					if (layerMask)
+					{
+						uint32_t bits;
+						mono_field_get_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
+
+						std::string enabled;
+						uint totalLayers = 0u;
+						uint amountEnabled = 0u;
+
+						for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+						{
+							const char* layerName = App->layers->NumberToName(i);
+							if (strcmp(layerName, "") == 0)
+								continue;
+
+							totalLayers++;
+							enabled = (bits >> i) & 1U == 1 ? layerName : enabled;
+							amountEnabled += (bits >> i) & 1U == 1 ? 1 : 0;
+						}
+
+						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
+
+						ImGui::PushItemWidth(150.0f);
+						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
+						{
+							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+							{
+								const char* layerName = App->layers->NumberToName(i);
+								if (strcmp(layerName, "") == 0)
+									continue;
+
+								if (ImGui::Selectable(layerName, (bits >> i) & 1U == 1 ? true : false, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+								{
+									bits ^= 1UL << i;
+									mono_field_set_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
+								}
+							}
+							ImGui::EndCombo();
+						}
+						ImGui::PopItemWidth();
+					}					
 				}
 			}
 

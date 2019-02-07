@@ -6,6 +6,8 @@
 
 #include "imgui\imgui.h"
 
+#include "MathGeoLib/include/Geometry/LineSegment.h"
+
 ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentTypes::CameraComponent)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
@@ -151,4 +153,11 @@ void ComponentCamera::OnLoad(JSON_Object* file)
 
 	mainCamera = json_object_get_boolean(file, "isMainCamera");
 	frustumCulling = json_object_get_boolean(file, "isFrustumCulling");
+}
+
+math::Ray ComponentCamera::ScreenToRay(math::float2 screenPoint)
+{
+	float normalizedX = -(1.0f - (screenPoint.x * 2.0f) / App->window->GetWindowWidth());
+	float normalizedY = 1.0f - (screenPoint.y * 2.0f) / App->window->GetWindowHeight();
+	return frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
 }

@@ -20,6 +20,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
+#include "Layers.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
@@ -362,6 +363,40 @@ GameObject* ScriptingModule::GameObjectFrom(MonoObject* monoObject)
 	return (GameObject*)address;
 	
 	//We only can create MonoObjects though a GameObject*, not viceversa.
+}
+
+MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
+{
+	MonoObject* monoComponent = nullptr;
+	monoComponent = component->GetMonoComponent();
+	if (monoComponent)
+		return monoComponent;
+
+	switch (component->GetType())
+	{
+		case ComponentTypes::CameraComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Camera"));			
+			break;
+		}
+	}
+
+	if (!monoComponent)
+		return nullptr;
+
+	mono_runtime_object_init(monoComponent);
+
+	int gameObjectAddress = (int)component->GetParent();
+	int componentAddress = (int)component;
+
+	mono_field_set_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "gameObjectAddress"), &gameObjectAddress);
+	mono_field_set_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "componentAddress"), &componentAddress);
+	mono_field_set_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "gameObject"), MonoObjectFrom(component->GetParent()));
+
+	uint32_t handleID = mono_gchandle_new(monoComponent, true);
+	component->SetMonoComponent(handleID);
+
+	return monoComponent;
 }
 
 bool ScriptingModule::alreadyCreated(std::string scriptName)
@@ -1113,8 +1148,59 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 
 MonoObject* GetGameCamera()
 {
-	GameObject* mainCamera = App->renderer3D->GetCurrentCamera()->GetParent();
-	return App->scripting->MonoObjectFrom(mainCamera);
+	return App->scripting->MonoComponentFrom(App->renderer3D->GetCurrentCamera());
+}
+
+MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponent)
+{
+	math::float2 screenPoint{ mono_array_get(screenCoordinates, float, 0),mono_array_get(screenCoordinates, float, 1) };
+
+	//Get the camera component attached
+
+	int compAddress;
+	mono_field_get_value(cameraComponent, mono_class_get_field_from_name(mono_object_get_class(cameraComponent) , "componentAddress"), &compAddress);
+
+	ComponentCamera* camera = (ComponentCamera*)compAddress;
+	if (!camera)
+		return nullptr;
+
+	//Get the MathGeoLib Ray
+	math::Ray ray = camera->ScreenToRay(screenPoint);
+	
+	//Create the CSharp Ray object
+	MonoClass* RayClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Ray");
+	MonoObject* ret = mono_object_new(App->scripting->domain, RayClass);
+	mono_runtime_object_init(ret);
+
+	//SetUp the created Ray fields
+	MonoClassField* positionField = mono_class_get_field_from_name(RayClass, "position");
+	MonoClassField* directionField = mono_class_get_field_from_name(RayClass, "direction");
+	
+	MonoObject* positionObj; mono_field_get_value(ret, positionField, &positionObj);
+	MonoObject* directionObj; mono_field_get_value(ret, directionField, &directionObj);
+
+	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_x"), &ray.pos.x);
+	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_y"), &ray.pos.y);
+	mono_field_set_value(positionObj, mono_class_get_field_from_name(mono_object_get_class(positionObj), "_z"), &ray.pos.z);
+
+	mono_field_set_value(directionObj, mono_class_get_field_from_name(mono_object_get_class(directionObj), "_x"), &ray.dir.x);
+	mono_field_set_value(directionObj, mono_class_get_field_from_name(mono_object_get_class(directionObj), "_y"), &ray.dir.y);
+	mono_field_set_value(directionObj, mono_class_get_field_from_name(mono_object_get_class(directionObj), "_z"), &ray.dir.z);
+
+	return ret;
+}
+
+int LayerToBit(MonoString* layerName)
+{
+	char* layerCName = mono_string_to_utf8(layerName);
+
+	int bits = 0; 
+	int res = App->layers->NameToNumber(layerCName);
+	res != -1 ? bits |= 1 << res : bits = 0;
+
+	mono_free(layerCName);
+
+	return bits;
 }
 
 //---------------------------------
@@ -1182,6 +1268,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
 	mono_add_internal_call("JellyBitEngine.GameObject::GetComponentByType", (const void*)&GetComponentByType);
 	mono_add_internal_call("JellyBitEngine.Camera::getMainCamera", (const void*)&GetGameCamera);
+	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
+	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 
 	ClearMap();
 

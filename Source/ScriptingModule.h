@@ -41,6 +41,9 @@ public:
 	MonoObject* MonoObjectFrom(GameObject* gameObject);
 	GameObject* GameObjectFrom(MonoObject* monoObject);
 
+	MonoObject* MonoComponentFrom(Component* component);
+	Component* ComponentFrom(MonoObject* monoComponent);
+
 	bool alreadyCreated(std::string scriptName);
 
 	void CreateScriptingProject();

@@ -59,7 +59,7 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 		if (parent->boundingBox.IsFinite())
 			shape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
 		else
-			shape = App->physics->CreateShape(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
+			shape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
 		assert(shape != nullptr);
 	}
 

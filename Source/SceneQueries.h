@@ -12,6 +12,12 @@ class ComponentRigidActor;
 class ComponentCollider;
 class GameObject;
 
+enum SceneQueryFlags
+{
+	Static = 1 << 0,
+	Dynamic = 1 << 1
+};
+
 class RaycastHit
 {
 public:

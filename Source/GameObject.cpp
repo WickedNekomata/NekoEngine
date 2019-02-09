@@ -519,6 +519,26 @@ MonoObject* GameObject::GetMonoObject()
 	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
 }
 
+void GameObject::SetLayer(uint layerNumber)
+{
+	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
+	if (layer == layerNumber)
+		return;
+
+	layer = layerNumber;
+
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::LayerChanged;
+	newEvent.layerEvent.layer = layerNumber;
+	newEvent.layerEvent.collider = collider;
+	App->PushSystemEvent(newEvent);
+}
+
+uint GameObject::GetLayer() const
+{
+	return layer;
+}
+
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
 	boundingBox.SetNegativeInfinity();

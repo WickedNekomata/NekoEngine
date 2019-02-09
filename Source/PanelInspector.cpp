@@ -123,14 +123,14 @@ void PanelInspector::ShowGameObjectInspector() const
 			continue;
 
 		layers.push_back(layerName);
-		if (i == gameObject->layer)
+		if (i == gameObject->GetLayer())
 			currentLayer = layers.size() - 1;
 	}
 	layers.shrink_to_fit();
 
 	ImGui::PushItemWidth(150.0f);
 	if (ImGui::Combo("Layer", &currentLayer, &layers[0], layers.size()))
-		gameObject->layer = App->layers->NameToNumber(layers[currentLayer]);
+		gameObject->SetLayer(App->layers->NameToNumber(layers[currentLayer]));
 	ImGui::PopItemWidth();
 
 	// -----

@@ -4,6 +4,7 @@
 #include "Module.h"
 
 #include "Layers.h"
+#include "SceneQueries.h"
 
 #include "physx\include\PxPhysicsAPI.h"
 #include "physx\include\extensions\PxDefaultAllocator.h"
@@ -50,10 +51,13 @@ public:
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();
+	update_status FixedUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event event);
+
+	void Debug();
 
 	// ----------------------------------------------------------------------------------------------------
 
@@ -92,13 +96,13 @@ public:
 
 	// Scene queries
 	/// They require a Rigid Actor component and a Collider component
-	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
-	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
-	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 	
-	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 	
-	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, bool staticShapes = true, bool dynamicShapes = true) const;
+	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 
 	// ----------------------------------------------------------------------------------------------------
 

@@ -60,7 +60,7 @@ void ComponentBoxCollider::RecalculateShape()
 	physx::PxTransform relativePose(physx::PxVec3(center.x, center.y, center.z));
 	gShape->setLocalPose(relativePose);
 
-	Layer* layer = App->layers->GetLayer(parent->layer);
+	Layer* layer = App->layers->GetLayer(parent->GetLayer());
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
 	// -----

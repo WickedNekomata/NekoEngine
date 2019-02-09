@@ -4,6 +4,7 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
 #include "ModuleInput.h"
+#include "ComponentNavAgent.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -1278,6 +1279,21 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, floa
 		hitInfo = nullptr;
 
 	return ret;
+}
+
+void SetDestination(MonoObject* agentCSharp, MonoArray* destination)
+{
+	int compAddress = 0;
+	mono_field_get_value(agentCSharp, mono_class_get_field_from_name(mono_object_get_class(agentCSharp), "componentAddress"), &compAddress);
+
+	ComponentNavAgent* agentCpp = (ComponentNavAgent*) agentCpp;
+
+	if (!agentCpp)
+		return;
+
+	math::float3 destinationCpp {mono_array_get(destination, float, 0), mono_array_get(destination, float, 1), mono_array_get(destination, float, 2)};
+
+	agentCpp->SetDestination(destinationCpp.ptr());
 }
 
 //---------------------------------

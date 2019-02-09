@@ -17,13 +17,13 @@ public class RayCaster : JellyScript
         if(Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            Debug.Log("My ray has " + ray.position.ToString() + "as position and " + ray.direction.ToString() + "as direction.");
-
+            
             RaycastHit hitInfo;
 
             if(Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
-                Debug.Log("Dude! I raycasted " + hitInfo.gameObject.name + "!");
+                Debug.Log("I raycasted " + hitInfo.gameObject.name);
+                hitInfo.gameObject.transform.position += Vector3.forward * Time.deltaTime * 6f;
             }
         }    
     }

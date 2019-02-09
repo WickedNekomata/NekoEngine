@@ -873,7 +873,7 @@ void ComponentScript::OnUniqueEditor()
 						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
 
 						ImGui::PushItemWidth(150.0f);
-						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
+						if (ImGui::BeginCombo((fieldName + "##" + std::to_string(UUID)).data(), title))
 						{
 							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 							{

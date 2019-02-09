@@ -68,7 +68,7 @@ void ComponentPlaneCollider::RecalculateShape()
 	physx::PxTransform relativePose = physx::PxTransformFromPlaneEquation(physx::PxPlane(normal.x, normal.y, normal.z, distance));
 	gShape->setLocalPose(relativePose);
 
-	Layer* layer = App->layers->GetLayer(parent->layer);
+	Layer* layer = App->layers->GetLayer(parent->GetLayer());
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
 	// -----

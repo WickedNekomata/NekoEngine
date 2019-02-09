@@ -15,12 +15,16 @@ enum System_Event_Type
 	ResourceDestroyed,
 	GameObjectDestroyed,
 	ComponentDestroyed,
-	LayerNameReset, // LayerEvent
-	LayerFilterMaskChanged // LayerEvent
+
+	// LayerEvent
+	LayerNameReset,
+	LayerChanged,
+	LayerFilterMaskChanged
 };
 
 class GameObject;
 class Component;
+class ComponentCollider;
 class Resource;
 
 struct FileEvent
@@ -57,6 +61,7 @@ struct ComponentEvent
 struct LayerEvent
 {
 	System_Event_Type type;
+	ComponentCollider* collider;
 	uint layer;
 };
 

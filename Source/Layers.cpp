@@ -59,6 +59,23 @@ Layers::Layers()
 
 Layers::~Layers() {}
 
+bool Layers::Init(JSON_Object * jObject)
+{
+	return true;
+}
+
+bool Layers::Start()
+{
+	return true;
+}
+
+bool Layers::CleanUp()
+{
+	return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 void Layers::SetLayerName(uint layerNumber, const char* layerName) const
 {
 	assert(layerName != nullptr

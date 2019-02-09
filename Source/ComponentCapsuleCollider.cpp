@@ -90,7 +90,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 	break;
 	}
 
-	Layer* layer = App->layers->GetLayer(parent->layer);
+	Layer* layer = App->layers->GetLayer(parent->GetLayer());
 	SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 
 	// -----

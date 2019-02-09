@@ -76,6 +76,9 @@ public:
 	MonoObject* GetMonoObject();
 	inline void SetMonoObject(uint32_t monoObjectHandle) { this->monoObjectHandle = monoObjectHandle; };
 
+	void SetLayer(uint layerNumber);
+	uint GetLayer() const;
+
 	void RecursiveRecalculateBoundingBoxes();
 
 	void OnSave(JSON_Object* file) const;
@@ -102,9 +105,6 @@ public:
 
 	math::AABB boundingBox;
 
-	// Layer
-	uint layer = 0; // in the range [0...31]
-
 private:
 
 	const char* name = nullptr;
@@ -122,6 +122,9 @@ private:
 	bool isActive = true;
 	bool isStatic = true;
 	bool seenLastFrame = false;
+
+	// Layer
+	uint layer = 0; // in the range [0...31]
 };
 
 #endif

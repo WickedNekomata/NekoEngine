@@ -1,6 +1,8 @@
 #ifndef __LAYERS_H__
 #define __LAYERS_H__
 
+#include "Module.h"
+
 #include "Globals.h"
 
 #include <string>
@@ -42,12 +44,18 @@ private:
 	uint filterMask = 0;
 };
 
-class Layers
+class Layers : public Module
 {
 public:
 
 	Layers();
 	~Layers();
+
+	bool Init(JSON_Object* jObject);
+	bool Start();
+	bool CleanUp();
+
+	// ----------------------------------------------------------------------------------------------------
 
 	void SetLayerName(uint layerNumber, const char* layerName) const;
 

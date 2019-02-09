@@ -27,7 +27,6 @@
 
 #include "PhysicsConstants.h"
 #include "SimulationEvents.h"
-#include "SceneQueries.h"
 
 #include <assert.h>
 
@@ -46,8 +45,6 @@
 	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXFoundation_32.lib")
 	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXExtensions_static_32.lib")
 #endif
-
-#define STEP_SIZE 1.0f / 60.0f
 
 DefaultErrorCallback::DefaultErrorCallback() {}
 
@@ -130,7 +127,7 @@ ModulePhysics::~ModulePhysics() {}
 
 bool ModulePhysics::Init(JSON_Object* jObject)
 {
-	gravity = math::float3(GRAVITY_X, GRAVITY_Y, GRAVITY_Z);
+	gravity = math::float3(PhysicsConstants::GRAVITY_X, PhysicsConstants::GRAVITY_Y, PhysicsConstants::GRAVITY_Z);
 
 	return true;
 }
@@ -165,7 +162,7 @@ bool ModulePhysics::Start()
 	assert(gScene != nullptr && "MODULE PHYSICS: createScene failed!");
 
 	// Default material
-	defaultMaterial = gPhysics->createMaterial(STATIC_FRICTION, DYNAMIC_FRICTION, RESTITUTION);
+	defaultMaterial = gPhysics->createMaterial(PhysicsConstants::STATIC_FRICTION, PhysicsConstants::DYNAMIC_FRICTION, PhysicsConstants::RESTITUTION);
 
 	// Ground
 	physx::PxShape* planeShape = CreateShape(physx::PxPlaneGeometry(), *defaultMaterial);
@@ -185,156 +182,39 @@ update_status ModulePhysics::PreUpdate()
 
 update_status ModulePhysics::Update()
 {
-	// *****Debug*****
-	int winWidth = App->window->GetWindowWidth();
-	int winHeight = App->window->GetWindowHeight();
-	float normalizedX = -(1.0f - (float(App->input->GetMouseX()) * 2.0f) / winWidth);
-	float normalizedY = 1.0f - (float(App->input->GetMouseY()) * 2.0f) / winHeight;
-	math::Ray ray = App->camera->camera->frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
+	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		|| App->GetEngineState() == engine_states::ENGINE_STEP)
 	{
-		// Raycast
-		RaycastHit hitInfo;
-		std::vector<RaycastHit> touchesInfo;
-		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo))
+		// Step physics
+		gAccumulator += App->timeManager->GetDt();
+		//gAccumulator += App->timeManager->GetRealDt();
+		if (gAccumulator >= PhysicsConstants::FIXED_DT)
 		{
-			// Hit
-			if (hitInfo.GetGameObject() != nullptr)
-			{
-				CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+			gAccumulator = 0.0f;
 
-				// Distance (and closest point) and AABB
-				physx::PxShape* gShape = hitInfo.GetCollider()->GetShape();
+			updateStatus = FixedUpdate();
 
-				math::float4x4 gameObjectGlobalMatrix = hitInfo.GetGameObject()->transform->GetGlobalMatrix();
-				math::float3 position = math::float3::zero;
-				math::Quat rotation = math::Quat::identity;
-				math::float3 scale = math::float3::one;
-				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
-				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+			gScene->simulate(PhysicsConstants::FIXED_DT); // moves all objects in the scene forward by FIXED_DT
+			gScene->fetchResults(true); // allows the simulation to finish and return the results
 
-				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
-				
-				switch (gShape->getGeometryType())
-				{
-				case physx::PxGeometryType::Enum::eSPHERE:
-				{
-					physx::PxSphereGeometry gSphereGeometry;
-					gShape->getSphereGeometry(gSphereGeometry);
+			// Update colliders
+			for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
+				(*it)->Update();
 
-					// Distance (and closest point)
-					math::float3 closestPoint = math::float3::zero;
-					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gSphereGeometry, transform, closestPoint);
-					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
-				
-					// AABB
-					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gSphereGeometry, transform);
-					physx::PxVec3 dimensions = bounds.getDimensions();
-					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eCAPSULE:
-				{
-					physx::PxCapsuleGeometry gCapsuleGeometry;
-					gShape->getCapsuleGeometry(gCapsuleGeometry);
-
-					// Distance (and closest point)
-					math::float3 closestPoint = math::float3::zero;
-					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gCapsuleGeometry, transform, closestPoint);
-					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
-				
-					// AABB
-					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gCapsuleGeometry, transform);
-					physx::PxVec3 dimensions = bounds.getDimensions();
-					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eBOX:
-				{
-					physx::PxBoxGeometry gBoxGeometry;
-					gShape->getBoxGeometry(gBoxGeometry);
-
-					// Distance (and closest point)
-					math::float3 closestPoint = math::float3::zero;
-					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gBoxGeometry, transform, closestPoint);
-					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
-				
-					// AABB
-					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gBoxGeometry, transform);
-					physx::PxVec3 dimensions = bounds.getDimensions();
-					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
-				}
-				break;
-				case physx::PxGeometryType::Enum::ePLANE:
-				{
-					physx::PxPlaneGeometry gPlaneGeometry;
-					gShape->getPlaneGeometry(gPlaneGeometry);
-
-					// AABB
-					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gPlaneGeometry, transform);
-					physx::PxVec3 dimensions = bounds.getDimensions();
-					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
-				}
-				break;
-				}
-			}
-
-			// Touches
-			for (uint i = 0; i < touchesInfo.size(); ++i)
-			{
-				if (touchesInfo[i].GetGameObject() != nullptr)
-					CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
-			}
+			// Update rigid actors
+			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+				(*it)->Update();
 		}
 	}
-	else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
-	{
-		// Sweep
-		SweepHit hitInfo;
-		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
-		if (Sweep(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), transform, ray.dir, hitInfo))
-		{
-			// Hit
-			if (hitInfo.GetGameObject() != nullptr)
-				CONSOLE_LOG(LogTypes::Normal, "The sweep hit the game object '%s'", hitInfo.GetGameObject()->GetName());
-		}		
-	}
-	else if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_DOWN)
-	{
-		// Overlap
-		std::vector<OverlapHit> touchesInfo;
-		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
-		if (Overlap(physx::PxBoxGeometry(GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE, GEOMETRY_HALF_SIZE), transform, touchesInfo))
-		{
-			// Touches
-			for (uint i = 0; i < touchesInfo.size(); ++i)
-			{
-				if (touchesInfo[i].GetGameObject() != nullptr)
-					CONSOLE_LOG(LogTypes::Normal, "The overlap touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
-			}
-		}
-	}
-	//_*****Debug*****
 
-	// Step physics
-	gAccumulator += App->timeManager->GetDt();
-	if (gAccumulator >= STEP_SIZE)
-	{
-		gAccumulator = 0.0f;
+	return updateStatus;
+}
 
-		gScene->simulate(STEP_SIZE); // moves all objects in the scene forward by STEP_SIZE
-		gScene->fetchResults(true); // allows the simulation to finish and return the results
-
-		// Update colliders
-		for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
-			(*it)->Update();
-
-		// Update rigid actors
-		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
-			(*it)->Update();
-	}
+update_status ModulePhysics::FixedUpdate()
+{
+	Debug();
 
 	return UPDATE_CONTINUE;
 }
@@ -373,12 +253,26 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
-	case System_Event_Type::LayerFilterMaskChanged:
+	case System_Event_Type::LayerChanged: // LayerEvent
 
-		// Update filtering
+		// Update filtering (specific collider)
 		for (uint i = 0; i < colliderComponents.size(); ++i)
 		{
-			Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->layer);
+			if (colliderComponents[i] == event.layerEvent.collider)
+			{
+				Layer* layer = App->layers->GetLayer(event.layerEvent.layer);
+				colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
+			}
+		}
+
+		break;
+
+	case System_Event_Type::LayerFilterMaskChanged: // LayerEvent
+
+		// Update filtering (all colliders)
+		for (uint i = 0; i < colliderComponents.size(); ++i)
+		{
+			Layer* layer = App->layers->GetLayer(colliderComponents[i]->GetParent()->GetLayer());
 			if (layer->GetNumber() == event.layerEvent.layer)
 				colliderComponents[i]->SetFiltering(layer->GetFilterGroup(), layer->GetFilterMask());
 		}
@@ -386,6 +280,142 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 		break;
 	}
 }
+
+// *****Debug*****
+void ModulePhysics::Debug()
+{
+	int winWidth = App->window->GetWindowWidth();
+	int winHeight = App->window->GetWindowHeight();
+	float normalizedX = -(1.0f - (float(App->input->GetMouseX()) * 2.0f) / winWidth);
+	float normalizedY = 1.0f - (float(App->input->GetMouseY()) * 2.0f) / winHeight;
+	math::Ray ray = App->camera->camera->frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		// Raycast
+		RaycastHit hitInfo;
+		std::vector<RaycastHit> touchesInfo;
+		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo, FLT_MAX, BIT_SHIFT(1) | BIT_SHIFT(2)))
+		{
+			// Hit
+			if (hitInfo.GetGameObject() != nullptr)
+			{
+				CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+
+				// Distance (and closest point) and AABB
+				physx::PxShape* gShape = hitInfo.GetCollider()->GetShape();
+
+				math::float4x4 gameObjectGlobalMatrix = hitInfo.GetGameObject()->transform->GetGlobalMatrix();
+				math::float3 position = math::float3::zero;
+				math::Quat rotation = math::Quat::identity;
+				math::float3 scale = math::float3::one;
+				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
+				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+
+				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
+
+				switch (gShape->getGeometryType())
+				{
+				case physx::PxGeometryType::Enum::eSPHERE:
+				{
+					physx::PxSphereGeometry gSphereGeometry;
+					gShape->getSphereGeometry(gSphereGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gSphereGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gSphereGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eCAPSULE:
+				{
+					physx::PxCapsuleGeometry gCapsuleGeometry;
+					gShape->getCapsuleGeometry(gCapsuleGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gCapsuleGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gCapsuleGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::eBOX:
+				{
+					physx::PxBoxGeometry gBoxGeometry;
+					gShape->getBoxGeometry(gBoxGeometry);
+
+					// Distance (and closest point)
+					math::float3 closestPoint = math::float3::zero;
+					float distance = ComponentCollider::GetPointToGeometryObjectDistance(ray.pos, gBoxGeometry, transform, closestPoint);
+					CONSOLE_LOG(LogTypes::Normal, "The distance is %f and the closest point is (%f, %f, %f)", distance, closestPoint.x, closestPoint.y, closestPoint.z);
+
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gBoxGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				case physx::PxGeometryType::Enum::ePLANE:
+				{
+					physx::PxPlaneGeometry gPlaneGeometry;
+					gShape->getPlaneGeometry(gPlaneGeometry);
+
+					// AABB
+					physx::PxBounds3 bounds = ComponentCollider::GetGeometryObjectAABB(gPlaneGeometry, transform);
+					physx::PxVec3 dimensions = bounds.getDimensions();
+					CONSOLE_LOG(LogTypes::Normal, "The bounds are (%f, %f, %f)", dimensions.x, dimensions.y, dimensions.z);
+				}
+				break;
+				}
+			}
+
+			// Touches
+			for (uint i = 0; i < touchesInfo.size(); ++i)
+			{
+				if (touchesInfo[i].GetGameObject() != nullptr)
+					CONSOLE_LOG(LogTypes::Normal, "The ray also touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
+		}
+	}
+	else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
+	{
+		// Sweep
+		SweepHit hitInfo;
+		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
+		if (Sweep(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), transform, ray.dir, hitInfo))
+		{
+			// Hit
+			if (hitInfo.GetGameObject() != nullptr)
+				CONSOLE_LOG(LogTypes::Normal, "The sweep hit the game object '%s'", hitInfo.GetGameObject()->GetName());
+		}
+	}
+	else if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_DOWN)
+	{
+		// Overlap
+		std::vector<OverlapHit> touchesInfo;
+		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
+		if (Overlap(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), transform, touchesInfo))
+		{
+			// Touches
+			for (uint i = 0; i < touchesInfo.size(); ++i)
+			{
+				if (touchesInfo[i].GetGameObject() != nullptr)
+					CONSOLE_LOG(LogTypes::Normal, "The overlap touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
+		}
+	}
+}
+//_*****Debug*****
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -617,7 +647,7 @@ void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collisio
 
 // Raycast: traces a point along a line segment until it hits a geometry object
 // Raycast with multiple touches and a blocking hit
-bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
 	direction.Normalize();
@@ -627,13 +657,13 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
-	if (!staticShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
-	if (!dynamicShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))
 		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
 
-	physx::PxRaycastHit hitBuffer[MAX_HITS];
-	physx::PxRaycastBuffer hitsBuffer(hitBuffer, MAX_HITS);
+	physx::PxRaycastHit hitBuffer[PhysicsConstants::MAX_HITS];
+	physx::PxRaycastBuffer hitsBuffer(hitBuffer, PhysicsConstants::MAX_HITS);
 
 	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
 		maxDistance, hitsBuffer, hitFlags, filterData);
@@ -702,7 +732,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 }
 
 // Raycast with a blocking hit (first encountered hit)
-bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
 	direction.Normalize();
@@ -713,9 +743,9 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
 	filterData.flags |= physx::PxQueryFlag::eANY_HIT;
-	if (!staticShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
-	if (!dynamicShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))
 		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
 
 	physx::PxRaycastBuffer hitsBuffer;
@@ -749,7 +779,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 }
 
 // Raycast with multiple touches (no blocking hits)
-bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, bool staticShapes, bool dynamicShapes) const
+bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(origin.IsFinite() && direction.IsFinite() && maxDistance >= 0.0f);
 	direction.Normalize();
@@ -760,13 +790,13 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // raycast against this filter mask
 	filterData.flags |= physx::PxQueryFlag::eNO_BLOCK;
-	if (!staticShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
-	if (!dynamicShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))
 		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
 
-	physx::PxRaycastHit hitBuffer[MAX_HITS];
-	physx::PxRaycastBuffer hitsBuffer(hitBuffer, MAX_HITS);
+	physx::PxRaycastHit hitBuffer[PhysicsConstants::MAX_HITS];
+	physx::PxRaycastBuffer hitsBuffer(hitBuffer, PhysicsConstants::MAX_HITS);
 
 	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
 		maxDistance, hitsBuffer, hitFlags, filterData);
@@ -801,16 +831,16 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 
 // Sweep: traces one geometry object through space to find the impact point on a second geometry object
 /// Transformed box, sphere, capsule or convex geometry
-bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance, float inflation, uint filterMask, bool staticShapes, bool dynamicShapes) const
+bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance, float inflation, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(transform.isFinite() && direction.IsFinite());
 	direction.Normalize();
 
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // sweep against this filter mask
-	if (!staticShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
-	if (!dynamicShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))
 		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
 
 	physx::PxSweepBuffer hitsBuffer;
@@ -843,18 +873,18 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 
 // Overlap: checks whether two geometry objects overlap
 /// Transformed box, sphere, capsule or convex geometry
-bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask, bool staticShapes, bool dynamicShapes) const
+bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(transform.isFinite());
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // overlap against this filter mask
-	if (!staticShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
-	if (!dynamicShapes)
+	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))
 		filterData.flags &= ~physx::PxQueryFlag::eDYNAMIC;
 
-	physx::PxOverlapHit hitBuffer[MAX_HITS];
-	physx::PxOverlapBuffer hitsBuffer(hitBuffer, MAX_HITS);
+	physx::PxOverlapHit hitBuffer[PhysicsConstants::MAX_HITS];
+	physx::PxOverlapBuffer hitsBuffer(hitBuffer, PhysicsConstants::MAX_HITS);
 
 	bool status = gScene->overlap(geometry, transform, hitsBuffer, filterData);
 

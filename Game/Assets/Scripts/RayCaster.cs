@@ -21,7 +21,7 @@ public class RayCaster : JellyScript
 
             RaycastHit hitInfo;
 
-            if(Physics.Raycast(ray, out hitInfo, 3000f, (uint)layerMask.masks, true, true))
+            if(Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 Debug.Log("Dude! I raycasted " + hitInfo.gameObject.name + "!");
             }

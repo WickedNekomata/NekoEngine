@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleTimeManager.h"
+#include "ModuleRenderer3D.h"
 #include "GameObject.h"
 
 // *****Debug*****
@@ -288,14 +289,14 @@ void ModulePhysics::Debug()
 	int winHeight = App->window->GetWindowHeight();
 	float normalizedX = -(1.0f - (float(App->input->GetMouseX()) * 2.0f) / winWidth);
 	float normalizedY = 1.0f - (float(App->input->GetMouseY()) * 2.0f) / winHeight;
-	math::Ray ray = App->camera->camera->frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
+	math::Ray ray = App->renderer3D->GetCurrentCamera()->frustum.UnProjectLineSegment(normalizedX, normalizedY).ToRay();
 
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 	{
 		// Raycast
 		RaycastHit hitInfo;
 		std::vector<RaycastHit> touchesInfo;
-		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo, FLT_MAX, BIT_SHIFT(1) | BIT_SHIFT(2)))
+		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo, FLT_MAX, BIT_SHIFT(0) | BIT_SHIFT(1) | BIT_SHIFT(2)))
 		{
 			// Hit
 			if (hitInfo.GetGameObject() != nullptr)

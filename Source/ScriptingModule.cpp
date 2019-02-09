@@ -337,6 +337,9 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 {
+	if (!gameObject)
+		return nullptr;
+
 	MonoObject* monoObject = gameObject->GetMonoObject();
 
 	if (monoObject)

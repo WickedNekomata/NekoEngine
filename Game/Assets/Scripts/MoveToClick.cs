@@ -3,7 +3,7 @@ using JellyBitEngine;
 
 public class MoveToClick : JellyScript
 {
-    LayerMask layerMask = new LayerMask();
+    public LayerMask layerMask = new LayerMask();
 
     //Use this method for initialization
     public override void Awake()
@@ -14,7 +14,8 @@ public class MoveToClick : JellyScript
     //Called every frame
     public override void Update()
     {
-        if(Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
+        
+        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
             if(agent != null)
@@ -25,6 +26,7 @@ public class MoveToClick : JellyScript
 
                 if(Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
                 {
+                    Debug.Log("I set up the destination");
                     agent.SetDestination(hitInfo.point);
                 }
             }

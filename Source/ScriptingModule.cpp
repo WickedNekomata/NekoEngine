@@ -1289,7 +1289,7 @@ void SetDestination(MonoObject* agentCSharp, MonoArray* destination)
 	int compAddress = 0;
 	mono_field_get_value(agentCSharp, mono_class_get_field_from_name(mono_object_get_class(agentCSharp), "componentAddress"), &compAddress);
 
-	ComponentNavAgent* agentCpp = (ComponentNavAgent*) agentCpp;
+	ComponentNavAgent* agentCpp = (ComponentNavAgent*)compAddress;
 
 	if (!agentCpp)
 		return;

@@ -186,21 +186,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 				if (!errors)
 				{
 					//ReCreate the Domain, recompile all the ResourceScripts and reInstance all the monoInstance's references in all the stored ComponentScript
-
-					App->scripting->CreateDomain();
-
-					std::map<uint32_t, Resource*>::iterator it;
-					for (it = resources.begin(); it != resources.end(); ++it)
-					{
-						Resource* res = it->second;
-						if (res->GetType() == ResourceType::ScriptResource)
-						{
-							ResourceScript* toRecompile = (ResourceScript*)res;
-							toRecompile->Compile();
-						}
-					}
-
-					App->scripting->ReInstance();
+					System_Event event;
+					event.type = System_Event_Type::Domain_Destroyed;
+					App->PushSystemEvent(event);	
 				}
 				break;
 			}
@@ -1159,4 +1147,18 @@ bool ModuleResourceManager::IsAnyResourceInVram() const
 	}
 
 	return false;
+}
+
+void ModuleResourceManager::ReCompileScriptResources()
+{
+	std::map<uint32_t, Resource*>::iterator it;
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* res = it->second;
+		if (res->GetType() == ResourceType::ScriptResource)
+		{
+			ResourceScript* toRecompile = (ResourceScript*)res;
+			toRecompile->Compile();
+		}
+	}
 }

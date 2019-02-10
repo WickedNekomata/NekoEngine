@@ -85,6 +85,8 @@ public:
 
 	bool IsAnyResourceInVram() const;
 
+	void ReCompileScriptResources();
+
 private:
 
 	std::map<uint, Resource*> resources;

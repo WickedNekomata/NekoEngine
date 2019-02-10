@@ -20,15 +20,20 @@ public class MoveToClick : JellyScript
             NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
             if(agent != null)
             {
+                Debug.Log("I founded a NavMeshAgent component");
                 Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
 
                 RaycastHit hitInfo;
 
-                if(Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+                if (Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
                 {
+                    Debug.Log(hitInfo.ToString());
+
                     Debug.Log("I set up the destination");
                     agent.SetDestination(hitInfo.point);
                 }
+                else
+                    Debug.LogError("I could not find anything to collide with");
             }
             else           
                 Debug.LogError("I have not encountered a NavMeshAgent component");            

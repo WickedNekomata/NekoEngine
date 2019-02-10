@@ -86,6 +86,8 @@ private:
 	mutable std::map<aiBone*, uint> mesh_bone;
 	mutable std::map<std::string, aiBone*> bones;
 	mutable std::map<const aiNode*, GameObject*> relations;
+	mutable std::map<std::string, uint> imported_bones;
+	mutable uint bone_root_uid = 0u;
 };
 
 #endif

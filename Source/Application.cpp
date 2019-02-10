@@ -13,6 +13,7 @@
 #include "ModuleParticles.h"
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
+#include "BoneImporter.h"
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
@@ -38,6 +39,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	sceneImporter = new SceneImporter();
+	boneImporter = new BoneImporter();
 	shaderImporter = new ShaderImporter();
 	navigation = new ModuleNavigation();
 	particle = new ModuleParticle();
@@ -94,6 +96,7 @@ Application::~Application()
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
 	RELEASE(sceneImporter);
+	RELEASE(boneImporter);
 	RELEASE(shaderImporter);
 	RELEASE(layers);
 }

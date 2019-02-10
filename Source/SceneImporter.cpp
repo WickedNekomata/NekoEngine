@@ -8,6 +8,7 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
 #include "GameObject.h"
+#include "BoneImporter.h"
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
@@ -1054,19 +1055,19 @@ void SceneImporter::RecursiveProcessBones(const aiScene * scene, const aiNode * 
 		aiBone* bone = it->second;
 
 		GameObject* go = relations[node];
-		/*ComponentBone* comp_bone = (ComponentBone*)go->CreateComponent(Component::component_type::COMPONENT_BONE);
+		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;
-		UID bone_uid = App->resources->bone_importer->Import(bone, mesh_bone[bone], output);
+		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output);
 
 		if (go->GetParent() == nullptr ||
-			(go->GetParent() && !go->GetParent()->FindComponentByType(Component::component_type::COMPONENT_BONE)))
+			(go->GetParent() && !go->GetParent()->GetComponentByType(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
 		imported_bones[node->mName.C_Str()] = bone_uid;
-		TR_LOG("->-> Added Bone component and created bone resource");*/
+		DEPRECATED_LOG("SceneImporter: Added Bone component and created bone resource");
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

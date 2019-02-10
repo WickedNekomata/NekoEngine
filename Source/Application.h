@@ -37,6 +37,7 @@ struct Module;
 struct ModuleResourceManager;
 struct MaterialImporter;
 struct SceneImporter;
+struct BoneImporter;
 struct ShaderImporter;
 struct ModuleCameraEditor;
 struct ModuleGui;
@@ -119,6 +120,7 @@ public:
 	ModuleResourceManager*	res;
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
+	mutable BoneImporter*	boneImporter;
 	ShaderImporter*			shaderImporter;
 	ModuleParticle*			particle;
 

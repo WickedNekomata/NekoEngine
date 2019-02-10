@@ -11,6 +11,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentBone.h"
 #include "ComponentTypes.h"
 #include "MaterialImporter.h"
 #include "Resource.h"
@@ -158,6 +159,9 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 			GetMeshesUUIDsFromMeta(metaFile, UUIDs);
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, UUIDs);
+
+		RecursiveProcessBones(scene, scene->mRootNode);
+
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
@@ -289,6 +293,24 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 					}
 					else
 						memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
+				}
+			}
+
+			relations[node] = gameObject;
+
+			// Bones / Animations stuff
+			if (nodeMesh->HasBones())
+			{
+				int num = nodeMesh->mNumBones;
+				for (int k = 0; k < num; ++k)
+				{
+					if (!root_bone)
+						root_bone = gameObject;
+
+					ComponentMesh* mesh_cmp = (ComponentMesh*)gameObject->GetComponentByType(ComponentTypes::MeshComponent);
+					
+					bones[nodeMesh->mBones[k]->mName.C_Str()] = nodeMesh->mBones[k];
+					mesh_bone[nodeMesh->mBones[k]] = mesh_cmp->res;
 				}
 			}
 
@@ -1021,4 +1043,32 @@ void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO
 	defaultPlaneVAO = this->defaultPlaneVAO;
 	defaultPlaneIBO = this->defaultPlaneIBO;
 	defaultPlaneIndicesSize = this->defaultPlaneIndicesSize;
+}
+
+void SceneImporter::RecursiveProcessBones(const aiScene * scene, const aiNode * node) const
+{
+	std::map<std::string, aiBone*>::iterator it = bones.find(node->mName.C_Str());
+
+	if (it != bones.end())
+	{
+		aiBone* bone = it->second;
+
+		GameObject* go = relations[node];
+		/*ComponentBone* comp_bone = (ComponentBone*)go->CreateComponent(Component::component_type::COMPONENT_BONE);
+
+		std::string output;
+		UID bone_uid = App->resources->bone_importer->Import(bone, mesh_bone[bone], output);
+
+		if (go->GetParent() == nullptr ||
+			(go->GetParent() && !go->GetParent()->FindComponentByType(Component::component_type::COMPONENT_BONE)))
+			bone_root_uid = go->GetUUID();
+
+
+		comp_bone->SetResource(bone_uid);
+		imported_bones[node->mName.C_Str()] = bone_uid;
+		TR_LOG("->-> Added Bone component and created bone resource");*/
+	}
+
+	for (uint i = 0; i < node->mNumChildren; ++i)
+		RecursiveProcessBones(scene, node->mChildren[i]);
 }

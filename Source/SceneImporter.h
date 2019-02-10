@@ -7,9 +7,12 @@
 #include "MathGeoLib\include\Math\float3.h"
 
 #include <list>
+#include <map>
+#include <string>
 
 struct aiScene;
 struct aiNode;
+struct aiBone;
 
 class GameObject;
 class Resource;
@@ -51,6 +54,8 @@ public:
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings, const char* metaFile) const;
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::list<uint>& UUIDs) const;
 
+	void RecursiveProcessBones(const aiScene* scene, const aiNode* node) const;
+
 	bool GenerateMeta(std::list<Resource*> resources, std::string& outputMetaFile, const MeshImportSettings* meshImportSettings) const;
 	bool SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUIDs) const;
 	bool GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const;
@@ -74,6 +79,13 @@ private:
 	uint defaultPlaneVAO = 0;
 	uint defaultPlaneIBO = 0;
 	uint defaultPlaneIndicesSize = 0;
+
+	// Anim / Bones
+	/*hehehehe*/
+	mutable GameObject* root_bone = nullptr;
+	mutable std::map<aiBone*, uint> mesh_bone;
+	mutable std::map<std::string, aiBone*> bones;
+	mutable std::map<const aiNode*, GameObject*> relations;
 };
 
 #endif

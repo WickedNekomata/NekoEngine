@@ -16,10 +16,20 @@ BoneImporter::~BoneImporter()
 
 bool BoneImporter::Import(const char * file_path, std::string & output_file)
 {
-	return false;
+	return true;
 }
 
-uint BoneImporter::Import(const aiBone* new_bone, uint mesh, std::string& output) const
+bool BoneImporter::Import(const char * importFile, std::string & outputFile, const ImportSettings * importSettings) const
+{
+	return true;
+}
+
+bool BoneImporter::Import(const void * buffer, uint size, std::string & outputFile, const ImportSettings * importSettings, const char * metaFile) const
+{
+	return true;
+}
+
+uint BoneImporter::Import(mutable aiBone* new_bone,mutable uint mesh, mutable std::string& output) const
 {
 	bool ret = false;
 

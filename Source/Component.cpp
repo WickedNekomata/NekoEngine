@@ -38,7 +38,8 @@ void Component::OnEditor()
 		ImGui::EndDragDropTarget();
 	}
 
-	if (componentType != ComponentTypes::MaterialComponent) {
+	if (componentType != ComponentTypes::MaterialComponent) 
+	{
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Delete##%u", UUID);
 
 		ImGui::SameLine();
@@ -53,9 +54,11 @@ void Component::OnEditor()
 
 	bool isActive = IsActive();
 	if (ImGui::Checkbox(itemName, &isActive)) { ToggleIsActive(); }
-	ImGui::SameLine();
 
-	OnUniqueEditor();
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##treeNode%u", UUID);
+
+	if (ImGui::CollapsingHeader(itemName, ImGuiTreeNodeFlags_DefaultOpen))
+		OnUniqueEditor();
 #endif
 }
 
@@ -69,6 +72,20 @@ void Component::ToggleIsActive()
 bool Component::IsActive() const
 {
 	return isActive;
+}
+
+bool Component::IsTreeActive()
+{
+	bool active = isActive;
+
+	GameObject* itGO = parent;
+	while (active && itGO)
+	{
+		active = itGO->IsActive();
+		itGO = itGO->GetParent();
+	}
+
+	return active;
 }
 
 ComponentTypes Component::GetType() const
@@ -90,4 +107,9 @@ void Component::OnSave(JSON_Object* file)
 {
 	json_object_set_number(file, "Type", componentType);
 	OnInternalSave(file);
+}
+
+MonoObject* Component::GetMonoComponent()
+{
+	return monoCompHandle != 0 ? mono_gchandle_get_target(monoCompHandle) : nullptr;
 }

@@ -110,13 +110,17 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 	case System_Event_Type::RecalculateBBoxes:
+
 		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
 		{
 			if (event.goEvent.gameObject == *it)
 				(*it)->OnSystemEvent(event);
 		}
+
 		break;
+
 	case System_Event_Type::ShaderProgramChanged:
+
 		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
 		{
 			if ((*it)->materialRenderer != nullptr)
@@ -127,6 +131,18 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 					(*it)->OnSystemEvent(event);
 			}
 		}
+
+		break;
+
+	case System_Event_Type::LayerNameReset: // LayerEvent
+
+		// Reset layer to default (all game objects)
+		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		{
+			if ((*it)->GetLayer() == event.layerEvent.layer)
+				(*it)->SetLayer(0);
+		}
+
 		break;
 	}
 }
@@ -141,7 +157,7 @@ bool ModuleGOs::OnGameMode()
 		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
 		tmpGameObjects.push_back(tmpGameObject);
 	}
-	CONSOLE_LOG("MODULE GOS: tmpGameObjects vector size OnGameMode: %i", tmpGameObjects.size());
+	DEPRECATED_LOG("MODULE GOS: tmpGameObjects vector size OnGameMode: %i", tmpGameObjects.size());
 
 	return true;
 }
@@ -154,7 +170,7 @@ bool ModuleGOs::OnEditorMode()
 	DeleteScene();
 
 	// 2. Copy temporary game objects to the real gameObjects vector and activate them
-	CONSOLE_LOG("MODULE GOS: tmpGameObjects vector size OnEditorMode: %i", tmpGameObjects.size());
+	DEPRECATED_LOG("MODULE GOS: tmpGameObjects vector size OnEditorMode: %i", tmpGameObjects.size());
 	for (uint i = 0; i < tmpGameObjects.size(); ++i)
 	{
 		gameObjects.push_back(tmpGameObjects[i]);
@@ -217,9 +233,9 @@ void ModuleGOs::DeleteTemporaryGameObjects()
 
 void ModuleGOs::DeleteScene()
 {
-	CONSOLE_LOG("MODULE GOS: Game Objects in hierarchy: %i", gameObjects.size());
+	DEPRECATED_LOG("MODULE GOS: Game Objects in hierarchy: %i", gameObjects.size());
 	ClearScene();
-	CONSOLE_LOG("MODULE GOS: Game Objects in gameObjectsToDelete vector after ClearScene: %i", gameObjectsToDelete.size());
+	DEPRECATED_LOG("MODULE GOS: Game Objects in gameObjectsToDelete vector after ClearScene: %i", gameObjectsToDelete.size());
 
 	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
 	{
@@ -282,6 +298,15 @@ void ModuleGOs::GetStaticGameObjects(std::vector<GameObject*>& gameObjects) cons
 	}
 }
 
+void ModuleGOs::GetMeshComponentsFromStaticGameObjects(std::vector<ComponentMesh*>& gameObjects) const
+{
+	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	{
+		if (this->gameObjects[i]->IsStatic() && this->gameObjects[i]->meshRenderer)
+			gameObjects.push_back(this->gameObjects[i]->meshRenderer);
+	}
+}
+
 void ModuleGOs::GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const
 {
 	for (uint i = 0; i < this->gameObjects.size(); ++i)
@@ -324,11 +349,11 @@ bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFil
 	uint size = App->fs->SaveInGame(buf, sizeBuf, FileType::SceneFile, outputFile);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFile.data());
+		DEPRECATED_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not save Scene '%s'", outputFile.data());
+		DEPRECATED_LOG("Scene Serialization: Could not save Scene '%s'", outputFile.data());
 		return false;
 	}
 
@@ -344,11 +369,11 @@ bool ModuleGOs::LoadScene(const char* file)
 	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
+		DEPRECATED_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", file);
+		DEPRECATED_LOG("Scene Serialization: Could not load Scene '%s'", file);
 		return false;
 	}
 
@@ -399,11 +424,11 @@ bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::vector<std::str
 	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
+		DEPRECATED_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
 	}
 	else
 	{
-		CONSOLE_LOG("Scene Serialization: Could not load Scene '%s'", file);
+		DEPRECATED_LOG("Scene Serialization: Could not load Scene '%s'", file);
 		return false;
 	}
 

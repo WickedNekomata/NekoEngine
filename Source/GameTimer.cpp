@@ -10,10 +10,7 @@
 #include "ModuleTimeManager.h"
 // ---------------------------------------------
 GameTimer::GameTimer()
-{
-	if (App)
-		App->timeManager->GetGameTimerList().push_back(this);
-}
+{}
 
 GameTimer::~GameTimer()
 {}
@@ -27,8 +24,7 @@ void GameTimer::Update(float dt)
 // ---------------------------------------------
 void GameTimer::Start()
 {
-	if ((std::find(App->timeManager->GetGameTimerList().begin(), App->timeManager->GetGameTimerList().end(), this) == App->timeManager->GetGameTimerList().end()))
-		App->timeManager->GetGameTimerList().push_back(this);
+	App->timeManager->TimerInGameList(this);
 
 	running = true;
 	time = 0;

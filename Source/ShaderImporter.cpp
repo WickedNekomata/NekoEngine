@@ -41,7 +41,7 @@ bool ShaderImporter::CreateShaderObject(std::string& file, ShaderType shaderType
 
 	if (App->fs->SaveInGame(buffer, size, FileType::NoFileType, file, true) > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully created Shader Object '%s'", file.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully created Shader Object '%s'", file.data());
 		ret = true;
 	}
 
@@ -62,11 +62,11 @@ bool ShaderImporter::SaveShaderObject(ResourceShaderObject* shaderObject, std::s
 	uint size = strlen(shaderObject->GetSource());
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", shaderObject->GetName());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully read Shader Object '%s'", shaderObject->GetName());
 		ret = SaveShaderObject(shaderObject->GetSource(), size, shaderObject->shaderType, outputFile, overwrite);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", shaderObject->GetName());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not read Shader Object '%s'", shaderObject->GetName());
 
 	return ret;
 }
@@ -88,11 +88,11 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderType 
 
 	if (App->fs->SaveInGame((char*)buffer, size, fileType, outputFile, overwrite) > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Shader Object '%s'", outputFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved Shader Object '%s'", outputFile.data());
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not save Shader Object '%s'", outputFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save Shader Object '%s'", outputFile.data());
 
 	return ret;
 }
@@ -116,12 +116,12 @@ bool ShaderImporter::SaveShaderProgram(ResourceShaderProgram* shaderProgram, std
 	uint size = shaderProgram->GetBinary(&buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", shaderProgram->GetName());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully got Binary Program '%s'", shaderProgram->GetName());
 		ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", shaderProgram->GetName());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not get Binary Program '%s'", shaderProgram->GetName());
 
 	return ret;
 }
@@ -136,11 +136,11 @@ bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::strin
 
 	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile, overwrite) > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not save Binary Program '%s'", outputFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save Binary Program '%s'", outputFile.data());
 
 	return ret;
 }
@@ -174,11 +174,11 @@ bool ShaderImporter::GenerateShaderObjectMeta(ResourceShaderObject* shaderObject
 	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 
@@ -228,11 +228,11 @@ bool ShaderImporter::GenerateShaderProgramMeta(ResourceShaderProgram* shaderProg
 	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 
@@ -258,7 +258,7 @@ bool ShaderImporter::SetShaderNameToMeta(const char* metaFile, std::string name)
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -278,11 +278,11 @@ bool ShaderImporter::SetShaderNameToMeta(const char* metaFile, std::string name)
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its name", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its name", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its name", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its name", metaFile);
 		return false;
 	}
 
@@ -308,7 +308,7 @@ bool ShaderImporter::GetShaderNameFromMeta(const char* metaFile, std::string& na
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -339,7 +339,7 @@ bool ShaderImporter::SetShaderUUIDToMeta(const char* metaFile, uint UUID) const
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -359,11 +359,11 @@ bool ShaderImporter::SetShaderUUIDToMeta(const char* metaFile, uint UUID) const
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
 		return false;
 	}
 
@@ -389,7 +389,7 @@ bool ShaderImporter::GetShaderUUIDFromMeta(const char* metaFile, uint& UUID) con
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -420,7 +420,7 @@ bool ShaderImporter::SetShaderObjectsToMeta(const char* metaFile, std::list<Reso
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -448,11 +448,11 @@ bool ShaderImporter::SetShaderObjectsToMeta(const char* metaFile, std::list<Reso
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its Shader Objects UUIDs", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully saved meta '%s' and set its Shader Objects UUIDs", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its Shader Objects UUIDs", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not save meta '%s' nor set its Shader Objects UUIDs", metaFile);
 		return false;
 	}
 
@@ -478,7 +478,7 @@ bool ShaderImporter::GetShaderObjectsFromMeta(const char* metaFile, std::list<st
 	}
 	else
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -506,12 +506,12 @@ bool ShaderImporter::LoadShaderObject(const char* objectFile, ResourceShaderObje
 	uint size = App->fs->Load(objectFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully loaded Shader Object '%s'", objectFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully loaded Shader Object '%s'", objectFile);
 		ret = LoadShaderObject(buffer, size, shaderObject);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not load Shader Object '%s'", objectFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load Shader Object '%s'", objectFile);
 
 	return ret;
 }
@@ -537,10 +537,10 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 
 	if (ret)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: New Shader Object loaded with: size %u", size);
+		DEPRECATED_LOG("SHADER IMPORTER: New Shader Object loaded with: size %u", size);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Shader Object with size %u could not be loaded", size);
+		DEPRECATED_LOG("SHADER IMPORTER: Shader Object with size %u could not be loaded", size);
 
 	return ret;
 }
@@ -555,12 +555,12 @@ bool ShaderImporter::LoadShaderProgram(const char* programFile, ResourceShaderPr
 	uint size = App->fs->Load(programFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: Successfully loaded Shader Program '%s'", programFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Successfully loaded Shader Program '%s'", programFile);
 		ret = LoadShaderProgram(buffer, size, shaderProgram);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Could not load Shader Program '%s'", programFile);
+		DEPRECATED_LOG("SHADER IMPORTER: Could not load Shader Program '%s'", programFile);
 
 	return ret;
 }
@@ -577,10 +577,10 @@ bool ShaderImporter::LoadShaderProgram(const void* buffer, uint size, ResourceSh
 
 	if (ret)
 	{
-		CONSOLE_LOG("SHADER IMPORTER: New Shader Program loaded with: size %u", size);
+		DEPRECATED_LOG("SHADER IMPORTER: New Shader Program loaded with: size %u", size);
 	}
 	else
-		CONSOLE_LOG("SHADER IMPORTER: Shader Program with size %u could not be loaded", size);
+		DEPRECATED_LOG("SHADER IMPORTER: Shader Program with size %u could not be loaded", size);
 
 	return ret;
 }

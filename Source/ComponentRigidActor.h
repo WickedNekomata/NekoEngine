@@ -3,9 +3,9 @@
 
 #include "Component.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-#include "MathGeoLib/include/Math/float3.h"
-#include "MathGeoLib/include/Math/float4x4.h"
+#include "physx\include\PxPhysicsAPI.h"
+
+#include "MathGeoLib\include\Math\float4x4.h"
 
 class ComponentRigidActor : public Component
 {
@@ -17,14 +17,19 @@ public:
 
 	virtual void OnUniqueEditor();
 
-	void UpdateShape();
-	void UpdateTransform() const;
+	virtual void Update();
+
+	void UpdateShape(physx::PxShape* shape) const;
+	void UpdateTransform(math::float4x4& globalMatrix) const;
 	void UpdateGameObjectTransform() const;
 
+	// Sets
 	void SetUseGravity(bool useGravity);
 
+	// Gets
 	physx::PxRigidActor* GetActor() const;
 
+	// Callbacks
 	void OnWake();
 	void OnSleep();
 
@@ -34,6 +39,8 @@ public:
 protected:
 
 	bool useGravity = true;
+
+	// -----
 
 	physx::PxRigidActor* gActor = nullptr;
 };

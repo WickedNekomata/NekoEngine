@@ -5,6 +5,7 @@
 #include "ModuleFileSystem.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
+#include "ScriptingModule.h"
 #include "PanelShaderEditor.h"
 #include "PanelCodeEditor.h"
 
@@ -17,6 +18,7 @@
 #include "ResourceTexture.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
+#include "ResourceScript.h"
 
 #include "Brofiler\Brofiler.h"
 
@@ -54,7 +56,7 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	//assert(!IsAnyResourceInVram() && "Memory still allocated on vram. Code better!");
+	assert(!IsAnyResourceInVram() && "Memory still allocated on vram. Code better!");
 
 	DestroyResources();
 
@@ -72,7 +74,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		if (GetResourceTypeByExtension(extension.data()) != ResourceType::NoResourceType)
 		{
-			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
+			DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has been dropped and needs to be copied to Assets", event.fileEvent.file);
 
 			// Copy
 			std::string outputFile;
@@ -89,7 +91,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::NewFile:
 	{
-		CONSOLE_LOG("RESOURCE MANAGER: A new file '%s' has been added", event.fileEvent.file);
+		DEPRECATED_LOG("RESOURCE MANAGER: A new file '%s' has been added", event.fileEvent.file);
 
 		// Import
 		ImportFile(event.fileEvent.file);
@@ -110,7 +112,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		if (found != std::string::npos)
 			fileInAssets = fileInAssets.substr(0, found);
 
-		CONSOLE_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
+		DEPRECATED_LOG("RESOURCE MANAGER: The meta '%s' has been removed", event.fileEvent.metaFile);
 
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
@@ -130,7 +132,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::FileRemoved:
 	{
-		CONSOLE_LOG("RESOURCE MANAGER: The file with the meta '%s' has been removed", event.fileEvent.metaFile);
+		DEPRECATED_LOG("RESOURCE MANAGER: The file with the meta '%s' has been removed", event.fileEvent.metaFile);
 
 		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
 
@@ -154,14 +156,52 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		if (found != std::string::npos)
 			fileInAssets = fileInAssets.substr(0, found);
 
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
+		DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has been overwritten", fileInAssets.data());
 
-		DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
+		std::string extension;
+		App->fs->GetExtension(fileInAssets.data(), extension);
 
-		// Reimport
-		uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+		ResourceType type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+			case ResourceType::ScriptResource:
+			{
+				//Find the .meta to get the UUID.
+				char* metaBuffer;
+				uint size = App->fs->Load(event.fileEvent.metaFile, &metaBuffer);
+				if (size <= 0)
+					return; //ResourceScript without meta
 
-		RELEASE_ARRAY(event.fileEvent.metaFile);
+				//Get the UUID
+				uint32_t UUID;
+				memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+				//Get the ResourceScript whose file has changed
+				if (resources.find(UUID) == resources.end())
+					return; //Resource not found
+				ResourceScript* scriptRes = (ResourceScript*)resources.at(UUID);
+
+				//Check if the new .cs version has errors. If it has, keep running the old successful script.
+				bool errors = scriptRes->preCompileErrors();
+				if (!errors)
+				{
+					//ReCreate the Domain, recompile all the ResourceScripts and reInstance all the monoInstance's references in all the stored ComponentScript
+					System_Event event;
+					event.type = System_Event_Type::Domain_Destroyed;
+					App->PushSystemEvent(event);	
+				}
+				break;
+			}
+
+			default:
+			{
+				DestroyResourcesAndRemoveLibraryEntries(event.fileEvent.metaFile);
+				// Reimport
+				uint UUID = ImportFile(fileInAssets.data(), event.fileEvent.metaFile, nullptr);
+
+				RELEASE_ARRAY(event.fileEvent.metaFile);
+			}
+		}
 
 		System_Event newEvent;
 		newEvent.type = System_Event_Type::RefreshFiles;
@@ -406,7 +446,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 	if (!App->fs->Exists(metaFile))
 	{
 		// Import the file (using the default import settings)
-		CONSOLE_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
+		DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' needs to be imported", fileInAssets);
 		ret = ImportFile(fileInAssets, nullptr, nullptr);
 	}
 	else
@@ -454,18 +494,25 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			}
 		}
 		break;
-
 		case ResourceType::ShaderObjectResource:
 		case ResourceType::ShaderProgramResource:
 			entries = true;
 			break;
+		case ResourceType::ScriptResource:
+		{
+			std::string fileName;
+			App->fs->GetFileName(fileInAssets, fileName);
+			sprintf_s(exportedFile, "%s/%s%s", DIR_LIBRARY_SCRIPTS, fileName.data(), EXTENSION_SCRIPT);
+			entries = App->fs->Exists(exportedFile);
+			break;
+		}
 		}
 
 		// CASE 2 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
 		if (!entries)
 		{
 			// Reimport the file (using the import settings from the meta)
-			CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
+			DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has Library file(s) that need(s) to be reimported", fileInAssets);
 			ret = ImportFile(fileInAssets, metaFile, nullptr);
 		}
 		else
@@ -479,7 +526,7 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets)
 			if (!resources)
 			{
 				// Create the resources
-				CONSOLE_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
+				DEPRECATED_LOG("RESOURCE MANAGER: The file '%s' has resources that need to be created", fileInAssets);
 				ret = ImportFile(fileInAssets, metaFile, exportedFile);
 			}
 		}
@@ -512,8 +559,8 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 	App->fs->GetExtension(fileInAssets, extension);
 	ResourceType type = GetResourceTypeByExtension(extension.data());
 
-	// If the file has no file(s) in Libray or its import settings have changed, import or reimport the file
-	if (exportedFile == nullptr && (type == ResourceType::MeshResource || type == ResourceType::TextureResource))
+	// If the file has no file(s) in Library or its import settings have changed, import or reimport the file
+	if (exportedFile == nullptr && (type == ResourceType::MeshResource || type == ResourceType::TextureResource || type == ResourceType::ScriptResource))
 	{
 		// Initialize the import settings to the default import settings
 		switch (type)
@@ -548,6 +595,9 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 			break;
 		case ResourceType::TextureResource:
 			imported = App->materialImporter->Import(fileInAssets, outputFile, importSettings); // Textures' outputFileName is the name of the file in Library, which is its UUID
+			break;
+		case ResourceType::ScriptResource:
+			imported = App->scripting->ImportScriptResource(fileInAssets, metaFile, exportedFile);
 			break;
 		}
 	}
@@ -787,6 +837,13 @@ uint ModuleResourceManager::ImportFile(const char* fileInAssets, const char* met
 				int lastModTime = App->fs->GetLastModificationTime(fileInAssets);
 				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
 			}
+			break;
+		}
+
+		case ResourceType::ScriptResource:
+		{
+			App->scripting->ImportScriptResource(fileInAssets, metaFile, exportedFile);
+			break;
 		}
 		break;
 		}
@@ -885,9 +942,17 @@ ResourceType ModuleResourceManager::GetResourceTypeByExtension(const char* exten
 	case ASCIIpsh: case ASCIIPSH:
 		return ResourceType::ShaderProgramResource;
 		break;
+	case ASCIIcs: case ASCIICS:
+		return ResourceType::ScriptResource;
+		break;
 	}
 
 	return ResourceType::NoResourceType;
+}
+
+void ModuleResourceManager::InsertResource(Resource* resource)
+{
+	resources.insert(std::pair<uint, Resource*>(resource->GetUUID(), resource));
 }
 
 // Returns the UUID(s) associated to the resource(s) of the file
@@ -1082,4 +1147,18 @@ bool ModuleResourceManager::IsAnyResourceInVram() const
 	}
 
 	return false;
+}
+
+void ModuleResourceManager::ReCompileScriptResources()
+{
+	std::map<uint32_t, Resource*>::iterator it;
+	for (it = resources.begin(); it != resources.end(); ++it)
+	{
+		Resource* res = it->second;
+		if (res->GetType() == ResourceType::ScriptResource)
+		{
+			ResourceScript* toRecompile = (ResourceScript*)res;
+			toRecompile->Compile();
+		}
+	}
 }

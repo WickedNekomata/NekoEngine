@@ -27,7 +27,7 @@ MaterialImporter::MaterialImporter()
 		iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION ||
 		ilutGetInteger(ILUT_VERSION_NUM) < ILUT_VERSION)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: DevIL version is different. Exiting...");
+		DEPRECATED_LOG("MATERIAL IMPORTER: DevIL version is different. Exiting...");
 		versionCheck = false;
 	}
 
@@ -76,12 +76,12 @@ bool MaterialImporter::Import(const char* importFile, std::string& outputFile, c
 	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
+		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
 		ret = Import(buffer, size, outputFile, importSettings, metaFile);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", outputFile.data());
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", outputFile.data());
 
 	return ret;
 }
@@ -154,11 +154,11 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 
 				if (App->fs->SaveInGame((char*)data, size, FileType::TextureFile, outputFile) > 0)
 				{
-					CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
+					DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
 					ret = true;
 				}
 				else
-					CONSOLE_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFile.data());
+					DEPRECATED_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFile.data());
 			}
 
 			RELEASE_ARRAY(data);
@@ -167,7 +167,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		ilDeleteImages(1, &imageName);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
+		DEPRECATED_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
 	return ret;
 }
@@ -211,11 +211,11 @@ bool MaterialImporter::GenerateMeta(Resource* resource, std::string& outputMetaF
 	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 
@@ -241,7 +241,7 @@ bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint UUID) con
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -261,11 +261,11 @@ bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint UUID) con
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
 		return false;
 	}
 
@@ -291,7 +291,7 @@ bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) 
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -322,7 +322,7 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -349,11 +349,11 @@ bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, cons
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its texture import settings", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its texture import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its texture import settings", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its texture import settings", metaFile);
 		return false;
 	}
 
@@ -379,7 +379,7 @@ bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, Te
 	}
 	else
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -416,12 +416,12 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTex
 	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
 		ret = Load(buffer, size, outputTexture, textureImportSettings);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFile);
 
 	return ret;
 }
@@ -579,18 +579,18 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 			outputTexture->width = imageInfo.Width;
 			outputTexture->height = imageInfo.Height;
 
-			CONSOLE_LOG("MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			DEPRECATED_LOG("MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 			ret = true;
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
-			CONSOLE_LOG("MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
+			DEPRECATED_LOG("MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
 
 		ilDeleteImages(1, &imageName);
 	}
 	else
-		CONSOLE_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
+		DEPRECATED_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
 	return ret;
 }
@@ -650,7 +650,7 @@ void MaterialImporter::LoadCheckers()
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	CONSOLE_LOG("MATERIAL IMPORTER: Success at loading Checkers: %i ID, %i x %i", checkers, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+	DEPRECATED_LOG("MATERIAL IMPORTER: Success at loading Checkers: %i ID, %i x %i", checkers, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -661,9 +661,9 @@ void MaterialImporter::LoadDefaultTexture()
 
 	for (uint i = 0; i < 2; i++) {
 		for (uint j = 0; j < 2; j++) {
-			replaceMeTexture[i][j][0] = (GLubyte)255;
-			replaceMeTexture[i][j][1] = (GLubyte)0;
-			replaceMeTexture[i][j][2] = (GLubyte)144;
+			replaceMeTexture[i][j][0] = (GLubyte)190;
+			replaceMeTexture[i][j][1] = (GLubyte)178;
+			replaceMeTexture[i][j][2] = (GLubyte)137;
 			replaceMeTexture[i][j][3] = (GLubyte)255;
 		}
 	}
@@ -689,7 +689,7 @@ void MaterialImporter::LoadDefaultTexture()
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	CONSOLE_LOG("MATERIAL IMPORTER: Success at loading Default Texture: %i ID, %i x %i", defaultTexture, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+	DEPRECATED_LOG("MATERIAL IMPORTER: Success at loading Default Texture: %i ID, %i x %i", defaultTexture, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

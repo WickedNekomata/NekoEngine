@@ -28,6 +28,8 @@ public:
 	bool GetParticle(int& id);
 	void ClearEmitters();
 
+	void OnSystemEvent(System_Event event);
+
 	void RemoveEmitter(ComponentEmitter* emitter);
 public:
 

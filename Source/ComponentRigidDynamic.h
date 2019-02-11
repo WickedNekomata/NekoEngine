@@ -4,8 +4,6 @@
 #include "Component.h"
 #include "ComponentRigidActor.h"
 
-#define DEFAULT_DENSITY 10.0f
-
 class ComponentRigidDynamic : public ComponentRigidActor
 {
 public:
@@ -16,11 +14,14 @@ public:
 
 	void OnUniqueEditor();
 	
+	void Update();
+
+	// Sets
 	void SetDensity(float density);
 	void UpdateMassAndInertia();
 	void SetMass(float mass);
-	void SetCMass(math::float3 cMass);
-	void SetInertia(math::float3 inertia);
+	void SetCMass(math::float3& cMass);
+	void SetInertia(math::float3& inertia);
 	void SetLinearDamping(float linearDamping);
 	void SetAngularDamping(float angularDamping);
 	void SetMaxLinearVelocity(float maxLinearVelocity);
@@ -29,11 +30,11 @@ public:
 	void FreezeRotation(bool x, bool y, bool z);
 	void SetIsKinematic(bool isKinematic);
 
-	void SetLinearVelocity(math::float3 linearVelocity);
-	void SetAngularVelocity(math::float3 angularVelocity);
-	void AddForce(math::float3 force, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
+	void SetLinearVelocity(math::float3& linearVelocity);
+	void SetAngularVelocity(math::float3& angularVelocity);
+	void AddForce(math::float3& force, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
 	void ClearForce() const;
-	void AddTorque(math::float3 torque, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
+	void AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
 	void ClearTorque() const;
 
 	//void OnInternalSave(JSON_Object* file);

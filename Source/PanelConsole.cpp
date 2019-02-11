@@ -26,9 +26,19 @@ bool PanelConsole::Draw()
 		{
 			Clear();
 		}
+
+		static bool showLogs = true, showWarnings = true, showErrors = true;
+
 		ImGui::SameLine();
 		ImGui::Checkbox("Auto Scroll", &scrollToBottom);
 		ImGui::SameLine();
+		ImGui::Checkbox("Logs", &showLogs);
+		ImGui::SameLine();
+		ImGui::Checkbox("Warnings", &showWarnings);
+		ImGui::SameLine();
+		ImGui::Checkbox("Errors", &showErrors);
+		ImGui::SameLine();
+
 		filter.Draw("Filter", -100.0f);
 
 		ImGui::Separator();
@@ -55,8 +65,26 @@ bool PanelConsole::Draw()
 
 					// Print filtered text
 					if (filter.PassFilter(line, lineEnd))
-						ImGui::TextUnformatted(line, lineEnd);
+					{		
+						char lineToPrint[DEFAULT_BUF_SIZE];
+						uint toPrintLength = strlen(line) - strlen(lineEnd);
+						strncpy(lineToPrint, line, toPrintLength);
+						lineToPrint[toPrintLength] = '\0';
 
+						if (strstr(lineToPrint, "Error: ") != nullptr)
+						{
+							if (showErrors)
+								ImGui::TextColored({ 1,0,0,1 }, lineToPrint);
+						}
+						else if (strstr(lineToPrint, "Warning: ") != nullptr)
+						{
+							if (showWarnings)
+								ImGui::TextColored({ .95,.81,0.24,1 }, lineToPrint);
+						}
+						else if (showLogs)
+							ImGui::TextUnformatted(lineToPrint);
+					}
+						
 					if (lineEnd != nullptr && lineEnd[1] != '\0')
 						line = lineEnd + 1;
 					else
@@ -64,8 +92,40 @@ bool PanelConsole::Draw()
 				}
 			}
 			else
+			{
 				// Print text
-				ImGui::TextUnformatted(buf.begin());
+				uint charsRead = 0;
+				while (charsRead < buf.size())
+				{
+					char line[DEFAULT_BUF_SIZE];
+					char character[2];
+					strcpy(line, "");
+
+					while (buf[charsRead] != '\n')
+					{				
+						character[0] = buf[charsRead];
+						character[1] = '\0';
+						strcat(line, character);
+						charsRead++;
+					}
+
+					strcat(line, "\n");
+					charsRead++;
+
+					if (strstr(line, "Error: ") != nullptr)
+					{
+						if (showErrors)
+							ImGui::TextColored({ 1,0,0,1 }, line);
+					}
+					else if (strstr(line, "Warning: ") != nullptr)
+					{
+						if (showWarnings)
+							ImGui::TextColored({ .95,.81,0.24,1 }, line);
+					}
+					else if (showLogs)
+						ImGui::TextUnformatted(line);
+				}			
+			}			
 		}
 
 		if (scrollToBottom)

@@ -11,21 +11,6 @@
 
 #include <vector>
 
-class Panel;
-class PanelInspector;
-class PanelAbout;
-class PanelConsole;
-class PanelSettings;
-class PanelHierarchy;
-class PanelAssets;
-class PanelLibrary;
-class PanelDebugDraw;
-class PanelEdit;
-class PanelCodeEditor;
-class PanelShaderEditor;
-class PanelSkybox;
-class PanelPhysics;
-
 class ModuleGui : public Module
 {
 public:
@@ -52,6 +37,8 @@ public:
 	void HideAllWindows();
 
 	void LogConsole(const char* log) const;
+	void ClearConsole() const;
+
 	void AddInput(uint key, uint state) const;
 
 	bool IsMouseHoveringAnyWindow();
@@ -60,25 +47,28 @@ public:
 
 public:
 
-	PanelInspector*		panelInspector = nullptr;
-	PanelAbout*			panelAbout = nullptr;
-	PanelConsole*		panelConsole = nullptr;
-	PanelSettings*		panelSettings = nullptr;
-	PanelHierarchy*		panelHierarchy = nullptr;
-	PanelAssets*		panelAssets = nullptr;
-	PanelLibrary*		panelLibrary = nullptr;
-	PanelDebugDraw*		panelDebugDraw = nullptr;
-	PanelEdit*			panelEdit = nullptr;
-	PanelCodeEditor*	panelCodeEditor = nullptr;
-	PanelShaderEditor*  panelShaderEditor = nullptr;
-	PanelSkybox*		panelSkybox = nullptr;
-	PanelPhysics*		panelPhysics = nullptr;
+	class PanelInspector*		panelInspector = nullptr;
+	class PanelAbout*			panelAbout = nullptr;
+	class PanelConsole*			panelConsole = nullptr;
+	class PanelSettings*		panelSettings = nullptr;
+	class PanelHierarchy*		panelHierarchy = nullptr;
+	class PanelAssets*			panelAssets = nullptr;
+	class PanelLibrary*			panelLibrary = nullptr;
+	class PanelDebugDraw*		panelDebugDraw = nullptr;
+	class PanelEdit*			panelEdit = nullptr;
+	class PanelCodeEditor*		panelCodeEditor = nullptr;
+	class PanelShaderEditor*	panelShaderEditor = nullptr;
+	class PanelSkybox*			panelSkybox = nullptr;
+	class PanelNavigation*		panelNavigation = nullptr;
+	class PanelSimulatedTime*	panelSimulatedTime = nullptr;
+	class PanelLayers*			panelLayers = nullptr;
+	class PanelPhysics*			panelPhysics = nullptr;
 
 	ResourceTexture* atlas = nullptr;
 
 private:
 
-	std::vector<Panel*> panels;
+	std::vector<class Panel*> panels;
 
 	bool showSaveScenePopUp = false;
 	bool showLoadScenePopUp = false;

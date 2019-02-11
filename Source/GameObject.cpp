@@ -4,6 +4,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
+#include "ComponentNavAgent.h"
 #include "ComponentEmitter.h"
 #include "ComponentRigidActor.h"
 #include "ComponentRigidStatic.h"
@@ -11,6 +12,7 @@
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
+
 #include "ResourceMesh.h"
 
 #include "Application.h"
@@ -19,10 +21,14 @@
 #include "ModuleGOs.h"
 #include "ModuleScene.h"
 #include "ModulePhysics.h"
+#include "ModuleParticles.h"
+#include "ScriptingModule.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
 #include <algorithm>
+
+#include <mono/jit/jit.h>
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
@@ -72,6 +78,12 @@ GameObject::GameObject(const GameObject& gameObject)
 		components.push_back(camera);
 	}
 
+	if (gameObject.emitter != nullptr)
+	{
+		emitter = new ComponentEmitter(*gameObject.emitter);
+		emitter->SetParent(this);
+		components.push_back(emitter);
+	}
 	boundingBox = gameObject.boundingBox;
 
 	isActive = gameObject.isActive;
@@ -236,8 +248,14 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		assert(camera == nullptr);
 		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
 		break;
-	case EmitterComponent:
+	case ComponentTypes::NavAgentComponent:
+		newComponent = navAgent = new ComponentNavAgent(this);
+		break;
+	case ComponentTypes::EmitterComponent:
 		newComponent = emitter = new ComponentEmitter(this);
+		//if (materialRenderer == nullptr)
+			//createMaterial = true;
+		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:
 		assert(rigidActor == nullptr);
@@ -258,6 +276,23 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		AddComponent(ComponentTypes::MaterialComponent);
 
 	return newComponent;
+}
+
+void GameObject::AddComponent(Component* component)
+{
+	components.push_back(component);
+}
+
+void GameObject::ClearComponent(Component* component)
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == component)
+		{
+			components.erase(components.begin() + i);
+			break;
+		}
+	}
 }
 
 void GameObject::MarkToDeleteComponent(uint index)
@@ -286,12 +321,13 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		break;
 	case ComponentTypes::CameraComponent:
 		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
-		materialRenderer = nullptr;
+		camera = nullptr;
 		break;
 	case ComponentTypes::RigidDynamicComponent:
 	case ComponentTypes::RigidStaticComponent:
 		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
 		rigidActor = nullptr;
+		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
@@ -299,6 +335,16 @@ void GameObject::InternallyDeleteComponent(Component* toDelete)
 		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
 		collider = nullptr;
 		break;
+	case ComponentTypes::ScriptComponent:
+	{
+		App->scripting->DestroyScript((ComponentScript*)toDelete);
+		return;
+	}
+	case ComponentTypes::NavAgentComponent:
+	{
+		RELEASE(navAgent);
+		return;
+	}
 	}
 
 	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
@@ -313,10 +359,27 @@ void GameObject::InternallyDeleteComponents()
 		{
 		case ComponentTypes::MeshComponent:
 			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
+			meshRenderer = nullptr;
 			break;
 		case ComponentTypes::CameraComponent:
 			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
+			camera = nullptr;
 			break;
+		case ComponentTypes::RigidDynamicComponent:
+		case ComponentTypes::RigidStaticComponent:
+			App->physics->EraseRigidActorComponent((ComponentRigidActor*)components[i]);
+			rigidActor = nullptr;
+			break;
+		case ComponentTypes::BoxColliderComponent:
+		case ComponentTypes::SphereColliderComponent:
+		case ComponentTypes::CapsuleColliderComponent:
+		case ComponentTypes::PlaneColliderComponent:
+			App->physics->EraseColliderComponent((ComponentCollider*)components[i]);
+			collider = nullptr;
+			break;
+		case ComponentTypes::ScriptComponent:
+			App->scripting->DestroyScript((ComponentScript*)components[i]);
+			continue;
 		}		
 
 		RELEASE(components[i]);
@@ -330,7 +393,7 @@ bool GameObject::HasComponents() const
 	return components.size() > 0;
 }
 
-uint GameObject::GetComponenetsLength() const
+uint GameObject::GetComponentsLength() const
 {
 	return components.size();
 }
@@ -412,6 +475,8 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::ToggleIsActive()
 {
 	isActive = !isActive;
+
+	isActive ? OnEnable() : OnDisable();
 }
 
 bool GameObject::IsActive() const
@@ -449,6 +514,31 @@ bool GameObject::GetSeenLastFrame() const
 	return seenLastFrame;
 }
 
+MonoObject* GameObject::GetMonoObject()
+{
+	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
+}
+
+void GameObject::SetLayer(uint layerNumber)
+{
+	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
+	if (layer == layerNumber)
+		return;
+
+	layer = layerNumber;
+
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::LayerChanged;
+	newEvent.layerEvent.layer = layerNumber;
+	newEvent.layerEvent.collider = collider;
+	App->PushSystemEvent(newEvent);
+}
+
+uint GameObject::GetLayer() const
+{
+	return layer;
+}
+
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
 	boundingBox.SetNegativeInfinity();
@@ -457,16 +547,10 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	if (meshRenderer != nullptr && meshRenderer->res != 0) 
 	{
 		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
-
-		float* vertices = new float[meshRes->verticesSize * 3];
-		for (uint i = 0; i < meshRes->verticesSize; ++i)
-		{
-			vertices[3 * i] = meshRes->vertices[i].position[0];
-			vertices[3 * i + 1] = meshRes->vertices[i].position[1];
-			vertices[3 * i + 2] = meshRes->vertices[i].position[2];
-		}
-
-		boundingBox.Enclose((const math::float3*)vertices, meshRes->verticesSize);
+		int nVerts = meshRes->GetVertsCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetVerts(vertices);
+		boundingBox.Enclose((const math::float3*)vertices, nVerts);
 	}
 
 	// Transform bounding box (calculate OBB)
@@ -551,4 +635,30 @@ void GameObject::RecursiveForceAllResources(uint forceRes) const
 
 	for (int i = 0; i < children.size(); ++i)
 		children[i]->RecursiveForceAllResources(forceRes);
+}
+
+void GameObject::OnEnable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnEnable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnEnable();
+	}
+}
+
+void GameObject::OnDisable()
+{
+	for (int i = 0; i < components.size(); ++i)
+	{
+		components[i]->OnDisable();
+	}
+
+	for (int i = 0; i < children.size(); ++i)
+	{
+		children[i]->OnDisable();
+	}
 }

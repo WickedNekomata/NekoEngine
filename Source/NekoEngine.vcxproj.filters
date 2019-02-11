@@ -94,6 +94,27 @@
     <Filter Include="Sources\3rd Party\ImGuiColorTextEdit">
       <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour">
+      <UniqueIdentifier>{e5e30fb3-930e-44d9-b4c4-7eb164c2e03b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DebugUtils">
+      <UniqueIdentifier>{4b41b123-8f0e-4ed3-abf5-d337353a6877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\Detour">
+      <UniqueIdentifier>{840ea111-143b-469b-8a76-2450fe98be35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DetourCrowd">
+      <UniqueIdentifier>{6efde3f1-ee05-4b76-8d25-e5c3c02417c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DetourTileCache">
+      <UniqueIdentifier>{347337ed-f53e-4a8e-a8b1-2db3eb024491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\Recast">
+      <UniqueIdentifier>{df7e1bd5-a3d4-4af5-93ba-5fbbb345dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\NavMesh">
+      <UniqueIdentifier>{b4d148e9-5dfc-46a2-beaf-c2cc2732d010}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Sources\Modules\Particles">
       <UniqueIdentifier>{9a4bede6-50fc-4d49-93bc-caa1f6ff8fee}</UniqueIdentifier>
     </Filter>
@@ -153,6 +174,12 @@
     </Filter>
     <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics">
       <UniqueIdentifier>{e8d12beb-7c4b-407e-a1c5-60c3d1ce4b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\pugi">
+      <UniqueIdentifier>{ff358738-4a78-4841-a66b-bfc97da50d40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\Physics">
+      <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -700,6 +727,93 @@
     <ClInclude Include="PanelSkybox.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DetourDebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDump.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAlloc.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAssert.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourCommon.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourMath.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMesh.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshBuilder.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshQuery.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNode.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourStatus.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourCrowd.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourLocalBoundary.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourObstacleAvoidance.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathCorridor.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathQueue.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourProximityGrid.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCache.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCacheBuilder.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\Recast.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAlloc.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="NMDebugDraw.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NMInputGeom.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentNavAgent.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelNavigation.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleNavigation.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Sources\Modules\Particles</Filter>
     </ClInclude>
@@ -711,6 +825,9 @@
     </ClInclude>
     <ClInclude Include="GameTimer.h">
       <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelSimulatedTime.h">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
     <ClInclude Include="ModulePhysics.h">
       <Filter>Sources\Modules</Filter>
@@ -1309,6 +1426,54 @@
     <ClInclude Include="PanelPhysics.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugiconfig.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugixml.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingModule.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceScript.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEvents.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stl.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAnimation.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBone.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBone.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelLayers.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Layers.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationEvents.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConstants.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneQueries.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1581,6 +1746,105 @@
     <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DetourDebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDump.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourAlloc.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourCommon.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMesh.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshBuilder.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshQuery.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNode.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourCrowd.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourLocalBoundary.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourObstacleAvoidance.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathCorridor.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathQueue.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourProximityGrid.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCache.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCacheBuilder.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\Recast.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastAlloc.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastArea.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastContour.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastFilter.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastLayers.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMesh.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMeshDetail.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRasterization.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="NMDebugDraw.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NMBuildContext.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentNavAgent.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelNavigation.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleNavigation.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Sources\Modules\Particles</Filter>
     </ClCompile>
@@ -1592,6 +1856,9 @@
     </ClCompile>
     <ClCompile Include="GameTimer.cpp">
       <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSimulatedTime.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="ModulePhysics.cpp">
       <Filter>Sources\Modules</Filter>
@@ -1622,6 +1889,48 @@
     </ClCompile>
     <ClCompile Include="PanelPhysics.cpp">
       <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingModule.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="pugui\pugixml.cpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEvents.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stl.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBone.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBone.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelLayers.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Layers.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationEvents.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneQueries.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1672,6 +1981,9 @@
     </None>
     <None Include="Uniforms.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </None>
+    <None Include="NMBuildContext.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
     </None>
   </ItemGroup>
 </Project>

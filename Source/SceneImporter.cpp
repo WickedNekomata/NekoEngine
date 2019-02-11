@@ -8,9 +8,11 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
 #include "GameObject.h"
+#include "BoneImporter.h"
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentBone.h"
 #include "ComponentTypes.h"
 #include "MaterialImporter.h"
 #include "Resource.h"
@@ -32,7 +34,7 @@
 
 void myCallback(const char* msg, char* userData)
 {
-	CONSOLE_LOG("%s", msg);
+	DEPRECATED_LOG("%s", msg);
 }
 
 SceneImporter::SceneImporter()
@@ -70,12 +72,12 @@ bool SceneImporter::Import(const char* importFile, std::string& outputFile, cons
 	uint size = App->fs->Load(importFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
 		ret = Import(buffer, size, outputFile, importSettings, metaFile);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
 
 	return ret;
 }
@@ -158,6 +160,9 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 			GetMeshesUUIDsFromMeta(metaFile, UUIDs);
 
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, UUIDs);
+
+		RecursiveProcessBones(scene, scene->mRootNode);
+
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
@@ -285,10 +290,28 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				{
 					if (nodeMesh->mFaces[j].mNumIndices != 3)
 					{
-						CONSOLE_LOG("WARNING, geometry face with != 3 indices!");
+						DEPRECATED_LOG("WARNING, geometry face with != 3 indices!");
 					}
 					else
 						memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
+				}
+			}
+
+			relations[node] = gameObject;
+
+			// Bones / Animations stuff
+			if (nodeMesh->HasBones())
+			{
+				int num = nodeMesh->mNumBones;
+				for (int k = 0; k < num; ++k)
+				{
+					if (!root_bone)
+						root_bone = gameObject;
+
+					ComponentMesh* mesh_cmp = (ComponentMesh*)gameObject->GetComponentByType(ComponentTypes::MeshComponent);
+					
+					bones[nodeMesh->mBones[k]->mName.C_Str()] = nodeMesh->mBones[k];
+					mesh_bone[nodeMesh->mBones[k]] = mesh_cmp->res;
 				}
 			}
 
@@ -442,10 +465,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFileName) > 0)
 			{
-				CONSOLE_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
+				DEPRECATED_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 			}
 			else
-				CONSOLE_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
+				DEPRECATED_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
 
 			RELEASE_ARRAY(data);
 			RELEASE_ARRAY(vertices);
@@ -526,11 +549,11 @@ bool SceneImporter::GenerateMeta(std::list<Resource*> resources, std::string& ou
 	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
 		return false;
 	}
 
@@ -556,7 +579,7 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUI
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -580,11 +603,11 @@ bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUI
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
 		return false;
 	}
 
@@ -610,7 +633,7 @@ bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -644,7 +667,7 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -682,11 +705,11 @@ bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const Mesh
 	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
 		return false;
 	}
 
@@ -712,7 +735,7 @@ bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImpo
 	}
 	else
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
 		return false;
 	}
 
@@ -760,12 +783,12 @@ bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh) con
 	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		CONSOLE_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
 		ret = Load(buffer, size, outputMesh);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		CONSOLE_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
+		DEPRECATED_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
 
 	return ret;
 }
@@ -866,7 +889,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	outputMesh->indices = new GLuint[outputMesh->indicesSize];
 	memcpy(outputMesh->indices, cursor, bytes);
 
-	CONSOLE_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
+	DEPRECATED_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
 
 	return true;
 }
@@ -874,7 +897,7 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
 	float skyboxVertices[] = {
-		// positions          
+        
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -930,6 +953,77 @@ void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void SceneImporter::LoadPrimitivePlane()
+{
+	uint verticesSize = 12;
+	Vertex* vertices = new Vertex[verticesSize];
+
+	float verticesPosition[12]
+	{
+		-0.5f, -0.5f, 0.0f, // a
+		 0.5f, -0.5f, 0.0f, // b
+		-0.5f,  0.5f, 0.0f, // c
+		 0.5f,  0.5f, 0.0f, // d
+	};
+
+	uint textCordsSize = 8;
+	float textCordsPosition[8]
+	{
+		 0.0f,  0.0f, // a
+		 1.0f,  0.0f, // b
+		 0.0f,  1.0f, // c
+		 1.0f,  1.0f, // d
+	};
+
+	uint normalSize = 12;
+	float normalPosition[12]
+	{
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
+		0.0f, 1.0f, 0.0f, // a
+	};
+
+	defaultPlaneIndicesSize = 6;
+	uint indices[6]
+	{
+		// Front
+		0, 1, 2, // ABC
+		1, 3, 2, // BDC
+	};
+
+	// Vertices
+	/// Position
+	float* cursor = verticesPosition;
+	for (uint i = 0; i < verticesSize/3; ++i)
+	{
+		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	///Normals
+	cursor = normalPosition;
+	for (uint i = 0; i < normalSize / 3; ++i)
+	{
+		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	///TextCords
+	cursor = textCordsPosition;
+	for (uint i = 0; i < textCordsSize/2; ++i)
+	{
+		memcpy(vertices[i].texCoord, cursor, sizeof(float) * 2);
+		cursor += 2;
+	}
+	// -----
+
+	GLuint VBO = 0;
+	ResourceMesh::GenerateVBO(VBO, vertices, verticesSize);
+	ResourceMesh::GenerateIBO(defaultPlaneIBO, indices, defaultPlaneIndicesSize);
+	ResourceMesh::GenerateVAO(defaultPlaneVAO, VBO);
+}
+
 uint SceneImporter::GetAssimpMajorVersion() const
 {
 	return aiGetVersionMajor();
@@ -943,4 +1037,39 @@ uint SceneImporter::GetAssimpMinorVersion() const
 uint SceneImporter::GetAssimpRevisionVersion() const
 {
 	return aiGetVersionRevision();
+}
+
+void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO, uint& defaultPlaneIndicesSize) const
+{
+	defaultPlaneVAO = this->defaultPlaneVAO;
+	defaultPlaneIBO = this->defaultPlaneIBO;
+	defaultPlaneIndicesSize = this->defaultPlaneIndicesSize;
+}
+
+void SceneImporter::RecursiveProcessBones(const aiScene * scene, const aiNode * node) const
+{
+	std::map<std::string, aiBone*>::iterator it = bones.find(node->mName.C_Str());
+
+	if (it != bones.end())
+	{
+		aiBone* bone = it->second;
+
+		GameObject* go = relations[node];
+		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
+
+		std::string output;
+		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output);
+
+		if (go->GetParent() == nullptr ||
+			(go->GetParent() && !go->GetParent()->GetComponentByType(ComponentTypes::BoneComponent)))
+			bone_root_uid = go->GetUUID();
+
+
+		comp_bone->SetResource(bone_uid);
+		imported_bones[node->mName.C_Str()] = bone_uid;
+		DEPRECATED_LOG("SceneImporter: Added Bone component and created bone resource");
+	}
+
+	for (uint i = 0; i < node->mNumChildren; ++i)
+		RecursiveProcessBones(scene, node->mChildren[i]);
 }

@@ -4,8 +4,6 @@
 #include "Component.h"
 #include "ComponentCollider.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-
 class ComponentSphereCollider : public ComponentCollider
 {
 public:
@@ -17,6 +15,12 @@ public:
 	void OnUniqueEditor();
 
 	void RecalculateShape();
+
+	// Sets
+	void SetRadius(float radius);
+
+	// Gets
+	physx::PxSphereGeometry GetSphereGeometry() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);

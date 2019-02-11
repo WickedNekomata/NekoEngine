@@ -4,7 +4,10 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+
 #include "ComponentCollider.h"
+
+#include "PhysicsConstants.h"
 
 #include "imgui\imgui.h"
 
@@ -15,6 +18,8 @@ ComponentRigidActor::~ComponentRigidActor()
 	App->physics->RemoveActor(*gActor);
 	gActor->release();
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::OnUniqueEditor()
 {
@@ -27,33 +32,57 @@ void ComponentRigidActor::OnUniqueEditor()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidActor::UpdateShape()
+void ComponentRigidActor::Update() {}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 {
-	physx::PxShape* gShape = nullptr;
+	bool attach = true;
 
 	// Detach current shape
 	uint nbShapes = gActor->getNbShapes();
 	if (nbShapes > 0)
 	{
+		physx::PxShape* gShape = nullptr;
 		gActor->getShapes(&gShape, 1);
 
-		if (gShape != nullptr)
+		if (gShape == shape && shape != nullptr)
+			attach = false;
+		else
 			gActor->detachShape(*gShape);
-		gShape = nullptr;
 	}
 
-	// Update current shape
-	gShape = parent->collider->GetShape();
-
 	// Attach current shape
-	if (gShape != nullptr)
-		gActor->attachShape(*gShape);
+	if (shape == nullptr)
+	{
+		if (parent->boundingBox.IsFinite())
+			shape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+		else
+			shape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
+		assert(shape != nullptr);
+	}
+
+	if (attach)
+		gActor->attachShape(*shape);
 }
 
-void ComponentRigidActor::UpdateTransform() const
+void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 {
-	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
-	gActor->setGlobalPose(physx::PxTransform(physx::PxMat44(globalMatrix.Transposed().ptr())));
+	assert(globalMatrix.IsFinite());
+	math::float3 position = math::float3::zero;
+	math::Quat rotation = math::Quat::identity;
+	math::float3 scale = math::float3::zero;
+	globalMatrix.Decompose(position, rotation, scale);
+
+	if (!position.IsFinite() || !rotation.IsFinite())
+	{
+		CONSOLE_LOG(LogTypes::Warning, "The rigid actor transform cannot be updated since the position or the rotation of the game object is infinite");
+		return;
+	}
+
+	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
+		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
 }
 
 void ComponentRigidActor::UpdateGameObjectTransform() const
@@ -82,12 +111,13 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 
 // ----------------------------------------------------------------------------------------------------
 
+
 void ComponentRigidActor::OnWake()
 {
-	CONSOLE_LOG("I'm awake");
+	CONSOLE_LOG(LogTypes::Normal, "OnWake", LogTypes::Normal);
 }
 
 void ComponentRigidActor::OnSleep()
 {
-	CONSOLE_LOG("I'm asleep");
+	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
 }

@@ -872,18 +872,18 @@ void ParticlePlane::LoadPlaneBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ParticlePlane::Render(math::float4x4 matrix, ResourceTexture* texture, uint textureUV, math::float4 color) const
+void ParticlePlane::Render(math::float4x4 matrix, ResourceTexture* texture,/* uint textureUV,*/ math::float4 color) const
 {
-	glPushMatrix();
+	//glPushMatrix();
 
 	glMultMatrixf(matrix.ptr());
 
-	DrawPlane(texture, textureUV, color);
+	DrawPlane(texture, /*textureUV, */color);
 
-	glPopMatrix();
+	//glPopMatrix();
 }
 
-void ParticlePlane::DrawPlane(ResourceTexture* texture, uint textureUV, math::float4 &color) const
+void ParticlePlane::DrawPlane(ResourceTexture* texture, /*uint textureUV, */math::float4 &color) const
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -898,9 +898,9 @@ void ParticlePlane::DrawPlane(ResourceTexture* texture, uint textureUV, math::fl
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		//Load Texture UV
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		/*glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, textureUV);
-		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);*/
 
 		glEnable(GL_ALPHA_TEST);
 

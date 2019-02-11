@@ -16,13 +16,17 @@
 
 #include <assert.h>
 
-#pragma comment(lib, "physfs\\libx86\\physfs.lib")
+#pragma comment(lib, "physfs/libx86/physfs.lib")
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 {
 	name = "FileSystem";
 
-	PHYSFS_init(nullptr);
+	if (PHYSFS_init(nullptr) == 0)
+	{
+		const char* error = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+		DEPRECATED_LOG("Could not initialize PHYSFS. Error: %s", error);
+	}
 
 	AddPath(".");
 #ifndef GAMEMODE
@@ -30,14 +34,18 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 #endif
 	AddPath("./Settings/", "Settings");
 
+	//Internal Directory: Engine stuff
+	AddPath("./internal.f", "Internal");
+
 	if (PHYSFS_setWriteDir(".") == 0)
-		CONSOLE_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
+		DEPRECATED_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
 #ifndef GAMEMODE
 	CreateDir(DIR_ASSETS_SCENES);
 	CreateDir(DIR_ASSETS_SHADERS);
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
+	CreateDir(DIR_ASSETS_SCRIPTS);
 #endif
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -45,6 +53,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }
 
@@ -52,7 +61,7 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 bool ModuleFileSystem::CleanUp()
 {
-	CONSOLE_LOG("Freeing File System subsystem");
+	DEPRECATED_LOG("Freeing File System subsystem");
 	PHYSFS_deinit();
 
 	return true;
@@ -109,10 +118,10 @@ bool ModuleFileSystem::CreateDir(const char* dirName) const
 
 	if (ret)
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
+		DEPRECATED_LOG("FILE SYSTEM: Successfully created the directory '%s'", dirName);
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Couldn't create the directory '%s'. ERROR: %s", dirName, PHYSFS_getLastError());
 
 	return ret;
 }
@@ -124,7 +133,7 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint) const
 	if (PHYSFS_mount(newDir, mountPoint, 1) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
 		
 	return ret;
 }
@@ -136,7 +145,7 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 	if (PHYSFS_delete(path) != 0)
 		ret = true;
 	else
-		CONSOLE_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
 
 	return ret;
 }
@@ -253,8 +262,21 @@ void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::
 				uint UUID = 0;
 				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
 				file->resource = App->res->GetResource(UUID);
+				break;
 			}
-			break;
+			case ResourceType::ScriptResource:
+			{				
+				char* metaBuffer;
+				uint size = App->fs->Load(metaFile, &metaBuffer);
+				if (size > 0)
+				{
+					uint32_t UUID = 0;
+					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+					file->resource = App->res->GetResource(UUID);
+				}
+				break;
+			}			
 			}
 
 			assetsFiles[file->path] = file->lastModTime;
@@ -337,9 +359,9 @@ bool ModuleFileSystem::IsDirectory(const char* file) const
 	return PHYSFS_isDirectory(file);
 }
 
-bool ModuleFileSystem::Exists(const char* file) const
+bool ModuleFileSystem::Exists(std::string file) const
 {
-	return PHYSFS_exists(file);
+	return PHYSFS_exists(file.data());
 }
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
@@ -479,19 +501,19 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 			size = Save(outputFile.data(), buffer, size);
 			if (size > 0)
 			{
-				CONSOLE_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
+				DEPRECATED_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
 			}
 			else
-				CONSOLE_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
+				DEPRECATED_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'", file);
+			DEPRECATED_LOG("FILE SYSTEM: Could not read from file '%s'", file);
 
 		RELEASE_ARRAY(buffer);
 		fclose(filehandle);
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
+		DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
 
 	return size;
 }
@@ -513,6 +535,16 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
 			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
 			outputFile.append(EXTENSION_TEXTURE);
+			break;
+		case FileType::BoneFile:
+			outputFile.insert(0, DIR_LIBRARY_BONES);
+			outputFile.insert(strlen(DIR_LIBRARY_BONES), "/");
+			outputFile.append(EXTENSION_BONE);
+			break;
+		case FileType::AnimationFile:
+			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
+			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
+			outputFile.append(EXTENSION_ANIMATION);
 			break;
 		case FileType::SceneFile:
 			outputFile.insert(0, DIR_ASSETS_SCENES);
@@ -542,20 +574,20 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 	return ret;
 }
 
-uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool append) const
+uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool append) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName, true);
+	GetFileName(file.data(), fileName, true);
 
-	bool exists = Exists(file);
+	bool exists = Exists(file.data());
 
 	PHYSFS_file* filehandle = nullptr;
 	if (append)
-		filehandle = PHYSFS_openAppend(file);
+		filehandle = PHYSFS_openAppend(file.data());
 	else
-		filehandle = PHYSFS_openWrite(file);
+		filehandle = PHYSFS_openWrite(file.data());
 
 	if (filehandle != nullptr)
 	{
@@ -567,38 +599,38 @@ uint ModuleFileSystem::Save(const char* file, char* buffer, uint size, bool appe
 			{
 				if (append)
 				{
-					CONSOLE_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
+					DEPRECATED_LOG("FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
 				}
 				else
-					CONSOLE_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
+					DEPRECATED_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
 			}			
 			else
-				CONSOLE_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
+				DEPRECATED_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 		if (PHYSFS_close(filehandle) == 0)
-			CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+		DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 
 	return objCount;
 }
 
-uint ModuleFileSystem::Load(const char* file, char** buffer) const
+uint ModuleFileSystem::Load(std::string file, char** buffer) const
 {
 	uint objCount = 0;
 
 	std::string fileName;
-	GetFileName(file, fileName, true);
+	GetFileName(file.data(), fileName, true);
 
-	bool exists = Exists(file);
+	bool exists = Exists(file.data());
 
 	if (exists)
 	{
-		PHYSFS_file* filehandle = PHYSFS_openRead(file);
+		PHYSFS_file* filehandle = PHYSFS_openRead(file.data());
 
 		if (filehandle != nullptr)
 		{
@@ -616,18 +648,18 @@ uint ModuleFileSystem::Load(const char* file, char** buffer) const
 				else
 				{
 					RELEASE(buffer);
-					CONSOLE_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+					DEPRECATED_LOG("FILE SYSTEM: Could not read from file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 				}
 
 				if (PHYSFS_close(filehandle) == 0)
-					CONSOLE_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+					DEPRECATED_LOG("FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 			}
 		}
 		else
-			CONSOLE_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName.data(), PHYSFS_getLastError());
+			DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to read. ERROR: %s", fileName.data(), PHYSFS_getLastError());
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
+		DEPRECATED_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
 
 	return objCount;
 }
@@ -640,7 +672,7 @@ bool ModuleFileSystem::AddMeta(const char* metaFile, int lastModTime)
 		return false;
 	}
 
-	CONSOLE_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
+	DEPRECATED_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
 	metas[metaFile] = lastModTime;
 
 	return true;
@@ -658,12 +690,12 @@ bool ModuleFileSystem::DeleteMeta(const char* metaFile)
 
 	if (metas.find(metaFile) != metas.end())
 	{
-		CONSOLE_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
+		DEPRECATED_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
 		metas.erase(metaFile);
 		ret = true;
 	}
 	else
-		CONSOLE_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
+		DEPRECATED_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
 
 	return ret;
 }
@@ -741,4 +773,212 @@ void ModuleFileSystem::CheckFilesInAssets() const
 			}
 		}
 	}
+}
+
+std::string ModuleFileSystem::getAppPath()
+{
+	std::string baseDir = PHYSFS_getBaseDir();
+
+	PHYSFS_unmount(".");
+
+	AddPath((char*)baseDir.data(), "");
+
+	if (Exists("physfs.dll"))
+	{
+		PHYSFS_unmount(baseDir.data());
+		PHYSFS_mount(".", "", 0);
+		return PHYSFS_getBaseDir();
+	}
+
+	else
+	{
+		PHYSFS_unmount(baseDir.data());
+
+		for (int i = 0; i < 2; ++i)
+		{
+			baseDir = baseDir.substr(0, baseDir.find_last_of("\\"));
+		}
+
+		baseDir += "\\Game\\";
+
+		AddPath((char*)baseDir.data(), "");
+
+		std::string moretemp = baseDir + "physfs.dll";
+
+		if (Exists("physfs.dll"))
+		{
+			PHYSFS_unmount(baseDir.data());
+			PHYSFS_mount(".", "", 0);
+			return baseDir;
+		}
+
+		PHYSFS_unmount(baseDir.data());
+	}
+
+	PHYSFS_unmount(baseDir.data());
+
+	PHYSFS_mount(".", "", 0);
+
+	return "";
+}
+
+bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string& newLocation)
+{
+	char* buffer;
+	int size = Load(file, &buffer);
+	if (size <= 0) 
+	{
+		CONSOLE_LOG(LogTypes::Error, "Couldn't move the file");
+		return false;
+	}
+
+	if (Save(newLocation, buffer, size) <= 0)
+	{
+		CONSOLE_LOG(LogTypes::Error, "Couldn't move the file");
+		delete[] buffer;
+		return false;
+	}
+
+	if (!deleteFile(file))
+	{
+		CONSOLE_LOG(LogTypes::Error, "Couldn't move the file");
+		delete[] buffer;
+		return false;
+	}
+
+	CONSOLE_LOG(LogTypes::Normal, "File %s moved succesfully to %s.", file.data(), newLocation.data());
+
+	delete[] buffer;
+	return true;
+}
+
+bool ModuleFileSystem::CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot)
+{
+	Directory originDir = RecursiveGetFilesFromDir((char*)origin.data());
+
+	for (int i = 0; i < originDir.files.size(); ++i)
+	{
+		std::string file = originDir.files[i].name;
+
+		char* buffer;
+		int size;
+
+		size = Load(origin + "/" + file, &buffer);
+		if (size <= 0)
+			return false;
+
+		std::string destinationWithRoot = destination + "/" + originDir.name + "/" + file;
+
+		std::string destinationWithoutRoot = destinationWithRoot.at(0) == '/' ? destinationWithRoot.substr(1) : destinationWithRoot;
+		destinationWithoutRoot = destinationWithoutRoot.substr(destinationWithoutRoot.find_first_of("/") + 1);
+
+		std::string realDestination = keepRoot ? destinationWithRoot : destinationWithoutRoot;
+
+		if (Save(realDestination, buffer, size) <= 0)
+		{
+			delete[] buffer;
+			return false;
+		}
+
+		delete[] buffer;
+	}
+
+	for (int i = 0; i < originDir.directories.size(); ++i)
+	{
+		bool success = CopyDirectoryAndContentsInto(originDir.directories[i].fullPath, destination + "/" + originDir.name, keepRoot);
+		if (!success)
+			return false;
+	}
+
+	return true;
+}
+
+Directory ModuleFileSystem::RecursiveGetFilesFromDir(char* dir) const
+{
+	Directory ret;
+	ret.fullPath = dir;
+	std::string dirstr(dir);
+	std::string name;
+	int pos = dirstr.find_last_of("/");
+	if (pos != std::string::npos)
+	{
+		name = dirstr.substr(pos + 1, std::string::npos);
+	}
+	else
+	{
+		name = dirstr;
+	}
+
+	ret.name = name;
+
+	char** files = PHYSFS_enumerateFiles(dir);
+	for (int i = 0; files[i] != nullptr; ++i)
+	{
+		std::string fulldir(dir + std::string("/") + std::string(files[i]));
+
+		//First, check if PHYSFS can recognize this file as a real file or a directory. If a UNKNOWN_TYPE is thrown, then search the extension and use it to detect. This may fail sometimes.
+		PHYSFS_Stat stats;
+		PHYSFS_stat(fulldir.data(), &stats);
+
+		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_OTHER)
+		{
+			//Here use the extension as recognition-method.
+			CONSOLE_LOG(LogTypes::Warning, "Physfs could not recognize if \"%s\" is a file or a directory. Using the extension as recognition-method. Weird behaviors may happen.", files[i]);
+
+			std::string file(files[i]);
+			if (file.find(".") == std::string::npos) //It's a directory, have not extension
+			{
+				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY;
+				CONSOLE_LOG(LogTypes::Warning, "File \"%s\" was recognized as a directory", files[i]);
+			}
+			else
+			{
+				stats.filetype = PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR;
+				CONSOLE_LOG(LogTypes::Warning, "File \"%s\" was recognized as a regular file", files[i]);
+			}
+		}
+
+		if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY)
+		{
+			Directory child = RecursiveGetFilesFromDir((char*)fulldir.data());
+			child.fullPath = fulldir;
+			ret.directories.push_back(child);
+		}
+		else if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR)
+		{
+			File file;
+			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
+			file.name = files[i];
+			ret.files.push_back(file);
+		}
+
+	}
+	PHYSFS_freeList(files);
+
+	return ret;
+}
+
+bool ModuleFileSystem::deleteFile(const std::string& filePath) const
+{
+	return PHYSFS_delete(filePath.c_str()) != 0;
+}
+
+bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& extension) const
+{
+	Directory directory = RecursiveGetFilesFromDir((char*)root.c_str());
+
+	for (int i = 0; i < directory.files.size(); ++i)
+	{
+		std::string fileExt; GetExtension(directory.files[i].name.data(), fileExt);
+
+		if (fileExt == extension)
+			PHYSFS_delete(std::string(directory.fullPath + "/" + directory.files[i].name).c_str());
+	}
+
+	for (int i = 0; i < directory.directories.size(); ++i)
+	{
+		deleteFiles(directory.directories[i].fullPath, extension);
+	}
+
+	return true;
 }

@@ -3,48 +3,42 @@
 
 #include "Module.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-#include "physx/include/extensions/PxDefaultAllocator.h"
-#include "physx/include/extensions/PxDefaultCpuDispatcher.h"
+#include "Layers.h"
+#include "SceneQueries.h"
 
-#include "MathGeoLib/include/Math/float3.h"
+#include "physx\include\PxPhysicsAPI.h"
+#include "physx\include\extensions\PxDefaultAllocator.h"
+#include "physx\include\extensions\PxDefaultCpuDispatcher.h"
+
+#include "MathGeoLib\include\Math\float3.h"
+#include "MathGeoLib\include\Math\MathConstants.h"
 
 #include <vector>
 
 class ComponentRigidActor;
 class ComponentCollider;
+class GameObject;
+class Collision;
+class RaycastHit;
+class SweepHit;
+class OverlapHit;
+class SimulationEventCallback;
 enum ComponentTypes;
+enum SimulationEventTypes;
+enum CollisionTypes;
 
 class DefaultErrorCallback : public physx::PxErrorCallback
 {
 public:
+
 	DefaultErrorCallback();
 	~DefaultErrorCallback();
 
 	void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line);
 };
 
-class SimulationEventCallback : public physx::PxSimulationEventCallback
-{
-public:
-	SimulationEventCallback();
-	~SimulationEventCallback();
-
-	// Happen before fetchResults() (swaps the buffers)
-	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) {}
-	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
-	void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
-
-	void onAdvance(const physx::PxRigidBody*const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count) {}
-
-	// Happen after fetchResults() (swaps the buffers)
-	void onWake(physx::PxActor** actors, physx::PxU32 count);
-	void onSleep(physx::PxActor** actors, physx::PxU32 count);
-
-private:
-
-	Module* callback = nullptr;
-};
+// ----------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 
 class ModulePhysics : public Module
 {
@@ -57,38 +51,63 @@ public:
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();
+	update_status FixedUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
 
-	// Create elements
+	void OnSystemEvent(System_Event event);
+
+	void Debug();
+
+	// ----------------------------------------------------------------------------------------------------
+
+	// Physic elements
+	/// Rigid actors
 	physx::PxRigidStatic* CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const;
-	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;
+	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;	
+	void AddActor(physx::PxActor& actor) const;
 	void RemoveActor(physx::PxActor& actor) const;
 
+	/// Shapes
 	physx::PxShape* CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive = true) const;
 
-	// Create components
+	// ----------------------------------------------------------------------------------------------------
+
+	// Components
 	ComponentRigidActor* CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType);
 	bool AddRigidActorComponent(ComponentRigidActor* toAdd);
 	bool EraseRigidActorComponent(ComponentRigidActor* toErase);
+	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
+	ComponentRigidActor* FindRigidActorComponentByActor(physx::PxActor* actor) const;
 
 	ComponentCollider* CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType);
 	bool AddColliderComponent(ComponentCollider* toAdd);
 	bool EraseColliderComponent(ComponentCollider* toErase);
-
-	// Callbacks
-	void OnSimulationEvent(physx::PxActor* actorA, physx::PxActor* actorB) const;
-
-	// ----------
-
-	std::vector<physx::PxRigidActor*> GetRigidStatics() const;
-	std::vector<physx::PxRigidActor*> GetRigidDynamics() const;
-
-	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
 	std::vector<ComponentCollider*> GetColliderComponents() const;
+	ComponentCollider* FindColliderComponentByShape(physx::PxShape* shape) const;
+
+	// ----------------------------------------------------------------------------------------------------
+
+	// Simulation events
+	void OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const;
+	void OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const;
+	
+	// ----------------------------------------------------------------------------------------------------
+
+	// Scene queries
+	/// They require a Rigid Actor component and a Collider component
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	
+	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	
+	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+
+	// ----------------------------------------------------------------------------------------------------
 
 	// General configuration values
-	void SetGravity(math::float3 gravity);
+	void SetGravity(math::float3& gravity);
 	math::float3 GetGravity() const;
 
 	void SetDefaultMaterial(physx::PxMaterial* material);
@@ -101,8 +120,13 @@ private:
 	physx::PxScene* gScene = nullptr;
 	physx::PxDefaultCpuDispatcher* gDispatcher = nullptr;
 
+	SimulationEventCallback* simulationEventCallback = nullptr;
+
 	float gAccumulator = 0.0f;
 
+	// -----
+
+	// Components
 	std::vector<ComponentRigidActor*> rigidActorComponents;
 	std::vector<ComponentCollider*> colliderComponents;
 

@@ -3,8 +3,8 @@
 
 #include "ComponentTypes.h"
 #include "parson\parson.h"
-
 #include "Globals.h"
+#include <mono/metadata/object.h>
 
 class GameObject;
 
@@ -23,6 +23,8 @@ public:
 	void ToggleIsActive();
 	bool IsActive() const;
 
+	bool IsTreeActive();
+
 	ComponentTypes GetType() const;
 
 	void SetParent(GameObject* parent);
@@ -31,23 +33,30 @@ public:
 	virtual void OnSave(JSON_Object* file);
 	virtual void OnLoad(JSON_Object* file) {};
 
+	virtual void OnEnable() {}
+	virtual void OnDisable() {}
+
+	MonoObject* GetMonoComponent();
+	inline void SetMonoComponent(uint32_t monoCompHandle) { this->monoCompHandle = monoCompHandle; };
+
 private:
 
 	virtual void OnInternalSave(JSON_Object* file) {};
 	virtual void OnUniqueEditor();
 
-private:
-
-	bool isActive = true;
-
 protected:
 
 	ComponentTypes componentType;
 	GameObject* parent = nullptr;
+	bool isActive = true;
+
+	uint32_t monoCompHandle = 0u;
 
 public:
 
 	uint UUID = 0;
+
+
 };
 
 #endif

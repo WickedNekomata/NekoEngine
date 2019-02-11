@@ -37,6 +37,7 @@ struct Module;
 struct ModuleResourceManager;
 struct MaterialImporter;
 struct SceneImporter;
+struct BoneImporter;
 struct ShaderImporter;
 struct ModuleCameraEditor;
 struct ModuleGui;
@@ -50,7 +51,11 @@ struct ModuleGOs;
 struct ModuleTimeManager;
 struct ModuleParticle;
 struct DebugDrawer;
+struct ModuleNavigation;
+struct ScriptingModule;
+struct ModuleEvents;
 struct ModulePhysics;
+struct Layers;
 
 class Application
 {
@@ -93,7 +98,6 @@ public:
 	bool IsEditor() const;
 
 	uint GenerateRandomNumber() const;
-	math::LCG GetLCGRandomMath() const;
 
 	void SaveState() const;
 	void LoadState() const;
@@ -116,10 +120,11 @@ public:
 	ModuleResourceManager*	res;
 	MaterialImporter*		materialImporter;
 	SceneImporter*			sceneImporter;
+	mutable BoneImporter*	boneImporter;
 	ShaderImporter*			shaderImporter;
 	ModuleParticle*			particle;
 
-#ifndef GAMEMODE	
+#ifndef GAMEMODE
 	ModuleCameraEditor*		camera;
 	ModuleGui*				gui;
 
@@ -133,13 +138,17 @@ public:
 	ModuleFileSystem*		fs;
 	ModuleGOs*				GOs;
 	ModuleTimeManager*		timeManager;
+	ScriptingModule*		scripting;
+	ModuleEvents*			events;
 	ModulePhysics*			physics;
-
 	DebugDrawer*			debugDrawer;
+	ModuleNavigation*		navigation;
+	Layers*					layers;
 
 	pcg32_random_t			rng;
 
 	bool firstFrame = true;
+	math::LCG randomMathLCG; //Cant be private with const Get
 
 private:
 
@@ -165,7 +174,6 @@ private:
 	mutable bool		load = false;
 
 	engine_states engineState = engine_states::ENGINE_EDITOR;
-	math::LCG randomMathLCG;
 };
 
 extern Application* App;

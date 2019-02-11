@@ -3,6 +3,7 @@
 #ifndef GAMEMODE
 
 #include "Globals.h"
+#include "Layers.h"
 
 #include "Application.h"
 #include "ModuleScene.h"
@@ -13,18 +14,26 @@
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
+#include "ScriptingModule.h"
+#include "ModuleFileSystem.h"
 
 #include "GameObject.h"
 #include "Component.h"
+#include "ComponentScript.h"
+#include "ComponentRigidActor.h"
+#include "ComponentCollider.h"
 
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
+#include "ResourceScript.h"
 
 #include "ImGui\imgui.h"
 #include "imgui\imgui_internal.h"
+
+#include "imgui/imgui_stl.h"
 
 PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
@@ -70,7 +79,7 @@ bool PanelInspector::Draw()
 		}
 	}
 	ImGui::End();
-	
+
 	return true;
 }
 
@@ -104,19 +113,66 @@ void PanelInspector::ShowGameObjectInspector() const
 	ImGui::SameLine();
 	ImGui::Text("Static");
 
-	for (int i = 0; i < gameObject->GetComponenetsLength(); ++i)
+	// Layer
+	std::vector<const char*> layers;
+	int currentLayer = 0;
+	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+	{
+		const char* layerName = App->layers->NumberToName(i);
+		if (strcmp(layerName, "") == 0)
+			continue;
+
+		layers.push_back(layerName);
+		if (i == gameObject->GetLayer())
+			currentLayer = layers.size() - 1;
+	}
+	layers.shrink_to_fit();
+
+	ImGui::PushItemWidth(150.0f);
+	if (ImGui::Combo("Layer", &currentLayer, &layers[0], layers.size()))
+		gameObject->SetLayer(App->layers->NameToNumber(layers[currentLayer]));
+	ImGui::PopItemWidth();
+
+	// -----
+
+	ImVec2 inspectorSize = ImGui::GetWindowSize();
+	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+	ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+	ImGui::Dummy(inspectorSize);
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_RESOURCE"))
+		{
+			ResourceScript* scriptRes = *(ResourceScript**)payload->Data;
+
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptRes->scriptName);
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	ImGui::SetCursorScreenPos(cursorPos);
+
+	for (int i = 0; i < gameObject->GetComponentsLength(); ++i)
 	{
 		ImGui::Separator();
 		DragnDropSeparatorTarget(gameObject->GetComponent(i));
 		gameObject->GetComponent(i)->OnEditor();
 	}
+	
 	ImGui::Separator();
-	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponenetsLength() - 1));
+	DragnDropSeparatorTarget(gameObject->GetComponent(gameObject->GetComponentsLength() - 1));
 
 	ImGui::Button("Add Component");
+	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->meshRenderer == nullptr) 
+		if (gameObject->meshRenderer == nullptr)
 			if (ImGui::Selectable("Mesh")) {
 				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
@@ -131,12 +187,28 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
 			}
+
+		if (ImGui::Selectable("Script"))
+		{
+			//Open new Popup, with input text and autocompletion to select scripts by name
+			scriptSelected = true;
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (gameObject->navAgent == nullptr) {
+			if (ImGui::Selectable("Nav Agent")) {
+				gameObject->AddComponent(ComponentTypes::NavAgentComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
 		if (gameObject->rigidActor == nullptr) {
 			if (ImGui::Selectable("Rigid Static")) {
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if (ImGui::Selectable("Rigid Dynamic")) {
+			else if ((gameObject->collider == nullptr || gameObject->collider->GetType() != ComponentTypes::PlaneColliderComponent)
+				&& ImGui::Selectable("Rigid Dynamic")) {
 				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
 				ImGui::CloseCurrentPopup();
 			}
@@ -154,11 +226,114 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if (ImGui::Selectable("Plane Collider")) {
+			else if ((gameObject->rigidActor == nullptr || gameObject->rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
+				&& ImGui::Selectable("Plane Collider")) {
 				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}
+		ImGui::EndPopup();
+	}
+
+	if (scriptSelected)
+	{
+		ImGui::OpenPopup("AddingScript");
+	}
+
+	inspectorSize = ImGui::GetWindowSize();
+	ImGui::SetNextWindowPos({ ImGui::GetWindowPos().x, ImGui::GetCursorScreenPos().y });
+	ImGui::SetNextWindowSize({ inspectorSize.x, 0.0f });
+	if (ImGui::BeginPopup("AddingScript"))
+	{
+		std::vector<std::string> scriptNames = ResourceScript::getScriptNames();
+
+		float totalHeight = 0;
+
+		float windowPaddingY = ImGui::GetCurrentWindow()->WindowPadding.y - 2;
+
+		for (int i = 0; i < scriptNames.size(); ++i)
+		{
+			totalHeight += ImGui::CalcTextSize(scriptNames[i].data()).y + 4;
+		}
+
+		ImGui::SetNextWindowContentSize({ 0, totalHeight});
+
+		//TODO: Add a maximum height, fix the totalHeight calculation
+		ImGui::BeginChild("Names Available", {inspectorSize.x - 15, totalHeight + windowPaddingY * 2}, true);
+
+		for (int i = 0; i < scriptNames.size(); ++i)
+		{
+			if(ImGui::Selectable(scriptNames[i].data()))
+			{
+				ResourceScript* res = nullptr;
+
+				if (App->fs->Exists("Assets/Scripts/" + scriptNames[i] + ".cs.meta"))
+				{
+					char* metaBuffer;
+					uint size = App->fs->Load("Assets/Scripts/" + scriptNames[i] + ".cs.meta", &metaBuffer);
+					if (size > 0)
+					{
+						uint32_t UUID;
+						memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+						res = (ResourceScript*)App->res->GetResource(UUID);
+
+						delete[] metaBuffer;
+					}
+				}
+
+				DEPRECATED_LOG("New Script Created: %s", scriptNames[i].data());
+				ComponentScript* script = App->scripting->CreateScriptComponent(scriptNames[i], res == nullptr);
+				gameObject->AddComponent(script);
+				script->SetParent(gameObject);
+				script->InstanceClass();
+
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::EndChild();
+
+		static std::string scriptName;
+
+		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
+		ImGui::PushItemWidth(inspectorSize.x - ImGui::CalcTextSize("Script Name").x - 30);
+		if (ImGui::InputText("Script Name", &scriptName, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank))
+		{
+			App->scripting->clearSpaces(scriptName);
+
+			//Find the ResourceScript with this name, extracting the UUID from the .meta
+
+			ResourceScript* res = nullptr;
+
+			if (App->fs->Exists("Assets/Scripts/" + scriptName + ".cs.meta"))
+			{
+				char* metaBuffer;
+				uint size = App->fs->Load("Assets/Scripts/" + scriptName + ".cs.meta", &metaBuffer);
+				if (size > 0)
+				{
+					uint32_t UUID;
+					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+
+					res = (ResourceScript*)App->res->GetResource(UUID);
+
+					delete[] metaBuffer;
+				}
+			}
+
+			DEPRECATED_LOG("New Script Created: %s", scriptName.data());
+			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
+			gameObject->AddComponent(script);
+			script->SetParent(gameObject);
+			script->InstanceClass();
+
+			scriptName = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopItemWidth();
+
+		ImGui::PopStyleColor();
 		ImGui::EndPopup();
 	}
 }
@@ -189,7 +364,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::TextColored(BLUE, "%s", resourceMesh->exportedFile.data());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUUID());
-	
+
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceMesh->IsInMemory();
 	ImGui::Checkbox("In memory", &inMemory);
@@ -203,32 +378,34 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Spacing();
 
 	ImGui::Text("VBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Vertices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	float nVerts = resourceMesh->GetVertsCount();
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Normals:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Colors:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Texture Coordinates:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->verticesSize);
+	ImGui::TextColored(BLUE, "%u", nVerts);
 
 	ImGui::Spacing();
 
 	ImGui::Text("VAO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->VAO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 
 	ImGui::Spacing();
 
 	ImGui::Text("IBO ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->IBO);
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetIBO());
+	float nIndices = resourceMesh->GetIndicesCount();
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Indices:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize);
+	ImGui::TextColored(BLUE, "%u", nIndices);
 
 	ImGui::Spacing();
 
 	ImGui::Text("Triangles:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->indicesSize / 3);
+	ImGui::TextColored(BLUE, "%u", nIndices / 3);
 }
 
 void PanelInspector::ShowTextureResourceInspector() const
@@ -445,8 +622,8 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
+	if (ImGui::Button("REIMPORT"))
+	{
 		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile.data(), meshImportSettings);
 
 		// Reimport Mesh file
@@ -507,10 +684,10 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
-	if (ImGui::Button("REIMPORT")) 
-	{ 
-		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings); 
-		
+	if (ImGui::Button("REIMPORT"))
+	{
+		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings);
+
 		// Reimport Texture file
 		System_Event newEvent;
 		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
@@ -542,7 +719,7 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::PushItemWidth(150.0f);
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
-	{	
+	{
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
 		strcpy_s(metaFile, strlen(shaderObject->file.data()) + 1, shaderObject->file.data()); // file

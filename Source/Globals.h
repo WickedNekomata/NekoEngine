@@ -8,9 +8,17 @@
 #include <stdio.h>
 #include "parson/parson.h"
 
-#define CONSOLE_LOG(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
+enum class LogTypes
+{
+	Normal,
+	Warning,
+	Error
+};
 
-void Log(const char file[], int line, const char* format, ...);
+#define DEPRECATED_LOG(format, ...) Log(__FILE__, __LINE__, LogTypes::Normal, format, __VA_ARGS__);
+#define CONSOLE_LOG(mode, format, ...) Log(__FILE__, __LINE__, mode, format, __VA_ARGS__);
+
+void Log(const char file[], int line, LogTypes mode, const char* format, ...);
 
 void OpenInBrowser(char* url);
 
@@ -56,8 +64,11 @@ enum update_status
 
 #define EXTENSION_MESH ".nekoMesh"
 #define EXTENSION_TEXTURE ".nekoDDS"
+#define EXTENSION_BONE ".nekoBone"
+#define EXTENSION_ANIMATION ".nekoAnimation"
 #define EXTENSION_SCENE ".nekoScene"
 #define EXTENSION_VERTEX_SHADER_OBJECT ".vsh"
 #define EXTENSION_FRAGMENT_SHADER_OBJECT ".fsh"
 #define EXTENSION_SHADER_PROGRAM ".psh"
 #define EXTENSION_META ".meta"
+#define EXTENSION_SCRIPT ".dll"

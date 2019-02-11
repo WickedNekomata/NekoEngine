@@ -4,8 +4,6 @@
 #include "Component.h"
 #include "ComponentCollider.h"
 
-#include "physx/include/PxPhysicsAPI.h"
-
 class ComponentBoxCollider : public ComponentCollider
 {
 public:
@@ -17,6 +15,12 @@ public:
 	void OnUniqueEditor();
 
 	void RecalculateShape();
+
+	// Sets
+	void SetHalfSize(math::float3& halfSize);
+
+	// Gets
+	physx::PxBoxGeometry GetBoxGeometry() const;
 
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);

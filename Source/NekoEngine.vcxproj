@@ -5,8 +5,12 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="GAME|Win32">
-      <Configuration>GAME</Configuration>
+    <ProjectConfiguration Include="Game|Win32">
+      <Configuration>Game</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="IN_GAME|Win32">
+      <Configuration>IN_GAME</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -18,7 +22,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -34,7 +38,14 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
@@ -50,11 +61,26 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)$(Configuration)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'">
+    <IncludePath>$(ProjectDir)..\Game\Mono\include\mono-2.0;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -68,6 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -90,9 +117,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GAME|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Game|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
@@ -101,7 +129,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GAMEMODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,6 +137,27 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='IN_GAME|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>GAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>$(ProjectDir)..\Game\Mono\lib\mono-2.0-sgen.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -154,17 +203,24 @@
     <ClInclude Include="Assimp\include\vector2.h" />
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
+    <ClInclude Include="BoneImporter.h" />
+    <ClInclude Include="PhysicsConstants.h" />
+    <ClInclude Include="SceneQueries.h" />
+    <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentBone.h" />
     <ClInclude Include="ComponentBoxCollider.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentEmitter.h" />
     <ClInclude Include="ComponentCapsuleCollider.h" />
     <ClInclude Include="ComponentCollider.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentNavAgent.h" />
     <ClInclude Include="ComponentPlaneCollider.h" />
     <ClInclude Include="ComponentRigidActor.h" />
     <ClInclude Include="ComponentRigidStatic.h" />
+    <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentSphereCollider.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ComponentTypes.h" />
@@ -194,10 +250,13 @@
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imgui_stl.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="NMInputGeom.h" />
+    <ClInclude Include="Layers.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
@@ -260,12 +319,18 @@
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="mmgr\mmgr.h" />
     <ClInclude Include="mmgr\nommgr.h" />
+    <ClInclude Include="ModuleEvents.h" />
     <ClInclude Include="ModuleGOs.h" />
+    <ClInclude Include="NMDebugDraw.h" />
+    <ClInclude Include="PanelNavigation.h" />
+    <ClInclude Include="ModuleNavigation.h" />
     <ClInclude Include="ModuleParticles.h" />
     <ClInclude Include="ModulePhysics.h" />
     <ClInclude Include="PanelCodeEditor.h" />
     <ClInclude Include="PanelDebugDraw.h" />
     <ClInclude Include="PanelEdit.h" />
+    <ClInclude Include="PanelLayers.h" />
+    <ClInclude Include="PanelSimulatedTime.h" />
     <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelPhysics.h" />
     <ClInclude Include="PanelShaderEditor.h" />
@@ -460,11 +525,40 @@
     <ClInclude Include="physx\include\vehicle\PxVehicleUtilSetup.h" />
     <ClInclude Include="physx\include\vehicle\PxVehicleUtilTelemetry.h" />
     <ClInclude Include="physx\include\vehicle\PxVehicleWheels.h" />
+    <ClInclude Include="pugui\pugiconfig.hpp" />
+    <ClInclude Include="pugui\pugixml.hpp" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h" />
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DetourDebugDraw.h" />
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDebugDraw.h" />
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDump.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourCrowd.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourLocalBoundary.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourObstacleAvoidance.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathCorridor.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathQueue.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourProximityGrid.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCache.h" />
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCacheBuilder.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAlloc.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAssert.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourCommon.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourMath.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMesh.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshBuilder.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshQuery.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNode.h" />
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourStatus.h" />
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\Recast.h" />
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAlloc.h" />
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ModuleResourceManager.h" />
+    <ClInclude Include="ResourceAnimation.h" />
+    <ClInclude Include="ResourceBone.h" />
+    <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceShaderObject.h" />
     <ClInclude Include="ResourceShaderProgram.h" />
     <ClInclude Include="ResourceTexture.h" />
@@ -494,14 +588,19 @@
     <ClInclude Include="physfs\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="ModuleTimeManager.h" />
+    <ClInclude Include="ScriptingModule.h" />
     <ClInclude Include="ShaderImporter.h" />
     <ClInclude Include="ComponentRigidDynamic.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="BoneImporter.cpp" />
+    <ClCompile Include="SceneQueries.cpp" />
+    <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentBone.cpp" />
     <ClCompile Include="ComponentBoxCollider.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentEmitter.cpp" />
@@ -509,9 +608,11 @@
     <ClCompile Include="ComponentCollider.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentNavAgent.cpp" />
     <ClCompile Include="ComponentPlaneCollider.cpp" />
     <ClCompile Include="ComponentRigidActor.cpp" />
     <ClCompile Include="ComponentRigidStatic.cpp" />
+    <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentSphereCollider.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="DebugDrawer.cpp" />
@@ -524,8 +625,10 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_impl_sdl.cpp" />
+    <ClCompile Include="imgui\imgui_stl.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="Layers.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -560,22 +663,61 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="mmgr\mmgr.cpp" />
+    <ClCompile Include="ModuleEvents.cpp" />
     <ClCompile Include="ModuleGOs.cpp" />
+    <ClCompile Include="NMDebugDraw.cpp" />
+    <ClCompile Include="PanelNavigation.cpp" />
+    <ClCompile Include="NMBuildContext.cpp" />
+    <ClCompile Include="ModuleNavigation.cpp" />
     <ClCompile Include="ModuleParticles.cpp" />
     <ClCompile Include="ModulePhysics.cpp" />
     <ClCompile Include="PanelCodeEditor.cpp" />
     <ClCompile Include="PanelDebugDraw.cpp" />
     <ClCompile Include="PanelEdit.cpp" />
+    <ClCompile Include="PanelLayers.cpp" />
+    <ClCompile Include="PanelSimulatedTime.cpp" />
     <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelPhysics.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="PanelSkybox.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="pugui\pugixml.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DetourDebugDraw.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDebugDraw.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDump.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourCrowd.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourLocalBoundary.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourObstacleAvoidance.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathCorridor.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathQueue.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourProximityGrid.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCache.cpp" />
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCacheBuilder.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourAlloc.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourCommon.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMesh.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshQuery.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNode.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\Recast.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastAlloc.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastArea.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastContour.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastFilter.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastLayers.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMesh.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMeshDetail.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRasterization.cpp" />
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
+    <ClCompile Include="ResourceAnimation.cpp" />
+    <ClCompile Include="ResourceBone.cpp" />
+    <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceShaderObject.cpp" />
     <ClCompile Include="ResourceShaderProgram.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
@@ -600,6 +742,7 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
+    <ClCompile Include="ScriptingModule.cpp" />
     <ClCompile Include="ShaderImporter.cpp" />
     <ClCompile Include="ComponentRigidDynamic.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -620,6 +763,7 @@
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\include\Math\Matrix.inl" />
+    <None Include="NMBuildContext.h" />
     <None Include="Uniforms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

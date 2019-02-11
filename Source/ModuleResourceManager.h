@@ -32,6 +32,8 @@
 #define ASCIIFSH 1213417006
 #define ASCIIpsh 1752395822
 #define ASCIIPSH 1213419566
+#define ASCIIcs  7562030
+#define ASCIICS  5456686
 
 struct ImportSettings;
 class Resource;
@@ -64,6 +66,8 @@ public:
 	const Resource* GetResource(uint UUID) const;
 	static ResourceType GetResourceTypeByExtension(const char* extension);
 
+	void InsertResource(Resource* resource);
+
 	bool FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
 	bool FindResourcesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
 
@@ -80,6 +84,8 @@ public:
 	bool DestroyResourcesAndRemoveLibraryEntries(const char* metaFile);
 
 	bool IsAnyResourceInVram() const;
+
+	void ReCompileScriptResources();
 
 private:
 

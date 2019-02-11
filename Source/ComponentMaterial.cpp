@@ -134,7 +134,7 @@ void ComponentMaterial::OnUniqueEditor()
 				shaderProgramUUID = payload_n->GetUUID();
 			}
 			else
-				CONSOLE_LOG("Invalid shader program");
+				DEPRECATED_LOG("Invalid shader program");
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -244,26 +244,24 @@ void ComponentMaterial::OnUniqueEditor()
 		}
 		ImGui::SameLine();
 
-		uint id = 0;
-		uint width = 0;
-		uint height = 0;
+
 
 		char itemName[DEFAULT_BUF_SIZE];
 
 		const ResourceTexture* resource = (const ResourceTexture*)App->res->GetResource(res[i].res);
 		if (resource != nullptr)
 		{
-			id = resource->id;
-			width = resource->width;
-			height = resource->height;
+			res[i].id = resource->id;
+			res[i].width = resource->width;
+			res[i].height = resource->height;
 
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", resource->GetName(), i);
 		}
 		else if (res[i].checkers)
 		{
-			id = App->materialImporter->GetCheckers();
-			width = CHECKERS_WIDTH;
-			height = CHECKERS_HEIGHT;
+			res[i].id = App->materialImporter->GetCheckers();
+			res[i].width = CHECKERS_WIDTH;
+			res[i].height = CHECKERS_HEIGHT;
 
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "Checkers##%i", i);
 		}
@@ -271,9 +269,9 @@ void ComponentMaterial::OnUniqueEditor()
 		{
 			if (i == 0)
 			{
-				id = App->materialImporter->GetDefaultTexture();
-				width = REPLACE_ME_WIDTH;
-				height = REPLACE_ME_HEIGHT;
+				res[i].id = App->materialImporter->GetDefaultTexture();
+				res[i].width = REPLACE_ME_WIDTH;
+				res[i].height = REPLACE_ME_HEIGHT;
 
 				sprintf_s(itemName, DEFAULT_BUF_SIZE, "Replace Me!##%i", i);
 			}
@@ -286,7 +284,7 @@ void ComponentMaterial::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("%u", id);
+			ImGui::Text("%u", res[i].id);
 			ImGui::EndTooltip();
 		}
 
@@ -301,7 +299,7 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::EndDragDropTarget();
 		}
 
-		ImGui::Image((void*)(intptr_t)id, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)res[i].id, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "Matrix##%i", i);
@@ -316,7 +314,7 @@ void ComponentMaterial::OnUniqueEditor()
 			ImGui::EndPopup();
 		}
 
-		ImGui::TextColored(BLUE, "%u x %u", width, height);
+		ImGui::TextColored(BLUE, "%u x %u", res[i].width, res[i].height);
 		ImGui::Spacing();
 
 		sprintf_s(itemName, DEFAULT_BUF_SIZE, "USE DEFAULT TEXTURE##%i", i);

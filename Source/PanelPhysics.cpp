@@ -4,8 +4,10 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
+#include "Layers.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_internal.h"
 
 PanelPhysics::PanelPhysics(const char* name) : Panel(name) {}
 
@@ -50,6 +52,69 @@ bool PanelPhysics::Draw()
 				//SetResource(payload_n);
 			}
 			ImGui::EndDragDropTarget();
+		}
+
+		// ----
+
+		if (ImGui::TreeNodeEx("Layer Collision Matrix", ImGuiTreeNodeFlags_OpenOnArrow))
+		{
+			ImGui::NewLine();
+
+			std::vector<Layer*> layers = App->layers->GetLayers();
+			char layerName[DEFAULT_BUF_SIZE];
+
+			uint pos_x = 55.0f;
+
+			std::vector<Layer*> activeLayers;
+			for (int i = layers.size() - 1; i >= 0; --i)
+			{
+				if (strcmp(layers[i]->name.data(), "") == 0)
+					continue;
+
+				ImGui::SameLine(pos_x);
+
+				ImGui::Text("%i", layers[i]->GetNumber());
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip("%s", layers[i]->name.data());
+
+				activeLayers.push_back(layers[i]);
+
+				pos_x += 27.0f;
+			}
+			activeLayers.shrink_to_fit();
+
+			int size = activeLayers.size();
+			for (int i = activeLayers.size() - 1; i >= 0; --i)
+			{
+				ImGui::Text("%i", activeLayers[i]->GetNumber());
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip("%s", activeLayers[i]->name.data());
+
+				pos_x = 55.0f;
+
+				for (uint j = 0; j < size; ++j)
+				{
+					ImGui::SameLine(pos_x);
+
+					if (activeLayers[i]->builtin)
+						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+					sprintf_s(layerName, DEFAULT_BUF_SIZE, "##%i%i", i, j);
+					uint filterMask = activeLayers[i]->GetFilterMask();
+					if (ImGui::CheckboxFlags(layerName, &filterMask, activeLayers[j]->GetFilterGroup()))
+						activeLayers[i]->SetFilterMask(filterMask);
+					if (activeLayers[i]->builtin)
+						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip("%s/%s", activeLayers[i]->name.data(), activeLayers[j]->name.data());
+
+					pos_x += 27.0f;
+				}
+
+				--size;
+			}
+
+			ImGui::TreePop();
 		}
 	}
 	ImGui::End();

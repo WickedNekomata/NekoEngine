@@ -8,10 +8,27 @@ enum System_Event_Type
 	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, // FileEvent
 	RecalculateBBoxes, // GameObjectEvent
 	ShaderProgramChanged,
-	RecreateQuadtree
+	RecreateQuadtree,
+	Play,
+	Pause,
+	Stop,
+	ResourceDestroyed,
+	GameObjectDestroyed,
+	ComponentDestroyed,
+
+	// LayerEvent
+	LayerNameReset,
+	LayerChanged,
+	LayerFilterMaskChanged,
+
+	//Scripting Events
+	Domain_Destroyed
 };
 
 class GameObject;
+class Component;
+class ComponentCollider;
+class Resource;
 
 struct FileEvent
 {
@@ -32,12 +49,34 @@ struct ShaderEvent
 	uint shader;
 };
 
+struct ResourceEvent
+{
+	System_Event_Type type;
+	Resource* resource;
+};
+
+struct ComponentEvent
+{
+	System_Event_Type type;
+	Component* component;
+};
+
+struct LayerEvent
+{
+	System_Event_Type type;
+	ComponentCollider* collider;
+	uint layer;
+};
+
 union System_Event
 {
 	System_Event_Type type;      /**< Event type, shared with all events */
 	FileEvent fileEvent;             /**< Drag and drop event data */
 	GameObjectEvent goEvent;
 	ShaderEvent shaderEvent;
+	ResourceEvent resEvent;
+	ComponentEvent compEvent;
+	LayerEvent layerEvent;
 
 	/* This is necessary for ABI compatibility between Visual C++ and GCC
 	   Visual C++ will respect the push pack pragma and use 52 bytes for

@@ -35,13 +35,13 @@ public:
 
 	bool Update(float dt);
 
-	void EndParticle(bool &ret);
+	void EndParticle();
 
 	void LookAtCamera();
 
 	float GetCamDistance() const;
 	void SetCamDistance();
-	void Draw() const;
+	void Draw();
 
 	float CreateRandomNum(math::float2 edges);
 

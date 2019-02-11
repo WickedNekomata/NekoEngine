@@ -23,7 +23,7 @@ update_status ModuleParticle::Update()
 		if (firework)
 		{
 			firework->StartEmitter();
-			CONSOLE_LOG("Module Particle: Firework Comming");
+			DEPRECATED_LOG("Module Particle: Firework Comming");
 		}
 	}
 
@@ -36,7 +36,7 @@ update_status ModuleParticle::Update()
 	int count = 0;
 
 	float dt;
-	if(App->GetEngineState() == ENGINE_EDITOR)
+	if(App->IsEditor())
 		dt = App->timeManager->GetRealDt();
 	else
 		dt = App->timeManager->GetDt();
@@ -51,7 +51,6 @@ update_status ModuleParticle::Update()
 			allParticles[i].Update(dt); //Particles can be created here, they sould not be updated yet
 			++count;
 			allParticles[i].SetCamDistance();
-			//partQueue.push(&allParticles[i]);
 			partVec[j++] = &allParticles[i];
 		}
 		else
@@ -152,6 +151,23 @@ void ModuleParticle::ClearEmitters()
 
 	activeParticles = 0;
 	lastUsedParticle = 0;
+}
+
+void ModuleParticle::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::Play:
+		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
+		{
+			(*emitter)->StartEmitter();
+		}
+	case System_Event_Type::Stop:
+		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
+		{
+			(*emitter)->ClearEmitter();
+		}
+	}
 }
 
 void ModuleParticle::RemoveEmitter(ComponentEmitter * emitter)

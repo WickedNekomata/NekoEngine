@@ -95,7 +95,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+		DEPRECATED_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
 
 #ifndef GAMEMODE
 		// GET ERROR LINE AND ERROR TEXT AND SEND IT TO THE CODE EDITOR
@@ -144,7 +144,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		DeleteShaderObject(shaderObject);
 	}
 	else
-		CONSOLE_LOG("Successfully compiled Shader Object");
+		DEPRECATED_LOG("Successfully compiled Shader Object");
 
 	return shaderObject;
 }
@@ -175,10 +175,10 @@ bool ResourceShaderObject::IsObjectCompiled(bool comment) const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		CONSOLE_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+		DEPRECATED_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
 	}
 	else if (comment)
-		CONSOLE_LOG("Successfully compiled Shader Object");
+		DEPRECATED_LOG("Successfully compiled Shader Object");
 
 	return success;
 }

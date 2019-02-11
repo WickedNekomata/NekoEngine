@@ -17,6 +17,9 @@
 
 #include <list>
 #include <queue>
+
+class ComponentMaterial;
+
 enum ShapeType {
 	ShapeType_BOX,
 	ShapeType_SPHERE,
@@ -129,11 +132,11 @@ class ComponentEmitter : public Component
 {
 public:
 	ComponentEmitter(GameObject* gameObject);
-	//ComponentEmitter(GameObject* gameObject, EmitterInfo* info);
+	ComponentEmitter(const ComponentEmitter & componentEmitter);
 	~ComponentEmitter();
 
 	void StartEmitter();
-	//void ChangeGameState(engine_states state);
+	void ChangeGameState(SimulatedGame state);
 
 	void Update();
 
@@ -148,15 +151,19 @@ public:
 	//void SetNewAnimation(int row, int col);
 	math::float3 RandPos(ShapeType shapeType);
 	void ShowFloatValue(math::float2 & value, bool checkBox, const char * name, float v_speed, float v_min, float v_max);
+	void EqualsMinMaxValues(math::float2 & value);
 	void CheckMinMax(math::float2 & value);
 	void ClearEmitter();
 	void SoftClearEmitter();
 	void CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos = math::float3::zero);
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
 
+#ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
+#endif
 
-	void SaveComponent(JSON_Object * parent);
+	void OnInternalSave(JSON_Object * parent);
+	void OnLoad(JSON_Object * info);
 
 	int GetEmition() const;
 public:
@@ -170,8 +177,6 @@ public:
 
 	// Emitter particles
 	std::list<Particle*> particles;
-
-	bool emitterActive = true;
 
 	SimulatedGame simulatedGame = SimulatedGame_NONE;
 	GameTimer timeSimulating;
@@ -187,6 +192,9 @@ public:
 	StartValues startValues;
 
 	bool isSubEmitter = false;
+
+	ComponentMaterial* material = nullptr;
+
 private:
 	// General info
 	//---------------------------------------

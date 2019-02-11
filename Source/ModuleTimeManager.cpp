@@ -33,12 +33,14 @@ void ModuleTimeManager::PrepareUpdate()
 	{
 	case engine_states::ENGINE_PLAY:
 	case engine_states::ENGINE_WANTS_PAUSE:
-		time += realDt;
 		dt = realDt * timeScale;
+		time += realDt;
+		gameTime += dt;
 		break;
 
 	case engine_states::ENGINE_EDITOR:
 		time = 0.0f;
+		gameTime = 0.0f;
 		break;
 	}
 
@@ -90,7 +92,23 @@ float ModuleTimeManager::GetRealDt() const
 	return realDt;
 }
 
-std::list<GameTimer*> ModuleTimeManager::GetGameTimerList() const
+float ModuleTimeManager::GetGameTime() const
 {
-	return gameTimerList;
+	return gameTime;
+}
+
+//Game Timer List
+bool ModuleTimeManager::TimerInGameList(GameTimer* timer)
+{
+	if (timer != nullptr)
+		if (std::find(gameTimerList.begin(), gameTimerList.end(), timer) == gameTimerList.end())
+			gameTimerList.push_back(timer);
+	return true;
+}
+
+bool ModuleTimeManager::RemoveGameTimer(GameTimer* timer)
+{
+	if(timer != nullptr)
+		gameTimerList.remove(timer);
+	return true;
 }

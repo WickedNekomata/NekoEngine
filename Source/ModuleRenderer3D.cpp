@@ -221,6 +221,7 @@ update_status ModuleRenderer3D::PostUpdate()
 	App->particle->Draw();
 	//glDepthMask(GL_TRUE);
 
+
 #ifndef GAMEMODE
 
 	App->navigation->Draw();
@@ -367,6 +368,11 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	// 3. Editor
 	App->gui->Draw();
+
+#else // Draw UI
+
+
+
 #endif // GAME
 
 	// 4. Swap buffers

@@ -56,6 +56,7 @@ struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
 struct Layers;
+struct ModuleUI;
 
 class Application
 {
@@ -141,6 +142,7 @@ public:
 	ScriptingModule*		scripting;
 	ModuleEvents*			events;
 	ModulePhysics*			physics;
+	ModuleUI*				ui;
 	DebugDrawer*			debugDrawer;
 	ModuleNavigation*		navigation;
 	Layers*					layers;

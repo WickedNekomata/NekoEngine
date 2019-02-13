@@ -1,8 +1,8 @@
 [
     {
         "Name": "RootNode",
-        "UUID": 116511390,
-        "Parent UUID": 3076431329,
+        "UUID": 4017408034,
+        "Parent UUID": 974383516,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -21,8 +21,8 @@
     },
     {
         "Name": "Tank",
-        "UUID": 2105841897,
-        "Parent UUID": 116511390,
+        "UUID": 3465674867,
+        "Parent UUID": 4017408034,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -41,8 +41,8 @@
     },
     {
         "Name": "TankRenderers",
-        "UUID": 479650579,
-        "Parent UUID": 2105841897,
+        "UUID": 2555755420,
+        "Parent UUID": 3465674867,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -61,8 +61,8 @@
     },
     {
         "Name": "TankTurret",
-        "UUID": 268978929,
-        "Parent UUID": 479650579,
+        "UUID": 2968868113,
+        "Parent UUID": 2555755420,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -137,8 +137,8 @@
     },
     {
         "Name": "TankTracksLeft",
-        "UUID": 2353267071,
-        "Parent UUID": 479650579,
+        "UUID": 7351171,
+        "Parent UUID": 2555755420,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -213,8 +213,8 @@
     },
     {
         "Name": "TankTracksRight",
-        "UUID": 411800832,
-        "Parent UUID": 479650579,
+        "UUID": 4255521091,
+        "Parent UUID": 2555755420,
         "jsonComponents": [
             {
                 "Type": 1,
@@ -289,8 +289,8 @@
     },
     {
         "Name": "TankChassis",
-        "UUID": 4025590074,
-        "Parent UUID": 479650579,
+        "UUID": 1113985087,
+        "Parent UUID": 2555755420,
         "jsonComponents": [
             {
                 "Type": 1,

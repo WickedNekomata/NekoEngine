@@ -12,11 +12,17 @@
 #include "MathGeoLib\include\Math\MathConstants.h"
 
 #include "ImGuizmo\ImGuizmo.h"
-
+#include <stack>
 #define SELECT(x) App->scene->selectedObject = x;
 
 class PrimitiveGrid;
 class GameObject;
+
+struct LastTransform
+{
+	math::float4x4 matrix;
+	GameObject* object;
+};
 
 class ModuleScene : public Module
 {
@@ -38,9 +44,12 @@ public:
 	void Draw() const;
 
 	// ImGuizmo
-	void OnGizmos(GameObject* gameObject) const;
+	void OnGizmos(GameObject* gameObject) /*const*/;
+
 
 #ifndef GAMEMODE
+	void SaveLastTransform(math::float4x4 matrix);
+	void GetPreviousTransform();
 	void SetImGuizmoOperation(ImGuizmo::OPERATION operation);
 	ImGuizmo::OPERATION GetImGuizmoOperation() const;
 
@@ -65,6 +74,10 @@ private:
 	bool showGrid = true;
 
 #ifndef GAMEMODE
+	math::float4x4 lastMat;
+	std::stack<LastTransform> prevTransforms;
+	bool canSaveTransform = false;
+
 	ImGuizmo::OPERATION currentImGuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE currentImGuizmoMode = ImGuizmo::MODE::WORLD;
 #endif

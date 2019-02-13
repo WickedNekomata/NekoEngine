@@ -215,7 +215,7 @@ update_status ModulePhysics::Update()
 
 update_status ModulePhysics::FixedUpdate()
 {
-	Debug();
+	//Debug();
 
 	return UPDATE_CONTINUE;
 }

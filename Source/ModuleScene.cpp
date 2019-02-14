@@ -169,7 +169,7 @@ void ModuleScene::OnGizmos(GameObject* gameObject) /*const*/
 	}
 	else if (canSaveTransform)
 	{
-		SaveLastTransform(lastMat);
+		SaveLastTransform(lastMat.Transposed());
 		canSaveTransform = false;
 	}
 }
@@ -182,7 +182,7 @@ void ModuleScene::SaveLastTransform(math::float4x4 matrix)
 	{
 		if (prevTransforms.empty() || curr->transform->GetMatrix().ptr() != prevTransforms.top().matrix.ptr())
 		{
-			prevTrans.matrix = matrix.Transposed();
+			prevTrans.matrix = matrix;
 			prevTrans.object = curr;
 			prevTransforms.push(prevTrans);
 		}

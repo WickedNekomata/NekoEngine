@@ -55,8 +55,6 @@ void ComponentTransform::OnUniqueEditor()
 		scale = math::float3::one;
 	}
 
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
-
 	math::float4x4 matrix = parent->transform->GetMatrix();
 	ImGui::Text("Position");
 	if (ImGui::DragFloat3("##Pos", &position[0], 0.01f, 0.0f, 0.0f, "%.3f"))

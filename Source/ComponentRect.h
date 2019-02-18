@@ -10,7 +10,6 @@ class ComponentRect : public Component
 public:
 
 	ComponentRect(GameObject* parent, ComponentTypes componentType = ComponentTypes::RectComponent);
-	ComponentRect(const ComponentRect& componentTransform);
 	~ComponentRect();
 
 	void Update();

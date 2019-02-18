@@ -10,6 +10,7 @@
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "ModuleParticles.h"
+#include "ModuleUI.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
@@ -369,10 +370,9 @@ update_status ModuleRenderer3D::PostUpdate()
 	// 3. Editor
 	App->gui->Draw();
 
-#else // Draw UI
-
-
-
+	//UIOnEditor
+	if (App->ui->GetUIMode())
+		App->ui->DrawTest();
 #endif // GAME
 
 	// 4. Swap buffers

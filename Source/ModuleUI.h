@@ -5,6 +5,9 @@
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
+//Possible Solution
+//https://stackoverflow.com/questions/47026863/opengl-geometry-shader-with-orthographic-projection
+
 class ResourceShaderProgram;
 class ResourceShaderObject;
 class ComponentRect;

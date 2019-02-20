@@ -28,7 +28,7 @@ ModuleUI::~ModuleUI()
 
 void ModuleUI::DrawTest()
 {
-	DrawSquare(rect_test, 45.0f, { 0.0f, 1.0f, 0.0f });
+	DrawUI(rect_test, 0.0f, { 0.0f, 1.0f, 0.0f });
 }
 
 bool ModuleUI::Init(JSON_Object * jObject)
@@ -131,7 +131,7 @@ void ModuleUI::initRenderData()
 	glBindVertexArray(0);
 }
 
-void ModuleUI::DrawSquare(ComponentRect* rect, float rotation, math::float3 color)
+void ModuleUI::DrawUI(ComponentRect* rect, float rotation, math::float3 color)
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -145,13 +145,13 @@ void ModuleUI::DrawSquare(ComponentRect* rect, float rotation, math::float3 colo
 	float w_height = App->window->GetWindowHeight();
 
 	math::float2 pos;
-	pos = math::Frustum::ScreenToViewportSpace({ 480.0f, 270.0f }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ rect->x, rect->y }, w_width, w_height);
 	setFloat(shaderID, "topLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ 960.0f,270.0f }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ rect->x + rect->x_dist, rect->y }, w_width, w_height);
 	setFloat(shaderID, "topRight", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ 480.0f,540.0f }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ rect->x, rect->y + rect->y_dist }, w_width, w_height);
 	setFloat(shaderID, "bottomLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ 960.0f,540.0f }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ rect->x + rect->x_dist, rect->y + rect->y_dist }, w_width, w_height);
 	setFloat(shaderID, "bottomRight", pos.x, pos.y);
 
 	setFloat(shaderID, "spriteColor", color);

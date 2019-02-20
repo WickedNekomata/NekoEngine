@@ -38,7 +38,7 @@ private:
 	void OnSystemEvent(System_Event event);
 
 	void initRenderData();
-	void DrawSquare(ComponentRect* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
+	void DrawUI(ComponentRect* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
 
 	//math::float4x4 orthonormalMatrix = math::float4x4::identity;
 	uint reference_vertex;

@@ -13,6 +13,7 @@
 #include "ComponentTransform.h"
 #include "ComponentRect.h"
 #include "ResourceTexture.h"
+#include "ModuleWindow.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -62,25 +63,17 @@ bool ModuleUI::Start()
 	App->materialImporter->Load(uoutput_file.c_str(), texture_loaded, texture_test);
 
 	rect_test = new ComponentRect(nullptr);
-	rect_test->x = 200;
-	rect_test->y = 200;
-	rect_test->x_dist = 300;
-	rect_test->y_dist = 400;
-
-	ortho_matrix.At(0, 0) = (2 / ortho_right - ortho_left);
-	ortho_matrix.At(1, 1) = (2 / ortho_top - ortho_bottom);
-	ortho_matrix.At(2, 2) = (2 / ortho_far - ortho_near);
-
-	ortho_matrix.At(0, 3) = (ortho_right + ortho_left / ortho_right - ortho_left);
-	ortho_matrix.At(1, 3) = (ortho_top + ortho_bottom / ortho_top - ortho_bottom);
-	ortho_matrix.At(2, 3) = (ortho_far + ortho_near / ortho_far - ortho_near);
+	rect_test->x = 0;
+	rect_test->y = 0;
+	rect_test->x_dist = 100;
+	rect_test->y_dist = 100;
 
 	return true;
 }
 
 update_status ModuleUI::PreUpdate()
 {
-	orthonormalMatrix = math::float4x4(App->camera->camera->frustum.NearPlane().OrthoProjection());
+	//orthonormalMatrix = math::float4x4(App->camera->camera->frustum.NearPlane().OrthoProjection());
 
 	return update_status::UPDATE_CONTINUE;
 }
@@ -115,138 +108,66 @@ void ModuleUI::initRenderData()
 	// Configure VAO/VBO
 	GLuint VBO;
 	GLfloat vertices[] = {
-		// Pos      // Tex
-		0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f,
+		// Pos      
+		1.0f,  1.0f, 
+		1.0f, -1.0f, 
+		-1.0f,  1.0f,
 
-		0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f
+		 1.0f, -1.0f,
+		-1.0f, -1.0f,
+		-1.0f,  1.0f
 	};
 
-	glGenVertexArrays(1, &quadVAO);
+	glGenVertexArrays(1, &reference_vertex);
 	glGenBuffers(1, &VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
 
-	glBindVertexArray(quadVAO);
+	glBindVertexArray(reference_vertex);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
 void ModuleUI::DrawSquare(ComponentRect* rect, float rotation, math::float3 color)
 {
-	// Prepare transformations
-	/*
-	uint shaderID = ui_shader->shaderProgram;
-	use(shaderID);
-
-	ComponentTransform transform(nullptr);
-
-	transform.position = { rect->x, rect->y, 0.0f };
-	transform.rotation = math::Quat({0.0f,0.0f,1.0f},rotation);
-
-	math::float4x4 model = math::float4x4::identity;
-	model = model * math::TranslateOp({ rect->x, rect->y, 0.0f });
-
-	model = model * math::TranslateOp({ 0.5f * rect->x_dist, 0.5f * rect->y_dist, 0.0f });
-	model = model * math::Quat({ 0.0f,0.0f,1.0f }, rotation);
-	model = model * math::TranslateOp({ -0.5f * rect->x_dist, -0.5f * rect->y_dist, 0.0f });
-
-	model = model * math::ScaleOp(rect->x_dist, rect->y_dist, 1.0f);
-	
-	setFloat4x4(shaderID, "projection", orthonormalMatrix.Transposed().ptr());
-	setFloat4x4(shaderID, "model",model.Transposed().ptr());
-
-	setFloat(shaderID, "spriteColor", color);
-
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-	*/
-	
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	//glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
 
-	/*
-	math::float4x4 ortho_matrix = math::float4x4::identity;
-	ortho_matrix.At(0, 0) = (2 / );
-
-	uint shaderID = ui_shader->shaderProgram;
-	use(shaderID);
-	
-	setFloat4x4(shaderID, "projection", math::float4x4::identity.ptr());
-	setFloat4x4(shaderID, "model", math::float4x4::identity.ptr());
-
-	setFloat(shaderID, "spriteColor", {1.0f, 1.0f, 1.0f});
-
-	gluOrtho2D(-100, 100, -100, 100);
-
-	use(shaderID);
-
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-	*/
-	
-
 	uint shaderID = ui_shader->shaderProgram;
 	use(shaderID);
 
-	math::float4x4 model = math::float4x4::identity;
-	model = model * math::TranslateOp({ rect->x, rect->y, 0.0f });
+	float w_width = App->window->GetWindowWidth();
+	float w_height = App->window->GetWindowHeight();
 
-	model = model * math::TranslateOp({ 0.5f * rect->x_dist, 0.5f * rect->y_dist, 0.0f });
-	model = model * math::Quat({ 0.0f,0.0f,1.0f }, rotation);
-	model = model * math::TranslateOp({ -0.5f * rect->x_dist, -0.5f * rect->y_dist, 0.0f });
+	math::float2 pos;
+	pos = math::Frustum::ScreenToViewportSpace({ 480.0f, 270.0f }, w_width, w_height);
+	setFloat(shaderID, "topLeft", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ 960.0f,270.0f }, w_width, w_height);
+	setFloat(shaderID, "topRight", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ 480.0f,540.0f }, w_width, w_height);
+	setFloat(shaderID, "bottomLeft", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ 960.0f,540.0f }, w_width, w_height);
+	setFloat(shaderID, "bottomRight", pos.x, pos.y);
 
-	model = model * math::ScaleOp(rect->x_dist, rect->y_dist, 1.0f);
-
-	setFloat4x4(shaderID, "projection", ortho_matrix.ptr());
-	setFloat4x4(shaderID, "model", model.ptr());
 	setFloat(shaderID, "spriteColor", color);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, texture_loaded->id);
+	//setInt(shaderID, "image", 0);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_loaded->id);
-	setInt(shaderID, "image", 0);
-
-	glBindVertexArray(quadVAO);
+	glBindVertexArray(reference_vertex);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
-	/*
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-100, 100, -100, 100, -1, 1);
-	//gluOrtho2D(-100, 100, -100, 100);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glColor3f(1, 1, 1);
-	
-	glBegin(GL_QUADS);
-	glVertex3f(20.0f, 20.0f, 0.0f);
-	glVertex3f(20.0f, -20.0f, 0.0f);
-	glVertex3f(-20.0f, -20.0f, 0.0f);
-	glVertex3f(-20.0f, 20.0f, 0.0f);
-	glEnd();
-	*/
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	//glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
-	/*
-	//glPopMatrix();
-
-	App->renderer3D->CalculateProjectionMatrix();
-	*/
 }
 
 

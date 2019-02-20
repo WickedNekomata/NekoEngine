@@ -40,8 +40,8 @@ private:
 	void initRenderData();
 	void DrawSquare(ComponentRect* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
 
-	math::float4x4 orthonormalMatrix = math::float4x4::identity;
-	uint quadVAO;
+	//math::float4x4 orthonormalMatrix = math::float4x4::identity;
+	uint reference_vertex;
 
 	ResourceShaderProgram* ui_shader = nullptr;
 	ResourceShaderObject* ui_fragment = nullptr;
@@ -53,16 +53,6 @@ private:
 	ComponentRect* rect_test;
 
 	bool uiMode = false;
-
-	//Spaceview for orthogonal
-	float ortho_left = -100.0f;
-	float ortho_right = 100.0f;
-	float ortho_bottom = -100.0f;
-	float ortho_top = 100.0f;
-	float ortho_near = -1.0f;
-	float ortho_far = 1.0f;
-
-	math::float4x4 ortho_matrix = math::float4x4::identity;
 
 	//Shader functions
 		// use/activate the shader

@@ -12,6 +12,7 @@
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
+#include "ComponentRectTransform.h"
 
 #include "ResourceMesh.h"
 
@@ -255,6 +256,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType)
 		newComponent = emitter = new ComponentEmitter(this);
 		//if (materialRenderer == nullptr)
 			//createMaterial = true;
+		break;
+	case ComponentTypes::RectTransformComponent:
+		assert(rectTransform == nullptr);
+		newComponent = rectTransform = new ComponentRectTransform(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

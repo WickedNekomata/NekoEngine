@@ -13,7 +13,7 @@ enum ComponentTypes
 	ScriptComponent,
 	BoneComponent,
 	AnimationComponent,
-	RectComponent,
+	RectTransformComponent,
 
 	// Physics
 	RigidStaticComponent,

@@ -10,7 +10,7 @@
 
 class ResourceShaderProgram;
 class ResourceShaderObject;
-class ComponentRect;
+class ComponentRectTransform;
 class TextureImportSettings;
 class ResourceTexture;
 
@@ -38,7 +38,7 @@ private:
 	void OnSystemEvent(System_Event event);
 
 	void initRenderData();
-	void DrawUI(ComponentRect* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
+	void DrawUI(ComponentRectTransform* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
 
 	//math::float4x4 orthonormalMatrix = math::float4x4::identity;
 	uint reference_vertex;
@@ -50,7 +50,7 @@ private:
 	TextureImportSettings* texture_test = nullptr;
 	ResourceTexture* texture_loaded = nullptr;
 
-	ComponentRect* rect_test;
+	ComponentRectTransform* rect_test = nullptr;
 
 	bool uiMode = false;
 

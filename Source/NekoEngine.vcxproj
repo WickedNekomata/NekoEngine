@@ -204,7 +204,7 @@
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="BoneImporter.h" />
-    <ClInclude Include="ComponentRect.h" />
+    <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="SceneQueries.h" />
@@ -598,7 +598,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
-    <ClCompile Include="ComponentRect.cpp" />
+    <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />

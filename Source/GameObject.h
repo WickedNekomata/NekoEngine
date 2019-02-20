@@ -99,6 +99,9 @@ public:
 	class ComponentEmitter* emitter = nullptr;
 	class ComponentNavAgent* navAgent = nullptr;
 
+	//UI
+	class ComponentRectTransform* rectTransform = nullptr;
+
 	// Physics
 	class ComponentRigidActor* rigidActor = nullptr;
 	class ComponentCollider* collider = nullptr;

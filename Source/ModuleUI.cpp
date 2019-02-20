@@ -11,7 +11,7 @@
 #include "MaterialImporter.h"
 #include "ModuleFileSystem.h"
 #include "ComponentTransform.h"
-#include "ComponentRect.h"
+#include "ComponentRectTransform.h"
 #include "ResourceTexture.h"
 #include "ModuleWindow.h"
 
@@ -62,9 +62,9 @@ bool ModuleUI::Start()
 	App->materialImporter->Import("Assets/Textures/Baker_house.dds", uoutput_file, texture_test);
 	App->materialImporter->Load(uoutput_file.c_str(), texture_loaded, texture_test);
 
-	rect_test = new ComponentRect(nullptr);
-	rect_test->x = 0;
-	rect_test->y = 0;
+	rect_test = new ComponentRectTransform(nullptr);
+	rect_test->x = 1820;
+	rect_test->y = 917;
 	rect_test->x_dist = 100;
 	rect_test->y_dist = 100;
 
@@ -131,7 +131,7 @@ void ModuleUI::initRenderData()
 	glBindVertexArray(0);
 }
 
-void ModuleUI::DrawUI(ComponentRect* rect, float rotation, math::float3 color)
+void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3 color)
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -145,13 +145,13 @@ void ModuleUI::DrawUI(ComponentRect* rect, float rotation, math::float3 color)
 	float w_height = App->window->GetWindowHeight();
 
 	math::float2 pos;
-	pos = math::Frustum::ScreenToViewportSpace({ rect->x, rect->y }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x, (float)rect->y }, w_width, w_height);
 	setFloat(shaderID, "topLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ rect->x + rect->x_dist, rect->y }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x + (float)rect->x_dist, (float)rect->y }, w_width, w_height);
 	setFloat(shaderID, "topRight", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ rect->x, rect->y + rect->y_dist }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x, (float)rect->y + (float)rect->y_dist }, w_width, w_height);
 	setFloat(shaderID, "bottomLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ rect->x + rect->x_dist, rect->y + rect->y_dist }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x + (float)rect->x_dist, (float)rect->y + (float)rect->y_dist }, w_width, w_height);
 	setFloat(shaderID, "bottomRight", pos.x, pos.y);
 
 	setFloat(shaderID, "spriteColor", color);

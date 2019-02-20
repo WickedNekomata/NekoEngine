@@ -1477,7 +1477,7 @@
     <ClInclude Include="ModuleUI.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRect.h">
+    <ClInclude Include="ComponentRectTransform.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1941,7 +1941,7 @@
     <ClCompile Include="ModuleUI.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRect.cpp">
+    <ClCompile Include="ComponentRectTransform.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
   </ItemGroup>

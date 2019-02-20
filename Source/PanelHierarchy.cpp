@@ -49,6 +49,12 @@ bool PanelHierarchy::Draw()
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
+			if(!App->GOs->ExistCanvas())
+				if (ImGui::Selectable("Create Screen Canvas"))
+				{
+					App->GOs->CreateCanvas("Canvas", root);
+					ImGui::CloseCurrentPopup();
+				}
 			ImGui::EndPopup();
 		}
 
@@ -155,6 +161,8 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 			if (child->EqualsToChildrenOrMe(App->scene->selectedObject.Get()))
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
+			if (App->GOs->IsCanvas(child))
+				App->GOs->DeleteCanvasPointer();
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

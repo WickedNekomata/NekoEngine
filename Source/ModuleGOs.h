@@ -27,9 +27,11 @@ public:
 	bool OnEditorMode();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
+	GameObject* CreateCanvas(const char* name, GameObject* parent);
 	inline void AddGameObject(GameObject* gameObject) { gameObjects.push_back(gameObject); }
 	void DeleteGameObject(const char* name);
 	void DeleteGameObject(GameObject* toDelete);
+	void DeleteCanvasPointer();
 
 	void DeleteTemporaryGameObjects();
 	void DeleteScene();
@@ -57,6 +59,13 @@ public:
 
 	bool InvalidateResource(const Resource* resource);
 
+
+	//UI
+	bool ExistCanvas() const;
+	bool IsCanvas(GameObject* go_canvas) const;
+	GameObject* GetCanvas()const;
+
+
 public:
 
 	const char* nameScene = nullptr;
@@ -71,6 +80,9 @@ private:
 
 	// OnGameMode/OnEditorMode
 	std::vector<GameObject*> tmpGameObjects;
+
+	//Canvas
+	GameObject* canvas = nullptr;
 };
 
 #endif

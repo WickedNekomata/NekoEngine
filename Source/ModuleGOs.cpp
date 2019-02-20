@@ -199,6 +199,16 @@ GameObject* ModuleGOs::CreateGameObject(const char* name, GameObject* parent, bo
 	return newGameObject;
 }
 
+GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
+{
+	assert(canvas == nullptr);
+	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
+	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
+	gameObjects.push_back(newGameObject);
+
+	return newGameObject;
+}
+
 void ModuleGOs::DeleteGameObject(const char* name)
 {
 	for (uint i = 0; i < gameObjects.size(); ++i)
@@ -221,6 +231,11 @@ void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
 		}
 	}
+}
+
+void ModuleGOs::DeleteCanvasPointer()
+{
+	canvas = nullptr;
 }
 
 void ModuleGOs::DeleteTemporaryGameObjects()
@@ -501,4 +516,19 @@ bool ModuleGOs::InvalidateResource(const Resource* resource)
 
 	//assert(resource->CountReferences() <= 0);
 	return true;
+}
+
+bool ModuleGOs::ExistCanvas() const
+{
+	return (canvas != nullptr);
+}
+
+bool ModuleGOs::IsCanvas(GameObject * go_canvas) const
+{
+	return (canvas == go_canvas);
+}
+
+GameObject * ModuleGOs::GetCanvas() const
+{
+	return canvas;
 }

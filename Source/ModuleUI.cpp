@@ -14,6 +14,7 @@
 #include "ComponentRectTransform.h"
 #include "ResourceTexture.h"
 #include "ModuleWindow.h"
+#include "ModuleGOs.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -28,7 +29,10 @@ ModuleUI::~ModuleUI()
 
 void ModuleUI::DrawTest()
 {
-	DrawUI(rect_test, 0.0f, { 0.0f, 1.0f, 0.0f });
+	if (App->GOs->ExistCanvas())
+		DrawUI((ComponentRectTransform*)App->GOs->GetCanvas()->GetComponentByType(ComponentTypes::RectTransformComponent), 0.0f, { 0.0f, 1.0f, 0.0f });
+	else
+		DrawUI(rect_test, 0.0f, { 0.0f, 1.0f, 0.0f });
 }
 
 bool ModuleUI::Init(JSON_Object * jObject)

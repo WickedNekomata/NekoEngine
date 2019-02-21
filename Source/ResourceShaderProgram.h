@@ -36,7 +36,7 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 
-	static bool ImportFile(const char* file, std::string& outputFile, std::vector<std::string>& shaderObjectsNames);
+	static bool ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputFile);
 	static bool ExportFile(ResourceShaderProgramData& shaderProgramData, ResourceData& data, std::string& outputFile, bool overwrite = false);
 	static uint CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames);

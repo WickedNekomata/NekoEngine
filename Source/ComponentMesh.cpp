@@ -25,8 +25,6 @@ ComponentMesh::~ComponentMesh()
 {
 	App->renderer3D->EraseMeshComponent(this);
 
-	parent->cmp_mesh = nullptr;
-
 	SetResource(0);
 }
 

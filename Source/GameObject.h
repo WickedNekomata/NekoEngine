@@ -72,7 +72,7 @@ public:
 	uint GetLayer() const;
 
 public:
-
+	
 	class ComponentTransform*  transform = 0;
 	class ComponentMesh*       cmp_mesh = 0;
 	class ComponentMaterial*   cmp_material = 0;

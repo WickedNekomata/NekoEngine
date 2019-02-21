@@ -60,6 +60,7 @@ bool PanelInspector::Draw()
 				break;
 			case ResourceTypes::TextureResource:
 				ShowTextureResourceInspector();
+				ShowTextureImportSettingsInspector();
 				break;
 			case ResourceTypes::ShaderObjectResource:
 				ShowShaderObjectInspector();
@@ -73,8 +74,6 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
 			break;
-		case CurrentSelection::SelectedType::textureImportSettings:
-			ShowTextureImportSettingsInspector();
 			break;
 		}
 	}

@@ -24,7 +24,6 @@
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
 #include "ComponentScript.h"
-#include "ComponentRectTransform.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
 
@@ -377,10 +376,6 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::EmitterComponent:
 		assert(cmp_emitter == NULL);
 		newComponent = cmp_emitter = new ComponentEmitter(this);
-		break;
-	case ComponentTypes::RectTransformComponent:
-		assert(rectTransform == nullptr);
-		newComponent = rectTransform = new ComponentRectTransform(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

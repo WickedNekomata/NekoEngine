@@ -72,7 +72,7 @@ public:
 	uint GetLayer() const;
 
 public:
-  
+	
 	class ComponentTransform*  transform = 0;
 	class ComponentMesh*       cmp_mesh = 0;
 	class ComponentMaterial*   cmp_material = 0;
@@ -82,7 +82,6 @@ public:
 	class ComponentRigidActor* cmp_rigidActor = 0;
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
-	class ComponentRectTransform* rectTransform = nullptr; //Nullptr a puño y fuego D:<
 
 	std::vector<Component*> components;
 

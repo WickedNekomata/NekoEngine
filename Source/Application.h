@@ -53,7 +53,6 @@ struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
 struct Layers;
-struct ModuleUI;
 
 class Application
 {
@@ -129,7 +128,7 @@ public:
 							  
 	Raycaster*				  raycaster;
 #endif // GAME
-  
+
 	ModuleWindow*			  window;
 	ModuleInput*			  input;
 	ModuleScene*			  scene;
@@ -140,7 +139,6 @@ public:
 	ScriptingModule*		  scripting;
 	ModuleEvents*			  events;
 	ModulePhysics*			  physics;
-  ModuleUI*				ui;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
 	Layers*					  layers;

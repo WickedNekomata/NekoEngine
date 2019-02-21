@@ -3,7 +3,6 @@
 #ifndef GAMEMODE
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "ModuleUI.h"
 #include "ModuleScene.h"
 
 #include "ImGui\imgui.h"
@@ -26,11 +25,6 @@ bool PanelDebugDraw::Draw()
 
 		bool wireframeMode = App->renderer3D->IsWireframeMode();
 		if (ImGui::Checkbox("Wireframe", &wireframeMode)) { App->renderer3D->SetWireframeMode(wireframeMode); }
-
-		ImGui::SameLine();
-
-		bool uiMode = App->ui->GetUIMode();
-		if (ImGui::Checkbox("Edit or show UI", &uiMode)) { App->ui->SetUIMode(uiMode); }
 
 		ImGui::SameLine();
 

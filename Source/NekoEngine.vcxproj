@@ -205,8 +205,6 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="BoneImporter.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
-    <ClInclude Include="ComponentRectTransform.h" />
-    <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="SceneQueries.h" />
     <ClInclude Include="SimulationEvents.h" />
@@ -598,8 +596,6 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
-    <ClCompile Include="ComponentRectTransform.cpp" />
-    <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />

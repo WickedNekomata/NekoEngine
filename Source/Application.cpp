@@ -23,7 +23,6 @@
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
 #include "Layers.h"
-#include "ModuleUI.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -50,7 +49,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
 	layers = new Layers();
-	ui = new ModuleUI();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -72,7 +70,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	AddModule(particle);
 	AddModule(physics);
-	AddModule(ui);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);

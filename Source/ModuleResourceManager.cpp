@@ -260,7 +260,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	case ResourceTypes::ShaderObjectResource:
 	{
 		std::string outputFile;
-		if (ResourceShaderObject::ImportFile(file, outputFile))
+		std::string name;
+		if (ResourceShaderObject::ImportFile(file, name, outputFile))
 		{
 			std::vector<uint> resourcesUuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
@@ -268,7 +269,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader object file '%s' has resources that need to be created", file);
 
-				// 1. Shader object			
+				// 1. Shader object
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
 				assert(uuid > 0);
 				resourcesUuids.push_back(uuid);
@@ -277,7 +278,11 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				ResourceData data;
 				ResourceShaderObjectData shaderObjectData;
 				data.file = file;
-				App->fs->GetFileName(file, data.name);
+				if (name.empty())
+					App->fs->GetFileName(file, data.name);
+				else
+					data.name = name.data();
+
 				if (IS_VERTEX_SHADER(extension.data()))
 					shaderObjectData.shaderType = ShaderTypes::VertexShaderType;
 				else if (IS_FRAGMENT_SHADER(extension.data()))
@@ -306,8 +311,9 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	case ResourceTypes::ShaderProgramResource:
 	{
 		std::string outputFile;
+		std::string name;
 		std::vector<std::string> shaderObjectsNames;
-		if (ResourceShaderProgram::ImportFile(file, outputFile, shaderObjectsNames))
+		if (ResourceShaderProgram::ImportFile(file, name, shaderObjectsNames, outputFile))
 		{
 			std::vector<uint> resourcesUuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
@@ -315,7 +321,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader program file '%s' has resources that need to be created", file);
 
-				// 1. Shader program			
+				// 1. Shader program	
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
 				assert(uuid > 0);
 				resourcesUuids.push_back(uuid);
@@ -324,7 +330,10 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				ResourceData data;
 				ResourceShaderProgramData shaderProgramData;
 				data.file = file;
-				App->fs->GetFileName(file, data.name);
+				if (name.empty())
+					App->fs->GetFileName(file, data.name);
+				else
+					data.name = name.data();
 
 				uint shaderProgram = 0;
 				bool success = App->shaderImporter->LoadShaderProgram(file, shaderProgramData, shaderProgram);

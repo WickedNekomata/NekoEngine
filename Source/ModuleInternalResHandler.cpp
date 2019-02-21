@@ -9,7 +9,6 @@
 
 bool ModuleInternalResHandler::Start()
 {
-	memset(this, 0, sizeof(ModuleInternalResHandler));
 	return true;
 }
 

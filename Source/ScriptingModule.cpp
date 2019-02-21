@@ -414,6 +414,14 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 	return monoComponent;
 }
 
+Component* ScriptingModule::ComponentFrom(MonoObject* monoComponent)
+{
+	int componentAddress;
+	mono_field_get_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "componentAddress"), &componentAddress);	
+
+	return (Component*)componentAddress;
+}
+
 bool ScriptingModule::alreadyCreated(std::string scriptName)
 {
 	clearSpaces(scriptName);

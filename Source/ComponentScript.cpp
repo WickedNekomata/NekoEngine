@@ -918,11 +918,12 @@ void ComponentScript::OnUniqueEditor()
 uint ComponentScript::GetInternalSerializationBytes()
 {
 	//My resource uuid + public vars
-	return sizeof(uint32_t) + GetPublicVarsSerializationBytes();
+	return 0;/*sizeof(uint32_t) + GetPublicVarsSerializationBytes();*/
 }
 
 void ComponentScript::OnInternalSave(char*& cursor)
 {
+	return;
 	uint bytes = sizeof(uint32_t);
 
 	uint32_t resUID = scriptResUUID;
@@ -934,6 +935,7 @@ void ComponentScript::OnInternalSave(char*& cursor)
 
 void ComponentScript::OnInternalLoad(char*& cursor)
 {
+	return;
 	uint bytes = sizeof(uint32_t);
 
 	memcpy(&scriptResUUID, cursor, bytes);

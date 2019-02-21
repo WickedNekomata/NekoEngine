@@ -54,13 +54,29 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	case System_Event_Type::FileOverwritten:
 	case System_Event_Type::ReImportFile:
 	{
-		// 1. Delete resource(s)
-		std::vector<uint> resourcesUuids;
-		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-			DeleteResources(resourcesUuids);
+		std::string extension;
+		App->fs->GetExtension(event.fileEvent.file, extension);
+		ResourceTypes type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+			case ResourceTypes::ScriptResource:
+			{
+				App->scripting->ScriptModified(event.fileEvent.file);
+				break;
+			}
+			default:
+			{
+				// 1. Delete resource(s)
+				std::vector<uint> resourcesUuids;
+				if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
+					DeleteResources(resourcesUuids);
 
-		// 2. Import file
-		ImportFile(event.fileEvent.file);
+				// 2. Import file
+				ImportFile(event.fileEvent.file);
+
+				break;
+			}
+		}	
 	}
 	break;
 
@@ -510,9 +526,6 @@ bool ModuleResourceManager::DeleteResources(std::vector<uint> uuids)
 		if (resource == resources.end())
 			return false;
 
-		if (resource->second->GetType() == ResourceTypes::ScriptResource)
-			continue;
-
 		RELEASE(resource->second);
 		resources.erase(*it);
 	}
@@ -679,4 +692,17 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	}
 
 	return ResourceTypes::NoResourceType;
+}
+
+std::vector<Resource*> ModuleResourceManager::GetResourcesByType(ResourceTypes type)
+{
+	std::vector<Resource*> ret;
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->GetType() == type)
+		{
+			ret.push_back(it->second);
+		}
+	}
+	return ret;
 }

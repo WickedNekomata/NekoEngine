@@ -23,7 +23,10 @@ enum System_Event_Type
 	// LayerEvent
 	LayerNameReset,
 	LayerChanged,
-	LayerFilterMaskChanged
+	LayerFilterMaskChanged,
+
+	//Scripting events
+	ScriptingDomainReloaded
 };
 
 class GameObject;

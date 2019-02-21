@@ -63,6 +63,8 @@ public:
 	void ClearMap();
 
 	Resource* ImportScriptResource(const char* fileAssets);
+	void ScriptModified(const char* scriptPath);
+	void RecompileScripts();
 
 private:
 	void UpdateMethods();

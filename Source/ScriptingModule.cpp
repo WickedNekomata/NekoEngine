@@ -634,6 +634,41 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 	return scriptRes;
 }
 
+void ScriptingModule::ScriptModified(const char* scriptPath)
+{
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy(metaFile, scriptPath);
+	strcat(metaFile, ".meta");
+
+	char* metaBuffer;
+	uint size = App->fs->Load(metaFile, &metaBuffer);
+	if (size < 0)
+		return;
+
+	char* cursor = metaBuffer;
+	cursor += sizeof(int64_t) + sizeof(uint);
+	uint UID;
+	memcpy(&UID, cursor, sizeof(uint32_t));
+
+	ResourceScript* scriptModified = (ResourceScript*)App->res->GetResource(UID);
+	if (scriptModified->preCompileErrors())
+		return;
+
+	System_Event event;
+	event.type = System_Event_Type::ScriptingDomainReloaded;
+	App->PushSystemEvent(event);
+}
+
+void ScriptingModule::RecompileScripts()
+{
+	std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+	for (int i = 0; i < scriptResources.size(); ++i)
+	{
+		ResourceScript* res = (ResourceScript*)scriptResources[i];
+		res->Compile();
+	}
+}
+
 void ScriptingModule::UpdateMethods()
 {
 	for (int i = 0; i < scripts.size(); ++i)

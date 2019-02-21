@@ -9,6 +9,7 @@
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
+#include "ModuleInternalResHandler.h"
 
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
@@ -26,7 +27,7 @@ bool PanelAssets::Draw()
 	ImGuiWindowFlags assetsFlags = 0;
 	assetsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
-	if(ImGui::Begin(name, &enabled, assetsFlags))
+	if (ImGui::Begin(name, &enabled, assetsFlags))
 	{
 		if (ImGui::Button("Re-Import"))
 		{
@@ -44,19 +45,16 @@ bool PanelAssets::Draw()
 		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
-		//CreateShaderPopUp(DIR_ASSETS);
+		CreateShaderPopUp(DIR_ASSETS);
 		if (treeNodeOpened)
 		{
 			RecursiveDrawAssetsDir(App->fs->rootAssets);
 			ImGui::TreePop();
 		}
-		
 	}
 	ImGui::End();
 
-	//TODO: WHAT IS THIS
-
-	/*if (showCreateShaderConfirmationPopUp)
+	if (showCreateShaderConfirmationPopUp)
 	{
 		ImGui::OpenPopup("Create Shader");
 		CreateShaderConfirmationPopUp();
@@ -65,7 +63,7 @@ bool PanelAssets::Draw()
 	{
 		ImGui::OpenPopup("Delete Shader");
 		DeleteShaderConfirmationPopUp();
-	}*/
+	}
 
 	return true;
 }
@@ -201,7 +199,7 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 			SELECT(NULL);
 
 		//TODO: WHAT IS THIS?
-		//CreateShaderPopUp(dir.fullPath.data());
+		CreateShaderPopUp(dir.fullPath.data());
 
 		if (treeNodeOpened)
 		{
@@ -278,21 +276,25 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 		{
 			shaderFile.append(shaderName);
 
+			ResourceData data;
+			ResourceShaderObjectData shaderObjectData;
+	
 			switch (shaderType)
 			{
 			case ShaderTypes::VertexShaderType:
+				shaderObjectData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
 				shaderFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
 				break;
 			case ShaderTypes::FragmentShaderType:
+				shaderObjectData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
 				shaderFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
 				break;
 			}
 
-			if (App->shaderImporter->CreateShaderObject(shaderFile, shaderType))
-			{
-				// TODO
-				// App->res->ImportFile(shaderFile.data());
-			}
+			data.file = shaderFile;
+			shaderObjectData.shaderType = shaderType;
+
+			App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, true);
 
 			showCreateShaderConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();

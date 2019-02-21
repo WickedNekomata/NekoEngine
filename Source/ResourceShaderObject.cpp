@@ -18,6 +18,9 @@ ResourceShaderObject::ResourceShaderObject(ResourceTypes type, uint uuid, Resour
 
 ResourceShaderObject::~ResourceShaderObject()
 {
+	char* source = (char*)shaderObjectData.GetSource();
+	RELEASE_ARRAY(source);
+
 	DeleteShaderObject(shaderObject);
 }
 
@@ -32,7 +35,8 @@ void ResourceShaderObject::OnPanelAssets()
 	char id[DEFAULT_BUF_SIZE];
 	sprintf(id, "%s##%d", data.name.data(), uuid);
 
-	ImGui::TreeNodeEx(id, flags);
+	if (ImGui::TreeNodeEx(id, flags))
+		ImGui::TreePop();
 
 	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 	{
@@ -64,7 +68,7 @@ bool ResourceShaderObject::ImportFile(const char* file, std::string& outputFile)
 		assert(ResourceShaderObject::ReadShaderObjectUuidFromMeta(metaFile, uuid));
 
 		char entry[DEFAULT_BUF_SIZE];
-		sprintf_s(entry, "%s", uuid);
+		sprintf_s(entry, "%u", uuid);
 
 		outputFile = entry;
 	}
@@ -78,16 +82,19 @@ bool ResourceShaderObject::ExportFile(ResourceShaderObjectData& shaderObjectData
 }
 
 // Returns the last modification time of the file
-uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, std::string& outputMetaFile)
+uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile)
 {
 	assert(file != nullptr);
 	
 	uint uuidsSize = 1;
+	uint nameSize = name.size();
 
 	uint size =
 		sizeof(int64_t) +
 		sizeof(uint) +
-		sizeof(uint) * uuidsSize;
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize;
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -110,6 +117,18 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 	bytes = sizeof(uint) * uuidsSize;
 	memcpy(cursor, &shaderObjectUuid, bytes);
 
+	cursor += bytes;
+
+	// 4. Store shader object name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader object name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, name.data(), bytes);
+
 	// --------------------------------------------------
 
 	// Build the path of the meta file and save it
@@ -129,7 +148,7 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 	return lastModTime;
 }
 
-bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid)
+bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid, std::string& name)
 {
 	assert(metaFile != nullptr);
 
@@ -147,7 +166,7 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 
 		// 2. Load uuids size
 		uint uuidsSize = 0;
-		bytes = sizeof(uint) * uuidsSize;
+		bytes = sizeof(uint);
 		memcpy(&uuidsSize, cursor, bytes);
 		assert(uuidsSize > 0);
 
@@ -156,6 +175,21 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 		// 3. Load shader object uuid
 		bytes = sizeof(uint);
 		memcpy(&shaderObjectUuid, cursor, bytes);
+
+		cursor += bytes;
+
+		// 4. Load shader object name size
+		uint nameSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&nameSize, cursor, bytes);
+		assert(nameSize > 0);
+
+		cursor += bytes;
+
+		// 5. Load shader object name
+		name.resize(nameSize);
+		bytes = sizeof(char) * nameSize;
+		memcpy(&name[0], cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Object: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -167,6 +201,73 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 	}
 
 	return true;
+}
+
+uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string& name)
+{
+	assert(metaFile != nullptr);
+
+	int64_t lastModTime = 0;
+	uint shaderObjectUuid = 0;
+	std::string oldName;
+	ReadMeta(metaFile, lastModTime, shaderObjectUuid, oldName);
+
+	uint uuidsSize = 1;
+	uint nameSize = name.size();
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store shader object uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &shaderObjectUuid, bytes);
+
+	cursor += bytes;
+
+	// 4. Store shader object name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader object name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, name.data(), bytes);
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	uint resultSize = App->fs->Save(metaFile, data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Object: Successfully saved meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Object: Could not save meta '%s'", metaFile);
+		return 0;
+	}
+
+	return lastModTime;
 }
 
 // ----------------------------------------------------------------------------------------------------

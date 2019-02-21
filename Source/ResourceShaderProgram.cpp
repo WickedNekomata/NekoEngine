@@ -30,7 +30,8 @@ void ResourceShaderProgram::OnPanelAssets()
 	char id[DEFAULT_BUF_SIZE];
 	sprintf(id, "%s##%d", data.name.data(), uuid);
 
-	ImGui::TreeNodeEx(id, flags);
+	if (ImGui::TreeNodeEx(id, flags))
+		ImGui::TreePop();
 
 	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 	{
@@ -63,7 +64,7 @@ bool ResourceShaderProgram::ImportFile(const char* file, std::string& outputFile
 		ResourceShaderProgram::ReadShaderObjectsNamesFromMeta(metaFile, shaderObjectsNames);
 
 		char entry[DEFAULT_BUF_SIZE];
-		sprintf_s(entry, "%s", uuid);
+		sprintf_s(entry, "%u", uuid);
 
 		outputFile = entry;
 	}
@@ -76,12 +77,12 @@ bool ResourceShaderProgram::ExportFile(ResourceShaderProgramData& shaderProgramD
 	return App->shaderImporter->SaveShaderProgram(data, shaderProgramData, outputFile, overwrite);
 }
 
-uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile)
+uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile)
 {
 	assert(file != nullptr);
 
 	uint uuidsSize = 1;
-
+	uint nameSize = name.size();
 	uint namesSize = 0;
 	for (uint i = 0; i < shaderObjectsNames.size(); ++i)
 		namesSize += shaderObjectsNames[i].size();
@@ -91,6 +92,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 		sizeof(uint) +
 		sizeof(uint) * uuidsSize +
 
+		sizeof(char) * nameSize +
 		sizeof(char) * namesSize;
 
 	char* data = new char[size];
@@ -105,7 +107,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 	cursor += bytes;
 
 	// 2. Store uuids size
-	bytes = sizeof(uint);
+	bytes = sizeof(uint) * uuidsSize;
 	memcpy(cursor, &uuidsSize, bytes);
 
 	cursor += bytes;
@@ -116,13 +118,25 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 
 	cursor += bytes;
 
-	// 4. Store names size
+	// 4. Store shader program name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader program name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, name.data(), bytes);
+
+	cursor += bytes;
+
+	// 6. Store shader objects names size
 	bytes = sizeof(uint);
 	memcpy(cursor, &namesSize, bytes);
 
 	cursor += bytes;
 
-	// 5. Store shader objects names
+	// 7. Store shader objects names
 	bytes = sizeof(char) * namesSize;
 	memcpy(cursor, &shaderObjectsNames[0], bytes);
 
@@ -145,7 +159,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 	return lastModTime;
 }
 
-bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::vector<std::string>& shaderObjectsNames)
+bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames)
 {
 	assert(metaFile != nullptr);
 
@@ -175,7 +189,22 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 
 		cursor += bytes;
 
-		// 4. Load names size
+		// 4. Load shader program name size
+		uint nameSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&nameSize, cursor, bytes);
+		assert(nameSize > 0);
+
+		cursor += bytes;
+
+		// 5. Load shader program name
+		name.resize(nameSize);
+		bytes = sizeof(char) * nameSize;
+		memcpy(&name[0], cursor, bytes);
+
+		cursor += bytes;
+
+		// 6. Load names size
 		uint namesSize = 0;
 		bytes = sizeof(uint);
 		memcpy(&namesSize, cursor, bytes);
@@ -183,7 +212,7 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 
 		cursor += bytes;
 
-		// 5. Load shader objects names
+		// 7. Load shader objects names
 		bytes = sizeof(char) * namesSize;
 		memcpy(&shaderObjectsNames[0], cursor, bytes);
 
@@ -197,6 +226,90 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 	}
 
 	return true;
+}
+
+uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::string& name)
+{
+	assert(metaFile != nullptr);
+
+	int64_t lastModTime = 0;
+	uint shaderProgramUuid = 0;
+	std::string oldName;
+	std::vector<std::string> shaderObjectsNames;
+	ReadMeta(metaFile, lastModTime, shaderProgramUuid, oldName, shaderObjectsNames);
+
+	uint uuidsSize = 1;
+	uint nameSize = name.size();
+	uint namesSize = 0;
+	for (uint i = 0; i < shaderObjectsNames.size(); ++i)
+		namesSize += shaderObjectsNames[i].size();
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize +
+		sizeof(char) * namesSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store shader program uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &shaderProgramUuid, bytes);
+
+	cursor += bytes;
+
+	// 4. Store shader program name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader program name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, name.data(), bytes);
+
+	cursor += bytes;
+
+	// 6. Store shader objects names size
+	bytes = sizeof(uint);
+	memcpy(cursor, &namesSize, bytes);
+
+	cursor += bytes;
+
+	// 7. Store shader objects names
+	bytes = sizeof(char) * namesSize;
+	memcpy(cursor, &shaderObjectsNames[0], bytes);
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	uint resultSize = App->fs->Save(metaFile, data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully saved meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not save meta '%s'", metaFile);
+		return 0;
+	}
+
+	return lastModTime;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -483,6 +596,18 @@ bool ResourceShaderProgram::ReadShaderObjectsNamesFromMeta(const char* metaFile,
 
 		// 3. (Load shader program uuid)
 		bytes = sizeof(uint) * uuidsSize;
+		cursor += bytes;
+
+		// (Load shader program name size)
+		uint nameSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&nameSize, cursor, bytes);
+		assert(nameSize > 0);
+
+		cursor += bytes;
+
+		// (Load shader program name)
+		bytes = sizeof(char) * nameSize;
 		cursor += bytes;
 
 		// 4. Load names size

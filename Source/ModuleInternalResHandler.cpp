@@ -9,6 +9,9 @@
 
 bool ModuleInternalResHandler::Start()
 {
+	CreatePlane();
+	CreateCube();
+	CreateDefaultShaderProgram();
 	return true;
 }
 
@@ -16,8 +19,8 @@ void ModuleInternalResHandler::CreatePlane()
 {
 	ResourceMeshData specificData;
 
-	uint verticesSize = 4;
-	Vertex* vertices = new Vertex[verticesSize];
+	specificData.verticesSize = 4;
+	specificData.vertices = new Vertex[specificData.verticesSize];
 
 	float verticesPosition[12]
 	{
@@ -46,22 +49,19 @@ void ModuleInternalResHandler::CreatePlane()
 	};
 
 	specificData.indicesSize = 6;
-	specificData.indices = new uint[specificData.indicesSize];
-	uint indices[]
+	specificData.indices = new uint[specificData.indicesSize]
 	{
 		// Front
-		0, 1, 2, // ABC
-		1, 3, 2, // BDC
+		2, 1, 0, // ABC
+		2, 3, 1, // BDC
 	};
-
-	memcpy(&specificData, indices, sizeof(int) * specificData.indicesSize);
 
 	// Vertices
 	/// Position
 	float* cursor = verticesPosition;
-	for (uint i = 0; i < verticesSize / 3; ++i)
+	for (uint i = 0; i < specificData.verticesSize; ++i)
 	{
-		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
+		memcpy(specificData.vertices[i].position, cursor, sizeof(float) * 3);
 		cursor += 3;
 	}
 
@@ -69,7 +69,7 @@ void ModuleInternalResHandler::CreatePlane()
 	cursor = normalPosition;
 	for (uint i = 0; i < normalSize / 3; ++i)
 	{
-		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
+		memcpy(specificData.vertices[i].normal, cursor, sizeof(float) * 3);
 		cursor += 3;
 	}
 
@@ -77,7 +77,7 @@ void ModuleInternalResHandler::CreatePlane()
 	cursor = textCordsPosition;
 	for (uint i = 0; i < textCordsSize / 2; ++i)
 	{
-		memcpy(vertices[i].texCoord, cursor, sizeof(float) * 2);
+		memcpy(specificData.vertices[i].texCoord, cursor, sizeof(float) * 2);
 		cursor += 2;
 	}
 
@@ -91,8 +91,8 @@ void ModuleInternalResHandler::CreateCube()
 {
 	ResourceMeshData specificData;
 
-	uint verticesSize = 8;
-	Vertex* vertices = new Vertex[verticesSize];
+	specificData.verticesSize = 8;
+	specificData.vertices = new Vertex[specificData.verticesSize];
 
 	float verticesPosition[24]
 	{
@@ -106,31 +106,8 @@ void ModuleInternalResHandler::CreateCube()
 		-1,  1,  1
 	};
 
-	int texCoordsSize = 12;
-	float texCoords[12]
-	{
-		0, 0,
-		1, 0,
-		0, 1,
-		0, 1,
-		1, 0,
-		0, 1
-	};
-
-	int normalSize = 18;
-	float normalPosition[18]
-	{
-		 0,  0,  1,
-		 1,  0,  0,
-		 0,  0, -1,
-		-1,  0,  0,
-		 0,  1,  0,
-		 0, -1,  0
-	};
-
 	specificData.indicesSize = 36;
-	specificData.indices = new uint[specificData.indicesSize];
-	uint indices[]
+	specificData.indices = new uint[specificData.indicesSize]
 	{
 		0, 1, 3, 3, 1, 2,
 		1, 5, 2, 2, 5, 6,
@@ -140,31 +117,13 @@ void ModuleInternalResHandler::CreateCube()
 		4, 5, 0, 0, 5, 1
 	};
 
-	memcpy(&specificData, indices, sizeof(int) * specificData.indicesSize);
-
 	// Vertices
 	/// Position
 	float* cursor = verticesPosition;
-	for (uint i = 0; i < verticesSize / 3; ++i)
+	for (uint i = 0; i < specificData.verticesSize; ++i)
 	{
-		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
+		memcpy(specificData.vertices[i].position, cursor, sizeof(float) * 3);
 		cursor += 3;
-	}
-
-	///Normals
-	cursor = normalPosition;
-	for (uint i = 0; i < normalSize / 3; ++i)
-	{
-		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
-		cursor += 3;
-	}
-
-	///TextCords
-	cursor = texCoords;
-	for (uint i = 0; i < texCoordsSize / 2; ++i)
-	{
-		memcpy(vertices[i].texCoord, cursor, sizeof(float) * 2);
-		cursor += 2;
 	}
 
 	ResourceData data;

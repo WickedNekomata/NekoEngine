@@ -17,6 +17,7 @@ std::vector<std::string>ResourceScript::scriptNames;
 ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
 {
 	scriptName = data.name;
+	scriptNames.push_back(scriptName);
 }
 
 ResourceScript::~ResourceScript()

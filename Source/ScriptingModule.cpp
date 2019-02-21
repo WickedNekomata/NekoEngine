@@ -184,7 +184,8 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 			for (int i = 0; i < scripts.size(); ++i)
 			{
 				bool somethingDestroyed = false;
-				if (scripts[i]->scriptRes == event.resEvent.resource)
+
+				if (scripts[i]->scriptResUUID == event.resEvent.resource->GetUuid())
 				{
 					somethingDestroyed = true;
 					scripts[i]->GetParent()->EraseComponent(scripts[i]);
@@ -284,7 +285,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		cursor += sizeof(int64_t) + sizeof(uint);
 
 		uint32_t UID;
-		memcpy(&UID, metaBuffer, sizeof(uint32_t));
+		memcpy(&UID, cursor, sizeof(uint32_t));
 
 		scriptRes = (ResourceScript*)App->res->GetResource(UID);
 
@@ -317,7 +318,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	}
 
 	App->res->SetAsUsed(scriptRes->GetUuid());
-	script->scriptRes = scriptRes;
+	script->scriptResUUID = scriptRes->GetUuid();
 
 	scripts.push_back(script);
 
@@ -574,7 +575,7 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-bool ScriptingModule::ImportScriptResource(const char* fileAssets)
+Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 {
 	std::string file = fileAssets;
 	std::string metaFile = file + ".meta";
@@ -587,10 +588,12 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 	data.file = "Assets/Scripts/" + scriptName + ".cs";
 	data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
 
-	ResourceScript* scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
+	ResourceScript* scriptRes = nullptr;
 
 	if (!App->fs->Exists(data.file + ".meta"))
 	{
+		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
+
 		//Create the .meta
 		uint bytes = scriptRes->bytesToSerializeMeta();
 		char* buffer = new char[bytes];
@@ -608,6 +611,14 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 		if (size > 0)
 		{
 			char* cursor = metaBuffer;
+			cursor += sizeof(int64_t);
+			cursor += sizeof(uint);
+			uint uid;
+			memcpy(&uid, cursor, sizeof(uint));
+
+			scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData(), uid);
+
+			cursor = metaBuffer;
 			scriptRes->DeSerializeFromMeta(cursor);
 			delete[] metaBuffer;
 		}
@@ -620,7 +631,7 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 		scriptRes->referenceMethods();
 	}
 		
-	return true;
+	return scriptRes;
 }
 
 void ScriptingModule::UpdateMethods()

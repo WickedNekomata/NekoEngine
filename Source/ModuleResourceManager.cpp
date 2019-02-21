@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ScriptingModule.h"
 
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
@@ -56,7 +57,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		// 1. Delete resource(s)
 		std::vector<uint> resourcesUuids;
 		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-			DeleteResources(resourcesUuids); // TODO: don't delete script resources
+			DeleteResources(resourcesUuids);
 
 		// 2. Import file
 		ImportFile(event.fileEvent.file);
@@ -396,7 +397,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 	case ResourceTypes::ScriptResource:
 	{
-		
+		resource = App->scripting->ImportScriptResource(file);
 		break;
 	}
 	}
@@ -458,6 +459,7 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;
 	}
+
 	assert(resource != nullptr);
 
 	resources[uuid] = resource;
@@ -507,6 +509,9 @@ bool ModuleResourceManager::DeleteResources(std::vector<uint> uuids)
 
 		if (resource == resources.end())
 			return false;
+
+		if (resource->second->GetType() == ResourceTypes::ScriptResource)
+			continue;
 
 		RELEASE(resource->second);
 		resources.erase(*it);

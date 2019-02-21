@@ -62,7 +62,7 @@ public:
 
 	void ClearMap();
 
-	bool ImportScriptResource(const char* fileAssets);
+	Resource* ImportScriptResource(const char* fileAssets);
 
 private:
 	void UpdateMethods();

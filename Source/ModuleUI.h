@@ -5,6 +5,11 @@
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
+#define UI_XRECT 0
+#define UI_YRECT 1
+#define UI_WIDTHRECT 2
+#define UI_HEIGHTRECT 3
+
 //Possible Solution
 //https://stackoverflow.com/questions/47026863/opengl-geometry-shader-with-orthographic-projection
 
@@ -25,6 +30,10 @@ public:
 	bool GetUIMode() const;
 	void SetUIMode(bool stat);
 
+	void OnWindowResize(uint width, uint height);
+
+	const uint* GetRectUI()const;
+
 private:
 
 	bool Init(JSON_Object* jObject);
@@ -39,6 +48,8 @@ private:
 
 	void initRenderData();
 	void DrawUI(ComponentRectTransform* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
+
+	uint ui_size_draw[4];
 
 	//math::float4x4 orthonormalMatrix = math::float4x4::identity;
 	uint reference_vertex;

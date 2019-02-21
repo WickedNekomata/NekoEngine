@@ -67,10 +67,12 @@ bool ModuleUI::Start()
 	App->materialImporter->Load(uoutput_file.c_str(), texture_loaded, texture_test);
 
 	rect_test = new ComponentRectTransform(nullptr);
-	rect_test->x = 1820;
-	rect_test->y = 917;
-	rect_test->x_dist = 100;
-	rect_test->y_dist = 100;
+	rect_test->SetRect(0,0,100,100);
+
+	ui_size_draw[UI_XRECT] = 0;
+	ui_size_draw[UI_YRECT] = 0;
+	ui_size_draw[UI_WIDTHRECT] = App->window->GetWindowWidth();
+	ui_size_draw[UI_HEIGHTRECT] = App->window->GetWindowHeight();
 
 	return true;
 }
@@ -145,17 +147,19 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	uint shaderID = ui_shader->shaderProgram;
 	use(shaderID);
 
-	float w_width = App->window->GetWindowWidth();
-	float w_height = App->window->GetWindowHeight();
+	float w_width = ui_size_draw[UI_WIDTHRECT];
+	float w_height = ui_size_draw[UI_HEIGHTRECT];
 
+	const uint* rect_points = rect->GetRect();
+	
 	math::float2 pos;
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x, (float)rect->y }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
 	setFloat(shaderID, "topLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x + (float)rect->x_dist, (float)rect->y }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
 	setFloat(shaderID, "topRight", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x, (float)rect->y + (float)rect->y_dist }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
 	setFloat(shaderID, "bottomLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect->x + (float)rect->x_dist, (float)rect->y + (float)rect->y_dist }, w_width, w_height);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
 	setFloat(shaderID, "bottomRight", pos.x, pos.y);
 
 	setFloat(shaderID, "spriteColor", color);
@@ -183,6 +187,17 @@ bool ModuleUI::GetUIMode() const
 void ModuleUI::SetUIMode(bool stat)
 {
 	uiMode = stat;
+}
+
+void ModuleUI::OnWindowResize(uint width, uint height)
+{
+	ui_size_draw[UI_WIDTHRECT] = width;
+	ui_size_draw[UI_HEIGHTRECT] = height;
+}
+
+const uint * ModuleUI::GetRectUI() const
+{
+	return ui_size_draw;
 }
 
 // Shader methods

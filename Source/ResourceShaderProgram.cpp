@@ -75,7 +75,7 @@ bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std:
 	return true;
 }
 
-bool ResourceShaderProgram::ExportFile(ResourceShaderProgramData& shaderProgramData, ResourceData& data, std::string& outputFile, bool overwrite)
+bool ResourceShaderProgram::ExportFile(ResourceData& data, ResourceShaderProgramData& shaderProgramData, std::string& outputFile, bool overwrite)
 {
 	return App->shaderImporter->SaveShaderProgram(data, shaderProgramData, outputFile, overwrite);
 }
@@ -148,6 +148,9 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
 		bytes = sizeof(char) * nameSize;
 		memcpy(cursor, shaderObjectName, bytes);
+
+		if (i < namesSize - 1)
+			cursor += bytes;
 	}
 
 	// --------------------------------------------------
@@ -229,6 +232,9 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 			bytes = sizeof(char) * nameSize;
 			memcpy(shaderObjectName, cursor, bytes);
 			shaderObjectsNames.push_back(shaderObjectName);
+
+			if (i < namesSize - 1)
+				cursor += bytes;
 		}
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
@@ -315,6 +321,9 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
 		bytes = sizeof(char) * nameSize;
 		memcpy(cursor, shaderObjectName, bytes);
+
+		if (i < namesSize - 1)
+			cursor += bytes;
 	}
 
 	// --------------------------------------------------
@@ -647,6 +656,9 @@ bool ResourceShaderProgram::ReadShaderObjectsNamesFromMeta(const char* metaFile,
 			bytes = sizeof(char) * nameSize;
 			memcpy(cursor, shaderObjectName, bytes);
 			shaderObjectsNames.push_back(shaderObjectName);
+
+			if (i < namesSize - 1)
+				cursor += bytes;
 		}
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
@@ -709,4 +721,20 @@ bool ResourceShaderProgram::IsProgramLinked(uint shaderProgram)
 		CONSOLE_LOG(LogTypes::Normal, "Successfully linked Shader Program");
 
 	return success;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+std::list<std::string> ResourceShaderProgramData::GetShaderObjectsNames() const
+{
+	std::list<std::string> shaderObjectsNames;
+
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	{
+		std::string shaderObjectName;
+		App->fs->GetFileName((*it)->GetFile(), shaderObjectName, true);
+		shaderObjectsNames.push_back(shaderObjectName.data());
+	}
+
+	return shaderObjectsNames;
 }

@@ -408,7 +408,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	return resource;
 }
 
-Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, bool overwrite)
+Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite)
 {
 	assert(type != ResourceTypes::NoResourceType);
 
@@ -418,33 +418,40 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	{
 	case ResourceTypes::ShaderObjectResource:
 	{
-		std::string outputFile;
-		if (ResourceShaderObject::ExportFile(*(ResourceShaderObjectData*)specificData, data, outputFile, overwrite))
-			resource = ImportFile(outputFile.data());
+		if (ResourceShaderObject::ExportFile(data, *(ResourceShaderObjectData*)specificData, outputFile, overwrite))
+		{
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
 	}
 	break;
 
 	case ResourceTypes::ShaderProgramResource:
 	{
-		std::string outputFile;
-		if (ResourceShaderProgram::ExportFile(*(ResourceShaderProgramData*)specificData, data, outputFile, overwrite))
+		if (ResourceShaderProgram::ExportFile(data, *(ResourceShaderProgramData*)specificData, outputFile, overwrite))
 		{
 			// Meta
 			std::string outputMetaFile;
+
+			uint uuid = 0;
+			std::vector<uint> resourcesUuids;
+			if (GetResourcesUuidsByFile(outputFile.data(), resourcesUuids))
+				uuid = resourcesUuids.front();
 			ResourceShaderProgramData shaderProgramData = *(ResourceShaderProgramData*)specificData;
-			std::vector<std::string> names;
 			std::list<std::string> shaderObjectsNames = shaderProgramData.GetShaderObjectsNames();
+			std::vector<std::string> names;
 			for (std::list<std::string>::const_iterator it = shaderObjectsNames.begin(); it != shaderObjectsNames.end(); ++it)
 				names.push_back(*it);
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), App->GenerateRandomNumber(), data.name, names, outputMetaFile);
+
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, outputMetaFile);
 			assert(lastModTime > 0);
 
-			resource = ImportFile(outputFile.data());
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
 		}
 	}
 	break;
 	}
-	assert(resource != nullptr);
 
 	return resource;
 }

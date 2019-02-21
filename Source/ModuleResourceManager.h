@@ -46,7 +46,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	Resource* ImportFile(const char* file);
-	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, bool overwrite = false);
+	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false);
 	Resource* CreateResource(ResourceTypes type, ResourceData& data, void* specificData, uint forcedUuid = 0);
 
 	// ----------------------------------------------------------------------------------------------------

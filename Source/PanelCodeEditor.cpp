@@ -81,7 +81,8 @@ bool PanelCodeEditor::Draw()
 			else
 				shaderObject->isValid = true;
 
-			App->res->ExportFile(ResourceTypes::ShaderObjectResource, shaderObject->GetData(), &shaderObject->GetSpecificData(), true);
+			std::string outputFile;
+			App->res->ExportFile(ResourceTypes::ShaderObjectResource, shaderObject->GetData(), &shaderObject->GetSpecificData(), outputFile, true);
 		}
 
 		ImGui::SameLine();

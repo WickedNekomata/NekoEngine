@@ -267,11 +267,7 @@ bool ModuleFileSystem::Exists(std::string file) const
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
 {
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return false;
-	}
+	assert(dir != nullptr);
 
 	path.append("/");
 

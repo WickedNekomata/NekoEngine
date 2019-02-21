@@ -9,6 +9,7 @@
 
 bool ModuleInternalResHandler::Start()
 {
+	memset(this, 0, sizeof(ModuleInternalResHandler));
 	return true;
 }
 
@@ -85,6 +86,92 @@ void ModuleInternalResHandler::CreatePlane()
 	data.name = "Default Plane";
 
 	defaultPlane = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData)->GetUuid();
+}
+
+void ModuleInternalResHandler::CreateCube()
+{
+	ResourceMeshData specificData;
+
+	uint verticesSize = 8;
+	Vertex* vertices = new Vertex[verticesSize];
+
+	float verticesPosition[24]
+	{
+		-1, -1, -1,
+		 1, -1, -1,
+		 1,  1, -1,
+		-1,  1, -1,
+		-1, -1,  1,
+		 1, -1,  1,
+		 1,  1,  1,
+		-1,  1,  1
+	};
+
+	int texCoordsSize = 12;
+	float texCoords[12]
+	{
+		0, 0,
+		1, 0,
+		0, 1,
+		0, 1,
+		1, 0,
+		0, 1
+	};
+
+	int normalSize = 18;
+	float normalPosition[18]
+	{
+		 0,  0,  1,
+		 1,  0,  0,
+		 0,  0, -1,
+		-1,  0,  0,
+		 0,  1,  0,
+		 0, -1,  0
+	};
+
+	specificData.indicesSize = 36;
+	specificData.indices = new uint[specificData.indicesSize];
+	uint indices[]
+	{
+		0, 1, 3, 3, 1, 2,
+		1, 5, 2, 2, 5, 6,
+		5, 4, 6, 6, 4, 7,
+		4, 0, 7, 7, 0, 3,
+		3, 2, 7, 7, 2, 6,
+		4, 5, 0, 0, 5, 1
+	};
+
+	memcpy(&specificData, indices, sizeof(int) * specificData.indicesSize);
+
+	// Vertices
+	/// Position
+	float* cursor = verticesPosition;
+	for (uint i = 0; i < verticesSize / 3; ++i)
+	{
+		memcpy(vertices[i].position, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	///Normals
+	cursor = normalPosition;
+	for (uint i = 0; i < normalSize / 3; ++i)
+	{
+		memcpy(vertices[i].normal, cursor, sizeof(float) * 3);
+		cursor += 3;
+	}
+
+	///TextCords
+	cursor = texCoords;
+	for (uint i = 0; i < texCoordsSize / 2; ++i)
+	{
+		memcpy(vertices[i].texCoord, cursor, sizeof(float) * 2);
+		cursor += 2;
+	}
+
+	ResourceData data;
+	data.name = "Default Cube";
+
+	defaultCube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData)->GetUuid();
 }
 
 void ModuleInternalResHandler::CreateDefaultShaderProgram()

@@ -431,16 +431,19 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 
 	switch (type)
 	{
-	case ResourceTypes::MeshResource:
-		resource = new ResourceMesh(ResourceTypes::MeshResource, uuid, data, *(ResourceMeshData*)specificData);
-		break;
-	case ResourceTypes::TextureResource:
-		resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
-		break;
-	case ResourceTypes::ShaderObjectResource:
-		break;
-	case ResourceTypes::ShaderProgramResource:
-		break;
+		case ResourceTypes::MeshResource:
+			resource = new ResourceMesh(ResourceTypes::MeshResource, uuid, data, *(ResourceMeshData*)specificData);
+			break;
+		case ResourceTypes::TextureResource:
+			resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
+			break;
+		case ResourceTypes::ShaderObjectResource:
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			break;
+		case ResourceTypes::ScriptResource:		
+			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
+			break;
 	}
 	assert(resource != nullptr);
 

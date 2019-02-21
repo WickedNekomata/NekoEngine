@@ -860,6 +860,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		aiBone* bone = it->second;
 
 		GameObject* go = relations[node];
+		
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;

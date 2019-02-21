@@ -85,6 +85,11 @@ GameObject::GameObject(const GameObject& gameObject)
 			cmp_emitter->SetParent(this);
 			components.push_back(cmp_emitter);
 			break;
+		case ComponentTypes::BoneComponent:
+			cmp_bone = new ComponentBone(*gameObject.cmp_bone);
+			cmp_bone->SetParent(this);
+			components.push_back(cmp_bone);
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			// TODO
@@ -377,6 +382,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		// TODO
 		assert(cmp_rigidActor == nullptr);
 		newComponent = cmp_rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
+		break;
+	case ComponentTypes::BoneComponent:
+		assert(cmp_bone == NULL);
+		newComponent = cmp_bone = new ComponentBone(this);
 		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:

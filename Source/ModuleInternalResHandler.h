@@ -138,6 +138,7 @@ public:
 	bool Start();
 
 	void CreatePlane();
+	void CreateCube();
 
 	void CreateDefaultShaderProgram();
 	void CreateCubemapShaderProgram();
@@ -147,10 +148,11 @@ public:
 
 	// Mesh resources
 	uint defaultPlane;
+	uint defaultCube;
 
 	// Texture resources
-	uint checkers = 0;
-	uint defaultTexture = 0;
+	uint checkers;
+	uint defaultTexture;
 	// todo cubemap textures
 
 	// Shader resources

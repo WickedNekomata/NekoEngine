@@ -60,6 +60,7 @@ bool PanelInspector::Draw()
 				break;
 			case ResourceTypes::TextureResource:
 				ShowTextureResourceInspector();
+				ShowTextureImportSettingsInspector();
 				break;
 			case ResourceTypes::ShaderObjectResource:
 				ShowShaderObjectInspector();
@@ -73,8 +74,6 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
 			break;
-		case CurrentSelection::SelectedType::textureImportSettings:
-			ShowTextureImportSettingsInspector();
 			break;
 		}
 	}
@@ -282,7 +281,7 @@ void PanelInspector::ShowGameObjectInspector() const
 					}
 				}
 
-				DEPRECATED_LOG("New Script Created: %s", scriptNames[i].data());
+				CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptNames[i].data());
 				ComponentScript* script = App->scripting->CreateScriptComponent(scriptNames[i], res == nullptr);
 				gameObject->AddComponent(script);
 				script->SetParent(gameObject);
@@ -322,7 +321,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				}
 			}
 
-			DEPRECATED_LOG("New Script Created: %s", scriptName.data());
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptName.data());
 			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
 			gameObject->AddComponent(script);
 			script->SetParent(gameObject);
@@ -458,7 +457,6 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 	
 	if (m_is.postProcessConfigurationFlags == ResourceMeshImportSettings::PostProcessConfigurationFlags::CUSTOM)
 	{
-		// TODO if gen normals and gen smooth normals only one can be checked
 		ImGui::CheckboxFlags("Tangent space", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::CALC_TANGENT_SPACE);
 		if (ImGui::CheckboxFlags("Normals", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::GEN_NORMALS))
 		{
@@ -588,9 +586,9 @@ void PanelInspector::ShowShaderObjectInspector() const
 		strcpy_s(metaFile, strlen(shaderObject->GetFile()) + 1, shaderObject->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		// TODO
-		//shaderObject->SetName(name);
-		//App->shaderImporter->SetShaderNameToMeta(metaFile, shaderObject->GetName());
+		shaderObject->SetName(name);
+		std::string shaderName = name;
+		ResourceShaderObject::SetNameToMeta(metaFile, shaderName);
 	}
 	ImGui::Spacing();
 
@@ -628,9 +626,9 @@ void PanelInspector::ShowShaderProgramInspector() const
 		strcpy_s(metaFile, strlen(shaderProgram->GetFile()) + 1, shaderProgram->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		// TODO
-		//shaderProgram->SetName(name);
-		//App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
+		shaderProgram->SetName(name);
+		std::string shaderName = name;
+		ResourceShaderProgram::SetNameToMeta(metaFile, shaderName);
 	}
 	ImGui::Spacing();
 

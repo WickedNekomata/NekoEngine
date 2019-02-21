@@ -23,8 +23,6 @@ public:
 	ShaderImporter();
 	~ShaderImporter();
 
-	bool CreateShaderObject(std::string& file, ShaderTypes shaderType) const;
-
 	// Shader Object (save)
 	bool SaveShaderObject(ResourceData& data, ResourceShaderObjectData& outputShaderObjectData, std::string& outputFile, bool overwrite = false) const;
 	bool SaveShaderObject(const void* buffer, uint size, ShaderTypes shaderType, std::string& outputFile, bool overwrite = false) const;

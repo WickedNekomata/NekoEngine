@@ -268,8 +268,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader object file '%s' has resources that need to be created", file);
 
-				// 1. Shader object			
-				int uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
+				// 1. Shader object
+				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
 				assert(uuid > 0);
 				resourcesUuids.push_back(uuid);
 				resourcesUuids.shrink_to_fit();
@@ -296,7 +296,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
-			int64_t lastModTime = ResourceShaderObject::CreateMeta(file, resourcesUuids.front(), outputMetaFile);
+			std::string name = resource->GetName();
+			int64_t lastModTime = ResourceShaderObject::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -314,8 +315,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader program file '%s' has resources that need to be created", file);
 
-				// 1. Shader program			
-				int uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
+				// 1. Shader program
+				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
 				assert(uuid > 0);
 				resourcesUuids.push_back(uuid);
 				resourcesUuids.shrink_to_fit();
@@ -377,7 +378,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), shaderObjectsNames, outputMetaFile);
+			std::string name = resource->GetName();
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), name, shaderObjectsNames, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -437,11 +439,13 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 		case ResourceTypes::TextureResource:
 			resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
 			break;
-		case ResourceTypes::ShaderObjectResource:
-			break;
-		case ResourceTypes::ShaderProgramResource:
-			break;
-		case ResourceTypes::ScriptResource:		
+			case ResourceTypes::ShaderObjectResource:
+				resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
+				break;
+			case ResourceTypes::ShaderProgramResource:
+				resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
+				break;
+		case ResourceTypes::ScriptResource:
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;
 	}

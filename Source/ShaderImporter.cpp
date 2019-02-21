@@ -23,33 +23,6 @@ ShaderImporter::~ShaderImporter()
 	ResourceShaderObject::DeleteShaderObject(defaultFragmentShaderObject);
 }
 
-bool ShaderImporter::CreateShaderObject(std::string& file, ShaderTypes shaderType) const
-{
-	bool ret = false;
-
-	char* buffer = nullptr;
-	uint size = 0;
-	switch (shaderType)
-	{
-	case ShaderTypes::VertexShaderType:
-		buffer = vShaderTemplate;
-		size = strlen(vShaderTemplate);
-		break;
-	case ShaderTypes::FragmentShaderType:
-		buffer = fShaderTemplate;
-		size = strlen(fShaderTemplate);
-		break;
-	}
-
-	if (App->fs->SaveInGame(buffer, size, FileType::NoFileType, file, true) > 0)
-	{
-		CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully created Shader Object '%s'", file.data());
-		ret = true;
-	}
-
-	return ret;
-}
-
 bool ShaderImporter::SaveShaderObject(ResourceData& data, ResourceShaderObjectData& outputShaderObjectData, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;

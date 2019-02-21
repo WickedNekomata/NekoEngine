@@ -12,6 +12,7 @@
 #include "ModuleInput.h"
 #include "MaterialImporter.h"
 #include "ResourceTexture.h"
+#include "ModuleResourceManager.h"
 
 #include "Panel.h"
 #include "PanelInspector.h"
@@ -107,14 +108,8 @@ bool ModuleGui::Start()
 	ImGui::StyleColorsLight();
 
 	// Load atlas texture // TODO: ATLAS
-	/*
-	std::string outputFileName;
-	atlas = new ResourceTexture(ResourceTypes::TextureResource, App->GenerateRandomNumber());
-	TextureImportSettings* importSettings = new TextureImportSettings();
-	App->materialImporter->Import("Settings/atlas.png", outputFileName, importSettings);
-	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
-	RELEASE(importSettings);
-	*/
+	atlas = (ResourceTexture*)App->res->ImportFile("Settings/atlas.png");
+	App->res->SetAsUsed(atlas->GetUuid());
 
 	return ret;
 }
@@ -265,7 +260,7 @@ bool ModuleGui::CleanUp()
 	panelPhysics = nullptr;
 	panelLayers = nullptr;
 	
-	RELEASE(atlas);
+	App->res->SetAsUnused(atlas->GetUuid());
 
 	DEPRECATED_LOG("Cleaning up ImGui");
 

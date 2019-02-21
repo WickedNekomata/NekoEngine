@@ -33,7 +33,7 @@ bool PanelNavigation::Draw()
 	{
 		GameObject* curr = (GameObject*)App->scene->selectedObject.Get();
 
-		if (curr->meshRenderer) {
+		if (curr->cmp_mesh) {
 			ImGui::Text("Object");
 
 			bool isStatic = curr->IsStatic();
@@ -48,7 +48,7 @@ bool PanelNavigation::Draw()
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Walkable");
 			ImGui::SameLine();
-			ImGui::Checkbox("##Walkability", &curr->meshRenderer->nv_walkable);
+			ImGui::Checkbox("##Walkability", &curr->cmp_mesh->nv_walkable);
 		}
 	}
 
@@ -137,7 +137,15 @@ void PanelNavigation::ResetCommonSettings()
 void PanelNavigation::HandleInputMeshes() const
 {
 	std::vector<ComponentMesh*> staticsMeshComp;
-	App->GOs->GetMeshComponentsFromStaticGameObjects(staticsMeshComp);
+	std::vector<GameObject*> gos;
+	App->GOs->GetStaticGameobjects(gos);
+
+	for each (auto go in gos)
+	{
+		assert(go->IsStatic());
+		if (go->cmp_mesh)
+			staticsMeshComp.push_back(go->cmp_mesh);
+	}
 
 	if (staticsMeshComp.size() <= 0)
 	{
@@ -175,11 +183,11 @@ void PanelNavigation::HandleInputMeshes() const
 		{
 			p_inputGeom.i_meshes[i].m_ntris = res->GetIndicesCount() / 3;
 			p_inputGeom.i_ntris += p_inputGeom.i_meshes[i].m_ntris;
-			p_inputGeom.i_meshes[i].m_nverts = res->GetVertsCount();
+			p_inputGeom.i_meshes[i].m_nverts = res->GetVerticesCount();
 			p_inputGeom.i_meshes[i].m_tris = new int[p_inputGeom.i_meshes[i].m_ntris * 3];
 			p_inputGeom.i_meshes[i].m_verts = new float[p_inputGeom.i_meshes[i].m_nverts * 3];
-			res->GetIndices(p_inputGeom.i_meshes[i].m_tris);
-			res->GetVerts(p_inputGeom.i_meshes[i].m_verts);
+			res->GetIndices((uint*)p_inputGeom.i_meshes[i].m_tris);
+			res->GetTris(p_inputGeom.i_meshes[i].m_verts);
 
 			p_inputGeom.i_meshes[i].walkable = staticsMeshComp[i]->nv_walkable;
 

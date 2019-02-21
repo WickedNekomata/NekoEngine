@@ -30,9 +30,9 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	assert(gActor != nullptr);
 
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
-	if (parent->collider != nullptr)
+	if (parent->cmp_collider != nullptr)
 	{
-		UpdateShape(parent->collider->GetShape());
+		UpdateShape(parent->cmp_collider->GetShape());
 		UpdateMassAndInertia();
 	}
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
@@ -458,4 +458,9 @@ void ComponentRigidDynamic::AddTorque(math::float3& torque, physx::PxForceMode::
 void ComponentRigidDynamic::ClearTorque() const
 {
 	gActor->is<physx::PxRigidDynamic>()->clearTorque();
+}
+
+uint ComponentRigidDynamic::GetInternalSerializationBytes()
+{
+	return 0;
 }

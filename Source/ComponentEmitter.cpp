@@ -20,7 +20,8 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
-	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+	// TODO
+	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
 
 }
 
@@ -83,7 +84,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 
 	App->particle->emitters.push_back(this);
 
-	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+	// TODO
+	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
 }
 
 
@@ -123,7 +125,7 @@ void ComponentEmitter::ChangeGameState(SimulatedGame state)
 
 	if (subEmitter)
 	{
-		ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponentByType(EmitterComponent));
+		ComponentEmitter* compEmitter = (ComponentEmitter*)(subEmitter->GetComponent(EmitterComponent));
 		if (compEmitter)
 			compEmitter->ChangeGameState(state);
 	}
@@ -617,7 +619,7 @@ void ComponentEmitter::ParticleSubEmitter()
 			{
 				subEmitter = App->GOs->CreateGameObject("SubEmition",parent);
 				subEmitter->AddComponent(EmitterComponent);
-				((ComponentEmitter*)subEmitter->GetComponentByType(EmitterComponent))->isSubEmitter = true;
+				((ComponentEmitter*)subEmitter->GetComponent(EmitterComponent))->isSubEmitter = true;
 				subEmitter->boundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
 				App->scene->quadtree.Insert(subEmitter);
 			}
@@ -723,6 +725,11 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 	return vec;
 }
 #endif
+
+uint ComponentEmitter::GetInternalSerializationBytes()
+{
+	return 0;
+}
 
 void ComponentEmitter::OnInternalSave(JSON_Object* parent)
 {

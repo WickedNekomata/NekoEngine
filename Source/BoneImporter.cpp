@@ -14,30 +14,19 @@ BoneImporter::~BoneImporter()
 {
 }
 
-bool BoneImporter::Import(const char * file_path, std::string & output_file)
-{
-	return true;
-}
-
-bool BoneImporter::Import(const char * importFile, std::string & outputFile, const ImportSettings * importSettings) const
-{
-	return true;
-}
-
-bool BoneImporter::Import(const void * buffer, uint size, std::string & outputFile, const ImportSettings * importSettings, const char * metaFile) const
-{
-	return true;
-}
-
-uint BoneImporter::Import(mutable aiBone* new_bone,mutable uint mesh, mutable std::string& output) const
+uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable std::string& output) const
 {
 	bool ret = false;
 
 	if (new_bone == nullptr)
 		return ret;
 
+
+	return 0u;
+	// TODO_G : Now we dont create resources here uwu
+
 	// Temporary object to make the load/Save process
-	ResourceBone* bone = (ResourceBone*)App->res->CreateNewResource(ResourceType::BoneResource);
+	/*ResourceBone* bone = (ResourceBone*)App->res->CreateNewResource(ResourceTypes::BoneResource);
 
 	bone->mesh_uid = mesh;
 	bone->bone_weights_size = new_bone->mNumWeights;
@@ -59,10 +48,10 @@ uint BoneImporter::Import(mutable aiBone* new_bone,mutable uint mesh, mutable st
 
 	bone->exportedFile = output;
 
-	return bone->GetUUID();
+	return bone->GetUUID();*/
 }
 
-uint BoneImporter::GenerateResourceFromFile(const char * file_path, uint uid_to_force)
+uint BoneImporter::GenerateResourceFromFile(mutable const char * file_path, mutable uint uid_to_force)
 {
 	// Reading file
 	char* buffer = nullptr;
@@ -75,8 +64,11 @@ uint BoneImporter::GenerateResourceFromFile(const char * file_path, uint uid_to_
 		return false;
 	}
 
-	char* cursor = buffer;
-	ResourceBone* resource = (ResourceBone*)App->res->CreateNewResource(ResourceType::BoneResource, uid_to_force);
+	return 0u;
+	// TODO_G : Now we dont create resources here uwu
+
+	/*char* cursor = buffer;
+	ResourceBone* resource = (ResourceBone*)App->res->CreateNewResource(ResourceTypes::BoneResource, uid_to_force);
 
 	// Load mesh UID
 	uint bytes = sizeof(uint);
@@ -108,10 +100,10 @@ uint BoneImporter::GenerateResourceFromFile(const char * file_path, uint uid_to_
 
 	RELEASE_ARRAY(buffer);
 
-	return resource->GetUUID();
+	return resource->GetUUID();*/
 }
 
-bool BoneImporter::SaveBone(const ResourceBone* bone, std::string& output) const
+bool BoneImporter::SaveBone(mutable const ResourceBone* bone, mutable std::string& output) const
 {
 	bool ret = false;
 

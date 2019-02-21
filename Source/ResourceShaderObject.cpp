@@ -1,49 +1,187 @@
 #include "ResourceShaderObject.h"
 
+#include "Application.h"
+#include "ModuleFileSystem.h"
+#include "ShaderImporter.h"
+#include "ModuleScene.h"
+
 #include "ModuleGui.h"
 #include "PanelCodeEditor.h"
 
-#include "Application.h"
-#include "ModuleResourceManager.h"
-#include "ShaderImporter.h"
+#include "glew\include\GL\glew.h"
 
-ResourceShaderObject::ResourceShaderObject(ResourceType type, uint uuid) : Resource(type, uuid) {}
+#include "imgui\imgui.h"
+
+#include <assert.h>
+
+ResourceShaderObject::ResourceShaderObject(ResourceTypes type, uint uuid, ResourceData data, ResourceShaderObjectData shaderObjectData) : Resource(type, uuid, data), shaderObjectData(shaderObjectData) {}
 
 ResourceShaderObject::~ResourceShaderObject()
 {
-	RELEASE_ARRAY(source);
-
 	DeleteShaderObject(shaderObject);
 }
 
-int ResourceShaderObject::LoadMemory()
+void ResourceShaderObject::OnPanelAssets()
 {
-	return LoadInMemory();
+	ImGuiTreeNodeFlags flags = 0;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
+
+	if (App->scene->selectedObject == this)
+		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
+
+	char id[DEFAULT_BUF_SIZE];
+	sprintf(id, "%s##%d", data.name.data(), uuid);
+
+	ImGui::TreeNodeEx(id, flags);
+
+	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
+	{
+		SELECT(this);
+	}
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		Resource* res = this;
+		ImGui::SetDragDropPayload("SHADER_OBJECT", &res, sizeof(Resource*));
+		ImGui::EndDragDropSource();
+	}
 }
 
-void ResourceShaderObject::SetSource(const char* source, uint size)
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderObject::ImportFile(const char* file, std::string& outputFile)
 {
-	RELEASE_ARRAY(this->source);
-	this->source = new char[size + 1];
-	strcpy_s(this->source, size + 1, source);
+	assert(file != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(file) + 1, file); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	if (App->fs->Exists(metaFile))
+	{
+		uint uuid = 0;
+		assert(ResourceShaderObject::ReadShaderObjectUuidFromMeta(metaFile, uuid));
+
+		char entry[DEFAULT_BUF_SIZE];
+		sprintf_s(entry, "%s", uuid);
+
+		outputFile = entry;
+	}
+
+	return true;
 }
 
-const char* ResourceShaderObject::GetSource() const
+bool ResourceShaderObject::ExportFile(ResourceShaderObjectData& shaderObjectData, ResourceData& data, std::string& outputFile, bool overwrite)
 {
-	return source;
+	return App->shaderImporter->SaveShaderObject(data, shaderObjectData, outputFile, overwrite);
 }
 
-bool ResourceShaderObject::Compile(bool comment)
+// Returns the last modification time of the file
+uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, std::string& outputMetaFile)
+{
+	assert(file != nullptr);
+	
+	uint uuidsSize = 1;
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	int64_t lastModTime = App->fs->GetLastModificationTime(file);
+	assert(lastModTime > 0);
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store shader object uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &shaderObjectUuid, bytes);
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	outputMetaFile = file;
+	outputMetaFile.append(EXTENSION_META);
+	uint resultSize = App->fs->Save(outputMetaFile.data(), data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Object: Successfully saved meta '%s'", outputMetaFile.data());
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Object: Could not save meta '%s'", outputMetaFile.data());
+		return 0;
+	}
+
+	return lastModTime;
+}
+
+bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. Load last modification time
+		uint bytes = sizeof(int64_t);
+		memcpy(&lastModTime, cursor, bytes);
+
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. Load shader object uuid
+		bytes = sizeof(uint);
+		memcpy(&shaderObjectUuid, cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Object: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Object: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderObject::Compile()
 {
 	bool ret = true;
 
-	GLenum shader = 0;
-	switch (shaderType)
+	uint shader = 0;
+	switch (shaderObjectData.shaderType)
 	{
-	case ShaderType::VertexShaderType:
+	case ShaderTypes::VertexShaderType:
 		shader = GL_VERTEX_SHADER;
 		break;
-	case ShaderType::FragmentShaderType:
+	case ShaderTypes::FragmentShaderType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
 	}
@@ -51,12 +189,13 @@ bool ResourceShaderObject::Compile(bool comment)
 	// Create a Shader Object
 	DeleteShaderObject(shaderObject);
 	shaderObject = glCreateShader(shader); // Creates an empty Shader Object
+	const char* source = shaderObjectData.GetSource();
 	glShaderSource(shaderObject, 1, &source, NULL); // Takes an array of strings and stores it into the shader
 
 	// Compile the Shader Object
 	glCompileShader(shaderObject);
 
-	if (!IsObjectCompiled(comment))
+	if (!IsObjectCompiled())
 	{
 		DeleteShaderObject(shaderObject);
 		ret = false;
@@ -65,15 +204,15 @@ bool ResourceShaderObject::Compile(bool comment)
 	return ret;
 }
 
-GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
+uint ResourceShaderObject::Compile(const char* source, ShaderTypes shaderType)
 {
 	GLenum shader = 0;
 	switch (shaderType)
 	{
-	case ShaderType::VertexShaderType:
+	case ShaderTypes::VertexShaderType:
 		shader = GL_VERTEX_SHADER;
 		break;
-	case ShaderType::FragmentShaderType:
+	case ShaderTypes::FragmentShaderType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
 	}
@@ -95,7 +234,7 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		DEPRECATED_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+		CONSOLE_LOG(LogTypes::Error, "Shader Object could not be compiled. ERROR: %s", infoLog);
 
 #ifndef GAMEMODE
 		// GET ERROR LINE AND ERROR TEXT AND SEND IT TO THE CODE EDITOR
@@ -144,12 +283,12 @@ GLuint ResourceShaderObject::Compile(const char* source, ShaderType shaderType)
 		DeleteShaderObject(shaderObject);
 	}
 	else
-		DEPRECATED_LOG("Successfully compiled Shader Object");
+		CONSOLE_LOG(LogTypes::Normal, "Successfully compiled Shader Object");
 
 	return shaderObject;
 }
 
-bool ResourceShaderObject::DeleteShaderObject(GLuint& shaderObject)
+bool ResourceShaderObject::DeleteShaderObject(uint shaderObject)
 {
 	bool ret = false;
 
@@ -163,7 +302,74 @@ bool ResourceShaderObject::DeleteShaderObject(GLuint& shaderObject)
 	return ret;
 }
 
-bool ResourceShaderObject::IsObjectCompiled(bool comment) const
+// ----------------------------------------------------------------------------------------------------
+
+ShaderTypes ResourceShaderObject::GetShaderType() const
+{
+	return shaderObjectData.shaderType;
+}
+
+void ResourceShaderObject::SetSource(const char* source, uint size)
+{
+	shaderObjectData.SetSource(source, size);
+}
+
+const char* ResourceShaderObject::GetSource() const
+{
+	return shaderObjectData.GetSource();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderObject::ReadShaderObjectUuidFromMeta(const char* metaFile, uint& shaderObjectUuid)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. (Last modification time)
+		uint bytes = sizeof(int64_t);
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. Load shader object uuid
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&shaderObjectUuid, cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Object: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Object: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
+}
+
+bool ResourceShaderObject::LoadInMemory()
+{
+	return true;
+}
+
+bool ResourceShaderObject::UnloadFromMemory()
+{
+	return true;
+}
+
+bool ResourceShaderObject::IsObjectCompiled() const
 {
 	GLint success = 0;
 	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &success);
@@ -175,40 +381,10 @@ bool ResourceShaderObject::IsObjectCompiled(bool comment) const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		DEPRECATED_LOG("Shader Object could not be compiled. ERROR: %s", infoLog);
+		CONSOLE_LOG(LogTypes::Normal, "Shader Object could not be compiled. ERROR: %s", infoLog);
 	}
-	else if (comment)
-		DEPRECATED_LOG("Successfully compiled Shader Object");
+	else
+		CONSOLE_LOG(LogTypes::Error, "Successfully compiled Shader Object");
 
 	return success;
-}
-
-// Returns the shader type that matches the extension
-ShaderType ResourceShaderObject::GetShaderTypeByExtension(const char* extension)
-{
-	union
-	{
-		char ext[4];
-		uint32_t asciiValue;
-	} asciiUnion;
-
-	for (int i = 0; i < 4; ++i)
-		asciiUnion.ext[i] = extension[i];
-
-	switch (asciiUnion.asciiValue)
-	{
-	case ASCIIvsh: case ASCIIVSH:
-		return ShaderType::VertexShaderType;
-		break;
-	case ASCIIfsh: case ASCIIFSH:
-		return ShaderType::FragmentShaderType;
-		break;
-	}
-
-	return ShaderType::NoShaderType;
-}
-
-bool ResourceShaderObject::LoadInMemory()
-{
-	return App->shaderImporter->LoadShaderObject(exportedFile.data(), this);
 }

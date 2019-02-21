@@ -115,7 +115,7 @@ bool PanelConsole::Draw()
 					if (strstr(line, "Error: ") != nullptr)
 					{
 						if (showErrors)
-							ImGui::TextColored({ 1,0,0,1 }, line);
+							ImGui::TextColored({ 1.0f,0.0f,0.0f,1.0f }, line);
 					}
 					else if (strstr(line, "Warning: ") != nullptr)
 					{

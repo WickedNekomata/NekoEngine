@@ -858,7 +858,6 @@ void ParticlePlane::LoadPlaneBuffers()
 	// 12 = All vertex positions (4 * 3) 4 = posibleVertex and 3 = pos x-y-z
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
 	uint vertices[]
 	{
 		// Front
@@ -905,7 +904,7 @@ void ParticlePlane::DrawPlane(ResourceTexture* texture, /*uint textureUV, */math
 		glEnable(GL_ALPHA_TEST);
 
 		//Load texture
-		glBindTexture(GL_TEXTURE_2D, texture->id);
+		glBindTexture(GL_TEXTURE_2D, texture->GetId());
 	}
 
 	glColor4f(color.x, color.y, color.z, color.w);

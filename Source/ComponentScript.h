@@ -25,7 +25,6 @@ public:
 
 	void OnUniqueEditor() override;
 
-	static uint bytesToSerialize() { return sizeof(uint32_t) * 3 + (sizeof(bool)); }
 	uint bytesToSerializePublicVars() const;
 
 	void Serialize(char*& cursor) const;
@@ -34,6 +33,9 @@ public:
 	void SerializePublicVars(char*& cursor) const;
 	void deSerializePublicVars(char*& cursor);
 
+	void OnInternalSave(char*& cursor) {}
+	void OnInternalLoad(char*& cursor) {}
+	uint GetInternalSerializationBytes() { return 0; }
 public:
 	void InstanceClass();
 

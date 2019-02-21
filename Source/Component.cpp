@@ -33,7 +33,7 @@ void Component::OnEditor()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMPONENTS_INSPECTOR"))
 		{
 			Component* payload_n = *(Component**)payload->Data;
-			GetParent()->SwapComponents(this, payload_n);
+		//	GetParent()->SwapComponents(this, payload_n);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -44,9 +44,7 @@ void Component::OnEditor()
 
 		ImGui::SameLine();
 		if (ImGui::Button(itemName)) {
-			GetParent()->MarkToDeleteComponentByValue(this);
-			if (componentType == ComponentTypes::MeshComponent)
-				GetParent()->MarkToDeleteComponentByValue((Component*)GetParent()->materialRenderer);
+			GetParent()->DestroyComponent(this);
 		}
 	}
 
@@ -60,6 +58,11 @@ void Component::OnEditor()
 	if (ImGui::CollapsingHeader(itemName, ImGuiTreeNodeFlags_DefaultOpen))
 		OnUniqueEditor();
 #endif
+}
+
+uint Component::GetSerializationBytes()
+{
+	return sizeof(uint) + sizeof(int) + sizeof(bool) + GetInternalSerializationBytes();
 }
 
 void Component::OnUniqueEditor() {}
@@ -103,10 +106,37 @@ GameObject* Component::GetParent() const
 	return parent;
 }
 
-void Component::OnSave(JSON_Object* file)
+void Component::OnSave(char*& cursor)
 {
-	json_object_set_number(file, "Type", componentType);
-	OnInternalSave(file);
+	size_t bytes = sizeof(int);
+
+	memcpy(cursor, &componentType, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+
+	memcpy(cursor, &UUID, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &isActive, bytes);
+	cursor += bytes;
+
+	OnInternalSave(cursor);
+}
+
+void Component::OnLoad(char*& cursor)
+{
+	size_t bytes = sizeof(uint);
+
+	memcpy(&UUID, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&isActive, cursor, bytes);
+	cursor += bytes;
+
+	OnInternalLoad(cursor);
 }
 
 MonoObject* Component::GetMonoComponent()

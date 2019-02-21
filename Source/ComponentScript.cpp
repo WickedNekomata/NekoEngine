@@ -26,7 +26,7 @@ ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)
-		App->res->SetAsUnused(scriptRes->GetUUID());
+		App->res->SetAsUnused(scriptRes->GetUuid());
 
 	if (handleID != 0)
 	{
@@ -283,7 +283,7 @@ void ComponentScript::OnUniqueEditor()
 			event.compEvent.component = this;
 			App->PushSystemEvent(event);
 			
-			parent->ClearComponent(this);		
+			parent->EraseComponent(this);		
 			deleted = true;
 			App->scripting->DestroyScript(this);
 			ImGui::CloseCurrentPopup();
@@ -335,14 +335,14 @@ void ComponentScript::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->file.data());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->GetFile());
 			ImGui::EndTooltip();
 		}		
 
 		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
 
 		//Calculate the text fitting the button rect
-		std::string originalText = scriptRes ? scriptRes->file : "";
+		std::string originalText = scriptRes ? scriptRes->GetFile() : "";
 		std::string clampedText;
 
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
@@ -873,7 +873,7 @@ void ComponentScript::OnUniqueEditor()
 						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
 
 						ImGui::PushItemWidth(150.0f);
-						if (ImGui::BeginCombo((fieldName + "##" + std::to_string(UUID)).data(), title))
+						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
 						{
 							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 							{
@@ -1053,7 +1053,7 @@ void ComponentScript::Serialize(char*& cursor) const
 	memcpy(cursor, &UUID, bytes);
 	cursor += bytes;
 
-	uint32_t resUID = scriptRes ? scriptRes->GetUUID() : 0;
+	uint32_t resUID = scriptRes ? scriptRes->GetUuid() : 0;
 	memcpy(cursor, &resUID, bytes);
 	cursor += bytes;
 

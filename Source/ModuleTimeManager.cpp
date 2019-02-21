@@ -32,7 +32,6 @@ void ModuleTimeManager::PrepareUpdate()
 	switch (App->GetEngineState())
 	{
 	case engine_states::ENGINE_PLAY:
-	case engine_states::ENGINE_WANTS_PAUSE:
 		dt = realDt * timeScale;
 		time += realDt;
 		gameTime += dt;

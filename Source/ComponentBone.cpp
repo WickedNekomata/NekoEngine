@@ -31,12 +31,20 @@ ComponentBone::~ComponentBone()
 		res->Release();*/ //CHECK THIS
 }
 
+uint ComponentBone::GetInternalSerializationBytes()
+{
+	return 0;
+}
+
 bool ComponentBone::Save(JSON_Object* component_obj) const
 {
-	//todo: get resource path etc
-	const Resource* res = (Resource*)App->res->GetResource(this->res);
-	if (res)
-		json_object_set_string(component_obj, "path", res->exportedFile.c_str());
+	Resource* resource = App->res->GetResource(this->res);
+	
+	if (resource) {
+		const char* exported_file = resource->GetExportedFile();
+		json_object_set_string(component_obj, "path", exported_file);
+	}
+
 	return true;
 }
 

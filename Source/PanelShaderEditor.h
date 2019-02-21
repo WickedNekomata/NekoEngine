@@ -20,26 +20,25 @@ public:
 
 	bool Draw();
 	
-	void OpenShaderInShaderEditor(uint shaderProgramUUID);
-	uint GetShaderProgramUUID() const;
+	void OpenShaderInShaderEditor(uint shaderProgramUuid);
+	uint GetShaderProgramUuid() const;
 
 private:
 
 	bool GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
-	bool GetShaderObjectsIDs(std::list<uint>& shaderObjectsIDs) const;
 
 	bool TryLink() const;
 
 private:
 
-	uint shaderProgramUUID = 0;
+	uint shaderProgramUuid = 0;
 
 public:
 
 	char shaderProgramName[INPUT_BUF_SIZE];
 
-	std::list<uint> vertexShadersUUIDs;
-	std::list<uint> fragmentShadersUUIDs;
+	std::list<uint> vertexShadersUuids;
+	std::list<uint> fragmentShadersUuids;
 };
 
 #endif

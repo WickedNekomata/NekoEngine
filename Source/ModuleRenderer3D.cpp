@@ -158,7 +158,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	App->shaderImporter->LoadCubemapShader();
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
-	App->materialImporter->LoadSkyboxTexture();
+	//App->materialImporter->LoadSkyboxTexture();
 
 	skyboxTextures = App->materialImporter->GetSkyboxTextures();
 	skyboxTexture = App->materialImporter->GetSkyboxTexture();
@@ -212,7 +212,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->GetSeenLastFrame())
+			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
 				DrawMesh(meshComponents[i]);
 		}
 	}
@@ -397,6 +397,21 @@ bool ModuleRenderer3D::CleanUp()
 	return ret;
 }
 
+void ModuleRenderer3D::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::Play:
+		SetCurrentCamera();
+		break;
+	case System_Event_Type::Stop:
+#ifndef GAMEMODE
+		currentCamera = App->camera->camera;
+#endif // GAME
+		break;
+	}
+}
+
 void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 {
 	json_object_set_boolean(jObject, "vSync", vsync);
@@ -414,19 +429,6 @@ void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 	drawBoundingBoxes = json_object_get_boolean(jObject, "drawBoundingBoxes");
 	drawCamerasFrustum = json_object_get_boolean(jObject, "drawCamerasFrustum");
 	drawQuadtree = json_object_get_boolean(jObject, "drawQuadtree");
-}
-
-bool ModuleRenderer3D::OnGameMode()
-{
-	return SetCurrentCamera();
-}
-
-bool ModuleRenderer3D::OnEditorMode()
-{
-#ifndef GAMEMODE
-	currentCamera = App->camera->camera;
-#endif // GAME
-	return true;
 }
 
 void ModuleRenderer3D::OnResize(int width, int height)
@@ -588,18 +590,6 @@ bool ModuleRenderer3D::GetDrawQuadtree() const
 	return drawQuadtree;
 }
 
-ComponentMesh* ModuleRenderer3D::CreateMeshComponent(GameObject* parent)
-{
-	ComponentMesh* newComponent = new ComponentMesh(parent);
-
-	std::vector<ComponentMesh*>::const_iterator it = std::find(meshComponents.begin(), meshComponents.end(), newComponent);
-
-	if (it == meshComponents.end())
-		meshComponents.push_back(newComponent);
-
-	return newComponent;
-}
-
 bool ModuleRenderer3D::AddMeshComponent(ComponentMesh* toAdd)
 {
 	bool ret = true;
@@ -626,18 +616,6 @@ bool ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
 	return ret;
 }
 
-ComponentCamera* ModuleRenderer3D::CreateCameraComponent(GameObject* parent)
-{
-	ComponentCamera* newComponent = new ComponentCamera(parent);
-
-	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), newComponent);
-
-	if (it == cameraComponents.end())
-		cameraComponents.push_back(newComponent);
-
-	return newComponent;
-}
-
 bool ModuleRenderer3D::AddCameraComponent(ComponentCamera* toAdd)
 {
 	bool ret = true;
@@ -655,6 +633,10 @@ bool ModuleRenderer3D::EraseCameraComponent(ComponentCamera* toErase)
 {
 	bool ret = false;
 
+	if (cameraComponents.size() <= 0)
+		return false;
+
+	// TODO: Sometimes crash trying to erase editor camera. (its ok to call this method even if editor camera isnt in this vector, but it shouldnt crash)
 	std::vector<ComponentCamera*>::const_iterator it = std::find(cameraComponents.begin(), cameraComponents.end(), toErase);
 	ret = it != cameraComponents.end();
 
@@ -741,16 +723,16 @@ ComponentCamera* ModuleRenderer3D::GetCurrentCamera() const
 void ModuleRenderer3D::SetMeshComponentsSeenLastFrame(bool seenLastFrame)
 {
 	for (uint i = 0; i < meshComponents.size(); ++i)
-		meshComponents[i]->GetParent()->SetSeenLastFrame(seenLastFrame);
+		meshComponents[i]->GetParent()->seenLastFrame = seenLastFrame;
 }
 
 void ModuleRenderer3D::FrustumCulling() const
 {
 	std::vector<GameObject*> gameObjects;
-	App->GOs->GetGameObjects(gameObjects);
+	App->GOs->GetGameobjects(gameObjects);
 
 	for (uint i = 0; i < gameObjects.size(); ++i)
-		gameObjects[i]->SetSeenLastFrame(false);
+		gameObjects[i]->seenLastFrame = false;
 
 	// Static objects
 	std::vector<GameObject*> seen;
@@ -758,7 +740,7 @@ void ModuleRenderer3D::FrustumCulling() const
 
 	// Dynamic objects
 	std::vector<GameObject*> dynamicGameObjects;
-	App->GOs->GetDynamicGameObjects(dynamicGameObjects);
+	App->GOs->GetDynamicGameobjects(dynamicGameObjects);
 
 	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
 	{
@@ -770,7 +752,7 @@ void ModuleRenderer3D::FrustumCulling() const
 	}
 
 	for (uint i = 0; i < seen.size(); ++i)
-		seen[i]->SetSeenLastFrame(true);
+		seen[i]->seenLastFrame = true;
 }
 
 void ModuleRenderer3D::DrawSkybox()
@@ -802,11 +784,12 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (toDraw->res == 0)
 		return;
 
-	ComponentMaterial* materialRenderer = toDraw->GetParent()->materialRenderer;
+	ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 
 	// Shader
 	const ResourceShaderProgram* shader = (const ResourceShaderProgram*)App->res->GetResource(materialRenderer->shaderProgramUUID);
 	GLuint shaderProgram = shader != nullptr ? shader->shaderProgram : App->shaderImporter->GetDefaultShaderProgram();
+	shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 
 	glUseProgram(shaderProgram);
 
@@ -818,7 +801,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		GLuint tex = 0;
 		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
 		if (texRes != nullptr)
-			tex = texRes->id;
+			tex = texRes->GetId();
 		else if (materialRenderer->res[i].checkers)
 			tex = App->materialImporter->GetCheckers();
 		else if (i == 0)
@@ -875,47 +858,43 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		// Game
 	case ENGINE_PLAY:
 	case ENGINE_PAUSE:
-	case ENGINE_WANTS_PAUSE:
 	case ENGINE_STEP:
-	case ENGINE_WANTS_STEP:
-	case ENGINE_WANTS_EDITOR:
 		glUniform1f(location, App->timeManager->GetTime());
 		break;
 
 		// Editor
 	case ENGINE_EDITOR:
-	case ENGINE_WANTS_PLAY:
 		glUniform1f(location, App->timeManager->GetRealTime());
 		break;
 	}
 
 	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
 	{
-		switch ((*it)->common.type)
+		switch ((*it).common.type)
 		{
 		case Uniforms_Values::FloatU_value:
-			glUniform1f((*it)->common.location, (*it)->floatU.value);
+			glUniform1f((*it).common.location, (*it).floatU.value);
 			break;
 		case Uniforms_Values::IntU_value:
-			glUniform1i((*it)->common.location, (*it)->intU.value);
+			glUniform1i((*it).common.location, (*it).intU.value);
 			break;
 		case Uniforms_Values::Vec2FU_value:
-			glUniform2f((*it)->common.location, (*it)->vec2FU.value.x, (*it)->vec2FU.value.y);
+			glUniform2f((*it).common.location, (*it).vec2FU.value.x, (*it).vec2FU.value.y);
 			break;
 		case Uniforms_Values::Vec3FU_value:
-			glUniform3f((*it)->common.location, (*it)->vec3FU.value.x, (*it)->vec3FU.value.y, (*it)->vec3FU.value.z);
+			glUniform3f((*it).common.location, (*it).vec3FU.value.x, (*it).vec3FU.value.y, (*it).vec3FU.value.z);
 			break;
 		case Uniforms_Values::Vec4FU_value:
-			glUniform4f((*it)->common.location, (*it)->vec4FU.value.x, (*it)->vec4FU.value.y, (*it)->vec4FU.value.z, (*it)->vec4FU.value.w);
+			glUniform4f((*it).common.location, (*it).vec4FU.value.x, (*it).vec4FU.value.y, (*it).vec4FU.value.z, (*it).vec4FU.value.w);
 			break;
 		case Uniforms_Values::Vec2IU_value:
-			glUniform2i((*it)->common.location, (*it)->vec2IU.value.x, (*it)->vec2IU.value.y);
+			glUniform2i((*it).common.location, (*it).vec2IU.value.x, (*it).vec2IU.value.y);
 			break;
 		case Uniforms_Values::Vec3IU_value:
-			glUniform3i((*it)->common.location, (*it)->vec3IU.value.x, (*it)->vec3IU.value.y, (*it)->vec3IU.value.z);
+			glUniform3i((*it).common.location, (*it).vec3IU.value.x, (*it).vec3IU.value.y, (*it).vec3IU.value.z);
 			break;
 		case Uniforms_Values::Vec4IU_value:
-			glUniform4i((*it)->common.location, (*it)->vec4IU.value.x, (*it)->vec4IU.value.y, (*it)->vec4IU.value.z, (*it)->vec4IU.value.w);
+			glUniform4i((*it).common.location, (*it).vec4IU.value.x, (*it).vec4IU.value.y, (*it).vec4IU.value.z, (*it).vec4IU.value.w);
 			break;
 		}
 	}
@@ -959,7 +938,7 @@ void ModuleRenderer3D::ClearSkybox()
 	{
 		ResourceTexture* res = (ResourceTexture*)App->res->GetResource(skyboxTextures[i]);
 		if (res != nullptr)
-			App->res->SetAsUnused(res->GetUUID());
+			App->res->SetAsUnused(res->GetUuid());
 	}
 
 	skyboxTextures.clear();

@@ -1,52 +1,66 @@
 #ifndef __RESOURCE_H__
 #define __RESOURCE_H__
 
-#include "Globals.h"
-
 #include "ResourceTypes.h"
+
+#include "Globals.h"
 
 #include <string>
 
-struct ImportSettings;
+struct ResourceData
+{
+	std::string file;
+	std::string exportedFile;
+	std::string name;
+};
 
 class Resource
 {
 public:
 	
-	Resource(ResourceType type, uint uuid);
+	Resource(ResourceTypes type, uint uuid, ResourceData data);
 	virtual ~Resource();
 
+	virtual void OnPanelAssets() = 0;
+
+	// ----------------------------------------------------------------------------------------------------
+	
+	static uint SetLastModTimeToMeta(const char* metaFile, const uint64_t& lastModTime);
+
+	uint IncreaseReferences();
+	uint DecreaseReferences();
+
+	// ----------------------------------------------------------------------------------------------------
+
+	ResourceTypes GetType() const;
+	uint GetUuid() const;
+	uint GetReferencesCount() const;
+	bool IsInMemory() const;
+
+	inline ResourceData& GetData() { return data; }
+	void SetFile(const char* file);
+	const char* GetFile() const;
+	void SetExportedFile(const char* exportedFile);
+	const char* GetExportedFile() const;
 	void SetName(const char* name);
 	const char* GetName() const;
 
-	uint GetUUID() const;
-	ResourceType GetType() const;
-
-	bool IsInMemory() const;
-	virtual int LoadMemory();
-	virtual int UnloadMemory();
-
-	int CountReferences() const;
+	// ----------------------------------------------------------------------------------------------------
 
 private:
 
 	virtual bool LoadInMemory() = 0;
 	virtual bool UnloadFromMemory() = 0;
 
-public:
-
-	std::string file;
-	std::string exportedFile;
-
-	bool isValid = true;
+	bool IsLastInMemory() const;
 
 protected:
 
-	const char* name = nullptr;
-	ResourceType type = ResourceType::NoResourceType;
-	uint UUID = 0;
-	int count = 0;
-};
+	ResourceTypes type = ResourceTypes::NoResourceType;
+	uint uuid = 0;
+	uint count = 0;
 
+	ResourceData data;
+};
 
 #endif

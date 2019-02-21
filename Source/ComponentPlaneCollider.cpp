@@ -73,8 +73,8 @@ void ComponentPlaneCollider::RecalculateShape()
 
 	// -----
 
-	if (parent->rigidActor != nullptr)
-		parent->rigidActor->UpdateShape(gShape);
+	if (parent->cmp_rigidActor != nullptr)
+		parent->cmp_rigidActor->UpdateShape(gShape);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -115,4 +115,9 @@ physx::PxPlaneGeometry ComponentPlaneCollider::GetPlaneGeometry() const
 	physx::PxPlaneGeometry planeGeometry;
 	gShape->getPlaneGeometry(planeGeometry);
 	return planeGeometry;
+}
+
+uint ComponentPlaneCollider::GetInternalSerializationBytes()
+{
+	return 0;
 }

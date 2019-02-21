@@ -57,10 +57,6 @@ public:
 
 	virtual void OnSystemEvent(System_Event) {};
 
-	virtual bool OnGameMode() { return true; };
-
-	virtual bool OnEditorMode() { return true; };
-
 	inline char* GetName() const { return name; }
 
 	bool IsActive() const { return enabled; }

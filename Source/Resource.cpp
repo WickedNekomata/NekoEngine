@@ -1,76 +1,144 @@
 #include "Resource.h"
 
 #include "Application.h"
-#include "ModuleGOs.h"
+#include "ModuleFileSystem.h"
 
 #include <assert.h> 
 
-Resource::Resource(ResourceType type, uint uuid) : type(type), UUID(uuid) 
+Resource::Resource(ResourceTypes type, uint uuid, ResourceData data) : type(type), uuid(uuid), data(data) {}
+
+Resource::~Resource() {}
+
+// ----------------------------------------------------------------------------------------------------
+
+uint Resource::SetLastModTimeToMeta(const char* metaFile, const uint64_t& lastModTime)
 {
-	name = new char[DEFAULT_BUF_SIZE];
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. Store last modification time
+		uint bytes = sizeof(int64_t);
+		memcpy(cursor, &lastModTime, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource: Successfully saved meta '%s'", metaFile);
+
+		uint resultSize = App->fs->Save(metaFile, buffer, size);
+		if (resultSize > 0)
+		{
+			CONSOLE_LOG(LogTypes::Normal, "Resource: Successfully saved meta '%s'", metaFile);
+		}
+		else
+		{
+			CONSOLE_LOG(LogTypes::Error, "Resource: Could not save meta '%s'", metaFile);
+			return 0;
+		}
+
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource: Could not saved meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
 }
 
-Resource::~Resource() 
+uint Resource::IncreaseReferences()
 {
-	RELEASE_ARRAY(name);
+	bool ret = true;
+
+	if (!IsInMemory())
+		ret = LoadInMemory();
+
+	if (ret)
+	{
+		++count;
+		CONSOLE_LOG(LogTypes::Normal, "The references of the resource '%s' have been incremented", data.file.data());
+	}
+	else
+		CONSOLE_LOG(LogTypes::Error, "The references of the resource '%s' have not been incremented", data.file.data());
+
+	return count;
 }
 
-void Resource::SetName(const char* name)
+uint Resource::DecreaseReferences()
 {
-	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
+	assert(IsInMemory());
+
+	bool ret = true;
+
+	if (IsLastInMemory())
+		ret = UnloadFromMemory();
+	assert(ret);
+
+	--count;
+
+	return count;
 }
 
-const char* Resource::GetName() const
-{
-	return name;
-}
+// ----------------------------------------------------------------------------------------------------
 
-// Get UUID of the current resource.
-uint Resource::GetUUID() const
-{
-	return UUID;
-}
-
-// Get type of the current resource.
-ResourceType Resource::GetType() const
+ResourceTypes Resource::GetType() const
 {
 	return type;
 }
 
-// Returns true if the current resource is already loaded into vram.
+uint Resource::GetUuid() const
+{
+	return uuid;
+}
+
+uint Resource::GetReferencesCount() const
+{
+	return count;
+}
+
 bool Resource::IsInMemory() const
 {
 	return count > 0;
 }
 
-// Increase number of references and returns it. In case of 0 references also load into memory.
-int Resource::LoadMemory()
+// ----------------------------------------------------------------------------------------------------
+
+void Resource::SetFile(const char* file)
 {
-	bool result = true;
-
-	if (!IsInMemory())
-		result = LoadInMemory();
-
-	return result ? count++ : count;
+	data.file = file;
 }
 
-// Decrease number of references and returns it. In case of 0 references also unload from memory.
-int Resource::UnloadMemory()
+const char* Resource::GetFile() const
 {
-	assert(count > 0 && "Calls to load and unload of resource not equivalent");
-
-	bool result = true;
-
-	if (count <= 1)
-		result = UnloadFromMemory();
-
-	assert(result && "Resource could not be unloaded from memory");
-
-	return result ? count-- : count;
+	return data.file.data();
 }
 
-// Get the number of references.
-int Resource::CountReferences() const
+void Resource::SetExportedFile(const char* exportedFile)
 {
-	return count;
+	data.exportedFile = exportedFile;
+}
+
+const char* Resource::GetExportedFile() const
+{
+	return data.exportedFile.data();
+}
+
+void Resource::SetName(const char* name)
+{
+	data.name = name;
+}
+
+const char* Resource::GetName() const
+{
+	return data.name.data();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool Resource::IsLastInMemory() const
+{
+	return count == 1;
 }

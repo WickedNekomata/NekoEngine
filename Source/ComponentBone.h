@@ -13,10 +13,14 @@ public:
 	ComponentBone(GameObject* embedded_game_object, uint resource);
 	~ComponentBone();
 
-	bool Save(JSON_Object* component_obj)const;
+	uint GetInternalSerializationBytes();
+	bool Save(JSON_Object* component_obj) const;
 	bool Load(const JSON_Object* component_obj);
 
 	bool SetResource(uint resource);
+
+	void OnInternalSave(char*& cursor) {}
+	void OnInternalLoad(char*& cursor) {}
 
 public:
 

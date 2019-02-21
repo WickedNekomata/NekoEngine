@@ -61,7 +61,8 @@ bool PanelHierarchy::Draw()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DROP_PREFAB_TO_GAME"))
 		{
 			char* payload_n = (char*)payload->Data;
-			App->GOs->LoadScene(payload_n);
+			// TODO
+			//App->GOs->LoadScene(payload_n);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -152,7 +153,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 		}
 		if (ImGui::Selectable("Delete")) 
 		{
-			if (child->EqualsToChildrenOrMe(App->scene->selectedObject.Get()))
+			if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
 			ImGui::CloseCurrentPopup();

@@ -23,6 +23,9 @@ public:
 	// Gets
 	physx::PxPlaneGeometry GetPlaneGeometry() const;
 
+	uint GetInternalSerializationBytes();
+	void OnInternalLoad(char*& cursor) {}
+	void OnInternalSave(char*& cursor) {}
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

@@ -72,8 +72,8 @@ void ComponentSphereCollider::RecalculateShape()
 
 	// -----
 
-	if (parent->rigidActor != nullptr)
-		parent->rigidActor->UpdateShape(gShape);
+	if (parent->cmp_rigidActor != nullptr)
+		parent->cmp_rigidActor->UpdateShape(gShape);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -91,4 +91,9 @@ physx::PxSphereGeometry ComponentSphereCollider::GetSphereGeometry() const
 	physx::PxSphereGeometry sphereGeometry;
 	gShape->getSphereGeometry(sphereGeometry);
 	return sphereGeometry;
+}
+
+uint ComponentSphereCollider::GetInternalSerializationBytes()
+{
+	return 0;
 }

@@ -53,7 +53,6 @@ public:
 	class PanelSettings*		panelSettings = nullptr;
 	class PanelHierarchy*		panelHierarchy = nullptr;
 	class PanelAssets*			panelAssets = nullptr;
-	class PanelLibrary*			panelLibrary = nullptr;
 	class PanelDebugDraw*		panelDebugDraw = nullptr;
 	class PanelEdit*			panelEdit = nullptr;
 	class PanelCodeEditor*		panelCodeEditor = nullptr;

@@ -14,6 +14,8 @@
 #include "Brofiler\Brofiler.h"
 
 #include "Resource.h"
+#include "ResourceMesh.h"
+#include "ResourceTexture.h"
 
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
@@ -24,13 +26,15 @@ bool PanelAssets::Draw()
 	ImGuiWindowFlags assetsFlags = 0;
 	assetsFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 
-	if (ImGui::Begin(name, &enabled, assetsFlags))
+	if(ImGui::Begin(name, &enabled, assetsFlags))
 	{
-		if (ImGui::Button("Refresh"))
+		if (ImGui::Button("Re-Import"))
 		{
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshAssets;
-			App->PushSystemEvent(newEvent);
+			App->fs->ForceReImport(App->fs->rootAssets);
+
+			System_Event event;
+			event.type = System_Event_Type::DeleteUnusedFiles;
+			App->PushSystemEvent(event);
 		}
 		else if (ImGui::Button("Copy Shaders Into Library"))
 		{
@@ -40,16 +44,19 @@ bool PanelAssets::Draw()
 		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
-		CreateShaderPopUp(DIR_ASSETS);
+		//CreateShaderPopUp(DIR_ASSETS);
 		if (treeNodeOpened)
 		{
-			RecursiveDrawAssetsDir(App->fs->GetRootAssetsFile());
+			RecursiveDrawAssetsDir(App->fs->rootAssets);
 			ImGui::TreePop();
 		}
+		
 	}
 	ImGui::End();
 
-	if (showCreateShaderConfirmationPopUp)
+	//TODO: WHAT IS THIS
+
+	/*if (showCreateShaderConfirmationPopUp)
 	{
 		ImGui::OpenPopup("Create Shader");
 		CreateShaderConfirmationPopUp();
@@ -58,223 +65,150 @@ bool PanelAssets::Draw()
 	{
 		ImGui::OpenPopup("Delete Shader");
 		DeleteShaderConfirmationPopUp();
-	}
+	}*/
 
 	return true;
 }
 
-void PanelAssets::RecursiveDrawAssetsDir(AssetsFile* assetsFile)
+void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 {
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
 
-	assert(assetsFile != nullptr);
+	//TODO: ORGANIZE THIS LOGIC INTO THE OWN ONPANELASSETS METHOD:
 
-	ImGuiTreeNodeFlags treeNodeFlags;
+	//	1* The stantard draw
+	//	2* Manage the selection and show the import settings
+	//	3* Drag and Drop support
 
-	char id[DEFAULT_BUF_SIZE];
-
-	for (uint i = 0; i < assetsFile->children.size(); ++i)
+	for (uint i = 0; i < directory.files.size(); ++i)
 	{
-		AssetsFile* child = (AssetsFile*)assetsFile->children[i];
+		File file = directory.files[i];
+
+		std::string metaFile = directory.fullPath + "//" + file.name + ".meta";
+		if (!App->fs->Exists(metaFile))
+			continue;
+
+		char* metaBuffer;
+		uint metaSize = App->fs->Load(metaFile, &metaBuffer);
+		if (metaSize <= 0)
+			continue;
+
+		char* cursor = metaBuffer;
 
 		std::string extension;
-		App->fs->GetExtension(child->path.data(), extension);
+		App->fs->GetExtension(file.name.data(), extension);
 
-		// Ignore metas
-		if (IS_META(extension.data()))
-			continue;
+		union
+		{
+			char ext[4];
+			uint32_t asciiValue;
+		} asciiUnion;
+
+		memcpy(asciiUnion.ext, extension.data(), sizeof(char) * 4);
+
+		switch (asciiUnion.asciiValue)
+		{
+			case ASCIIFBX:
+			case ASCIIfbx:
+			case ASCIIOBJ:
+			case ASCIIobj:
+			case ASCIIdae:
+			case ASCIIDAE:
+			{		
+				ImGuiTreeNodeFlags flags = 0;
+				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
+
+				if (App->scene->selectedObject == CurrentSelection::SelectedType::meshImportSettings)
+				{
+					ResourceMeshImportSettings* importSettings = (ResourceMeshImportSettings*)App->scene->selectedObject.Get();
+					
+					if (strstr(importSettings->modelPath, file.name.data()) != nullptr)
+						flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
+
+				}
+
+				char id[DEFAULT_BUF_SIZE];
+				sprintf(id, "%s##%s", file.name.data(), directory.fullPath.data());
+
+				bool fbxOpened = ImGui::TreeNodeEx(id, flags);
+
+				ImVec2 mouseDelta = ImGui::GetMouseDragDelta(0);
+				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
+				{		
+					std::vector<uint> uids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+
+					ResourceMesh* tempRes = (ResourceMesh*)App->res->GetResource(uids[0]);
+					SELECT(tempRes->GetSpecificData().meshImportSettings);
+				}
+			
+				if(fbxOpened)
+				{
+					std::vector<uint> uids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+
+					for (int i = 0; i < uids.size(); ++i)
+					{
+						Resource* res = (Resource*)App->res->GetResource(uids[i]);
+						if (res)
+							res->OnPanelAssets();
+					}
+					ImGui::TreePop();
+				}
+			
+				break;
+			}
+
+			default:
+			{
+				uint uid;
+				cursor += sizeof(int64_t);
+				cursor += sizeof(uint);
+				
+				memcpy(&uid, cursor, sizeof(uint));
+
+				Resource* res = (Resource*)App->res->GetResource(uid);
+				if(res)
+					res->OnPanelAssets();
+
+				break;
+			}
+		}
+
+		delete[] metaBuffer;
+	}
+
+	for (uint i = 0; i < directory.directories.size(); ++i)
+	{
+		ImGuiTreeNodeFlags flags = 0;
+		flags |= ImGuiTreeNodeFlags_OpenOnArrow;
+
+		Directory dir = directory.directories[i];
 
 		bool treeNodeOpened = false;
 
-		if (child->isDirectory)
+		char id[DEFAULT_BUF_SIZE];
+		sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", dir.name.data(), dir.fullPath.data());
+
+		if (ImGui::TreeNodeEx(id, flags))
+			treeNodeOpened = true;
+
+		//TODO: WHY ARE DIRECTORIES BEING SELECTED?
+		if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+			&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+			SELECT(NULL);
+
+		//TODO: WHAT IS THIS?
+		//CreateShaderPopUp(dir.fullPath.data());
+
+		if (treeNodeOpened)
 		{
-			treeNodeFlags = 0;
-			treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
-			if (ImGui::TreeNodeEx(id, treeNodeFlags))
-				treeNodeOpened = true;
-
-			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
-				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-				SELECT(NULL);
-
-			CreateShaderPopUp(child->path.data());			
-
-			if (treeNodeOpened)
-			{
-				if (!child->children.empty())
-					RecursiveDrawAssetsDir(child);
-				ImGui::TreePop();
-			}
+			if (!(dir.files.empty() && dir.directories.empty()))
+				RecursiveDrawAssetsDir(dir);
+			ImGui::TreePop();
 		}
-		else
-		{
-			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
-			
-			treeNodeFlags = 0;
-
-			if (type != ResourceType::MeshResource)
-				treeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-			else
-				treeNodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow;
-
-			switch (type)
-			{
-			case ResourceType::MeshResource:
-				if (App->scene->selectedObject == ((MeshImportSettings*)child->importSettings))
-					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
-				break;
-			case ResourceType::TextureResource:
-				if (App->scene->selectedObject == ((TextureImportSettings*)child->importSettings))
-					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
-				break;
-			case ResourceType::ShaderObjectResource:
-			case ResourceType::ShaderProgramResource:
-				if (App->scene->selectedObject == child->resource)
-					treeNodeFlags |= ImGuiTreeNodeFlags_Selected;
-				break;
-			}
-
-			sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%s", child->name.data(), child->path.data());
-			if (ImGui::TreeNodeEx(id, treeNodeFlags))
-				treeNodeOpened = true;
-
-			if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
-				&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-			{
-				switch (type)
-				{
-				case ResourceType::MeshResource:
-					SELECT((MeshImportSettings*)child->importSettings);
-					break;
-				case ResourceType::TextureResource:
-					SELECT((TextureImportSettings*)child->importSettings);
-					break;
-				case ResourceType::ShaderObjectResource:
-				case ResourceType::ShaderProgramResource:
-					SELECT(child->resource);
-					break;
-				case ResourceType::NoResourceType:
-					if (IS_SCENE(extension.data()))
-					{
-						SELECT(CurrentSelection::SelectedType::scene);
-					}
-					else
-						SELECT(NULL);
-					break;
-				}
-			}
-
-			if (treeNodeOpened)
-			{
-				switch (type)
-				{
-				case ResourceType::MeshResource:
-					for (std::map<std::string, uint>::const_iterator it = child->UUIDs.begin(); it != child->UUIDs.end(); ++it)
-					{
-						sprintf_s(id, DEFAULT_BUF_SIZE, "%s##%u", it->first.data(), it->second);
-						if (ImGui::TreeNodeEx(id, ImGuiTreeNodeFlags_Leaf))
-						{
-							if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
-								&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
-								SELECT(NULL);
-
-							SetResourceDragAndDropSource(type, it->second);
-							ImGui::TreePop();
-						}
-					}
-					break;
-				case ResourceType::TextureResource:
-					SetResourceDragAndDropSource(type, child->UUIDs.begin()->second);
-					DeleteShaderPopUp(child->path.data());
-					break;
-				case ResourceType::ShaderObjectResource:
-				case ResourceType::ShaderProgramResource:
-					SetResourceDragAndDropSource(type, 0, child->resource);
-					DeleteShaderPopUp(child->path.data());
-					break;
-				case ResourceType::NoResourceType:
-					if (IS_SCENE(extension.data()))
-						SetResourceDragAndDropSource(type, 0, nullptr, child->path.data());
-					break;
-
-				case ResourceType::ScriptResource:
-					SetResourceDragAndDropSource(type, 0, child->resource);
-					break;
-				}
-				ImGui::TreePop();
-			}
-		}
-	}
-}
-
-void PanelAssets::SetResourceDragAndDropSource(ResourceType type, uint UUID, const Resource* resource, const char* file) const
-{
-	switch (type)
-	{
-	case ResourceType::MeshResource:
-
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
-			ImGui::EndDragDropSource();
-		}
-		break;
-
-	case ResourceType::TextureResource:
-
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &UUID, sizeof(uint));
-			ImGui::EndDragDropSource();
-		}
-		break;
-
-	case ResourceType::ShaderObjectResource:
-
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::SetDragDropPayload("SHADER_OBJECT", &resource, sizeof(Resource*));
-			ImGui::EndDragDropSource();
-		}
-		break;
-
-	case ResourceType::ShaderProgramResource:
-
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::SetDragDropPayload("SHADER_PROGRAM", &resource, sizeof(Resource*));
-			ImGui::EndDragDropSource();
-		}
-		break;
-
-	case ResourceType::ScriptResource:
-	{
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::SetDragDropPayload("SCRIPT_RESOURCE", &resource, sizeof(Resource*));
-			ImGui::EndDragDropSource();
-		}
-		break;
-	}
-	case ResourceType::NoResourceType:
-	{
-		std::string extension;
-		App->fs->GetExtension(file, extension);
-
-		if (IS_SCENE(extension.data()))
-		{
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-			{
-				ImGui::SetDragDropPayload("DROP_PREFAB_TO_GAME", file, sizeof(char) * (strlen(file) + 1));
-				ImGui::EndDragDropSource();
-			}
-		}
-	}
-	break;
 	}
 }
 
@@ -284,7 +218,7 @@ void PanelAssets::CreateShaderPopUp(const char* path)
 	{
 		if (ImGui::Selectable("Create Vertex Shader"))
 		{
-			shaderType = ShaderType::VertexShaderType;
+			shaderType = ShaderTypes::VertexShaderType;
 			strcpy_s(shaderName, strlen("New Vertex Shader") + 1, "New Vertex Shader");
 			shaderFile = path;
 			shaderFile.append("/");
@@ -294,7 +228,7 @@ void PanelAssets::CreateShaderPopUp(const char* path)
 		}
 		else if (ImGui::Selectable("Create Fragment Shader"))
 		{
-			shaderType = ShaderType::FragmentShaderType;
+			shaderType = ShaderTypes::FragmentShaderType;
 			strcpy_s(shaderName, strlen("New Fragment Shader") + 1, "New Fragment Shader");
 			shaderFile = path;
 			shaderFile.append("/");
@@ -332,10 +266,10 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 
 		switch (shaderType)
 		{
-		case ShaderType::VertexShaderType:
+		case ShaderTypes::VertexShaderType:
 			ImGui::Text(EXTENSION_VERTEX_SHADER_OBJECT);
 			break;
-		case ShaderType::FragmentShaderType:
+		case ShaderTypes::FragmentShaderType:
 			ImGui::Text(EXTENSION_FRAGMENT_SHADER_OBJECT);
 			break;
 		}
@@ -346,21 +280,18 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 
 			switch (shaderType)
 			{
-			case ShaderType::VertexShaderType:
+			case ShaderTypes::VertexShaderType:
 				shaderFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
 				break;
-			case ShaderType::FragmentShaderType:
+			case ShaderTypes::FragmentShaderType:
 				shaderFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
 				break;
 			}
 
 			if (App->shaderImporter->CreateShaderObject(shaderFile, shaderType))
 			{
-				App->res->ImportFile(shaderFile.data());
-
-				System_Event newEvent;
-				newEvent.type = System_Event_Type::RefreshFiles;
-				App->PushSystemEvent(newEvent);
+				// TODO
+				// App->res->ImportFile(shaderFile.data());
 			}
 
 			showCreateShaderConfirmationPopUp = false;
@@ -395,12 +326,7 @@ void PanelAssets::DeleteShaderConfirmationPopUp()
 
 		if (ImGui::Button("Delete", ImVec2(120.0f, 0)))
 		{
-			if (App->fs->DeleteFileOrDir(shaderFile.data()))
-			{
-				System_Event newEvent;
-				newEvent.type = System_Event_Type::RefreshAssets;
-				App->PushSystemEvent(newEvent);
-			}
+			App->fs->DeleteFileOrDir(shaderFile.data());
 
 			showDeleteShaderConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();

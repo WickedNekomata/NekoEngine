@@ -95,8 +95,8 @@ void ComponentCapsuleCollider::RecalculateShape()
 
 	// -----
 
-	if (parent->rigidActor != nullptr)
-		parent->rigidActor->UpdateShape(gShape);
+	if (parent->cmp_rigidActor != nullptr)
+		parent->cmp_rigidActor->UpdateShape(gShape);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -177,4 +177,9 @@ physx::PxCapsuleGeometry ComponentCapsuleCollider::GetCapsuleGeometry() const
 	physx::PxCapsuleGeometry capsuleGeometry;
 	gShape->getCapsuleGeometry(capsuleGeometry);
 	return capsuleGeometry;
+}
+
+uint ComponentCapsuleCollider::GetInternalSerializationBytes()
+{
+	return 0;
 }

@@ -26,7 +26,7 @@
 ModuleCameraEditor::ModuleCameraEditor(bool start_enabled) : Module(start_enabled)
 {
 	name = "CameraEditor";
-	camera = new ComponentCamera(nullptr);
+	camera = new ComponentCamera(nullptr, true);
 }
 
 ModuleCameraEditor::~ModuleCameraEditor()

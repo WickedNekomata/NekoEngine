@@ -4,8 +4,10 @@
 enum System_Event_Type 
 { 
 	NoEvent,
-	RefreshAssets, RefreshFiles, CopyShadersIntoLibrary,
-	FileDropped, NewFile, FileRemoved, MetaRemoved, FileOverwritten, // FileEvent
+	CopyShadersIntoLibrary,
+
+	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
+	
 	RecalculateBBoxes, // GameObjectEvent
 	ShaderProgramChanged,
 	RecreateQuadtree,
@@ -15,14 +17,13 @@ enum System_Event_Type
 	ResourceDestroyed,
 	GameObjectDestroyed,
 	ComponentDestroyed,
+	SaveScene,
+	LoadScene,
 
 	// LayerEvent
 	LayerNameReset,
 	LayerChanged,
-	LayerFilterMaskChanged,
-
-	//Scripting Events
-	Domain_Destroyed
+	LayerFilterMaskChanged
 };
 
 class GameObject;
@@ -33,8 +34,8 @@ class Resource;
 struct FileEvent
 {
 	System_Event_Type type;
-	const char* file;
-	const char* metaFile;
+	char file[DEFAULT_BUF_SIZE];
+	char newFileLocation[DEFAULT_BUF_SIZE];
 };
 
 struct GameObjectEvent
@@ -61,6 +62,12 @@ struct ComponentEvent
 	Component* component;
 };
 
+struct SceneEvent
+{
+	System_Event_Type type;
+	char nameScene[DEFAULT_BUF_SIZE];
+};
+
 struct LayerEvent
 {
 	System_Event_Type type;
@@ -76,6 +83,7 @@ union System_Event
 	ShaderEvent shaderEvent;
 	ResourceEvent resEvent;
 	ComponentEvent compEvent;
+	SceneEvent sceneEvent;
 	LayerEvent layerEvent;
 
 	/* This is necessary for ABI compatibility between Visual C++ and GCC

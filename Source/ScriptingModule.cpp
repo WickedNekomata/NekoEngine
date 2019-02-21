@@ -4,7 +4,7 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
 #include "ModuleInput.h"
-#include "ComponentNavAgent.h"
+#include "ModuleScene.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -120,7 +120,7 @@ bool ScriptingModule::CleanUp()
 {
 	for (int i = 0; i < scripts.size(); ++i)
 	{
-		scripts[i]->GetParent()->ClearComponent(scripts[i]);
+		scripts[i]->GetParent()->EraseComponent(scripts[i]);
 		delete scripts[i];
 	}
 
@@ -187,7 +187,7 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 				if (scripts[i]->scriptRes == event.resEvent.resource)
 				{
 					somethingDestroyed = true;
-					scripts[i]->GetParent()->ClearComponent(scripts[i]);
+					scripts[i]->GetParent()->EraseComponent(scripts[i]);
 					delete scripts[i];
 					scripts.erase(scripts.begin() + i);
 
@@ -243,6 +243,7 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 
 ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, bool createCS)
 {
+	/*
 	while (scriptName.find(" ") != std::string::npos)
 	{
 		scriptName = scriptName.replace(scriptName.find(" "), 1, "");
@@ -310,14 +311,14 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		App->res->InsertResource(scriptRes);
 	}
 
-	App->res->SetAsUsed(scriptRes->GetUUID());
+	App->res->SetAsUsed(scriptRes->GetUuid());
 	script->scriptRes = scriptRes;
 
 	scripts.push_back(script);
 
-	App->fs->AddMeta(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data(), App->fs->GetLastModificationTime(std::string("Assets/Scripts/" + scriptName + ".cs.meta").data()));
-
 	return script;
+	*/
+	return nullptr;
 }
 
 bool ScriptingModule::DestroyScript(ComponentScript* script)
@@ -337,9 +338,6 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
 {
-	if (!gameObject)
-		return nullptr;
-
 	MonoObject* monoObject = gameObject->GetMonoObject();
 
 	if (monoObject)
@@ -567,6 +565,7 @@ void ScriptingModule::ClearMap()
 
 bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* metaFile, const char* exportedFile)
 {
+	/*
 	std::string file = fileAssets;
 
 	std::string scriptName = file.substr(file.find_last_of("/") + 1);
@@ -609,7 +608,7 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* m
 	}
 		
 	App->res->InsertResource(scriptRes);
-
+	*/
 	return true;
 }
 
@@ -720,7 +719,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 	{
 		//Instantiate an empty GameObject and returns the MonoObject
 
-		GameObject* instance = App->GOs->CreateGameObject("default", App->GOs->getRoot());
+		GameObject* instance = App->GOs->CreateGameObject("default", App->scene->root);
 
 		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "GameObject");
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
@@ -1129,7 +1128,7 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 			if (!gameObject)
 				return nullptr;
 
-			Component* comp = gameObject->GetComponentByType(ComponentTypes::NavAgentComponent);
+			Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
 
 			if (!comp)
 				return nullptr;
@@ -1217,7 +1216,7 @@ int LayerToBit(MonoString* layerName)
 	return bits;
 }
 
-bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, float maxDistance, uint filterMask, SceneQueryFlags sceneQueryFlags)
+bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject* hitInfo, float maxDistance, uint filterMask, SceneQueryFlags sceneQueryFlags)
 {
 	math::float3 originCpp{mono_array_get(origin, float, 0), mono_array_get(origin, float, 1), mono_array_get(origin, float, 2)};
 	math::float3 directionCpp{mono_array_get(direction, float, 0), mono_array_get(direction, float, 1), mono_array_get(direction, float, 2)};
@@ -1229,13 +1228,12 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, floa
 	{
 		//Create the HitInfo object
 		MonoClass* raycastHitClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "RaycastHit");
-		
-		*hitInfo = mono_object_new(App->scripting->domain, raycastHitClass);
-		mono_runtime_object_init(*hitInfo);
+		hitInfo = mono_object_new(App->scripting->domain, raycastHitClass);
+		mono_runtime_object_init(hitInfo);
 
 		//Setup the gameObject and collider fields
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "gameObject"), App->scripting->MonoObjectFrom(hitInfocpp.GetGameObject()));
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "collider"), App->scripting->MonoComponentFrom((Component*)hitInfocpp.GetCollider()));
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "gameObject"), App->scripting->MonoObjectFrom(hitInfocpp.GetGameObject()));
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "collider"), App->scripting->MonoComponentFrom((Component*)hitInfocpp.GetCollider()));
 
 		//Setup the point field
 		MonoClass* Vector3Class = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Vector3");
@@ -1247,7 +1245,7 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, floa
 		mono_field_set_value(pointObj, mono_class_get_field_from_name(Vector3Class, "_y"), &point.y);
 		mono_field_set_value(pointObj, mono_class_get_field_from_name(Vector3Class, "_z"), &point.z);
 
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "point"), pointObj);
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "point"), pointObj);
 
 		//Setup the normal field
 		MonoObject* normalObj = mono_object_new(App->scripting->domain, Vector3Class);
@@ -1258,7 +1256,7 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, floa
 		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector3Class, "_y"), &normal.y);
 		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector3Class, "_z"), &normal.z);
 
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "normal"), normalObj);
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "normal"), normalObj);
 
 		//Setup the texCoord field
 		MonoClass* Vector2Class = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Vector2");
@@ -1269,34 +1267,19 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject** hitInfo, floa
 		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector2Class, "x"), &texCoord.x);
 		mono_field_set_value(normalObj, mono_class_get_field_from_name(Vector2Class, "y"), &texCoord.y);
 
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "texCoord"), texCoordObj);
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "texCoord"), texCoordObj);
 
 		//Setup the distance and the faceIndex fields
 		float distance = hitInfocpp.GetDistance();
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "distance"), &distance);
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "distance"), &distance);
 
 		uint faceIndex = hitInfocpp.GetFaceIndex();
-		mono_field_set_value(*hitInfo, mono_class_get_field_from_name(raycastHitClass, "faceIndex"), &faceIndex);
+		mono_field_set_value(hitInfo, mono_class_get_field_from_name(raycastHitClass, "faceIndex"), &faceIndex);
 	}
 	else
 		hitInfo = nullptr;
 
 	return ret;
-}
-
-void SetDestination(MonoObject* agentCSharp, MonoArray* destination)
-{
-	int compAddress = 0;
-	mono_field_get_value(agentCSharp, mono_class_get_field_from_name(mono_object_get_class(agentCSharp), "componentAddress"), &compAddress);
-
-	ComponentNavAgent* agentCpp = (ComponentNavAgent*)compAddress;
-
-	if (!agentCpp)
-		return;
-
-	math::float3 destinationCpp {mono_array_get(destination, float, 0), mono_array_get(destination, float, 1), mono_array_get(destination, float, 2)};
-
-	agentCpp->SetDestination(destinationCpp.ptr());
 }
 
 //---------------------------------
@@ -1367,7 +1350,6 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
 	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
-	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 
 	ClearMap();
 

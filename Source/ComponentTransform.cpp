@@ -4,7 +4,6 @@
 #include "ModuleTimeManager.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleScene.h"
-#include "ModuleInput.h"
 #include "GameObject.h"
 #include "ComponentCamera.h"
 #include "ComponentRigidActor.h"
@@ -40,7 +39,7 @@ void ComponentTransform::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-	bool seenLastFrame = parent->GetSeenLastFrame();
+	bool seenLastFrame = parent->seenLastFrame;
 	ImGui::Checkbox("Seen last frame", &seenLastFrame);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
@@ -55,10 +54,15 @@ void ComponentTransform::OnUniqueEditor()
 		scale = math::float3::one;
 	}
 
-	math::float4x4 matrix = parent->transform->GetMatrix();
+	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
+
 	ImGui::Text("Position");
-	if (ImGui::DragFloat3("##Pos", &position[0], 0.01f, 0.0f, 0.0f, "%.3f"))
-		SavePrevTransform(matrix);
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##PosY", ImGuiDataType_Float, (void*)&position.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
 	ImGui::Text("Rotation");
 	math::float3 axis;
@@ -66,29 +70,35 @@ void ComponentTransform::OnUniqueEditor()
 	rotation.ToAxisAngle(axis, angle);
 	axis *= angle;
 	axis *= RADTODEG;
-	if (ImGui::DragFloat3("##Rot", &axis[0], 0.1f, 0.0f, 0.0f, "%.3f"))
-	{
-		SavePrevTransform(matrix);
-		axis *= DEGTORAD;
-		rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
-	}
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##AxisAngleX", ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##AxisAngleY", ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##AxisAngleZ", ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+	axis *= DEGTORAD;
+	rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
 
 	ImGui::Text("Scale");
-	if (ImGui::DragFloat3("##Scale", &scale[0], 0.01f, 0.0f, 0.0f, "%.3f"))
-		SavePrevTransform(matrix);
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
 
 	if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
 	{
 		// Transform updated: if the game object has a rigid body, update its transform
-		if (parent->rigidActor != nullptr)
+		if (parent->cmp_rigidActor != nullptr)
 		{
 			math::float4x4 globalMatrix = GetGlobalMatrix();
-			parent->rigidActor->UpdateTransform(globalMatrix);
+			parent->cmp_rigidActor->UpdateTransform(globalMatrix);
 		}
 
 		// Transform updated: if the game object has a camera, update its frustum
-		if (parent->camera != nullptr)
-			parent->camera->UpdateTransform();
+		if (parent->cmp_camera != nullptr)
+			parent->cmp_camera->UpdateTransform();
 
 #ifndef GAMEMODE
 		// Transform updated: if the game object is selected, update the camera reference
@@ -109,24 +119,9 @@ void ComponentTransform::OnUniqueEditor()
 			newEvent.type = System_Event_Type::RecreateQuadtree;
 			App->PushSystemEvent(newEvent);
 		}
-
 	}
-	if ((App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP || App->input->GetKey(SDL_SCANCODE_KP_ENTER) == KEY_DOWN
-	|| App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) && !dragTransform)
-		dragTransform = true;
-
 #endif // !GAMEMODE
 }
-
-void ComponentTransform::SavePrevTransform(const math::float4x4 &prevTransformMat)
-{
-	if (dragTransform)
-	{
-		App->scene->SaveLastTransform(prevTransformMat);
-		dragTransform = false;
-	}
-}
-
 
 math::float4x4& ComponentTransform::GetMatrix() const
 {
@@ -173,15 +168,15 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	}
 
 	// Transform updated: if the game object has a rigid body, update its transform
-	if (parent->rigidActor != nullptr)
+	if (parent->cmp_rigidActor != nullptr)
 	{
 		math::float4x4 globalMatrix = GetGlobalMatrix();
-		parent->rigidActor->UpdateTransform(globalMatrix);
+		parent->cmp_rigidActor->UpdateTransform(globalMatrix);
 	}
 
 	// Transform updated: if the game object has a camera, update its frustum
-	if (parent->camera != nullptr)
-		parent->camera->UpdateTransform();
+	if (parent->cmp_camera != nullptr)
+		parent->cmp_camera->UpdateTransform();
 
 #ifndef GAMEMODE
 	// Transform updated: if the game object is selected, update the camera reference
@@ -204,30 +199,37 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	}
 }
 
-void ComponentTransform::OnInternalSave(JSON_Object* file)
+uint ComponentTransform::GetInternalSerializationBytes()
 {
-	json_object_set_number(file, "PosX", position.x);
-	json_object_set_number(file, "PosY", position.y);
-	json_object_set_number(file, "PosZ", position.z);
-	json_object_set_number(file, "RotX", rotation.x);
-	json_object_set_number(file, "RotY", rotation.y);
-	json_object_set_number(file, "RotZ", rotation.z);
-	json_object_set_number(file, "RotW", rotation.w);
-	json_object_set_number(file, "ScaleX", scale.x);
-	json_object_set_number(file, "ScaleY", scale.y);
-	json_object_set_number(file, "ScaleZ", scale.z);
+	return sizeof(math::float3) * 2 + sizeof(math::Quat);
 }
 
-void ComponentTransform::OnLoad(JSON_Object* file)
+void ComponentTransform::OnInternalSave(char*& cursor)
 {
-	position.x = json_object_get_number(file, "PosX");
-	position.y = json_object_get_number(file, "PosY");
-	position.z = json_object_get_number(file, "PosZ");
-	rotation.x = json_object_get_number(file, "RotX");
-	rotation.y = json_object_get_number(file, "RotY");
-	rotation.z = json_object_get_number(file, "RotZ");
-	rotation.w = json_object_get_number(file, "RotW");
-	scale.x = json_object_get_number(file, "ScaleX");
-	scale.y = json_object_get_number(file, "ScaleY");
-	scale.z = json_object_get_number(file, "ScaleZ");
+	size_t bytes = sizeof(math::float3);
+	memcpy(cursor, &position, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::Quat);
+	memcpy(cursor, &rotation, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &scale, bytes);
+	cursor += bytes;
+}
+
+void ComponentTransform::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(math::float3);
+	memcpy(&position, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::Quat);
+	memcpy(&rotation, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&scale, cursor, bytes);
+	cursor += bytes;
 }

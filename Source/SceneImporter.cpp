@@ -3,26 +3,32 @@
 #include "SceneImporter.h"
 
 #include "Application.h"
-#include "ModuleFileSystem.h"
-#include "ModuleGOs.h"
-#include "ModuleTimeManager.h"
-#include "ModuleResourceManager.h"
-#include "GameObject.h"
 #include "BoneImporter.h"
-#include "ComponentTransform.h"
+#include "Globals.h"
+#include "ModuleFileSystem.h"
+#include "ModuleResourceManager.h"
+#include "ResourceMesh.h"
+
+#include "ModuleGOs.h"
+#include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 #include "ComponentBone.h"
-#include "ComponentTypes.h"
-#include "MaterialImporter.h"
-#include "Resource.h"
-#include "ResourceMesh.h"
+#include "BoneImporter.h"
 
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"
 #include "Assimp\include\cfileio.h"
 #include "Assimp\include\version.h"
+
+#include "glew\include\GL\glew.h"
+
+#include "MathGeoLib\include\Math\float3.h"
+#include "MathGeoLib\include\Math\Quat.h"
+
+#include <assert.h>
 
 #pragma comment (lib, "Assimp\\libx86\\assimp-vc140-mt.lib")
 
@@ -34,7 +40,7 @@
 
 void myCallback(const char* msg, char* userData)
 {
-	DEPRECATED_LOG("%s", msg);
+	CONSOLE_LOG(LogTypes::Normal, "%s", msg);
 }
 
 SceneImporter::SceneImporter()
@@ -49,101 +55,84 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const
+bool SceneImporter::Import(const char* file, std::vector<std::string>& outputFiles, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids) const
 {
+	assert(file != nullptr);
+
 	bool ret = false;
 
-	if (importFile == nullptr || importSettings == nullptr)
-	{
-		assert(importFile != nullptr && importSettings != nullptr);
-		return ret;
-	}
-
-	std::string importFileName;
-	App->fs->GetFileName(importFile, importFileName);
-	outputFile = importFileName.data();
-
-	// Search for the meta associated to the file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(importFile) + 1, importFile); // file
-	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+	std::string fileName;
+	App->fs->GetFileName(file, fileName);
 
 	char* buffer;
-	uint size = App->fs->Load(importFile, &buffer);
+	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Model '%s'", outputFile.data());
-		ret = Import(buffer, size, outputFile, importSettings, metaFile);
+		CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully loaded Model '%s'", fileName.data());
+		ret = Import(buffer, size, fileName.data(), outputFiles, importSettings, forcedUuids);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load Model '%s'", outputFile.data());
+		CONSOLE_LOG(LogTypes::Error, "SCENE IMPORTER: Could not load Model '%s'", fileName.data());
 
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings, const char* metaFile) const
+bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName, std::vector<std::string>& outputFiles, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids) const
 {
+	assert(buffer != nullptr && size > 0);
+
 	bool ret = false;
 
-	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
+	uint postProcessConfigurationFlags = 0;
+	switch (importSettings.postProcessConfigurationFlags)
 	{
-		assert(buffer != nullptr && size > 0 && importSettings != nullptr);
-		return ret;
-	}
-
-	MeshImportSettings* meshImportSettings = (MeshImportSettings*)importSettings;
-
-	uint postProcessingFlags = 0;
-
-	switch (meshImportSettings->postProcessConfiguration)
-	{
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_FAST:
-		postProcessingFlags |= aiProcessPreset_TargetRealtime_Fast;
+	case ResourceMeshImportSettings::PostProcessConfigurationFlags::TARGET_REALTIME_FAST:
+		postProcessConfigurationFlags |= aiProcessPreset_TargetRealtime_Fast;
 		break;
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_QUALITY:
-		postProcessingFlags |= aiProcessPreset_TargetRealtime_Quality;
+	case ResourceMeshImportSettings::PostProcessConfigurationFlags::TARGET_REALTIME_QUALITY:
+		postProcessConfigurationFlags |= aiProcessPreset_TargetRealtime_Quality;
 		break;
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_MAX_QUALITY:
-		postProcessingFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
+	case ResourceMeshImportSettings::PostProcessConfigurationFlags::TARGET_REALTIME_MAX_QUALITY:
+		postProcessConfigurationFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
 		break;
-	case MeshImportSettings::MeshPostProcessConfiguration::CUSTOM:
-		if (meshImportSettings->calcTangentSpace)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_CalcTangentSpace;
-		if (meshImportSettings->genNormals)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenNormals;
-		else if (meshImportSettings->genSmoothNormals)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
-		if (meshImportSettings->joinIdenticalVertices)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
-		if (meshImportSettings->triangulate)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_Triangulate;
-		if (meshImportSettings->genUVCoords)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_GenUVCoords;
-		if (meshImportSettings->sortByPType)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_SortByPType;
-		if (meshImportSettings->improveCacheLocality)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_ImproveCacheLocality;
-		if (meshImportSettings->limitBoneWeights)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_LimitBoneWeights;
-		if (meshImportSettings->removeRedundantMaterials)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_RemoveRedundantMaterials;
-		if (meshImportSettings->splitLargeMeshes)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_SplitLargeMeshes;
-		if (meshImportSettings->findDegenerates)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindDegenerates;
-		if (meshImportSettings->findInvalidData)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindInvalidData;
-		if (meshImportSettings->findInstances)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_FindInstances;
-		if (meshImportSettings->validateDataStructure)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_ValidateDataStructure;
-		if (meshImportSettings->optimizeMeshes)
-			postProcessingFlags |= aiPostProcessSteps::aiProcess_OptimizeMeshes;
+	case ResourceMeshImportSettings::PostProcessConfigurationFlags::CUSTOM:
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::CALC_TANGENT_SPACE)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_CalcTangentSpace;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::GEN_NORMALS)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_GenNormals;
+		else if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::GEN_SMOOTH_NORMALS)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_GenSmoothNormals;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::JOIN_IDENTICAL_VERTICES)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_JoinIdenticalVertices;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::TRIANGULATE)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_Triangulate;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::GEN_UV_COORDS)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_GenUVCoords;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::SORT_BY_P_TYPE)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_SortByPType;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::IMPROVE_CACHE_LOCALITY)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_ImproveCacheLocality;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::LIMIT_BONE_WEIGHTS)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_LimitBoneWeights;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::REMOVE_REDUNDANT_MATERIALS)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_RemoveRedundantMaterials;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::SPLIT_LARGE_MESHES)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_SplitLargeMeshes;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::FIND_DEGENERATES)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_FindDegenerates;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::FIND_INVALID_DATA)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_FindInvalidData;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::FIND_INSTANCES)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_FindInstances;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::VALIDATE_DATA_STRUCTURE)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_ValidateDataStructure;
+		if (importSettings.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::OPTIMIZE_MESHES)
+			postProcessConfigurationFlags |= aiPostProcessSteps::aiProcess_OptimizeMeshes;
 		break;
 	}
 
-	const aiScene* scene = aiImportFileFromMemory((const char*)buffer, size, postProcessingFlags, nullptr);
+	const aiScene* scene = aiImportFileFromMemory((const char*)buffer, size, postProcessConfigurationFlags, nullptr);
 
 	if (scene != nullptr)
 	{
@@ -155,28 +144,26 @@ bool SceneImporter::Import(const void* buffer, uint size, std::string& outputFil
 		GameObject* dummy = new GameObject("Dummy", nullptr);
 		GameObject* rootGameObject = new GameObject(rootNode->mName.data, dummy); // Root game object will never be a transformation
 
-		std::list<uint> UUIDs;
-		if (metaFile != nullptr && App->fs->Exists(metaFile))
-			GetMeshesUUIDsFromMeta(metaFile, UUIDs);
+		std::vector<uint> dummyForcedUuids = forcedUuids;
+		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, UUIDs);
 
-		RecursiveProcessBones(scene, scene->mRootNode);
 
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
-		App->GOs->SerializeFromNode(dummy, outputFile);
+		// TODO: create prefab
+		//App->GOs->SerializeFromNode(dummy, outputFile);
 
 		dummy->RecursiveForceAllResources(0);
-		dummy->DestroyChildren();
-		RELEASE(dummy);
+		// TODO DESTROY DUMMY/CHILDREN/COMPONENTS
+		App->GOs->Kill(dummy);
 	}
 
 	return ret;
 }
 
-void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::list<uint>& UUIDs) const
+void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::vector<std::string>& outputFiles, std::vector<uint>& forcedUuids) const
 {
 	std::string name = node->mName.data;
 
@@ -244,40 +231,39 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		if (!broken)
 		{
 			gameObject->AddComponent(ComponentTypes::MeshComponent);
-			if (UUIDs.size() > 0)
+			if (forcedUuids.size() > 0)
 			{
-				gameObject->meshRenderer->res = UUIDs.front();
-				UUIDs.remove(UUIDs.front());
+				gameObject->cmp_mesh->res = forcedUuids.front();
+				forcedUuids.erase(forcedUuids.begin());
 			}
-			else				
-				gameObject->meshRenderer->res = App->GenerateRandomNumber();
+			else
+				gameObject->cmp_mesh->res = App->GenerateRandomNumber();
 
-
-			GLfloat* vertices = nullptr;
+			float* vertices = nullptr;
 			uint verticesSize = 0;
 
 			uint* indices = nullptr;
 			uint indicesSize = 0;
 
-			GLfloat* normals = nullptr;
+			float* normals = nullptr;
 			uint normalsSize = 0;
 
-			GLfloat* tangents = nullptr;
+			float* tangents = nullptr;
 			uint tangentsSize = 0;
 
-			GLfloat* bitangents = nullptr;
+			float* bitangents = nullptr;
 			uint bitangentsSize = 0;
 
-			GLubyte* colors = nullptr;
+			uchar* colors = nullptr;
 			uint colorsSize = 0;
 
-			GLfloat* texCoords = nullptr;
+			float* texCoords = nullptr;
 			uint texCoordsSize = 0;
 
 			// Unique vertices
 			verticesSize = nodeMesh->mNumVertices;
-			vertices = new GLfloat[verticesSize * 3];
-			memcpy(vertices, nodeMesh->mVertices, sizeof(GLfloat) * verticesSize * 3);
+			vertices = new float[verticesSize * 3];
+			memcpy(vertices, nodeMesh->mVertices, sizeof(float) * verticesSize * 3);
 
 			// Indices
 			if (nodeMesh->HasFaces())
@@ -290,28 +276,10 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				{
 					if (nodeMesh->mFaces[j].mNumIndices != 3)
 					{
-						DEPRECATED_LOG("WARNING, geometry face with != 3 indices!");
+						CONSOLE_LOG(LogTypes::Warning, "WARNING, geometry face with != 3 indices!");
 					}
 					else
 						memcpy(&indices[j * 3], nodeMesh->mFaces[j].mIndices, 3 * sizeof(uint));
-				}
-			}
-
-			relations[node] = gameObject;
-
-			// Bones / Animations stuff
-			if (nodeMesh->HasBones())
-			{
-				int num = nodeMesh->mNumBones;
-				for (int k = 0; k < num; ++k)
-				{
-					if (!root_bone)
-						root_bone = gameObject;
-
-					ComponentMesh* mesh_cmp = (ComponentMesh*)gameObject->GetComponentByType(ComponentTypes::MeshComponent);
-					
-					bones[nodeMesh->mBones[k]->mName.C_Str()] = nodeMesh->mBones[k];
-					mesh_bone[nodeMesh->mBones[k]] = mesh_cmp->res;
 				}
 			}
 
@@ -319,40 +287,40 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			if (nodeMesh->HasNormals())
 			{
 				normalsSize = verticesSize;
-				normals = new GLfloat[normalsSize * 3];
-				memcpy(normals, nodeMesh->mNormals, sizeof(GLfloat) * normalsSize * 3);
+				normals = new float[normalsSize * 3];
+				memcpy(normals, nodeMesh->mNormals, sizeof(float) * normalsSize * 3);
 			}
 			
 			// Tangents and Bitangents
 			if (nodeMesh->HasTangentsAndBitangents())
 			{
 				tangentsSize = verticesSize;
-				tangents = new GLfloat[tangentsSize * 3];
-				memcpy(tangents, nodeMesh->mTangents, sizeof(GLfloat) * tangentsSize * 3);
+				tangents = new float[tangentsSize * 3];
+				memcpy(tangents, nodeMesh->mTangents, sizeof(float) * tangentsSize * 3);
 				
 				bitangentsSize = verticesSize;
-				bitangents = new GLfloat[bitangentsSize * 3];
-				memcpy(bitangents, nodeMesh->mBitangents, sizeof(GLfloat) * bitangentsSize * 3);
+				bitangents = new float[bitangentsSize * 3];
+				memcpy(bitangents, nodeMesh->mBitangents, sizeof(float) * bitangentsSize * 3);
 			}
 			
 			// Color
 			if (nodeMesh->HasVertexColors(0))
 			{
 				colorsSize = verticesSize;
-				colors = new GLubyte[colorsSize * 4];
-				memcpy(colors, nodeMesh->mColors, sizeof(GLubyte) * colorsSize * 4);
+				colors = new uchar[colorsSize * 4];
+				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
 			}
 
 			// Texture coords
 			if (nodeMesh->HasTextureCoords(0))
 			{
 				texCoordsSize = verticesSize;
-				texCoords = new GLfloat[texCoordsSize * 2];
+				texCoords = new float[texCoordsSize * 2];
 
 				for (uint j = 0; j < verticesSize; ++j)
 				{
-					memcpy(&texCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(GLfloat));
-					memcpy(&texCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(GLfloat));
+					memcpy(&texCoords[j * 2], &nodeMesh->mTextureCoords[0][j].x, sizeof(float));
+					memcpy(&texCoords[(j * 2) + 1], &nodeMesh->mTextureCoords[0][j].y, sizeof(float));
 				}
 
 				// Material
@@ -370,32 +338,37 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						std::string outputFile = DIR_ASSETS;
 						if (App->fs->RecursiveExists(fileName.data(), DIR_ASSETS, outputFile))
 						{
-							uint UUID = 0;
-							std::list<uint> UUIDs;
-							if (!App->res->FindResourcesByFile(outputFile.data(), UUIDs))
-								// If the texture is not a resource yet, import it
-								UUID = App->res->ImportFile(outputFile.data());
+							uint uuid = 0;
+							std::vector<uint> uuids;
+							if (App->res->GetResourcesUuidsByFile(outputFile.data(), uuids))
+								uuid = uuids.front();
 							else
-								UUID = UUIDs.front();
+								// If the texture is not a resource yet, import it
+								uuid = App->res->ImportFile(outputFile.data())->GetUuid();
 
-							if (UUID > 0)
-								gameObject->materialRenderer->res[0].res = UUID;
+							assert(uuid > 0);
+							gameObject->cmp_material->res[0].res = uuid;
 						}
 					}
 				}
 			}
 
-			// Vertices + Normals + Colors + Texture Coords + Indices
-			uint ranges[7] = { verticesSize, normalsSize, tangentsSize, bitangentsSize, colorsSize, texCoordsSize, indicesSize };
+			// Name
+			char meshName[DEFAULT_BUF_SIZE];
+			strcpy_s(meshName, DEFAULT_BUF_SIZE, name.data());
+
+			// Vertices + Normals + Tangents + Bitangents + Colors + Texture Coords + Indices + Name
+			uint ranges[8] = { verticesSize, normalsSize, tangentsSize, bitangentsSize, colorsSize, texCoordsSize, indicesSize, DEFAULT_BUF_SIZE };
 
 			uint size = sizeof(ranges) +
-				sizeof(GLfloat) * verticesSize * 3 +
-				sizeof(GLfloat) * normalsSize * 3 +
-				sizeof(GLfloat) * tangentsSize * 3 +
-				sizeof(GLfloat) * bitangentsSize * 3 +
-				sizeof(GLubyte) * colorsSize * 4 +
-				sizeof(GLfloat) * texCoordsSize * 2 +
-				sizeof(uint) * indicesSize;
+				sizeof(float) * verticesSize * 3 +
+				sizeof(float) * normalsSize * 3 +
+				sizeof(float) * tangentsSize * 3 +
+				sizeof(float) * bitangentsSize * 3 +
+				sizeof(uchar) * colorsSize * 4 +
+				sizeof(float) * texCoordsSize * 2 +
+				sizeof(uint) * indicesSize +
+				sizeof(char) * DEFAULT_BUF_SIZE;
 
 			char* data = new char[size];
 			char* cursor = data;
@@ -407,7 +380,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			cursor += bytes;
 
 			// 2. Store vertices
-			bytes = sizeof(GLfloat) * verticesSize * 3;
+			bytes = sizeof(float) * verticesSize * 3;
 			memcpy(cursor, vertices, bytes);
 
 			cursor += bytes;
@@ -415,7 +388,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// 3. Store normals
 			if (normalsSize > 0)
 			{
-				bytes = sizeof(GLfloat) * normalsSize * 3;
+				bytes = sizeof(float) * normalsSize * 3;
 				memcpy(cursor, normals, bytes);
 
 				cursor += bytes;
@@ -424,7 +397,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// 4. Store tangents
 			if (tangentsSize > 0)
 			{
-				bytes = sizeof(GLfloat) * tangentsSize * 3;
+				bytes = sizeof(float) * tangentsSize * 3;
 				memcpy(cursor, tangents, bytes);
 
 				cursor += bytes;
@@ -433,7 +406,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// 5. Store bitangents
 			if (bitangentsSize > 0)
 			{
-				bytes = sizeof(GLfloat) * bitangentsSize * 3;
+				bytes = sizeof(float) * bitangentsSize * 3;
 				memcpy(cursor, bitangents, bytes);
 
 				cursor += bytes;
@@ -442,7 +415,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// 6. Store colors
 			if (colorsSize > 0)
 			{
-				bytes = sizeof(GLubyte) * colorsSize * 4;
+				bytes = sizeof(uchar) * colorsSize * 4;
 				memcpy(cursor, colors, bytes);
 
 				cursor += bytes;
@@ -451,24 +424,30 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			// 7. Store texture coords
 			if (texCoordsSize > 0)
 			{
-				bytes = sizeof(GLfloat) * texCoordsSize * 2;
+				bytes = sizeof(float) * texCoordsSize * 2;
 				memcpy(cursor, texCoords, bytes);
 
 				cursor += bytes;
 			}
 
 			// 8. Store indices
-			bytes = sizeof(GLuint) * indicesSize;
+			bytes = sizeof(uint) * indicesSize;
 			memcpy(cursor, indices, bytes);
 
-			std::string outputFileName = std::to_string(gameObject->meshRenderer->res);
+			cursor += bytes;
 
-			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFileName) > 0)
+			// 9. Store name
+			bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+			memcpy(cursor, meshName, bytes);
+
+			std::string outputFile = std::to_string(gameObject->cmp_mesh->res);
+			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFile) > 0)
 			{
-				DEPRECATED_LOG("SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
+				CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
+				outputFiles.push_back(outputFile);
 			}
 			else
-				DEPRECATED_LOG("SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
+				CONSOLE_LOG(LogTypes::Error, "SCENE IMPORTER: Could not save Mesh '%s' to own format", gameObject->GetName());
 
 			RELEASE_ARRAY(data);
 			RELEASE_ARRAY(vertices);
@@ -485,326 +464,41 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	{
 		if (isTransformation)
 			// If the current game object is a transformation, keep its parent and pass it as the new transformation for the next game object
-			RecursivelyImportNodes(scene, node->mChildren[i], parent, gameObject, UUIDs);
+			RecursivelyImportNodes(scene, node->mChildren[i], parent, gameObject, outputFiles, forcedUuids);
 		else
 			// Else, the current game object becomes the new parent for the next game object
-			RecursivelyImportNodes(scene, node->mChildren[i], gameObject, nullptr, UUIDs);
+			RecursivelyImportNodes(scene, node->mChildren[i], gameObject, nullptr, outputFiles, forcedUuids);
 	}
 }
 
-bool SceneImporter::GenerateMeta(std::list<Resource*> resources, std::string& outputMetaFile, const MeshImportSettings* meshImportSettings) const
+bool SceneImporter::Load(const char* exportedFile, ResourceData& outputData, ResourceMeshData& outputMeshData) const
 {
-	if (resources.empty() || meshImportSettings == nullptr)
-	{
-		assert(!resources.empty() && meshImportSettings != nullptr);
-		return false;
-	}
+	assert(exportedFile != nullptr);
 
-	ResourceMesh* meshResource = (ResourceMesh*)resources.front();
-
-	JSON_Value* rootValue = json_value_init_object();
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	// Fill the JSON with data
-	int lastModTime = App->fs->GetLastModificationTime(resources.front()->file.data());
-	json_object_set_number(rootObject, "Time Created", lastModTime);
-
-	JSON_Value* meshesArrayValue = json_value_init_array();
-	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
-	for (std::list<Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
-		json_array_append_number(meshesArray, (*it)->GetUUID());
-	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
-
-	JSON_Value* sceneImporterValue = json_value_init_object();
-	JSON_Object* sceneImporterObject = json_value_get_object(sceneImporterValue);
-	json_object_set_value(rootObject, "Scene Importer", sceneImporterValue);
-
-	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
-	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
-	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
-	json_object_set_boolean(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
-	json_object_set_boolean(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
-	json_object_set_boolean(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
-	json_object_set_boolean(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
-	json_object_set_boolean(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
-	json_object_set_boolean(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
-	json_object_set_boolean(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
-	json_object_set_boolean(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
-	json_object_set_boolean(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
-	json_object_set_boolean(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
-	json_object_set_boolean(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
-	json_object_set_boolean(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
-	json_object_set_boolean(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
-	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
-
-	// Build the path of the meta file
-	outputMetaFile.append(meshResource->file.data());
-	outputMetaFile.append(EXTENSION_META);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-
-	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s'", outputMetaFile.data());
-		return false;
-	}
-
-	RELEASE_ARRAY(buf);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::SetMeshUUIDsToMeta(const char* metaFile, std::list<uint> UUIDs) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Value* meshesArrayValue = json_value_init_array();
-	JSON_Array* meshesArray = json_value_get_array(meshesArrayValue);
-	for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
-		json_array_append_number(meshesArray, *it);
-	json_object_set_value(rootObject, "Meshes", meshesArrayValue);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-
-	RELEASE_ARRAY(buffer);
-
-	char* newBuffer = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
-
-	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its UUIDs", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its UUIDs", metaFile);
-		return false;
-	}
-
-	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::GetMeshesUUIDsFromMeta(const char* metaFile, std::list<uint>& UUIDs) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Array* meshesArray = json_object_get_array(rootObject, "Meshes");
-	uint meshesArraySize = json_array_get_count(meshesArray);
-	for (uint i = 0; i < meshesArraySize; i++)
-		UUIDs.push_back(json_array_get_number(meshesArray, i));
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::SetMeshImportSettingsToMeta(const char* metaFile, const MeshImportSettings* meshImportSettings) const
-{
-	if (metaFile == nullptr || meshImportSettings == nullptr)
-	{
-		assert(metaFile != nullptr && meshImportSettings != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
-
-	json_object_set_number(sceneImporterObject, "Post Process Configuration", meshImportSettings->postProcessConfiguration);
-	json_object_set_boolean(sceneImporterObject, "Calculate Tangent Space", meshImportSettings->calcTangentSpace);
-	json_object_set_boolean(sceneImporterObject, "Generate Normals", meshImportSettings->genNormals);
-	json_object_set_boolean(sceneImporterObject, "Generate Smooth Normals", meshImportSettings->genSmoothNormals);
-	json_object_set_boolean(sceneImporterObject, "Join Identical Vertices", meshImportSettings->joinIdenticalVertices);
-	json_object_set_boolean(sceneImporterObject, "Triangulate", meshImportSettings->triangulate);
-	json_object_set_boolean(sceneImporterObject, "Generate UV Coordinates", meshImportSettings->genUVCoords);
-	json_object_set_boolean(sceneImporterObject, "Sort By Primitive Type", meshImportSettings->sortByPType);
-	json_object_set_boolean(sceneImporterObject, "Improve Cache Locality", meshImportSettings->improveCacheLocality);
-	json_object_set_boolean(sceneImporterObject, "Limit Bone Weights", meshImportSettings->limitBoneWeights);
-	json_object_set_boolean(sceneImporterObject, "Remove Redundant Materials", meshImportSettings->removeRedundantMaterials);
-	json_object_set_boolean(sceneImporterObject, "Split Large Meshes", meshImportSettings->splitLargeMeshes);
-	json_object_set_boolean(sceneImporterObject, "Find Degenerates", meshImportSettings->findDegenerates);
-	json_object_set_boolean(sceneImporterObject, "Find Invalid Data", meshImportSettings->findInvalidData);
-	json_object_set_boolean(sceneImporterObject, "Find Instances", meshImportSettings->findInstances);
-	json_object_set_boolean(sceneImporterObject, "Validate Data Structure", meshImportSettings->validateDataStructure);
-	json_object_set_boolean(sceneImporterObject, "Optimize Meshes", meshImportSettings->optimizeMeshes);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-
-	RELEASE_ARRAY(buffer);
-
-	char* newBuffer = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
-
-	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Successfully saved meta '%s' and set its mesh import settings", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not save meta '%s' nor set its mesh import settings", metaFile);
-		return false;
-	}
-
-	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::GetMeshImportSettingsFromMeta(const char* metaFile, MeshImportSettings* meshImportSettings) const
-{
-	if (metaFile == nullptr || meshImportSettings == nullptr)
-	{
-		assert(metaFile != nullptr && meshImportSettings != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("SCENE IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	meshImportSettings->metaFile = metaFile;
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Object* sceneImporterObject = json_object_get_object(rootObject, "Scene Importer");
-	meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)(uint)json_object_get_number(sceneImporterObject, "Post Process Configuration");
-	meshImportSettings->calcTangentSpace = json_object_get_boolean(sceneImporterObject, "Calculate Tangent Space");
-	meshImportSettings->genNormals = json_object_get_boolean(sceneImporterObject, "Generate Normals");
-	meshImportSettings->genSmoothNormals = json_object_get_boolean(sceneImporterObject, "Generate Smooth Normals");
-	meshImportSettings->joinIdenticalVertices = json_object_get_boolean(sceneImporterObject, "Join Identical Vertices");
-	meshImportSettings->triangulate = json_object_get_boolean(sceneImporterObject, "Triangulate");
-	meshImportSettings->genUVCoords = json_object_get_boolean(sceneImporterObject, "Generate UV Coordinates");
-	meshImportSettings->sortByPType = json_object_get_boolean(sceneImporterObject, "Sort By Primitive Type");
-	meshImportSettings->improveCacheLocality = json_object_get_boolean(sceneImporterObject, "Improve Cache Locality");
-	meshImportSettings->limitBoneWeights = json_object_get_boolean(sceneImporterObject, "Limit Bone Weights");
-	meshImportSettings->removeRedundantMaterials = json_object_get_boolean(sceneImporterObject, "Remove Redundant Materials");
-	meshImportSettings->splitLargeMeshes = json_object_get_boolean(sceneImporterObject, "Split Large Meshes");
-	meshImportSettings->findDegenerates = json_object_get_boolean(sceneImporterObject, "Find Degenerates");
-	meshImportSettings->findInvalidData = json_object_get_boolean(sceneImporterObject, "Find Invalid Data");
-	meshImportSettings->findInstances = json_object_get_boolean(sceneImporterObject, "Find Instances");
-	meshImportSettings->validateDataStructure = json_object_get_boolean(sceneImporterObject, "Validate Data Structure");
-	meshImportSettings->optimizeMeshes = json_object_get_boolean(sceneImporterObject, "Optimize Meshes");
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool SceneImporter::Load(const char* exportedFile, ResourceMesh* outputMesh) const
-{
 	bool ret = false;
-
-	if (exportedFile == nullptr || outputMesh == nullptr)
-	{
-		assert(exportedFile != nullptr && outputMesh != nullptr);
-		return ret;
-	}
 
 	char* buffer;
 	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		DEPRECATED_LOG("SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
-		ret = Load(buffer, size, outputMesh);
+		CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully loaded Mesh '%s' (own format)", exportedFile);
+		ret = Load(buffer, size, outputData, outputMeshData);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		DEPRECATED_LOG("SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
+		CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Could not load Mesh '%s' (own format)", exportedFile);
 
 	return ret;
 }
 
-bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh) const
+bool SceneImporter::Load(const void* buffer, uint size, ResourceData& outputData, ResourceMeshData& outputMeshData) const
 {
-	if (buffer == nullptr || size <= 0 || outputMesh == nullptr)
-	{
-		assert(buffer != nullptr && size > 0 && outputMesh != nullptr);
-		return false;
-	}
+	assert(buffer != nullptr && size > 0);
 
 	char* cursor = (char*)buffer;
 
-	// Vertices + Normals + tangents + bitangents + Colors + Texture Coords + Indices
-	uint ranges[7];
+	// Vertices + Normals + Tangents + Bitangents + Colors + Texture Coords + Indices + Name
+	uint ranges[8];
 
 	// 1. Load ranges
 	uint bytes = sizeof(ranges);
@@ -812,35 +506,36 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 
 	cursor += bytes;
 
-	outputMesh->verticesSize = ranges[0];
-	outputMesh->indicesSize = ranges[6];
+	outputMeshData.verticesSize = ranges[0];
+	outputMeshData.indicesSize = ranges[6];
 	uint normalsSize = ranges[1];
 	uint tangentsSize = ranges[2];
 	uint bitangentsSize = ranges[3];
 	uint colorsSize = ranges[4];
 	uint texCoordsSize = ranges[5];
+	uint nameSize = ranges[7];
 
-	char* normalsCursor = cursor + ranges[0] * sizeof(GLfloat) * 3;
-	char* tangentsCursor = normalsCursor + ranges[1] * sizeof(GLfloat) * 3;
-	char* bitangentsCursor = tangentsCursor + ranges[2] * sizeof(GLfloat) * 3;
-	char* colorCursor = bitangentsCursor + ranges[3] * sizeof(GLfloat) * 3;
-	char* texCoordsCursor = colorCursor + ranges[4] * sizeof(GLubyte) * 4;
+	char* normalsCursor = cursor + ranges[0] * sizeof(float) * 3;
+	char* tangentsCursor = normalsCursor + ranges[1] * sizeof(float) * 3;
+	char* bitangentsCursor = tangentsCursor + ranges[2] * sizeof(float) * 3;
+	char* colorCursor = bitangentsCursor + ranges[3] * sizeof(float) * 3;
+	char* texCoordsCursor = colorCursor + ranges[4] * sizeof(uchar) * 4;
 
-	outputMesh->vertices = new Vertex[outputMesh->verticesSize];
+	outputMeshData.vertices = new Vertex[outputMeshData.verticesSize];
 
-	for (uint i = 0; i < outputMesh->verticesSize; ++i)
+	for (uint i = 0; i < outputMeshData.verticesSize; ++i)
 	{
 		// 2. Load vertices
-		bytes = sizeof(GLfloat) * 3;
-		memcpy(outputMesh->vertices[i].position, cursor, bytes);
+		bytes = sizeof(float) * 3;
+		memcpy(outputMeshData.vertices[i].position, cursor, bytes);
 
 		cursor += bytes;
 
 		// 3. Load normals
 		if (normalsSize > 0)
 		{
-			bytes = sizeof(GLfloat) * 3;
-			memcpy(outputMesh->vertices[i].normal, normalsCursor, bytes);
+			bytes = sizeof(float) * 3;
+			memcpy(outputMeshData.vertices[i].normal, normalsCursor, bytes);
 
 			normalsCursor += bytes;
 		}
@@ -848,8 +543,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		// 4. Load tangents
 		if (tangentsSize > 0)
 		{
-			bytes = sizeof(GLfloat) * 3;
-			memcpy(outputMesh->vertices[i].tangent, tangentsCursor, bytes);
+			bytes = sizeof(float) * 3;
+			memcpy(outputMeshData.vertices[i].tangent, tangentsCursor, bytes);
 
 			tangentsCursor += bytes;
 		}
@@ -857,8 +552,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		// 5. Load bitangents
 		if (bitangentsSize > 0)
 		{
-			bytes = sizeof(GLfloat) * 3;
-			memcpy(outputMesh->vertices[i].bitangent, bitangentsCursor, bytes);
+			bytes = sizeof(float) * 3;
+			memcpy(outputMeshData.vertices[i].bitangent, bitangentsCursor, bytes);
 
 			bitangentsCursor += bytes;
 		}
@@ -866,8 +561,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		// 6. Load colors
 		if (colorsSize > 0)
 		{
-			bytes = sizeof(GLubyte) * 4;
-			memcpy(outputMesh->vertices[i].color, colorCursor, bytes);
+			bytes = sizeof(uchar) * 4;
+			memcpy(outputMeshData.vertices[i].color, colorCursor, bytes);
 
 			colorCursor += bytes;
 		}
@@ -875,8 +570,8 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 		// 7. Load texture coords
 		if (texCoordsSize > 0)
 		{
-			bytes = sizeof(GLfloat) * 2;
-			memcpy(outputMesh->vertices[i].texCoord, texCoordsCursor, bytes);
+			bytes = sizeof(float) * 2;
+			memcpy(outputMeshData.vertices[i].texCoord, texCoordsCursor, bytes);
 
 			texCoordsCursor += bytes;
 		}
@@ -885,14 +580,123 @@ bool SceneImporter::Load(const void* buffer, uint size, ResourceMesh* outputMesh
 	// 8. Load indices
 	cursor = texCoordsCursor;
 
-	bytes = sizeof(GLuint) * outputMesh->indicesSize;
-	outputMesh->indices = new GLuint[outputMesh->indicesSize];
-	memcpy(outputMesh->indices, cursor, bytes);
+	bytes = sizeof(uint) * outputMeshData.indicesSize;
+	outputMeshData.indices = new uint[outputMeshData.indicesSize];
+	memcpy(outputMeshData.indices, cursor, bytes);
 
-	DEPRECATED_LOG("SCENE IMPORTER: New mesh loaded with: %u vertices and %u indices", outputMesh->verticesSize, outputMesh->indicesSize);
+	cursor += bytes;
+
+	// 9. Load name
+	bytes = sizeof(char) * nameSize;
+	outputData.name.resize(nameSize);
+	memcpy(&outputData.name[0], cursor, bytes);
+
+	CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: New mesh loaded with %u vertices and %u indices", outputMeshData.verticesSize, outputMeshData.indicesSize);
 
 	return true;
 }
+
+void SceneImporter::GenerateVBO(uint& VBO, Vertex* vertices, uint verticesSize) const
+{
+	assert(vertices != nullptr && verticesSize > 0);
+
+	// Vertex Buffer Object
+
+	// Generate a VBO
+	glGenBuffers(1, &VBO);
+	// Bind the VBO
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verticesSize, vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void SceneImporter::GenerateIBO(uint& IBO, uint* indices, uint indicesSize) const
+{
+	assert(indices != nullptr && indicesSize > 0);
+
+	// Index Buffer Object
+
+	// Generate a IBO
+	glGenBuffers(1, &IBO);
+	// Bind the IBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
+{
+	// Vertex Array Object
+
+	// Generate a VAO
+	glGenVertexArrays(1, &VAO);
+	// Bind the VAO
+	glBindVertexArray(VAO);
+
+	// Bind the VBO 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// Set the vertex attributes pointers
+	// 1. Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, position)));
+	glEnableVertexAttribArray(0);
+
+	// 2. Normal
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, normal)));
+	glEnableVertexAttribArray(1);
+
+	// 3. Color
+	glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)(offsetof(Vertex, color)));
+	glEnableVertexAttribArray(2);
+
+	// 4. Tex coords
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, texCoord)));
+	glEnableVertexAttribArray(3);
+
+	// 5. Tangents
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, tangent)));
+	glEnableVertexAttribArray(4);
+
+	// 6. Bitangents
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, bitangent)));
+	glEnableVertexAttribArray(5);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void SceneImporter::DeleteBufferObject(uint& name) const
+{
+	glDeleteBuffers(1, &name);
+}
+
+void SceneImporter::DeleteVertexArrayObject(uint& name) const
+{
+	glDeleteVertexArrays(1, &name);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+uint SceneImporter::GetAssimpMajorVersion() const
+{
+	return aiGetVersionMajor();
+}
+
+uint SceneImporter::GetAssimpMinorVersion() const
+{
+	return aiGetVersionMinor();
+}
+
+uint SceneImporter::GetAssimpRevisionVersion() const
+{
+	return aiGetVersionRevision();
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
@@ -1019,24 +823,9 @@ void SceneImporter::LoadPrimitivePlane()
 	// -----
 
 	GLuint VBO = 0;
-	ResourceMesh::GenerateVBO(VBO, vertices, verticesSize);
-	ResourceMesh::GenerateIBO(defaultPlaneIBO, indices, defaultPlaneIndicesSize);
-	ResourceMesh::GenerateVAO(defaultPlaneVAO, VBO);
-}
-
-uint SceneImporter::GetAssimpMajorVersion() const
-{
-	return aiGetVersionMajor();
-}
-
-uint SceneImporter::GetAssimpMinorVersion() const
-{
-	return aiGetVersionMinor();
-}
-
-uint SceneImporter::GetAssimpRevisionVersion() const
-{
-	return aiGetVersionRevision();
+	GenerateVBO(VBO, vertices, verticesSize);
+	GenerateIBO(defaultPlaneIBO, indices, defaultPlaneIndicesSize);
+	GenerateVAO(defaultPlaneVAO, VBO);
 }
 
 void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO, uint& defaultPlaneIndicesSize) const
@@ -1046,7 +835,7 @@ void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO
 	defaultPlaneIndicesSize = this->defaultPlaneIndicesSize;
 }
 
-void SceneImporter::RecursiveProcessBones(const aiScene * scene, const aiNode * node) const
+void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable const aiNode * node)const
 {
 	std::map<std::string, aiBone*>::iterator it = bones.find(node->mName.C_Str());
 
@@ -1058,16 +847,16 @@ void SceneImporter::RecursiveProcessBones(const aiScene * scene, const aiNode * 
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;
+		// TODO_G : DONT CREATE THE RESOURCE IN THE IMPORT METHOD
 		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output);
-
 		if (go->GetParent() == nullptr ||
-			(go->GetParent() && !go->GetParent()->GetComponentByType(ComponentTypes::BoneComponent)))
+			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
 		imported_bones[node->mName.C_Str()] = bone_uid;
-		DEPRECATED_LOG("SceneImporter: Added Bone component and created bone resource");
+		DEPRECATED_LOG("->-> Added Bone component");
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

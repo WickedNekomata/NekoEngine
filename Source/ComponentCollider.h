@@ -47,6 +47,9 @@ public:
 	static float GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint);
 	static physx::PxBounds3 GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation = 1.01f);
 
+	virtual uint GetInternalSerializationBytes() = 0;
+	virtual void OnInternalLoad(char*& cursor) = 0;
+	virtual void OnInternalSave(char*& cursor) = 0;
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

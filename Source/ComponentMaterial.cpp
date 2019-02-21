@@ -45,20 +45,20 @@ ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial)
 
 	for (uint i = 0; i < componentMaterial.uniforms.size(); ++i)
 	{
-		Uniform* uniform = new Uniform();
-		memcpy_s(uniform, sizeof(Uniform), componentMaterial.uniforms[i], sizeof(Uniform));
+		Uniform uniform;
+		memcpy_s(&uniform, sizeof(Uniform), &componentMaterial.uniforms[i], sizeof(Uniform));
 		uniforms.push_back(uniform);
 	}
 }
 
 ComponentMaterial::~ComponentMaterial()
 {
-	parent->materialRenderer = nullptr;
+	parent->cmp_material = nullptr;
 
 	for (uint i = 0; i < res.size(); ++i)
 		SetResource(0, i);
 
-	ReleaseUniforms();
+	uniforms.clear();
 }
 
 void ComponentMaterial::Update() {}
@@ -77,17 +77,9 @@ void ComponentMaterial::SetResource(uint res_uuid, uint position)
 	res[position].res = res_uuid;
 }
 
-void ComponentMaterial::ReleaseUniforms()
-{
-	for (uint i = 0; i < uniforms.size(); ++i)
-		RELEASE(uniforms[i]);
-
-	uniforms.clear();
-}
-
 void ComponentMaterial::UpdateUniforms()
 {
-	ReleaseUniforms();
+	uniforms.clear();
 	const ResourceShaderProgram* program = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
 	if (program != nullptr)
 		program->GetUniforms(uniforms);
@@ -108,7 +100,7 @@ void ComponentMaterial::OnUniqueEditor()
 	if (shaderProgram != nullptr && !shaderProgram->isValid)
 	{
 		shaderProgramUUID = 0;
-		ReleaseUniforms();
+		uniforms.clear();
 	}
 
 	ImGui::PushID("shader");
@@ -129,9 +121,9 @@ void ComponentMaterial::OnUniqueEditor()
 			ResourceShaderProgram* payload_n = *(ResourceShaderProgram**)payload->Data;
 			if (payload_n->isValid)
 			{
-				ReleaseUniforms();
+				uniforms.clear();
 				payload_n->GetUniforms(uniforms);
-				shaderProgramUUID = payload_n->GetUUID();
+				shaderProgramUUID = payload_n->GetUuid();
 			}
 			else
 				DEPRECATED_LOG("Invalid shader program");
@@ -144,73 +136,73 @@ void ComponentMaterial::OnUniqueEditor()
 		if (i == 0)
 			ImGui::Text("Active Uniforms");
 
-		Uniform* uniform = uniforms[i];
-		ImGui::Text(uniform->common.name);
+		Uniform uniform = uniforms[i];
+		ImGui::Text(uniform.common.name);
 		ImGui::SameLine();
 
 		char itemName[] = { "##uniformX" };
 		itemName[10] = i;
 		ImGui::PushItemWidth(100.0f);
-		switch (uniform->common.type)
+		switch (uniform.common.type)
 		{
 		case Uniforms_Values::FloatU_value:
-			ImGui::InputFloat(itemName, &uniform->floatU.value);
+			ImGui::InputFloat(itemName, &uniform.floatU.value);
 			break;
 		case Uniforms_Values::IntU_value:
-			ImGui::InputInt(itemName, (int*)&uniform->intU.value);
+			ImGui::InputInt(itemName, (int*)&uniform.intU.value);
 			break;
 		case Uniforms_Values::Vec2FU_value:
 		{
-			float v[] = { uniform->vec2FU.value.x, uniform->vec2FU.value.y };
+			float v[] = { uniform.vec2FU.value.x, uniform.vec2FU.value.y };
 			ImGui::InputFloat2(itemName, v);
-			uniform->vec2FU.value.x = v[0];
-			uniform->vec2FU.value.y = v[1];
+			uniform.vec2FU.value.x = v[0];
+			uniform.vec2FU.value.y = v[1];
 			break;
 		}
 		case Uniforms_Values::Vec3FU_value:
 		{
-			float v[] = { uniform->vec3FU.value.x, uniform->vec3FU.value.y , uniform->vec3FU.value.z };
+			float v[] = { uniform.vec3FU.value.x, uniform.vec3FU.value.y , uniform.vec3FU.value.z };
 			ImGui::InputFloat3(itemName, v);
-			uniform->vec3FU.value.x = v[0];
-			uniform->vec3FU.value.y = v[1];
-			uniform->vec3FU.value.z = v[2];
+			uniform.vec3FU.value.x = v[0];
+			uniform.vec3FU.value.y = v[1];
+			uniform.vec3FU.value.z = v[2];
 			break;
 		}
 		case Uniforms_Values::Vec4FU_value:
 		{
-			float v[] = { uniform->vec4FU.value.x, uniform->vec4FU.value.y , uniform->vec4FU.value.z, uniform->vec4FU.value.w };
+			float v[] = { uniform.vec4FU.value.x, uniform.vec4FU.value.y , uniform.vec4FU.value.z, uniform.vec4FU.value.w };
 			ImGui::InputFloat4(itemName, v);
-			uniform->vec4FU.value.x = v[0];
-			uniform->vec4FU.value.y = v[1];
-			uniform->vec4FU.value.z = v[2];
-			uniform->vec4FU.value.w = v[3];
+			uniform.vec4FU.value.x = v[0];
+			uniform.vec4FU.value.y = v[1];
+			uniform.vec4FU.value.z = v[2];
+			uniform.vec4FU.value.w = v[3];
 			break;
 		}
 		case Uniforms_Values::Vec2IU_value:
 		{
-			int v[] = { uniform->vec2IU.value.x, uniform->vec2IU.value.y };
+			int v[] = { uniform.vec2IU.value.x, uniform.vec2IU.value.y };
 			ImGui::InputInt2(itemName, v);
-			uniform->vec2IU.value.x = v[0];
-			uniform->vec2IU.value.y = v[1];
+			uniform.vec2IU.value.x = v[0];
+			uniform.vec2IU.value.y = v[1];
 			break;
 		}
 		case Uniforms_Values::Vec3IU_value:
 		{
-			int v[] = { uniform->vec3IU.value.x, uniform->vec3IU.value.y , uniform->vec3IU.value.z };
+			int v[] = { uniform.vec3IU.value.x, uniform.vec3IU.value.y , uniform.vec3IU.value.z };
 			ImGui::InputInt3(itemName, v);
-			uniform->vec3IU.value.x = v[0];
-			uniform->vec3IU.value.y = v[1];
-			uniform->vec3IU.value.z = v[2];
+			uniform.vec3IU.value.x = v[0];
+			uniform.vec3IU.value.y = v[1];
+			uniform.vec3IU.value.z = v[2]; 
 			break;
 		}
 		case Uniforms_Values::Vec4IU_value:
 		{
-			int v[] = { uniform->vec4IU.value.x, uniform->vec4IU.value.y , uniform->vec4IU.value.z, uniform->vec4IU.value.w };
+			int v[] = { uniform.vec4IU.value.x, uniform.vec4IU.value.y , uniform.vec4IU.value.z, uniform.vec4IU.value.w };
 			ImGui::InputInt4(itemName, v);
-			uniform->vec4IU.value.x = v[0];
-			uniform->vec4IU.value.y = v[1];
-			uniform->vec4IU.value.z = v[2];
-			uniform->vec4IU.value.w = v[3];
+			uniform.vec4IU.value.x = v[0];
+			uniform.vec4IU.value.y = v[1];
+			uniform.vec4IU.value.z = v[2];
+			uniform.vec4IU.value.w = v[3];
 			break;
 		}
 		}
@@ -220,7 +212,7 @@ void ComponentMaterial::OnUniqueEditor()
 	if (ImGui::Button("USE DEFAULT SHADER"))
 	{
 		shaderProgramUUID = 0;
-		ReleaseUniforms();
+		uniforms.clear();
 	}
 
 	// Textures
@@ -244,16 +236,14 @@ void ComponentMaterial::OnUniqueEditor()
 		}
 		ImGui::SameLine();
 
-
-
 		char itemName[DEFAULT_BUF_SIZE];
 
 		const ResourceTexture* resource = (const ResourceTexture*)App->res->GetResource(res[i].res);
 		if (resource != nullptr)
 		{
-			res[i].id = resource->id;
-			res[i].width = resource->width;
-			res[i].height = resource->height;
+			res[i].id = resource->GetId();
+			res[i].width = resource->GetWidth();
+			res[i].height = resource->GetHeight();
 
 			sprintf_s(itemName, DEFAULT_BUF_SIZE, "%s##%i", resource->GetName(), i);
 		}
@@ -337,253 +327,80 @@ void ComponentMaterial::OnUniqueEditor()
 #endif
 }
 
-void ComponentMaterial::OnInternalSave(JSON_Object* file)
+uint ComponentMaterial::GetInternalSerializationBytes()
 {
-	JSON_Value* arrayValue = json_value_init_array();
-	JSON_Array* jsonArray = json_value_get_array(arrayValue);
-	json_array_append_number(jsonArray, color[0]);
-	json_array_append_number(jsonArray, color[1]);
-	json_array_append_number(jsonArray, color[2]);
-	json_array_append_number(jsonArray, color[3]);
-	json_object_set_value(file, "VertexColor", arrayValue);
+	size_t size = sizeof(GLuint);
+	size += sizeof(uint);
+	size += sizeof(Uniform) * uniforms.size();
 
-	json_array_append_value(jsonArray, arrayValue);
+	size += sizeof(uint);
+	size += sizeof(MaterialResource) * res.size();
 
-	arrayValue = json_value_init_array();
-	jsonArray = json_value_get_array(arrayValue);
+	size += sizeof(float) * 4;
 
-	for (int i = 0; i < res.size(); ++i)
-	{
-		JSON_Value* newValue = json_value_init_object();
-		JSON_Object* resource = json_value_get_object(newValue);
-
-		json_object_set_number(resource, "res", res[i].res);
-
-		math::float3 pos; math::Quat rot; math::float3 scale;
-		res[i].matrix.Decompose(pos, rot, scale);
-		json_object_set_number(resource, "posX", pos.x);
-		json_object_set_number(resource, "posY", pos.y);
-		json_object_set_number(resource, "posZ", pos.z);
-
-		json_object_set_number(resource, "rotX",rot.x);
-		json_object_set_number(resource, "rotY",rot.y);
-		json_object_set_number(resource, "rotZ",rot.z);
-		json_object_set_number(resource, "rotW",rot.w);
-
-		json_object_set_number(resource, "scaleX", scale.x);
-		json_object_set_number(resource, "scaleY", scale.y);
-		json_object_set_number(resource, "scaleZ", scale.z);
-
-		json_array_append_value(jsonArray, newValue);
-	}
-	json_object_set_value(file, "TexturesResources", arrayValue);
-
-	json_object_set_number(file, "Shader", shaderProgramUUID);
-
-	JSON_Value* uniformsValue = json_value_init_array();
-	JSON_Array* uniformsArray = json_value_get_array(uniformsValue);
-
-	for (int i = 0; i < uniforms.size(); ++i)
-	{
-		JSON_Value* currentValue = json_value_init_object();
-		JSON_Object* currentObject = json_value_get_object(currentValue);
-
-		switch (uniforms[i]->common.type)
-		{
-		case Uniforms_Values::FloatU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Value", uniforms[i]->floatU.value);
-			break;
-		case Uniforms_Values::IntU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Location", uniforms[i]->common.location);
-			json_object_set_number(currentObject, "Value", uniforms[i]->intU.value);
-			break;
-		case Uniforms_Values::Vec2FU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec2FU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec2FU.value.y);
-			break;
-		case Uniforms_Values::Vec3FU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "Value", uniforms[i]->intU.value);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec3FU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec3FU.value.y);
-			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec3FU.value.z);
-			break;
-		case Uniforms_Values::Vec4FU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec4FU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec4FU.value.y);
-			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec4FU.value.z);
-			json_object_set_number(currentObject, "ValueW", uniforms[i]->vec4FU.value.w);
-			break;
-		case Uniforms_Values::Vec2IU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec2IU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec2IU.value.y);
-			break;
-		case Uniforms_Values::Vec3IU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec3IU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec3IU.value.y);
-			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec3IU.value.z);
-			break;
-		case Uniforms_Values::Vec4IU_value:
-			json_object_set_number(currentObject, "Type", uniforms[i]->common.type);
-			json_object_set_string(currentObject, "Name", uniforms[i]->common.name);
-			json_object_set_number(currentObject, "ValueX", uniforms[i]->vec4IU.value.x);
-			json_object_set_number(currentObject, "ValueY", uniforms[i]->vec4IU.value.y);
-			json_object_set_number(currentObject, "ValueZ", uniforms[i]->vec4IU.value.z);
-			json_object_set_number(currentObject, "ValueW", uniforms[i]->vec4IU.value.w);
-			break;
-		}
-		json_array_append_value(uniformsArray, currentValue);
-	}
-	json_object_set_value(file, "Uniforms", uniformsValue);
+	return size;
 }
 
-void ComponentMaterial::OnLoad(JSON_Object* file)
+void ComponentMaterial::OnInternalSave(char*& cursor)
 {
-	JSON_Array* jsonArray = json_object_get_array(file, "VertexColor");
+	size_t bytes = sizeof(GLuint);
+	memcpy(cursor, &shaderProgramUUID, bytes);
+	cursor += bytes;
 
-	uint arraySize = json_array_get_count(jsonArray);
+	bytes = sizeof(int);
+	int numUniforms = uniforms.size();
+	memcpy(cursor, &numUniforms, bytes);
+	cursor += bytes;
+	
+	bytes = sizeof(Uniform) * uniforms.size();
+	memcpy(cursor, uniforms.data(), bytes);
+	cursor += bytes;
 
-	for (int i = 0; i < arraySize; i++)
-		color[i] = json_array_get_number(jsonArray, i);
+	bytes = sizeof(int);
+	int numRes = res.size();
+	memcpy(cursor, &numRes, bytes);
+	cursor += bytes;
 
-	jsonArray = json_object_get_array(file, "TexturesResources");
+	bytes = sizeof(MaterialResource) * res.size();
+	memcpy(cursor, res.data(), bytes);
+	cursor += bytes;
 
-	arraySize = json_array_get_count(jsonArray);
+	bytes = sizeof(float) * 4;
+	memcpy(cursor, color, bytes);
+	cursor += bytes;
+}
 
-	while (res.size() < arraySize)
-	{
-		MaterialResource newRes;
-		res.push_back(newRes);
-	}
+void ComponentMaterial::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(GLuint);
+	memcpy(&shaderProgramUUID, cursor, bytes);
+	cursor += bytes;
 
-	for (int i = 0; i < arraySize; i++) {
-		JSON_Object* rObject = json_array_get_object(jsonArray, i);
+	bytes = sizeof(int);
+	int numUniforms;
+	memcpy(&numUniforms, cursor, bytes);
+	cursor += bytes;
 
-		uint newRes = json_object_get_number(rObject, "res");
-		if (newRes == 0 || App->res->GetResource(newRes) != nullptr)
-			SetResource(newRes, i);
+	uniforms.resize(numUniforms);
 
-		math::float3 pos; math::Quat rot; math::float3 scale;
+	bytes = sizeof(Uniform) * numUniforms;
+	memcpy(uniforms.data(), cursor, bytes);
+	cursor += bytes;
 
-		pos.x = json_object_get_number(rObject, "posX");
-		pos.y = json_object_get_number(rObject, "posY");
-		pos.z = json_object_get_number(rObject, "posZ");
+	bytes = sizeof(int);
+	int numRes;
+	memcpy(&numRes, cursor, bytes);
+	cursor += bytes;
 
-		rot.x = json_object_get_number(rObject, "rotX");
-		rot.y = json_object_get_number(rObject, "rotY");
-		rot.z = json_object_get_number(rObject, "rotZ");
-		rot.w = json_object_get_number(rObject, "rotW");
+	res.resize(numRes);
 
-		scale.x = json_object_get_number(rObject, "scaleX");
-		scale.y = json_object_get_number(rObject, "scaleY");
-		scale.z = json_object_get_number(rObject, "scaleZ");
+	bytes = sizeof(MaterialResource) * numRes;
+	memcpy(res.data(), cursor, bytes);
+	cursor += bytes;
 
-		res[i].matrix = math::float4x4::FromTRS(pos, rot, scale);
-	}
-
-	shaderProgramUUID = json_object_get_number(file, "Shader");
-
-	ResourceShaderProgram* program = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUUID);
-
-	if (program == nullptr || !program->isValid)
-	{
-		//CONSOLE_LOG("COMPONENT MATERIAL: Invalid Shader");
-		return;
-	}
-
-	// Here we get all uniforms from shader and update them loading data from json. This is important cause shader could been modified.
-
-	program->GetUniforms(uniforms);
-	JSON_Array* uniformsArray = json_object_get_array(file, "Uniforms");
-	uint size = json_array_get_count(uniformsArray);
-
-	for (int i = 0; i < size; ++i)
-	{	
-		JSON_Object* uniformObject = json_array_get_object(uniformsArray, i);
-		char name[DEFAULT_BUF_SIZE];
-		strcpy_s(name, json_object_get_string(uniformObject, "Name"));
-
-		for (int j = 0; j < uniforms.size(); ++j)
-		{
-			if (strcmp(name, uniforms[j]->common.name) == 0)
-			{
-				int type = json_object_get_number(uniformObject, "Type");
-
-				switch (type)
-				{
-				case Uniforms_Values::FloatU_value:
-					uniforms[j]->floatU.type = type;
-					strcpy_s(uniforms[j]->floatU.name, name);
-					uniforms[j]->floatU.value = json_object_get_number(uniformObject, "Value");
-					break;
-				case Uniforms_Values::IntU_value:
-					uniforms[j]->intU.type = type;
-					strcpy_s(uniforms[j]->intU.name, name);
-					uniforms[j]->intU.value = json_object_get_number(uniformObject, "Value");
-					break;
-				case Uniforms_Values::Vec2FU_value:
-					uniforms[j]->vec2FU.type = type;
-					strcpy_s(uniforms[j]->vec2FU.name, name);
-					uniforms[j]->vec2FU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec2FU.value.y = json_object_get_number(uniformObject, "ValueY");
-					break;
-				case Uniforms_Values::Vec3FU_value:
-					uniforms[j]->vec3FU.type = type;
-					strcpy_s(uniforms[j]->vec3FU.name, name);
-					uniforms[j]->vec3FU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec3FU.value.y = json_object_get_number(uniformObject, "ValueY");
-					uniforms[j]->vec3FU.value.z = json_object_get_number(uniformObject, "ValueZ");
-					break;
-				case Uniforms_Values::Vec4FU_value:
-					uniforms[j]->vec4FU.type = type;
-					strcpy_s(uniforms[j]->vec4FU.name, name);
-					uniforms[j]->vec4FU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec4FU.value.y = json_object_get_number(uniformObject, "ValueY");
-					uniforms[j]->vec4FU.value.z = json_object_get_number(uniformObject, "ValueZ");
-					uniforms[j]->vec4FU.value.w = json_object_get_number(uniformObject, "ValueW");
-					break;
-				case Uniforms_Values::Vec2IU_value:
-					uniforms[j]->vec2IU.type = type;
-					strcpy_s(uniforms[j]->vec2IU.name, name);
-					uniforms[j]->vec2IU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec2IU.value.y = json_object_get_number(uniformObject, "ValueY");
-					break;
-				case Uniforms_Values::Vec3IU_value:
-					uniforms[j]->vec3IU.type = type;
-					strcpy_s(uniforms[j]->vec3IU.name, name);
-					uniforms[j]->vec3IU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec3IU.value.y = json_object_get_number(uniformObject, "ValueY");
-					uniforms[j]->vec3IU.value.z = json_object_get_number(uniformObject, "ValueZ");
-					break;
-				case Uniforms_Values::Vec4IU_value:
-					uniforms[j]->vec4IU.type = type;
-					strcpy_s(uniforms[j]->vec4IU.name, name);
-					uniforms[j]->vec4IU.value.x = json_object_get_number(uniformObject, "ValueX");
-					uniforms[j]->vec4IU.value.y = json_object_get_number(uniformObject, "ValueY");
-					uniforms[j]->vec4IU.value.z = json_object_get_number(uniformObject, "ValueZ");
-					uniforms[j]->vec4IU.value.w = json_object_get_number(uniformObject, "ValueW");
-					break;
-				default:
-					assert("Material Component: Fatal error at loading uniforms");
-					break;
-				}
-				break;
-			}
-		}		
-	}
+	bytes = sizeof(float) * 4;
+	memcpy(color, cursor, bytes);
+	cursor += bytes;
 }
 
 void ComponentMaterial::EditCurrentResMatrixByIndex(int i)

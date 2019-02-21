@@ -4,73 +4,47 @@
 #include "Module.h"
 
 #include <vector>
-#include <list>
 
 class GameObject;
-class Component;
-class ComponentCamera;
-class Resource;
 
 class ModuleGOs : public Module
 {
 public:
-
 	ModuleGOs(bool start_enabled = true);
 	~ModuleGOs();
 
-	update_status PostUpdate();
 	bool CleanUp();
-
 	void OnSystemEvent(System_Event event);
 
-	bool OnGameMode();
-	bool OnEditorMode();
-
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	inline void AddGameObject(GameObject* gameObject) { gameObjects.push_back(gameObject); }
-	void DeleteGameObject(const char* name);
+	GameObject* Instanciate(GameObject* target);
 	void DeleteGameObject(GameObject* toDelete);
+	void Kill(GameObject* go);
 
-	void DeleteTemporaryGameObjects();
-	void DeleteScene();
+	void GetGameobjects(std::vector<GameObject*>& gos) const;
+	void GetStaticGameobjects(std::vector<GameObject*>& gos) const;
+	void GetDynamicGameobjects(std::vector<GameObject*>& gos) const;
+
 	void ClearScene();
 
-	void SetToDelete(GameObject* toDelete);
-	void SetComponentToDelete(Component* toDelete);
+	void RecalculateVector(GameObject* go); //if static or dynamic
 
-	GameObject* GetGameObject(uint index) const;
-	GameObject* GetGameObjectByUUID(uint UUID) const;
-	void GetGameObjects(std::vector<GameObject*>& gameObjects) const;
-	void GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const;
-	void GetMeshComponentsFromStaticGameObjects(std::vector<class ComponentMesh*>& components) const;
-	void GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const;
-
-	//TODO: Ask if this is right
-	inline GameObject* getRoot() const { return gameObjects[0]; }
-
-	void ReorderGameObjects(GameObject* source, GameObject* target);
-
-	void MarkSceneToSerialize();
-	bool SerializeFromNode(const GameObject* node, std::string& outputFile);
-	bool LoadScene(const char* file);
-	bool GetMeshResourcesFromScene(const char* file, std::vector<std::string>& meshes, std::vector<uint>& UUIDs) const;
+	bool SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
+	bool LoadScene(char*& buffer, size_t sizeBuffer);
 
 	bool InvalidateResource(const Resource* resource);
 
-public:
-
-	const char* nameScene = nullptr;
-
 private:
 
-	bool serializeScene = false;
+	std::vector<GameObject*> gameobjects;
+	std::vector<GameObject*> staticGos;
+	std::vector<GameObject*> dynamicGos;
 
-	std::vector<GameObject*> gameObjects;
-	std::vector<GameObject*> gameObjectsToDelete;
-	std::vector<Component*> componentsToDelete;
+public:
+	// This is for saving and loading scenes from ModuleEvents ;( (friendship?)
+	char* sceneStateBuffer = 0;
+	size_t sceneStateSize;
 
-	// OnGameMode/OnEditorMode
-	std::vector<GameObject*> tmpGameObjects;
+	char nameScene[DEFAULT_BUF_SIZE];
 };
-
 #endif

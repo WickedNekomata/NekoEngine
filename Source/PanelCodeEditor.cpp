@@ -22,7 +22,7 @@ PanelCodeEditor::~PanelCodeEditor() {}
 
 bool PanelCodeEditor::Draw()
 {
-	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUuid);
 
 	if (shaderObject != nullptr)
 	{
@@ -74,31 +74,14 @@ bool PanelCodeEditor::Draw()
 		{
 			TryCompile();
 
-			// Update the parameters of the shader object
+			// Update the existing shader object
 			shaderObject->SetSource(editor.GetText().data(), editor.GetText().length());
-			if (!shaderObject->Compile(false))
+			if (!shaderObject->Compile())
 				shaderObject->isValid = false;
 			else
 				shaderObject->isValid = true;
 
-			std::string output;
-			if (App->shaderImporter->SaveShaderObject(shaderObject, output, true))
-			{
-				// Search for the meta associated to the file
-				char metaFile[DEFAULT_BUF_SIZE];
-				strcpy_s(metaFile, strlen(output.data()) + 1, output.data()); // file
-				strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-
-				// Update last modification time in the meta
-				int lastModTime = App->fs->GetLastModificationTime(output.data());
-				Importer::SetLastModificationTimeToMeta(metaFile, lastModTime);
-
-				App->fs->AddMeta(metaFile, lastModTime);
-
-				System_Event newEvent;
-				newEvent.type = System_Event_Type::RefreshFiles;
-				App->PushSystemEvent(newEvent);
-			}
+			App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderObject->GetData(), &shaderObject->GetSpecificData(), true);
 		}
 
 		ImGui::SameLine();
@@ -115,15 +98,15 @@ bool PanelCodeEditor::Draw()
 			editor.SetErrorMarkers(markers);
 		}
 
-		switch (shaderObject->shaderType)
+		switch (shaderObject->GetShaderType())
 		{
-		case ShaderType::VertexShaderType:
+		case ShaderTypes::VertexShaderType:
 			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 				"Vertex Shader",
 				shaderObject->GetName());
 			break;
-		case ShaderType::FragmentShaderType:
+		case ShaderTypes::FragmentShaderType:
 			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 				"Vertex Shader",
@@ -140,7 +123,7 @@ bool PanelCodeEditor::Draw()
 
 	if (!enabled)
 	{
-		shaderObjectUUID = 0;
+		shaderObjectUuid = 0;
 		editor.Delete();
 	}
 
@@ -153,15 +136,15 @@ void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUUID)
 	if (shaderObject != nullptr)
 	{
 		enabled = true;
-		this->shaderObjectUUID = shaderObjectUUID;
+		this->shaderObjectUuid = shaderObjectUUID;
 
 		editor.SetText(shaderObject->GetSource());
 	}
 }
 
-uint PanelCodeEditor::GetShaderObjectUUID() const
+uint PanelCodeEditor::GetShaderObjectUuid() const
 {
-	return shaderObjectUUID;
+	return shaderObjectUuid;
 }
 
 void PanelCodeEditor::SetError(int line, const char* error)
@@ -181,8 +164,8 @@ bool PanelCodeEditor::TryCompile()
 	TextEditor::ErrorMarkers markers;
 	editor.SetErrorMarkers(markers);
 
-	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
-	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->shaderType);
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUuid);
+	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->GetShaderType());
 
 	if (tryCompile > 0)
 		ret = true;

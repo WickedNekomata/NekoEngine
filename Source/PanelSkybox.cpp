@@ -58,13 +58,13 @@ bool PanelSkybox::Draw()
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
 			{
 				if (tex != nullptr)
-					App->res->SetAsUnused(tex->GetUUID());
+					App->res->SetAsUnused(tex->GetUuid());
 
 				uint payload_n = *(uint*)payload->Data;
 				ResourceTexture* res = (ResourceTexture*)App->res->GetResource(payload_n);
 				if (res != nullptr)
 				{
-					App->renderer3D->skyboxTextures[i] = res->GetUUID();
+					App->renderer3D->skyboxTextures[i] = res->GetUuid();
 					App->res->SetAsUsed(App->renderer3D->skyboxTextures[i]);
 				}
 			}
@@ -87,7 +87,7 @@ bool PanelSkybox::Draw()
 		{
 			ResourceTexture* res = (ResourceTexture*)App->res->GetResource(App->renderer3D->skyboxTextures[i]);
 			if (res != nullptr)
-				texturesToLoad.push_back(res->id);
+				texturesToLoad.push_back(res->GetId());
 			else
 				texturesToLoad.push_back(0);
 		}

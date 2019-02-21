@@ -3,58 +3,113 @@
 
 #include "Resource.h"
 
-#include "glew\include\GL\glew.h"
+#include <vector>
+
+struct ResourceMeshImportSettings
+{
+	enum PostProcessConfigurationFlags
+	{
+		TARGET_REALTIME_FAST,
+		TARGET_REALTIME_QUALITY,
+		TARGET_REALTIME_MAX_QUALITY,
+		CUSTOM
+	};
+
+	enum CustomConfigurationFlags
+	{
+		CALC_TANGENT_SPACE = 1 << 0,
+		GEN_NORMALS = 1 << 1,
+		GEN_SMOOTH_NORMALS = 1 << 2,
+		JOIN_IDENTICAL_VERTICES = 1 << 3,
+		TRIANGULATE = 1 << 4,
+		GEN_UV_COORDS = 1 << 5,
+		SORT_BY_P_TYPE = 1 << 6,
+		IMPROVE_CACHE_LOCALITY = 1 << 7,
+		LIMIT_BONE_WEIGHTS = 1 << 8,
+		REMOVE_REDUNDANT_MATERIALS = 1 << 9,
+		SPLIT_LARGE_MESHES = 1 << 10,
+		FIND_DEGENERATES = 1 << 11,
+		FIND_INVALID_DATA = 1 << 12,
+		FIND_INSTANCES = 1 << 13,
+		VALIDATE_DATA_STRUCTURE = 1 << 14,
+		OPTIMIZE_MESHES = 1 << 15
+	};
+
+	PostProcessConfigurationFlags postProcessConfigurationFlags = PostProcessConfigurationFlags::TARGET_REALTIME_MAX_QUALITY;
+	uint customConfigurationFlags = 0;
+
+	uint size = 0;
+
+	char modelPath[DEFAULT_BUF_SIZE];
+};
 
 struct Vertex
 {
-	GLfloat position[3];
-	GLfloat normal[3];
-	GLfloat tangent[3];
-	GLfloat bitangent[3];
-	GLubyte color[4];
-	GLfloat texCoord[2];
+	float position[3];
+	float normal[3];
+	float tangent[3];
+	float bitangent[3];
+	uchar color[4];
+	float texCoord[2];
+};
+
+struct ResourceMeshData
+{
+	Vertex* vertices = nullptr;
+	uint verticesSize = 0;
+
+	uint* indices = nullptr;
+	uint indicesSize = 0;
+
+	ResourceMeshImportSettings meshImportSettings;
 };
 
 class ResourceMesh : public Resource
 {
 public:
 
-	ResourceMesh(ResourceType type, uint uuid);
+	ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData);
 	~ResourceMesh();
 
-	void GetIndices(int* indices) const;
-	void GetVerts(float* verts) const;
-	void GetNormals(float* normals) const;
-	int  GetVertsCount() const;
-	int  GetIndicesCount() const;
+	void OnPanelAssets();
+
+	// ----------------------------------------------------------------------------------------------------
+
+	static bool ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& outputFiles);
+	static uint CreateMeta(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids, std::string& outputMetaFile);
+	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids);
+	static bool ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uint>& meshesUuids);
+	static uint SetMeshImportSettingsToMeta(const char* metaFile, const ResourceMeshImportSettings& meshImportSettings);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	inline ResourceMeshData& GetSpecificData() { return meshData; }
+	void GetVerticesReference(Vertex*& vertices) const;
+	void GetTris(float* verticesPosition) const;
+	void GetIndicesReference(uint*& indices) const;
+	void GetIndices(uint* indices) const;
+	uint GetVerticesCount() const;
+	uint GetIndicesCount() const;
+
 	uint GetVBO() const;
 	uint GetIBO() const;
 	uint GetVAO() const;
 
-	static void GenerateVBO(GLuint& VBO, Vertex* vertices, uint verticesSize);
-	static void GenerateIBO(GLuint& IBO, GLuint* indices, uint indicesSize);
-	static void GenerateVAO(GLuint& VAO, GLuint& VBO);
-
 private:
+
+	static bool ReadMeshesUuidsFromMeta(const char* metaFile, std::vector<uint>& meshesUuids);
+	static bool ReadMeshImportSettingsFromMeta(const char* metaFile, ResourceMeshImportSettings& meshImportSettings);
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();
 
-	void GenerateVBO();
-	void GenerateIBO();
-	void GenerateVAO();
+private:
 
-public: //TODO: set this to private and fix errors
+	uint VBO = 0;
+	uint IBO = 0;
+	uint VAO = 0;
 
-	Vertex* vertices = nullptr;
-	uint verticesSize = 0;
-
-	GLuint* indices = nullptr;
-	uint indicesSize = 0;
-
-	GLuint VBO = 0;
-	GLuint IBO = 0;
-	GLuint VAO = 0;
+	ResourceMeshData meshData;
 };
 
 #endif

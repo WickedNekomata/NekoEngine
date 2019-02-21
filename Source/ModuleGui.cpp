@@ -20,7 +20,6 @@
 #include "PanelSettings.h"
 #include "PanelHierarchy.h"
 #include "PanelAssets.h"
-#include "PanelLibrary.h"
 #include "PanelDebugDraw.h"
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
@@ -54,7 +53,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelHierarchy = new PanelHierarchy("Hierarchy");
 	panelConsole = new PanelConsole("Console");
 	panelAssets = new PanelAssets("Assets");
-	panelLibrary = new PanelLibrary("Library");
 	panelEdit = new PanelEdit("Edit");
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
@@ -71,7 +69,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelHierarchy);
 	panels.push_back(panelConsole);
 	panels.push_back(panelAssets);
-	panels.push_back(panelLibrary);
 	panels.push_back(panelEdit);
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
@@ -109,13 +106,15 @@ bool ModuleGui::Start()
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	// Load atlas texture
+	// Load atlas texture // TODO: ATLAS
+	/*
 	std::string outputFileName;
-	atlas = new ResourceTexture(ResourceType::TextureResource, App->GenerateRandomNumber());
+	atlas = new ResourceTexture(ResourceTypes::TextureResource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
 	App->materialImporter->Import("Settings/atlas.png", outputFileName, importSettings);
 	App->materialImporter->Load(outputFileName.data(), atlas, importSettings);
 	RELEASE(importSettings);
+	*/
 
 	return ret;
 }
@@ -257,7 +256,6 @@ bool ModuleGui::CleanUp()
 	panelSettings = nullptr;
 	panelHierarchy = nullptr;
 	panelAssets = nullptr;
-	panelLibrary = nullptr;
 	panelDebugDraw = nullptr;
 	panelEdit = nullptr;
 	panelCodeEditor = nullptr;
@@ -341,7 +339,6 @@ void ModuleGui::DockSpace() const
 		ImGui::DockBuilderDockWindow(panelInspector->GetName(), dock_id_right);
 		ImGui::DockBuilderDockWindow(panelConsole->GetName(), dock_id_bottom);
 		ImGui::DockBuilderDockWindow(panelAssets->GetName(), dock_id_bottom);
-		ImGui::DockBuilderDockWindow(panelLibrary->GetName(), dock_id_bottom);
 
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
@@ -364,7 +361,13 @@ void ModuleGui::SaveScenePopUp()
 		ImGui::InputText("##sceneName", (char*)App->GOs->nameScene, DEFAULT_BUF_SIZE);
 		
 		if (ImGui::Button("Save", ImVec2(120, 0))) {
-			ImGui::CloseCurrentPopup(); App->GOs->MarkSceneToSerialize();
+			ImGui::CloseCurrentPopup(); 
+
+			System_Event newEvent;
+			newEvent.sceneEvent.type = System_Event_Type::SaveScene;
+			memcpy(newEvent.sceneEvent.nameScene, App->GOs->nameScene, sizeof(char) * DEFAULT_BUF_SIZE);
+			App->PushSystemEvent(newEvent);
+			
 			showSaveScenePopUp = false;
 		}
 		ImGui::SetItemDefaultFocus();
@@ -383,15 +386,17 @@ void ModuleGui::LoadScenePopUp()
 
 		ImGui::Text("Assets/Scenes/");
 
-		static char sceneToLoad[INPUT_BUF_SIZE];
+		static char sceneToLoad[DEFAULT_BUF_SIZE];
 		ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
 		ImGui::PushItemWidth(100.0f);
 		ImGui::InputText("##sceneName", sceneToLoad, IM_ARRAYSIZE(sceneToLoad), inputFlag);	
 
 		if (ImGui::Button("Load", ImVec2(120, 0))) {
 			ImGui::CloseCurrentPopup();
-			App->GOs->ClearScene();
-			App->GOs->LoadScene(sceneToLoad);
+			System_Event newEvent;
+			newEvent.sceneEvent.type = System_Event_Type::LoadScene;
+			memcpy(newEvent.sceneEvent.nameScene, sceneToLoad, sizeof(char) * DEFAULT_BUF_SIZE);
+			App->PushSystemEvent(newEvent);
 			showLoadScenePopUp = false;
 		}
 		ImGui::SetItemDefaultFocus();

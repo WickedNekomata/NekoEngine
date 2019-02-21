@@ -22,7 +22,7 @@ bool PanelEdit::Draw()
 	
 	float itemScale = 0.7f;
 	float itemSize = 1.0f / 4.0f;
-	ImVec2 imageSize(atlas->width * itemSize * itemScale, atlas->height * itemSize * itemScale);
+	ImVec2 imageSize(atlas->GetWidth() * itemSize * itemScale, atlas->GetHeight() * itemSize * itemScale);
 
 	ImGuiWindowFlags editFlags = 0;
 	editFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
@@ -38,7 +38,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, itemSize), ImVec2(itemSize, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(0.0f, itemSize), ImVec2(itemSize, itemSize * 2.0f));
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Move Tool");
 
@@ -48,7 +48,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("moveNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, itemSize * 3.0f), ImVec2(itemSize, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(0.0f, itemSize * 3.0f), ImVec2(itemSize, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Move Tool");
@@ -63,7 +63,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, itemSize), ImVec2(itemSize * 2.0f, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize, itemSize), ImVec2(itemSize * 2.0f, itemSize * 2.0f));
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Rotate Tool");
 
@@ -73,7 +73,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("rotateNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, itemSize * 3.0f), ImVec2(itemSize * 2.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize, itemSize * 3.0f), ImVec2(itemSize * 2.0f, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::ROTATE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Rotate Tool");
@@ -88,7 +88,7 @@ bool PanelEdit::Draw()
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, itemSize), ImVec2(itemSize * 3.0f, itemSize * 2.0f));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 2.0f, itemSize), ImVec2(itemSize * 3.0f, itemSize * 2.0f));
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Scale Tool");
 
@@ -98,7 +98,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("scaleNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, itemSize * 3.0f), ImVec2(itemSize * 3.0f, itemSize * 4.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 2.0f, itemSize * 3.0f), ImVec2(itemSize * 3.0f, itemSize * 4.0f)))
 				App->scene->SetImGuizmoOperation(ImGuizmo::OPERATION::SCALE);
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Scale Tool");
@@ -110,7 +110,7 @@ bool PanelEdit::Draw()
 		if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::LOCAL)
 		{
 			ImGui::PushID("localNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 3.0f, itemSize * 2.0f), ImVec2(itemSize * 4.0f, itemSize * 3.0f))
 				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::WORLD);
 			if (ImGui::IsItemHovered())
@@ -124,7 +124,7 @@ bool PanelEdit::Draw()
 		else if (App->scene->GetImGuizmoMode() == ImGuizmo::MODE::WORLD)
 		{
 			ImGui::PushID("worldNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 3.0f, itemSize * 3.0f), ImVec2(itemSize * 4.0f, itemSize * 4.0f))
 				&& App->scene->GetImGuizmoOperation() != ImGuizmo::OPERATION::SCALE)
 				App->scene->SetImGuizmoMode(ImGuizmo::MODE::LOCAL);
 			if (ImGui::IsItemHovered())
@@ -149,15 +149,15 @@ bool PanelEdit::Draw()
 		engine_states engineState = App->GetEngineState();
 
 		// Play button
-		if (App->IsPlay() || engineState == engine_states::ENGINE_WANTS_PLAY
-			|| App->IsPause() || engineState == engine_states::ENGINE_WANTS_PAUSE
-			|| App->IsStep() || engineState == engine_states::ENGINE_WANTS_STEP)
+		if (App->IsPlay()
+			|| App->IsPause()
+			|| App->IsStep())
 		{
 			ImGui::PushID("playHovered");
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, 0.0f), ImVec2(itemSize, itemSize));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(0.0f, 0.0f), ImVec2(itemSize, itemSize));
 
 			if (ImGui::IsItemClicked(0))
 				App->Play();
@@ -168,7 +168,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("playNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(0.0f, itemSize * 2.0f), ImVec2(itemSize, itemSize * 3.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(0.0f, itemSize * 2.0f), ImVec2(itemSize, itemSize * 3.0f)))
 				App->Play();
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Play");
@@ -177,14 +177,14 @@ bool PanelEdit::Draw()
 		ImGui::SameLine();
 
 		// Pause button
-		if (App->IsPause() || engineState == engine_states::ENGINE_WANTS_PAUSE
-			|| App->IsStep() || engineState == engine_states::ENGINE_WANTS_STEP)
+		if (App->IsPause()
+			|| App->IsStep())
 		{
 			ImGui::PushID("pauseHovered");
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, 0.0f), ImVec2(itemSize * 2.0f, itemSize));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize, 0.0f), ImVec2(itemSize * 2.0f, itemSize));
 
 			if (ImGui::IsItemClicked(0))
 				App->Pause();
@@ -195,7 +195,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("pauseNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize, itemSize * 2.0f), ImVec2(itemSize * 2.0f, itemSize * 3.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize, itemSize * 2.0f), ImVec2(itemSize * 2.0f, itemSize * 3.0f)))
 				App->Pause();
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Pause");
@@ -204,13 +204,13 @@ bool PanelEdit::Draw()
 		ImGui::SameLine();
 
 		// Step button
-		if (App->IsStep() || engineState == engine_states::ENGINE_WANTS_STEP)
+		if (App->IsStep())
 		{
 			ImGui::PushID("stepHovered");
 			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-			ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, 0.0f), ImVec2(itemSize * 3.0f, itemSize));
+			ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 2.0f, 0.0f), ImVec2(itemSize * 3.0f, itemSize));
 
 			if (ImGui::IsItemClicked(0))
 				App->Step();
@@ -221,7 +221,7 @@ bool PanelEdit::Draw()
 		else
 		{
 			ImGui::PushID("stepNormal");
-			if (ImGui::ImageButton((ImTextureID)atlas->id, imageSize, ImVec2(itemSize * 2.0f, itemSize * 2.0f), ImVec2(itemSize * 3.0f, itemSize * 3.0f)))
+			if (ImGui::ImageButton((ImTextureID)atlas->GetId(), imageSize, ImVec2(itemSize * 2.0f, itemSize * 2.0f), ImVec2(itemSize * 3.0f, itemSize * 3.0f)))
 				App->Step();
 			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip("Step");

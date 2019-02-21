@@ -121,3 +121,8 @@ void ComponentRigidActor::OnSleep()
 {
 	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
 }
+
+uint ComponentRigidActor::GetInternalSerializationBytes()
+{
+	return 0;
+}

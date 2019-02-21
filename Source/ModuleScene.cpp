@@ -43,7 +43,7 @@ bool ModuleScene::Start()
 {
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-	root = new GameObject("Root", nullptr);
+	root = new GameObject("Root", nullptr, true);
 
 #ifdef GAMEMODE
 	App->GOs->LoadScene("Settings/GameReady.nekoScene");
@@ -85,13 +85,6 @@ update_status ModuleScene::Update()
 	{
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT)
-	{
-		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
-			GetPreviousTransform();
-		
 	}
 #endif
 
@@ -138,7 +131,7 @@ void ModuleScene::Draw() const
 }
 
 #ifndef GAMEMODE
-void ModuleScene::OnGizmos(GameObject* gameObject) /*const*/
+void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
 	ImGuiViewport* vport = ImGui::GetMainViewport();
 	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
@@ -159,54 +152,10 @@ void ModuleScene::OnGizmos(GameObject* gameObject) /*const*/
 
 	if (ImGuizmo::IsUsing())
 	{
-		if (!canSaveTransform)
-		{
-			canSaveTransform = true;
-			lastMat = transformMatrix;
-		}
 		transformMatrix = transformMatrix.Transposed();
 		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 	}
-	else if (canSaveTransform)
-	{
-		SaveLastTransform(lastMat.Transposed());
-		canSaveTransform = false;
-	}
 }
-
-void ModuleScene::SaveLastTransform(math::float4x4 matrix)
-{
-	LastTransform prevTrans;
-	GameObject* curr = selectedObject.GetCurrGameObject();
-	if (curr)
-	{
-		if (prevTransforms.empty() || curr->transform->GetMatrix().ptr() != prevTransforms.top().matrix.ptr())
-		{
-			prevTrans.matrix = matrix;
-			prevTrans.object = curr;
-			prevTransforms.push(prevTrans);
-		}
-	}
-}
-
-void ModuleScene::GetPreviousTransform()
-{
-	if (!prevTransforms.empty())
-	{
-		LastTransform prevTrans = prevTransforms.top();
-		if (prevTrans.object)
-		{
-			selectedObject = prevTrans.object;
-			selectedObject.GetCurrGameObject()->transform->SetMatrixFromGlobal(prevTrans.matrix);
-		}
-		prevTransforms.pop();
-	}
-	// Bounding box changed: recreate quadtree
-	System_Event newEvent;
-	newEvent.type = System_Event_Type::RecreateQuadtree;
-	App->PushSystemEvent(newEvent);
-}
-
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)
 {
@@ -261,7 +210,7 @@ void ModuleScene::CreateQuadtree()
 void ModuleScene::RecalculateQuadtree()
 {
 	std::vector<GameObject*> staticGameObjects;
-	App->GOs->GetStaticGameObjects(staticGameObjects);
+	App->GOs->GetStaticGameobjects(staticGameObjects);
 
 	for (uint i = 0; i < staticGameObjects.size(); ++i)
 		App->scene->quadtree.Insert(staticGameObjects[i]);

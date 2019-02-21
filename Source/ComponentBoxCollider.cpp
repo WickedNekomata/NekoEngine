@@ -65,8 +65,8 @@ void ComponentBoxCollider::RecalculateShape()
 
 	// -----
 
-	if (parent->rigidActor != nullptr)
-		parent->rigidActor->UpdateShape(gShape);
+	if (parent->cmp_rigidActor != nullptr)
+		parent->cmp_rigidActor->UpdateShape(gShape);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -85,4 +85,9 @@ physx::PxBoxGeometry ComponentBoxCollider::GetBoxGeometry() const
 	physx::PxBoxGeometry boxGeometry;
 	gShape->getBoxGeometry(boxGeometry);
 	return boxGeometry;
+}
+
+uint ComponentBoxCollider::GetInternalSerializationBytes()
+{
+	return 0;
 }

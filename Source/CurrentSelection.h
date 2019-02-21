@@ -4,6 +4,10 @@
 #include "ComponentTransform.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
+#include "ResourceMesh.h"
+#include "PanelInspector.h"
+#include "ModuleGui.h"
+#include "Resource.h"
 
 #include <assert.h>
 
@@ -101,6 +105,10 @@ public:
 		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
 		cur = (void*)newSelection;
 		type = SelectedType::resource;
+
+		if (newSelection->GetType() == ResourceTypes::TextureResource)
+			App->gui->panelInspector->SetTextureImportSettings(((ResourceTexture*)newSelection)->GetSpecificData().textureImportSettings);
+		
 		return *this;
 	}
 
@@ -109,33 +117,17 @@ public:
 		return cur == rhs;
 	}
 
-	//-----------// IMPORT SETTINGS //----------//
-
-	CurrentSelection& operator=(MeshImportSettings* newSelection)
+	//Mesh Import Settings ----------------------------------
+	CurrentSelection& operator=(ResourceMeshImportSettings& newSelection)
 	{
-		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
-		cur = (void*)newSelection;
+		cur = (void*)&newSelection;
 		type = SelectedType::meshImportSettings;
+
+		App->gui->panelInspector->SetMeshImportSettings(newSelection);
+
 		return *this;
 	}
-
-	CurrentSelection& operator=(TextureImportSettings* newSelection)
-	{
-		assert(newSelection != nullptr && "Non valid setter. Set to SelectedType::null instead");
-		cur = (void*)newSelection;
-		type = SelectedType::textureImportSettings;
-		return *this;
-	}
-
-	bool operator==(const MeshImportSettings* rhs)
-	{
-		return cur == rhs;
-	}
-
-	bool operator==(const TextureImportSettings* rhs)
-	{
-		return cur == rhs;
-	}
+	//-------------------------------------------------------
 
 	// Add operators in case of new kinds of selection :)
 };

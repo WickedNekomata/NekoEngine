@@ -12,15 +12,23 @@
 
 ComponentNavAgent::ComponentNavAgent(GameObject* parent) : Component(parent, ComponentTypes::NavAgentComponent)
 {
+	App->navigation->AddComponent(this);
 }
 
-ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentTransform) :
-	Component(componentTransform.parent, ComponentTypes::NavAgentComponent)
+ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentNavAgent) :
+	Component(componentNavAgent.parent, ComponentTypes::NavAgentComponent)
 {
+	memcpy(&(ComponentNavAgent&)componentNavAgent, this, sizeof(ComponentNavAgent));
+	AddAgent();
+	App->navigation->AddComponent(this);
 }
 
 ComponentNavAgent::~ComponentNavAgent()
 {
+	if (App->navigation->IsCrowInitialized())
+		App->navigation->RemoveAgent(index);
+
+	App->navigation->EraseComponent(this);
 }
 
 void ComponentNavAgent::Update()
@@ -54,17 +62,17 @@ void ComponentNavAgent::OnUniqueEditor()
 	ImGui::CheckboxFlags("Optimize Visibility", &params, 8);
 	ImGui::CheckboxFlags("Optimize Topology", &params, 16);
 	ImGui::CheckboxFlags("Obstacle Avoidance", &params, 2);
-	ImGui::CheckboxFlags("Separation", &params, 4);
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Separation Weight");
-	ImGui::SameLine();
-	ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f);
 
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Avoidance Quality");
 	ImGui::SameLine();
 	ImGui::SliderInt("##AQuality", &avoidanceQuality, 0.0f, 3.0f);
+
+	ImGui::CheckboxFlags("Separation", &params, 4);
+	ImGui::AlignTextToFramePadding();
+	ImGui::Text("Separation Weight");
+	ImGui::SameLine();
+	ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f);
 #endif
 }
 
@@ -95,10 +103,67 @@ void ComponentNavAgent::SetDestination(const float* pos) const
 	App->navigation->SetDestination(pos, index);
 }
 
-void ComponentNavAgent::OnInternalSave(JSON_Object* file)
+uint ComponentNavAgent::GetInternalSerializationBytes()
 {
+	return sizeof(float) * 5 + sizeof(unsigned int) + sizeof(int) * 2;
 }
 
-void ComponentNavAgent::OnLoad(JSON_Object* file)
+void ComponentNavAgent::OnInternalSave(char*& cursor)
 {
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &radius, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &height, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &maxAcceleration, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &maxSpeed, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &separationWeight, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(unsigned int);
+	memcpy(cursor, &params, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(int);
+	memcpy(cursor, &avoidanceQuality, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &index, bytes);
+	cursor += bytes;
+}
+
+void ComponentNavAgent::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(float);
+	memcpy(&radius, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&height, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&maxAcceleration, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&maxSpeed, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&separationWeight, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(unsigned int);
+	memcpy(&params, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(int);
+	memcpy(&avoidanceQuality, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&index, cursor, bytes);
+	cursor += bytes;
 }

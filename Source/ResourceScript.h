@@ -2,10 +2,16 @@
 #define __RESOURCESCRIPT_H__
 
 #include "Resource.h"
+#include "Globals.h"
 
 struct _MonoMethod;
 struct _MonoImage;
 struct _MonoAssembly;
+
+struct ResourceScriptData
+{
+	// TODO
+};
 
 enum class VarType
 {
@@ -40,11 +46,13 @@ public:
 		
 	} state = ScriptState::NO_COMPILED;
 
-	ResourceScript(std::string name);
+	ResourceScript(ResourceTypes type, uint uuid, ResourceData data, ResourceScriptData scriptData);
 	virtual ~ResourceScript();
 
 	bool LoadInMemory() override { return true; }
 	bool UnloadFromMemory() override { return true; }
+
+	void OnPanelAssets();
 
 public:
 	void SerializeToMeta(char*& cursor) const;
@@ -83,6 +91,7 @@ private:
 	bool firstCompiled = true;
 	static std::vector<std::string> scriptNames;
 
+	ResourceScriptData scriptData;
 };
 
 #endif

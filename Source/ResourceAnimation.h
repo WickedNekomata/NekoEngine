@@ -2,9 +2,13 @@
 #define __RESOURCE_ANIMATION_H__
 
 #include "Resource.h"
-#include "MathGeoLib/include/Math/float4x4.h"
 
 #include <vector>
+
+struct ResourceAnimationData
+{
+	// TODO
+};
 
 class ResourceAnimation : public Resource
 {
@@ -57,11 +61,14 @@ public:
 	};
 
 public:
-	ResourceAnimation(uint uid);
+
+	ResourceAnimation(ResourceTypes type, uint uuid, ResourceData data, ResourceAnimationData animationData);
 	~ResourceAnimation();
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();
+
+	void OnPanelAssets();
 
 public:
 	std::string name;
@@ -71,6 +78,7 @@ public:
 	uint num_keys = 0;
 	BoneTransformation* bone_keys;
 
+	ResourceAnimationData animationData;
 };
 
 #endif // __RESOURCE_ANIMATION_H__

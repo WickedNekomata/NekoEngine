@@ -162,8 +162,11 @@ public:
 	ImVec4 EqualsFloat4(const math::float4 float4D);
 #endif
 
+	uint GetInternalSerializationBytes();
 	void OnInternalSave(JSON_Object * parent);
 	void OnLoad(JSON_Object * info);
+	void OnInternalLoad(char*& cursor) {}
+	void OnInternalSave(char*& cursor) {}
 
 	int GetEmition() const;
 public:

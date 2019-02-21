@@ -3,13 +3,17 @@
 #include "ComponentTransform.h"
 #include "ModuleWindow.h"
 #include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "imgui\imgui.h"
 
 #include "MathGeoLib/include/Geometry/LineSegment.h"
 
-ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, ComponentTypes::CameraComponent)
+ComponentCamera::ComponentCamera(GameObject* parent, bool dummy) : Component(parent, ComponentTypes::CameraComponent)
 {
+	if (!dummy)
+		App->renderer3D->AddCameraComponent(this);
+
 	frustum.type = math::FrustumType::PerspectiveFrustum;
 
 	frustum.pos = math::float3::zero;
@@ -24,6 +28,8 @@ ComponentCamera::ComponentCamera(GameObject* parent) : Component(parent, Compone
 
 ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentTypes::CameraComponent)
 {
+	App->renderer3D->AddCameraComponent(this);
+
 	frustum = componentCamera.frustum;
 
 	frustumCulling = componentCamera.frustumCulling;
@@ -32,8 +38,10 @@ ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Compo
 
 ComponentCamera::~ComponentCamera() 
 {
+	App->renderer3D->EraseCameraComponent(this);
+
 	if (parent != nullptr) // Editor camera's parent is nullptr
-		parent->camera = nullptr;
+		parent->cmp_camera = nullptr;
 }
 
 void ComponentCamera::UpdateTransform()
@@ -134,25 +142,55 @@ bool ComponentCamera::IsMainCamera() const
 	return mainCamera;
 }
 
-void ComponentCamera::OnInternalSave(JSON_Object* file)
+uint ComponentCamera::GetInternalSerializationBytes()
 {
-	json_object_set_number(file, "nearPlaneDistance", frustum.nearPlaneDistance);
-	json_object_set_number(file, "farPlaneDistance", frustum.farPlaneDistance);
-	json_object_set_number(file, "verticalFov", frustum.verticalFov);
-	json_object_set_number(file, "horizontalFov", frustum.horizontalFov);
-	json_object_set_boolean(file, "isMainCamera", mainCamera);
-	json_object_set_boolean(file, "isFrustumCulling", frustumCulling);
+	return sizeof(bool) * 2 + sizeof(float) * 4;
 }
 
-void ComponentCamera::OnLoad(JSON_Object* file)
+void ComponentCamera::OnInternalSave(char*& cursor)
 {
-	frustum.nearPlaneDistance = json_object_get_number(file, "nearPlaneDistance");
-	frustum.farPlaneDistance = json_object_get_number(file, "farPlaneDistance");
-	frustum.verticalFov = json_object_get_number(file, "verticalFov");
-	frustum.horizontalFov = json_object_get_number(file, "horizontalFov");
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &frustum.nearPlaneDistance, bytes);
+	cursor += bytes;
 
-	mainCamera = json_object_get_boolean(file, "isMainCamera");
-	frustumCulling = json_object_get_boolean(file, "isFrustumCulling");
+	memcpy(cursor, &frustum.farPlaneDistance, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &frustum.verticalFov, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &frustum.horizontalFov, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &mainCamera, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &frustumCulling, bytes);
+	cursor += bytes;
+}
+
+void ComponentCamera::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(float);
+	memcpy(&frustum.nearPlaneDistance, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&frustum.farPlaneDistance, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&frustum.verticalFov, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&frustum.horizontalFov, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&mainCamera, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&frustumCulling, cursor, bytes);
+	cursor += bytes;
 }
 
 math::Ray ComponentCamera::ScreenToRay(math::float2 screenPoint)

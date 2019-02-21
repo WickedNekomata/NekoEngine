@@ -574,19 +574,22 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* metaFile, const char* exportedFile)
+bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 {
-	/*
 	std::string file = fileAssets;
+	std::string metaFile = file + ".meta";
 
 	std::string scriptName = file.substr(file.find_last_of("/") + 1);
 	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
-	//Creating script resource
-	ResourceScript* scriptRes = new ResourceScript(scriptName);
-	scriptRes->file = file;
+	ResourceData data;
+	data.name = scriptName;
+	data.file = "Assets/Scripts/" + scriptName + ".cs";
+	data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
 
-	if (!metaFile)
+	ResourceScript* scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
+
+	if (!App->fs->Exists(data.file + ".meta"))
 	{
 		//Create the .meta
 		uint bytes = scriptRes->bytesToSerializeMeta();
@@ -610,16 +613,13 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets, const char* m
 		}
 	}
 
-	if (!exportedFile)
+	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll"))
 		scriptRes->Compile();
 	else
 	{
 		scriptRes->referenceMethods();
-		scriptRes->exportedFile = exportedFile;
 	}
 		
-	App->res->InsertResource(scriptRes);
-	*/
 	return true;
 }
 

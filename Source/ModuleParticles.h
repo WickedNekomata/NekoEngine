@@ -24,7 +24,6 @@ public:
 	void Draw();
 	void DrawParticles();
 	void SortParticles();
-	//void SortParticles();
 	bool GetParticle(int& id);
 	void ClearEmitters();
 
@@ -37,13 +36,7 @@ public:
 
 	Particle allParticles[MAX_PARTICLES];
 
-	//ParticleUV particleAnimation;
-
-
-	ParticlePlane* plane = nullptr;
-
 	int activeParticles = 0;
-	ComponentEmitter* firework = nullptr;
 private:
 	
 	std::priority_queue<Particle*, std::vector<Particle*>,particleCompare> partQueue;

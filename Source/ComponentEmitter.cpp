@@ -20,7 +20,6 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
-	// TODO
 	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
 
 }
@@ -48,7 +47,6 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	circleCreation.r = componentEmitter.circleCreation.r;
 
 	normalShapeType = componentEmitter.normalShapeType;
-	texture = componentEmitter.texture;
 
 	startValues = componentEmitter.startValues;
 
@@ -64,10 +62,11 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	isParticleAnimated = componentEmitter.isParticleAnimated;
 	if (isParticleAnimated)
 	{
+		animationSpeed = componentEmitter.animationSpeed;
 		textureRows = componentEmitter.textureRows;
 		textureColumns = componentEmitter.textureColumns;
-		animationSpeed = componentEmitter.animationSpeed;
 	}
+
 	dieOnAnimation = componentEmitter.dieOnAnimation;
 
 	drawAABB = componentEmitter.drawAABB;
@@ -79,27 +78,24 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	rateOverTime = componentEmitter.rateOverTime;
 
 	if (parent)
-	//	parent->boundingBox = math::AABB::FromCenterAndSize(posDifAABB, sizeOBB);
-	App->scene->quadtree.Insert(parent);
+		App->scene->quadtree.Insert(parent);
 
 	App->particle->emitters.push_back(this);
 
-	// TODO
 	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
 }
 
 
 ComponentEmitter::~ComponentEmitter()
 {
-	if (App)
-	{
-		App->timeManager->RemoveGameTimer(&timer);
-		App->timeManager->RemoveGameTimer(&burstTime);
-		App->timeManager->RemoveGameTimer(&loopTimer);
-		App->timeManager->RemoveGameTimer(&timeSimulating);
 
-		App->particle->RemoveEmitter(this);
-	}			
+	App->timeManager->RemoveGameTimer(&timer);
+	App->timeManager->RemoveGameTimer(&burstTime);
+	App->timeManager->RemoveGameTimer(&loopTimer);
+	App->timeManager->RemoveGameTimer(&timeSimulating);
+
+	App->particle->RemoveEmitter(this);
+
 	ClearEmitter();
 }
 
@@ -208,7 +204,7 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 			math::float3 spawnPos = pos;
 			spawnPos += RandPos(shapeType);
 
-			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, &texture, /*&particleAnimation.textureIDs,*/ animationSpeed);
+			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, textureColumns, textureRows);
 
 			App->particle->allParticles[particleId].owner = this;
 			particles.push_back(&App->particle->allParticles[particleId]);
@@ -283,7 +279,7 @@ void ComponentEmitter::OnUniqueEditor()
 
 	ParticleAABB();
 
-	//ParticleTexture();
+	ParticleTexture();
 
 	ParticleSubEmitter();
 #endif
@@ -509,80 +505,25 @@ void ComponentEmitter::ParticleAABB()
 	}
 #endif
 }
-/*
+
 void ComponentEmitter::ParticleTexture()
 {
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
-		if (texture)
-		{
-			std::string name = texture->file;
-			name = name.substr(name.find_last_of("\\") + 1);
 
-			ImGui::Text("Loaded texture '%s'", name.data());
-			//ImGui::Text("Texture used %i times", texture->usage);
-
-			ImGui::Image((void*)(intptr_t)texture->id, ImVec2(256.0f, 256.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
-			if (ImGui::BeginMenu("Change Texture"))
-			{
-				std::vector<Resource*> resource;
-				App->res->GetResources(resource, ResourceType::TextureResource);
-
-				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
-				{
-					std::string textName;
-					textName.append((*iterator)->GetName());
-					if (ImGui::MenuItem(textName.data()))
-					{
-						App->res->Remove(texture);
-						texture = nullptr;
-
-						texture = ((ResourceTexture*)(*iterator));
-						texture->usage++;
-					}
-				}
-				ImGui::End();
-			}
-			if (ImGui::Button("Remove Texture", ImVec2(125, 25)))
-			{
-				App->res->Remove(texture);
-				texture = nullptr;
-			}
-
-		}
-		else
-		{
-			ImGui::Text("No texture loaded");
-			if (ImGui::BeginMenu("Add new Texture"))
-			{
-				std::vector<Resource*> resource;
-				App->res->GetResources(resource, ResourceType::TextureResource);
-
-				for (std::vector<Resource*>::iterator iterator = resource.begin(); iterator != resource.end(); ++iterator)
-				{
-					std::string textName;
-					textName.append((*iterator)->GetName());
-					if (ImGui::MenuItem(textName.data()))
-					{
-						texture = ((ResourceTexture*)(*iterator));
-						texture->usage++;
-					}
-				}
-				ImGui::End();
-			}
-		}
-
-		ImGui::Separator();
 		if (ImGui::Checkbox("Animated sprite", &isParticleAnimated))
 		{
 			if (!isParticleAnimated)
 			{
-				SetNewAnimation(1, 1);
+				textureRows = 1;
+				textureColumns = 1;
 				dieOnAnimation = false;
+				SetNewAnimation();
 			}
 			else
-				SetNewAnimation(textureRows, textureColumns);
+				SetNewAnimation();
+
+			startValues.isAnimated = isParticleAnimated;
 		}
 		if (isParticleAnimated)
 		{
@@ -594,18 +535,25 @@ void ComponentEmitter::ParticleTexture()
 			if (dieOnAnimation)
 			{
 				checkLife = false;
-				startValues.life.x = animationSpeed * particleAnimation.columns * particleAnimation.rows;
+				startValues.life.x = animationSpeed * textureColumns * textureRows;
 			}
-
-			if (ImGui::Button("Calc Animation", ImVec2(150.0f, 25.0f)))
+			if (ImGui::Button("Instant Animation", ImVec2(150.0f, 25.0f)))
 			{
-				SetNewAnimation(textureRows, textureColumns);
+				SetNewAnimation();
 			}
 		}
 		ImGui::Separator();
 	}
 }
-*/
+
+void ComponentEmitter::SetNewAnimation()
+{
+	for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
+	{
+		(*iterator)->ChangeAnim(textureRows, textureColumns, isParticleAnimated);
+	}
+}
+
 void ComponentEmitter::ParticleSubEmitter()
 {
 #ifndef GAMEMODE
@@ -630,16 +578,7 @@ void ComponentEmitter::ParticleSubEmitter()
 	ImGui::Separator();
 #endif
 }
-/*
-void ComponentEmitter::SetNewAnimation(int row, int col)
-{
-	particleAnimation = App->res->LoadTextureUV(row, col);
-	for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
-	{
-		(*iterator)->currentFrame = 0;
-	}
-}
-*/
+
 void ComponentEmitter::ShowFloatValue(math::float2& value, bool checkBox, const char* name, float v_speed, float v_min, float v_max)
 {
 #ifndef GAMEMODE
@@ -725,11 +664,6 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 	return vec;
 }
 #endif
-
-uint ComponentEmitter::GetInternalSerializationBytes()
-{
-	return 0;
-}
 
 void ComponentEmitter::OnInternalSave(JSON_Object* parent)
 {
@@ -867,131 +801,21 @@ void ComponentEmitter::OnInternalSave(JSON_Object* parent)
 	}
 }
 
-void ComponentEmitter::OnLoad(JSON_Object* info)
+uint ComponentEmitter::GetInternalSerializationBytes()
 {
+	return 0;
+}
 
-	duration = json_object_get_number(info, "duration");
+void ComponentEmitter::OnInternalSave(char *& cursor)
+{
+}
 
-	loop = json_object_get_number(info, "loop");
-
-	burst = json_object_get_number(info, "burst");
-	minPart = json_object_get_number(info, "minPart");
-	maxPart = json_object_get_number(info, "maxPart");
-	repeatTime = json_object_get_number(info, "repeatTime");
-
-	isSubEmitter = json_object_get_boolean(info, "isSubEmitter");
-
-	// posDifAABB
-	math::float3 posDifAABB = math::float3(
-		json_object_get_number(info, "posDifAABBX"),
-		json_object_get_number(info, "posDifAABBY"),
-		json_object_get_number(info, "posDifAABBZ"));
-	posDifAABB = posDifAABB;
-
-	gravity = json_object_get_number(info, "gravity");
-
-	// boxCreation
-	math::float3 boxMin = math::float3(
-		json_object_get_number(info, "boxCreationMinX"),
-		json_object_get_number(info, "boxCreationMinY"),
-		json_object_get_number(info, "boxCreationMinZ"));
-
-	math::float3 boxMax = math::float3(
-		json_object_get_number(info, "boxCreationMaxX"),
-		json_object_get_number(info, "boxCreationMaxY"),
-		json_object_get_number(info, "boxCreationMaxZ"));
-
-	boxCreation = math::AABB(boxMin, boxMax);
-
-	sphereCreation.r = json_object_get_number(info, "SphereCreationRad");
-
-	circleCreation.r = json_object_get_number(info, "circleCreationRad");
-
-	normalShapeType = (ShapeType)(int)json_object_get_number(info, "shapeType");
-	//texture = App->resources->LoadTexture(json_object_get_string(info, "texture"));
-
-	isParticleAnimated = json_object_get_boolean(info, "isParticleAnimated");
-	dieOnAnimation = json_object_get_boolean(info, "dieOnAnimation");
-	textureColumns = json_object_get_number(info, "textureColumns");
-	textureRows = json_object_get_number(info, "textureRows");
-	animationSpeed = json_object_get_number(info, "animationSpeed");
-
-	//AABB Colision
-	drawAABB = json_object_get_boolean(info, "drawAABB");
-
-	checkLife = json_object_get_boolean(info, "checkLife");
-	checkSpeed = json_object_get_boolean(info, "checkSpeed");
-	checkAcceleration = json_object_get_boolean(info, "checkAcceleration");
-	checkSize = json_object_get_boolean(info, "checkSize");
-	checkSizeOverTime = json_object_get_boolean(info, "checkSizeOverTime");
-	checkRotation = json_object_get_boolean(info, "checkRotation");
-	checkAngularAcceleration = json_object_get_boolean(info, "checkAngularAcceleration");
-	checkAngularVelocity = json_object_get_boolean(info, "checkAngularVelocity");
-
-	subEmitterUUID = json_object_get_number(info, "SubEmitter");
-
-	rateOverTime = json_object_get_number(info, "rateOverTime");
-
-	startValues.subEmitterActive = json_object_get_boolean(info, "subEmitterActive");
-
-	startValues.life.x = json_object_get_number(info, "lifeMin");
-	startValues.life.y = json_object_get_number(info, "lifeMax");
-
-	startValues.speed.x = json_object_get_number(info, "speedMin");
-	startValues.speed.y = json_object_get_number(info, "speedMax");
-
-	startValues.acceleration.x = json_object_get_number(info, "accelerationMin");
-	startValues.acceleration.y = json_object_get_number(info, "accelerationMax");
-
-	startValues.size.x = json_object_get_number(info, "sizeMin");
-	startValues.size.y = json_object_get_number(info, "sizeMax");
-
-	startValues.rotation.x = json_object_get_number(info, "rotationMin");
-	startValues.rotation.y = json_object_get_number(info, "rotationMax");
-
-	startValues.angularVelocity.x = json_object_get_number(info, "angularVelocityMin");
-	startValues.angularVelocity.y = json_object_get_number(info, "angularVelocityMax");
-
-	startValues.angularAcceleration.x = json_object_get_number(info, "angularAccelerationMin");
-	startValues.angularAcceleration.y = json_object_get_number(info, "angularAccelerationMax");
-
-	startValues.sizeOverTime.x = json_object_get_number(info, "sizeOverTimeMin");
-	startValues.sizeOverTime.y = json_object_get_number(info, "sizeOverTimeMax");
-
-	JSON_Array* colorArray = json_object_get_array(info, "Colors");
-
-	int numColors = json_array_get_count(colorArray);
-
-	startValues.color.clear();
-	startValues.color.resize(numColors);
-	int i = 0;
-	for (std::list<ColorTime>::iterator iterator = startValues.color.begin(); iterator != startValues.color.end(); ++iterator, ++i)
-	{
-		JSON_Object* currCol = json_array_get_object(colorArray, i);
-
-		(*iterator).color = math::float4(
-			json_object_get_number(currCol, "colorX"),
-			json_object_get_number(currCol, "colorY"),
-			json_object_get_number(currCol, "colorZ"),
-			json_object_get_number(currCol, "colorW")
-		);
-
-		(*iterator).position = json_object_get_number(currCol, "position");
-
-		(*iterator).name = json_object_get_string(currCol, "name");
-	}
-
-
-	startValues.timeColor = json_object_get_number(info, "timeColor");
-
-	startValues.particleDirection.x = json_object_get_number(info, "particleDirectionX");
-	startValues.particleDirection.y = json_object_get_number(info, "particleDirectionY");
-	startValues.particleDirection.x = json_object_get_number(info, "particleDirectionZ");
+void ComponentEmitter::OnInternalLoad(char *& cursor)
+{
 }
 
 int ComponentEmitter::GetEmition() const
 {
 	return rateOverTime;
 }
-
 // todo event system to delete texture

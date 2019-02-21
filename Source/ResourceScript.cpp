@@ -85,7 +85,14 @@ void ResourceScript::SerializeToMeta(char*& cursor) const
 
 void ResourceScript::DeSerializeFromMeta(char*& cursor)
 {
-	uint bytes = sizeof(UUID);
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 

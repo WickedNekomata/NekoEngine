@@ -33,7 +33,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	{
 	case System_Event_Type::RecalculateBBoxes:
 
-		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
 			if (event.goEvent.gameObject == *it)
 				(*it)->OnSystemEvent(event);

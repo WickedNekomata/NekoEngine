@@ -29,11 +29,6 @@ struct ResourceShaderObjectData
 		return source;
 	}
 
-	~ResourceShaderObjectData()
-	{
-		RELEASE_ARRAY(source);
-	}
-
 private:
 
 	char* source = nullptr;
@@ -52,8 +47,9 @@ public:
 
 	static bool ImportFile(const char* file, std::string& outputFile);
 	static bool ExportFile(ResourceShaderObjectData& shaderObjectData, ResourceData& data, std::string& outputFile, bool overwrite = false);
-	static uint CreateMeta(const char* file, uint shaderObjectUuid, std::string& outputMetaFile);
-	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid);
+	static uint CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile);
+	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid, std::string& name);
+	static uint SetNameToMeta(const char* metaFile, const std::string& name);
 
 	// ----------------------------------------------------------------------------------------------------
 

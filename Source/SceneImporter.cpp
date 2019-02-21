@@ -311,6 +311,22 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
 			}
 
+			relations[node] = gameObject;
+
+			// Bone
+			if (nodeMesh->HasBones() == true)
+			{
+				int num = nodeMesh->mNumBones;
+				for (int i = 0; i < num; ++i)
+				{
+					if (!root_bone)
+						root_bone = gameObject;
+
+					bones[nodeMesh->mBones[i]->mName.C_Str()] = nodeMesh->mBones[i];
+					mesh_bone[nodeMesh->mBones[i]] = gameObject->GetComponent(ComponentTypes::BoneComponent)->UUID;
+				}
+			}
+
 			// Texture coords
 			if (nodeMesh->HasTextureCoords(0))
 			{

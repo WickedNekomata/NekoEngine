@@ -5,6 +5,7 @@
 #include "ModuleResourceManager.h"
 #include "ModulePhysics.h"
 #include "ResourceMesh.h"
+#include "ScriptingModule.h"
 
 #include "ComponentTypes.h"
 #include "Component.h"
@@ -234,6 +235,17 @@ void GameObject::OnSystemEvent(System_Event event)
 	case System_Event_Type::ShaderProgramChanged:
 		cmp_material->UpdateUniforms();
 		break;
+	case System_Event_Type::ScriptingDomainReloaded:
+	case System_Event_Type::Stop:
+	{
+		monoObjectHandle = 0;
+
+		for (auto component = components.begin(); component != components.end(); ++component)
+		{
+			(*component)->OnSystemEvent(event);
+		}
+		break;
+	}
 	}
 }
 
@@ -386,8 +398,17 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_collider == nullptr);
 		newComponent = cmp_collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
-	}
+		
+		case ComponentTypes::ScriptComponent:
+		{
+			newComponent = new ComponentScript("", this);
 
+			//TODO: CORRECT THIS
+			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+			break;
+		}
+	}
+	
 	components.push_back(newComponent);
 
 	if (newMaterial)

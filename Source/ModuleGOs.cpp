@@ -110,6 +110,26 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		}
 		break;
 	}
+
+	case System_Event_Type::ScriptingDomainReloaded:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
+
+	case System_Event_Type::Stop:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
 	}
 }
 

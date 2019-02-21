@@ -13,7 +13,7 @@ public class Testing : JellyScript
     //Called every frame
     public override void Update()
     {
-        Debug.Log("Adios");
+        Debug.Log(a.ToString());
     }
 }
 

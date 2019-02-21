@@ -37,6 +37,8 @@ ComponentScript::~ComponentScript()
 		mono_gchandle_free(handleID);
 		handleID = 0;
 	}
+
+	App->scripting->ClearScriptComponent(this);
 }
 
 void ComponentScript::Awake()
@@ -349,7 +351,7 @@ void ComponentScript::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->GetFile());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes ? scriptRes->GetFile() : "null");
 			ImGui::EndTooltip();
 		}		
 
@@ -918,12 +920,11 @@ void ComponentScript::OnUniqueEditor()
 uint ComponentScript::GetInternalSerializationBytes()
 {
 	//My resource uuid + public vars
-	return 0;/*sizeof(uint32_t) + GetPublicVarsSerializationBytes();*/
+	return sizeof(uint32_t) + GetPublicVarsSerializationBytes();
 }
 
 void ComponentScript::OnInternalSave(char*& cursor)
 {
-	return;
 	uint bytes = sizeof(uint32_t);
 
 	uint32_t resUID = scriptResUUID;
@@ -935,7 +936,6 @@ void ComponentScript::OnInternalSave(char*& cursor)
 
 void ComponentScript::OnInternalLoad(char*& cursor)
 {
-	return;
 	uint bytes = sizeof(uint32_t);
 
 	memcpy(&scriptResUUID, cursor, bytes);
@@ -946,9 +946,15 @@ void ComponentScript::OnInternalLoad(char*& cursor)
 	{
 		scriptName = scriptRes->scriptName;
 		LoadPublicVars(cursor);
+
+		App->res->SetAsUsed(scriptRes->GetUuid());
 	}
 	else
 		CONSOLE_LOG(LogTypes::Error, "A ComponentScript lost his ResourceScript reference!");	
+
+	InstanceClass();
+
+	LoadPublicVars(cursor);
 }
 
 uint ComponentScript::GetPublicVarsSerializationBytes() const

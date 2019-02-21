@@ -179,6 +179,12 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 			break;
 		}
 
+		case System_Event_Type::LoadScene:
+		{
+			ClearMap();
+			break;
+		}
+
 		case System_Event_Type::ResourceDestroyed:
 		{		
 			for (int i = 0; i < scripts.size(); ++i)
@@ -338,6 +344,18 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	}
 
 	return false;
+}
+
+void ScriptingModule::ClearScriptComponent(ComponentScript * script)
+{
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		if (scripts[i] == script)
+		{
+			scripts.erase(scripts.begin() + i);
+			break;
+		}
+	}
 }
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)

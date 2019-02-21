@@ -665,149 +665,139 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 }
 #endif
 
-void ComponentEmitter::OnInternalSave(JSON_Object* parent)
-{
-	json_object_set_number(parent, "Type", this->componentType);
-
-	json_object_set_number(parent, "UUID", this->parent->GetUUID());
-
-	//json_object_set_number(parent, "Time Created", GetTime());
-
-	json_object_set_boolean(parent, "checkLife", checkLife);
-	json_object_set_boolean(parent, "checkSpeed", checkSpeed);
-	json_object_set_boolean(parent, "checkAcceleration", checkAcceleration);
-	json_object_set_boolean(parent, "checkSize", checkSize);
-	json_object_set_boolean(parent, "checkSizeOverTime", checkSizeOverTime);
-	json_object_set_boolean(parent, "checkRotation", checkRotation);
-	json_object_set_boolean(parent, "checkAngularAcceleration", checkAngularAcceleration);
-	json_object_set_boolean(parent, "checkAngularVelocity", checkAngularVelocity);
-
-	json_object_set_number(parent, "lifeMin", startValues.life.x);
-	json_object_set_number(parent, "lifeMax", startValues.life.y);
-
-	json_object_set_number(parent, "speedMin", startValues.speed.x);
-	json_object_set_number(parent, "speedMax", startValues.speed.y);
-
-	json_object_set_number(parent, "accelerationMin", startValues.acceleration.x);
-	json_object_set_number(parent, "accelerationMax", startValues.acceleration.y);
-
-	json_object_set_number(parent, "sizeMin", startValues.size.x);
-	json_object_set_number(parent, "sizeMax", startValues.size.y);
-
-	json_object_set_number(parent, "sizeOverTimeMin", startValues.sizeOverTime.x);
-	json_object_set_number(parent, "sizeOverTimeMax", startValues.sizeOverTime.y);
-
-	json_object_set_number(parent, "rotationMin", startValues.rotation.x);
-	json_object_set_number(parent, "rotationMax", startValues.rotation.y);
-
-	json_object_set_number(parent, "angularAccelerationMin", startValues.angularAcceleration.x);
-	json_object_set_number(parent, "angularAccelerationMax", startValues.angularAcceleration.y);
-
-	json_object_set_number(parent, "angularVelocityMin", startValues.angularVelocity.x);
-	json_object_set_number(parent, "angularVelocityMax", startValues.angularVelocity.y);
-
-
-	json_object_set_boolean(parent, "subEmitterActive", startValues.subEmitterActive);
-
-
-	json_object_set_number(parent, "rateOverTime", rateOverTime);
-
-	JSON_Value* colorValue = json_value_init_array();
-	JSON_Array* color = json_value_get_array(colorValue);
-
-	for (std::list<ColorTime>::const_iterator iterator = startValues.color.begin(); iterator != startValues.color.end(); ++iterator)
-	{
-		JSON_Value* newColor = json_value_init_object();
-		JSON_Object* objCol = json_value_get_object(newColor);
-
-		json_object_set_number(objCol, "colorX", (*iterator).color.x);
-		json_object_set_number(objCol, "colorY", (*iterator).color.y);
-		json_object_set_number(objCol, "colorZ", (*iterator).color.z);
-		json_object_set_number(objCol, "colorW", (*iterator).color.w);
-
-		json_object_set_number(objCol, "position", (*iterator).position);
-		json_object_set_string(objCol, "name", (*iterator).name.data());
-
-
-		json_array_append_value(color, newColor);
-	}
-		json_object_set_value(parent, "Colors", colorValue);
-
-	// TODO: save colors
-	json_object_set_number(parent, "timeColor", startValues.timeColor);
-
-	json_object_set_number(parent, "particleDirectionX", startValues.particleDirection.x);
-	json_object_set_number(parent, "particleDirectionY", startValues.particleDirection.y);
-	json_object_set_number(parent, "particleDirectionZ", startValues.particleDirection.z);
-
-	json_object_set_number(parent, "duration", duration);
-
-	json_object_set_number(parent, "loop", loop);
-
-	json_object_set_number(parent, "burst", burst);
-	json_object_set_number(parent, "minPart", minPart);
-	json_object_set_number(parent, "maxPart", maxPart);
-	json_object_set_number(parent, "repeatTime", repeatTime);
-
-	json_object_set_number(parent, "posDifAABBX",posDifAABB.x);
-	json_object_set_number(parent, "posDifAABBY",posDifAABB.y);
-	json_object_set_number(parent, "posDifAABBZ",posDifAABB.z);
-
-	json_object_set_number(parent, "gravity", gravity);
-
-	json_object_set_number(parent, "boxCreationMinX", boxCreation.minPoint.x);
-	json_object_set_number(parent, "boxCreationMinY", boxCreation.minPoint.y);
-	json_object_set_number(parent, "boxCreationMinZ", boxCreation.minPoint.z);
-
-	json_object_set_number(parent, "boxCreationMaxX", boxCreation.maxPoint.x);
-	json_object_set_number(parent, "boxCreationMaxY", boxCreation.maxPoint.y);
-	json_object_set_number(parent, "boxCreationMaxZ", boxCreation.maxPoint.z);
-	
-	SaveNumberArray(parent, "boxCreationMin", boxCreation.minPoint.ptr(), 3);
-	SaveNumberArray(parent, "boxCreationMax", boxCreation.maxPoint.ptr(), 3);
-
-	json_object_set_number(parent, "SphereCreationRad", sphereCreation.r);
-
-	json_object_set_number(parent, "circleCreationRad", circleCreation.r);
-
-	json_object_set_number(parent, "shapeType", normalShapeType);
-
-	/*if (texture)
-	json_object_set_string(parent, "texture", texture->file.data());
-	else*/
-	json_object_set_string(parent, "texture", "noTexture");
-
-	json_object_set_number(parent, "textureRows", textureRows);
-	json_object_set_number(parent, "textureColumns", textureColumns);
-	json_object_set_number(parent, "animationSpeed", animationSpeed);
-
-	json_object_set_boolean(parent, "isParticleAnimated", isParticleAnimated);
-	json_object_set_boolean(parent, "dieOnAnimation", dieOnAnimation);
-
-	json_object_set_boolean(parent, "drawAABB", drawAABB);
-	
-	json_object_set_boolean(parent, "isSubEmitter", isSubEmitter);
-	if(subEmitter)
-	json_object_set_number(parent, "SubEmitter", subEmitter->GetUUID());
-
-
-	if (this->parent && this->parent->transform)
-	{
-		math::float3 bb = this->parent->boundingBox.Size();
-
-		json_object_set_number(parent, "originalBoundingBoxSizeX", bb.x);
-		json_object_set_number(parent, "originalBoundingBoxSizeY", bb.y);
-		json_object_set_number(parent, "originalBoundingBoxSizeZ", bb.z);
-	}
-}
-
 uint ComponentEmitter::GetInternalSerializationBytes()
 {
-	return 0;
+	//		Value Checkers +	StartValues
+	return sizeof(bool)*8 + sizeof(StartValues) + sizeof(rateOverTime) + sizeof(duration)
+		 + sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(uint)//UUID Subemiter
+		 + sizeof(dieOnAnimation) + sizeof(isParticleAnimated) + sizeof(animationSpeed)
+		 + sizeof(textureColumns) + sizeof(textureRows) + sizeof(normalShapeType)
+		 + sizeof(boxCreation) + sizeof(float)*2 //Circle and Sphere rad
+		 + sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst)
+		 + sizeof(minPart) + sizeof(maxPart) + sizeof(repeatTime);
 }
 
 void ComponentEmitter::OnInternalSave(char *& cursor)
 {
+	size_t bytes = sizeof(StartValues);
+	memcpy(cursor, &startValues, bytes);
+	cursor += bytes;
+
+	//Checkers
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkLife, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkSpeed, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkAcceleration, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkSizeOverTime, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkSize, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkRotation, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkAngularAcceleration, bytes);
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkAngularVelocity, bytes);
+
+	cursor += bytes;
+	size_t bytes = sizeof(int);
+	memcpy(cursor, &rateOverTime, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &duration, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &drawAABB, bytes);
+
+	cursor += bytes;
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &isSubEmitter, bytes);
+
+
+	uint uuid = 0u;
+	if (subEmitter)
+		 uuid = subEmitter->GetUUID();
+
+	cursor += bytes;
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &uuid, bytes);
+	cursor += bytes;
+
+
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &dieOnAnimation, bytes);
+	cursor += bytes;	
+
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &isParticleAnimated, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &animationSpeed, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(int);
+	memcpy(cursor, &textureColumns, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(int);
+	memcpy(cursor, &textureRows, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(ShapeType);
+	memcpy(cursor, &normalShapeType, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(math::AABB);
+	memcpy(cursor, &boxCreation, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &circleCreation.r, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &sphereCreation.r, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &gravity, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(math::float3);
+	memcpy(cursor, &posDifAABB, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &loop, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &burst, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(int);
+	memcpy(cursor, &minPart, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(int);
+	memcpy(cursor, &maxPart, bytes);
+	cursor += bytes;
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &repeatTime, bytes);
+	cursor += bytes;
 }
 
 void ComponentEmitter::OnInternalLoad(char *& cursor)

@@ -147,7 +147,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-
+		//RecursiveProcessBones(scene, scene->mRootNode);
 
 		aiReleaseImport(scene);
 
@@ -314,7 +314,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			relations[node] = gameObject;
 
 			// Bone
-			if (nodeMesh->HasBones() == true)
+			if (nodeMesh->HasBones() == true && gameObject->GetComponent(ComponentTypes::MeshComponent))
 			{
 				int num = nodeMesh->mNumBones;
 				for (int i = 0; i < num; ++i)
@@ -323,7 +323,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						root_bone = gameObject;
 
 					bones[nodeMesh->mBones[i]->mName.C_Str()] = nodeMesh->mBones[i];
-					mesh_bone[nodeMesh->mBones[i]] = gameObject->GetComponent(ComponentTypes::BoneComponent)->UUID;
+					mesh_bone[nodeMesh->mBones[i]] = gameObject->GetComponent(ComponentTypes::MeshComponent)->UUID;
 				}
 			}
 

@@ -394,11 +394,11 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	}
 	break;
 
-		case ResourceTypes::ScriptResource:
-		{
-
-			break;
-		}
+	case ResourceTypes::ScriptResource:
+	{
+		
+		break;
+	}
 	}
 
 	return resource;

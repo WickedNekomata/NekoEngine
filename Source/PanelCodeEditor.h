@@ -23,8 +23,8 @@ public:
 
 	bool Draw();
 
-	void OpenShaderInCodeEditor(uint shaderObjectUUID);
-	uint GetShaderObjectUUID() const;
+	void OpenShaderInCodeEditor(uint shaderObjectUuid);
+	uint GetShaderObjectUuid() const;
 
 	void SetError(int line, const char* error);
 
@@ -34,7 +34,7 @@ private:
 
 private:
 
-	uint shaderObjectUUID = 0;
+	uint shaderObjectUuid = 0;
 
 	const char* fileToEdit = "";
 	TextEditor editor;

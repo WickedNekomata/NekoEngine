@@ -26,7 +26,7 @@ ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject
 ComponentScript::~ComponentScript()
 {
 	if(scriptRes)
-		App->res->SetAsUnused(scriptRes->GetUUID());
+		App->res->SetAsUnused(scriptRes->GetUuid());
 
 	if (handleID != 0)
 	{
@@ -283,7 +283,7 @@ void ComponentScript::OnUniqueEditor()
 			event.compEvent.component = this;
 			App->PushSystemEvent(event);
 			
-			parent->ClearComponent(this);		
+			parent->EraseComponent(this);		
 			deleted = true;
 			App->scripting->DestroyScript(this);
 			ImGui::CloseCurrentPopup();
@@ -335,14 +335,14 @@ void ComponentScript::OnUniqueEditor()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->file.data());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->GetFile());
 			ImGui::EndTooltip();
 		}		
 
 		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
 
 		//Calculate the text fitting the button rect
-		std::string originalText = scriptRes ? scriptRes->file : "";
+		std::string originalText = scriptRes ? scriptRes->GetFile() : "";
 		std::string clampedText;
 
 		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
@@ -873,7 +873,7 @@ void ComponentScript::OnUniqueEditor()
 						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
 
 						ImGui::PushItemWidth(150.0f);
-						if (ImGui::BeginCombo((fieldName + "##" + std::to_string(UUID)).data(), title))
+						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
 						{
 							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 							{
@@ -901,7 +901,45 @@ void ComponentScript::OnUniqueEditor()
 #endif
 }
 
-uint ComponentScript::bytesToSerializePublicVars() const
+uint ComponentScript::GetInternalSerializationBytes()
+{
+	//My resource uuid + public vars
+	return sizeof(uint32_t) + GetPublicVarsSerializationBytes();
+}
+
+void ComponentScript::OnInternalSave(char*& cursor)
+{
+	uint bytes = sizeof(uint32_t);
+
+	uint32_t resUID = scriptRes ? scriptRes->GetUuid() : 0;
+	memcpy(cursor, &resUID, bytes);
+	cursor += bytes;
+
+	SavePublicVars(cursor);
+}
+
+void ComponentScript::OnInternalLoad(char*& cursor)
+{
+	uint bytes = sizeof(uint32_t);
+
+	uint32_t resUID;
+	memcpy(&resUID, cursor, bytes);
+	cursor += bytes;
+
+	//Reference the ScriptResource
+	scriptRes = (ResourceScript*)App->res->GetResource(resUID);
+
+	if (scriptRes)
+	{
+		scriptName = scriptRes->scriptName;
+
+		LoadPublicVars(cursor);
+	}
+	else
+		CONSOLE_LOG(LogTypes::Error, "A ComponentScript lost his ResourceScript reference!");	
+}
+
+uint ComponentScript::GetPublicVarsSerializationBytes() const
 {
 	uint bytes = sizeof(uint);
 
@@ -927,7 +965,7 @@ uint ComponentScript::bytesToSerializePublicVars() const
 			{
 				varType = VarType::BOOL;
 
-				uint nameLenght = fieldName.length();	
+				uint nameLenght = fieldName.length();
 				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(bool));
 			}
 			else if (typeName == "single")
@@ -1043,54 +1081,7 @@ uint ComponentScript::bytesToSerializePublicVars() const
 	return bytes;
 }
 
-void ComponentScript::Serialize(char*& cursor) const
-{
-	uint bytes = sizeof(uint32_t);
-	uint32_t parentUUID = parent->GetUUID();
-	memcpy(cursor, &parentUUID, bytes);
-	cursor += bytes;
-
-	memcpy(cursor, &UUID, bytes);
-	cursor += bytes;
-
-	uint32_t resUID = scriptRes ? scriptRes->GetUUID() : 0;
-	memcpy(cursor, &resUID, bytes);
-	cursor += bytes;
-
-	bytes = sizeof(bool);
-	memcpy(cursor, &isActive, bytes);
-	cursor += bytes;
-}
-
-void ComponentScript::deSerialize(char*& cursor, uint32_t& goUUID)
-{
-	uint bytes = sizeof(uint32_t);
-	memcpy(&goUUID, cursor, bytes);
-	cursor += bytes;
-
-	memcpy(&UUID, cursor, bytes);
-	cursor += bytes;
-
-	uint32_t resUID;
-	memcpy(&resUID, cursor, bytes);
-	cursor += bytes;
-
-	bytes = sizeof(bool);
-	memcpy(&isActive, cursor, bytes);
-	cursor += bytes;
-
-	//Reference the ScriptResource
-	scriptRes = (ResourceScript*)App->res->GetResource(resUID);
-
-	if (scriptRes)
-	{
-		scriptName = scriptRes->scriptName;
-	}		
-	else
-		CONSOLE_LOG(LogTypes::Error, "A ComponentScript lost his ResourceScript reference!");
-}
-
-void ComponentScript::SerializePublicVars(char*& cursor) const
+void ComponentScript::SavePublicVars(char*& cursor) const
 {
 	uint numVars = 0;
 
@@ -1135,7 +1126,7 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 				bytes = sizeof(varType);
 				memcpy(cursor, &varType, bytes);
 				cursor += bytes;
-				
+
 				//Serialize the varName (lenght + string)
 
 				bytes = sizeof(uint);
@@ -1480,7 +1471,7 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 			else if (typeName == "JellyBitEngine.GameObject")
 			{
 				varType = VarType::GAMEOBJECT;
-									
+
 				MonoObject* monoObject; mono_field_get_value(classInstance, field, &monoObject);
 
 				GameObject* serializableGO = monoObject ? App->scripting->GameObjectFrom(monoObject) : nullptr;
@@ -1547,10 +1538,10 @@ void ComponentScript::SerializePublicVars(char*& cursor) const
 	}
 }
 
-void ComponentScript::deSerializePublicVars(char *& cursor)
+void ComponentScript::LoadPublicVars(char*& cursor)
 {
 	if (!classInstance)
-		return ;
+		return;
 
 	uint numVars = 0;
 	uint bytes = sizeof(uint);
@@ -1559,13 +1550,13 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 
 	for (int i = 0; i < numVars; i++)
 	{
-		//deSerialize type
+		//Load type
 		VarType varType;
 		uint bytes = sizeof(VarType);
 		memcpy(&varType, cursor, bytes);
 		cursor += bytes;
 
-		//deSerialize lenght + string
+		//Load lenght + string
 		bytes = sizeof(uint);
 		uint nameLenght;
 		memcpy(&nameLenght, cursor, bytes);
@@ -1574,476 +1565,476 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 		bytes = nameLenght;
 		std::string varName;
 		varName.resize(nameLenght);
- 		memcpy((void*)varName.c_str(), cursor, bytes);
-		varName.resize(nameLenght);		//TODO: Check if names are deSerializing well with this resize
-		cursor += bytes;	
+		memcpy((void*)varName.c_str(), cursor, bytes);
+		varName.resize(nameLenght);
+		cursor += bytes;
 
-		//deSerialize data
+		//Load data
 		switch (varType)
 		{
-		case VarType::BOOL:
-		{
-			bytes = sizeof(bool);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::BOOL:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(bool);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
 
-					if (typeName == "bool" && fieldName == varName)
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "bool" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::FLOAT:
-		{
-			bytes = sizeof(float);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::FLOAT:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(float);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "single" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "single" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::DOUBLE:
-		{
-			bytes = sizeof(double);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::DOUBLE:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(double);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "double" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "double" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::INT8:
-		{
-			bytes = sizeof(signed char);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::INT8:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(signed char);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "sbyte" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "sbyte" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::UINT8:
-		{
-			bytes = sizeof(unsigned char);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::UINT8:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(unsigned char);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "byte" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "byte" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::INT16:
-		{
-			bytes = sizeof(short);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::INT16:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(short);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "int16" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "int16" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::UINT16:
-		{
-			bytes = sizeof(unsigned short);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::UINT16:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(unsigned short);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "uint16" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "uint16" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::INT:
-		{
-			bytes = sizeof(int);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::INT:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(int);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "int" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "int" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::UINT:
-		{
-			bytes = sizeof(uint);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::UINT:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(uint);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "uint" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "uint" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::INT64:
-		{
-			bytes = sizeof(long long);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::INT64:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(long long);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "long" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "long" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::UINT64:
-		{
-			bytes = sizeof(unsigned long long);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::UINT64:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(unsigned long long);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "ulong" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "ulong" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}		
-		case VarType::CHAR:
-		{
-			bytes = sizeof(char);
-			bool var;
-			memcpy(&var, cursor, bytes);
-			cursor += bytes;
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::CHAR:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(char);
+				bool var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-					if (typeName == "char" && fieldName == varName)
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						mono_field_set_value(classInstance, field, &var);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "char" && fieldName == varName)
+						{
+							mono_field_set_value(classInstance, field, &var);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				break;
 			}
-			break;
-		}
-		case VarType::STRING:
-		{
-			bytes = sizeof(uint);
-			uint stringLength;
-			memcpy(&stringLength, cursor, bytes);
-			cursor += bytes;
-
-			std::string string;
-			string.resize(stringLength);
-			memcpy((void*)string.c_str(), cursor, bytes);
-			string.resize(stringLength);		//TODO: Check if names are deSerializing well with this resize
-			cursor += bytes;
-
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
+			case VarType::STRING:
 			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+				bytes = sizeof(uint);
+				uint stringLength;
+				memcpy(&stringLength, cursor, bytes);
+				cursor += bytes;
 
-					if (typeName == "string" && fieldName == varName)
+				std::string string;
+				string.resize(stringLength);
+				memcpy((void*)string.c_str(), cursor, bytes);
+				string.resize(stringLength);		//TODO: Check if names are deSerializing well with this resize
+				cursor += bytes;
+
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 					{
-						MonoString* monoString = mono_string_new(App->scripting->domain,string.c_str());
-						mono_field_set_value(classInstance, field, monoString);
-						break;
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "string" && fieldName == varName)
+						{
+							MonoString* monoString = mono_string_new(App->scripting->domain, string.c_str());
+							mono_field_set_value(classInstance, field, monoString);
+							break;
+						}
 					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+
+				break;
 			}
-
-			break;
-		}
-		case VarType::GAMEOBJECT:	
-		{
-			bytes = sizeof(uint32_t);
-			uint32_t uid;
-			memcpy(&uid, cursor, bytes);
-			cursor += bytes;
-			
-			GameObject* go = nullptr;
-
-			if (uid != 0)
+			case VarType::GAMEOBJECT:
 			{
-				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+				bytes = sizeof(uint32_t);
+				uint32_t uid;
+				memcpy(&uid, cursor, bytes);
+				cursor += bytes;
 
-				/*go = App->resources->FindPrefabGObyID(uid);
+				GameObject* go = nullptr;
 
-				if (!go)
+				if (uid != 0)
 				{
-					go = App->scene->FindGameObjectByID(uid);
+					//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+
+					/*go = App->resources->FindPrefabGObyID(uid);
+
 					if (!go)
 					{
-						Debug.LogError("A Script lost a Gameobject reference");
-					}
-				}*/
-			}
-
-			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
-
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-			while (field != nullptr)
-			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
-				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
-
-					if (typeName == "JellyBitEngine.GameObject" && fieldName == varName)
-					{
-						
-						mono_field_set_value(classInstance, field, monoObject);
-						break;
-					}
+						go = App->scene->FindGameObjectByID(uid);
+						if (!go)
+						{
+							Debug.LogError("A Script lost a Gameobject reference");
+						}
+					}*/
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
-			}
 
-			break;
-		}
-		case VarType::TRANSFORM:
-		{
-			bytes = sizeof(uint32_t);
-			uint32_t uid;
-			memcpy(&uid, cursor, bytes);
-			cursor += bytes;
+				MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
 
-			GameObject* go = nullptr;
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-			if (uid != 0)
-			{
-				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
-
-				/*go = App->resources->FindPrefabGObyID(uid);
-
-				if (!go)
+				while (field != nullptr)
 				{
-					go = App->scene->FindGameObjectByID(uid);
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+					{
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "JellyBitEngine.GameObject" && fieldName == varName)
+						{
+
+							mono_field_set_value(classInstance, field, monoObject);
+							break;
+						}
+					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				}
+
+				break;
+			}
+			case VarType::TRANSFORM:
+			{
+				bytes = sizeof(uint32_t);
+				uint32_t uid;
+				memcpy(&uid, cursor, bytes);
+				cursor += bytes;
+
+				GameObject* go = nullptr;
+
+				if (uid != 0)
+				{
+					//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
+
+					/*go = App->resources->FindPrefabGObyID(uid);
+
 					if (!go)
 					{
-						Debug.LogError("A Script lost a Transform reference");
-					}
-				}*/
-			}
+						go = App->scene->FindGameObjectByID(uid);
+						if (!go)
+						{
+							Debug.LogError("A Script lost a Transform reference");
+						}
+					}*/
+				}
 
-			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
+				MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
 
-			void* iterator = 0;
-			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
 
-			while (field != nullptr)
-			{
-				uint32_t flags = mono_field_get_flags(field);
-				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+				while (field != nullptr)
 				{
-					MonoType* type = mono_field_get_type(field);
-					std::string typeName = mono_type_full_name(type);
-					std::string fieldName = mono_field_get_name(field);
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+					{
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
 
 						if (typeName == "JellyBitEngine.Transform" && fieldName == varName)
 						{
@@ -2059,16 +2050,16 @@ void ComponentScript::deSerializePublicVars(char *& cursor)
 							}
 							break;
 						}
+					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
-				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
-			}
 
-			break;
+				break;
+			}
+			default:
+				break;
 		}
-		default:
-			break;
-		}
-	}	
+	}
 }
 
 void ComponentScript::InstanceClass()

@@ -30,8 +30,10 @@ public:
 	void SetParent(GameObject* parent);
 	GameObject* GetParent() const;
 
-	virtual void OnSave(JSON_Object* file);
-	virtual void OnLoad(JSON_Object* file) {};
+	uint GetSerializationBytes();
+
+	void OnSave(char*& cursor);
+	void OnLoad(char*& cursor);
 
 	virtual void OnEnable() {}
 	virtual void OnDisable() {}
@@ -41,7 +43,9 @@ public:
 
 private:
 
-	virtual void OnInternalSave(JSON_Object* file) {};
+	virtual uint GetInternalSerializationBytes() = 0;
+	virtual void OnInternalSave(char*& cursor) = 0;
+	virtual void OnInternalLoad(char*& cursor) = 0;
 	virtual void OnUniqueEditor();
 
 protected:

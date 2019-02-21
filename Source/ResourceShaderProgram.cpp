@@ -1,43 +1,351 @@
 #include "ResourceShaderProgram.h"
 
 #include "Application.h"
+#include "ModuleFileSystem.h"
 #include "ShaderImporter.h"
+#include "ResourceShaderObject.h"
+#include "ModuleScene.h"
+
+#include "glew\include\GL\glew.h"
+
+#include "imgui\imgui.h"
 
 #include <assert.h>
 
-ResourceShaderProgram::ResourceShaderProgram(ResourceType type, uint uuid) : Resource(type, uuid) {}
+ResourceShaderProgram::ResourceShaderProgram(ResourceTypes type, uint uuid, ResourceData data, ResourceShaderProgramData shaderProgramData) : Resource(type, uuid, data), shaderProgramData(shaderProgramData) {}
 
 ResourceShaderProgram::~ResourceShaderProgram()
 {
 	DeleteShaderProgram(shaderProgram);
 }
 
-int ResourceShaderProgram::LoadMemory()
+void ResourceShaderProgram::OnPanelAssets()
 {
-	return LoadInMemory();
-}
+	ImGuiTreeNodeFlags flags = 0;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
-void ResourceShaderProgram::SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects)
-{
-	this->shaderObjects = shaderObjects;
-}
+	if (App->scene->selectedObject == this)
+		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
 
-std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderType shaderType) const
-{
-	std::list<ResourceShaderObject*> shaderObjects;
+	char id[DEFAULT_BUF_SIZE];
+	sprintf(id, "%s##%d", data.name.data(), uuid);
 
-	for (std::list<ResourceShaderObject*>::const_iterator it = this->shaderObjects.begin(); it != this->shaderObjects.end(); ++it)
+	if (ImGui::TreeNodeEx(id, flags))
+		ImGui::TreePop();
+
+	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 	{
-		if (shaderType != ShaderType::NoShaderType && (*it)->shaderType == shaderType)
-			shaderObjects.push_back(*it);
-		else if (shaderType == ShaderType::NoShaderType)
-			shaderObjects.push_back(*it);
+		SELECT(this);
 	}
 
-	return shaderObjects;
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		Resource* res = this;
+		ImGui::SetDragDropPayload("SHADER_PROGRAM", &res, sizeof(Resource*));
+		ImGui::EndDragDropSource();
+	}
 }
 
-bool ResourceShaderProgram::Link(bool comment)
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputFile)
+{
+	assert(file != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(file) + 1, file); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	if (App->fs->Exists(metaFile))
+	{
+		uint uuid = 0;
+		int64_t lastModTime = 0;
+		std::string shaderName;
+		ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, shaderName, shaderObjectsNames);
+		assert(uuid > 0);
+
+		name = shaderName.data();
+
+		char entry[DEFAULT_BUF_SIZE];
+		sprintf_s(entry, "%u", uuid);
+		outputFile = entry;
+	}
+
+	return true;
+}
+
+bool ResourceShaderProgram::ExportFile(ResourceData& data, ResourceShaderProgramData& shaderProgramData, std::string& outputFile, bool overwrite)
+{
+	return App->shaderImporter->SaveShaderProgram(data, shaderProgramData, outputFile, overwrite);
+}
+
+uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile)
+{
+	assert(file != nullptr);
+
+	uint uuidsSize = 1;
+	uint nameSize = DEFAULT_BUF_SIZE;
+	uint namesSize = shaderObjectsNames.size();
+
+	// Name
+	char shaderName[DEFAULT_BUF_SIZE];
+	strcpy_s(shaderName, DEFAULT_BUF_SIZE, name.data());
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize +
+		sizeof(char) * namesSize * nameSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	int64_t lastModTime = App->fs->GetLastModificationTime(file);
+	assert(lastModTime > 0);
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store shader program uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &shaderProgramUuid, bytes);
+
+	cursor += bytes;
+
+	// 4. Store shader program name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader program name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, shaderName, bytes);
+
+	cursor += bytes;
+
+	// 6. Store shader objects names size
+	bytes = sizeof(uint);
+	memcpy(cursor, &namesSize, bytes);
+
+	cursor += bytes;
+
+	// 7. Store shader objects names
+	char shaderObjectName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < namesSize; ++i)
+	{
+		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
+		bytes = sizeof(char) * nameSize;
+		memcpy(cursor, shaderObjectName, bytes);
+
+		if (i < namesSize - 1)
+			cursor += bytes;
+	}
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	outputMetaFile = file;
+	outputMetaFile.append(EXTENSION_META);
+	uint resultSize = App->fs->Save(outputMetaFile.data(), data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully saved meta '%s'", outputMetaFile.data());
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not save meta '%s'", outputMetaFile.data());
+		return 0;
+	}
+
+	return lastModTime;
+}
+
+bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. Load last modification time
+		uint bytes = sizeof(int64_t);
+		memcpy(&lastModTime, cursor, bytes);
+
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. Load shader program uuid
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&shaderProgramUuid, cursor, bytes);
+
+		cursor += bytes;
+
+		// 4. Load shader program name size
+		uint nameSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&nameSize, cursor, bytes);
+		assert(nameSize > 0);
+
+		cursor += bytes;
+
+		// 5. Load shader program name
+		name.resize(nameSize);
+		bytes = sizeof(char) * nameSize;
+		memcpy(&name[0], cursor, bytes);
+
+		cursor += bytes;
+
+		// 6. Load names size
+		uint namesSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&namesSize, cursor, bytes);
+		assert(namesSize > 0);
+
+		cursor += bytes;
+
+		// 7. Load shader objects names
+		char shaderObjectName[DEFAULT_BUF_SIZE];
+		for (uint i = 0; i < namesSize; ++i)
+		{
+			bytes = sizeof(char) * nameSize;
+			memcpy(shaderObjectName, cursor, bytes);
+			shaderObjectsNames.push_back(shaderObjectName);
+
+			if (i < namesSize - 1)
+				cursor += bytes;
+		}
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
+}
+
+uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::string& name)
+{
+	assert(metaFile != nullptr);
+
+	int64_t lastModTime = 0;
+	uint shaderProgramUuid = 0;
+	std::string oldName;
+	std::vector<std::string> shaderObjectsNames;
+	ReadMeta(metaFile, lastModTime, shaderProgramUuid, oldName, shaderObjectsNames);
+
+	uint uuidsSize = 1;
+	uint nameSize = DEFAULT_BUF_SIZE;
+	uint namesSize = shaderObjectsNames.size();
+
+	// Name
+	char shaderName[DEFAULT_BUF_SIZE];
+	strcpy_s(shaderName, DEFAULT_BUF_SIZE, name.data());
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize +
+		sizeof(char) * namesSize * nameSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store shader program uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &shaderProgramUuid, bytes);
+
+	cursor += bytes;
+
+	// 4. Store shader program name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store shader program name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, shaderName, bytes);
+
+	cursor += bytes;
+
+	// 6. Store shader objects names size
+	bytes = sizeof(uint);
+	memcpy(cursor, &namesSize, bytes);
+
+	cursor += bytes;
+
+	// 7. Store shader objects names
+	char shaderObjectName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < namesSize; ++i)
+	{
+		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
+		bytes = sizeof(char) * nameSize;
+		memcpy(cursor, shaderObjectName, bytes);
+
+		if (i < namesSize - 1)
+			cursor += bytes;
+	}
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	uint resultSize = App->fs->Save(metaFile, data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully saved meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not save meta '%s'", metaFile);
+		return 0;
+	}
+
+	return lastModTime;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderProgram::Link()
 {
 	bool ret = true;
 
@@ -45,16 +353,16 @@ bool ResourceShaderProgram::Link(bool comment)
 	DeleteShaderProgram(shaderProgram);
 	shaderProgram = glCreateProgram();
 
-	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderProgramData.shaderObjects.begin(); it != shaderProgramData.shaderObjects.end(); ++it)
 		glAttachShader(shaderProgram, (*it)->shaderObject);
 
 	// Link the Shader Program
 	glLinkProgram(shaderProgram);
 
-	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderProgramData.shaderObjects.begin(); it != shaderProgramData.shaderObjects.end(); ++it)
 		glDetachShader(shaderProgram, (*it)->shaderObject);
 
-	if (!IsProgramLinked(comment))
+	if (!IsProgramLinked(shaderProgram))
 	{
 		DeleteShaderProgram(shaderProgram);
 		ret = false;
@@ -73,19 +381,19 @@ bool ResourceShaderProgram::Link(bool comment)
 	return ret;
 }
 
-GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
+uint ResourceShaderProgram::Link(std::list<ResourceShaderObject*> shaderObjects)
 {
 	// Create a Shader Program
 	GLuint shaderProgram = glCreateProgram();
 
-	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
-		glAttachShader(shaderProgram, *it);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glAttachShader(shaderProgram, (*it)->shaderObject);
 
 	// Link the Shader Program
 	glLinkProgram(shaderProgram);
 
-	for (std::list<GLuint>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
-		glDetachShader(shaderProgram, *it);
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+		glDetachShader(shaderProgram, (*it)->shaderObject);
 
 	GLint success = 0;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -97,18 +405,18 @@ GLuint ResourceShaderProgram::Link(std::list<GLuint> shaderObjects)
 		GLchar* infoLog = new GLchar[logSize];
 		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
 
-		DEPRECATED_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+		CONSOLE_LOG(LogTypes::Error, "Shader Program could not be linked. ERROR: %s", infoLog);
 
 		DeleteShaderProgram(shaderProgram);
 	}
 	else
-		DEPRECATED_LOG("Successfully linked Shader Program");
+		CONSOLE_LOG(LogTypes::Normal, "Successfully linked Shader Program");
 
 	return shaderProgram;
 }
 
 // Returns the length of the binary
-GLint ResourceShaderProgram::GetBinary(GLubyte** buffer)
+uint ResourceShaderProgram::GetBinary(uint shaderProgram, uchar** buffer)
 {
 	// Get the binary length
 	GLint length = 0;
@@ -125,28 +433,22 @@ GLint ResourceShaderProgram::GetBinary(GLubyte** buffer)
 	return length;
 }
 
-bool ResourceShaderProgram::LoadBinary(const void* buffer, GLint size)
+uint ResourceShaderProgram::LoadBinary(const void* buffer, int size)
 {
-	bool ret = true;
-
 	// Create a Shader Program
-	DeleteShaderProgram(shaderProgram);
-	shaderProgram = glCreateProgram();
+	GLuint shaderProgram = glCreateProgram();
 
 	// Install the binary
 	GLenum format = 0;
 	glProgramBinary(shaderProgram, format, buffer, size);
 
-	if (!IsProgramLinked())
-	{
+	if (!IsProgramLinked(shaderProgram))
 		DeleteShaderProgram(shaderProgram);
-		ret = false;
-	}
 
-	return ret;
+	return shaderProgram;
 }
 
-bool ResourceShaderProgram::DeleteShaderProgram(GLuint& shaderProgram)
+bool ResourceShaderProgram::DeleteShaderProgram(uint shaderProgram)
 {
 	bool ret = false;
 
@@ -160,48 +462,34 @@ bool ResourceShaderProgram::DeleteShaderProgram(GLuint& shaderProgram)
 	return ret;
 }
 
-bool ResourceShaderProgram::IsProgramValid() const
+// ----------------------------------------------------------------------------------------------------
+
+void ResourceShaderProgram::SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects)
 {
-	GLint success = 0;
-	glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		GLint logSize = 0;
-		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-
-		GLchar* infoLog = new GLchar[logSize];
-		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
-
-		DEPRECATED_LOG("Shader Program is not valid. ERROR: %s", infoLog);
-	}
-	else
-		DEPRECATED_LOG("Shader Program is valid");
-
-	return success;
+	shaderProgramData.shaderObjects = shaderObjects;
 }
 
-bool ResourceShaderProgram::IsProgramLinked(bool comment) const
+std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderTypes shaderType) const
 {
-	GLint success = 0;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
+	std::list<ResourceShaderObject*> shaderObjects;
+
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderProgramData.shaderObjects.begin(); it != shaderProgramData.shaderObjects.end(); ++it)
 	{
-		GLint logSize = 0;
-		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-
-		GLchar* infoLog = new GLchar[logSize];
-		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
-
-		if (comment)
-			DEPRECATED_LOG("Shader Program could not be linked. ERROR: %s", infoLog);
+		if (shaderType != ShaderTypes::NoShaderType && (*it)->GetShaderType() == shaderType)
+			shaderObjects.push_back(*it);
+		else if (shaderType == ShaderTypes::NoShaderType)
+			shaderObjects.push_back(*it);
 	}
-	else if (comment)
-		DEPRECATED_LOG("Successfully linked Shader Program");
 
-	return success;
+	return shaderObjects;
 }
 
-void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
+std::list<std::string> ResourceShaderProgram::GetShaderObjectsNames() const
+{
+	return shaderProgramData.GetShaderObjectsNames();
+}
+
+void ResourceShaderProgram::GetUniforms(std::vector<Uniform>& uniforms) const
 {
 	int count;
 	glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
@@ -223,56 +511,48 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 			|| strcmp(name, "Time") == 0 || strcmp(name, "viewPos") == 0)
 			continue;
 
-		Uniform* uniform;
+		Uniform uniform;
 		switch (type)
 		{
 		case Uniforms_Values::FloatU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->floatU.name, name);
-			uniform->floatU.type = type;
-			uniform->floatU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.floatU.name, name);
+			uniform.floatU.type = type;
+			uniform.floatU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::IntU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->intU.name, name);
-			uniform->intU.type = type;
-			uniform->intU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.intU.name, name);
+			uniform.intU.type = type;
+			uniform.intU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec2FU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec2FU.name, name);
-			uniform->vec2FU.type = type;
-			uniform->vec2FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec2FU.name, name);
+			uniform.vec2FU.type = type;
+			uniform.vec2FU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec3FU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec3FU.name, name);
-			uniform->vec3FU.type = type;
-			uniform->vec3FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec3FU.name, name);
+			uniform.vec3FU.type = type;
+			uniform.vec3FU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec4FU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec4FU.name, name);
-			uniform->vec4FU.type = type;
-			uniform->vec4FU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec4FU.name, name);
+			uniform.vec4FU.type = type;
+			uniform.vec4FU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec2IU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec2IU.name, name);
-			uniform->vec2IU.type = type;
-			uniform->vec2IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec2IU.name, name);
+			uniform.vec2IU.type = type;
+			uniform.vec2IU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec3IU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec3IU.name, name);
-			uniform->vec3IU.type = type;
-			uniform->vec3IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec3IU.name, name);
+			uniform.vec3IU.type = type;
+			uniform.vec3IU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		case Uniforms_Values::Vec4IU_value:
-			uniform = new Uniform();
-			strcpy_s(uniform->vec4IU.name, name);
-			uniform->vec4IU.type = type;
-			uniform->vec4IU.location = glGetUniformLocation(shaderProgram, uniform->common.name);
+			strcpy_s(uniform.vec4IU.name, name);
+			uniform.vec4IU.type = type;
+			uniform.vec4IU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
 		default:
 			continue;
@@ -283,7 +563,178 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform*>& uniforms) const
 	uniforms.shrink_to_fit();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceShaderProgram::ReadShaderProgramUuidFromMeta(const char* metaFile, uint& shaderProgramUuid)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. (Last modification time)
+		uint bytes = sizeof(int64_t);
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. Load shader program uuid
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&shaderProgramUuid, cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
+}
+
+bool ResourceShaderProgram::ReadShaderObjectsNamesFromMeta(const char* metaFile, std::vector<std::string>& shaderObjectsNames)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
+
+		// 1. (Last modification time)
+		uint bytes = sizeof(int64_t);
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. (Load shader program uuid)
+		bytes = sizeof(uint) * uuidsSize;
+		cursor += bytes;
+
+		// (Load shader program name size)
+		uint nameSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&nameSize, cursor, bytes);
+		assert(nameSize > 0);
+
+		cursor += bytes;
+
+		// (Load shader program name)
+		bytes = sizeof(char) * nameSize;
+		cursor += bytes;
+
+		// 4. Load names size
+		uint namesSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&namesSize, cursor, bytes);
+		assert(namesSize > 0);
+
+		cursor += bytes;
+
+		// 7. Load shader objects names
+		char shaderObjectName[DEFAULT_BUF_SIZE];
+		for (uint i = 0; i < namesSize; ++i)
+		{
+			bytes = sizeof(char) * nameSize;
+			memcpy(cursor, shaderObjectName, bytes);
+			shaderObjectsNames.push_back(shaderObjectName);
+
+			if (i < namesSize - 1)
+				cursor += bytes;
+		}
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Shader Program: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
+}
+
 bool ResourceShaderProgram::LoadInMemory()
 {
-	return App->shaderImporter->LoadShaderProgram(exportedFile.data(), this);
+	return true;
+}
+
+bool ResourceShaderProgram::UnloadFromMemory()
+{
+	return true;
+}
+
+bool ResourceShaderProgram::IsProgramValid(uint shaderProgram)
+{
+	GLint success = 0;
+	glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		GLint logSize = 0;
+		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
+
+		GLchar* infoLog = new GLchar[logSize];
+		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
+
+		CONSOLE_LOG(LogTypes::Error, "Shader Program is not valid. ERROR: %s", infoLog);
+	}
+	else
+		CONSOLE_LOG(LogTypes::Normal, "Shader Program is valid");
+
+	return success;
+}
+
+bool ResourceShaderProgram::IsProgramLinked(uint shaderProgram)
+{
+	GLint success = 0;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		GLint logSize = 0;
+		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
+
+		GLchar* infoLog = new GLchar[logSize];
+		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
+
+		CONSOLE_LOG(LogTypes::Error, "Shader Program could not be linked. ERROR: %s", infoLog);
+	}
+	else
+		CONSOLE_LOG(LogTypes::Normal, "Successfully linked Shader Program");
+
+	return success;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+std::list<std::string> ResourceShaderProgramData::GetShaderObjectsNames() const
+{
+	std::list<std::string> shaderObjectsNames;
+
+	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	{
+		std::string shaderObjectName;
+		App->fs->GetFileName((*it)->GetFile(), shaderObjectName, true);
+		shaderObjectsNames.push_back(shaderObjectName.data());
+	}
+
+	return shaderObjectsNames;
 }

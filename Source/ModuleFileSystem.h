@@ -21,12 +21,14 @@
 #define DIR_ASSETS_SHADERS_OBJECTS "Assets/Shaders/Objects"
 #define DIR_ASSETS_SHADERS_PROGRAMS "Assets/Shaders/Programs"
 #define DIR_ASSETS_SCRIPTS "Assets/Scripts"
+#define DIR_ASSETS_ANIMATIONS "Assets/Animations"
+#define DIR_ASSETS_MESHES "Assets/Meshes"
+#define DIR_ASSETS_TEXTURES "Assets/Textures"
 
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
 
 class Resource;
-struct ImportSettings;
 
 enum FileType
 {
@@ -45,29 +47,6 @@ enum FileType
 	ShaderProgramFile,
 
 	MetaFile
-};
-
-struct FileOLD
-{
-	std::string name;
-	std::string path;
-	bool isDirectory = false;
-	std::vector<FileOLD*> children;
-};
-
-struct AssetsFile : public FileOLD
-{
-	int lastModTime = 0;
-
-	const ImportSettings* importSettings = nullptr; // meshes, textures
-	const Resource* resource = nullptr; // shaders
-
-	std::map<std::string, uint> UUIDs; // meshes, textures
-};
-
-struct LibraryFile : public FileOLD
-{
-	const Resource* resource = nullptr;
 };
 
 struct File
@@ -281,6 +260,8 @@ public:
 	ModuleFileSystem(bool start_enabled = true);
 	~ModuleFileSystem();
 
+	update_status PreUpdate() override;
+	bool Start();
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event event);
@@ -294,12 +275,7 @@ public:
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
 
-	void RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, int>& assetsFiles) const;
-	void RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const;
-	AssetsFile* GetRootAssetsFile() const;
-	LibraryFile* GetRootLibraryFile() const;
-
-	int GetLastModificationTime(const char* file) const;
+	int64_t GetLastModificationTime(const char* file) const;
 
 	bool IsDirectory(const char* file) const;
 	bool Exists(std::string file) const;
@@ -308,7 +284,8 @@ public:
 	void GetFileName(const char* file, std::string& fileName, bool extension = false) const;
 	void GetExtension(const char* file, std::string& extension) const;
 	void GetMetaExtension(const char* file, std::string& extension) const;
-	void GetPath(const char* file, std::string& path) const;
+	void GetFileFromMeta(const char* metaFile, std::string& file) const;
+	void GetPath(const char* file, std::string& path, bool bar = true) const;
 
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;
 
@@ -317,26 +294,27 @@ public:
 
 	uint Load(std::string file, char** buffer) const;
 
-	bool AddMeta(const char* metaFile, int lastModTime);
-	bool DeleteMeta(const char* metaFile);
-
-	void CheckFilesInAssets() const;
-
 	std::string getAppPath();
-
+	void UpdateAssetsDir();
 	bool MoveFileInto(const std::string& file, const std::string& newLocation);
 	bool CopyDirectoryAndContentsInto(const std::string& origin, const std::string& destination, bool keepRoot = true);
 	Directory RecursiveGetFilesFromDir(char* dir) const;
 	bool deleteFile(const std::string& filePath) const;
 	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
+	void SendEvents(const Directory& newAssetsDir);
+	void ImportFilesEvents(const Directory& newAssetsDir);
+	void ForceReImport(const Directory& assetsDir);
+
+	void BeginTempException(std::string directory);
+	void EndTempException();
+
+public:
+	Directory rootAssets;
 
 private:
+	float updateAssetsRate = 1.0f;	
+	std::string tempException;
 
-	std::map<std::string, int> metas;
-	std::map<std::string, int> assetsFiles;
-
-	AssetsFile* rootAssetsFile = nullptr;
-	LibraryFile* rootLibraryFile = nullptr;
 };
 
 #endif

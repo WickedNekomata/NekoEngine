@@ -4,11 +4,14 @@
 #include "Module.h"
 
 #include "Recast&Detour/Recast/Include/Recast.h"
+#include "Recast&Detour/Detour/Include/DetourNavMeshQuery.h"
 #include "NMBuildContext.h"
+
+#include <vector>
 
 constexpr int max_Agents = 128;
 
-class ModuleNavigation : Module
+class ModuleNavigation : public Module
 {
 public:
 
@@ -21,7 +24,10 @@ public:
 	void OnSystemEvent(System_Event e);
 
 	void Draw() const;
+	void AddComponent(class ComponentNavAgent*);
+	void EraseComponent(class ComponentNavAgent*);
 	void SetInputGeom(class NMInputGeom& inputGeom);
+	void FindPath(float* start, float* end, float* path, int pathCount, int maxPath) const;
 	int  AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed,
 				  float collQueryRange, float pathOptimRange, unsigned char updateFlags,
 				  unsigned char obstacleAvoidanceType) const;
@@ -32,6 +38,8 @@ public:
 	void SetDestination(const float* p, int indx) const;
 
 	static void calcVel(float* vel, const float* pos, const float* tgt, const float speed);
+
+	bool IsCrowInitialized() const { return m_crowd ? true :  false; };
 
 	bool HandleBuild();
 
@@ -45,6 +53,7 @@ protected:
 	class dtNavMesh* m_navMesh = 0;
 	class dtNavMeshQuery* m_navQuery = 0;
 	class dtCrowd* m_crowd = 0;
+	dtQueryFilter m_filter;
 
 	NMBuildContext* m_ctx = 0;
 
@@ -57,8 +66,8 @@ protected:
 	rcPolyMesh* m_pmesh = 0;
 	rcConfig m_cfg;
 	rcPolyMeshDetail* m_dmesh = 0;
-	//
-
+	
+	std::vector<class ComponentNavAgent*> c_agents;
 };
 
 #endif

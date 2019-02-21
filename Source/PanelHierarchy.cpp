@@ -4,9 +4,11 @@
 
 #include "Application.h"
 #include "GameObject.h"
+#include "ComponentMesh.h"
 #include "ModuleScene.h"
 #include "ModuleInput.h"
 #include "ModuleGui.h"
+#include "ModuleInternalResHandler.h"
 
 #include "SDL\include\SDL_scancode.h"
 #include "ModuleGOs.h"
@@ -49,12 +51,18 @@ bool PanelHierarchy::Draw()
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
-			if(!App->GOs->ExistCanvas())
-				if (ImGui::Selectable("Create Screen Canvas"))
-				{
-					App->GOs->CreateCanvas("Canvas", root);
-					ImGui::CloseCurrentPopup();
-				}
+			if (ImGui::Selectable("Create Cube"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("Cube", root);
+				go->AddComponent(ComponentTypes::MeshComponent);
+				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+			}
+			if (ImGui::Selectable("Create Plane"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("Plane", root);
+				go->AddComponent(ComponentTypes::MeshComponent);
+				go->cmp_mesh->SetResource(App->resHandler->defaultPlane);
+			}
 			ImGui::EndPopup();
 		}
 
@@ -67,7 +75,8 @@ bool PanelHierarchy::Draw()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DROP_PREFAB_TO_GAME"))
 		{
 			char* payload_n = (char*)payload->Data;
-			App->GOs->LoadScene(payload_n);
+			// TODO
+			//App->GOs->LoadScene(payload_n);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -156,13 +165,18 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 			App->GOs->CreateGameObject("GameObject", child);
 			ImGui::CloseCurrentPopup();
 		}
+		if (ImGui::Selectable("Create Cube"))
+		{
+			GameObject* go = App->GOs->CreateGameObject("Cube", child);
+			go->AddComponent(ComponentTypes::MeshComponent);
+			go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+			ImGui::CloseCurrentPopup();
+		}
 		if (ImGui::Selectable("Delete")) 
 		{
-			if (child->EqualsToChildrenOrMe(App->scene->selectedObject.Get()))
+			if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
-			if (App->GOs->IsCanvas(child))
-				App->GOs->DeleteCanvasPointer();
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

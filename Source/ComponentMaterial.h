@@ -45,13 +45,13 @@ public:
 	void Update();
 
 	void SetResource(uint res_uuid, uint position);
-	void ReleaseUniforms();
 	void UpdateUniforms();
 
 	void OnUniqueEditor();
 
-	virtual void OnInternalSave(JSON_Object* file);
-	virtual void OnLoad(JSON_Object* file);
+	uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 
 private:
 
@@ -60,7 +60,7 @@ private:
 public:
 
 	GLuint shaderProgramUUID = 0;
-	std::vector<Uniform*> uniforms;
+	std::vector<Uniform> uniforms;
 	std::vector<MaterialResource> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
 };

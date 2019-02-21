@@ -2,16 +2,9 @@
 #define __RESOURCE_MANAGER_H__
 
 #include "Module.h"
-#include "Globals.h"
 
-#include "ResourceTypes.h"
+#include <unordered_map>
 
-#include <map>
-#include <vector>
-#include <list>
-
-// This is the value in memory of each string.
-// https://www.quora.com/How-is-an-integer-value-stored-in-the-memory-in-C
 #define ASCIIfbx 2019714606
 #define ASCIIFBX 1480738350
 #define ASCIItga 1634169902
@@ -32,11 +25,12 @@
 #define ASCIIFSH 1213417006
 #define ASCIIpsh 1752395822
 #define ASCIIPSH 1213419566
-#define ASCIIcs  7562030
-#define ASCIICS  5456686
+#define ASCIIcs 7562030
+#define ASCIICS 5456686
 
-struct ImportSettings;
 class Resource;
+struct ResourceData;
+enum ResourceTypes;
 
 class ModuleResourceManager : public Module
 {
@@ -49,48 +43,35 @@ public:
 
 	void OnSystemEvent(System_Event event);
 
-	// Game mode
-	void RecursiveImportFilesFromLibrary(const char* dir, std::string& path);
-	void ImportFileFromLibrary(const char* fileInLibrary);
+	// ----------------------------------------------------------------------------------------------------
 
-	void RecursiveImportFilesFromAssets(const char* dir, std::string& path);
-	void RecursiveDeleteUnusedFilesFromLibrary(const char* dir, std::string& path) const;
+	Resource* ImportFile(const char* file);
+	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false);
+	Resource* CreateResource(ResourceTypes type, ResourceData& data, void* specificData, uint forcedUuid = 0);
 
-	void RecursiveCopyShadersIntoLibrary(const char* dir, std::string& path);
+	// ----------------------------------------------------------------------------------------------------
 
-	uint ImportFile(const char* fileInAssets);
-	uint ImportFile(const char* fileInAssets, const char* metaFile, const char* exportedFile);
+	uint SetAsUsed(uint uuid) const;
+	uint SetAsUnused(uint uuid) const;
 
-	Resource* CreateNewResource(ResourceType type, uint force_uuid = 0);
+	bool DeleteResource(uint uuid);
+	bool DeleteResources(std::vector<uint> uuids);
+	bool DeleteResources();
+	bool EraseResource(Resource* toErase);
 
-	const Resource* GetResource(uint UUID) const;
-	static ResourceType GetResourceTypeByExtension(const char* extension);
+	void RecursiveDeleteUnusedEntries(const char* dir, std::string& path);
+	void RecursiveDeleteUnusedMetas(const char* dir, std::string& path);
 
-	void InsertResource(Resource* resource);
+	// ----------------------------------------------------------------------------------------------------
 
-	bool FindResourcesByFile(const char* fileInAssets, std::list<uint>& UUIDs) const;
-	bool FindResourcesByExportedFile(const char* exportedFile, std::list<uint>& UUIDs) const;
-
-	int SetAsUsed(uint UUID) const;
-	int SetAsUnused(uint UUID) const;
-
-	bool DestroyResource(uint UUID);
-	bool DestroyResources(std::list<uint> UUIDs);
-	void DestroyResources();
-
-	bool RemoveTextureLibraryEntry(uint UUID);
-	bool RemoveMeshesLibraryEntries(std::list<uint> UUIDs);
-
-	bool DestroyResourcesAndRemoveLibraryEntries(const char* metaFile);
-
-	bool IsAnyResourceInVram() const;
-
-	void ReCompileScriptResources();
+	Resource* GetResource(uint uuid) const;
+	bool GetResourcesUuidsByFile(const char* file, std::vector<uint>& resourcesUuids) const;
+	bool GetResourceUuidByExportedFile(const char* file, uint& resourceUuid) const;
+	ResourceTypes GetResourceTypeByExtension(const char* extension) const;
 
 private:
 
-	std::map<uint, Resource*> resources;
-	std::vector<ImportSettings*> importsSettings;
+	std::unordered_map<uint, Resource*> resources;
 };
 
 #endif

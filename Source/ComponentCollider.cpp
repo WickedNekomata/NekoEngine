@@ -17,8 +17,8 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 
 ComponentCollider::~ComponentCollider() 
 {
-	if (parent->rigidActor != nullptr)
-		parent->rigidActor->UpdateShape(nullptr);
+	if (parent->cmp_rigidActor != nullptr)
+		parent->cmp_rigidActor->UpdateShape(nullptr);
 	ClearShape();
 
 	gMaterial = nullptr;

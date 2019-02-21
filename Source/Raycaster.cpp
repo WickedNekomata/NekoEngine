@@ -44,10 +44,11 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 
 	// Dynamic objects
 	std::vector<GameObject*> dynamicGameObjects;
-	App->GOs->GetDynamicGameObjects(dynamicGameObjects);
+	App->GOs->GetDynamicGameobjects(dynamicGameObjects);
 
 	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
 	{
+		// TODO CHECK THIS
 		if (raycast.Intersects(dynamicGameObjects[i]->boundingBox))
 			hits.push_back(dynamicGameObjects[i]);
 	}
@@ -58,19 +59,24 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 		math::LineSegment localSpaceSegment(raycast);
 		localSpaceSegment.Transform(hits[i]->transform->GetGlobalMatrix().Inverted());
 
-		if (hits[i]->meshRenderer == nullptr)
+		if (hits[i]->cmp_mesh == nullptr)
 			return;
 
-		const ResourceMesh* resMesh = (const ResourceMesh*)App->res->GetResource(hits[i]->meshRenderer->res);
+		const ResourceMesh* resMesh = (const ResourceMesh*)App->res->GetResource(hits[i]->cmp_mesh->res);
 
 		if (resMesh == nullptr)
 			return;
 
+		Vertex* vertices = nullptr;
+		resMesh->GetVerticesReference(vertices);
+		uint* indices = nullptr;
+		resMesh->GetIndicesReference(indices);
+
 		for (uint j = 0; j < resMesh->GetIndicesCount();)
 		{
-			tri.a = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
-			tri.b = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
-			tri.c = math::float3(resMesh->vertices[resMesh->indices[j]].position[0], resMesh->vertices[resMesh->indices[j]].position[1], resMesh->vertices[resMesh->indices[j]].position[2]); j++;
+			tri.a = math::float3(vertices[indices[j]].position[0], vertices[indices[j]].position[1], vertices[indices[j]].position[2]); j++;
+			tri.b = math::float3(vertices[indices[j]].position[0], vertices[indices[j]].position[1], vertices[indices[j]].position[2]); j++;
+			tri.c = math::float3(vertices[indices[j]].position[0], vertices[indices[j]].position[1], vertices[indices[j]].position[2]); j++;
 
 			float distance;
 			math::float3 hitPoint;

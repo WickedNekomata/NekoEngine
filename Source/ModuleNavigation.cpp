@@ -5,6 +5,7 @@
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentNavAgent.h"
+#include "ComponentTransform.h"
 
 #include "Recast&Detour/Detour/Include/DetourNavMesh.h"
 #include "Recast&Detour/Detour/Include/DetourNavMeshBuilder.h"
@@ -45,7 +46,19 @@ bool ModuleNavigation::Init(JSON_Object* jObject)
 update_status ModuleNavigation::Update()
 {
 	if (m_navMesh && m_crowd)
+	{
 		m_crowd->update(App->timeManager->GetDt(), 0);
+
+		for each(ComponentNavAgent* agent in c_agents)
+		{
+			int index = agent->GetIndex();
+			const dtCrowdAgent* ag = m_crowd->getAgent(index);
+			// if (ag->targetState == 0 ??)
+			ComponentTransform* trm = agent->GetParent()->transform;
+			memcpy(&trm->position, ag->npos, sizeof(float) * 3);
+			// TODO rotate character using desire velocity here
+		}
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -62,7 +75,7 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 	{
 	case System_Event_Type::Play:
 	{
-		if (m_navMesh)
+		if (!m_navMesh)
 			return;
 
 		m_navQuery = dtAllocNavMeshQuery();
@@ -78,22 +91,23 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 
 		InitCrowd();
 
-		std::vector<GameObject*> gameobjects;
-		App->GOs->GetGameObjects(gameobjects);
-
-		for (int i = 0; i < gameobjects.size(); ++i)
-			gameobjects[i]->navAgent->AddAgent();
+		for each (ComponentNavAgent* ag in c_agents)
+			ag->AddAgent();
 
 		break;
 	}
 	case System_Event_Type::Stop:
 	{
-		if (m_navMesh)
+		if (!m_navMesh)
 			return;
+
+		for each (ComponentNavAgent* ag in c_agents)
+			RemoveAgent(ag->GetIndex());
 
 		dtFreeCrowd(m_crowd);
 		dtFreeNavMeshQuery(m_navQuery);
-		
+		m_crowd = 0;
+		m_navQuery = 0;
 	}
 		break;
 	}
@@ -112,7 +126,6 @@ void ModuleNavigation::InitCrowd()
 	dtObstacleAvoidanceParams params;
 	// Use mostly default settings, copy from dtCrowd.
 	memcpy(&params, m_crowd->getObstacleAvoidanceParams(0), sizeof(dtObstacleAvoidanceParams));
-
 	// check mikkos answer to understand local avoidance params
 	// https://groups.google.com/forum/#!searchin/recastnavigation/local$20avoidance%7Csort:date/recastnavigation/3hFcUXb-Cjc/XeC7t2CPMCYJ
 
@@ -155,6 +168,17 @@ void ModuleNavigation::Draw() const
 	}
 }
 
+void ModuleNavigation::AddComponent(ComponentNavAgent* cmp_agent)
+{
+	c_agents.push_back(cmp_agent);
+}
+
+void ModuleNavigation::EraseComponent(ComponentNavAgent* cmp_agent)
+{
+	std::vector<ComponentNavAgent*>::const_iterator it = std::find(c_agents.begin(), c_agents.end(), cmp_agent);
+	if (it != c_agents.end()) { c_agents.erase(it); }
+}
+
 void ModuleNavigation::cleanup()
 {
 	if (m_triareas) delete[] m_triareas;
@@ -181,6 +205,18 @@ void ModuleNavigation::SetInputGeom(NMInputGeom& inputGeom)
 	cleanup();
 	m_geom = new NMInputGeom();
 	memcpy(m_geom, &inputGeom, sizeof(NMInputGeom));
+}
+
+void ModuleNavigation::FindPath(float* start, float* end, float* path, int pathCount, int maxPath) const
+{
+	// TODO find path from point to point
+	//dtPolyRef polyRefStart, polyRefEnd, polyPath;
+	//float* nearestPTStart, *nearestPTEnd;
+	//float extends[] = { 10.0f,10.0f,10.0f }; // thats odd
+	//m_navQuery->findNearestPoly(start, extends, &m_filter, &polyRefStart, nearestPTStart);
+	//m_navQuery->findNearestPoly(start, extends, &m_filter, &polyRefEnd, nearestPTEnd);
+	//m_navQuery->findPath(polyRefStart, polyRefEnd, start, end, &m_filter, &polyPath, &pathCount, maxPath);
+	//path = new float[pathCount * 3];
 }
 
 int ModuleNavigation::AddAgent(const float* p, float radius, float height, float maxAcc, float maxSpeed, float collQueryRange, float pathOptimRange, unsigned char updateFlags, unsigned char obstacleAvoidanceType) const

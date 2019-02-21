@@ -18,7 +18,7 @@ bool PanelSimulatedTime::Draw()
 	GameObject* selectedGO = App->scene->selectedObject.GetCurrGameObject();
 	if (selectedGO)
 	{
-		ComponentEmitter* emitter = (ComponentEmitter*)selectedGO->GetComponentByType(EmitterComponent);
+		ComponentEmitter* emitter = (ComponentEmitter*)selectedGO->GetComponent(EmitterComponent);
 		if (emitter && !emitter->isSubEmitter)
 		{
 			if (ImGui::Begin(name, &enabled, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize))

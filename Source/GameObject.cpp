@@ -1,44 +1,40 @@
 #include "GameObject.h"
 
+#include "Application.h"
+#include "ModuleGOs.h"
+#include "ModuleResourceManager.h"
+#include "ModulePhysics.h"
+#include "ResourceMesh.h"
+
+#include "ComponentTypes.h"
+#include "Component.h"
+#include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
-#include "ComponentTransform.h"
 #include "ComponentCamera.h"
-#include "ComponentNavAgent.h"
-#include "ComponentEmitter.h"
+#include "ComponentCollider.h"
+#include "ComponentBoxCollider.h"
+#include "ComponentCapsuleCollider.h"
+#include "ComponentSphereCollider.h"
+#include "ComponentPlaneCollider.h"
 #include "ComponentRigidActor.h"
 #include "ComponentRigidStatic.h"
 #include "ComponentRigidDynamic.h"
-#include "ComponentBoxCollider.h"
-#include "ComponentSphereCollider.h"
-#include "ComponentCapsuleCollider.h"
-#include "ComponentRectTransform.h"
+#include "ComponentNavAgent.h"
+#include "ComponentEmitter.h"
+#include "ComponentBone.h"
+#include "ComponentScript.h"
 
-#include "ResourceMesh.h"
-
-#include "Application.h"
-#include "ModuleRenderer3D.h"
-#include "ModuleResourceManager.h"
-#include "ModuleGOs.h"
-#include "ModuleScene.h"
-#include "ModulePhysics.h"
-#include "ModuleParticles.h"
-#include "ScriptingModule.h"
-
-#include "MathGeoLib\include\Geometry\OBB.h"
-
-#include <algorithm>
-
-#include <mono/jit/jit.h>
+#include "MathGeoLib/include/Geometry/OBB.h"
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
-	this->name = new char[DEFAULT_BUF_SIZE];
-	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
+	strcpy_s(this->name, DEFAULT_BUF_SIZE, name);
 
 	if (parent != nullptr)
 	{
 		parent->AddChild(this);
+		parent_uuid = parent->uuid;
 
 		if (!disableTransform)
 			AddComponent(ComponentTypes::TransformComponent);
@@ -46,96 +42,111 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 
 	boundingBox.SetNegativeInfinity();
 
-	UUID = App->GenerateRandomNumber();
+	uuid = App->GenerateRandomNumber();
 }
 
 GameObject::GameObject(const GameObject& gameObject)
 {
-	name = new char[DEFAULT_BUF_SIZE];
-	strcpy_s((char*)name, DEFAULT_BUF_SIZE, gameObject.name);
+	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
-	transform = new ComponentTransform(*gameObject.transform);
-	transform->SetParent(this);
-	components.push_back(transform);
-
-	if (gameObject.materialRenderer != nullptr)
+	for (int i = 0; i < gameObject.components.size(); ++i)
 	{
-		materialRenderer = new ComponentMaterial(*gameObject.materialRenderer);
-		materialRenderer->SetParent(this);
-		components.push_back(materialRenderer);
+		ComponentTypes type = gameObject.components[i]->GetType();
+
+		switch (type)
+		{
+		case ComponentTypes::TransformComponent:
+			transform = new ComponentTransform(*gameObject.transform);
+			transform->SetParent(this);
+			components.push_back(transform);
+			break;
+		case ComponentTypes::MeshComponent:
+			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh);
+			cmp_mesh->SetParent(this);
+			components.push_back(cmp_mesh);
+			break;
+		case ComponentTypes::MaterialComponent:
+			cmp_material = new ComponentMaterial(*gameObject.cmp_material);
+			cmp_mesh->SetParent(this);
+			components.push_back(cmp_material);
+			break;
+		case ComponentTypes::CameraComponent:
+			cmp_camera = new ComponentCamera(*gameObject.cmp_camera);
+			cmp_camera->SetParent(this);
+			components.push_back(cmp_camera);
+			break;
+		case ComponentTypes::NavAgentComponent:
+			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent);
+			cmp_navAgent->SetParent(this);
+			components.push_back(cmp_navAgent);
+			break;
+		case ComponentTypes::EmitterComponent:
+			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter);
+			cmp_emitter->SetParent(this);
+			components.push_back(cmp_emitter);
+			break;
+		case ComponentTypes::BoneComponent:
+			cmp_bone = new ComponentBone(*gameObject.cmp_bone);
+			cmp_bone->SetParent(this);
+			components.push_back(cmp_bone);
+			break;
+		case ComponentTypes::RigidStaticComponent:
+		case ComponentTypes::RigidDynamicComponent:
+			// TODO
+			cmp_rigidActor = App->physics->CreateRigidActorComponent(this, type);
+			break;
+		case ComponentTypes::BoxColliderComponent:
+		case ComponentTypes::SphereColliderComponent:
+		case ComponentTypes::CapsuleColliderComponent:
+		case ComponentTypes::PlaneColliderComponent:
+			// TODO
+			cmp_collider = App->physics->CreateColliderComponent(this, type);
+			break;
+		}
 	}
 
-	if (gameObject.meshRenderer != nullptr)
-	{
-		meshRenderer = new ComponentMesh(*gameObject.meshRenderer);
-		meshRenderer->SetParent(this);
-		components.push_back(meshRenderer);
-	}
-
-	if (gameObject.camera != nullptr)
-	{
-		camera = new ComponentCamera(*gameObject.camera);
-		camera->SetParent(this);
-		components.push_back(camera);
-	}
-
-	if (gameObject.emitter != nullptr)
-	{
-		emitter = new ComponentEmitter(*gameObject.emitter);
-		emitter->SetParent(this);
-		components.push_back(emitter);
-	}
 	boundingBox = gameObject.boundingBox;
 
 	isActive = gameObject.isActive;
 	isStatic = gameObject.isStatic;
 	seenLastFrame = gameObject.seenLastFrame;
 
-	UUID = gameObject.UUID;
-	parentUUID = gameObject.parent->UUID;
-}
-
-void GameObject::Activate() const
-{
-	if (meshRenderer != nullptr)
-		App->renderer3D->AddMeshComponent(meshRenderer);
-
-	if (camera != nullptr)
-		App->renderer3D->AddCameraComponent(camera);
+	uuid = App->GenerateRandomNumber();
+	parent_uuid = gameObject.parent_uuid;
+	parent = gameObject.parent;
 }
 
 GameObject::~GameObject()
 {
-	RELEASE_ARRAY(name);
-	InternallyDeleteComponents();
-
-	if (isStatic)
-	{
-		// Static game object deleted: recreate quadtree
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
-	}
+	// Components could not be destroyed by event at fbx exportation, for example.
+	for (int i = 0; i < components.size(); ++i)
+		delete components[i];
 }
 
-void GameObject::Update() {}
-
-void GameObject::OnSystemEvent(System_Event event)
+void GameObject::SetName(const char* name)
 {
-	switch (event.type)
-	{
-	case System_Event_Type::RecalculateBBoxes:
-		RecursiveRecalculateBoundingBoxes();
-		break;
-	case System_Event_Type::ShaderProgramChanged:
-		materialRenderer->UpdateUniforms();
-		break;
-	}
+	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
+}
+
+const char* GameObject::GetName() const
+{
+	return name;
+}
+
+uint GameObject::GetUUID() const
+{
+	return uuid;
+}
+
+void GameObject::ForceUUID(uint uuid)
+{
+	this->uuid = uuid;
 }
 
 void GameObject::SetParent(GameObject* parent)
 {
 	this->parent = parent;
+	parent_uuid = parent->GetUUID();
 }
 
 GameObject* GameObject::GetParent() const
@@ -145,47 +156,163 @@ GameObject* GameObject::GetParent() const
 
 uint GameObject::GetParentUUID() const
 {
-	return parentUUID;
+	return parent_uuid;
 }
 
-void GameObject::DestroyChildren()
+void GameObject::ToggleIsActive()
 {
-	for (uint i = 0; i < children.size(); ++i)
+	isActive = !isActive;
+
+	isActive ? OnEnable() : OnDisable();
+}
+
+void GameObject::ToggleIsStatic()
+{
+	isStatic = !isStatic;
+	App->GOs->RecalculateVector(this);
+}
+
+bool GameObject::IsActive() const
+{
+	return isActive;
+}
+
+bool GameObject::IsStatic() const
+{
+	return isStatic;
+}
+
+void GameObject::OnEnable()
+{
+	for (int i = 0; i < components.size(); ++i)
+		components[i]->OnEnable();
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->OnEnable();
+}
+
+void GameObject::OnDisable()
+{
+	for (int i = 0; i < components.size(); ++i)
+		components[i]->OnDisable();
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->OnDisable();
+}
+
+void GameObject::RecursiveRecalculateBoundingBoxes()
+{
+	boundingBox.SetNegativeInfinity();
+
+	// Grow bounding box
+	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
 	{
-		children[i]->DestroyChildren();
-		RELEASE(children[i]);
+		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
+		int nVerts = meshRes->GetVerticesCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetTris(vertices);
+		boundingBox.Enclose((const math::float3*)vertices, nVerts);
+		delete[] vertices;
+	}
+
+	// Transform bounding box (calculate OBB)
+	math::OBB obb;
+	obb.SetFrom(boundingBox);
+	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
+	obb.Transform(transformMatrix);
+
+	// Calculate AABB
+	if (obb.IsFinite())
+		boundingBox = obb.MinimalEnclosingAABB();
+
+	for (uint i = 0; i < children.size(); ++i)
+		children[i]->RecursiveRecalculateBoundingBoxes();
+}
+
+void GameObject::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::RecalculateBBoxes:
+		RecursiveRecalculateBoundingBoxes();
+		break;
+	case System_Event_Type::ShaderProgramChanged:
+		cmp_material->UpdateUniforms();
+		break;
 	}
 }
 
-void GameObject::DeleteMe()
+void GameObject::Destroy()
 {
-	App->GOs->SetToDelete(this);
+	std::vector<GameObject*> toDestroy;
 
-	DeleteChildren();
+	GetChildrenAndThisVectorFromLeaf(toDestroy);
+
+	bool recreateQuadtree = false;
+
+	for (int i = 0; i < toDestroy.size(); ++i)
+	{
+		for (int j = 0; j < toDestroy[i]->components.size(); ++j)
+		{
+			System_Event newEvent;
+			newEvent.compEvent.type = System_Event_Type::ComponentDestroyed;
+			newEvent.compEvent.component = toDestroy[i]->components[j];
+			App->PushSystemEvent(newEvent);
+		}
+		System_Event newEvent;
+		newEvent.goEvent.type = System_Event_Type::GameObjectDestroyed;
+		newEvent.goEvent.gameObject = toDestroy[i];
+		App->PushSystemEvent(newEvent);
+
+		if (toDestroy[i]->IsStatic())
+			recreateQuadtree = true;
+	}
+
+	if (recreateQuadtree)
+	{
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
-void GameObject::AddChild(GameObject* children)
+void GameObject::GetChildrenAndThisVectorFromLeaf(std::vector<GameObject*>& go)
 {
-	this->children.push_back(children);
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->GetChildrenAndThisVectorFromLeaf(go);
+
+	go.push_back(this);
 }
 
-void GameObject::EraseChild(GameObject* child)
+void GameObject::AddChild(GameObject* target)
 {
+	children.push_back(target);
+}
+
+bool GameObject::EraseChild(const GameObject* child)
+{
+	if (std::find(children.begin(), children.end(), child) == children.end())
+		return false;
+
 	children.erase(std::remove(children.begin(), children.end(), child), children.end());
+
+	return true;
 }
 
-void GameObject::DeleteChild(uint index)
+bool GameObject::IsChild(GameObject* target, bool untilTheEnd = false) const
 {
-	children[index]->DeleteMe();
-	children.erase(children.begin() + index);
-}
+	bool ret = false;
 
-void GameObject::DeleteChildren()
-{
-	for (uint i = 0; i < children.size(); ++i)
-		children[i]->DeleteMe();
+	for (int i = 0; i < children.size() && !ret; ++i)
+	{
+		if (target == children[i])
+			return true;
 
-	children.clear();
+		if (untilTheEnd)
+			ret = children[i]->IsChild(target, true);
+	}
+
+	return ret;
 }
 
 bool GameObject::HasChildren() const
@@ -203,82 +330,77 @@ GameObject* GameObject::GetChild(uint index) const
 	return children[index];
 }
 
-bool GameObject::IsChild(const GameObject* target, bool untilTheEnd = false) const
+bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 {
 	bool ret = false;
 
-	for (int i = 0; i < children.size() && !ret; ++i)
-	{
-		if (target == children[i])
-			return true;
+	if (isEqual == this)
+		ret = true;
 
-		if (untilTheEnd)
-			ret = children[i]->IsChild(target, true);
-	}
+	for (int i = 0; i < children.size() && !ret; ++i)
+		ret = children[i]->EqualsToChildrenOrThis(isEqual);
 
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentTypes componentType)
+Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
 {
-	Component* newComponent = nullptr;
+	assert(componentType != ComponentTypes::MaterialComponent);
 
-	bool createMaterial = false;
+	Component* newComponent;
+	Component* newMaterial = 0;
 
 	switch (componentType)
 	{
-	case ComponentTypes::NoComponentType:
-		break;
 	case ComponentTypes::TransformComponent:
-		assert(transform == nullptr);
+		assert(transform == NULL);
 		newComponent = transform = new ComponentTransform(this);
 		break;
 	case ComponentTypes::MeshComponent:
-		assert(meshRenderer == nullptr);
-		newComponent = meshRenderer = App->renderer3D->CreateMeshComponent(this);
-		if (materialRenderer == nullptr)
-			createMaterial = true;
-		break;
-	case ComponentTypes::MaterialComponent:
-		if (materialRenderer != nullptr)
-			return nullptr;
-		assert(materialRenderer == nullptr);
-		newComponent = materialRenderer = new ComponentMaterial(this);
+		assert(cmp_mesh == NULL);
+		newComponent = cmp_mesh = new ComponentMesh(this);
+		if (createDependencies)
+		{
+			assert(cmp_material == NULL);
+			newMaterial = cmp_material = new ComponentMaterial(this);
+		}
 		break;
 	case ComponentTypes::CameraComponent:
-		assert(camera == nullptr);
-		newComponent = camera = App->renderer3D->CreateCameraComponent(this);
+		assert(cmp_camera == NULL);
+		newComponent = cmp_camera = new ComponentCamera(this);
 		break;
 	case ComponentTypes::NavAgentComponent:
-		newComponent = navAgent = new ComponentNavAgent(this);
+		assert(cmp_navAgent == NULL);
+		newComponent = cmp_navAgent = new ComponentNavAgent(this);
 		break;
 	case ComponentTypes::EmitterComponent:
-		newComponent = emitter = new ComponentEmitter(this);
-		//if (materialRenderer == nullptr)
-			//createMaterial = true;
-		break;
-	case ComponentTypes::RectTransformComponent:
-		assert(rectTransform == nullptr);
-		newComponent = rectTransform = new ComponentRectTransform(this);
+		assert(cmp_emitter == NULL);
+		newComponent = cmp_emitter = new ComponentEmitter(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:
-		assert(rigidActor == nullptr);
-		newComponent = rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
+		// TODO
+		assert(cmp_rigidActor == nullptr);
+		newComponent = cmp_rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
+		break;
+	case ComponentTypes::BoneComponent:
+		assert(cmp_bone == NULL);
+		newComponent = cmp_bone = new ComponentBone(this);
 		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
 	case ComponentTypes::PlaneColliderComponent:
-		assert(collider == nullptr);
-		newComponent = collider = App->physics->CreateColliderComponent(this, componentType);
+		// TODO
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
 	}
-	
+
 	components.push_back(newComponent);
 
-	if (createMaterial)
-		AddComponent(ComponentTypes::MaterialComponent);
+	if (newMaterial)
+		components.push_back(newMaterial);
 
 	return newComponent;
 }
@@ -288,130 +410,41 @@ void GameObject::AddComponent(Component* component)
 	components.push_back(component);
 }
 
-void GameObject::ClearComponent(Component* component)
+bool GameObject::DestroyComponent(Component* destroyed)
 {
-	for (int i = 0; i < components.size(); ++i)
+	if (std::find(components.begin(), components.end(), destroyed) == components.end())
+		return false;
+
+	assert(destroyed->GetType() != ComponentTypes::MaterialComponent);
+
+	System_Event newEvent;
+	newEvent.compEvent.type = System_Event_Type::ComponentDestroyed;
+	newEvent.compEvent.component = destroyed;
+	App->PushSystemEvent(newEvent);
+
+	if (destroyed->GetType() == ComponentTypes::MeshComponent)
 	{
-		if (components[i] == component)
-		{
-			components.erase(components.begin() + i);
-			break;
-		}
+		assert(cmp_material != NULL);
+		newEvent.compEvent.type = System_Event_Type::ComponentDestroyed;
+		newEvent.compEvent.component = cmp_material;
+		App->PushSystemEvent(newEvent);
 	}
+	return true;
 }
 
-void GameObject::MarkToDeleteComponent(uint index)
+void GameObject::EraseComponent(Component* erased)
 {
-	App->GOs->SetComponentToDelete(components[index]);
+	components.erase(std::remove(components.begin(), components.end(), erased), components.end());
 }
 
-void GameObject::MarkToDeleteComponentByValue(Component* component)
-{
-	App->GOs->SetComponentToDelete(component);
-}
-
-void GameObject::MarkToDeleteAllComponents()
-{
-	for (uint i = 0; i < components.size(); ++i)
-		App->GOs->SetComponentToDelete(components[i]);
-}
-
-void GameObject::InternallyDeleteComponent(Component* toDelete)
-{
-	switch (toDelete->GetType())
-	{
-	case ComponentTypes::MeshComponent:
-		App->renderer3D->EraseMeshComponent((ComponentMesh*)toDelete);
-		meshRenderer = nullptr;
-		break;
-	case ComponentTypes::CameraComponent:
-		App->renderer3D->EraseCameraComponent((ComponentCamera*)toDelete);
-		camera = nullptr;
-		break;
-	case ComponentTypes::RigidDynamicComponent:
-	case ComponentTypes::RigidStaticComponent:
-		App->physics->EraseRigidActorComponent((ComponentRigidActor*)toDelete);
-		rigidActor = nullptr;
-		break;
-	case ComponentTypes::BoxColliderComponent:
-	case ComponentTypes::SphereColliderComponent:
-	case ComponentTypes::CapsuleColliderComponent:
-	case ComponentTypes::PlaneColliderComponent:
-		App->physics->EraseColliderComponent((ComponentCollider*)toDelete);
-		collider = nullptr;
-		break;
-	case ComponentTypes::ScriptComponent:
-	{
-		App->scripting->DestroyScript((ComponentScript*)toDelete);
-		return;
-	}
-	case ComponentTypes::NavAgentComponent:
-	{
-		RELEASE(navAgent);
-		return;
-	}
-	}
-
-	components.erase(std::remove(components.begin(), components.end(), toDelete), components.end());
-	RELEASE(toDelete);
-}
-
-void GameObject::InternallyDeleteComponents()
-{
-	for (int i = components.size() - 1; i >= 0; --i)
-	{   
-		switch (components[i]->GetType())
-		{
-		case ComponentTypes::MeshComponent:
-			App->renderer3D->EraseMeshComponent((ComponentMesh*)components[i]);
-			meshRenderer = nullptr;
-			break;
-		case ComponentTypes::CameraComponent:
-			App->renderer3D->EraseCameraComponent((ComponentCamera*)components[i]);
-			camera = nullptr;
-			break;
-		case ComponentTypes::RigidDynamicComponent:
-		case ComponentTypes::RigidStaticComponent:
-			App->physics->EraseRigidActorComponent((ComponentRigidActor*)components[i]);
-			rigidActor = nullptr;
-			break;
-		case ComponentTypes::BoxColliderComponent:
-		case ComponentTypes::SphereColliderComponent:
-		case ComponentTypes::CapsuleColliderComponent:
-		case ComponentTypes::PlaneColliderComponent:
-			App->physics->EraseColliderComponent((ComponentCollider*)components[i]);
-			collider = nullptr;
-			break;
-		case ComponentTypes::ScriptComponent:
-			App->scripting->DestroyScript((ComponentScript*)components[i]);
-			continue;
-		}		
-
-		RELEASE(components[i]);
-	}
-
-	components.clear();
-}
-
-bool GameObject::HasComponents() const
-{
-	return components.size() > 0;
-}
-
-uint GameObject::GetComponentsLength() const
-{
-	return components.size();
-}
-
-Component* GameObject::GetComponent(uint index) const
+Component* GameObject::GetComponent(int index) const
 {
 	return components[index];
 }
 
-Component* GameObject::GetComponentByType(ComponentTypes type) const
+Component* GameObject::GetComponent(ComponentTypes type) const
 {
-	Component* comp = nullptr;
-
+	Component* comp = 0;
 	for (int i = 0; i < components.size(); ++i)
 	{
 		if (components[i]->GetType() == type)
@@ -420,105 +453,134 @@ Component* GameObject::GetComponentByType(ComponentTypes type) const
 	return comp;
 }
 
-// Get the index of the component from the gameobject's components vector. If the component cannot be found, returns -1
-int GameObject::GetComponentIndexOnComponents(Component* component) const
+int GameObject::GetComponentsLength()
 {
-	for (int i = 0; i < components.size(); ++i)
-	{
-		if (components[i] == component)
-			return i;
-	}
-
-	return -1;
-}
-
-void GameObject::SwapComponents(Component* firstComponent, Component* secondComponent)
-{
-	std::swap(components[GetComponentIndexOnComponents(firstComponent)], components[GetComponentIndexOnComponents(secondComponent)]);
+	return components.size();
 }
 
 void GameObject::ReorderComponents(Component* source, Component* target)
 {
-	int index = GetComponentIndexOnComponents(target);
+	components.erase(std::remove(components.begin(), components.end(), target), components.end());
+	int index;
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == target)
+			index = i;
+	}
+
 	components.erase(std::remove(components.begin(), components.end(), source), components.end());
 	components.insert(components.begin() + index, source);
 }
 
-bool GameObject::EqualsToChildrenOrMe(const void* isEqual) const
+void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
 {
-	bool ret = false;
+	go.push_back(this);
 
-	if (isEqual == this)
-		ret = true;
-
-	for (int i = 0; i < children.size() && !ret; ++i)
-		ret = children[i]->EqualsToChildrenOrMe(isEqual);
-
-	return ret;
+	for (int i = 0; i < children.size(); i++)
+		children[i]->GetChildrenVector(go);
 }
 
-void GameObject::SetName(const char* name)
+uint GameObject::GetSerializationBytes() const
 {
-	strcpy_s((char*)this->name, DEFAULT_BUF_SIZE, name);
+	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
+
+	for (int i = 0; i < components.size(); ++i)
+		size += components[i]->GetSerializationBytes();
+
+	return size;
 }
 
-const char* GameObject::GetName() const
+void GameObject::OnSave(char*& cursor) const
 {
-	return name;
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &uuid, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &parent_uuid, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &layer, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &isActive, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &isStatic, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+	memcpy(cursor, &name, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(int);
+	int totalCmps = components.size();
+	memcpy(cursor, &totalCmps, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < components.size(); ++i)
+		components[i]->OnSave(cursor);
 }
 
-uint GameObject::GetUUID() const
+void GameObject::OnLoad(char*& cursor)
 {
-	return UUID;
-}
+	size_t bytes = sizeof(uint);
+	memcpy(&uuid, cursor, bytes);
+	cursor += bytes;
 
-void GameObject::ForceUUID(uint uuid)
-{
-	UUID = uuid;
-}
+	memcpy(&parent_uuid, cursor, bytes);
+	cursor += bytes;
 
-void GameObject::ToggleIsActive()
-{
-	isActive = !isActive;
+	memcpy(&layer, cursor, bytes);
+	cursor += bytes;
 
-	isActive ? OnEnable() : OnDisable();
-}
+	bytes = sizeof(bool);
+	memcpy(&isActive, cursor, bytes);
+	cursor += bytes;
 
-bool GameObject::IsActive() const
-{
-	return isActive;
-}
+	memcpy(&isStatic, cursor, bytes);
+	cursor += bytes;
 
-void GameObject::ToggleIsStatic()
-{
-	isStatic = !isStatic;
+	bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+	memcpy(&name, cursor, bytes);
+	cursor += bytes;
 
-	if (isStatic)
-		App->scene->quadtree.Insert(this);
-	else
+	bytes = sizeof(int);
+	int totalCmps;
+	memcpy(&totalCmps, cursor, bytes);
+	cursor += bytes;
+
+	components.reserve(totalCmps);
+	for (int i = 0; i < totalCmps; ++i)
 	{
-		// Game object changed from static to dynamic: recreate quadtree
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
+		bytes = sizeof(int);
+		ComponentTypes componentType;
+		memcpy(&componentType, cursor, bytes);
+		cursor += bytes;
+		Component* cmp = AddComponent(componentType, false);
+		cmp->OnLoad(cursor);
 	}
 }
 
-bool GameObject::IsStatic() const
+// review this
+void GameObject::RecursiveForceAllResources(uint forceRes) const
 {
-	return isStatic;
+	if (cmp_material != nullptr)
+	{
+		for (int i = 0; i < cmp_material->res.size(); ++i)
+			cmp_material->res[i].res = forceRes;
+
+		cmp_material->shaderProgramUUID = forceRes;
+	}
+
+	if (cmp_mesh != nullptr)
+		cmp_mesh->res = forceRes;
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->RecursiveForceAllResources(forceRes);
 }
 
-void GameObject::SetSeenLastFrame(bool seenLastFrame)
-{
-	this->seenLastFrame = seenLastFrame;
-}
-
-bool GameObject::GetSeenLastFrame() const
-{
-	return seenLastFrame;
-}
-
+// Scripting
 MonoObject* GameObject::GetMonoObject()
 {
 	return monoObjectHandle != 0 ? mono_gchandle_get_target(monoObjectHandle) : nullptr;
@@ -535,135 +597,11 @@ void GameObject::SetLayer(uint layerNumber)
 	System_Event newEvent;
 	newEvent.type = System_Event_Type::LayerChanged;
 	newEvent.layerEvent.layer = layerNumber;
-	newEvent.layerEvent.collider = collider;
+	newEvent.layerEvent.collider = cmp_collider;
 	App->PushSystemEvent(newEvent);
 }
 
 uint GameObject::GetLayer() const
 {
 	return layer;
-}
-
-void GameObject::RecursiveRecalculateBoundingBoxes()
-{
-	boundingBox.SetNegativeInfinity();
-
-	// Grow bounding box
-	if (meshRenderer != nullptr && meshRenderer->res != 0) 
-	{
-		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(meshRenderer->res);
-		int nVerts = meshRes->GetVertsCount();
-		float* vertices = new float[nVerts * 3];
-		meshRes->GetVerts(vertices);
-		boundingBox.Enclose((const math::float3*)vertices, nVerts);
-	}
-
-	// Transform bounding box (calculate OBB)
-	math::OBB obb;
-	obb.SetFrom(boundingBox);
-	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
-	obb.Transform(transformMatrix);
-
-	// Calculate AABB
-	if (obb.IsFinite())
-		boundingBox = obb.MinimalEnclosingAABB();
-
-	for (uint i = 0; i < children.size(); ++i)
-		children[i]->RecursiveRecalculateBoundingBoxes();
-}
-
-void GameObject::OnSave(JSON_Object* file) const
-{
-	json_object_set_string(file, "Name", name);
-	json_object_set_number(file, "UUID", UUID);
-	json_object_set_number(file, "Parent UUID", parent->UUID);
-
-	JSON_Value* arrayValue = json_value_init_array();
-	JSON_Array* jsonComponents = json_value_get_array(arrayValue);
-	for (int i = 0; i < components.size(); ++i)
-	{
-		JSON_Value* newValue = json_value_init_object();
-		JSON_Object* objToSerialize = json_value_get_object(newValue);
-
-		components[i]->OnSave(objToSerialize);
-		json_array_append_value(jsonComponents, newValue);	
-	}
-	json_object_set_value(file, "jsonComponents", arrayValue);
-}
-
-void GameObject::OnLoad(JSON_Object* file)
-{
-	UUID = json_object_get_number(file, "UUID");
-	JSON_Array* jsonComponents = json_object_get_array(file, "jsonComponents");
-	JSON_Object* cObject;
-
-	MarkToDeleteAllComponents();
-	
-	for (int i = 0; i < json_array_get_count(jsonComponents); i++) {
-		cObject = json_array_get_object(jsonComponents, i);
-		Component* newComponent = AddComponent((ComponentTypes)(int)json_object_get_number(cObject, "Type"));
-		// material special case cause of its bonunding property to mesh component
-		if (newComponent == nullptr)
-			materialRenderer->OnLoad(cObject);
-		else
-			newComponent->OnLoad(cObject);
-	}
-}
-
-void GameObject::RecursiveSerialitzation(JSON_Array* goArray) const
-{
-	if (parent != nullptr) {
-		JSON_Value* newValue = json_value_init_object();
-		JSON_Object* objToSerialize = json_value_get_object(newValue);
-
-		OnSave(objToSerialize);
-
-		json_array_append_value(goArray, newValue);
-	}
-
-	for (uint i = 0; i < children.size(); ++i)
-		children[i]->RecursiveSerialitzation(goArray);	
-}
-
-void GameObject::RecursiveForceAllResources(uint forceRes) const
-{
-	if (materialRenderer != nullptr)
-	{
-		for (int i = 0; i < materialRenderer->res.size(); ++i)
-			materialRenderer->res[i].res = forceRes;
-
-		materialRenderer->shaderProgramUUID = forceRes;
-	}
-
-	if (meshRenderer != nullptr)
-		meshRenderer->res = forceRes;
-
-	for (int i = 0; i < children.size(); ++i)
-		children[i]->RecursiveForceAllResources(forceRes);
-}
-
-void GameObject::OnEnable()
-{
-	for (int i = 0; i < components.size(); ++i)
-	{
-		components[i]->OnEnable();
-	}
-
-	for (int i = 0; i < children.size(); ++i)
-	{
-		children[i]->OnEnable();
-	}
-}
-
-void GameObject::OnDisable()
-{
-	for (int i = 0; i < components.size(); ++i)
-	{
-		components[i]->OnDisable();
-	}
-
-	for (int i = 0; i < children.size(); ++i)
-	{
-		children[i]->OnDisable();
-	}
 }

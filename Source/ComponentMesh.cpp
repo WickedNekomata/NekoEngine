@@ -5,20 +5,25 @@
 #include "Application.h"
 #include "Resource.h"
 #include "ModuleResourceManager.h"
+#include "ModuleRenderer3D.h"
 #include "ModuleFileSystem.h"
 
 #include "imgui\imgui.h"
 
-ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTypes::MeshComponent) {}
+ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTypes::MeshComponent)
+{
+	App->renderer3D->AddMeshComponent(this);
+}
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
 {
+	App->renderer3D->AddMeshComponent(this);
 	SetResource(componentMesh.res);
 }
 
 ComponentMesh::~ComponentMesh()
 {
-	parent->meshRenderer = nullptr;
+	App->renderer3D->EraseMeshComponent(this);
 
 	SetResource(0);
 }
@@ -90,14 +95,29 @@ void ComponentMesh::OnUniqueEditor()
 #endif
 }
 
-void ComponentMesh::OnInternalSave(JSON_Object* file)
+uint ComponentMesh::GetInternalSerializationBytes()
 {
-	json_object_set_number(file, "ResourceMesh", res);
+	return sizeof(uint) + sizeof(bool);
 }
 
-void ComponentMesh::OnLoad(JSON_Object* file)
+void ComponentMesh::OnInternalSave(char*& cursor)
 {
-	uint newRes = json_object_get_number(file, "ResourceMesh");
-	if (newRes == 0 || App->res->GetResource(newRes) != nullptr)
-		SetResource(newRes);
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &res, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &res, nv_walkable);
+	cursor += bytes;
+}
+
+void ComponentMesh::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(uint);
+	memcpy(&res, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&res, cursor, nv_walkable);
+	cursor += bytes;
 }

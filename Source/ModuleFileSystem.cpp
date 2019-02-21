@@ -3,13 +3,13 @@
 #include "Application.h"
 #include "Globals.h"
 
-#include "Importer.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 #include "ModuleScene.h"
+#include "ModuleTimeManager.h"
 
 #include "physfs\include\physfs.h"
 #include "Brofiler\Brofiler.h"
@@ -59,6 +59,32 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 ModuleFileSystem::~ModuleFileSystem() {}
 
+update_status ModuleFileSystem::PreUpdate()
+{
+	static float updateAssetsCounter = 0.0f;
+	updateAssetsCounter += App->timeManager->GetRealDt();
+	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
+	{
+		updateAssetsCounter = 0.0f;
+
+		UpdateAssetsDir();
+	}
+	return update_status::UPDATE_CONTINUE;
+	return UPDATE_CONTINUE;
+}
+
+bool ModuleFileSystem::Start()
+{
+	rootAssets = RecursiveGetFilesFromDir("Assets");
+	ImportFilesEvents(rootAssets);
+
+	System_Event event;
+	event.type = System_Event_Type::DeleteUnusedFiles;
+	App->PushSystemEvent(event);
+
+	return true;
+}
+
 bool ModuleFileSystem::CleanUp()
 {
 	DEPRECATED_LOG("Freeing File System subsystem");
@@ -71,42 +97,89 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
-	case System_Event_Type::RefreshAssets:
+		case System_Event_Type::FileDropped:
+		{
+			char* fileOrigin = event.fileEvent.file;
 
-		if (App->scene->selectedObject != CurrentSelection::SelectedType::gameObject)
-			SELECT(NULL);
+			union
+			{
+				char ext[4];
+				uint asciiValue;
 
-		// Read the current files in Assets
-		RELEASE(rootAssetsFile);
-		assetsFiles.clear();
-		rootAssetsFile = new AssetsFile();
-		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
-		rootAssetsFile->isDirectory = true;
-		RecursiveGetFilesFromAssets(rootAssetsFile, assetsFiles);
+			} dictionary;
 
-		// Check the read files against the metas
-		CheckFilesInAssets();
+			std::string extension;
+			App->fs->GetExtension(fileOrigin, extension);
 
-		break;
+			strcpy(dictionary.ext, extension.data());
 
-	case System_Event_Type::RefreshFiles:
+			char destinationDir[DEFAULT_BUF_SIZE];
 
-		// Read the current files in Assets
-		RELEASE(rootAssetsFile);
-		assetsFiles.clear();
-		rootAssetsFile = new AssetsFile();
-		rootAssetsFile->name = rootAssetsFile->path = DIR_ASSETS;
-		rootAssetsFile->isDirectory = true;
-		RecursiveGetFilesFromAssets(rootAssetsFile, assetsFiles);
+			switch (dictionary.asciiValue)
+			{
+				case ASCIIFBX:
+				case ASCIIfbx:
+				case ASCIIdae:
+				case ASCIIDAE:
+				case ASCIIobj:
+				case ASCIIOBJ:
+				{
+					strcpy(destinationDir, DIR_ASSETS_MESHES);
+					break;
+				}
+				case ASCIIfsh:
+				case ASCIIFSH:	
+				case ASCIIvsh:
+				case ASCIIVSH:
+				{
+					strcpy(destinationDir, DIR_ASSETS_SHADERS_OBJECTS);
+					break;
+				}
+				case ASCIIPSH:
+				case ASCIIpsh:
+				{
+					strcpy(destinationDir, DIR_ASSETS_SHADERS_PROGRAMS);
+					break;
+				}
+				case ASCIIcs:
+				case ASCIICS:
+				{
+					strcpy(destinationDir, DIR_ASSETS_SCRIPTS);
+					break;
+				}
+				case ASCIIdds:
+				case ASCIIDDS:
+				case ASCIItga:
+				case ASCIITGA:
+				case ASCIIJPG:
+				case ASCIIjpg:
+				case ASCIIPNG:
+				case ASCIIpng:
+				{
+					strcpy(destinationDir, DIR_ASSETS_TEXTURES);
+					break;
+				}			
+			}
 
-		// Read the current files in Library
-		RELEASE(rootLibraryFile);
-		rootLibraryFile = new LibraryFile();
-		rootLibraryFile->name = rootLibraryFile->path = DIR_LIBRARY;
-		rootLibraryFile->isDirectory = true;
-		RecursiveGetFilesFromLibrary(rootLibraryFile);
+			std::string fileName;
+			App->fs->GetFileName(fileOrigin, fileName, true);
 
-		break;
+			char destinationFile[DEFAULT_BUF_SIZE];
+			strcpy(destinationFile, destinationDir);
+			strcat(destinationFile, "//");
+			strcat(destinationFile, fileName.data());
+
+			std::string originDir = fileOrigin;
+			originDir = originDir.substr(0, originDir.find_last_of("\\"));
+
+			BeginTempException(originDir);
+			char originExFile[DEFAULT_BUF_SIZE];
+			sprintf(originExFile, "Exception/%s", fileName.data());
+			MoveFileInto(originExFile, destinationFile);
+			EndTempException();
+
+			break;
+		}
 	}
 }
 
@@ -134,7 +207,7 @@ bool ModuleFileSystem::AddPath(const char* newDir, const char* mountPoint) const
 		ret = true;
 	else
 		DEPRECATED_LOG("FILE SYSTEM: Error while adding a path or zip '%s': %s", newDir, PHYSFS_getLastError());
-		
+
 	return ret;
 }
 
@@ -150,7 +223,7 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 	return ret;
 }
 
-const char* ModuleFileSystem::GetBasePath() const 
+const char* ModuleFileSystem::GetBasePath() const
 {
 	return PHYSFS_getBaseDir();
 }
@@ -172,7 +245,7 @@ const char* ModuleFileSystem::GetReadPaths() const
 	return paths;
 }
 
-const char* ModuleFileSystem::GetWritePath() const 
+const char* ModuleFileSystem::GetWritePath() const
 {
 	return PHYSFS_getWriteDir();
 }
@@ -180,178 +253,6 @@ const char* ModuleFileSystem::GetWritePath() const
 const char** ModuleFileSystem::GetFilesFromDir(const char* dir) const
 {
 	return (const char**)PHYSFS_enumerateFiles(dir);
-}
-
-void ModuleFileSystem::RecursiveGetFilesFromAssets(AssetsFile* assetsFile, std::map<std::string, int>& assetsFiles) const
-{
-#ifndef GAMEMODE
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-#endif
-	assert(assetsFile != nullptr);
-
-	std::string path = assetsFile->path;
-
-	const char** files = GetFilesFromDir(path.data());
-	const char** it;
-
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
-
-		AssetsFile* file = new AssetsFile();
-		file->path = path.data();
-		GetFileName(file->path.data(), file->name);
-
-		if (IsDirectory(path.data()))
-		{
-			file->isDirectory = true;
-			RecursiveGetFilesFromAssets(file, assetsFiles);
-		}
-		else
-		{
-			std::string extension;
-			GetExtension(*it, extension);
-
-			file->lastModTime = GetLastModificationTime(path.data());
-
-			// Search for the meta associated to the file
-			char metaFile[DEFAULT_BUF_SIZE];
-			strcpy_s(metaFile, strlen(path.data()) + 1, path.data()); // file
-			strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
-
-			ResourceType type = ModuleResourceManager::GetResourceTypeByExtension(extension.data());
-			switch (type)
-			{
-			case ResourceType::MeshResource:
-			{
-				// Read the import settings
-				MeshImportSettings* importSettings = new MeshImportSettings();
-				App->sceneImporter->GetMeshImportSettingsFromMeta(metaFile, importSettings);
-				file->importSettings = importSettings;
-
-				// Read the UUIDs of the meshes
-				std::list<uint> UUIDs;
-				App->sceneImporter->GetMeshesUUIDsFromMeta(metaFile, UUIDs);
-
-				for (std::list<uint>::const_iterator it = UUIDs.begin(); it != UUIDs.end(); ++it)
-				{
-					const Resource* resource = App->res->GetResource(*it);
-					file->UUIDs[resource->GetName()] = *it;
-				}
-			}
-			break;
-			case ResourceType::TextureResource:
-			{
-				// Read the import settings
-				TextureImportSettings* importSettings = new TextureImportSettings();
-				App->materialImporter->GetTextureImportSettingsFromMeta(metaFile, importSettings);
-				file->importSettings = importSettings;
-
-				// Read the UUID of the texture
-				uint UUID = 0;
-				App->materialImporter->GetTextureUUIDFromMeta(metaFile, UUID);
-				file->UUIDs[file->name.data()] = UUID;
-			}
-			break;
-			case ResourceType::ShaderObjectResource:
-			case ResourceType::ShaderProgramResource:
-			{
-				// Read the UUID of the shader
-				uint UUID = 0;
-				App->shaderImporter->GetShaderUUIDFromMeta(metaFile, UUID);
-				file->resource = App->res->GetResource(UUID);
-				break;
-			}
-			case ResourceType::ScriptResource:
-			{				
-				char* metaBuffer;
-				uint size = App->fs->Load(metaFile, &metaBuffer);
-				if (size > 0)
-				{
-					uint32_t UUID = 0;
-					memcpy(&UUID, metaBuffer, sizeof(uint32_t));
-
-					file->resource = App->res->GetResource(UUID);
-				}
-				break;
-			}			
-			}
-
-			assetsFiles[file->path] = file->lastModTime;
-		}
-
-		assetsFile->children.push_back(file);
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
-	}
-}
-
-void ModuleFileSystem::RecursiveGetFilesFromLibrary(LibraryFile* libraryFile) const
-{
-#ifndef GAMEMODE
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-#endif
-
-	assert(libraryFile != nullptr);
-
-	std::string path = libraryFile->path;
-
-	const char** files = GetFilesFromDir(path.data());
-	const char** it;
-
-	path.append("/");
-
-	for (it = files; *it != nullptr; ++it)
-	{
-		path.append(*it);
-
-		LibraryFile* file = new LibraryFile();
-		file->path = path.data();
-		GetFileName(file->path.data(), file->name);
-		bool invalid = false;
-
-		if (IsDirectory(path.data()))
-		{
-			if (strcmp(path.data(), DIR_LIBRARY_SHADERS) != 0)
-			{
-				file->isDirectory = true;
-				RecursiveGetFilesFromLibrary(file);
-			}
-			else
-				invalid = true;
-		}
-		else
-		{
-			uint UUID = strtoul(*it, NULL, 0);
-			file->resource = App->res->GetResource(UUID);
-
-			if (file->resource == nullptr)
-				invalid = true;
-		}
-
-		if (!invalid)
-			libraryFile->children.push_back(file);
-		else
-			RELEASE(file);
-
-		uint found = path.rfind(*it);
-		if (found != std::string::npos)
-			path = path.substr(0, found);
-	}
-}
-
-AssetsFile* ModuleFileSystem::GetRootAssetsFile() const
-{
-	return rootAssetsFile;
-}
-
-LibraryFile* ModuleFileSystem::GetRootLibraryFile() const
-{
-	return rootLibraryFile;
 }
 
 bool ModuleFileSystem::IsDirectory(const char* file) const
@@ -366,11 +267,7 @@ bool ModuleFileSystem::Exists(std::string file) const
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
 {
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return false;
-	}
+	assert(dir != nullptr);
 
 	path.append("/");
 
@@ -408,7 +305,7 @@ bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, st
 	return exists;
 }
 
-int ModuleFileSystem::GetLastModificationTime(const char* file) const
+int64_t ModuleFileSystem::GetLastModificationTime(const char* file) const
 {
 	return PHYSFS_getLastModTime(file);
 }
@@ -458,32 +355,39 @@ void ModuleFileSystem::GetMetaExtension(const char* file, std::string& extension
 		extension = extension.substr(foundExtension);
 }
 
-void ModuleFileSystem::GetPath(const char* file, std::string& path) const
+void ModuleFileSystem::GetFileFromMeta(const char* metaFile, std::string& file) const
+{
+	file = metaFile;
+
+	uint foundMeta = file.find_last_of(".");
+	if (foundMeta != std::string::npos)
+		file = file.substr(0, foundMeta);
+}
+
+void ModuleFileSystem::GetPath(const char* file, std::string& path, bool bar) const
 {
 	path = file;
 
+	uint add = bar ? 1 : 0;
+
 	uint found = path.find_last_of("\\");
 	if (found != std::string::npos)
-		path = path.substr(0, found + 1);
+		path = path.substr(0, found + add);
 
 	found = path.find_last_of("//");
 	if (found != std::string::npos)
-		path = path.substr(0, found + 1);
+		path = path.substr(0, found + add);
 }
 
 uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outputFile) const
 {
-	uint size = 0;
+	assert(file != nullptr && dir != nullptr);
 
-	if (file == nullptr || dir == nullptr)
-	{
-		assert(file != nullptr && dir != nullptr);
-		return size;
-	}
+	uint size = 0;
 
 	std::FILE* filehandle;
 	fopen_s(&filehandle, file, "rb");
-	
+
 	if (filehandle != nullptr)
 	{
 		fseek(filehandle, 0, SEEK_END);
@@ -501,19 +405,19 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 			size = Save(outputFile.data(), buffer, size);
 			if (size > 0)
 			{
-				DEPRECATED_LOG("FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
+				CONSOLE_LOG(LogTypes::Normal, "FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
 			}
 			else
-				DEPRECATED_LOG("FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
+				CONSOLE_LOG(LogTypes::Error, "FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
 		}
 		else
-			DEPRECATED_LOG("FILE SYSTEM: Could not read from file '%s'", file);
+			CONSOLE_LOG(LogTypes::Error, "FILE SYSTEM: Could not read from file '%s'", file);
 
 		RELEASE_ARRAY(buffer);
 		fclose(filehandle);
 	}
 	else
-		DEPRECATED_LOG("FILE SYSTEM: Could not open file '%s' to read", file);
+		CONSOLE_LOG(LogTypes::Error, "FILE SYSTEM: Could not open file '%s' to read", file);
 
 	return size;
 }
@@ -592,7 +496,7 @@ uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool appe
 	if (filehandle != nullptr)
 	{
 		objCount = PHYSFS_writeBytes(filehandle, (const void*)buffer, size);
-	
+
 		if (objCount == size)
 		{
 			if (exists)
@@ -603,7 +507,7 @@ uint ModuleFileSystem::Save(std::string file, char* buffer, uint size, bool appe
 				}
 				else
 					DEPRECATED_LOG("FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
-			}			
+			}
 			else
 				DEPRECATED_LOG("FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
 		}
@@ -640,7 +544,7 @@ uint ModuleFileSystem::Load(std::string file, char** buffer) const
 			{
 				*buffer = new char[size];
 				objCount = PHYSFS_readBytes(filehandle, *buffer, size);
-			
+
 				if (objCount == size)
 				{
 					//CONSOLE_LOG("FILE SYSTEM: Read %u bytes from file '%s'", objCount, fileName.data());
@@ -662,117 +566,6 @@ uint ModuleFileSystem::Load(std::string file, char** buffer) const
 		DEPRECATED_LOG("FILE SYSTEM: Could not load file '%s' to read because it doesn't exist", fileName.data());
 
 	return objCount;
-}
-
-bool ModuleFileSystem::AddMeta(const char* metaFile, int lastModTime)
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	DEPRECATED_LOG("FILE SYSTEM: Successfully added/modified the meta '%s' in/from the metas map", metaFile);
-	metas[metaFile] = lastModTime;
-
-	return true;
-}
-
-bool ModuleFileSystem::DeleteMeta(const char* metaFile)
-{
-	bool ret = false;
-
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return ret;
-	}
-
-	if (metas.find(metaFile) != metas.end())
-	{
-		DEPRECATED_LOG("FILE SYSTEM: Successfully removed the meta '%s' from the metas map", metaFile);
-		metas.erase(metaFile);
-		ret = true;
-	}
-	else
-		DEPRECATED_LOG("FILE SYSTEM: Meta '%s' was not found in the metas map and therefore could not be removed", metaFile);
-
-	return ret;
-}
-
-void ModuleFileSystem::CheckFilesInAssets() const
-{
-#ifndef GAMEMODE
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-#endif
-
-	// NOTE: Files in Library are not expected to be removed by the user
-
-	for (std::map<std::string, int>::const_iterator it = metas.begin(); it != metas.end(); ++it)
-	{
-		// Each meta is expected to have an associated file in Assets that creates a resource
-
-		// Path of the file in Assets associated to the meta
-		std::string assetsFile = it->first;
-		uint found = assetsFile.find_last_of(".");
-		if (found != std::string::npos)
-			assetsFile = assetsFile.substr(0, found);
-
-		// CASE 1. Original file has been removed
-		// + Original file has been renamed from outside the editor (we have no way to detect it)
-		// + Original file has been moved to another folder from outside the editor (we have no way to detect it)
-		if (assetsFiles.find(assetsFile.data()) == assetsFiles.end())
-		{
-			System_Event newEvent;
-			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
-			newEvent.type = System_Event_Type::FileRemoved;
-			App->PushSystemEvent(newEvent);
-		}
-		// CASE 2. Meta has been removed
-		else if (assetsFiles.find(it->first.data()) == assetsFiles.end())
-		{
-			System_Event newEvent;
-			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
-			newEvent.type = System_Event_Type::MetaRemoved;
-			App->PushSystemEvent(newEvent);
-		}
-		// CASE 3. Original file has been overwritten
-		else if (assetsFiles.find(assetsFile.data())->second != it->second)
-		{
-			System_Event newEvent;
-			newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-			strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, it->first.data());
-			newEvent.type = System_Event_Type::FileOverwritten;
-			App->PushSystemEvent(newEvent);
-		}
-	}
-
-	for (std::map<std::string, int>::const_iterator it = assetsFiles.begin(); it != assetsFiles.end(); ++it)
-	{
-		std::string extension;
-		GetExtension(it->first.data(), extension);
-
-		if (ModuleResourceManager::GetResourceTypeByExtension(extension.data()) != ResourceType::NoResourceType)
-		{
-			// Each file in Assets that creates a resource is expected to have an associated meta
-
-			// Path of the meta associated to the file in Assets
-			std::string meta = it->first;
-			meta.append(EXTENSION_META);
-
-			// CASE 4. A new file has been added
-			if (metas.find(meta.data()) == metas.end())
-			{
-				System_Event newEvent;
-				newEvent.fileEvent.file = new char[DEFAULT_BUF_SIZE];
-				strcpy_s((char*)newEvent.fileEvent.file, DEFAULT_BUF_SIZE, it->first.data());
-				newEvent.type = System_Event_Type::NewFile;
-				App->PushSystemEvent(newEvent);
-			}
-		}
-	}
 }
 
 std::string ModuleFileSystem::getAppPath()
@@ -822,11 +615,22 @@ std::string ModuleFileSystem::getAppPath()
 	return "";
 }
 
-bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string& newLocation)
+void ModuleFileSystem::UpdateAssetsDir()
+{
+	Directory newAssetsDir = RecursiveGetFilesFromDir("Assets");
+
+	if (newAssetsDir != rootAssets)
+	{
+		SendEvents(newAssetsDir);
+		rootAssets = newAssetsDir;
+	}
+}
+
+bool ModuleFileSystem::MoveFileInto(const std::string& file, const std::string& newLocation)
 {
 	char* buffer;
 	int size = Load(file, &buffer);
-	if (size <= 0) 
+	if (size <= 0)
 	{
 		CONSOLE_LOG(LogTypes::Error, "Couldn't move the file");
 		return false;
@@ -841,7 +645,7 @@ bool ModuleFileSystem::MoveFileInto(const std::string & file, const std::string&
 
 	if (!deleteFile(file))
 	{
-		CONSOLE_LOG(LogTypes::Error, "Couldn't move the file");
+		//CONSOLE_LOG(LogTypes::Error, "Couldn't delete the file from origin");
 		delete[] buffer;
 		return false;
 	}
@@ -946,6 +750,12 @@ Directory ModuleFileSystem::RecursiveGetFilesFromDir(char* dir) const
 		}
 		else if (stats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_REGULAR)
 		{
+			std::string extension;
+			GetExtension(files[i], extension);
+
+			if (extension == ".meta")
+				continue;
+
 			File file;
 			file.lastModTime = stats.modtime; //Save the last modification time in order to know when a file has changed
 			file.name = files[i];
@@ -981,4 +791,288 @@ bool ModuleFileSystem::deleteFiles(const std::string& root, const std::string& e
 	}
 
 	return true;
+}
+
+void ModuleFileSystem::SendEvents(const Directory& newAssetsDir)
+{
+	//To get the moved elements, initialize here 2 vectors with both fullpaths. Below here when a file is detected as added or deleted,
+	//delete their reference in both fullpaths. At the end of the added and deleted fors, compare both fullpaths.
+	//The different ones have to have been moved.
+
+	//Two arrays with a complete path for each file contained in the directory
+	std::vector<std::string> newFullPaths;
+	std::vector<std::string> oldFullPaths;
+	newAssetsDir.getFullPaths(newFullPaths);
+	rootAssets.getFullPaths(oldFullPaths);
+
+	//Get the file names, without the path, for each file contained in the directory
+	std::vector<File> newFiles;
+	std::vector<File> oldFiles;
+	rootAssets.getFiles(oldFiles);
+	newAssetsDir.getFiles(newFiles);
+
+	//Check for deleted files
+	for (int i = 0; i < oldFiles.size(); ++i)
+	{
+		bool exists = false;
+		bool modified = false;
+		int64_t lastModTime;
+		for (int j = 0; j < newFiles.size(); ++j)
+		{
+			if (oldFiles[i] == newFiles[j])
+				exists = true;
+			else
+				if (oldFiles[i].name == newFiles[j].name) //Exists, but the file has been modified
+				{
+					exists = true;
+					modified = true;
+					lastModTime = newFiles[j].lastModTime;
+				}
+		}
+		if (!exists)
+		{
+			//A file has been deleted, get the full path and send the event.
+			//Delete this file from the oldFullPaths vector.
+
+			std::string file = oldFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < oldFullPaths.size(); ++j)
+			{
+				if (oldFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path
+					fullPathFile = oldFullPaths[j];
+					oldFullPaths.erase(oldFullPaths.begin() + j);
+					break;
+				}
+			}
+			System_Event event;
+			event.fileEvent.type = System_Event_Type::FileRemoved;
+			strcpy(event.fileEvent.file, fullPathFile.c_str());
+			App->PushSystemEvent(event);
+		}
+		if (modified)
+		{
+			//Send the event
+			std::string file = oldFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < oldFullPaths.size(); ++j)
+			{
+				if (oldFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path. Do not erase from the vector
+					fullPathFile = oldFullPaths[j];
+					break;
+				}
+			}
+
+			System_Event event;
+			event.fileEvent.type = System_Event_Type::FileOverwritten;
+			strcpy(event.fileEvent.file, fullPathFile.c_str());
+			App->PushSystemEvent(event);
+
+			Resource::SetLastModTimeToMeta((fullPathFile + ".meta").data(), lastModTime);
+		}
+	}
+
+	//Check for added files
+	for (int i = 0; i < newFiles.size(); ++i)
+	{
+		bool existed = false;
+		bool modified = false;
+		for (int j = 0; j < oldFiles.size(); ++j)
+		{
+			if (newFiles[i].name == oldFiles[j].name) //We already checked and sent events for file modifications above.
+				existed = true;
+		}
+		if (!existed)
+		{
+			//A file has been added, get the full path and send the event
+			//Delete this file from the newFullPaths vector.
+
+			std::string file = newFiles[i].name;
+			std::string fullPathFile;
+			for (int j = 0; j < newFullPaths.size(); ++j)
+			{
+				if (newFullPaths[j].find(file) != std::string::npos)
+				{
+					//We founded the path
+					fullPathFile = newFullPaths[j];
+					newFullPaths.erase(newFullPaths.begin() + j);
+					break;
+				}
+			}
+
+			if (!Exists(fullPathFile + ".meta"))
+			{
+				System_Event event;
+				event.fileEvent.type = System_Event_Type::NewFile;
+				strcpy(event.fileEvent.file, fullPathFile.c_str());
+				App->PushSystemEvent(event);
+			}		
+		}
+	}
+
+	//Now we only have complete paths referencing the same files in the FullPath vectors.
+	//Compare same-named files' paths and send events if they are different.
+	for (int i = 0; i < oldFullPaths.size(); ++i)
+	{
+		int oldPos = oldFullPaths[i].find_last_of("/") + 1;
+		std::string oldfile = oldFullPaths[i].substr(oldPos);
+
+		for (int j = 0; j < newFullPaths.size(); ++j)
+		{
+			int newPos = newFullPaths[j].find_last_of("/") + 1;
+			std::string newfile = newFullPaths[j].substr(newPos);
+
+			if (oldfile != newfile) //Different files, don't care their path, continue searching
+				continue;
+
+			std::string oldPath = oldFullPaths[i].substr(0, oldPos);
+			std::string newPath = newFullPaths[j].substr(0, newPos);
+
+			if (oldPath != newPath) //Same file, different paths
+			{
+				System_Event event;
+				event.fileEvent.type = System_Event_Type::FileMoved;
+				strcpy(event.fileEvent.newFileLocation, newFullPaths[j].c_str());
+
+				strcpy(event.fileEvent.file, oldFullPaths[i].c_str());
+				App->PushSystemEvent(event);
+				break;
+			}
+		}
+	}
+}
+
+void ModuleFileSystem::ImportFilesEvents(const Directory& directory)
+{
+	for (int i = 0; i < directory.files.size(); ++i)
+	{
+		//char metaFile[DEFAULT_BUF_SIZE];
+		char filePath[DEFAULT_BUF_SIZE];
+
+		strcpy(filePath, directory.fullPath.data());
+		strcat(filePath, "/");
+		strcat(filePath, directory.files[i].name.data());
+
+		//The ResourceManager already manages the .meta, already imported files etc. on his own.
+		System_Event event;
+		event.fileEvent.type = System_Event_Type::ImportFile;
+		strcpy(event.fileEvent.file, filePath);
+		App->PushSystemEvent(event);
+
+		/*
+		strcpy(metaFile, filePath);
+		strcat(metaFile, ".meta");
+
+		if (!Exists(metaFile))
+		{
+			//A new file has been added
+
+			System_Event event;
+			event.fileEvent.type = System_Event_Type::NewFile;
+			strcpy(event.fileEvent.file, filePath);
+			App->PushSystemEvent(event);
+
+			continue;
+		}
+
+		//Check if the last mod time is different that the last exported time
+		PHYSFS_Stat fileStats;
+		PHYSFS_sint64 lastExportedTime;
+
+		if (PHYSFS_stat(filePath, &fileStats) == 0)
+		{
+			CONSOLE_LOG(LogTypes::Error, "FILESYSTEM: Error reading stats from a file. Error: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			continue;
+		}
+
+		//Get the last exported time from the .meta
+		char* metaBuffer;
+		uint metaSize = Load(metaFile, &metaBuffer);
+		if (metaSize <= 0)
+			continue;
+
+		memcpy(&lastExportedTime, metaBuffer, sizeof(PHYSFS_sint64));
+
+		delete[] metaBuffer;
+
+		if (fileStats.modtime != lastExportedTime)
+		{
+			//The file has been modified
+
+			System_Event event;
+			event.fileEvent.type = System_Event_Type::FileOverwritten;
+			strcpy(event.fileEvent.file, filePath);
+			App->PushSystemEvent(event);
+		}
+
+		else
+		{
+			//Just load the resources
+
+			System_Event event;
+			event.fileEvent.type = System_Event_Type::ImportFile;
+			strcpy(event.fileEvent.file, filePath);
+			App->PushSystemEvent(event);
+		}
+		*/
+
+	}
+
+	for (int i = 0; i < directory.directories.size(); ++i)
+	{
+		ImportFilesEvents(directory.directories[i]);
+	}
+}
+
+void ModuleFileSystem::ForceReImport(const Directory& assetsDir)
+{
+	for (int i = 0; i < assetsDir.files.size(); ++i)
+	{
+		char filePath[DEFAULT_BUF_SIZE];
+
+		strcpy(filePath, assetsDir.fullPath.data());
+		strcat(filePath, "//");
+		strcat(filePath, assetsDir.files[i].name.data());
+
+		//The ResourceManager already manages the .meta, already imported files etc. on his own.
+		System_Event event;
+		event.fileEvent.type = System_Event_Type::ForceReImport;
+		strcpy(event.fileEvent.file, filePath);
+		App->PushSystemEvent(event);
+	}
+
+	for (int i = 0; i < assetsDir.directories.size(); ++i)
+	{
+		ImportFilesEvents(assetsDir.directories[i]);
+	}
+}
+
+void ModuleFileSystem::BeginTempException(std::string directory)
+{
+	if (tempException.empty())
+	{
+		tempException = directory;
+
+		//Add to the search path
+		if (PHYSFS_mount(directory.data(), "Exception", 1) == 0)
+		{
+			char* error = (char*)PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+		}
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "FILESYSTEM: YOU CAN ONLY HAVE 1 EXCEPTION LOADED AT THE SAME TIME");
+	}
+}
+
+void ModuleFileSystem::EndTempException()
+{
+	if (tempException.empty())
+		return;
+
+	PHYSFS_unmount(tempException.data());
+	tempException.clear();
 }

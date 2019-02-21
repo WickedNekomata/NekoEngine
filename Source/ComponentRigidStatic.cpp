@@ -28,8 +28,8 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	assert(gActor != nullptr);
 
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
-	if (parent->collider != nullptr)
-		UpdateShape(parent->collider->GetShape());
+	if (parent->cmp_collider != nullptr)
+		UpdateShape(parent->cmp_collider->GetShape());
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	UpdateTransform(globalMatrix);
 
@@ -59,4 +59,9 @@ void ComponentRigidStatic::Update()
 {
 	if (useGravity)
 		UpdateGameObjectTransform();
+}
+
+uint ComponentRigidStatic::GetInternalSerializationBytes()
+{
+	return 0;
 }

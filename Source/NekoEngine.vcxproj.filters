@@ -663,9 +663,6 @@
     <ClInclude Include="ModuleTimeManager.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Importer.h">
-      <Filter>Sources\Modules\Importers</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
@@ -719,9 +716,6 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClInclude>
     <ClInclude Include="PanelShaderEditor.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelLibrary.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
     <ClInclude Include="PanelSkybox.h">
@@ -1474,11 +1468,8 @@
     <ClInclude Include="BoneImporter.h">
       <Filter>Sources\Modules\Importers</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleUI.h">
+    <ClInclude Include="ModuleInternalResHandler.h">
       <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentRectTransform.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1725,9 +1716,6 @@
     <ClCompile Include="ResourceTexture.cpp">
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
-    <ClCompile Include="Importer.cpp">
-      <Filter>Sources\Modules\Importers</Filter>
-    </ClCompile>
     <ClCompile Include="PanelCodeEditor.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
@@ -1744,9 +1732,6 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="PanelShaderEditor.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelLibrary.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="PanelSkybox.cpp">
@@ -1938,11 +1923,8 @@
     <ClCompile Include="BoneImporter.cpp">
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleUI.cpp">
+    <ClCompile Include="ModuleInternalResHandler.cpp">
       <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentRectTransform.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

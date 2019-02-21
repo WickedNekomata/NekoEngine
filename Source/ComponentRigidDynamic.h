@@ -37,6 +37,9 @@ public:
 	void AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
 	void ClearTorque() const;
 
+	uint GetInternalSerializationBytes();
+	void OnInternalLoad(char*& cursor) {}
+	void OnInternalSave(char*& cursor) {}
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

@@ -79,7 +79,7 @@ bool PanelConsole::Draw()
 						else if (strstr(lineToPrint, "Warning: ") != nullptr)
 						{
 							if (showWarnings)
-								ImGui::TextColored({ .95,.81,0.24,1 }, lineToPrint);
+								ImGui::TextColored({ .95f,.81f,0.24f,1.0f }, lineToPrint);
 						}
 						else if (showLogs)
 							ImGui::TextUnformatted(lineToPrint);
@@ -115,12 +115,12 @@ bool PanelConsole::Draw()
 					if (strstr(line, "Error: ") != nullptr)
 					{
 						if (showErrors)
-							ImGui::TextColored({ 1,0,0,1 }, line);
+							ImGui::TextColored({ 1.0f,0.0f,0.0f,1.0f }, line);
 					}
 					else if (strstr(line, "Warning: ") != nullptr)
 					{
 						if (showWarnings)
-							ImGui::TextColored({ .95,.81,0.24,1 }, line);
+							ImGui::TextColored({ .95f,.81f,0.24f,1.0f }, line);
 					}
 					else if (showLogs)
 						ImGui::TextUnformatted(line);

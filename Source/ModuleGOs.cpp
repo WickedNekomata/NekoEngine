@@ -1,106 +1,28 @@
 #include "ModuleGOs.h"
 
-#include "Globals.h"
-#include "GameObject.h"
-#include "Component.h"
-#include "ComponentMesh.h"
-#include "ComponentMaterial.h"
-#include "ComponentCamera.h"
-
 #include "Application.h"
-#include "ModuleFileSystem.h"
 #include "ModuleScene.h"
-#include "ModuleResourceManager.h"
+#include "GameObject.h"
+#include "ComponentMaterial.h"
+#include "ComponentMesh.h"
 
-#include "Resource.h"
+#include "ModuleResourceManager.h"
 #include "ResourceShaderProgram.h"
 
-#include "parson\parson.h"
-#include "Brofiler\Brofiler.h"
+#include "ModuleRenderer3D.h"
 
-#include <list>
-#include <algorithm>
+#include <assert.h>
 
 ModuleGOs::ModuleGOs(bool start_enabled) : Module(start_enabled)
 {
-	name = "GameObjects";
-
-	nameScene = new char[DEFAULT_BUF_SIZE];
-	strcpy_s((char*)nameScene, DEFAULT_BUF_SIZE, "Main Scene");
+	strcpy_s(nameScene, DEFAULT_BUF_SIZE, "Main Scene");
 }
 
-ModuleGOs::~ModuleGOs()
-{
-	RELEASE_ARRAY(nameScene);
-}
-
-update_status ModuleGOs::PostUpdate()
-{
-#ifndef GAMEMODE
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
-#endif
-
-	for (int i = gameObjectsToDelete.size() - 1; i >= 0; --i)
-	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
-		RELEASE(gameObjectsToDelete[i]);
-	}
-
-	gameObjectsToDelete.clear();
-
-	for (uint i = 0; i < componentsToDelete.size(); ++i)
-		componentsToDelete[i]->GetParent()->InternallyDeleteComponent(componentsToDelete[i]);
-
-	componentsToDelete.clear();
-
-	if (serializeScene)
-	{
-		std::string outputFileName = nameScene;
-		if (SerializeFromNode(App->scene->root, outputFileName))
-		{
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RefreshFiles;
-			App->PushSystemEvent(newEvent);
-		}
-	}
-
-	serializeScene = false;
-
-	return UPDATE_CONTINUE;
-}
+ModuleGOs::~ModuleGOs() {}
 
 bool ModuleGOs::CleanUp()
 {
-	// Remove hierarchy (game objects) and load hierarchy from temporary game objects
-	DeleteScene();
-
-	for (uint i = 0; i < tmpGameObjects.size(); ++i)
-		gameObjects.push_back(tmpGameObjects[i]);
-
-	tmpGameObjects.clear();
-
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		GameObject* parent = GetGameObjectByUUID(gameObjects[i]->GetParentUUID());
-		parent->AddChild(gameObjects[i]);
-		gameObjects[i]->SetParent(parent);
-	}
-
-	// Remove hierarchy (temporary game objects)
 	ClearScene();
-
-	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
-	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
-		RELEASE(gameObjectsToDelete[i]);
-	}
-
-	componentsToDelete.clear();
-	gameObjectsToDelete.clear();
-	gameObjects.clear();
-
-	// Free the root
-	App->scene->FreeRoot();
 
 	return true;
 }
@@ -111,7 +33,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	{
 	case System_Event_Type::RecalculateBBoxes:
 
-		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
 			if (event.goEvent.gameObject == *it)
 				(*it)->OnSystemEvent(event);
@@ -121,12 +43,12 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::ShaderProgramChanged:
 
-		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
-			if ((*it)->materialRenderer != nullptr)
+			if ((*it)->cmp_material != nullptr)
 			{
-				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource((*it)->materialRenderer->shaderProgramUUID);
-				
+				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource((*it)->cmp_material->shaderProgramUUID);
+
 				if (shaderProgram != nullptr && shaderProgram->shaderProgram == event.shaderEvent.shader)
 					(*it)->OnSystemEvent(event);
 			}
@@ -134,401 +56,235 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 		break;
 
-	case System_Event_Type::LayerNameReset: // LayerEvent
+	case System_Event_Type::LayerNameReset:
 
-		// Reset layer to default (all game objects)
-		for (std::vector<GameObject*>::const_iterator it = gameObjects.begin(); it != gameObjects.end(); ++it)
+		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
 			if ((*it)->GetLayer() == event.layerEvent.layer)
 				(*it)->SetLayer(0);
 		}
+		break;
 
+	case System_Event_Type::GameObjectDestroyed:
+		event.goEvent.gameObject->GetParent()->EraseChild(event.goEvent.gameObject);
+		gameobjects.erase(std::remove(gameobjects.begin(), gameobjects.end(), event.goEvent.gameObject), gameobjects.end());
+		staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), event.goEvent.gameObject), staticGos.end());
+		dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), event.goEvent.gameObject), dynamicGos.end());
+		break;
+
+	case System_Event_Type::ComponentDestroyed:
+	{
+		GameObject* go = event.compEvent.component->GetParent();
+		go->EraseComponent(event.compEvent.component);
+
+		switch (event.compEvent.component->GetType())
+		{
+		case ComponentTypes::TransformComponent:
+			go->transform = 0;
+			break;
+		case ComponentTypes::MeshComponent:
+			go->cmp_mesh = 0;
+			break;
+		case ComponentTypes::MaterialComponent:
+			go->cmp_material = 0;
+			break;
+		case ComponentTypes::CameraComponent:
+			go->cmp_camera = 0;
+			break;
+		case ComponentTypes::NavAgentComponent:
+			go->cmp_navAgent = 0;
+			break;
+		case ComponentTypes::EmitterComponent:
+			go->cmp_emitter = 0;
+			break;
+		case ComponentTypes::BoneComponent:
+			go->cmp_bone = 0;
+			break;
+		case ComponentTypes::RigidStaticComponent:
+		case ComponentTypes::RigidDynamicComponent:
+			go->cmp_rigidActor = 0;
+			break;
+		case ComponentTypes::BoxColliderComponent:
+		case ComponentTypes::SphereColliderComponent:
+		case ComponentTypes::CapsuleColliderComponent:
+		case ComponentTypes::PlaneColliderComponent:
+			go->cmp_collider = 0;
+			break;
+		}
+		break;
+	}
+
+	case System_Event_Type::ResourceDestroyed:
+		InvalidateResource(event.resEvent.resource);
 		break;
 	}
 }
 
-bool ModuleGOs::OnGameMode()
+GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, bool disableTransform)
 {
-	// Save scene in memory
-
-	// 1. Copy game objects to a temporary gameObjects vector
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		GameObject* tmpGameObject = new GameObject(*gameObjects[i]);
-		tmpGameObjects.push_back(tmpGameObject);
-	}
-	DEPRECATED_LOG("MODULE GOS: tmpGameObjects vector size OnGameMode: %i", tmpGameObjects.size());
-
-	return true;
-}
-
-bool ModuleGOs::OnEditorMode()
-{
-	// Load scene from memory
-
-	// 1. Clear game objects
-	DeleteScene();
-
-	// 2. Copy temporary game objects to the real gameObjects vector and activate them
-	DEPRECATED_LOG("MODULE GOS: tmpGameObjects vector size OnEditorMode: %i", tmpGameObjects.size());
-	for (uint i = 0; i < tmpGameObjects.size(); ++i)
-	{
-		gameObjects.push_back(tmpGameObjects[i]);
-		tmpGameObjects[i]->Activate();
-	}
-
-	tmpGameObjects.clear();
-
-	// 3. Match correct parent and children of the game objects
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		GameObject* parent = GetGameObjectByUUID(gameObjects[i]->GetParentUUID());
-		parent->AddChild(gameObjects[i]);
-		gameObjects[i]->SetParent(parent);
-	}
-
-	return true;
-}
-
-GameObject* ModuleGOs::CreateGameObject(const char* name, GameObject* parent, bool disableTransform)
-{
-	GameObject* newGameObject = new GameObject(name, parent, disableTransform);
-
-	gameObjects.push_back(newGameObject);
-
+	GameObject* newGameObject = new GameObject(goName, parent, disableTransform);
+	gameobjects.push_back(newGameObject);
+	dynamicGos.push_back(newGameObject);
 	return newGameObject;
 }
 
-GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
+GameObject* ModuleGOs::Instanciate(GameObject* copy)
 {
-	assert(canvas == nullptr);
-	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
-	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
-	gameObjects.push_back(newGameObject);
+	GameObject* newGameObject = new GameObject(*copy);
+	gameobjects.push_back(newGameObject);
+
+	if (!copy->IsStatic())
+		dynamicGos.push_back(newGameObject);
+	else
+		staticGos.push_back(newGameObject);
 
 	return newGameObject;
-}
-
-void ModuleGOs::DeleteGameObject(const char* name)
-{
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			gameObjects[i]->DeleteMe();
-			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
-		}
-	}
 }
 
 void ModuleGOs::DeleteGameObject(GameObject* toDelete)
 {
-	for (uint i = 0; i < gameObjects.size(); ++i)
+	toDelete->Destroy();
+}
+
+void ModuleGOs::Kill(GameObject* go)
+{
+	std::vector<GameObject*> toDestroy;
+	go->GetChildrenAndThisVectorFromLeaf(toDestroy);
+	for (int i = 0; i < toDestroy.size(); ++i)
 	{
-		if (gameObjects[i] == toDelete)
-		{
-			gameObjects[i]->DeleteMe();
-			gameObjects[i]->GetParent()->EraseChild(gameObjects[i]);
-		}
+		for (int j = 0; j < toDestroy[i]->components.size(); ++j)
+			RELEASE(toDestroy[i]->components[j]);
+		RELEASE(toDestroy[i]);
 	}
 }
 
-void ModuleGOs::DeleteCanvasPointer()
+void ModuleGOs::GetGameobjects(std::vector<GameObject*>& gos) const
 {
-	canvas = nullptr;
+	gos = gameobjects;
 }
 
-void ModuleGOs::DeleteTemporaryGameObjects()
+void ModuleGOs::GetStaticGameobjects(std::vector<GameObject*>& gos) const
 {
-	for (uint i = 0; i < tmpGameObjects.size(); ++i)
-		RELEASE(tmpGameObjects[i]);
-
-	tmpGameObjects.clear();
+	gos = staticGos;
 }
 
-void ModuleGOs::DeleteScene()
+void ModuleGOs::GetDynamicGameobjects(std::vector<GameObject*>& gos) const
 {
-	DEPRECATED_LOG("MODULE GOS: Game Objects in hierarchy: %i", gameObjects.size());
-	ClearScene();
-	DEPRECATED_LOG("MODULE GOS: Game Objects in gameObjectsToDelete vector after ClearScene: %i", gameObjectsToDelete.size());
-
-	for (uint i = 0; i < gameObjectsToDelete.size(); ++i)
-	{
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjectsToDelete[i]), gameObjects.end());
-		RELEASE(gameObjectsToDelete[i]);
-	}
-
-	componentsToDelete.clear();
-	gameObjectsToDelete.clear();
-	gameObjects.clear();
+	gos = dynamicGos;
 }
 
 void ModuleGOs::ClearScene()
 {
-	App->scene->root->DeleteChildren();
-	SELECT(NULL);
+	for (int i = 0; i < gameobjects.size(); ++i)
+		RELEASE(gameobjects[i]);
+
+	gameobjects.clear();
+	staticGos.clear();
+	dynamicGos.clear();
+
+	App->scene->FreeRoot();
 }
 
-void ModuleGOs::SetToDelete(GameObject* toDelete)
+void ModuleGOs::RecalculateVector(GameObject* go)
 {
-	gameObjectsToDelete.push_back(toDelete);
-}
+	dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), go), dynamicGos.end());
+	staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), go), staticGos.end());
 
-void ModuleGOs::SetComponentToDelete(Component* toDelete)
-{
-	componentsToDelete.push_back(toDelete);
-}
-
-GameObject* ModuleGOs::GetGameObject(uint index) const
-{
-	return gameObjects[index];
-}
-
-GameObject* ModuleGOs::GetGameObjectByUUID(uint UUID) const
-{
-	for (uint i = 0; i < gameObjects.size(); ++i)
-	{
-		if (gameObjects[i]->GetUUID() == UUID && std::find(gameObjectsToDelete.begin(), gameObjectsToDelete.end(), gameObjects[i]) == gameObjectsToDelete.end())
-			return gameObjects[i];
-	}
-
-	if (UUID == App->scene->root->GetUUID())
-		return App->scene->root;
-	
-	return nullptr;
-}
-
-void ModuleGOs::GetGameObjects(std::vector<GameObject*>& gameObjects) const
-{
-	for (uint i = 0; i < this->gameObjects.size(); ++i)
-		gameObjects.push_back(this->gameObjects[i]);
-}
-
-void ModuleGOs::GetStaticGameObjects(std::vector<GameObject*>& gameObjects) const
-{
-	for (uint i = 0; i < this->gameObjects.size(); ++i)
-	{
-		if (this->gameObjects[i]->IsStatic())
-			gameObjects.push_back(this->gameObjects[i]);
-	}
-}
-
-void ModuleGOs::GetMeshComponentsFromStaticGameObjects(std::vector<ComponentMesh*>& gameObjects) const
-{
-	for (uint i = 0; i < this->gameObjects.size(); ++i)
-	{
-		if (this->gameObjects[i]->IsStatic() && this->gameObjects[i]->meshRenderer)
-			gameObjects.push_back(this->gameObjects[i]->meshRenderer);
-	}
-}
-
-void ModuleGOs::GetDynamicGameObjects(std::vector<GameObject*>& gameObjects) const
-{
-	for (uint i = 0; i < this->gameObjects.size(); ++i)
-	{
-		if (!this->gameObjects[i]->IsStatic())
-			gameObjects.push_back(this->gameObjects[i]);
-	}
-}
-
-void ModuleGOs::ReorderGameObjects(GameObject* source, GameObject* target)
-{
-	int index = 0;
-	for (index = 0; index < gameObjects.size(); ++index)
-	{
-		if (gameObjects[index] == target)
-			break;
-	}
-
-	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), source), gameObjects.end());
-	gameObjects.insert(gameObjects.begin() + index, source);
-}
-
-void ModuleGOs::MarkSceneToSerialize()
-{
-	serializeScene = true;
-}
-
-bool ModuleGOs::SerializeFromNode(const GameObject* node, std::string& outputFile)
-{
-	JSON_Value* rootValue = json_value_init_array();
-	JSON_Array* goArray = json_value_get_array(rootValue);
-
-	node->RecursiveSerialitzation(goArray);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-
-	uint size = App->fs->SaveInGame(buf, sizeBuf, FileType::SceneFile, outputFile);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("Scene Serialization: Successfully saved Scene '%s'", outputFile.data());
-	}
+	if (go->IsStatic())	
+		staticGos.push_back(go);
 	else
-	{
-		DEPRECATED_LOG("Scene Serialization: Could not save Scene '%s'", outputFile.data());
-		return false;
-	}
+		dynamicGos.push_back(go);
 
-	RELEASE_ARRAY(buf);
-	json_value_free(rootValue);
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::RecreateQuadtree;
+	App->PushSystemEvent(newEvent);
+}
+
+bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer)
+{
+	std::vector<GameObject*> go;
+	node->GetChildrenVector(go);
+	sizeBuffer = sizeof(uint);
+	for (int i = 0; i < go.size(); ++i)
+		sizeBuffer += go[i]->GetSerializationBytes();
+
+	outStateBuffer = new char[sizeBuffer];
+	char* cursor = outStateBuffer;
+
+	uint totalGO = go.size();
+	memcpy(cursor, &totalGO, sizeof(uint));
+	cursor += sizeof(uint);
+
+	for (int i = 0; i < go.size(); ++i)
+		go[i]->OnSave(cursor);
 
 	return true;
 }
 
-bool ModuleGOs::LoadScene(const char* file)
+bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 {
-	char* buffer;
-	uint size = App->fs->Load(file, &buffer);
-	if (size > 0)
+	char* cursor = buffer;
+	size_t bytes = sizeof(uint);
+	uint totalGO;
+	memcpy(&totalGO, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<GameObject*> gos;
+	gameobjects.reserve(totalGO - 1);
+	gos.reserve(totalGO);
+
+	for (int i = 0; i < totalGO; ++i)
 	{
-		DEPRECATED_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
-	}
-	else
-	{
-		DEPRECATED_LOG("Scene Serialization: Could not load Scene '%s'", file);
-		return false;
-	}
+		GameObject* go = new GameObject("", nullptr, true);
+		go->OnLoad(cursor);
 
-	JSON_Value* root_value;
-	JSON_Array* gameObjectsArray;
-	JSON_Object* gObject;
-
-	/* parsing json and validating output */
-	root_value = json_parse_string(buffer);
-	if (json_value_get_type(root_value) != JSONArray)
-		return false;
-
-	gameObjectsArray = json_value_get_array(root_value);
-	std::vector<GameObject*>auxList;
-	auxList.reserve(json_array_get_count(gameObjectsArray));
-	int sizeOfArray = json_array_get_count(gameObjectsArray);
-	for (int i = 0; i < sizeOfArray; i++)
-	{
-		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* go = CreateGameObject((char*)json_object_get_string(gObject, "Name"), App->scene->root, true);
-		go->OnLoad(gObject);
-		auxList.push_back(go);
-	}
-
-	for (int i = 0; i < sizeOfArray; i++)
-	{
-		gObject = json_array_get_object(gameObjectsArray, i);
-		GameObject* parent = GetGameObjectByUUID(json_object_get_number(gObject, "Parent UUID"));
-		if (parent != nullptr) {
-			auxList[i]->GetParent()->EraseChild(auxList[i]);
-			parent->AddChild(auxList[i]);
-			auxList[i]->SetParent(parent);
-		}
-	}
-
-	for (int i = 0; i < auxList.size(); ++i)
-		auxList[i]->ForceUUID(App->GenerateRandomNumber());
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(root_value);
-
-	return true;
-}
-
-bool ModuleGOs::GetMeshResourcesFromScene(const char* file, std::vector<std::string>& meshes, std::vector<uint>& UUIDs) const
-{
-	char* buffer;
-	uint size = App->fs->Load(file, &buffer);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("Scene Serialization: Successfully loaded Scene '%s'", file);
-	}
-	else
-	{
-		DEPRECATED_LOG("Scene Serialization: Could not load Scene '%s'", file);
-		return false;
-	}
-
-	JSON_Value* root_value;
-	JSON_Array* gameObjectsArray;
-	JSON_Object* gObject;
-
-	/* parsing json and validating output */
-	root_value = json_parse_string(buffer);
-	if (json_value_get_type(root_value) != JSONArray)
-		return false;
-
-	gameObjectsArray = json_value_get_array(root_value);
-
-	for (int i = 0; i < json_array_get_count(gameObjectsArray); i++) 
-	{
-		gObject = json_array_get_object(gameObjectsArray, i);
-
-		JSON_Array* jsonComponents = json_object_get_array(gObject, "jsonComponents");
-		JSON_Object* cObject;
-
-		for (int i = 0; i < json_array_get_count(jsonComponents); i++)
+		for (int i = gos.size() - 1; i >= 0; --i)
 		{
-			cObject = json_array_get_object(jsonComponents, i);
-
-			if ((ComponentTypes)(int)json_object_get_number(cObject, "Type") == ComponentTypes::MeshComponent)
+			if (gos[i]->GetUUID() == go->GetParentUUID())
 			{
-				meshes.push_back(json_object_get_string(gObject, "Name"));
-				UUIDs.push_back(json_object_get_number(cObject, "ResourceMesh"));
+				go->SetParent(gos[i]);
+				gos[i]->AddChild(go);
 			}
 		}
+		if (go->GetParent() == 0)
+		{
+			assert(App->scene->root == 0);
+			App->scene->root = go;
+		}
+		else
+		{
+			gameobjects.push_back(go);
+			go->IsStatic() ? staticGos.push_back(go) : dynamicGos.push_back(go);
+		}
+		gos.push_back(go);
 	}
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(root_value);
-
 	return true;
 }
 
-bool ModuleGOs::InvalidateResource(const Resource* resource)
+bool ModuleGOs::InvalidateResource(Resource* resource)
 {
-	if (resource == nullptr)
-	{
-		assert(resource != nullptr);
-		return false;
-	}
+	assert(resource != nullptr);
 
-	ResourceType type = resource->GetType();
-
-	for (uint i = 0; i < this->gameObjects.size(); ++i)
+	for (uint i = 0; i < gameobjects.size(); ++i)
 	{
-		switch (type)
+		switch (resource->GetType())
 		{
-		case ResourceType::MeshResource:
-			if (gameObjects[i]->meshRenderer != nullptr && gameObjects[i]->meshRenderer->res == resource->GetUUID())
-				gameObjects[i]->meshRenderer->SetResource(0);
+		case ResourceTypes::MeshResource:
+			if (gameobjects[i]->cmp_mesh != nullptr && gameobjects[i]->cmp_mesh->res == resource->GetUuid())
+				gameobjects[i]->cmp_mesh->SetResource(0);
 			break;
-		case ResourceType::TextureResource:
-			if (gameObjects[i]->materialRenderer != nullptr)
+		case ResourceTypes::TextureResource:
+			if (gameobjects[i]->cmp_material != nullptr)
 			{
-				for (uint j = 0; j < gameObjects[i]->materialRenderer->res.size(); ++j)
+				for (uint j = 0; j < gameobjects[i]->cmp_material->res.size(); ++j)
 				{
-					if (gameObjects[i]->materialRenderer->res[j].res == resource->GetUUID())
-						gameObjects[i]->materialRenderer->SetResource(0, j);
+					if (gameobjects[i]->cmp_material->res[j].res == resource->GetUuid())
+						gameobjects[i]->cmp_material->SetResource(0, j);
 				}
 			}
 			break;
 		}
 	}
 
-	//assert(resource->CountReferences() <= 0);
 	return true;
-}
-
-bool ModuleGOs::ExistCanvas() const
-{
-	return (canvas != nullptr);
-}
-
-bool ModuleGOs::IsCanvas(GameObject * go_canvas) const
-{
-	return (canvas == go_canvas);
-}
-
-GameObject * ModuleGOs::GetCanvas() const
-{
-	return canvas;
 }

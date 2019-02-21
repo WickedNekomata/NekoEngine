@@ -21,8 +21,9 @@ public:
 
 	void OnUniqueEditor();
 
-	virtual void OnInternalSave(JSON_Object* file);
-	virtual void OnLoad(JSON_Object* file);
+	uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 
 public:
 

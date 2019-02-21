@@ -13,7 +13,7 @@ class ComponentCamera : public Component
 {
 public:
 
-	ComponentCamera(GameObject* parent);
+	ComponentCamera(GameObject* parent, bool dummy = false);
 	ComponentCamera(const ComponentCamera& componentCamera);
 	~ComponentCamera();
 
@@ -36,8 +36,9 @@ public:
 	void SetMainCamera(bool mainCamera);
 	bool IsMainCamera() const;
 
-	virtual void OnInternalSave(JSON_Object* file);
-	virtual void OnLoad(JSON_Object* file);
+	uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 
 	math::Ray ScreenToRay(math::float2 screenPoint);
 

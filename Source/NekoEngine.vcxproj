@@ -204,8 +204,7 @@
     <ClInclude Include="Assimp\include\vector3.h" />
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="BoneImporter.h" />
-    <ClInclude Include="ComponentRectTransform.h" />
-    <ClInclude Include="ModuleUI.h" />
+    <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="SceneQueries.h" />
     <ClInclude Include="SimulationEvents.h" />
@@ -256,7 +255,6 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="Importer.h" />
     <ClInclude Include="NMInputGeom.h" />
     <ClInclude Include="Layers.h" />
     <ClInclude Include="Light.h" />
@@ -333,7 +331,6 @@
     <ClInclude Include="PanelEdit.h" />
     <ClInclude Include="PanelLayers.h" />
     <ClInclude Include="PanelSimulatedTime.h" />
-    <ClInclude Include="PanelLibrary.h" />
     <ClInclude Include="PanelPhysics.h" />
     <ClInclude Include="PanelShaderEditor.h" />
     <ClInclude Include="PanelSkybox.h" />
@@ -598,8 +595,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
-    <ClCompile Include="ComponentRectTransform.cpp" />
-    <ClCompile Include="ModuleUI.cpp" />
+    <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />
@@ -631,7 +627,6 @@
     <ClCompile Include="imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui\imgui_stl.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Importer.cpp" />
     <ClCompile Include="Layers.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Globals.cpp" />
@@ -680,7 +675,6 @@
     <ClCompile Include="PanelEdit.cpp" />
     <ClCompile Include="PanelLayers.cpp" />
     <ClCompile Include="PanelSimulatedTime.cpp" />
-    <ClCompile Include="PanelLibrary.cpp" />
     <ClCompile Include="PanelPhysics.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
     <ClCompile Include="PanelSkybox.cpp" />

@@ -10,10 +10,11 @@
 #include "ModuleGOs.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleParticles.h"
 #include "MaterialImporter.h"
-#include "SceneImporter.h"
 #include "BoneImporter.h"
+#include "SceneImporter.h"
 #include "ShaderImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
@@ -22,7 +23,6 @@
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
 #include "Layers.h"
-#include "ModuleUI.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -37,10 +37,11 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	GOs = new ModuleGOs();
 	timeManager = new ModuleTimeManager();
 	res = new ModuleResourceManager();
+	resHandler = new ModuleInternalResHandler();
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
-	sceneImporter = new SceneImporter();
 	boneImporter = new BoneImporter();
+	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
 	navigation = new ModuleNavigation();
 	particle = new ModuleParticle();
@@ -48,7 +49,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
 	layers = new Layers();
-	ui = new ModuleUI();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -60,6 +60,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 	AddModule(res);
+	AddModule(resHandler);
 	AddModule(timeManager);
 
 #ifndef GAMEMODE
@@ -69,13 +70,13 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	AddModule(particle);
 	AddModule(physics);
-	AddModule(ui);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);
 	AddModule(input);
 	AddModule(scene);
 	AddModule(scripting);
+	AddModule(navigation);
 
 	// Renderer last!
 	AddModule(renderer3D);
@@ -98,8 +99,8 @@ Application::~Application()
 
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
-	RELEASE(sceneImporter);
 	RELEASE(boneImporter);
+	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
 	RELEASE(layers);
 }
@@ -231,78 +232,6 @@ void Application::LogGui(const char* log) const
 void Application::PrepareUpdate()
 {
 	perfTimer.Start();
-
-	switch (engineState)
-	{
-	case engine_states::ENGINE_WANTS_PLAY:
-	{
-		bool ret = true;
-
-		// Save the scene and enter game mode
-		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-		{
-			if (!(*item)->OnGameMode())
-			{
-				App->GOs->DeleteTemporaryGameObjects();
-
-				engineState = engine_states::ENGINE_EDITOR;
-				ret = false;
-				break;
-			}
-		}
-
-		if (ret)
-		{
-			engineState = engine_states::ENGINE_PLAY;			
-		}
-			
-		break;
-	}
-	case engine_states::ENGINE_WANTS_PAUSE:
-
-		engineState = engine_states::ENGINE_PAUSE;
-		break;
-
-	case engine_states::ENGINE_WANTS_EDITOR:
-	{
-		bool ret = true;
-
-		// Load the scene and enter editor mode
-		for (std::list<Module*>::const_iterator item = list_modules.begin(); item != list_modules.end(); ++item)
-		{
-			if (!(*item)->OnEditorMode())
-			{
-				engineState = engine_states::ENGINE_PLAY;
-				ret = false;
-				break;
-			}
-		}
-
-		if (ret)
-		{
-			engineState = engine_states::ENGINE_EDITOR;
-
-			System_Event event;
-			event.type = System_Event_Type::Stop;
-			PushSystemEvent(event);
-		}
-			
-		break;
-	}
-	case engine_states::ENGINE_WANTS_STEP:
-
-		engineState = engine_states::ENGINE_STEP;
-		break;
-
-	case engine_states::ENGINE_STEP:
-
-		engineState = engine_states::ENGINE_WANTS_PAUSE;
-		break;
-
-	default:
-		break;
-	}
-
 	timeManager->PrepareUpdate();
 }
 
@@ -491,30 +420,33 @@ void Application::Play()
 	switch (engineState)
 	{
 	case engine_states::ENGINE_PLAY:
-	case engine_states::ENGINE_PAUSE:
 	{
-		// Enter editor mode
-		engineState = engine_states::ENGINE_WANTS_EDITOR;
+		engineState = engine_states::ENGINE_EDITOR;
 
 		System_Event event;
 		event.type = System_Event_Type::Stop;
 		PushSystemEvent(event);
-
 		break;
 	}
+	case engine_states::ENGINE_PAUSE:
+		// Enter editor mode
+		engineState = engine_states::ENGINE_PLAY;
+		break;
 	
 	case engine_states::ENGINE_EDITOR:
 	{
 		// Enter play mode
-		engineState = engine_states::ENGINE_WANTS_PLAY;
+		engineState = engine_states::ENGINE_PLAY;
 
 		System_Event event;
 		event.type = System_Event_Type::Play;
 		PushSystemEvent(event);
 		break;
 	}
-		
-	default:
+	case engine_states::ENGINE_STEP:
+
+		// Tick (step 1 frame)
+		engineState = engine_states::ENGINE_PLAY;
 		break;
 	}
 }
@@ -524,18 +456,11 @@ void Application::Pause()
 	switch (engineState)
 	{
 	case engine_states::ENGINE_PLAY:
-
-		// Pause
-		engineState = engine_states::ENGINE_WANTS_PAUSE;
-		break;
-
-	case engine_states::ENGINE_PAUSE:
-
 		// Play again
-		engineState = engine_states::ENGINE_PLAY;
-		break;
-
-	default:
+		engineState = engine_states::ENGINE_PAUSE;
+		System_Event event;
+		event.type = System_Event_Type::Pause;
+		PushSystemEvent(event);
 		break;
 	}
 }
@@ -547,16 +472,13 @@ void Application::Step()
 	case engine_states::ENGINE_PLAY:
 
 		// Stop and tick (step 1 frame)
-		engineState = engine_states::ENGINE_WANTS_STEP;
-		break;
-
-	case engine_states::ENGINE_PAUSE:
-
-		// Tick (step 1 frame)
 		engineState = engine_states::ENGINE_STEP;
 		break;
 
-	default:
+	case engine_states::ENGINE_STEP:
+
+		// Tick (step 1 frame)
+		engineState = engine_states::ENGINE_STEP;
 		break;
 	}
 }

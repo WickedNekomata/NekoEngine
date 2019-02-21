@@ -49,6 +49,7 @@ void SaveNumberArray(JSON_Object * parent, char * name, float * numbers, int siz
 	} \
 
 typedef unsigned int uint;
+typedef unsigned char uchar;
 
 enum update_status
 {

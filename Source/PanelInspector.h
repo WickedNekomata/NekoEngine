@@ -3,6 +3,9 @@
 
 #include "GameMode.h"
 
+#include "ResourceMesh.h"
+#include "ResourceTexture.h"
+
 #ifndef GAMEMODE
 
 #include "Panel.h"
@@ -17,6 +20,9 @@ public:
 	~PanelInspector();
 
 	bool Draw();
+	
+	void SetMeshImportSettings(ResourceMeshImportSettings& is) { m_is = is; }
+	void SetTextureImportSettings(ResourceTextureImportSettings& is) { t_is = is; }
 
 private:
 
@@ -25,10 +31,13 @@ private:
 
 	void ShowMeshResourceInspector() const;
 	void ShowTextureResourceInspector() const;
-	void ShowMeshImportSettingsInspector() const;
+	void ShowMeshImportSettingsInspector();
 	void ShowTextureImportSettingsInspector() const;
 	void ShowShaderObjectInspector() const;
 	void ShowShaderProgramInspector() const;
+
+	ResourceMeshImportSettings m_is;
+	ResourceTextureImportSettings t_is;
 };
 
 #endif

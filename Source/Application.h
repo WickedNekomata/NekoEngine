@@ -22,19 +22,16 @@ enum engine_states
 {
 	// Game
 	ENGINE_PLAY = 1,
-	ENGINE_WANTS_EDITOR,
 	ENGINE_PAUSE,
-	ENGINE_WANTS_PAUSE,
 	ENGINE_STEP,
-	ENGINE_WANTS_STEP,
 
 	// Editor
 	ENGINE_EDITOR,
-	ENGINE_WANTS_PLAY
 };
 
 struct Module;
 struct ModuleResourceManager;
+struct ModuleInternalResHandler;
 struct MaterialImporter;
 struct SceneImporter;
 struct BoneImporter;
@@ -56,7 +53,6 @@ struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
 struct Layers;
-struct ModuleUI;
 
 class Application
 {
@@ -118,36 +114,36 @@ private:
 
 public:
 
-	ModuleResourceManager*	res;
-	MaterialImporter*		materialImporter;
-	SceneImporter*			sceneImporter;
-	mutable BoneImporter*	boneImporter;
-	ShaderImporter*			shaderImporter;
-	ModuleParticle*			particle;
+	ModuleResourceManager*	  res;
+	ModuleInternalResHandler* resHandler;
+	MaterialImporter*		  materialImporter;
+	SceneImporter*			  sceneImporter;
+	ShaderImporter*			  shaderImporter;
+	mutable BoneImporter*	  boneImporter;
+	ModuleParticle*			  particle;
 
 #ifndef GAMEMODE
-	ModuleCameraEditor*		camera;
-	ModuleGui*				gui;
-
-	Raycaster*				raycaster;
+	ModuleCameraEditor*		  camera;
+	ModuleGui*				  gui;
+							  
+	Raycaster*				  raycaster;
 #endif // GAME
 
-	ModuleWindow*			window;
-	ModuleInput*			input;
-	ModuleScene*			scene;
-	ModuleRenderer3D*		renderer3D;
-	ModuleFileSystem*		fs;
-	ModuleGOs*				GOs;
-	ModuleTimeManager*		timeManager;
-	ScriptingModule*		scripting;
-	ModuleEvents*			events;
-	ModulePhysics*			physics;
-	ModuleUI*				ui;
-	DebugDrawer*			debugDrawer;
-	ModuleNavigation*		navigation;
-	Layers*					layers;
-
-	pcg32_random_t			rng;
+	ModuleWindow*			  window;
+	ModuleInput*			  input;
+	ModuleScene*			  scene;
+	ModuleRenderer3D*		  renderer3D;
+	ModuleFileSystem*		  fs;
+	ModuleGOs*				  GOs;
+	ModuleTimeManager*		  timeManager;
+	ScriptingModule*		  scripting;
+	ModuleEvents*			  events;
+	ModulePhysics*			  physics;
+	DebugDrawer*			  debugDrawer;
+	ModuleNavigation*		  navigation;
+	Layers*					  layers;
+							  
+	pcg32_random_t			  rng;
 
 	bool firstFrame = true;
 	math::LCG randomMathLCG; //Cant be private with const Get

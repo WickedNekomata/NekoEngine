@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ModuleScene.h"
 
 #include "ResourceScript.h"
 
@@ -9,10 +10,14 @@
 #include <mono/metadata/debug-helpers.h>
 
 #include "ScriptingModule.h"
+#include "imgui/imgui.h"
 
 std::vector<std::string>ResourceScript::scriptNames;
 
-ResourceScript::ResourceScript(std::string name) : Resource(ResourceType::ScriptResource, App->GenerateRandomNumber()) { scriptNames.push_back(name); scriptName = name; }
+ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
+{
+	scriptName = data.name;
+}
 
 ResourceScript::~ResourceScript()
 {
@@ -23,10 +28,46 @@ ResourceScript::~ResourceScript()
 	}
 }
 
+void ResourceScript::OnPanelAssets()
+{
+	ImGuiTreeNodeFlags flags = 0;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
+
+	if (App->scene->selectedObject == this)
+		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
+
+	char id[DEFAULT_BUF_SIZE];
+	sprintf(id, "%s##%d", data.name.data(), uuid);
+
+	if (ImGui::TreeNodeEx(id, flags))
+		ImGui::TreePop();
+
+	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
+	{
+		SELECT(this);
+	}
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		Resource* res = this;
+		ImGui::SetDragDropPayload("SCRIPT_RESOURCE", &res, sizeof(Resource*));
+		ImGui::EndDragDropSource();
+	}
+}
+
 void ResourceScript::SerializeToMeta(char*& cursor) const
 {
-	uint bytes = sizeof(UUID);
-	memcpy(cursor, &UUID, bytes);
+	//Skip lastModTime
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint numUUIDS = 1;
+	memcpy(cursor, &numUUIDS, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
+	memcpy(cursor, &uuid, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(ScriptState);
@@ -44,8 +85,15 @@ void ResourceScript::SerializeToMeta(char*& cursor) const
 
 void ResourceScript::DeSerializeFromMeta(char*& cursor)
 {
-	uint bytes = sizeof(UUID);
-	memcpy(&UUID, cursor, bytes);
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
+	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(ScriptState);
@@ -65,7 +113,8 @@ void ResourceScript::DeSerializeFromMeta(char*& cursor)
 
 uint ResourceScript::bytesToSerializeMeta() const
 {
-	return sizeof(UUID) + sizeof(ScriptState) + sizeof(uint) + scriptName.size();
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	return sizeof(int64_t) + sizeof(uint) + sizeof(uint32_t) + sizeof(ScriptState) + sizeof(uint) + scriptName.size();
 }
 
 uint ResourceScript::getBytes() const
@@ -80,8 +129,8 @@ bool ResourceScript::preCompileErrors()
 
 	std::string compileCommand(" mcs -target:library ");
 
-	std::string fileName = file.substr(file.find_last_of("/") + 1);
-	std::string windowsFormattedPath = pathToWindowsNotation(file);
+	std::string fileName = data.file.substr(data.file.find_last_of("/") + 1);
+	std::string windowsFormattedPath = pathToWindowsNotation(data.file);
 
 	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + windowsFormattedPath + "\"";
 
@@ -107,14 +156,14 @@ bool ResourceScript::preCompileErrors()
 		state = ScriptState::COMPILED_WITH_ERRORS;
 
 		//Deleting the .dll
-		std::string pathNoExt = file.substr(0, file.find_last_of("."));
+		std::string pathNoExt = data.file.substr(0, data.file.find_last_of("."));
 		App->fs->deleteFile(pathNoExt + ".dll");
 
 		return true;
 	}
 
 	//Deleting the .dll
-	std::string pathNoExt = file.substr(0, file.find_last_of("."));
+	std::string pathNoExt = data.file.substr(0, data.file.find_last_of("."));
 	App->fs->deleteFile(pathNoExt + ".dll");
 	return false;
 }
@@ -128,8 +177,8 @@ bool ResourceScript::Compile()
 
 	std::string compileCommand(" mcs -target:library ");
 
-	std::string fileName = file.substr(file.find_last_of("/") + 1);
-	std::string windowsFormattedPath = pathToWindowsNotation(file);
+	std::string fileName = data.file.substr(data.file.find_last_of("/") + 1);
+	std::string windowsFormattedPath = pathToWindowsNotation(data.file);
 
 	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + windowsFormattedPath + "\"";
 
@@ -166,17 +215,17 @@ bool ResourceScript::Compile()
 		state = ScriptState::COMPILED_FINE;
 
 		//Move the dll to the Library folder.
-		std::string dllPath = file;
+		std::string dllPath = data.file;
 		dllPath = dllPath.substr(0, dllPath.find_last_of("."));
 		dllPath += ".dll";
 
-		std::string fileNameNoExt = file.substr(file.find_last_of("/") + 1);
+		std::string fileNameNoExt = data.file.substr(data.file.find_last_of("/") + 1);
 		fileNameNoExt = fileNameNoExt.substr(0, fileNameNoExt.find("."));
 
 		if (!App->fs->MoveFileInto(dllPath, "Library/Scripts/" + fileNameNoExt + ".dll"))
 			return false;
 		
-		exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
+		data.exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
 
 		referenceMethods();
 	}
@@ -188,14 +237,14 @@ bool ResourceScript::referenceMethods()
 {
 	state = ScriptState::COMPILED_FINE;
 
-	std::string fileNameNoExt = file.substr(file.find_last_of("/") + 1);
+	std::string fileNameNoExt = data.file.substr(data.file.find_last_of("/") + 1);
 	fileNameNoExt = fileNameNoExt.substr(0, fileNameNoExt.find("."));
 
-	exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
+	data.exportedFile = "Library/Scripts/" + fileNameNoExt + ".dll";
 
 	//Referencing the assembly from memory
 	char* buffer;
-	int size = App->fs->Load(exportedFile, &buffer);
+	int size = App->fs->Load(data.exportedFile, &buffer);
 	if(size <= 0)
 		return false;
 
@@ -203,7 +252,7 @@ bool ResourceScript::referenceMethods()
 	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
 	image = mono_image_open_from_data(buffer, size, 1, &status);
 
-	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(GetUUID())).data(), &status, false);
+	assembly = mono_assembly_load_from_full(image, (std::string("assembly") + std::to_string(uuid)).data(), &status, false);
 
 	delete[] buffer;
 

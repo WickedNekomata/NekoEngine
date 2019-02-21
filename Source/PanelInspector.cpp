@@ -55,16 +55,17 @@ bool PanelInspector::Draw()
 		{
 			switch (((Resource*)App->scene->selectedObject.Get())->GetType())
 			{
-			case ResourceType::MeshResource:
+			case ResourceTypes::MeshResource:
 				ShowMeshResourceInspector();
 				break;
-			case ResourceType::TextureResource:
+			case ResourceTypes::TextureResource:
 				ShowTextureResourceInspector();
+				ShowTextureImportSettingsInspector();
 				break;
-			case ResourceType::ShaderObjectResource:
+			case ResourceTypes::ShaderObjectResource:
 				ShowShaderObjectInspector();
 				break;
-			case ResourceType::ShaderProgramResource:
+			case ResourceTypes::ShaderProgramResource:
 				ShowShaderProgramInspector();
 				break;
 			}
@@ -73,8 +74,6 @@ bool PanelInspector::Draw()
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
 			break;
-		case CurrentSelection::SelectedType::textureImportSettings:
-			ShowTextureImportSettingsInspector();
 			break;
 		}
 	}
@@ -172,17 +171,17 @@ void PanelInspector::ShowGameObjectInspector() const
 	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->meshRenderer == nullptr)
+		if (gameObject->cmp_mesh == nullptr)
 			if (ImGui::Selectable("Mesh")) {
 				gameObject->AddComponent(ComponentTypes::MeshComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		if (gameObject->camera == nullptr)
+		if (gameObject->cmp_camera == nullptr)
 			if (ImGui::Selectable("Camera")) {
 				gameObject->AddComponent(ComponentTypes::CameraComponent);
 				ImGui::CloseCurrentPopup();
 			}
-		if (gameObject->emitter == nullptr)
+		if (gameObject->cmp_emitter == nullptr)
 			if (ImGui::Selectable("Particle Emitter")) {
 				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
@@ -195,25 +194,25 @@ void PanelInspector::ShowGameObjectInspector() const
 			ImGui::CloseCurrentPopup();
 		}
 
-		if (gameObject->navAgent == nullptr) {
+		if (gameObject->cmp_navAgent == nullptr) {
 			if (ImGui::Selectable("Nav Agent")) {
 				gameObject->AddComponent(ComponentTypes::NavAgentComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}
 
-		if (gameObject->rigidActor == nullptr) {
+		if (gameObject->cmp_rigidActor == nullptr) {
 			if (ImGui::Selectable("Rigid Static")) {
 				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if ((gameObject->collider == nullptr || gameObject->collider->GetType() != ComponentTypes::PlaneColliderComponent)
+			else if ((gameObject->cmp_collider == nullptr || gameObject->cmp_collider->GetType() != ComponentTypes::PlaneColliderComponent)
 				&& ImGui::Selectable("Rigid Dynamic")) {
 				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
 				ImGui::CloseCurrentPopup();
 			}
 		}
-		if (gameObject->collider == nullptr) {
+		if (gameObject->cmp_collider == nullptr) {
 			if (ImGui::Selectable("Box Collider")) {
 				gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
 				ImGui::CloseCurrentPopup();
@@ -226,7 +225,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
 				ImGui::CloseCurrentPopup();
 			}
-			else if ((gameObject->rigidActor == nullptr || gameObject->rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
+			else if ((gameObject->cmp_rigidActor == nullptr || gameObject->cmp_rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
 				&& ImGui::Selectable("Plane Collider")) {
 				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
 				ImGui::CloseCurrentPopup();
@@ -282,7 +281,7 @@ void PanelInspector::ShowGameObjectInspector() const
 					}
 				}
 
-				DEPRECATED_LOG("New Script Created: %s", scriptNames[i].data());
+				CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptNames[i].data());
 				ComponentScript* script = App->scripting->CreateScriptComponent(scriptNames[i], res == nullptr);
 				gameObject->AddComponent(script);
 				script->SetParent(gameObject);
@@ -322,7 +321,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				}
 			}
 
-			DEPRECATED_LOG("New Script Created: %s", scriptName.data());
+			CONSOLE_LOG(LogTypes::Normal, "New Script Created: %s", scriptName.data());
 			ComponentScript* script = App->scripting->CreateScriptComponent(scriptName, res == nullptr);
 			gameObject->AddComponent(script);
 			script->SetParent(gameObject);
@@ -359,20 +358,20 @@ void PanelInspector::ShowMeshResourceInspector() const
 
 	const ResourceMesh* resourceMesh = (const ResourceMesh*)App->scene->selectedObject.Get();
 	ImGui::Text("File:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", resourceMesh->file.data());
+	ImGui::TextColored(BLUE, "%s", resourceMesh->GetFile());
 	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", resourceMesh->exportedFile.data());
+	ImGui::TextColored(BLUE, "%s", resourceMesh->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUUID());
+	ImGui::TextColored(BLUE, "%u", resourceMesh->GetUuid());
 
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceMesh->IsInMemory();
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	ImGui::Checkbox("In memory", &inMemory);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 	if (inMemory)
 	{
 		ImGui::Text("References:"); ImGui::SameLine();
-		ImGui::TextColored(BLUE, "%u", resourceMesh->CountReferences());
+		ImGui::TextColored(BLUE, "%u", resourceMesh->GetReferencesCount());
 	}
 
 	ImGui::Spacing();
@@ -380,7 +379,7 @@ void PanelInspector::ShowMeshResourceInspector() const
 	ImGui::Text("VBO ID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", resourceMesh->GetVBO());
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Vertices:"); ImGui::SameLine();
-	float nVerts = resourceMesh->GetVertsCount();
+	float nVerts = resourceMesh->GetVerticesCount();
 	ImGui::TextColored(BLUE, "%u", nVerts);
 	ImGui::Text(""); ImGui::SameLine(); ImGui::Text("Normals:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", nVerts);
@@ -416,11 +415,11 @@ void PanelInspector::ShowTextureResourceInspector() const
 
 	const ResourceTexture* resourceTexture = (const ResourceTexture*)App->scene->selectedObject.Get();
 	ImGui::Text("File:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", resourceTexture->file.data());
+	ImGui::TextColored(BLUE, "%s", resourceTexture->GetFile());
 	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", resourceTexture->exportedFile.data());
+	ImGui::TextColored(BLUE, "%s", resourceTexture->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceTexture->GetUUID());
+	ImGui::TextColored(BLUE, "%u", resourceTexture->GetUuid());
 
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool inMemory = resourceTexture->IsInMemory();
@@ -429,21 +428,19 @@ void PanelInspector::ShowTextureResourceInspector() const
 	if (inMemory)
 	{
 		ImGui::Text("References:"); ImGui::SameLine();
-		ImGui::TextColored(BLUE, "%u", resourceTexture->CountReferences());
+		ImGui::TextColored(BLUE, "%u", resourceTexture->GetReferencesCount());
 	}
 
 	ImGui::Spacing();
-
+	uint id = resourceTexture->GetId();
 	ImGui::Text("ID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", resourceTexture->id);
-	ImGui::Image((void*)(intptr_t)resourceTexture->id, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::TextColored(BLUE, "%u x %u", resourceTexture->width, resourceTexture->height);
+	ImGui::TextColored(BLUE, "%u", id);
+	ImGui::Image((void*)(intptr_t)id, ImVec2(128, 128), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::TextColored(BLUE, "%u x %u", resourceTexture->GetWidth(), resourceTexture->GetHeight());
 }
 
-void PanelInspector::ShowMeshImportSettingsInspector() const
+void PanelInspector::ShowMeshImportSettingsInspector()
 {
-	MeshImportSettings* meshImportSettings = (MeshImportSettings*)App->scene->selectedObject.Get();
-
 	ImGui::Text("Mesh Import Settings");
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -453,192 +450,58 @@ void PanelInspector::ShowMeshImportSettingsInspector() const
 	ImGui::Spacing();
 
 	const char* postProcessConfiguration[] = { "Target Realtime Fast", "Target Realtime Quality", "Target Realtime Max Quality", "Custom" };
-	static int currentPostProcessConfiguration = meshImportSettings->postProcessConfiguration;
+	
 	ImGui::PushItemWidth(100.0f);
-	if (ImGui::Combo("Configuration", &currentPostProcessConfiguration, postProcessConfiguration, IM_ARRAYSIZE(postProcessConfiguration)))
-		meshImportSettings->postProcessConfiguration = (MeshImportSettings::MeshPostProcessConfiguration)currentPostProcessConfiguration;
+	if (ImGui::Combo("Configuration", (int*)&m_is.postProcessConfigurationFlags, postProcessConfiguration, IM_ARRAYSIZE(postProcessConfiguration)))
 	ImGui::PopItemWidth();
-
-	bool calcTangentSpace = meshImportSettings->calcTangentSpace;
-	bool genNormals = meshImportSettings->genNormals;
-	bool genSmoothNormals = meshImportSettings->genSmoothNormals;
-	bool joinIdenticalVertices = meshImportSettings->joinIdenticalVertices;
-	bool triangulate = meshImportSettings->triangulate;
-	bool genUVCoords = meshImportSettings->genUVCoords;
-	bool sortByPType = meshImportSettings->sortByPType;
-	bool improveCacheLocality = meshImportSettings->improveCacheLocality;
-	bool limitBoneWeights = meshImportSettings->limitBoneWeights;
-	bool removeRedundantMaterials = meshImportSettings->removeRedundantMaterials;
-	bool splitLargeMeshes = meshImportSettings->splitLargeMeshes;
-	bool findDegenerates = meshImportSettings->findDegenerates;
-	bool findInvalidData = meshImportSettings->findInvalidData;
-	bool findInstances = meshImportSettings->findInstances;
-	bool validateDataStructure = meshImportSettings->validateDataStructure;
-	bool optimizeMeshes = meshImportSettings->optimizeMeshes;
-
-	switch (currentPostProcessConfiguration)
+	
+	if (m_is.postProcessConfigurationFlags == ResourceMeshImportSettings::PostProcessConfigurationFlags::CUSTOM)
 	{
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_FAST:
-		calcTangentSpace = true;
-		genNormals = true;
-		genSmoothNormals = false;
-		joinIdenticalVertices = true;
-		triangulate = true;
-		genUVCoords = true;
-		sortByPType = true;
-		improveCacheLocality = false;
-		limitBoneWeights = false;
-		removeRedundantMaterials = false;
-		splitLargeMeshes = false;
-		findDegenerates = false;
-		findInvalidData = false;
-		findInstances = false;
-		validateDataStructure = false;
-		optimizeMeshes = false;
-		break;
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_QUALITY:
-		calcTangentSpace = true;
-		genNormals = false;
-		genSmoothNormals = true;
-		joinIdenticalVertices = true;
-		triangulate = true;
-		genUVCoords = true;
-		sortByPType = true;
-		improveCacheLocality = true;
-		limitBoneWeights = true;
-		removeRedundantMaterials = true;
-		splitLargeMeshes = true;
-		findDegenerates = true;
-		findInvalidData = true;
-		findInstances = false;
-		validateDataStructure = false;
-		optimizeMeshes = false;
-		break;
-	case MeshImportSettings::MeshPostProcessConfiguration::TARGET_REALTIME_MAX_QUALITY:
-		calcTangentSpace = true;
-		genNormals = false;
-		genSmoothNormals = true;
-		joinIdenticalVertices = true;
-		triangulate = true;
-		genUVCoords = true;
-		sortByPType = true;
-		improveCacheLocality = true;
-		limitBoneWeights = true;
-		removeRedundantMaterials = true;
-		splitLargeMeshes = true;
-		findDegenerates = true;
-		findInvalidData = true;
-		findInstances = true;
-		validateDataStructure = true;
-		optimizeMeshes = true;
-		break;
+		ImGui::CheckboxFlags("Tangent space", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::CALC_TANGENT_SPACE);
+		if (ImGui::CheckboxFlags("Normals", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::GEN_NORMALS))
+		{
+			if (m_is.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::GEN_NORMALS)
+				m_is.customConfigurationFlags &= ~ResourceMeshImportSettings::CustomConfigurationFlags::GEN_SMOOTH_NORMALS;
+		}
+		if (ImGui::CheckboxFlags("Smooth normals", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::GEN_SMOOTH_NORMALS))
+		{
+			if (m_is.customConfigurationFlags & ResourceMeshImportSettings::CustomConfigurationFlags::GEN_SMOOTH_NORMALS)
+				m_is.customConfigurationFlags &= ~ResourceMeshImportSettings::CustomConfigurationFlags::GEN_NORMALS;
+		}
+		ImGui::CheckboxFlags("Join identical vertices", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::JOIN_IDENTICAL_VERTICES);
+		ImGui::CheckboxFlags("Triangulate", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::TRIANGULATE);
+		ImGui::CheckboxFlags("Sort by type", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::GEN_UV_COORDS);
+		ImGui::CheckboxFlags("Improve cache locality", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::IMPROVE_CACHE_LOCALITY);
+		ImGui::CheckboxFlags("Limit bone weights", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::LIMIT_BONE_WEIGHTS);
+		ImGui::CheckboxFlags("Remove redundant materials", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::REMOVE_REDUNDANT_MATERIALS);
+		ImGui::CheckboxFlags("Split large meshes", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::SPLIT_LARGE_MESHES);
+		ImGui::CheckboxFlags("Find degenerates", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::FIND_DEGENERATES);
+		ImGui::CheckboxFlags("Find invalid data", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::FIND_INVALID_DATA);
+		ImGui::CheckboxFlags("Find instances", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::FIND_INSTANCES);
+		ImGui::CheckboxFlags("Validate data structures", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::VALIDATE_DATA_STRUCTURE);
+		ImGui::CheckboxFlags("Optimize Meshes", &(uint)m_is.customConfigurationFlags, ResourceMeshImportSettings::CustomConfigurationFlags::OPTIMIZE_MESHES);
 	}
-
-	if (currentPostProcessConfiguration != MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-
-	if (ImGui::Checkbox("Calculate Tangent Space", &calcTangentSpace))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->calcTangentSpace = calcTangentSpace;
-	}
-	if (ImGui::Checkbox("Generate Normals", &genNormals))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->genNormals = genNormals;
-	}
-	if (ImGui::Checkbox("Generate Smooth Normals", &genSmoothNormals))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->genSmoothNormals = genSmoothNormals;
-	}
-	if (ImGui::Checkbox("Join Identical Vertices", &joinIdenticalVertices))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->joinIdenticalVertices = joinIdenticalVertices;
-	}
-	if (ImGui::Checkbox("Triangulate", &triangulate))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->triangulate = triangulate;
-	}
-	if (ImGui::Checkbox("Generate UV Coordinates", &genUVCoords))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->genUVCoords = genUVCoords;
-	}
-	if (ImGui::Checkbox("Sort By Primitive Type", &sortByPType))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->sortByPType = sortByPType;
-	}
-	if (ImGui::Checkbox("Improve Cache Locality", &improveCacheLocality))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->improveCacheLocality = improveCacheLocality;
-	}
-	if (ImGui::Checkbox("Limit Bone Weights", &limitBoneWeights))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->limitBoneWeights = limitBoneWeights;
-	}
-	if (ImGui::Checkbox("Remove Redundant Materials", &removeRedundantMaterials))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->removeRedundantMaterials = removeRedundantMaterials;
-	}
-	if (ImGui::Checkbox("Split Large Meshes", &splitLargeMeshes))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->splitLargeMeshes = splitLargeMeshes;
-	}
-	if (ImGui::Checkbox("Find Degenerates", &findDegenerates))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->findDegenerates = findDegenerates;
-	}
-	if (ImGui::Checkbox("Find Invalid Data", &findInvalidData))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->findInvalidData = findInvalidData;
-	}
-	if (ImGui::Checkbox("Find Instances", &findInstances))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->findInstances = findInstances;
-	}
-	if (ImGui::Checkbox("Validate Data Structure", &validateDataStructure))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->validateDataStructure = validateDataStructure;
-	}
-	if (ImGui::Checkbox("Optimize Meshes", &optimizeMeshes))
-	{
-		if (currentPostProcessConfiguration == MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-			meshImportSettings->optimizeMeshes = optimizeMeshes;
-	}
-
-	if (currentPostProcessConfiguration != MeshImportSettings::MeshPostProcessConfiguration::CUSTOM)
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
-
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT"))
 	{
-		App->sceneImporter->SetMeshImportSettingsToMeta(meshImportSettings->metaFile.data(), meshImportSettings);
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(m_is.modelPath) + 1, m_is.modelPath); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		// cambiar meta
+		ResourceMesh::SetMeshImportSettingsToMeta(metaFile, m_is);
 
 		// Reimport Mesh file
 		System_Event newEvent;
-		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-		strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, meshImportSettings->metaFile.data());
-		newEvent.type = System_Event_Type::FileOverwritten;
+		newEvent.fileEvent.type = System_Event_Type::ReImportFile;
+		strcpy(newEvent.fileEvent.file, m_is.modelPath);
 		App->PushSystemEvent(newEvent);
 	}
 }
 
 void PanelInspector::ShowTextureImportSettingsInspector() const
 {
-	TextureImportSettings* textureImportSettings = (TextureImportSettings*)App->scene->selectedObject.Get();
-
 	ImGui::Text("Texture Import Settings");
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -648,10 +511,8 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Spacing();
 
 	const char* compression[] = { "DXT1", "DXT3", "DXT5" };
-	int currentCompression = textureImportSettings->compression;
 	ImGui::PushItemWidth(100.0f);
-	if (ImGui::Combo("Compression", &currentCompression, compression, IM_ARRAYSIZE(compression)))
-		textureImportSettings->compression = (TextureImportSettings::TextureCompression)currentCompression;
+	if (ImGui::Combo("Compression", (int*)&t_is.compression, compression, IM_ARRAYSIZE(compression)))
 
 	ImGui::Spacing();
 	ImGui::Text("Load Settings");
@@ -659,40 +520,40 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 
 	ImGui::Text("Wrap Mode");
 	const char* wrap[] = { "Repeat", "Mirrored Repeat", "Clamp To Edge", "Clamp To Border" };
-	int currentWrapS = textureImportSettings->wrapS;
-	int currentWrapT = textureImportSettings->wrapT;
-	if (ImGui::Combo("Wrap S", &currentWrapS, wrap, IM_ARRAYSIZE(wrap)))
-		textureImportSettings->wrapS = (TextureImportSettings::TextureWrapMode)currentWrapS;
-	if (ImGui::Combo("Wrap T", &currentWrapT, wrap, IM_ARRAYSIZE(wrap)))
-		textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)currentWrapT;
+	
+	ImGui::Combo("Wrap S", (int*)&t_is.wrapS, wrap, IM_ARRAYSIZE(wrap));
+	ImGui::Combo("Wrap T", (int*)&t_is.wrapT, wrap, IM_ARRAYSIZE(wrap));
 
 	ImGui::Text("Filter Mode");
 	const char* filter[] = { "Nearest", "Linear",
 		"Nearest Mipmap Nearest", "Linear Mipmap Nearest", "Nearest Mipmap Linear", "Linear Mipmap Linear" };
-	int currentMinFilter = textureImportSettings->minFilter;
-	int currentMagFilter = textureImportSettings->magFilter;
-	if (ImGui::Combo("Min Filter", &currentMinFilter, filter, IM_ARRAYSIZE(filter)))
-		textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)currentMinFilter;
-	if (ImGui::Combo("Mag Filter", &currentMagFilter, filter, IM_ARRAYSIZE(filter)))
-		textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)currentMagFilter;
+	if (ImGui::Combo("Min Filter", (int*)&t_is.minFilter, filter, IM_ARRAYSIZE(filter)))
+	if (ImGui::Combo("Mag Filter", (int*)&t_is.magFilter, filter, IM_ARRAYSIZE(filter)))
 	ImGui::PopItemWidth();
 
-	if (textureImportSettings->UseMipmap())
+	if (t_is.UseMipmap())
 		ImGui::TextColored(BLUE, "Mip Maps will be generated");
 
 	if (App->materialImporter->IsAnisotropySupported())
-		ImGui::SliderFloat("Anisotropy", &textureImportSettings->anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
+		ImGui::SliderFloat("Anisotropy", &(float)t_is.anisotropy, 0.0f, App->materialImporter->GetLargestSupportedAnisotropy());
 
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT"))
 	{
-		App->materialImporter->SetTextureImportSettingsToMeta(textureImportSettings->metaFile.data(), textureImportSettings);
+		// cambiar meta
+		ResourceTexture* res = (ResourceTexture*)App->scene->selectedObject.Get();
+		
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(res->GetFile()) + 1, res->GetFile()); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		// Reimport Texture file
+		ResourceTexture::SetTextureImportSettingsToMeta(metaFile, t_is);
+
+		// Reimport Mesh file
 		System_Event newEvent;
-		newEvent.fileEvent.metaFile = new char[DEFAULT_BUF_SIZE];
-		strcpy_s((char*)newEvent.fileEvent.metaFile, DEFAULT_BUF_SIZE, textureImportSettings->metaFile.data());
-		newEvent.type = System_Event_Type::FileOverwritten;
+		newEvent.fileEvent.type = System_Event_Type::ReImportFile;
+		strcpy(newEvent.fileEvent.file, res->GetFile());
 		App->PushSystemEvent(newEvent);
 	}
 }
@@ -701,12 +562,12 @@ void PanelInspector::ShowShaderObjectInspector() const
 {
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->scene->selectedObject.Get();
 
-	switch (shaderObject->shaderType)
+	switch (shaderObject->GetShaderType())
 	{
-	case ShaderType::VertexShaderType:
+	case ShaderTypes::VertexShaderType:
 		ImGui::Text("Vertex Shader Object");
 		break;
-	case ShaderType::FragmentShaderType:
+	case ShaderTypes::FragmentShaderType:
 		ImGui::Text("Fragment Shader Object");
 		break;
 	}
@@ -722,26 +583,27 @@ void PanelInspector::ShowShaderObjectInspector() const
 	{
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
-		strcpy_s(metaFile, strlen(shaderObject->file.data()) + 1, shaderObject->file.data()); // file
+		strcpy_s(metaFile, strlen(shaderObject->GetFile()) + 1, shaderObject->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 		shaderObject->SetName(name);
-		App->shaderImporter->SetShaderNameToMeta(metaFile, shaderObject->GetName());
+		std::string shaderName = name;
+		ResourceShaderObject::SetNameToMeta(metaFile, shaderName);
 	}
 	ImGui::Spacing();
 
 	ImGui::Text("File:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderObject->file.data());
+	ImGui::TextColored(BLUE, "%s", shaderObject->GetFile());
 	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderObject->exportedFile.data());
+	ImGui::TextColored(BLUE, "%s", shaderObject->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", shaderObject->GetUUID());
+	ImGui::TextColored(BLUE, "%u", shaderObject->GetUuid());
 
 	// Shader Object info
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER OBJECT"))
-		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject->GetUUID());
+		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject->GetUuid());
 }
 
 void PanelInspector::ShowShaderProgramInspector() const
@@ -761,20 +623,21 @@ void PanelInspector::ShowShaderProgramInspector() const
 	{
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
-		strcpy_s(metaFile, strlen(shaderProgram->file.data()) + 1, shaderProgram->file.data()); // file
+		strcpy_s(metaFile, strlen(shaderProgram->GetFile()) + 1, shaderProgram->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 		shaderProgram->SetName(name);
-		App->shaderImporter->SetShaderNameToMeta(metaFile, shaderProgram->GetName());
+		std::string shaderName = name;
+		ResourceShaderProgram::SetNameToMeta(metaFile, shaderName);
 	}
 	ImGui::Spacing();
 
 	ImGui::Text("File:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderProgram->file.data());
+	ImGui::TextColored(BLUE, "%s", shaderProgram->GetFile());
 	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderProgram->exportedFile.data());
+	ImGui::TextColored(BLUE, "%s", shaderProgram->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUUID());
+	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUuid());
 	ImGui::Spacing();
 
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -794,13 +657,13 @@ void PanelInspector::ShowShaderProgramInspector() const
 		ImGui::TextColored(BLUE, "%s", (*it)->GetName()); ImGui::SameLine();
 		sprintf_s(shaderObject, DEFAULT_BUF_SIZE, "EDIT##%i", std::distance(shaderObjects.begin(), it));
 		if (ImGui::Button(shaderObject))
-			App->gui->panelCodeEditor->OpenShaderInCodeEditor((*it)->GetUUID());
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor((*it)->GetUuid());
 	}
 
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
-		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUUID());
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUuid());
 }
 
 #endif // GAME

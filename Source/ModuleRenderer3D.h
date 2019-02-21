@@ -44,11 +44,10 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	void OnSystemEvent(System_Event event);
+
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
-
-	bool OnGameMode();
-	bool OnEditorMode();
 
 	void OnResize(int width, int height);
 	void CalculateProjectionMatrix();
@@ -82,11 +81,9 @@ public:
 	void SetDrawQuadtree(bool drawQuadtree);
 	bool GetDrawQuadtree() const;
 
-	ComponentMesh* CreateMeshComponent(GameObject* parent);
 	bool AddMeshComponent(ComponentMesh* toAdd);
 	bool EraseMeshComponent(ComponentMesh* toErase);
 
-	ComponentCamera* CreateCameraComponent(GameObject* parent);
 	bool AddCameraComponent(ComponentCamera* toAdd);
 	bool EraseCameraComponent(ComponentCamera* toErase);
 

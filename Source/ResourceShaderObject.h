@@ -3,50 +3,85 @@
 
 #include "Resource.h"
 
-#include "glew\include\GL\glew.h"
+#define IS_VERTEX_SHADER(extension) strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
+#define IS_FRAGMENT_SHADER(extension) strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0
 
-enum ShaderType
+enum ShaderTypes
 {
 	NoShaderType,
 	VertexShaderType,
 	FragmentShaderType
 };
 
-class ResourceShaderObject : public Resource
+struct ResourceShaderObjectData
 {
-public:
+	ShaderTypes shaderType = ShaderTypes::NoShaderType;
 
-	ResourceShaderObject(ResourceType type, uint uuid);
-	~ResourceShaderObject();
+	void SetSource(const char* source, uint size)
+	{
+		RELEASE_ARRAY(this->source);
+		this->source = new char[size + 1];
+		strcpy_s(this->source, size + 1, source);
+	}
 
-	int LoadMemory();
-	int UnloadMemory() { return 0; }
-
-	void SetSource(const char* source, uint size);
-	const char* GetSource() const;
-
-	bool Compile(bool comment = true);
-	static GLuint Compile(const char* source, ShaderType shaderType);
-
-	static bool DeleteShaderObject(GLuint& shaderObject);
-
-	bool IsObjectCompiled(bool comment = true) const;
-
-	static ShaderType GetShaderTypeByExtension(const char* extension);
-
-private:
-
-	bool LoadInMemory();
-	bool UnloadFromMemory() { return true; }
+	const char* GetSource() const
+	{
+		return source;
+	}
 
 private:
 
 	char* source = nullptr;
+};
+
+class ResourceShaderObject : public Resource
+{
+public:
+
+	ResourceShaderObject(ResourceTypes type, uint uuid, ResourceData data, ResourceShaderObjectData shaderObjectData);
+	~ResourceShaderObject();
+
+	void OnPanelAssets();
+
+	// ----------------------------------------------------------------------------------------------------
+
+	static bool ImportFile(const char* file, std::string& name, std::string& outputFile);
+	static bool ExportFile(ResourceData& data, ResourceShaderObjectData& shaderObjectData, std::string& outputFile, bool overwrite = false);
+	static uint CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile);
+	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid, std::string& name);
+	static uint SetNameToMeta(const char* metaFile, const std::string& name);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	bool Compile();
+	static uint Compile(const char* source, ShaderTypes shaderType);
+
+	static bool DeleteShaderObject(uint shaderObject);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	inline ResourceShaderObjectData& GetSpecificData() { return shaderObjectData; }
+	ShaderTypes GetShaderType() const;
+	void SetSource(const char* source, uint size);
+	const char* GetSource() const;
+
+private:
+
+	static bool ReadShaderObjectUuidFromMeta(const char* metaFile, uint& shaderObjectUuid);
+
+	bool LoadInMemory();
+	bool UnloadFromMemory();
+
+	bool IsObjectCompiled() const;
 
 public:
 
-	ShaderType shaderType = ShaderType::NoShaderType;
-	GLuint shaderObject = 0;
+	bool isValid = true;
+	uint shaderObject = 0;
+
+private:
+
+	ResourceShaderObjectData shaderObjectData;
 };
 
 #endif // __RESOURCE_SHADER_OBJECT_H__

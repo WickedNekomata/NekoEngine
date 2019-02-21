@@ -3,15 +3,17 @@
 #include "MaterialImporter.h"
 
 #include "Application.h"
-#include "ModuleFileSystem.h"
-#include "ModuleRenderer3D.h"
-#include "ModuleTimeManager.h"
 #include "Globals.h"
+#include "ModuleFileSystem.h"
 #include "ResourceTexture.h"
+
+#include "glew\include\GL\glew.h"
 
 #include "DevIL\include\il.h"
 #include "DevIL\include\ilu.h"
 #include "DevIL\include\ilut.h"
+
+#include <assert.h>
 
 #pragma comment (lib, "DevIL\\libx86\\DevIL.lib")
 #pragma comment (lib, "DevIL\\libx86\\ILU.lib")
@@ -53,50 +55,35 @@ MaterialImporter::~MaterialImporter()
 		glDeleteTextures(1, (GLuint*)&skyboxTextures[i]);
 }
 
-bool MaterialImporter::Import(const char* importFile, std::string& outputFile, const ImportSettings* importSettings) const
+bool MaterialImporter::Import(const char* file, std::string& outputFile, const ResourceTextureImportSettings& importSettings, uint forcedUuid) const
 {
+	assert(file != nullptr);
+
 	bool ret = false;
 
-	if (importFile == nullptr || importSettings == nullptr)
-	{
-		assert(importFile != nullptr && importSettings != nullptr);
-		return ret;
-	}
-
-	std::string importFileName;
-	App->fs->GetFileName(importFile, importFileName);
-	outputFile = importFileName.data();
-
-	// Search for the meta associated to the file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(importFile) + 1, importFile); // file
-	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+	std::string fileName;
+	App->fs->GetFileName(file, fileName);
+	outputFile = fileName.data();
 
 	char* buffer;
-	uint size = App->fs->Load(importFile, &buffer);
+	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
-		ret = Import(buffer, size, outputFile, importSettings, metaFile);
+		CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: Successfully loaded Texture '%s' (original format)", outputFile.data());
+		ret = Import(buffer, size, outputFile, importSettings, forcedUuid);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (original format)", outputFile.data());
+		CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: Could not load Texture '%s' (original format)", outputFile.data());
 
 	return ret;
 }
 
-bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFile, const ImportSettings* importSettings, const char* metaFile) const
+bool MaterialImporter::Import(const void* buffer, uint size, std::string& outputFile, const ResourceTextureImportSettings& importSettings, uint forcedUuid) const
 {
+	assert(buffer != nullptr && size > 0);
+
 	bool ret = false;
-
-	if (buffer == nullptr || size <= 0 || importSettings == nullptr)
-	{
-		assert(buffer != nullptr && size > 0 && importSettings != nullptr);
-		return ret;
-	}
-
-	TextureImportSettings* textureImportSettings = (TextureImportSettings*)importSettings;
 
 	// Generate the image name
 	uint imageName = 0;
@@ -116,15 +103,15 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		// Pick a specific DXT compression use
 		int compression = 0;
 
-		switch (textureImportSettings->compression)
+		switch (importSettings.compression)
 		{
-		case TextureImportSettings::TextureCompression::DXT1:
+		case ResourceTextureImportSettings::TextureCompression::DXT1:
 			compression = IL_DXT1;
 			break;
-		case TextureImportSettings::TextureCompression::DXT3:
+		case ResourceTextureImportSettings::TextureCompression::DXT3:
 			compression = IL_DXT3;
 			break;
-		case TextureImportSettings::TextureCompression::DXT5:
+		case ResourceTextureImportSettings::TextureCompression::DXT5:
 			compression = IL_DXT5;
 			break;
 		}
@@ -144,21 +131,15 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				uint UUID = 0;
-				if (metaFile != nullptr && App->fs->Exists(metaFile))
-					GetTextureUUIDFromMeta(metaFile, UUID);
-				if (UUID == 0)
-					UUID = App->GenerateRandomNumber();
-
-				outputFile = std::to_string(UUID);
-
+				uint uuid = forcedUuid == 0 ? App->GenerateRandomNumber() : forcedUuid;
+				outputFile = std::to_string(uuid);
 				if (App->fs->SaveInGame((char*)data, size, FileType::TextureFile, outputFile) > 0)
 				{
-					DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
+					CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
 					ret = true;
 				}
 				else
-					DEPRECATED_LOG("MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFile.data());
+					CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: Could not save Texture '%s' to own format", outputFile.data());
 			}
 
 			RELEASE_ARRAY(data);
@@ -167,274 +148,36 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 		ilDeleteImages(1, &imageName);
 	}
 	else
-		DEPRECATED_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
+		CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
 	return ret;
 }
 
-bool MaterialImporter::GenerateMeta(Resource* resource, std::string& outputMetaFile, const TextureImportSettings* textureImportSettings) const
+bool MaterialImporter::Load(const char* exportedFile, ResourceTextureData& outputTextureData, uint& textureId) const
 {
-	if (resource == nullptr || textureImportSettings == nullptr)
-	{
-		assert(resource != nullptr && textureImportSettings != nullptr);
-		return false;
-	}
+	assert(exportedFile != nullptr);
 
-	JSON_Value* rootValue = json_value_init_object();
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	// Fill the JSON with data
-	int lastModTime = App->fs->GetLastModificationTime(resource->file.data());
-	json_object_set_number(rootObject, "Time Created", lastModTime);
-	json_object_set_number(rootObject, "UUID", resource->GetUUID());
-
-	JSON_Value* materialImporterValue = json_value_init_object();
-	JSON_Object* materialImporterObject = json_value_get_object(materialImporterValue);
-	json_object_set_value(rootObject, "Material Importer", materialImporterValue);
-	
-	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
-	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
-	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
-	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
-	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
-	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
-
-	// Build the path of the meta file
-	outputMetaFile.append(resource->file.data());
-	outputMetaFile.append(EXTENSION_META);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-	char* buf = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, buf, sizeBuf);
-	
-	uint size = App->fs->Save(outputMetaFile.data(), buf, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s'", outputMetaFile.data());
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s'", outputMetaFile.data());
-		return false;
-	}
-
-	RELEASE_ARRAY(buf);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::SetTextureUUIDToMeta(const char* metaFile, uint UUID) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	json_object_set_number(rootObject, "UUID", UUID);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-
-	RELEASE_ARRAY(buffer);
-
-	char* newBuffer = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
-
-	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its UUID", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its UUID", metaFile);
-		return false;
-	}
-
-	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::GetTextureUUIDFromMeta(const char* metaFile, uint& UUID) const
-{
-	if (metaFile == nullptr)
-	{
-		assert(metaFile != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	UUID = json_object_get_number(rootObject, "UUID");
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::SetTextureImportSettingsToMeta(const char* metaFile, const TextureImportSettings* textureImportSettings) const
-{
-	if (metaFile == nullptr || textureImportSettings == nullptr)
-	{
-		assert(metaFile != nullptr && textureImportSettings != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Object* materialImporterObject = json_object_get_object(rootObject, "Material Importer");
-
-	json_object_set_number(materialImporterObject, "Compression", textureImportSettings->compression);
-	json_object_set_number(materialImporterObject, "Wrap S", textureImportSettings->wrapS);
-	json_object_set_number(materialImporterObject, "Wrap T", textureImportSettings->wrapT);
-	json_object_set_number(materialImporterObject, "Min Filter", textureImportSettings->minFilter);
-	json_object_set_number(materialImporterObject, "Mag Filter", textureImportSettings->magFilter);
-	json_object_set_number(materialImporterObject, "Anisotropy", textureImportSettings->anisotropy);
-
-	// Create the JSON
-	int sizeBuf = json_serialization_size_pretty(rootValue);
-
-	RELEASE_ARRAY(buffer);
-
-	char* newBuffer = new char[sizeBuf];
-	json_serialize_to_buffer_pretty(rootValue, newBuffer, sizeBuf);
-
-	size = App->fs->Save(metaFile, newBuffer, sizeBuf);
-	if (size > 0)
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully saved meta '%s' and set its texture import settings", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not save meta '%s' nor set its texture import settings", metaFile);
-		return false;
-	}
-
-	RELEASE_ARRAY(newBuffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::GetTextureImportSettingsFromMeta(const char* metaFile, TextureImportSettings* textureImportSettings) const
-{
-	if (metaFile == nullptr || textureImportSettings == nullptr)
-	{
-		assert(metaFile != nullptr && textureImportSettings != nullptr);
-		return false;
-	}
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
-	{
-		//CONSOLE_LOG("MATERIAL IMPORTER: Successfully loaded meta '%s'", metaFile);
-	}
-	else
-	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load meta '%s'", metaFile);
-		return false;
-	}
-
-	textureImportSettings->metaFile = metaFile;
-
-	JSON_Value* rootValue = json_parse_string(buffer);
-	JSON_Object* rootObject = json_value_get_object(rootValue);
-
-	JSON_Object* materialImporterObject = json_object_get_object(rootObject, "Material Importer");
-	textureImportSettings->compression = (TextureImportSettings::TextureCompression)(uint)json_object_get_number(materialImporterObject, "Compression");
-	textureImportSettings->wrapS = (TextureImportSettings::TextureWrapMode)(uint)json_object_get_number(materialImporterObject, "Wrap S");
-	textureImportSettings->wrapT = (TextureImportSettings::TextureWrapMode)(uint)json_object_get_number(materialImporterObject, "Wrap T");
-	textureImportSettings->minFilter = (TextureImportSettings::TextureFilterMode)(uint)json_object_get_number(materialImporterObject, "Min Filter");
-	textureImportSettings->magFilter = (TextureImportSettings::TextureFilterMode)(uint)json_object_get_number(materialImporterObject, "Mag Filter");
-	textureImportSettings->anisotropy = json_object_get_number(materialImporterObject, "Anisotropy");
-
-	RELEASE_ARRAY(buffer);
-	json_value_free(rootValue);
-
-	return true;
-}
-
-bool MaterialImporter::Load(const char* exportedFile, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const
-{
 	bool ret = false;
-
-	if (exportedFile == nullptr || outputTexture == nullptr || textureImportSettings == nullptr)
-	{
-		assert(exportedFile != nullptr && outputTexture != nullptr && textureImportSettings != nullptr);
-		return ret;
-	}
 
 	char* buffer;
 	uint size = App->fs->Load(exportedFile, &buffer);
 	if (size > 0)
 	{
-		DEPRECATED_LOG("MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
-		ret = Load(buffer, size, outputTexture, textureImportSettings);
+		CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
+		ret = Load(buffer, size, outputTextureData, textureId);
 		RELEASE_ARRAY(buffer);
 	}
 	else
-		DEPRECATED_LOG("MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFile);
+		CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: Could not load Texture '%s' (own format)", exportedFile);
 
 	return ret;
 }
 
-bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outputTexture, const TextureImportSettings* textureImportSettings) const
+bool MaterialImporter::Load(const void* buffer, uint size, ResourceTextureData& outputTextureData, uint& textureId) const
 {
-	bool ret = false;
+	assert(buffer != nullptr && size > 0);
 
-	if (buffer == nullptr || size <= 0 || outputTexture == nullptr || textureImportSettings == nullptr)
-	{
-		assert(buffer != nullptr && size > 0 && outputTexture != nullptr && textureImportSettings != nullptr);
-		return ret;
-	}
+	bool ret = false;
 
 	// Generate the image name
 	uint imageName = 0;
@@ -464,41 +207,40 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 			// Bind the texture
 			glBindTexture(GL_TEXTURE_2D, texName);
 
-			// TODO (someday): http://openil.sourceforge.net/tuts/tut_8/index.htm // iluAlienify();
+			// http://openil.sourceforge.net/tuts/tut_8/index.htm
 
 			// Set texture wrap mode
 			int wrap = 0;
-
-			switch (textureImportSettings->wrapS)
+			switch (outputTextureData.textureImportSettings.wrapS)
 			{
-			case TextureImportSettings::TextureWrapMode::REPEAT:
+			case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
 				wrap = GL_REPEAT;
 				break;
-			case TextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+			case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
 				wrap = GL_MIRRORED_REPEAT;
 				break;
-			case TextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
 				wrap = GL_CLAMP_TO_EDGE;
 				break;
-			case TextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
 				wrap = GL_CLAMP_TO_BORDER;
 				break;
 			}
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 
-			switch (textureImportSettings->wrapT)
+			switch (outputTextureData.textureImportSettings.wrapT)
 			{
-			case TextureImportSettings::TextureWrapMode::REPEAT:
+			case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
 				wrap = GL_REPEAT;
 				break;
-			case TextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+			case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
 				wrap = GL_MIRRORED_REPEAT;
 				break;
-			case TextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
 				wrap = GL_CLAMP_TO_EDGE;
 				break;
-			case TextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
 				wrap = GL_CLAMP_TO_BORDER;
 				break;
 			}
@@ -509,57 +251,49 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 			int filter = 0;
 			bool mipmap = false;
 
-			switch (textureImportSettings->minFilter)
+			switch (outputTextureData.textureImportSettings.minFilter)
 			{
-			case TextureImportSettings::TextureFilterMode::NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
 				filter = GL_NEAREST;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
 				filter = GL_LINEAR;
 				break;
-			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
 				filter = GL_NEAREST_MIPMAP_NEAREST;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
 				filter = GL_LINEAR_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
 				filter = GL_NEAREST_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
 				filter = GL_LINEAR_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
 			}
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 
-			switch (textureImportSettings->magFilter)
+			switch (outputTextureData.textureImportSettings.magFilter)
 			{
-			case TextureImportSettings::TextureFilterMode::NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
 				filter = GL_NEAREST;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
 				filter = GL_LINEAR;
 				break;
-			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
 				filter = GL_NEAREST_MIPMAP_NEAREST;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
 				filter = GL_LINEAR_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
 				filter = GL_NEAREST_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
-			case TextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
 				filter = GL_LINEAR_MIPMAP_LINEAR;
-				mipmap = true;
 				break;
 			}
 
@@ -567,33 +301,41 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTexture* outp
 
 			// Anisotropic filtering
 			if (isAnisotropySupported)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, textureImportSettings->anisotropy);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, outputTextureData.textureImportSettings.anisotropy);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
 				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 
-			if (mipmap)
+			if (outputTextureData.textureImportSettings.UseMipmap())
 				glGenerateMipmap(GL_TEXTURE_2D);
 
-			outputTexture->id = texName;
-			outputTexture->width = imageInfo.Width;
-			outputTexture->height = imageInfo.Height;
+			textureId = texName;
+			outputTextureData.width= imageInfo.Width;
+			outputTextureData.height = imageInfo.Height;
 
-			DEPRECATED_LOG("MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
 			ret = true;
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
-			DEPRECATED_LOG("MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
+			CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
 
 		ilDeleteImages(1, &imageName);
 	}
 	else
-		DEPRECATED_LOG("MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
+		CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: DevIL could not load the image. ERROR: %s", iluErrorString(ilGetError()));
 
 	return ret;
 }
+
+void MaterialImporter::DeleteTexture(uint& name) const
+{
+	if (glIsTexture(name))
+		glDeleteTextures(1, &name);
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 void MaterialImporter::SetIsAnisotropySupported(bool isAnisotropySupported)
 {
@@ -614,6 +356,15 @@ float MaterialImporter::GetLargestSupportedAnisotropy() const
 {
 	return largestSupportedAnisotropy;
 }
+
+uint MaterialImporter::GetDevILVersion() const
+{
+	return ilGetInteger(IL_VERSION_NUM);
+	// == iluGetInteger(ILU_VERSION_NUM)
+	// == ilutGetInteger(ILUT_VERSION_NUM)
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 void MaterialImporter::LoadCheckers()
 {
@@ -694,12 +445,13 @@ void MaterialImporter::LoadDefaultTexture()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+/*
 void MaterialImporter::LoadSkyboxTexture()
 {
 	skyboxTextures.clear();
 
 	std::string outputFile;
-	ResourceTexture* sky = new ResourceTexture(ResourceType::TextureResource, App->GenerateRandomNumber());
+	ResourceTexture* sky = new ResourceTexture(ResourceTypes::TextureResource, App->GenerateRandomNumber());
 	TextureImportSettings* importSettings = new TextureImportSettings();
 
 	/// Right
@@ -726,6 +478,7 @@ void MaterialImporter::LoadSkyboxTexture()
 
 	skyboxTexture = LoadCubemapTexture(skyboxTextures);
 }
+*/
 
 uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
 {
@@ -768,15 +521,6 @@ uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
 	return result;
 }
 
-bool MaterialImporter::DeleteTexture(uint texture)
-{
-	if (!glIsTexture(texture))
-		return false;
-
-	glDeleteTextures(1, &texture);
-	return true;
-}
-
 uint MaterialImporter::GetCheckers() const
 {
 	return checkers;
@@ -795,11 +539,4 @@ uint MaterialImporter::GetSkyboxTexture() const
 std::vector<uint> MaterialImporter::GetSkyboxTextures() const
 {
 	return skyboxTextures;
-}
-
-uint MaterialImporter::GetDevILVersion() const
-{
-	return ilGetInteger(IL_VERSION_NUM); 
-	// == iluGetInteger(ILU_VERSION_NUM)
-	// == ilutGetInteger(ILUT_VERSION_NUM)
 }

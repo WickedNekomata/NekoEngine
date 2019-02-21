@@ -11,7 +11,7 @@
 #include "Globals.h"
 #include "ResourceShaderObject.h"
 
-struct AssetsFile;
+struct Directory;
 struct Resource;
 
 class PanelAssets : public Panel
@@ -25,8 +25,7 @@ public:
 
 private:
 
-	void RecursiveDrawAssetsDir(AssetsFile* assetsFile);
-	void SetResourceDragAndDropSource(ResourceType type, uint UUID = 0, const Resource* resource = nullptr, const char* file = nullptr) const;
+	void RecursiveDrawAssetsDir(const Directory& assetsFile);
 	
 	void CreateShaderPopUp(const char* path);
 	void DeleteShaderPopUp(const char* path);
@@ -35,7 +34,7 @@ private:
 
 public:
 
-	ShaderType shaderType = ShaderType::NoShaderType;
+	ShaderTypes shaderType = ShaderTypes::NoShaderType;
 	std::string shaderFile;
 	char shaderName[INPUT_BUF_SIZE];
 

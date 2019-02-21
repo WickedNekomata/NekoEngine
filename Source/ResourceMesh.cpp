@@ -1,159 +1,376 @@
 #include "ResourceMesh.h"
 
 #include "Application.h"
-#include "ModuleGOs.h"
+#include "ModuleFileSystem.h"
+#include "ModuleScene.h"
+
 #include "SceneImporter.h"
+
+#include "imgui\imgui.h"
 
 #include <assert.h>
 
-#include "glew\include\GL\glew.h"
+ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {}
 
-ResourceMesh::ResourceMesh(ResourceType type, uint uuid) : Resource(type, uuid) {}
-
-ResourceMesh::~ResourceMesh() 
+ResourceMesh::~ResourceMesh()
 {
-	App->GOs->InvalidateResource(this);
+	RELEASE_ARRAY(meshData.vertices);
+	RELEASE_ARRAY(meshData.indices);
 }
 
-bool ResourceMesh::LoadInMemory()
+void ResourceMesh::OnPanelAssets()
 {
-	bool ret = App->sceneImporter->Load(exportedFile.data(), this);
+	ImGuiTreeNodeFlags flags = 0;
+	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
-	if (!ret)
-		return ret;
+	if (App->scene->selectedObject == this)
+		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
 
-	GenerateVBO();
-	GenerateIBO();
-	GenerateVAO();
+	/*if (App->scene->selectedObject == ((MeshImportSettings*)child->importSettings))
+		treeNodeFlags |= ImGuiTreeNodeFlags_Selected;*/
 
-	return ret;
+		//Create the leaf
+
+	char id[DEFAULT_BUF_SIZE];
+	sprintf(id, "%s##%d", data.name.data(), uuid);
+
+	if (ImGui::TreeNodeEx(id, flags))
+		ImGui::TreePop();
+
+	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
+	{
+		SELECT(this);
+	}
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+	{
+		ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
+		ImGui::EndDragDropSource();
+	}
 }
 
-bool ResourceMesh::UnloadFromMemory()
+// ----------------------------------------------------------------------------------------------------
+
+bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& outputFiles) // NewFile
 {
-	glDeleteBuffers(1, (GLuint*)&VBO);
-	glDeleteBuffers(1, (GLuint*)&IBO);
-	glDeleteVertexArrays(1, (GLuint*)&VAO);
+	assert(file != nullptr);
 
-	RELEASE_ARRAY(vertices);
-	RELEASE_ARRAY(indices);
+	bool imported = false;
 
-	verticesSize = 0;
-	indicesSize = 0;
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(file) + 1, file); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-	VBO = 0;
-	IBO = 0;
-	VAO = 0;
+	// CASE 1 (file). The file has no meta associated (the file is new)
+	if (!App->fs->Exists(metaFile))
+	{
+		// Import the file (using the default import settings)
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' needs to be imported", file);
+
+		imported = App->sceneImporter->Import(file, outputFiles, meshImportSettings);
+	}
+	else
+	{
+		std::vector<uint> uuids;
+		std::vector<std::string> entryFiles;
+		assert(ResourceMesh::ReadMeshesUuidsFromMeta(metaFile, uuids));
+
+		char entry[DEFAULT_BUF_SIZE];
+		std::string entryFile;
+		for (uint i = 0; i < uuids.size(); ++i)
+		{
+			sprintf_s(entry, "%u%s", uuids[i], EXTENSION_MESH);
+			entryFile = DIR_LIBRARY;
+			if (App->fs->RecursiveExists(entry, DIR_LIBRARY, entryFile))
+				entryFiles.push_back(entryFile);
+			entryFile.clear();
+		}
+
+		// CASE 2 (file + meta + Library file(s)). The resource(s) do(es)n't exist
+		if (entryFiles.size() == uuids.size())
+		{
+			outputFiles = entryFiles;
+			imported = true;
+		}			
+		// CASE 3 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
+		else
+		{
+			// Import the file (using the import settings from the meta)
+			CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' has Library file(s) that need(s) to be reimported", file);
+
+			ResourceMesh::ReadMeshImportSettingsFromMeta(metaFile, meshImportSettings);
+			imported = App->sceneImporter->Import(file, outputFiles, meshImportSettings, uuids);
+		}
+	}
+
+	return imported;
+}
+
+// Returns the last modification time of the file
+uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids, std::string& outputMetaFile)
+{
+	assert(file != nullptr);
+
+	uint uuidsSize = meshesUuids.size();
+
+	uint size = 
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(int) +
+		sizeof(uint) +
+		sizeof(uint);
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	int64_t lastModTime = App->fs->GetLastModificationTime(file);
+	assert(lastModTime > 0);
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store meshes uuids
+	bytes = sizeof(uint) * meshesUuids.size();
+	memcpy(cursor, &meshesUuids[0], bytes);
+
+	cursor += bytes;
+
+	// 4. Store import settings
+	bytes = sizeof(int);
+	memcpy(cursor, &meshImportSettings.postProcessConfigurationFlags, bytes);
+
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &meshImportSettings.customConfigurationFlags, bytes);
+
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &meshImportSettings.size, bytes);
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	outputMetaFile = file;
+	outputMetaFile.append(EXTENSION_META);
+	uint resultSize = App->fs->Save(outputMetaFile.data(), data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully saved meta '%s'", outputMetaFile.data());
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Mesh: Could not save meta '%s'", outputMetaFile.data());
+		return 0;
+	}
+
+	return lastModTime;
+}
+
+bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids)
+{
+	assert(metaFile != nullptr);
+
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{		
+		char* cursor = (char*)buffer;
+
+		// 1. Load last modification time
+		uint bytes = sizeof(int64_t);
+		memcpy(&lastModTime, cursor, bytes);
+
+		cursor += bytes;
+
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 3. Load meshes uuids
+		meshesUuids.resize(uuidsSize);
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&meshesUuids[0], cursor, bytes);
+
+		cursor += bytes;
+
+		// 4. Load import settings
+		bytes = sizeof(int);
+		memcpy(&meshImportSettings.postProcessConfigurationFlags, cursor, bytes);
+
+		cursor += bytes;
+
+		bytes = sizeof(uint);
+		memcpy(&meshImportSettings.customConfigurationFlags, cursor, bytes);
+
+		cursor += bytes;
+
+		bytes = sizeof(uint);
+		memcpy(&meshImportSettings.size, cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Mesh: Could not load meta '%s'", metaFile);
+		return false;
+	}
 
 	return true;
 }
 
-void ResourceMesh::GenerateVBO()
+// Returns true if the meshes uuids vector is not empty. Else, returns false
+bool ResourceMesh::ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uint>& meshesUuids)
 {
-	assert(vertices != nullptr);
+	char* cursor = (char*)buffer;
 
-	// Vertex Buffer Object
+	// 1. (Last modification time)
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
 
-	// Generate a VBO
-	glGenBuffers(1, &VBO);
-	// Bind the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// 2. Load uuids size
+	uint uuidsSize = 0;
+	bytes = sizeof(uint);
+	memcpy(&uuidsSize, cursor, bytes);
+	assert(uuidsSize > 0);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verticesSize, vertices, GL_STATIC_DRAW);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	cursor += bytes;
+
+	// 3. Load meshes uuids
+	meshesUuids.resize(uuidsSize);
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(&meshesUuids[0], cursor, bytes);
+
+	if (meshesUuids.size() > 0)
+		return true;
+	else
+		return false;
 }
 
-void ResourceMesh::GenerateIBO()
+uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const ResourceMeshImportSettings& meshImportSettings)
 {
-	assert(indices != nullptr);
+	assert(metaFile != nullptr);
 
-	// Index Buffer Object
+	int64_t lastModTime = 0;
+	ResourceMeshImportSettings oldMeshImportSettings;
+	std::vector<uint> meshesUuids;
+	ReadMeta(metaFile, lastModTime, oldMeshImportSettings, meshesUuids);
 
-	// Generate a IBO
-	glGenBuffers(1, &IBO);
-	// Bind the IBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	uint uuidsSize = meshesUuids.size();
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
+		sizeof(int) +
+		sizeof(uint) +
+		sizeof(uint);
 
-void ResourceMesh::GenerateVAO()
-{
-	// Vertex Array Object
+	char* data = new char[size];
+	char* cursor = data;
 
-	// Generate a VAO
-	glGenVertexArrays(1, &VAO);
-	// Bind the VAO
-	glBindVertexArray(VAO);
+	// 1. Store last modification time
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
 
-	// Bind the VBO 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	cursor += bytes;
 
-	// Set the vertex attributes pointers
-	// 1. Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, position)));
-	glEnableVertexAttribArray(0);
+	// 2. Store uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuidsSize, bytes);
 
-	// 2. Normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, normal)));
-	glEnableVertexAttribArray(1);
+	cursor += bytes;
 
-	// 3. Color
-	glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)(offsetof(Vertex, color)));
-	glEnableVertexAttribArray(2);
+	// 3. Store meshes uuids
+	bytes = sizeof(uint) * meshesUuids.size();
+	memcpy(cursor, &meshesUuids[0], bytes);
 
-	// 4. Tex coords
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, texCoord)));
-	glEnableVertexAttribArray(3);
+	cursor += bytes;
 
-	// 5. Tangents
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, tangent)));
-	glEnableVertexAttribArray(4);
+	// 4. Store import settings
+	bytes = sizeof(int);
+	memcpy(cursor, &meshImportSettings.postProcessConfigurationFlags, bytes);
 
-	// 6. Bitangents
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, bitangent)));
-	glEnableVertexAttribArray(5);
+	cursor += bytes;
 
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
+	bytes = sizeof(uint);
+	memcpy(cursor, &meshImportSettings.customConfigurationFlags, bytes);
 
-void ResourceMesh::GetIndices(int* out_indices) const
-{
-	memcpy(out_indices, indices, indicesSize * sizeof(int));
-}
+	cursor += bytes;
 
-void ResourceMesh::GetVerts(float* verts) const
-{
-	for (int i = 0, j = 0; i < verticesSize; ++i)
+	bytes = sizeof(uint);
+	memcpy(cursor, &meshImportSettings.size, bytes);
+
+	// --------------------------------------------------
+
+	// Save the meta file
+	uint resultSize = App->fs->Save(metaFile, data, size);
+	if (resultSize > 0)
 	{
-		verts[j++] = vertices[i].position[0];
-		verts[j++] = vertices[i].position[1];
-		verts[j++] = vertices[i].position[2];
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully saved meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Mesh: Could not save meta '%s'", metaFile);
+		return 0;
+	}
+
+	return lastModTime;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ResourceMesh::GetVerticesReference(Vertex*& vertices) const
+{
+	vertices = meshData.vertices;
+}
+
+void ResourceMesh::GetTris(float* verticesPosition) const
+{
+	for (int i = 0, j = -1; i < meshData.verticesSize; ++i)
+	{
+		verticesPosition[++j] = meshData.vertices[i].position[0];
+		verticesPosition[++j] = meshData.vertices[i].position[1];
+		verticesPosition[++j] = meshData.vertices[i].position[2];
 	}
 }
 
-void ResourceMesh::GetNormals(float* normals) const
+void ResourceMesh::GetIndicesReference(uint*& indices) const
 {
-	for (int i = 0, j = 0; i < verticesSize; ++i)
-	{
-		normals[j++] = vertices[i].normal[0];
-		normals[j++] = vertices[i].normal[1];
-		normals[j++] = vertices[i].normal[2];
-	}
+	indices = meshData.indices;
 }
 
-int ResourceMesh::GetVertsCount() const
+void ResourceMesh::GetIndices(uint* indices) const
 {
-	return verticesSize;
+	memcpy(indices, meshData.indices, meshData.indicesSize * sizeof(uint));
 }
 
-int ResourceMesh::GetIndicesCount() const
+uint ResourceMesh::GetVerticesCount() const
 {
-	return indicesSize;
+	return meshData.verticesSize;
+}
+
+uint ResourceMesh::GetIndicesCount() const
+{
+	return meshData.indicesSize;
 }
 
 uint ResourceMesh::GetVBO() const
@@ -171,75 +388,120 @@ uint ResourceMesh::GetVAO() const
 	return VAO;
 }
 
-void ResourceMesh::GenerateVBO(GLuint& VBO, Vertex* vertices, uint verticesSize)
+// ----------------------------------------------------------------------------------------------------
+
+// Returns true if the meshes uuids vector is not empty. Else, returns false
+bool ResourceMesh::ReadMeshesUuidsFromMeta(const char* metaFile, std::vector<uint>& meshesUuids)
 {
-	assert(vertices != nullptr);
+	assert(metaFile != nullptr);
 
-	// Vertex Buffer Object
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
 
-	// Generate a VBO
-	glGenBuffers(1, &VBO);
-	// Bind the VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		// 1. (Last modification time)
+		uint bytes = sizeof(int64_t);
+		cursor += bytes;
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verticesSize, vertices, GL_STATIC_DRAW);
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		cursor += bytes;
+
+		// 3. Load meshes uuids
+		meshesUuids.resize(uuidsSize);
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&meshesUuids[0], cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Mesh: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	if (meshesUuids.size() > 0)
+		return true;
+	else
+		return false;
 }
 
-void ResourceMesh::GenerateIBO(GLuint& IBO, GLuint* indices, uint indicesSize)
+bool ResourceMesh::ReadMeshImportSettingsFromMeta(const char* metaFile, ResourceMeshImportSettings& meshImportSettings)
 {
-	assert(indices != nullptr);
+	assert(metaFile != nullptr);
 
-	// Index Buffer Object
+	char* buffer;
+	uint size = App->fs->Load(metaFile, &buffer);
+	if (size > 0)
+	{
+		char* cursor = (char*)buffer;
 
-	// Generate a IBO
-	glGenBuffers(1, &IBO);
-	// Bind the IBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		// 1. (Last modification time)
+		uint bytes = sizeof(int64_t);
+		cursor += bytes;
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+		// 2. Load uuids size
+		uint uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		assert(uuidsSize > 0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		cursor += bytes;
+
+		// 3. (Meshes uuids)
+		bytes = sizeof(uint) * uuidsSize;
+		cursor += bytes;
+
+		// 4. Load import settings
+		bytes = sizeof(int);
+		memcpy(&meshImportSettings.postProcessConfigurationFlags, cursor, bytes);
+
+		cursor += bytes;
+
+		bytes = sizeof(uint);
+		memcpy(&meshImportSettings.customConfigurationFlags, cursor, bytes);
+
+		cursor += bytes;
+
+		bytes = sizeof(uint);
+		memcpy(&meshImportSettings.size, cursor, bytes);
+
+		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
+		RELEASE_ARRAY(buffer);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Mesh: Could not load meta '%s'", metaFile);
+		return false;
+	}
+
+	return true;
 }
 
-void ResourceMesh::GenerateVAO(GLuint& VAO, GLuint& VBO)
+bool ResourceMesh::LoadInMemory()
 {
-	// Vertex Array Object
+	assert(meshData.vertices != nullptr && meshData.verticesSize > 0
+		&& meshData.indices != nullptr && meshData.indicesSize > 0);
 
-	// Generate a VAO
-	glGenVertexArrays(1, &VAO);
-	// Bind the VAO
-	glBindVertexArray(VAO);
+	App->sceneImporter->GenerateVBO(VBO, meshData.vertices, meshData.verticesSize);
+	App->sceneImporter->GenerateIBO(IBO, meshData.indices, meshData.indicesSize);
+	App->sceneImporter->GenerateVAO(VAO, VBO);
 
-	// Bind the VBO 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	return true;
+}
 
-	// Set the vertex attributes pointers
-	// 1. Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, position)));
-	glEnableVertexAttribArray(0);
+bool ResourceMesh::UnloadFromMemory()
+{
+	App->sceneImporter->DeleteBufferObject(VBO);
+	App->sceneImporter->DeleteBufferObject(IBO);
+	App->sceneImporter->DeleteVertexArrayObject(VAO);
 
-	// 2. Normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, normal)));
-	glEnableVertexAttribArray(1);
-
-	// 3. Color
-	glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)(offsetof(Vertex, color)));
-	glEnableVertexAttribArray(2);
-
-	// 4. Tex coords
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, texCoord)));
-	glEnableVertexAttribArray(3);
-
-	// 5. Tangents
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, tangent)));
-	glEnableVertexAttribArray(4);
-
-	// 6. Bitangents
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, bitangent)));
-	glEnableVertexAttribArray(5);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	return true;
 }

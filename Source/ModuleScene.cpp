@@ -43,7 +43,7 @@ bool ModuleScene::Start()
 {
 	grid = new PrimitiveGrid();
 	grid->ShowAxis(true);
-	root = new GameObject("Root", nullptr);
+	root = new GameObject("Root", nullptr, true);
 
 #ifdef GAMEMODE
 	App->GOs->LoadScene("Settings/GameReady.nekoScene");
@@ -133,30 +133,27 @@ void ModuleScene::Draw() const
 #ifndef GAMEMODE
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
-	if (!App->GOs->IsCanvas(gameObject))
+	ImGuiViewport* vport = ImGui::GetMainViewport();
+	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
+
+	math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
+	math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
+	math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
+	transformMatrix = transformMatrix.Transposed();
+
+	ImGuizmo::MODE mode = currentImGuizmoMode;
+	if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
+		mode = ImGuizmo::MODE::LOCAL;
+
+	ImGuizmo::Manipulate(
+		viewMatrix.ptr(), projectionMatrix.ptr(),
+		currentImGuizmoOperation, mode, transformMatrix.ptr()
+	);
+
+	if (ImGuizmo::IsUsing())
 	{
-		ImGuiViewport* vport = ImGui::GetMainViewport();
-		ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
-
-		math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
-		math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
-		math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
 		transformMatrix = transformMatrix.Transposed();
-
-		ImGuizmo::MODE mode = currentImGuizmoMode;
-		if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
-			mode = ImGuizmo::MODE::LOCAL;
-
-		ImGuizmo::Manipulate(
-			viewMatrix.ptr(), projectionMatrix.ptr(),
-			currentImGuizmoOperation, mode, transformMatrix.ptr()
-		);
-
-		if (ImGuizmo::IsUsing())
-		{
-			transformMatrix = transformMatrix.Transposed();
-			gameObject->transform->SetMatrixFromGlobal(transformMatrix);
-		}
+		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 	}
 }
 
@@ -213,7 +210,7 @@ void ModuleScene::CreateQuadtree()
 void ModuleScene::RecalculateQuadtree()
 {
 	std::vector<GameObject*> staticGameObjects;
-	App->GOs->GetStaticGameObjects(staticGameObjects);
+	App->GOs->GetStaticGameobjects(staticGameObjects);
 
 	for (uint i = 0; i < staticGameObjects.size(); ++i)
 		App->scene->quadtree.Insert(staticGameObjects[i]);

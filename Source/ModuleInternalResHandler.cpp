@@ -134,21 +134,26 @@ void ModuleInternalResHandler::CreateCube()
 
 void ModuleInternalResHandler::CreateDefaultShaderProgram()
 {
-	ResourceData data;
-	ResourceShaderObjectData ObjspecificData;
-	data.name = "Default vertex object";
-	ObjspecificData.shaderType = ShaderTypes::VertexShaderType;
-	ObjspecificData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
-	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, data, &ObjspecificData);
-	data.name = "Default fragment object";
-	ObjspecificData.shaderType = ShaderTypes::FragmentShaderType;
-	ObjspecificData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
-	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, data, &ObjspecificData);
-	data.name = "Shader vertex object";
-	ResourceShaderProgramData programData;
-	programData.shaderObjects.push_back(vObj);
-	programData.shaderObjects.push_back(fObj);
-	App->res->CreateResource(ResourceTypes::ShaderProgramResource, data, &programData);
+	ResourceData vertexData;
+	ResourceShaderObjectData vertexShaderData;
+	vertexData.name = "Default vertex object";
+	vertexShaderData.shaderType = ShaderTypes::VertexShaderType;
+	vertexShaderData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
+	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
+	
+	ResourceData fragmentData;
+	ResourceShaderObjectData fragmentShaderData;
+	fragmentData.name = "Default fragment object";
+	fragmentShaderData.shaderType = ShaderTypes::FragmentShaderType;
+	fragmentShaderData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
+	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
+	
+	ResourceData shaderData;
+	ResourceShaderProgramData programShaderData;
+	shaderData.name = "Default shader program";
+	programShaderData.shaderObjects.push_back(vObj);
+	programShaderData.shaderObjects.push_back(fObj);
+	App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData);
 }
 
 void ModuleInternalResHandler::CreateCubemapShaderProgram()

@@ -14,7 +14,7 @@
 
 //#include "pcg-c-basic-0.9/pcg_basic.h"
 
-Particle::Particle(math::float3 pos, StartValues data, ResourceTexture** texture)
+Particle::Particle(math::float3 pos, StartValues data)
 {}
 
 Particle::Particle()
@@ -24,13 +24,11 @@ Particle::Particle()
 
 Particle::~Particle()
 {
-	//delete plane;
 }
 
-void Particle::SetActive(math::float3 pos, StartValues data, ResourceTexture ** texture, /*std::vector<uint>* animation,*/ float animationSpeed)
+void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int animRow)
 {
 	color.clear();
-	plane = App->particle->plane;
 
 	lifeTime = CreateRandomNum(data.life);
 
@@ -50,21 +48,19 @@ void Particle::SetActive(math::float3 pos, StartValues data, ResourceTexture ** 
 	transform.rotation = math::Quat::FromEulerXYZ(0, 0, 0); //Start rotation
 	transform.scale = math::float3::one * CreateRandomNum(data.size);
 
-	//LOG("life %f", lifeTime);
-	//LOG("size %f", transform.scale.x);
-
 	for (std::list<ColorTime>::iterator iter = data.color.begin(); iter != data.color.end(); ++iter)
 		color.push_back(*iter);
 
 	multicolor = data.timeColor;
-	this->texture = texture;
 
-
-	//TODO Particle: Active Particle
-	this->animation = animation;
-	this->animationSpeed = animationSpeed;
 	animationTime = 0.0f;
 	currentFrame = 0u;
+
+	rowAnimNorm = 1.0f / animRow;
+	columnAnimNorm = 1.0f / animColumn;
+	rowAnim = animRow;
+	columnAnim = animColumn;
+	isAnimated = data.isAnimated;
 
 	active = true;
 	subEmitterActive = data.subEmitterActive;
@@ -115,14 +111,17 @@ bool Particle::Update(float dt)
 		angle += angularVelocity * dt;
 		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
-		if (animation)
+		if (isAnimated)
 		{
 			animationTime += dt;
-			if (animationTime > animationSpeed)
+			if (animationTime > owner->animationSpeed)
 			{
-				if (animation->size() > currentFrame + 1)
+				if ((columnAnim * rowAnim) >= currentFrame + 1)
 				{
 					currentFrame++;
+
+					currMinUVCoord.x = (currentFrame % columnAnim) * columnAnimNorm;
+					currMinUVCoord.y = (currentFrame / rowAnim) * rowAnimNorm;
 				}
 				else if (owner->dieOnAnimation)
 				{
@@ -211,6 +210,17 @@ void Particle::Draw()
 		glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
 		location = glGetUniformLocation(shaderProgram, "normal_matrix");
 		glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+		location = glGetUniformLocation(shaderProgram, "currColor");
+		glUniform4f(location,currentColor.x, currentColor.y, currentColor.z, currentColor.w);
+
+		location = glGetUniformLocation(shaderProgram, "rowUVNorm");
+		glUniform1f(location, rowAnimNorm);
+		location = glGetUniformLocation(shaderProgram, "columUVNorm");
+		glUniform1f(location, columnAnimNorm);
+		location = glGetUniformLocation(shaderProgram, "currMinCoord");
+		glUniform2f(location, currMinUVCoord.x, currMinUVCoord.y);
+		location = glGetUniformLocation(shaderProgram, "isAnimated");
+		glUniform1i(location, isAnimated);
 
 		location = glGetUniformLocation(shaderProgram, "light.direction");
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.direction.ptr());
@@ -249,6 +259,17 @@ float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoi
 		num = ((edges.y - edges.x) * random / (float)MAXUINT) + edges.x;
 	}
 	return num;
+}
+
+void Particle::ChangeAnim(uint textureRows, uint textureColumns, bool isAnimated)
+{
+	rowAnim = textureRows;
+	columnAnim = textureColumns;
+	rowAnimNorm = 1.0f/textureRows;
+	columnAnimNorm = 1.0f/textureColumns;
+	currMinUVCoord = math::float2::zero;
+	currentFrame = 0;
+	this->isAnimated = isAnimated;
 }
 
 //Particle transform

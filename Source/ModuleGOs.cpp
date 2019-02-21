@@ -113,6 +113,10 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		}
 		break;
 	}
+
+	case System_Event_Type::ResourceDestroyed:
+		InvalidateResource(event.resEvent.resource);
+		break;
 	}
 }
 
@@ -257,19 +261,13 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 	return true;
 }
 
-bool ModuleGOs::InvalidateResource(const Resource* resource)
+bool ModuleGOs::InvalidateResource(Resource* resource)
 {
-	if (resource == nullptr)
-	{
-		assert(resource != nullptr);
-		return false;
-	}
+	assert(resource != nullptr);
 
-	ResourceTypes type = resource->GetType();
-
-	for (uint i = 0; i < this->gameobjects.size(); ++i)
+	for (uint i = 0; i < gameobjects.size(); ++i)
 	{
-		switch (type)
+		switch (resource->GetType())
 		{
 		case ResourceTypes::MeshResource:
 			if (gameobjects[i]->cmp_mesh != nullptr && gameobjects[i]->cmp_mesh->res == resource->GetUuid())
@@ -288,6 +286,5 @@ bool ModuleGOs::InvalidateResource(const Resource* resource)
 		}
 	}
 
-	assert(resource->GetReferencesCount() <= 0);
 	return true;
 }

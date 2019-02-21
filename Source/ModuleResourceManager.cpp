@@ -33,7 +33,9 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	DeleteResources();
+	for (std::unordered_map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+		RELEASE(it->second);
+	resources.clear();
 
 	return true;
 }
@@ -517,8 +519,11 @@ bool ModuleResourceManager::DeleteResource(uint uuid)
 	if (it == resources.end())
 		return false;
 
-	RELEASE(it->second);
-	resources.erase(uuid);
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::ResourceDestroyed;
+	newEvent.resEvent.resource = it->second;
+	App->PushSystemEvent(newEvent);
+
 	return true;
 }
 
@@ -531,8 +536,10 @@ bool ModuleResourceManager::DeleteResources(std::vector<uint> uuids)
 		if (resource == resources.end())
 			return false;
 
-		RELEASE(resource->second);
-		resources.erase(*it);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::ResourceDestroyed;
+		newEvent.resEvent.resource = resource->second;
+		App->PushSystemEvent(newEvent);
 	}
 
 	return true;
@@ -544,10 +551,27 @@ bool ModuleResourceManager::DeleteResources()
 
 	for (std::unordered_map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
 	{
-		assert(!it->second->IsInMemory());
-		RELEASE(it->second);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::ResourceDestroyed;
+		newEvent.resEvent.resource = it->second;
+		App->PushSystemEvent(newEvent);
+
 		ret = true;
 	}
+
+	return ret;
+}
+
+bool ModuleResourceManager::EraseResource(Resource* toErase)
+{
+	assert(toErase != nullptr);
+	bool ret = false;
+
+	std::unordered_map<uint, Resource*>::iterator it = resources.find(toErase->GetUuid());
+	ret = it != resources.end();
+
+	if (ret)
+		resources.erase(it);
 
 	return ret;
 }

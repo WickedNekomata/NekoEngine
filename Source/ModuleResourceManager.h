@@ -57,6 +57,7 @@ public:
 	bool DeleteResource(uint uuid);
 	bool DeleteResources(std::vector<uint> uuids);
 	bool DeleteResources();
+	bool EraseResource(Resource* toErase);
 
 	void RecursiveDeleteUnusedEntries(const char* dir, std::string& path);
 	void RecursiveDeleteUnusedMetas(const char* dir, std::string& path);

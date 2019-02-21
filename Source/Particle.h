@@ -1,8 +1,8 @@
 #ifndef __Particle_H__
 #define __Particle_H__
 
-#include "Primitive.h"
 #include"MathGeoLib/include/Math/float4.h"
+#include"MathGeoLib/include/Math/float2.h"
 #include"MathGeoLib/include/Math/Quat.h"
 
 class ComponentEmitter;
@@ -22,7 +22,7 @@ struct ParticleTrans
 class Particle
 {
 public:
-	Particle(math::float3 pos, StartValues data, ResourceTexture** texture);
+	Particle(math::float3 pos, StartValues data);
 	Particle();
 	~Particle();
 
@@ -31,7 +31,7 @@ public:
 		return camDistance < particle2.camDistance;
 	}
 
-	void SetActive(math::float3 pos, StartValues data, ResourceTexture ** texture, /*std::vector<uint>* animation, */float animationSpeed);
+	void SetActive(math::float3 pos, StartValues data, int animColumn, int animRow);
 
 	bool Update(float dt);
 
@@ -45,6 +45,7 @@ public:
 
 	float CreateRandomNum(math::float2 edges);
 
+	void ChangeAnim(uint textureRows, uint textureColumns, bool isAnimated);
 
 public:
 	float camDistance = 0.0f;
@@ -52,7 +53,6 @@ public:
 
 	ComponentEmitter* owner = nullptr;
 
-	uint currentFrame = 0;
 private:
 	float lifeTime = 0.0f;
 	float life = 0.0f;
@@ -76,15 +76,16 @@ private:
 
 	ParticleTrans transform;
 
-	ParticlePlane* plane = nullptr;
-	ResourceTexture** texture = nullptr;
-
 	float rotation = 0.0f;
 	float angle = 0.0f;
 
-	std::vector<uint>* animation = nullptr;
-	float animationSpeed = 0.1f;
-
+	uint rowAnim = 1u;
+	uint columnAnim = 1u;
+	float rowAnimNorm = 1.0f;
+	float columnAnimNorm = 1.0f;
+	math::float2 currMinUVCoord = math::float2::zero;
+	uint currentFrame = 0;
+	bool isAnimated = false;
 	float animationTime = 0.0f;
 };
 

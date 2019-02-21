@@ -54,7 +54,7 @@ private:
 	//math::float4x4 orthonormalMatrix = math::float4x4::identity;
 	uint reference_vertex;
 
-	ResourceShaderProgram* ui_shader = nullptr;
+	uint ui_shader = 0;
 	ResourceShaderObject* ui_fragment = nullptr;
 	ResourceShaderObject* ui_vertex = nullptr;
 

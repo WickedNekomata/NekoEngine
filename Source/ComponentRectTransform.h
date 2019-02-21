@@ -53,6 +53,10 @@ private:
 	void RecaculateAnchors();
 
 	const uint* ui_rect = nullptr;
+
+	virtual uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 };
 
 #endif

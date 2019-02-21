@@ -110,6 +110,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::PlaneColliderComponent:
 			go->cmp_collider = 0;
 			break;
+		case ComponentTypes::RectTransformComponent:
+			go->cmp_rectTransform = nullptr; // Uh
+			break;
 		}
 		break;
 	}
@@ -125,8 +128,8 @@ GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
 	assert(canvas == nullptr);
 	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
 	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
-	gameObjects.push_back(newGameObject);
-
+	gameobjects.push_back(newGameObject);
+	staticGos.push_back(newGameObject);
 	return newGameObject;
 }
 

@@ -152,3 +152,38 @@ void ComponentRectTransform::RecaculateAnchors()
 	else
 		anchor[BOTTOM_RECT] = ui_rect[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
 }
+
+uint ComponentRectTransform::GetInternalSerializationBytes()
+{
+	return sizeof(uint) * 8 + sizeof(bool) * 4;
+}
+
+void ComponentRectTransform::OnInternalSave(char *& cursor)
+{
+	size_t bytes = sizeof(uint) * 4;
+	memcpy(cursor, &rectTransform, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint) * 4;
+	memcpy(cursor, &anchor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 4;
+	memcpy(cursor, &anchor_flags, bytes);
+	cursor += bytes;
+}
+
+void ComponentRectTransform::OnInternalLoad(char *& cursor)
+{
+	size_t bytes = sizeof(uint) * 4;
+	memcpy(&rectTransform, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint) * 4;
+	memcpy(&anchor, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 4;
+	memcpy(&anchor_flags, cursor, bytes);
+	cursor += bytes;
+}

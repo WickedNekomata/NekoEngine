@@ -30,7 +30,7 @@ ModuleUI::~ModuleUI()
 void ModuleUI::DrawTest()
 {
 	if (App->GOs->ExistCanvas())
-		DrawUI((ComponentRectTransform*)App->GOs->GetCanvas()->GetComponentByType(ComponentTypes::RectTransformComponent), 0.0f, { 0.0f, 1.0f, 0.0f });
+		DrawUI((ComponentRectTransform*)App->GOs->GetCanvas()->GetComponent(ComponentTypes::RectTransformComponent), 0.0f, { 0.0f, 1.0f, 0.0f });
 	else
 		DrawUI(rect_test, 0.0f, { 0.0f, 1.0f, 0.0f });
 }
@@ -45,27 +45,18 @@ bool ModuleUI::Start()
 	initRenderData();
 
 	//Shader
-	ui_vertex = new ResourceShaderObject(ResourceType::ShaderObjectResource, App->GenerateRandomNumber());
-	ui_vertex->shaderType = ShaderType::VertexShaderType;
-	ui_vertex->exportedFile = "Assets/Shaders/Objects/UIVertex.vsh";
-	ui_vertex->LoadMemory();
+	ui_vertex = (ResourceShaderObject*)App->res->ImportFile("Assets/Shaders/Objects/UIVertex.vsh");
+	ui_fragment = (ResourceShaderObject*)App->res->ImportFile("Assets/Shaders/Objects/UIFragment.fsh");
+	ui_shader = App->shaderImporter->LoadShaderProgram(ui_vertex->shaderObject, ui_fragment->shaderObject);
 
-	ui_fragment = new ResourceShaderObject(ResourceType::ShaderObjectResource, App->GenerateRandomNumber());
-	ui_fragment->shaderType = ShaderType::FragmentShaderType;
-	ui_fragment->exportedFile = "Assets/Shaders/Objects/UIFragment.fsh";
-	ui_fragment->LoadMemory();
 
-	ui_shader = new ResourceShaderProgram(ResourceType::ShaderProgramResource, App->GenerateRandomNumber());
-	ui_shader->SetShaderObjects({ ui_vertex, ui_fragment });
-	ui_shader->Link();
-	bool program_loaded = ui_shader->IsProgramLinked();
-	
+	/*
 	texture_test = new TextureImportSettings();
 	texture_loaded = new ResourceTexture(ResourceType::TextureResource, App->GenerateRandomNumber());
 	std::string uoutput_file;
 	App->materialImporter->Import("Assets/Textures/Baker_house.dds", uoutput_file, texture_test);
 	App->materialImporter->Load(uoutput_file.c_str(), texture_loaded, texture_test);
-
+	*/
 	rect_test = new ComponentRectTransform(nullptr);
 	rect_test->SetRect(0,0,100,100);
 
@@ -144,8 +135,7 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	//glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
 
-	uint shaderID = ui_shader->shaderProgram;
-	use(shaderID);
+	use(ui_shader);
 
 	float w_width = ui_size_draw[UI_WIDTHRECT];
 	float w_height = ui_size_draw[UI_HEIGHTRECT];
@@ -154,15 +144,15 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	
 	math::float2 pos;
 	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
-	setFloat(shaderID, "topLeft", pos.x, pos.y);
+	setFloat(ui_shader, "topLeft", pos.x, pos.y);
 	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
-	setFloat(shaderID, "topRight", pos.x, pos.y);
+	setFloat(ui_shader, "topRight", pos.x, pos.y);
 	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
-	setFloat(shaderID, "bottomLeft", pos.x, pos.y);
+	setFloat(ui_shader, "bottomLeft", pos.x, pos.y);
 	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
-	setFloat(shaderID, "bottomRight", pos.x, pos.y);
+	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
 
-	setFloat(shaderID, "spriteColor", color);
+	setFloat(ui_shader, "spriteColor", color);
 	//glActiveTexture(GL_TEXTURE0);
 	//glBindTexture(GL_TEXTURE_2D, texture_loaded->id);
 	//setInt(shaderID, "image", 0);

@@ -82,7 +82,7 @@ public:
 	class ComponentRigidActor* cmp_rigidActor = 0;
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
-	class ComponentRectTransform* rectTransform = nullptr; //Nullptr a puño y fuego D:<
+	class ComponentRectTransform* cmp_rectTransform = nullptr; //Nullptr a puño y fuego D:<
 
 	std::vector<Component*> components;
 

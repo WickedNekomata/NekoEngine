@@ -103,6 +103,9 @@ GameObject::GameObject(const GameObject& gameObject)
 			// TODO
 			cmp_collider = App->physics->CreateColliderComponent(this, type);
 			break;
+		case ComponentTypes::RectTransformComponent:
+			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			break;
 		}
 	}
 
@@ -379,8 +382,8 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		newComponent = cmp_emitter = new ComponentEmitter(this);
 		break;
 	case ComponentTypes::RectTransformComponent:
-		assert(rectTransform == nullptr);
-		newComponent = rectTransform = new ComponentRectTransform(this);
+		assert(cmp_rectTransform == nullptr);
+		newComponent = cmp_rectTransform = new ComponentRectTransform(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

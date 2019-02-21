@@ -304,12 +304,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 			
 			// Color
-			if (nodeMesh->HasVertexColors(0))
-			{
-				colorsSize = verticesSize;
-				colors = new uchar[colorsSize * 4];
-				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
-			}
+			//if (nodeMesh->HasVertexColors(0))
+			//{
+			//	colorsSize = verticesSize;
+			//	colors = new uchar[colorsSize * 4];
+			//	memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
+			//}
 
 			relations[node] = gameObject;
 

@@ -340,8 +340,6 @@ bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 
 Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
 {
-	assert(componentType != ComponentTypes::MaterialComponent);
-
 	Component* newComponent;
 	Component* newMaterial = 0;
 
@@ -359,6 +357,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 			assert(cmp_material == NULL);
 			newMaterial = cmp_material = new ComponentMaterial(this);
 		}
+		break;
+	case ComponentTypes::MaterialComponent:
+		assert(cmp_material == NULL);
+		newComponent = cmp_material = new ComponentMaterial(this);
 		break;
 	case ComponentTypes::CameraComponent:
 		assert(cmp_camera == NULL);
@@ -472,7 +474,7 @@ void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
 }
 
 uint GameObject::GetSerializationBytes() const
-{
+{				   // uuid + parent + layer + active + static + name + number of components
 	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
 
 	for (int i = 0; i < components.size(); ++i)

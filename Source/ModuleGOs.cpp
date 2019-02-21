@@ -97,6 +97,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::EmitterComponent:
 			go->cmp_emitter = 0;
 			break;
+		case ComponentTypes::BoneComponent:
+			go->cmp_bone = 0;
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			go->cmp_rigidActor = 0;

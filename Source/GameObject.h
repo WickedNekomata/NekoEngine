@@ -81,6 +81,7 @@ public:
 	class ComponentEmitter*    cmp_emitter = 0;
 	class ComponentRigidActor* cmp_rigidActor = 0;
 	class ComponentCollider*   cmp_collider = 0;
+	class ComponentBone*	   cmp_bone = 0;
 
 	std::vector<Component*> components;
 

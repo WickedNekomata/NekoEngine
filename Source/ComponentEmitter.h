@@ -74,60 +74,10 @@ struct StartValues
 		colorTime.name = "Start Color";
 		color.push_back(colorTime);
 	}
+
+	bool isAnimated = false;
 };
 
-/*
-struct EmitterInfo : ComponentInfo
-{
-
-	float duration = 1.0f;
-
-	bool loop = true;
-
-	bool burst = false;
-	int minPart = 0;
-	int maxPart = 10;
-	float repeatTime = 1.0f;
-
-	bool drawAABB = false;
-	math::float3 posDifAABB = math::float3::zero;
-	float gravity = 0.0f;
-
-	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
-	float SphereCreationRad = 1.0f;
-	float circleCreationRad = 1.0f;
-
-	ShapeType shapeType = ShapeType_BOX;
-
-	ResourceTexture* texture = nullptr;
-
-	StartValues startValues;
-
-	bool checkLife = false;
-	bool checkSpeed = false;
-	bool checkAcceleration = false;
-	bool checkSize = false;
-	bool checkSizeOverTime = false;
-	bool checkRotation = false;
-	bool checkAngularAcceleration = false;
-	bool checkAngularVelocity = false;
-
-	int textureRows = 1;
-	int textureColumns = 1;
-	float animationSpeed = 0.1f;
-	bool isParticleAnimated = false;
-	bool dieOnAnimation = false;
-
-	bool isSubEmitter = false;
-	GameObject* subEmitter = nullptr;
-	uint subEmitterUUID = 0u;
-
-	int rateOverTime = 10;
-	bool subEmitterActive = false;
-
-	math::float3 sizeOBB = math::float3::zero;
-};
-*/
 class ComponentEmitter : public Component
 {
 public:
@@ -141,14 +91,14 @@ public:
 	void Update();
 
 	void OnUniqueEditor();
-	//void ParticleTexture();
+	void ParticleTexture();
 	void ParticleAABB();
 	void ParticleSubEmitter();
 	void ParticleBurst();
 	void ParticleColor();
 	void ParticleValues();
 	void ParticleShape();
-	//void SetNewAnimation(int row, int col);
+	void SetNewAnimation();
 	math::float3 RandPos(ShapeType shapeType);
 	void ShowFloatValue(math::float2 & value, bool checkBox, const char * name, float v_speed, float v_min, float v_max);
 	void EqualsMinMaxValues(math::float2 & value);
@@ -163,18 +113,15 @@ public:
 #endif
 
 	uint GetInternalSerializationBytes();
+
 	void OnInternalSave(JSON_Object * parent);
-	void OnLoad(JSON_Object * info);
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 
 	int GetEmition() const;
 public:
 	GameTimer timer;
 	GameTimer burstTime;
-
-	// Particle texture
-	ResourceTexture* texture = nullptr;
 
 	bool drawAABB = false;
 
@@ -194,9 +141,12 @@ public:
 
 	StartValues startValues;
 
+	//Create other particle when he death
 	bool isSubEmitter = false;
 
 	ComponentMaterial* material = nullptr;
+
+	float animationSpeed = 0.1f;
 
 private:
 	// General info
@@ -220,8 +170,6 @@ private:
 	// Warm up the particle emitter (if true the particle emitter will be already started at play-time)
 	bool preWarm = true;
 
-	//Create other particle when he death
-
 	//Burst options
 	bool burst = false;
 	int minPart = 0;
@@ -242,6 +190,8 @@ private:
 	int nextPos = 100;
 	math::float4 nextColor = math::float4(0.0f, 0.0f, 0.0f, 1.0f);
 
+	int textureRows = 1;
+	int textureColumns = 1;
 	//---------------------------------------
 
 	// Emission info
@@ -250,13 +200,6 @@ private:
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
 	//---------------------------------------
-
-	//ParticleUV particleAnimation;
-	float animationSpeed = 0.1f;
-
-	int textureRows = 1;
-	int textureColumns = 1;
-
 	bool isParticleAnimated = false;
 };
 #endif // !__Emitter_H__

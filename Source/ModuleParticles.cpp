@@ -11,22 +11,11 @@ ModuleParticle::ModuleParticle(bool start_enabled) : Module(start_enabled)
 
 ModuleParticle::~ModuleParticle()
 {
-	delete plane;
 }
 
 update_status ModuleParticle::Update()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
-
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		if (firework)
-		{
-			firework->StartEmitter();
-			DEPRECATED_LOG("Module Particle: Firework Comming");
-		}
-	}
-
 
 	for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
 	{
@@ -65,8 +54,7 @@ void ModuleParticle::StartAllEmiters()
 {
 	for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
 	{
-		if((*emitter) != firework)
-			(*emitter)->StartEmitter();
+		(*emitter)->StartEmitter();
 	}
 }
 
@@ -74,11 +62,7 @@ void ModuleParticle::Draw()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 
-	if (plane == nullptr)
-		plane = new ParticlePlane();
-
 	SortParticles();
-
 	DrawParticles();
 }
 
@@ -86,20 +70,9 @@ void ModuleParticle::DrawParticles()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 
-	//while (!partQueue.empty())
-	//{
-	//	Particle* currPart = partQueue.top();
-
-	//	//if (currPart->owner && currPart->owner->gameObject->canDraw)
-	//		currPart->Draw();
-
-	//	partQueue.pop();
-	//}
-
 	for (int i = 0; i < partVec.size(); ++i)
 	{
-		//TODO Particles: Need boolean canDraw??
-		if (partVec[i]->owner /*&& partVec[i]->owner->GetParent()->canDraw*/)
+		if (partVec[i]->owner)
 			partVec[i]->Draw();
 	}
 }

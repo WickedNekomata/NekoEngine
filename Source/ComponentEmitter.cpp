@@ -672,9 +672,9 @@ uint ComponentEmitter::GetInternalSerializationBytes()
 		 + sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(uint)//UUID Subemiter
 		 + sizeof(dieOnAnimation) + sizeof(isParticleAnimated) + sizeof(animationSpeed)
 		 + sizeof(textureColumns) + sizeof(textureRows) + sizeof(normalShapeType)
-		 + sizeof(boxCreation) + sizeof(float)*2 //Circle and Sphere rad
+		 + sizeof(boxCreation) + sizeof(burstType) + sizeof(float)*2 //Circle and Sphere rad
 		 + sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst)
-		 + sizeof(minPart) + sizeof(maxPart) + sizeof(repeatTime);
+		 + sizeof(minPart) + sizeof(maxPart) + sizeof(repeatTime) + sizeof(char) * burstTypeName.size();
 }
 
 void ComponentEmitter::OnInternalSave(char *& cursor)
@@ -683,125 +683,118 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, &startValues, bytes);
 	cursor += bytes;
 
-	//Checkers
 	size_t bytes = sizeof(bool);
 	memcpy(cursor, &checkLife, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkSpeed, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkAcceleration, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkSizeOverTime, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkSize, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkRotation, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
+
 	memcpy(cursor, &checkAngularAcceleration, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &checkAngularVelocity, bytes);
 
+	memcpy(cursor, &checkAngularVelocity, bytes);
 	cursor += bytes;
+
+	memcpy(cursor, &drawAABB, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &isSubEmitter, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &dieOnAnimation, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &isParticleAnimated, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &loop, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &burst, bytes);
+	cursor += bytes;
+
 	size_t bytes = sizeof(int);
 	memcpy(cursor, &rateOverTime, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &minPart, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &maxPart, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &textureColumns, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &textureRows, bytes);
 	cursor += bytes;
 
 	size_t bytes = sizeof(float);
 	memcpy(cursor, &duration, bytes);
 	cursor += bytes;
 
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &drawAABB, bytes);
-
+	memcpy(cursor, &repeatTime, bytes);
 	cursor += bytes;
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &isSubEmitter, bytes);
 
+	memcpy(cursor, &animationSpeed, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &circleCreation.r, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &sphereCreation.r, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &gravity, bytes);
+	cursor += bytes;
 
 	uint uuid = 0u;
 	if (subEmitter)
-		 uuid = subEmitter->GetUUID();
+		uuid = subEmitter->GetUUID();
 
 	cursor += bytes;
 	size_t bytes = sizeof(uint);
 	memcpy(cursor, &uuid, bytes);
 	cursor += bytes;
 
-
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &dieOnAnimation, bytes);
-	cursor += bytes;	
-
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &isParticleAnimated, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &animationSpeed, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(int);
-	memcpy(cursor, &textureColumns, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(int);
-	memcpy(cursor, &textureRows, bytes);
-	cursor += bytes;
-
 	size_t bytes = sizeof(ShapeType);
 	memcpy(cursor, &normalShapeType, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &burstType, bytes);
 	cursor += bytes;
 
 	size_t bytes = sizeof(math::AABB);
 	memcpy(cursor, &boxCreation, bytes);
 	cursor += bytes;
 
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &circleCreation.r, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &sphereCreation.r, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &gravity, bytes);
-	cursor += bytes;
-
 	size_t bytes = sizeof(math::float3);
 	memcpy(cursor, &posDifAABB, bytes);
 	cursor += bytes;
 
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &loop, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(bool);
-	memcpy(cursor, &burst, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(int);
-	memcpy(cursor, &minPart, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(int);
-	memcpy(cursor, &maxPart, bytes);
-	cursor += bytes;
-
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &repeatTime, bytes);
+	const char* string = burstTypeName.data();
+	size_t bytes = sizeof(char)*burstTypeName.size();
+	memcpy(cursor, &string, bytes);
 	cursor += bytes;
 }
 
 void ComponentEmitter::OnInternalLoad(char *& cursor)
 {
+
+
 }
 
 int ComponentEmitter::GetEmition() const

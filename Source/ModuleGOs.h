@@ -28,9 +28,16 @@ public:
 	void ClearScene();
 
 	void RecalculateVector(GameObject* go); //if static or dynamic
-
+  
 	bool SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
 	bool LoadScene(char*& buffer, size_t sizeBuffer);
+  
+	//UI
+  GameObject* CreateCanvas(const char* name, GameObject* parent);
+ 	void DeleteCanvasPointer();
+	bool ExistCanvas() const;
+	bool IsCanvas(GameObject* go_canvas) const;
+	GameObject* GetCanvas()const;
 
 	bool InvalidateResource(Resource* resource);
 
@@ -46,5 +53,8 @@ public:
 	size_t sceneStateSize;
 
 	char nameScene[DEFAULT_BUF_SIZE];
+
+	//Canvas
+	GameObject* canvas = nullptr;
 };
 #endif

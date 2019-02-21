@@ -8,6 +8,7 @@
 #include "PanelInspector.h"
 #include "ModuleGui.h"
 #include "Resource.h"
+#include "ModuleGOs.h"
 
 #include <assert.h>
 
@@ -80,7 +81,8 @@ public:
 
 #ifndef GAMEMODE
 		// New game object selected. Update the camera reference
-		App->camera->SetReference(newSelection->transform->position);
+		if(!App->GOs->IsCanvas(newSelection))
+			App->camera->SetReference(newSelection->transform->position);
 #endif
 
 		return *this;

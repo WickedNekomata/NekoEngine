@@ -51,6 +51,14 @@ bool PanelHierarchy::Draw()
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
+      if(!App->GOs->ExistCanvas())
+      {
+				if (ImGui::Selectable("Create Screen Canvas"))
+				{
+					App->GOs->CreateCanvas("Canvas", root);
+					ImGui::CloseCurrentPopup();
+				}
+      }
 			if (ImGui::Selectable("Create Cube"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("Cube", root);
@@ -63,6 +71,7 @@ bool PanelHierarchy::Draw()
 				go->AddComponent(ComponentTypes::MeshComponent);
 				go->cmp_mesh->SetResource(App->resHandler->defaultPlane);
 			}
+
 			ImGui::EndPopup();
 		}
 
@@ -177,6 +186,8 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 			if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
+			if (App->GOs->IsCanvas(child))
+				App->GOs->DeleteCanvasPointer();
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

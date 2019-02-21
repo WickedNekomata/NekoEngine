@@ -14,7 +14,10 @@
 
 std::vector<std::string>ResourceScript::scriptNames;
 
-ResourceScript::ResourceScript(ResourceTypes type, uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(type, uuid, data), scriptData(scriptData) {}
+ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
+{
+	scriptName = data.name;
+}
 
 ResourceScript::~ResourceScript()
 {
@@ -54,7 +57,16 @@ void ResourceScript::OnPanelAssets()
 
 void ResourceScript::SerializeToMeta(char*& cursor) const
 {
-	uint bytes = sizeof(UUID);
+	//Skip lastModTime
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint numUUIDS = 1;
+	memcpy(cursor, &numUUIDS, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
 	memcpy(cursor, &uuid, bytes);
 	cursor += bytes;
 
@@ -73,7 +85,14 @@ void ResourceScript::SerializeToMeta(char*& cursor) const
 
 void ResourceScript::DeSerializeFromMeta(char*& cursor)
 {
-	uint bytes = sizeof(UUID);
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
@@ -94,7 +113,8 @@ void ResourceScript::DeSerializeFromMeta(char*& cursor)
 
 uint ResourceScript::bytesToSerializeMeta() const
 {
-	return sizeof(UUID) + sizeof(ScriptState) + sizeof(uint) + scriptName.size();
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	return sizeof(int64_t) + sizeof(uint) + sizeof(uint32_t) + sizeof(ScriptState) + sizeof(uint) + scriptName.size();
 }
 
 uint ResourceScript::getBytes() const

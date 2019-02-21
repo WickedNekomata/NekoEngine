@@ -24,18 +24,19 @@ public:
 	void OnDisable() override;
 
 	void OnUniqueEditor() override;
-
-	uint bytesToSerializePublicVars() const;
+	
+	uint GetInternalSerializationBytes();
+	uint GetPublicVarsSerializationBytes() const;
 
 	void Serialize(char*& cursor) const;
 	void deSerialize(char*& cursor, uint32_t& goUUID);
 
-	void SerializePublicVars(char*& cursor) const;
-	void deSerializePublicVars(char*& cursor);
+	void SavePublicVars(char*& cursor) const;
+	void LoadPublicVars(char*& cursor);
 
-	void OnInternalSave(char*& cursor) {}
-	void OnInternalLoad(char*& cursor) {}
-	uint GetInternalSerializationBytes() { return 0; }
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
+
 public:
 	void InstanceClass();
 

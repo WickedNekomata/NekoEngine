@@ -53,7 +53,7 @@ void ResourceShaderObject::OnPanelAssets()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ResourceShaderObject::ImportFile(const char* file, std::string& outputFile)
+bool ResourceShaderObject::ImportFile(const char* file, std::string& name, std::string& outputFile)
 {
 	assert(file != nullptr);
 
@@ -65,18 +65,22 @@ bool ResourceShaderObject::ImportFile(const char* file, std::string& outputFile)
 	if (App->fs->Exists(metaFile))
 	{
 		uint uuid = 0;
-		assert(ResourceShaderObject::ReadShaderObjectUuidFromMeta(metaFile, uuid));
+		int64_t lastModTime = 0;
+		std::string shaderName;
+		ResourceShaderObject::ReadMeta(metaFile, lastModTime, uuid, shaderName);
+		assert(uuid > 0);
+
+		name = shaderName.data();
 
 		char entry[DEFAULT_BUF_SIZE];
 		sprintf_s(entry, "%u", uuid);
-
 		outputFile = entry;
 	}
 
 	return true;
 }
 
-bool ResourceShaderObject::ExportFile(ResourceShaderObjectData& shaderObjectData, ResourceData& data, std::string& outputFile, bool overwrite)
+bool ResourceShaderObject::ExportFile(ResourceData& data, ResourceShaderObjectData& shaderObjectData, std::string& outputFile, bool overwrite)
 {
 	return App->shaderImporter->SaveShaderObject(data, shaderObjectData, outputFile, overwrite);
 }
@@ -87,7 +91,11 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 	assert(file != nullptr);
 	
 	uint uuidsSize = 1;
-	uint nameSize = name.size();
+	uint nameSize = DEFAULT_BUF_SIZE;
+
+	// Name
+	char shaderName[DEFAULT_BUF_SIZE];
+	strcpy_s(shaderName, DEFAULT_BUF_SIZE, name.data());
 
 	uint size =
 		sizeof(int64_t) +
@@ -127,7 +135,7 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 
 	// 5. Store shader object name
 	bytes = sizeof(char) * nameSize;
-	memcpy(cursor, name.data(), bytes);
+	memcpy(cursor, shaderName, bytes);
 
 	// --------------------------------------------------
 
@@ -213,7 +221,11 @@ uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string
 	ReadMeta(metaFile, lastModTime, shaderObjectUuid, oldName);
 
 	uint uuidsSize = 1;
-	uint nameSize = name.size();
+	uint nameSize = DEFAULT_BUF_SIZE;
+
+	// Name
+	char shaderName[DEFAULT_BUF_SIZE];
+	strcpy_s(shaderName, DEFAULT_BUF_SIZE, name.data());
 
 	uint size =
 		sizeof(int64_t) +
@@ -251,7 +263,7 @@ uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string
 
 	// 5. Store shader object name
 	bytes = sizeof(char) * nameSize;
-	memcpy(cursor, name.data(), bytes);
+	memcpy(cursor, shaderName, bytes);
 
 	// --------------------------------------------------
 

@@ -294,7 +294,8 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 			data.file = shaderFile;
 			shaderObjectData.shaderType = shaderType;
 
-			App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, true);
+			std::string outputFile;
+			App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, outputFile, true);
 
 			showCreateShaderConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();

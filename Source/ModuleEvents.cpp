@@ -22,6 +22,7 @@
 
 #include "Application.h"
 #include "ModuleGOs.h"
+#include "ModuleResourceManager.h"
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
 
@@ -41,6 +42,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		}
 		case System_Event_Type::ResourceDestroyed:
 		{
+			App->res->EraseResource(event.resEvent.resource);
 			delete event.resEvent.resource;
 			break;
 		}

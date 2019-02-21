@@ -7,7 +7,7 @@ enum System_Event_Type
 	CopyShadersIntoLibrary,
 
 	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
-	
+
 	RecalculateBBoxes, // GameObjectEvent
 	ShaderProgramChanged,
 	RecreateQuadtree,

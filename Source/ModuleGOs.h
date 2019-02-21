@@ -32,7 +32,7 @@ public:
 	bool SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
 	bool LoadScene(char*& buffer, size_t sizeBuffer);
 
-	bool InvalidateResource(const Resource* resource);
+	bool InvalidateResource(Resource* resource);
 
 private:
 

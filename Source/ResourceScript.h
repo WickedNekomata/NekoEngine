@@ -10,7 +10,7 @@ struct _MonoAssembly;
 
 struct ResourceScriptData
 {
-	// TODO
+	
 };
 
 enum class VarType
@@ -46,7 +46,7 @@ public:
 		
 	} state = ScriptState::NO_COMPILED;
 
-	ResourceScript(ResourceTypes type, uint uuid, ResourceData data, ResourceScriptData scriptData);
+	ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData);
 	virtual ~ResourceScript();
 
 	bool LoadInMemory() override { return true; }
@@ -55,6 +55,7 @@ public:
 	void OnPanelAssets();
 
 public:
+
 	void SerializeToMeta(char*& cursor) const;
 	void DeSerializeFromMeta(char*& cursor);
 	uint bytesToSerializeMeta() const;

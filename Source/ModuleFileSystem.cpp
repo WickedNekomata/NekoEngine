@@ -267,11 +267,7 @@ bool ModuleFileSystem::Exists(std::string file) const
 
 bool ModuleFileSystem::RecursiveExists(const char* fileName, const char* dir, std::string& path) const
 {
-	if (dir == nullptr)
-	{
-		assert(dir != nullptr);
-		return false;
-	}
+	assert(dir != nullptr);
 
 	path.append("/");
 
@@ -906,10 +902,14 @@ void ModuleFileSystem::SendEvents(const Directory& newAssetsDir)
 					break;
 				}
 			}
-			System_Event event;
-			event.fileEvent.type = System_Event_Type::NewFile;
-			strcpy(event.fileEvent.file, fullPathFile.c_str());
-			App->PushSystemEvent(event);
+
+			if (!Exists(fullPathFile + ".meta"))
+			{
+				System_Event event;
+				event.fileEvent.type = System_Event_Type::NewFile;
+				strcpy(event.fileEvent.file, fullPathFile.c_str());
+				App->PushSystemEvent(event);
+			}		
 		}
 	}
 

@@ -147,7 +147,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		//RecursiveProcessBones(scene, scene->mRootNode);
+		RecursiveProcessBones(scene, scene->mRootNode);
 
 		aiReleaseImport(scene);
 
@@ -182,7 +182,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		gameObject = (GameObject*)parent;
 	// If the previous game object was a transformation, keep the transformation
 	else if (transformation != nullptr)
-		gameObject = (GameObject*)transformation;
+		gameObject = new GameObject(name.data(), (GameObject*)parent);
 	// If the previous game object wasn't a transformation, create a new game object
 	else
 		gameObject = new GameObject(name.data(), (GameObject*)parent);
@@ -190,6 +190,8 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	// If the current game object is not a transformation, update its name (just in case the previous one was)
 	if (!isTransformation)
 		gameObject->SetName(name.data());
+
+	relations[node] = gameObject;
 
 	// Transform
 	aiVector3D position;
@@ -304,14 +306,12 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			}
 			
 			// Color
-			if (nodeMesh->HasVertexColors(0))
+			/*if (nodeMesh->HasVertexColors(0))
 			{
 				colorsSize = verticesSize;
 				colors = new uchar[colorsSize * 4];
 				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
-			}
-
-			relations[node] = gameObject;
+			}*/
 
 			// Bone
 			if (nodeMesh->HasBones() == true && gameObject->GetComponent(ComponentTypes::MeshComponent))

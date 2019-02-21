@@ -297,6 +297,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				if (success)
 					shaderObjectResource->shaderObject = shaderObject;
 			}
+			else
+				resource = GetResource(resourcesUuids.front());
 
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
@@ -383,6 +385,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				if (success)
 					shaderProgramResource->shaderProgram = shaderProgram;
 			}
+			else
+				resource = GetResource(resourcesUuids.front());
 
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
@@ -424,7 +428,19 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	{
 		std::string outputFile;
 		if (ResourceShaderProgram::ExportFile(*(ResourceShaderProgramData*)specificData, data, outputFile, overwrite))
+		{
+			// Meta
+			std::string outputMetaFile;
+			ResourceShaderProgramData shaderProgramData = *(ResourceShaderProgramData*)specificData;
+			std::vector<std::string> names;
+			std::list<std::string> shaderObjectsNames = shaderProgramData.GetShaderObjectsNames();
+			for (std::list<std::string>::const_iterator it = shaderObjectsNames.begin(); it != shaderObjectsNames.end(); ++it)
+				names.push_back(*it);
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), App->GenerateRandomNumber(), data.name, names, outputMetaFile);
+			assert(lastModTime > 0);
+
 			resource = ImportFile(outputFile.data());
+		}
 	}
 	break;
 	}
@@ -448,12 +464,12 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 		case ResourceTypes::TextureResource:
 			resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
 			break;
-			case ResourceTypes::ShaderObjectResource:
-				resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
-				break;
-			case ResourceTypes::ShaderProgramResource:
-				resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
-				break;
+		case ResourceTypes::ShaderObjectResource:
+			resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
+			break;
 		case ResourceTypes::ScriptResource:
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;

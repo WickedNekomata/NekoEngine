@@ -86,9 +86,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 
 	uint uuidsSize = 1;
 	uint nameSize = DEFAULT_BUF_SIZE;
-	uint namesSize = 0;
-	for (uint i = 0; i < shaderObjectsNames.size(); ++i)
-		namesSize += shaderObjectsNames[i].size();
+	uint namesSize = shaderObjectsNames.size();
 
 	// Name
 	char shaderName[DEFAULT_BUF_SIZE];
@@ -100,7 +98,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 		sizeof(uint) * uuidsSize +
 
 		sizeof(char) * nameSize +
-		sizeof(char) * namesSize;
+		sizeof(char) * namesSize * nameSize;
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -144,8 +142,13 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 	cursor += bytes;
 
 	// 7. Store shader objects names
-	bytes = sizeof(char) * namesSize;
-	memcpy(cursor, &shaderObjectsNames[0], bytes);
+	char shaderObjectName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < namesSize; ++i)
+	{
+		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
+		bytes = sizeof(char) * nameSize;
+		memcpy(cursor, shaderObjectName, bytes);
+	}
 
 	// --------------------------------------------------
 
@@ -220,8 +223,13 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 		cursor += bytes;
 
 		// 7. Load shader objects names
-		bytes = sizeof(char) * namesSize;
-		memcpy(&shaderObjectsNames[0], cursor, bytes);
+		char shaderObjectName[DEFAULT_BUF_SIZE];
+		for (uint i = 0; i < namesSize; ++i)
+		{
+			bytes = sizeof(char) * nameSize;
+			memcpy(shaderObjectName, cursor, bytes);
+			shaderObjectsNames.push_back(shaderObjectName);
+		}
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -247,9 +255,7 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 
 	uint uuidsSize = 1;
 	uint nameSize = DEFAULT_BUF_SIZE;
-	uint namesSize = 0;
-	for (uint i = 0; i < shaderObjectsNames.size(); ++i)
-		namesSize += shaderObjectsNames[i].size();
+	uint namesSize = shaderObjectsNames.size();
 
 	// Name
 	char shaderName[DEFAULT_BUF_SIZE];
@@ -261,7 +267,7 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 		sizeof(uint) * uuidsSize +
 
 		sizeof(char) * nameSize +
-		sizeof(char) * namesSize;
+		sizeof(char) * namesSize * nameSize;
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -303,8 +309,13 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 	cursor += bytes;
 
 	// 7. Store shader objects names
-	bytes = sizeof(char) * namesSize;
-	memcpy(cursor, &shaderObjectsNames[0], bytes);
+	char shaderObjectName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < namesSize; ++i)
+	{
+		strcpy_s(shaderObjectName, DEFAULT_BUF_SIZE, shaderObjectsNames[i].data());
+		bytes = sizeof(char) * nameSize;
+		memcpy(cursor, shaderObjectName, bytes);
+	}
 
 	// --------------------------------------------------
 
@@ -629,9 +640,14 @@ bool ResourceShaderProgram::ReadShaderObjectsNamesFromMeta(const char* metaFile,
 
 		cursor += bytes;
 
-		// 5. Load shader objects names
-		bytes = sizeof(char) * namesSize;
-		memcpy(&shaderObjectsNames[0], cursor, bytes);
+		// 7. Load shader objects names
+		char shaderObjectName[DEFAULT_BUF_SIZE];
+		for (uint i = 0; i < namesSize; ++i)
+		{
+			bytes = sizeof(char) * nameSize;
+			memcpy(cursor, shaderObjectName, bytes);
+			shaderObjectsNames.push_back(shaderObjectName);
+		}
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);

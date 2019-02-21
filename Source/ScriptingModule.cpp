@@ -243,7 +243,6 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 
 ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, bool createCS)
 {
-	/*
 	while (scriptName.find(" ") != std::string::npos)
 	{
 		scriptName = scriptName.replace(scriptName.find(" "), 1, "");
@@ -281,6 +280,9 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		metaSize = App->fs->Load("Assets/Scripts/" + scriptName + ".cs.meta", &metaBuffer);
 
+		char* cursor = metaBuffer;
+		cursor += sizeof(int64_t) + sizeof(uint);
+
 		uint32_t UID;
 		memcpy(&UID, metaBuffer, sizeof(uint32_t));
 
@@ -293,8 +295,13 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	{
 		//Here we have to reference a new ResourceScript with the .cs we have created, but the ResourceManager will still be sending file created events, and we would have data duplication.
 		//We disable this behavior and control the script creation only with this method, so we do not care for external files out-of-engine created.
-		scriptRes = new ResourceScript(scriptName);
-		scriptRes->file = "Assets/Scripts/" + scriptName + ".cs";
+		
+		ResourceData data;
+		data.name = scriptName;
+		data.file = "Assets/Scripts/" + scriptName + ".cs";
+		data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
+	
+		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
 
 		//Create the .meta, to make faster the search in the map storing the uid.
 		uint bytes = scriptRes->bytesToSerializeMeta();
@@ -307,8 +314,6 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		delete[] buffer;
 
 		scriptRes->Compile();
-
-		App->res->InsertResource(scriptRes);
 	}
 
 	App->res->SetAsUsed(scriptRes->GetUuid());
@@ -317,8 +322,6 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	scripts.push_back(script);
 
 	return script;
-	*/
-	return nullptr;
 }
 
 bool ScriptingModule::DestroyScript(ComponentScript* script)
@@ -409,6 +412,14 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 	component->SetMonoComponent(handleID);
 
 	return monoComponent;
+}
+
+Component* ScriptingModule::ComponentFrom(MonoObject* monoComponent)
+{
+	int componentAddress;
+	mono_field_get_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "componentAddress"), &componentAddress);	
+
+	return (Component*)componentAddress;
 }
 
 bool ScriptingModule::alreadyCreated(std::string scriptName)

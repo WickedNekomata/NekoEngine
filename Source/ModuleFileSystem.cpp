@@ -906,10 +906,14 @@ void ModuleFileSystem::SendEvents(const Directory& newAssetsDir)
 					break;
 				}
 			}
-			System_Event event;
-			event.fileEvent.type = System_Event_Type::NewFile;
-			strcpy(event.fileEvent.file, fullPathFile.c_str());
-			App->PushSystemEvent(event);
+
+			if (!Exists(fullPathFile + ".meta"))
+			{
+				System_Event event;
+				event.fileEvent.type = System_Event_Type::NewFile;
+				strcpy(event.fileEvent.file, fullPathFile.c_str());
+				App->PushSystemEvent(event);
+			}		
 		}
 	}
 

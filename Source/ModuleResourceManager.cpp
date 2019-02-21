@@ -321,7 +321,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader program file '%s' has resources that need to be created", file);
 
-				// 1. Shader program	
+				// 1. Shader program
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
 				assert(uuid > 0);
 				resourcesUuids.push_back(uuid);
@@ -394,11 +394,11 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	}
 	break;
 
-	case ResourceTypes::ScriptResource:
-	{
+		case ResourceTypes::ScriptResource:
+		{
 
-	}
-	break;
+			break;
+		}
 	}
 
 	return resource;
@@ -442,18 +442,21 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 
 	switch (type)
 	{
-	case ResourceTypes::MeshResource:
-		resource = new ResourceMesh(ResourceTypes::MeshResource, uuid, data, *(ResourceMeshData*)specificData);
-		break;
-	case ResourceTypes::TextureResource:
-		resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
-		break;
-	case ResourceTypes::ShaderObjectResource:
-		resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
-		break;
-	case ResourceTypes::ShaderProgramResource:
-		resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
-		break;
+		case ResourceTypes::MeshResource:
+			resource = new ResourceMesh(ResourceTypes::MeshResource, uuid, data, *(ResourceMeshData*)specificData);
+			break;
+		case ResourceTypes::TextureResource:
+			resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
+			break;
+			case ResourceTypes::ShaderObjectResource:
+				resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
+				break;
+			case ResourceTypes::ShaderProgramResource:
+				resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
+				break;
+		case ResourceTypes::ScriptResource:
+			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
+			break;
 	}
 	assert(resource != nullptr);
 

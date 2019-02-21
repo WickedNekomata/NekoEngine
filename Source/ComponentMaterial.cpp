@@ -329,6 +329,7 @@ void ComponentMaterial::OnUniqueEditor()
 
 uint ComponentMaterial::GetInternalSerializationBytes()
 {
+	return 0;
 	size_t size = sizeof(GLuint);
 	size += sizeof(uint);
 	size += sizeof(Uniform) * uniforms.size();
@@ -343,6 +344,7 @@ uint ComponentMaterial::GetInternalSerializationBytes()
 
 void ComponentMaterial::OnInternalSave(char*& cursor)
 {
+	return;
 	size_t bytes = sizeof(GLuint);
 	memcpy(cursor, &shaderProgramUUID, bytes);
 	cursor += bytes;
@@ -372,6 +374,7 @@ void ComponentMaterial::OnInternalSave(char*& cursor)
 
 void ComponentMaterial::OnInternalLoad(char*& cursor)
 {
+	return;
 	size_t bytes = sizeof(GLuint);
 	memcpy(&shaderProgramUUID, cursor, bytes);
 	cursor += bytes;

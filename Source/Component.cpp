@@ -75,8 +75,8 @@ void Component::OnSystemEvent(System_Event event)
 
 uint Component::GetSerializationBytes()
 {
-	//uuid + type + active + internal
-	return sizeof(uint) + sizeof(int) + sizeof(bool) + GetInternalSerializationBytes();
+	// uuid + type + active + internal
+	return sizeof(int) + sizeof(uint) + sizeof(bool) + GetInternalSerializationBytes();
 }
 
 void Component::OnUniqueEditor() {}

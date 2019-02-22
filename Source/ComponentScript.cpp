@@ -25,18 +25,26 @@ ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject
 
 ComponentScript::~ComponentScript()
 {
-	if(scriptRes)
-		App->res->SetAsUnused(scriptRes->GetUuid());
-
+	if (scriptResUUID != 0)
+	{
+		ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+		if (scriptRes)
+			App->res->SetAsUnused(scriptRes->GetUuid());
+	}
+	
 	if (handleID != 0)
 	{
 		mono_gchandle_free(handleID);
 		handleID = 0;
 	}
+
+	App->scripting->ClearScriptComponent(this);
 }
 
 void ComponentScript::Awake()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+	
 	if (scriptRes && scriptRes->awakeMethod)
 	{
 		awaked = true;
@@ -62,6 +70,7 @@ void ComponentScript::Awake()
 
 void ComponentScript::Start()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->startMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -86,6 +95,7 @@ void ComponentScript::Start()
 
 void ComponentScript::PreUpdate()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->preUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -110,6 +120,7 @@ void ComponentScript::PreUpdate()
 
 void ComponentScript::Update()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->updateMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -134,6 +145,7 @@ void ComponentScript::Update()
 
 void ComponentScript::PostUpdate()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->postUpdateMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -158,6 +170,7 @@ void ComponentScript::PostUpdate()
 
 void ComponentScript::OnEnableMethod()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->enableMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -182,6 +195,7 @@ void ComponentScript::OnEnableMethod()
 
 void ComponentScript::OnDisableMethod()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->disableMethod)
 	{
 		MonoObject* exc = nullptr;
@@ -203,6 +217,7 @@ void ComponentScript::OnDisableMethod()
 
 void ComponentScript::OnStop()
 {
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes && scriptRes->stopMethod)
 	{
 		awaked = false;
@@ -332,10 +347,11 @@ void ComponentScript::OnUniqueEditor()
 			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));			
 		}
 
+		ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes->GetFile());
+			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes ? scriptRes->GetFile() : "null");
 			ImGui::EndTooltip();
 		}		
 
@@ -911,7 +927,7 @@ void ComponentScript::OnInternalSave(char*& cursor)
 {
 	uint bytes = sizeof(uint32_t);
 
-	uint32_t resUID = scriptRes ? scriptRes->GetUuid() : 0;
+	uint32_t resUID = scriptResUUID;
 	memcpy(cursor, &resUID, bytes);
 	cursor += bytes;
 
@@ -922,21 +938,23 @@ void ComponentScript::OnInternalLoad(char*& cursor)
 {
 	uint bytes = sizeof(uint32_t);
 
-	uint32_t resUID;
-	memcpy(&resUID, cursor, bytes);
+	memcpy(&scriptResUUID, cursor, bytes);
 	cursor += bytes;
 
-	//Reference the ScriptResource
-	scriptRes = (ResourceScript*)App->res->GetResource(resUID);
-
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 	if (scriptRes)
 	{
 		scriptName = scriptRes->scriptName;
-
 		LoadPublicVars(cursor);
+
+		App->res->SetAsUsed(scriptRes->GetUuid());
 	}
 	else
 		CONSOLE_LOG(LogTypes::Error, "A ComponentScript lost his ResourceScript reference!");	
+
+	InstanceClass();
+
+	LoadPublicVars(cursor);
 }
 
 uint ComponentScript::GetPublicVarsSerializationBytes() const
@@ -2064,8 +2082,23 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 
 void ComponentScript::InstanceClass()
 {
-	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
+	if (scriptResUUID == 0)
 		return;
+
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+
+	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
+	{
+		if (!scriptRes)
+		{
+			System_Event event;
+			event.compEvent.type = System_Event_Type::ComponentDestroyed;
+			event.compEvent.component = this;
+			App->PushSystemEvent(event);
+		}
+		return;
+	}
+		
 
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
 	classInstance = mono_object_new(App->scripting->domain, klass);

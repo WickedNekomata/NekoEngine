@@ -114,9 +114,29 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		break;
 	}
 
+
 	case System_Event_Type::ResourceDestroyed:
 		InvalidateResource(event.resEvent.resource);
 		break;
+	case System_Event_Type::ScriptingDomainReloaded:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
+
+	case System_Event_Type::Stop:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
 	}
 }
 
@@ -190,7 +210,7 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), go), dynamicGos.end());
 	staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), go), staticGos.end());
 
-	if (go->IsStatic())	
+	if (go->IsStatic())
 		staticGos.push_back(go);
 	else
 		dynamicGos.push_back(go);

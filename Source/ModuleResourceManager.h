@@ -68,6 +68,7 @@ public:
 	bool GetResourcesUuidsByFile(const char* file, std::vector<uint>& resourcesUuids) const;
 	bool GetResourceUuidByExportedFile(const char* file, uint& resourceUuid) const;
 	ResourceTypes GetResourceTypeByExtension(const char* extension) const;
+	std::vector<Resource*> GetResourcesByType(ResourceTypes type);
 
 private:
 

@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ScriptingModule.h"
 
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
@@ -55,13 +56,29 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	case System_Event_Type::FileOverwritten:
 	case System_Event_Type::ReImportFile:
 	{
-		// 1. Delete resource(s)
-		std::vector<uint> resourcesUuids;
-		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-			DeleteResources(resourcesUuids); // TODO: don't delete script resources
+		std::string extension;
+		App->fs->GetExtension(event.fileEvent.file, extension);
+		ResourceTypes type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+			case ResourceTypes::ScriptResource:
+			{
+				App->scripting->ScriptModified(event.fileEvent.file);
+				break;
+			}
+			default:
+			{
+				// 1. Delete resource(s)
+				std::vector<uint> resourcesUuids;
+				if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
+					DeleteResources(resourcesUuids);
 
-		// 2. Import file
-		ImportFile(event.fileEvent.file);
+				// 2. Import file
+				ImportFile(event.fileEvent.file);
+
+				break;
+			}
+		}	
 	}
 	break;
 
@@ -137,10 +154,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 
 		// 3. Delete resource(s)
+
+		//TODO: SEND EVENTS ABOUT THE DELETED RESOURCES, COMPONENTSCRIPTS NEED THAT IN ORDER TO DELETE THEIRSELVES
+
 		if (resources)
 			DeleteResources(resourcesUuids);
 
-		// 4. Import file
+		// 4. Import file	
 		ImportFile(event.fileEvent.file);
 	}
 	break;
@@ -402,7 +422,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 	case ResourceTypes::ScriptResource:
 	{
-		
+		resource = App->scripting->ImportScriptResource(file);
 		break;
 	}
 	}
@@ -483,6 +503,7 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;
 	}
+
 	assert(resource != nullptr);
 
 	resources[uuid] = resource;
@@ -721,4 +742,17 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	}
 
 	return ResourceTypes::NoResourceType;
+}
+
+std::vector<Resource*> ModuleResourceManager::GetResourcesByType(ResourceTypes type)
+{
+	std::vector<Resource*> ret;
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->GetType() == type)
+		{
+			ret.push_back(it->second);
+		}
+	}
+	return ret;
 }

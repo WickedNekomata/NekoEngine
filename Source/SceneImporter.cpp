@@ -186,7 +186,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	// If the previous game object wasn't a transformation, create a new game object
 	else
 		gameObject = new GameObject(name.data(), (GameObject*)parent);
-	
+
 	// If the current game object is not a transformation, update its name (just in case the previous one was)
 	if (!isTransformation)
 		gameObject->SetName(name.data());
@@ -292,19 +292,19 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				normals = new float[normalsSize * 3];
 				memcpy(normals, nodeMesh->mNormals, sizeof(float) * normalsSize * 3);
 			}
-			
+
 			// Tangents and Bitangents
 			if (nodeMesh->HasTangentsAndBitangents())
 			{
 				tangentsSize = verticesSize;
 				tangents = new float[tangentsSize * 3];
 				memcpy(tangents, nodeMesh->mTangents, sizeof(float) * tangentsSize * 3);
-				
+
 				bitangentsSize = verticesSize;
 				bitangents = new float[bitangentsSize * 3];
 				memcpy(bitangents, nodeMesh->mBitangents, sizeof(float) * bitangentsSize * 3);
 			}
-			
+
 			// Color
 			/*if (nodeMesh->HasVertexColors(0))
 			{
@@ -409,7 +409,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 4. Store tangents
 			if (tangentsSize > 0)
 			{
@@ -427,7 +427,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 6. Store colors
 			if (colorsSize > 0)
 			{
@@ -653,7 +653,7 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 	// Bind the VAO
 	glBindVertexArray(VAO);
 
-	// Bind the VBO 
+	// Bind the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	// Set the vertex attributes pointers
@@ -717,7 +717,7 @@ uint SceneImporter::GetAssimpRevisionVersion() const
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
 	float skyboxVertices[] = {
-        
+
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -860,7 +860,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		aiBone* bone = it->second;
 
 		GameObject* go = relations[node];
-		
+
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;

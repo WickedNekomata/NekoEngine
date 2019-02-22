@@ -17,6 +17,7 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
+#include "ScriptingModule.h"
 
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
@@ -31,6 +32,8 @@ bool PanelAssets::Draw()
 	{
 		if (ImGui::Button("Re-Import"))
 		{
+			App->scripting->CreateDomain();
+
 			App->fs->ForceReImport(App->fs->rootAssets);
 
 			System_Event event;

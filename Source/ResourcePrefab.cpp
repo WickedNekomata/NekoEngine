@@ -2,6 +2,8 @@
 #include "imgui/imgui.h"
 #include "Application.h"
 #include "ModuleScene.h"
+#include "ModuleGOs.h"
+#include "ModuleFileSystem.h"
 
 ResourcePrefab::ResourcePrefab(uint uuid, ResourceData data, PrefabData customData) : Resource(ResourceTypes::PrefabResource, uuid, data)
 {
@@ -43,6 +45,25 @@ void ResourcePrefab::OnPanelAssets()
 
 bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
 {
+	bool ret = false;
+	char* buffer;
+	uint size = 0u;
+	App->GOs->SerializeFromNode(prefabData.root, buffer, size);
+
+	if (overwrite)
+		outputFile = data.file;
+	else
+		outputFile = data.name;
+
+	ret = App->fs->SaveInGame(buffer, size, FileType::PrefabFile, outputFile, overwrite) > 0;
+
+	if (ret) {
+		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Successfully saved prefab '%s'", outputFile.data());
+	}else
+		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Error saving prefab '%s'", outputFile.data());
+
+	RELEASE_ARRAY(buffer);
+
 	return true;
 }
 

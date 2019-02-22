@@ -20,6 +20,7 @@
 #define DIR_ASSETS_SHADERS "Assets/Shaders"
 #define DIR_ASSETS_SHADERS_OBJECTS "Assets/Shaders/Objects"
 #define DIR_ASSETS_SHADERS_PROGRAMS "Assets/Shaders/Programs"
+#define DIR_ASSETS_PREFAB "Assets/Prefabs"
 #define DIR_ASSETS_SCRIPTS "Assets/Scripts"
 #define DIR_ASSETS_ANIMATIONS "Assets/Animations"
 #define DIR_ASSETS_MESHES "Assets/Meshes"
@@ -39,6 +40,8 @@ enum FileType
 
 	BoneFile,
 	AnimationFile,
+
+	PrefabFile,
 
 	SceneFile,
 

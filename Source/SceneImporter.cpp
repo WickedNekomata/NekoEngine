@@ -159,16 +159,16 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		- Returns a resource already in memory (not needed here)
 		*/
 
-		/*ResourceData data;
+		ResourceData data;
 		PrefabData prefab_data;
 
-		// TODO ? fill data?
+		data.name = "Prefab_test";
 
 		prefab_data.root = rootGameObject;
 		std::string outputFile;
-		App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &prefab_data, outputFile, true);
+		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, true);
 
-		aiReleaseImport(scene);*/
+		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
 		// TODO: create prefab

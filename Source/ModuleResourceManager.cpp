@@ -486,8 +486,8 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	{
 		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
 		{
-			if (!overwrite)
-				resource = ImportFile(outputFile.data());
+			//if (!overwrite)
+				//resource = ImportFile(outputFile.data());
 		}
 	}
 	break;

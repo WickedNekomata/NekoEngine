@@ -7,6 +7,7 @@
 
 class ComponentCanvasRenderer : public Component
 {
+public:
 	ComponentCanvasRenderer(GameObject* parent, ComponentTypes componentType = ComponentTypes::CanvasRendererComponent);
 	ComponentCanvasRenderer(const ComponentCanvasRenderer& componentRectTransform);
 	~ComponentCanvasRenderer();

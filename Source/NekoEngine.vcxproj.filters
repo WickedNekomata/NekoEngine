@@ -1480,6 +1480,9 @@
     <ClInclude Include="ComponentCanvasRenderer.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentImage.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1942,6 +1945,9 @@
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCanvasRenderer.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentImage.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClCompile>
   </ItemGroup>

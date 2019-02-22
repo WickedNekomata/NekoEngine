@@ -25,6 +25,8 @@
 #include "ComponentBone.h"
 #include "ComponentScript.h"
 #include "ComponentRectTransform.h"
+#include "ComponentCanvasRenderer.h"
+#include "ComponentImage.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
 
@@ -105,6 +107,12 @@ GameObject::GameObject(const GameObject& gameObject)
 			break;
 		case ComponentTypes::RectTransformComponent:
 			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			break;
+		case ComponentTypes::CanvasRendererComponent:
+			cmp_canvasRenderer = new ComponentCanvasRenderer(*gameObject.cmp_canvasRenderer);
+			break;
+		case ComponentTypes::ImageComponent:
+			cmp_image = new ComponentImage(*gameObject.cmp_image);
 			break;
 		}
 	}
@@ -384,6 +392,14 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::RectTransformComponent:
 		assert(cmp_rectTransform == nullptr);
 		newComponent = cmp_rectTransform = new ComponentRectTransform(this);
+		break;
+	case ComponentTypes::CanvasRendererComponent:
+		newComponent = cmp_canvasRenderer = new ComponentCanvasRenderer(this);
+		break;
+	case ComponentTypes::ImageComponent:
+		if (cmp_canvasRenderer == nullptr)
+			components.push_back(cmp_canvasRenderer = new ComponentCanvasRenderer(this));
+		newComponent = cmp_image = new ComponentImage(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 	case ComponentTypes::RigidDynamicComponent:

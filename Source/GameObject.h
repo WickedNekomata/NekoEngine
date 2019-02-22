@@ -83,6 +83,8 @@ public:
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
 	class ComponentRectTransform* cmp_rectTransform = nullptr; //Nullptr a puño y fuego D:<
+	class ComponentCanvasRenderer* cmp_canvasRenderer = nullptr;
+	class ComponentImage* cmp_image = nullptr;
 
 	std::vector<Component*> components;
 

@@ -187,6 +187,15 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 
+		if (App->GOs->IsCanvas(gameObject))
+		{
+			if (gameObject->cmp_image == nullptr)
+				if (ImGui::Selectable("Image UI")) {
+					gameObject->AddComponent(ComponentTypes::ImageComponent);
+					ImGui::CloseCurrentPopup();
+				}
+		}
+
 		if (ImGui::Selectable("Script"))
 		{
 			//Open new Popup, with input text and autocompletion to select scripts by name

@@ -7,9 +7,8 @@
 #include "Timer.h"
 #include "GameTimer.h"
 
-#include "Particle.h"
-
 #include "MathGeoLib/include/Math/float2.h"
+#include"MathGeoLib/include/Math/float4.h"
 #include "MathGeoLib/include/Geometry/Sphere.h"
 #include "MathGeoLib/include/Geometry/Circle.h"
 
@@ -19,6 +18,7 @@
 #include <queue>
 
 class ComponentMaterial;
+class Particle;
 
 enum ShapeType {
 	ShapeType_BOX,
@@ -35,6 +35,7 @@ enum SimulatedGame
 	SimulatedGame_PAUSE,
 	SimulatedGame_STOP,
 };
+
 struct ColorTime
 {
 	math::float4 color = math::float4::one;
@@ -46,6 +47,26 @@ struct ColorTime
 	bool operator<(const ColorTime &color) const
 	{
 		return position < color.position;
+	}
+};
+
+struct ParticleAnimation
+{
+	bool isParticleAnimated = false;
+	int  textureRows = 1;
+	int  textureColumns = 1;
+	float textureRowsNorm = 1.0f;
+	float textureColumnsNorm = 1.0f;
+	float animationSpeed = 0.1f;
+
+	void operator=(ParticleAnimation partAnim) 
+	{
+		isParticleAnimated = partAnim.isParticleAnimated;
+		textureRows = partAnim.textureRows;
+		textureColumns = partAnim.textureColumns;
+		textureRowsNorm = partAnim.textureRowsNorm;
+		textureColumnsNorm = partAnim.textureColumnsNorm;
+		animationSpeed = partAnim.animationSpeed;
 	}
 };
 
@@ -74,8 +95,6 @@ struct StartValues
 		colorTime.name = "Start Color";
 		color.push_back(colorTime);
 	}
-
-	bool isAnimated = false;
 };
 
 class ComponentEmitter : public Component
@@ -113,8 +132,6 @@ public:
 #endif
 
 	uint GetInternalSerializationBytes();
-
-	void OnInternalSave(JSON_Object * parent);
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
 
@@ -146,8 +163,6 @@ public:
 
 	ComponentMaterial* material = nullptr;
 
-	float animationSpeed = 0.1f;
-
 private:
 	// General info
 	//---------------------------------------
@@ -170,6 +185,8 @@ private:
 	// Warm up the particle emitter (if true the particle emitter will be already started at play-time)
 	bool preWarm = true;
 
+	ParticleAnimation particleAnim;
+
 	//Burst options
 	bool burst = false;
 	int minPart = 0;
@@ -190,8 +207,6 @@ private:
 	int nextPos = 100;
 	math::float4 nextColor = math::float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	int textureRows = 1;
-	int textureColumns = 1;
 	//---------------------------------------
 
 	// Emission info
@@ -200,6 +215,5 @@ private:
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
 	//---------------------------------------
-	bool isParticleAnimated = false;
 };
 #endif // !__Emitter_H__

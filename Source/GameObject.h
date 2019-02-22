@@ -18,7 +18,7 @@ class GameObject
 public:
 
 	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject(const GameObject& gameObject);
+	GameObject(GameObject& gameObject, GameObject* newRoot = 0);
 	~GameObject();
 
 	void SetName(const char* name);
@@ -82,6 +82,7 @@ public:
 	class ComponentRigidActor* cmp_rigidActor = 0;
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
+	class ComponentLight*	   cmp_light = 0;
 
 	std::vector<Component*> components;
 

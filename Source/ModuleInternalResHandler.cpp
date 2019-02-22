@@ -140,20 +140,27 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 	vertexShaderData.shaderType = ShaderTypes::VertexShaderType;
 	vertexShaderData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
 	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
-	
+	if (!vObj->Compile())
+		vObj->isValid = false;
+
 	ResourceData fragmentData;
 	ResourceShaderObjectData fragmentShaderData;
 	fragmentData.name = "Default fragment object";
 	fragmentShaderData.shaderType = ShaderTypes::FragmentShaderType;
 	fragmentShaderData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
 	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
-	
+	if (!fObj->Compile())
+		fObj->isValid = false;
+
 	ResourceData shaderData;
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "Default shader program";
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
-	App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData);
+	ResourceShaderProgram* prog = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData);
+	if (!prog->Link())
+		prog->isValid = false;
+	defaultShaderProgram = prog->GetUuid();
 }
 
 void ModuleInternalResHandler::CreateCubemapShaderProgram()

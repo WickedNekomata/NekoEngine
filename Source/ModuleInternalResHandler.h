@@ -156,8 +156,6 @@ public:
 	// todo cubemap textures
 
 	// Shader resources
-	uint defaultVertexShaderObject;
-	uint defaultFragmentShaderObject;
 	uint defaultShaderProgram;
 	uint cubemapShaderProgram;
 };

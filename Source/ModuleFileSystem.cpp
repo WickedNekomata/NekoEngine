@@ -46,6 +46,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
 	CreateDir(DIR_ASSETS_SCRIPTS);
+	CreateDir(DIR_ASSETS_PREFAB);
 #endif
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -469,6 +470,11 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 			outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
 			outputFile.append(EXTENSION_SHADER_PROGRAM);
+			break;
+		case FileType::PrefabFile:
+			outputFile.insert(0, DIR_ASSETS_PREFAB);
+			outputFile.insert(strlen(DIR_ASSETS_PREFAB), "/");
+			outputFile.append(EXTENSION_PREFAB);
 			break;
 		}
 	}

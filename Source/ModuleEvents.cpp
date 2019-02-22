@@ -18,6 +18,7 @@
 #include "ComponentNavAgent.h"
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
+#include "ComponentLight.h"
 #include "ComponentScript.h"
 
 #include "Application.h"

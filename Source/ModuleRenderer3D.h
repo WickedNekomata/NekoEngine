@@ -5,7 +5,6 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "Light.h"
 
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"

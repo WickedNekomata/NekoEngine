@@ -17,6 +17,7 @@
 #include "ResourceAnimation.h"
 #include "ResourceBone.h"
 #include "ResourceScript.h"
+#include "ResourcePrefab.h"
 
 #include <assert.h>
 
@@ -477,6 +478,16 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 
 			if (!overwrite)
 				resource = ImportFile(outputFile.data());
+		}
+	}
+	break;
+
+	case ResourceTypes::PrefabResource:
+	{
+		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
+		{
+			//if (!overwrite)
+				//resource = ImportFile(outputFile.data());
 		}
 	}
 	break;

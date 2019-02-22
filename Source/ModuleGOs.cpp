@@ -129,7 +129,7 @@ GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
 	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
 	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
 	gameobjects.push_back(newGameObject);
-	staticGos.push_back(newGameObject);
+	dynamicGos.push_back(newGameObject);
 	return newGameObject;
 }
 
@@ -276,6 +276,17 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 		}
 		gos.push_back(go);
 	}
+
+	std::vector<GameObject*> children;
+	App->scene->root->GetChildrenVector(children);
+	for each (GameObject* child in children)
+	{
+		if (std::strcmp(child->GetName(), "Canvas") == 0)
+		{
+			canvas = child;
+		}
+	}
+
 	return true;
 }
 

@@ -18,7 +18,7 @@ public class RayCaster : JellyScript
         if (Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)mask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
             NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
-            agent.
+            //agent.
         }
     }
 }

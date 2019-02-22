@@ -153,7 +153,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 	shaderData.name = "Default shader program";
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
-	App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData);
+	defaultShaderProgram = App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData)->GetUuid();
 }
 
 void ModuleInternalResHandler::CreateCubemapShaderProgram()

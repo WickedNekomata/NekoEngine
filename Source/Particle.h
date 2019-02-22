@@ -46,7 +46,7 @@ public:
 
 	float CreateRandomNum(math::float2 edges);
 
-	void ChangeAnim(ParticleAnimation animPart);
+	void ChangeAnim(ParticleAnimation partAnim);
 
 public:
 	float camDistance = 0.0f;
@@ -80,7 +80,14 @@ private:
 	float rotation = 0.0f;
 	float angle = 0.0f;
 
-	ParticleAnimation particleAnim;
+	//ParticleAnimation particleAnim;
+
+	bool isParticleAnimated = false;
+	int  textureRows = 1;
+	int  textureColumns = 1;
+	float textureRowsNorm = 1.0f;
+	float textureColumnsNorm = 1.0f;
+	float animationSpeed = 0.1f;
 
 	float animationTime = 0.0f;
 	uint currentFrame = 0;

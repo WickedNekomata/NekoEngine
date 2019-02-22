@@ -58,16 +58,6 @@ struct ParticleAnimation
 	float textureRowsNorm = 1.0f;
 	float textureColumnsNorm = 1.0f;
 	float animationSpeed = 0.1f;
-
-	void operator=(ParticleAnimation partAnim) 
-	{
-		isParticleAnimated = partAnim.isParticleAnimated;
-		textureRows = partAnim.textureRows;
-		textureColumns = partAnim.textureColumns;
-		textureRowsNorm = partAnim.textureRowsNorm;
-		textureColumnsNorm = partAnim.textureColumnsNorm;
-		animationSpeed = partAnim.animationSpeed;
-	}
 };
 
 struct StartValues

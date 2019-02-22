@@ -107,17 +107,19 @@ void ComponentMesh::OnInternalSave(char*& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(bool);
-	memcpy(cursor, &res, nv_walkable);
+	memcpy(cursor, &nv_walkable, bytes);
 	cursor += bytes;
 }
 
 void ComponentMesh::OnInternalLoad(char*& cursor)
 {
+	uint loadedRes;
 	size_t bytes = sizeof(uint);
-	memcpy(&res, cursor, bytes);
+	memcpy(&loadedRes, cursor, bytes);
 	cursor += bytes;
+	SetResource(loadedRes);
 
 	bytes = sizeof(bool);
-	memcpy(&res, cursor, nv_walkable);
+	memcpy(&nv_walkable, cursor, bytes);
 	cursor += bytes;
 }

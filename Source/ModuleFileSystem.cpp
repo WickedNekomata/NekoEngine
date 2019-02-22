@@ -1038,7 +1038,7 @@ void ModuleFileSystem::ForceReImport(const Directory& assetsDir)
 		char filePath[DEFAULT_BUF_SIZE];
 
 		strcpy(filePath, assetsDir.fullPath.data());
-		strcat(filePath, "//");
+		strcat(filePath, "/");
 		strcat(filePath, assetsDir.files[i].name.data());
 
 		//The ResourceManager already manages the .meta, already imported files etc. on his own.
@@ -1050,7 +1050,7 @@ void ModuleFileSystem::ForceReImport(const Directory& assetsDir)
 
 	for (int i = 0; i < assetsDir.directories.size(); ++i)
 	{
-		ImportFilesEvents(assetsDir.directories[i]);
+		ForceReImport(assetsDir.directories[i]);
 	}
 }
 

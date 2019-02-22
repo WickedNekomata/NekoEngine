@@ -152,10 +152,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 
 		// 3. Delete resource(s)
+
+		//TODO: SEND EVENTS ABOUT THE DELETED RESOURCES, COMPONENTSCRIPTS NEED THAT IN ORDER TO DELETE THEIRSELVES
+
 		if (resources)
 			DeleteResources(resourcesUuids);
 
-		// 4. Import file
+		// 4. Import file	
 		ImportFile(event.fileEvent.file);
 	}
 	break;

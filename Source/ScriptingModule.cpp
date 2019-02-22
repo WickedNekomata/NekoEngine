@@ -608,6 +608,8 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 
 	ResourceScript* scriptRes = nullptr;
 
+	bool scriptModified = false;
+
 	if (!App->fs->Exists(data.file + ".meta"))
 	{
 		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
@@ -629,10 +631,23 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 		if (size > 0)
 		{
 			char* cursor = metaBuffer;
+			int64_t lastSavedModTime;
+			memcpy(&lastSavedModTime, cursor, sizeof(int64_t));
 			cursor += sizeof(int64_t);
 			cursor += sizeof(uint);
 			uint uid;
 			memcpy(&uid, cursor, sizeof(uint));
+
+			int64_t lastModTime = App->fs->GetLastModificationTime(fileAssets);
+			
+			scriptModified = lastSavedModTime != lastModTime;
+
+			if (scriptModified)
+			{
+				cursor = metaBuffer;
+				memcpy(cursor, &lastModTime, sizeof(int64_t));
+				App->fs->Save(metaFile, metaBuffer, size);
+			}
 
 			scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData(), uid);
 
@@ -642,8 +657,13 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 		}
 	}
 
-	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll"))
-		scriptRes->Compile();
+	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll") || scriptModified)
+	{
+		if (!scriptRes->preCompileErrors())
+		{
+			scriptRes->Compile();
+		}
+	}
 	else
 	{
 		scriptRes->referenceMethods();

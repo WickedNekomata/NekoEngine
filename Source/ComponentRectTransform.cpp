@@ -44,77 +44,7 @@ void ComponentRectTransform::Update()
 
 void ComponentRectTransform::OnEditor()
 {
-	uint screen_height = ui_rect[UI_HEIGHTRECT];
-	uint screen_width = ui_rect[UI_WIDTHRECT];
-
-	uint max_xpos = screen_width - rectTransform[XDIST_RECT];
-	uint max_ypos = screen_height - rectTransform[YDIST_RECT];
-
-	uint max_xdist = screen_width - rectTransform[X_RECT];
-	uint max_ydist = screen_height - rectTransform[Y_RECT];
-
-	bool needed_recalculate = false;
-
-	ImGui::Text("Rect Transform");
-	ImGui::PushItemWidth(50.0f);
-
-	ImGui::Text("Positions X & Y");
-	if (ImGui::DragScalar("##PosX", ImGuiDataType_U32, (void*)&rectTransform[X_RECT], 1, 0, &max_xpos, "%u", 1.0f))
-		needed_recalculate = true;
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##PosY", ImGuiDataType_U32, (void*)&rectTransform[Y_RECT], 1, 0, &max_ypos, "%u", 1.0f))
-		needed_recalculate = true;
-
-	ImGui::Text("Size X & Y");
-	if (ImGui::DragScalar("##SizeX", ImGuiDataType_U32, (void*)&rectTransform[XDIST_RECT], 1, 0, &max_xdist, "%u", 1.0f))
-		needed_recalculate = true;
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##SizeY", ImGuiDataType_U32, (void*)&rectTransform[YDIST_RECT], 1, 0, &max_ydist, "%u", 1.0f))
-		needed_recalculate = true;
-
-	ImGui::PushItemWidth(150.0f);
-	ImGui::Text("Anchor");
-	ImGui::PushItemWidth(50.0f);
-
-	int current_anchor_flag = (int)anchor_flags[LEFT_RECT];
-	if (ImGui::Combo(LEFT_RECT_STR, &current_anchor_flag, ANCHORS_POINTS_STR))
-	{
-		anchor_flags[LEFT_RECT] = current_anchor_flag;
-		needed_recalculate = true;
-	}
-
-	current_anchor_flag = (int)anchor_flags[TOP_RECT];
-	if (ImGui::Combo(TOP_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
-	{
-		anchor_flags[TOP_RECT] = current_anchor_flag;
-		needed_recalculate = true;
-	}
-
-	current_anchor_flag = (int)anchor_flags[RIGHT_RECT];
-	if (ImGui::Combo(RIGHT_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
-	{
-		anchor_flags[RIGHT_RECT] = current_anchor_flag;
-		needed_recalculate = true;
-	}
-
-	current_anchor_flag = (int)anchor_flags[BOTTOM_RECT];
-	if (ImGui::Combo(BOTTOM_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
-	{
-		anchor_flags[BOTTOM_RECT] = current_anchor_flag;
-		needed_recalculate = true;
-	}
-
-	if (needed_recalculate)
-		RecaculateAnchors();
-
-	ImGui::PushItemWidth(150.0f);
-	ImGui::Text("Margin");
-	ImGui::PushItemWidth(50.0f);
-
-	ImGui::Text("Left %u", anchor[LEFT_RECT]);
-	ImGui::Text("Top %u", anchor[TOP_RECT]);
-	ImGui::Text("Right %u", anchor[RIGHT_RECT]);
-	ImGui::Text("Bottom %u", anchor[BOTTOM_RECT]);
+	OnUniqueEditor();
 }
 
 void ComponentRectTransform::SetRect(uint x, uint y, uint x_dist, uint y_dist)
@@ -186,4 +116,84 @@ void ComponentRectTransform::OnInternalLoad(char *& cursor)
 	bytes = sizeof(bool) * 4;
 	memcpy(&anchor_flags, cursor, bytes);
 	cursor += bytes;
+}
+
+void ComponentRectTransform::OnUniqueEditor()
+{
+#ifndef GAMEMODE
+
+	ImGui::Text("Rect Transform");
+	ImGui::Spacing();
+
+	uint screen_height = ui_rect[UI_HEIGHTRECT];
+	uint screen_width = ui_rect[UI_WIDTHRECT];
+
+	uint max_xpos = screen_width - rectTransform[XDIST_RECT];
+	uint max_ypos = screen_height - rectTransform[YDIST_RECT];
+
+	uint max_xdist = screen_width - rectTransform[X_RECT];
+	uint max_ydist = screen_height - rectTransform[Y_RECT];
+
+	bool needed_recalculate = false;
+
+	ImGui::PushItemWidth(50.0f);
+
+	ImGui::Text("Positions X & Y");
+	if (ImGui::DragScalar("##PosX", ImGuiDataType_U32, (void*)&rectTransform[X_RECT], 1, 0, &max_xpos, "%u", 1.0f))
+		needed_recalculate = true;
+	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+	if (ImGui::DragScalar("##PosY", ImGuiDataType_U32, (void*)&rectTransform[Y_RECT], 1, 0, &max_ypos, "%u", 1.0f))
+		needed_recalculate = true;
+
+	ImGui::Text("Size X & Y");
+	if (ImGui::DragScalar("##SizeX", ImGuiDataType_U32, (void*)&rectTransform[XDIST_RECT], 1, 0, &max_xdist, "%u", 1.0f))
+		needed_recalculate = true;
+	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+	if (ImGui::DragScalar("##SizeY", ImGuiDataType_U32, (void*)&rectTransform[YDIST_RECT], 1, 0, &max_ydist, "%u", 1.0f))
+		needed_recalculate = true;
+
+	ImGui::PushItemWidth(150.0f);
+	ImGui::Text("Anchor");
+	ImGui::PushItemWidth(50.0f);
+
+	int current_anchor_flag = (int)anchor_flags[LEFT_RECT];
+	if (ImGui::Combo(LEFT_RECT_STR, &current_anchor_flag, ANCHORS_POINTS_STR))
+	{
+		anchor_flags[LEFT_RECT] = current_anchor_flag;
+		needed_recalculate = true;
+	}
+
+	current_anchor_flag = (int)anchor_flags[TOP_RECT];
+	if (ImGui::Combo(TOP_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
+	{
+		anchor_flags[TOP_RECT] = current_anchor_flag;
+		needed_recalculate = true;
+	}
+
+	current_anchor_flag = (int)anchor_flags[RIGHT_RECT];
+	if (ImGui::Combo(RIGHT_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
+	{
+		anchor_flags[RIGHT_RECT] = current_anchor_flag;
+		needed_recalculate = true;
+	}
+
+	current_anchor_flag = (int)anchor_flags[BOTTOM_RECT];
+	if (ImGui::Combo(BOTTOM_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
+	{
+		anchor_flags[BOTTOM_RECT] = current_anchor_flag;
+		needed_recalculate = true;
+	}
+
+	if (needed_recalculate)
+		RecaculateAnchors();
+
+	ImGui::PushItemWidth(150.0f);
+	ImGui::Text("Margin");
+	ImGui::PushItemWidth(50.0f);
+
+	ImGui::Text("Left %u", anchor[LEFT_RECT]);
+	ImGui::Text("Top %u", anchor[TOP_RECT]);
+	ImGui::Text("Right %u", anchor[RIGHT_RECT]);
+	ImGui::Text("Bottom %u", anchor[BOTTOM_RECT]);
+#endif
 }

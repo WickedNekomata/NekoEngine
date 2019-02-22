@@ -147,17 +147,25 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
 
 	setFloat(ui_shader, "spriteColor", color);
+	setFloat(ui_shader, "image", 0);
 
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetCheckers());
+
+	
 	glBindVertexArray(reference_vertex);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	//glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
+
+	use(0);
 }
 
 

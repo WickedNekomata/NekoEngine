@@ -57,6 +57,7 @@ private:
 	virtual uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
+	void OnUniqueEditor();
 };
 
 #endif

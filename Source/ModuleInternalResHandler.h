@@ -164,7 +164,7 @@
 "uniform vec3 spriteColor;\n" \
 "void main()\n" \
 "{\n" \
-"	color = vec4(spriteColor, 0.5) * texture(image, TexCoords);\n" \
+"	color = texture(image, TexCoords);\n" \
 "}"
 
 #pragma endregion

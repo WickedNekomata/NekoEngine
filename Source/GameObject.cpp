@@ -25,6 +25,7 @@
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
 #include "ComponentScript.h"
+#include "ComponentLight.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
 
@@ -46,7 +47,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 	uuid = App->GenerateRandomNumber();
 }
 
-GameObject::GameObject(const GameObject& gameObject)
+GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
@@ -91,6 +92,11 @@ GameObject::GameObject(const GameObject& gameObject)
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
+		case ComponentTypes::LightComponent:
+			cmp_light = new ComponentLight(*gameObject.cmp_light);
+			cmp_light->SetParent(this);
+			components.push_back(cmp_light);
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			// TODO
@@ -113,8 +119,18 @@ GameObject::GameObject(const GameObject& gameObject)
 	seenLastFrame = gameObject.seenLastFrame;
 
 	uuid = App->GenerateRandomNumber();
-	parent_uuid = gameObject.parent_uuid;
-	parent = gameObject.parent;
+	if (newRoot)
+	{
+		parent_uuid = newRoot->parent_uuid;
+		parent = newRoot->parent;
+		newRoot->AddChild(this);
+	}
+	else
+	{
+		parent_uuid = gameObject.parent_uuid;
+		parent = gameObject.parent;
+		gameObject.AddChild(this);
+	}
 }
 
 GameObject::~GameObject()
@@ -400,6 +416,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
+		break;
+	case ComponentTypes::LightComponent:
+		assert(cmp_light == NULL);
+		newComponent = cmp_light = new ComponentLight(this);
 		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:

@@ -17,7 +17,7 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject* Instanciate(GameObject* target);
+	GameObject* Instanciate(GameObject* target, GameObject* newRoot = 0);
 	void DeleteGameObject(GameObject* toDelete);
 	void Kill(GameObject* go);
 
@@ -29,7 +29,7 @@ public:
 
 	void RecalculateVector(GameObject* go); //if static or dynamic
 
-	bool SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
+	bool static SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
 	bool LoadScene(char*& buffer, size_t sizeBuffer);
 
 	bool InvalidateResource(Resource* resource);

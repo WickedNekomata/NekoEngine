@@ -100,6 +100,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::BoneComponent:
 			go->cmp_bone = 0;
 			break;
+		case ComponentTypes::LightComponent:
+			go->cmp_light = 0;
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			go->cmp_rigidActor = 0;
@@ -148,7 +151,7 @@ GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, 
 	return newGameObject;
 }
 
-GameObject* ModuleGOs::Instanciate(GameObject* copy)
+GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
 	gameobjects.push_back(newGameObject);
@@ -156,7 +159,12 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy)
 	if (!copy->IsStatic())
 		dynamicGos.push_back(newGameObject);
 	else
+	{
 		staticGos.push_back(newGameObject);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 
 	return newGameObject;
 }

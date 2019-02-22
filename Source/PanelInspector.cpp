@@ -186,6 +186,11 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::EmitterComponent);
 				ImGui::CloseCurrentPopup();
 			}
+		if (gameObject->cmp_light == nullptr)
+			if (ImGui::Selectable("Light")) {
+				gameObject->AddComponent(ComponentTypes::LightComponent);
+				ImGui::CloseCurrentPopup();
+			}
 
 		if (ImGui::Selectable("Script"))
 		{

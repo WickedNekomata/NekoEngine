@@ -5,8 +5,6 @@
 
 ResourcePrefab::ResourcePrefab(uint uuid, ResourceData data, PrefabData customData) : Resource(ResourceTypes::PrefabResource, uuid, data)
 {
-
-
 }
 
 ResourcePrefab::~ResourcePrefab()
@@ -41,6 +39,11 @@ void ResourcePrefab::OnPanelAssets()
 
 		//TODO: RECEIVE THIS DRAG AND DROP IN THE HIERARCHY AND INSTANTIATE A COPY OF THE LOADED ROOT WITH THE COPY CONSTRUCTOR
 	}
+}
+
+bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
+{
+	return true;
 }
 
 bool ResourcePrefab::LoadInMemory()

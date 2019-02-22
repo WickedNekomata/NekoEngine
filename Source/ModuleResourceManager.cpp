@@ -17,6 +17,7 @@
 #include "ResourceAnimation.h"
 #include "ResourceBone.h"
 #include "ResourceScript.h"
+#include "ResourcePrefab.h"
 
 #include <assert.h>
 
@@ -475,6 +476,16 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, outputMetaFile);
 			assert(lastModTime > 0);
 
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
+	}
+	break;
+
+	case ResourceTypes::PrefabResource:
+	{
+		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
+		{
 			if (!overwrite)
 				resource = ImportFile(outputFile.data());
 		}

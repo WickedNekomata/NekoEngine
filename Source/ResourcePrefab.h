@@ -12,10 +12,13 @@ struct PrefabData
 
 class ResourcePrefab : public Resource
 {
+public:
 	ResourcePrefab(uint uuid, ResourceData data, PrefabData customData);
 	~ResourcePrefab();
 
 	void OnPanelAssets();
+
+	static bool ExportFile(ResourceData& data, PrefabData& prefabData, std::string& outputFile, bool overwrite = false);
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();

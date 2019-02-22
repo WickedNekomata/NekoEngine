@@ -9,6 +9,8 @@
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 
+#include "ResourcePrefab.h"
+
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -157,7 +159,16 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		- Returns a resource already in memory (not needed here)
 		*/
 
-		aiReleaseImport(scene);
+		/*ResourceData data;
+		PrefabData prefab_data;
+
+		// TODO ? fill data?
+
+		prefab_data.root = rootGameObject;
+		std::string outputFile;
+		App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &prefab_data, outputFile, true);
+
+		aiReleaseImport(scene);*/
 
 		// 2. Serialize the imported scene
 		// TODO: create prefab

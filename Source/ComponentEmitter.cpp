@@ -672,13 +672,19 @@ int ComponentEmitter::GetEmition() const
 
 uint ComponentEmitter::GetInternalSerializationBytes()
 {
+	uint sizeOfList = 0u;
+	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	{
+		sizeOfList += (*it).GetColorListSerializationBytes();
+	}
+
 	//		Value Checkers +	StartValues
-	return sizeof(bool)*8 + sizeof(StartValues) + sizeof(rateOverTime) + sizeof(duration)
-		 + sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(uint)//UUID Subemiter
-		 + sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
-		 + sizeof(boxCreation) + sizeof(burstType) + sizeof(float)*2 //Circle and Sphere rad
-		 + sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst)
-		 + sizeof(minPart) + sizeof(maxPart) + sizeof(repeatTime) + sizeof(char) * burstTypeName.size();
+	return sizeof(bool) * 8 + sizeof(StartValues) + sizeof(rateOverTime) + sizeof(duration)
+		+ sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(repeatTime) + sizeof(uint)//UUID Subemiter
+		+ sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
+		+ sizeof(boxCreation) + sizeof(burstType) + sizeof(float) * 2 //Circle and Sphere rad
+		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst) + sizeOfList//Size of list of ColorTime Struct
+		+ sizeof(minPart) + sizeof(maxPart) + sizeof(char) * burstTypeName.size() + sizeof(uint); //Size of name;
 }
 
 void ComponentEmitter::OnInternalSave(char *& cursor)
@@ -780,10 +786,19 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, &posDifAABB, bytes);
 	cursor += bytes;
 
-	const char* string = burstTypeName.data();
-	bytes = sizeof(char)*burstTypeName.size();
-	memcpy(cursor, &string, bytes);
+	bytes = sizeof(uint);
+	uint nameLenght = burstTypeName.length();
+	memcpy(cursor, &nameLenght, bytes);
 	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, burstTypeName.c_str(), bytes);
+	cursor += bytes;
+
+	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	{
+		(*it).OnInternalSave(cursor);
+	}
 }
 
 void ComponentEmitter::OnInternalLoad(char *& cursor)
@@ -885,8 +900,77 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	memcpy(&posDifAABB, cursor, bytes);
 	cursor += bytes;
 
-	const char* string = burstTypeName.data();
-	bytes = sizeof(char)*burstTypeName.size();
-	memcpy(&string, cursor, bytes);
+	bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	burstTypeName.resize(nameLenght);
+	memcpy((void*)burstTypeName.c_str(), cursor, bytes);
+	burstTypeName.resize(nameLenght);
+	cursor += bytes;
+
+	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	{
+		(*it).OnInternalLoad(cursor);
+	}
+}
+
+
+//COLOR TIME Save&Load
+uint ColorTime::GetColorListSerializationBytes()
+{
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.size() + sizeof(uint);//Size of name
+}
+
+void ColorTime::OnInternalSave(char* &cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &changingColor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &position, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float4);
+	memcpy(cursor, &color, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint nameLenght = name.length();
+	memcpy(cursor, &nameLenght, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, name.c_str(), bytes);
+	cursor += bytes;
+}
+
+void ColorTime::OnInternalLoad(char *& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&changingColor, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&position, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float4);
+	memcpy(&color, cursor, bytes);
+	cursor += bytes;
+
+	//Load lenght + string
+	bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	name.resize(nameLenght);
+	memcpy((void*)name.c_str(), cursor, bytes);
+	name.resize(nameLenght);
 	cursor += bytes;
 }

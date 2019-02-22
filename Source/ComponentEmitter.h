@@ -48,6 +48,11 @@ struct ColorTime
 	{
 		return position < color.position;
 	}
+
+	uint GetColorListSerializationBytes();
+	void OnInternalSave(char *& cursor);
+	void OnInternalLoad(char *& cursor);
+
 };
 
 struct ParticleAnimation

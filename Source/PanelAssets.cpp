@@ -187,8 +187,10 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				memcpy(&uid, cursor, sizeof(uint));
 
 				Resource* res = (Resource*)App->res->GetResource(uid);
-				if(res)
+				if (res)
 					res->OnPanelAssets();
+
+				DeleteResourcePopUp(res->GetFile());
 
 				break;
 			}
@@ -212,12 +214,10 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 		if (ImGui::TreeNodeEx(id, flags))
 			treeNodeOpened = true;
 
-		//TODO: WHY ARE DIRECTORIES BEING SELECTED?
 		if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 			&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 			SELECT(NULL);
 
-		//TODO: WHAT IS THIS?
 		CreateResourcePopUp(dir.fullPath.data());
 
 		if (treeNodeOpened)
@@ -271,7 +271,23 @@ void PanelAssets::DeleteResourcePopUp(const char* path)
 {
 	if (ImGui::BeginPopupContextItem(path))
 	{
-		if (ImGui::Selectable("Delete Shader"))
+		char resource[DEFAULT_BUF_SIZE];
+		App->fs->GetExtension(path, extension);
+		ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+		switch (resourceType)
+		{
+		case ResourceTypes::ShaderObjectResource:
+			strcpy_s(resource, strlen("Delete Shader Object") + 1, "Delete Shader Object");
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			strcpy_s(resource, strlen("Delete Shader Program") + 1, "Delete Shader Program");
+			break;
+		case ResourceTypes::MaterialResource:
+			strcpy_s(resource, strlen("Delete Material") + 1, "Delete Material");
+			break;
+		}
+
+		if (ImGui::Selectable(resource))
 		{
 			file = path;
 
@@ -394,7 +410,7 @@ void PanelAssets::DeleteResourceConfirmationPopUp()
 			ImGui::Text("Are you sure that you want to delete the following Shader Program?");
 			break;
 		case ResourceTypes::MaterialResource:
-			ImGui::Text("Are you sure that you want to delete the following Material");
+			ImGui::Text("Are you sure that you want to delete the following Material?");
 			break;
 		}
 		ImGui::TextColored(BLUE, "%s", file.data());

@@ -30,7 +30,6 @@ bool PanelShaderEditor::Draw()
 		ImGui::Text("Shader Program:"); ImGui::SameLine();
 		ImGui::PushItemWidth(150.0f); 
 		ImGui::InputText("##name", shaderProgramName, INPUT_BUF_SIZE);
-		// TODO SELECT TYPE
 		ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUuid);
 		if (shaderProgram != nullptr)
 			ImGui::TextColored(BLUE, "%s", shaderProgram->GetFile());
@@ -144,7 +143,7 @@ bool PanelShaderEditor::Draw()
 					{
 						// Update the existing shader program
 						shaderProgram->SetName(shaderProgramName);
-						shaderProgram->SetShaderProgramType(shaderProgramType);
+						shaderProgram->SetShaderProgramType(ShaderProgramTypes::Custom);
 						shaderProgram->SetShaderObjects(shaderObjects);
 						shaderProgram->Link();
 						
@@ -157,7 +156,7 @@ bool PanelShaderEditor::Draw()
 						ResourceData data;
 						ResourceShaderProgramData shaderProgramData;
 						data.name = shaderProgramName;
-						shaderProgramData.shaderProgramType = shaderProgramType;
+						shaderProgramData.shaderProgramType = ShaderProgramTypes::Custom;
 						shaderProgramData.shaderObjects = shaderObjects;
 
 						// Export the new file
@@ -182,7 +181,6 @@ bool PanelShaderEditor::Draw()
 		{
 			shaderProgramUuid = 0;
 			strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
-			shaderProgramType = ShaderProgramTypes::Custom;
 			vertexShadersUuids.clear();
 			fragmentShadersUuids.clear();
 		}
@@ -193,7 +191,6 @@ bool PanelShaderEditor::Draw()
 	{
 		shaderProgramUuid = 0;
 		strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
-		shaderProgramType = ShaderProgramTypes::Custom;
 		vertexShadersUuids.clear();
 		fragmentShadersUuids.clear();
 	}
@@ -210,8 +207,6 @@ void PanelShaderEditor::OpenShaderInShaderEditor(uint shaderProgramUuid)
 	this->shaderProgramUuid = shaderProgramUuid;
 
 	strcpy_s(shaderProgramName, strlen(shaderProgram->GetName()) + 1, shaderProgram->GetName());
-
-	shaderProgramType = shaderProgram->GetShaderProgramType();
 
 	vertexShadersUuids.clear();
 	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects(ShaderObjectTypes::VertexType);

@@ -698,9 +698,9 @@ void PanelInspector::ShowMaterialInspector() const
 		{
 			for (uint j = 0; j < shaderResources.size(); ++j)
 			{
-				ResourceShaderProgram* shaderProgramResource = (ResourceShaderProgram*)shaderResources[j];
-				if (shaderProgramResource->GetShaderProgramType() == i)
-					shaderResourcesByType.push_back(shaderProgramResource);
+				ResourceShaderProgram* shaderResource = (ResourceShaderProgram*)shaderResources[j];
+				if (shaderResource->GetShaderProgramType() == i)
+					shaderResourcesByType.push_back(shaderResource);
 			}
 
 			if (shaderResourcesByType.empty())
@@ -711,7 +711,9 @@ void PanelInspector::ShowMaterialInspector() const
 				for (uint j = 0; j < shaderResourcesByType.size(); ++j)
 				{
 					sprintf(id, "%s##%u", shaderResourcesByType[j]->GetName(), shaderResourcesByType[j]->GetUuid());
-					ImGui::MenuItem(id);
+					bool selected = shader == shaderResourcesByType[j];
+					if (ImGui::MenuItem(id, "", selected))
+						material->SetShaderUuid(shaderResourcesByType[j]->GetUuid());
 				}
 				ImGui::EndMenu();
 			}

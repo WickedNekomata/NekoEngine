@@ -241,6 +241,8 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 			bytes = sizeof(char) * nameSize;
 			memcpy(shaderObjectName, cursor, bytes);
 			shaderObjectsNames.push_back(shaderObjectName);
+
+			cursor += bytes;
 		}
 
 		// 8. Load shader program type

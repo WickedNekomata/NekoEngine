@@ -74,10 +74,6 @@ bool ShaderImporter::SaveShaderProgram(ResourceData& data, ResourceShaderProgram
 {
 	bool ret = false;
 
-	// Verify that the driver supports at least one shader binary format
-	if (GetBinaryFormats() == 0)
-		return ret;
-
 	if (overwrite)
 		outputFile = data.file;
 	else

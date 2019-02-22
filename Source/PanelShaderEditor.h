@@ -8,8 +8,9 @@
 #include <list>
 #include "Globals.h"
 
+#include "ResourceShaderProgram.h"
+
 class ResourceShaderObject;
-class ResourceShaderProgram;
 
 class PanelShaderEditor : public Panel
 {
@@ -36,6 +37,7 @@ private:
 public:
 
 	char shaderProgramName[INPUT_BUF_SIZE];
+	ShaderProgramTypes shaderProgramType = ShaderProgramTypes::Custom;
 
 	std::list<uint> vertexShadersUuids;
 	std::list<uint> fragmentShadersUuids;

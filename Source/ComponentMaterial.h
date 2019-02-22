@@ -18,7 +18,7 @@
 
 class ResourceShaderProgram;
 
-struct MaterialResource
+struct MaterialResource1
 {
 	uint res = 0;
 	math::float4x4 matrix = math::float4x4::identity;
@@ -28,7 +28,7 @@ struct MaterialResource
 	uint width = 0;
 	uint height = 0;
 
-	bool operator==(const MaterialResource rhs)
+	bool operator==(const MaterialResource1 rhs)
 	{
 		return this->res == rhs.res && matrix.Equals(rhs.matrix);
 	}
@@ -61,7 +61,7 @@ public:
 
 	GLuint shaderProgramUUID = 0;
 	std::vector<Uniform> uniforms;
-	std::vector<MaterialResource> res;
+	std::vector<MaterialResource1> res;
 	float color[4] = { 1.0f,1.0f,1.0f,255.0f };
 };
 

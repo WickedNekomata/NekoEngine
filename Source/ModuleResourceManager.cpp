@@ -17,6 +17,7 @@
 #include "ResourceAnimation.h"
 #include "ResourceBone.h"
 #include "ResourceScript.h"
+#include "ResourceMaterial.h"
 
 #include <assert.h>
 
@@ -74,7 +75,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					DeleteResources(resourcesUuids);
 
 				// 2. Import file
-				ImportFile(event.fileEvent.file);
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::ImportFile;
+				strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
+				App->PushSystemEvent(newEvent);
 
 				break;
 			}
@@ -161,7 +165,10 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			DeleteResources(resourcesUuids);
 
 		// 4. Import file	
-		ImportFile(event.fileEvent.file);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::ImportFile;
+		strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
+		App->PushSystemEvent(newEvent);
 	}
 	break;
 
@@ -204,7 +211,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The mesh file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Mesh file '%s' has resources that need to be created", file);
 
 				// 1. Meshes
 				resourcesUuids.reserve(outputFiles.size());
@@ -250,7 +257,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The texture file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Texture file '%s' has resources that need to be created", file);
 
 				// 1. Texture
 				std::string fileName;
@@ -289,7 +296,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader object file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Shader Object file '%s' has resources that need to be created", file);
 
 				// 1. Shader object
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
@@ -306,12 +313,12 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					data.name = name.data();
 
 				if (IS_VERTEX_SHADER(extension.data()))
-					shaderObjectData.shaderType = ShaderTypes::VertexShaderType;
+					shaderObjectData.shaderObjectType = ShaderObjectTypes::VertexType;
 				else if (IS_FRAGMENT_SHADER(extension.data()))
-					shaderObjectData.shaderType = ShaderTypes::FragmentShaderType;
+					shaderObjectData.shaderObjectType = ShaderObjectTypes::FragmentType;
 
 				uint shaderObject = 0;
-				bool success = App->shaderImporter->LoadShaderObject(file, shaderObjectData, shaderObject);
+				bool success = ResourceShaderObject::LoadFile(file, shaderObjectData, shaderObject);
 
 				resource = CreateResource(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, uuid);
 				ResourceShaderObject* shaderObjectResource = (ResourceShaderObject*)resource;
@@ -337,13 +344,14 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		std::string outputFile;
 		std::string name;
 		std::vector<std::string> shaderObjectsNames;
-		if (ResourceShaderProgram::ImportFile(file, name, shaderObjectsNames, outputFile))
+		ShaderProgramTypes shaderProgramType = ShaderProgramTypes::Custom;
+		if (ResourceShaderProgram::ImportFile(file, name, shaderObjectsNames, shaderProgramType, outputFile))
 		{
 			std::vector<uint> resourcesUuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The shader program file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Shader Program file '%s' has resources that need to be created", file);
 
 				// 1. Shader program
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
@@ -360,7 +368,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					data.name = name.data();
 
 				uint shaderProgram = 0;
-				bool success = App->shaderImporter->LoadShaderProgram(file, shaderProgramData, shaderProgram);
+				bool success = ResourceShaderProgram::LoadFile(file, shaderProgramData, shaderProgram);
 
 				std::list<ResourceShaderObject*> shaderObjects;
 				for (uint i = 0; i < shaderObjectsNames.size(); ++i)
@@ -401,6 +409,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					}
 				}
 
+				shaderProgramData.shaderProgramType = shaderProgramType;
+
 				resource = CreateResource(ResourceTypes::ShaderProgramResource, data, &shaderProgramData, uuid);
 				ResourceShaderProgram* shaderProgramResource = (ResourceShaderProgram*)resource;
 				shaderProgramResource->isValid = success;
@@ -414,7 +424,49 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
 			std::string name = resource->GetName();
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), name, shaderObjectsNames, outputMetaFile);
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), name, shaderObjectsNames, shaderProgramType, outputMetaFile);
+			assert(lastModTime > 0);
+		}
+	}
+	break;
+
+	case ResourceTypes::MaterialResource:
+	{
+		std::string outputFile;
+		std::string name;
+		if (ResourceMaterial::ImportFile(file, name, outputFile))
+		{
+			std::vector<uint> resourcesUuids;
+			if (!GetResourcesUuidsByFile(file, resourcesUuids))
+			{
+				// Create the resources
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Material file '%s' has resources that need to be created", file);
+
+				// 1. Material
+				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
+				assert(uuid > 0);
+				resourcesUuids.push_back(uuid);
+				resourcesUuids.shrink_to_fit();
+
+				ResourceData data;
+				ResourceMaterialData materialData;
+				data.file = file;
+				if (name.empty())
+					App->fs->GetFileName(file, data.name);
+				else
+					data.name = name.data();
+				ResourceMaterial::LoadFile(file, materialData);
+
+				resource = CreateResource(ResourceTypes::MaterialResource, data, &materialData, uuid);
+			}
+			else
+				resource = GetResource(resourcesUuids.front());
+
+			// 2. Meta
+			// TODO: only create meta if any of its fields has been modificated
+			std::string outputMetaFile;
+			std::string name = resource->GetName();
+			int64_t lastModTime = ResourceMaterial::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -430,7 +482,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	return resource;
 }
 
-Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite)
+Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite, bool resources)
 {
 	assert(type != ResourceTypes::NoResourceType);
 
@@ -442,7 +494,7 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	{
 		if (ResourceShaderObject::ExportFile(data, *(ResourceShaderObjectData*)specificData, outputFile, overwrite))
 		{
-			if (!overwrite)
+			if (resources)
 				resource = ImportFile(outputFile.data());
 		}
 	}
@@ -465,10 +517,20 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 			for (std::list<std::string>::const_iterator it = shaderObjectsNames.begin(); it != shaderObjectsNames.end(); ++it)
 				names.push_back(*it);
 
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, outputMetaFile);
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, shaderProgramData.shaderProgramType, outputMetaFile);
 			assert(lastModTime > 0);
 
-			if (!overwrite)
+			if (resources)
+				resource = ImportFile(outputFile.data());
+		}
+	}
+	break;
+
+	case ResourceTypes::MaterialResource:
+	{
+		if (ResourceMaterial::ExportFile(data, *(ResourceMaterialData*)specificData, outputFile, overwrite))
+		{
+			if (resources)
 				resource = ImportFile(outputFile.data());
 		}
 	}
@@ -498,6 +560,9 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			break;
 		case ResourceTypes::ShaderProgramResource:
 			resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
+			break;
+		case ResourceTypes::MaterialResource:
+			resource = new ResourceMaterial(ResourceTypes::MaterialResource, uuid, data, *(ResourceMaterialData*)specificData);
 			break;
 		case ResourceTypes::ScriptResource:
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
@@ -738,6 +803,8 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 		break;
 	case ASCIIcs: case ASCIICS:
 		return ResourceTypes::ScriptResource;
+	case ASCIImat: case ASCIIMAT:
+		return ResourceTypes::MaterialResource;
 		break;
 	}
 

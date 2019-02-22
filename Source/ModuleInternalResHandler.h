@@ -4,6 +4,11 @@
 #include "Module.h"
 #include "Globals.h"
 
+#define DEFAULT_PLANE_UUID 1428675893
+#define DEFAULT_CUBE_UUID 1451315056
+#define DEFAULT_SHADER_PROGRAM_UUID 1608702687
+#define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
+
 #pragma region ShadersTemplate
 
 #define vShaderTemplate \
@@ -156,8 +161,6 @@ public:
 	// todo cubemap textures
 
 	// Shader resources
-	uint defaultVertexShaderObject;
-	uint defaultFragmentShaderObject;
 	uint defaultShaderProgram;
 	uint cubemapShaderProgram;
 };

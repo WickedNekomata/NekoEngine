@@ -73,3 +73,4 @@ enum update_status
 #define EXTENSION_SHADER_PROGRAM ".psh"
 #define EXTENSION_META ".meta"
 #define EXTENSION_SCRIPT ".dll"
+#define EXTENSION_MATERIAL ".mat"

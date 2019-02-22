@@ -48,7 +48,7 @@ void ResourceShaderProgram::OnPanelAssets()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputFile)
+bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes& shaderProgramType, std::string& outputFile)
 {
 	assert(file != nullptr);
 
@@ -62,7 +62,7 @@ bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std:
 		uint uuid = 0;
 		int64_t lastModTime = 0;
 		std::string shaderName;
-		ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, shaderName, shaderObjectsNames);
+		ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, shaderName, shaderObjectsNames, shaderProgramType);
 		assert(uuid > 0);
 
 		name = shaderName.data();
@@ -80,7 +80,12 @@ bool ResourceShaderProgram::ExportFile(ResourceData& data, ResourceShaderProgram
 	return App->shaderImporter->SaveShaderProgram(data, shaderProgramData, outputFile, overwrite);
 }
 
-uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile)
+bool ResourceShaderProgram::LoadFile(const char* file, ResourceShaderProgramData& outputShaderProgramData, uint& shaderProgram)
+{
+	return App->shaderImporter->LoadShaderProgram(file, outputShaderProgramData, shaderProgram);
+}
+
+uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes shaderProgramType, std::string& outputMetaFile)
 {
 	assert(file != nullptr);
 
@@ -98,7 +103,8 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 		sizeof(uint) * uuidsSize +
 
 		sizeof(char) * nameSize +
-		sizeof(char) * namesSize * nameSize;
+		sizeof(char) * namesSize * nameSize +
+		sizeof(uint);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -149,9 +155,12 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 		bytes = sizeof(char) * nameSize;
 		memcpy(cursor, shaderObjectName, bytes);
 
-		if (i < namesSize - 1)
-			cursor += bytes;
+		cursor += bytes;
 	}
+
+	// 8. Store shader program type
+	bytes = sizeof(uint);
+	memcpy(cursor, &shaderProgramType, bytes);
 
 	// --------------------------------------------------
 
@@ -172,7 +181,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 	return lastModTime;
 }
 
-bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames)
+bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes& shaderProgramType)
 {
 	assert(metaFile != nullptr);
 
@@ -232,10 +241,11 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 			bytes = sizeof(char) * nameSize;
 			memcpy(shaderObjectName, cursor, bytes);
 			shaderObjectsNames.push_back(shaderObjectName);
-
-			if (i < namesSize - 1)
-				cursor += bytes;
 		}
+
+		// 8. Load shader program type
+		bytes = sizeof(uint);
+		memcpy(&shaderProgramType, cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Shader Program: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -257,7 +267,8 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 	uint shaderProgramUuid = 0;
 	std::string oldName;
 	std::vector<std::string> shaderObjectsNames;
-	ReadMeta(metaFile, lastModTime, shaderProgramUuid, oldName, shaderObjectsNames);
+	ShaderProgramTypes shaderProgramType = ShaderProgramTypes::Custom;
+	ReadMeta(metaFile, lastModTime, shaderProgramUuid, oldName, shaderObjectsNames, shaderProgramType);
 
 	uint uuidsSize = 1;
 	uint nameSize = DEFAULT_BUF_SIZE;
@@ -273,7 +284,8 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 		sizeof(uint) * uuidsSize +
 
 		sizeof(char) * nameSize +
-		sizeof(char) * namesSize * nameSize;
+		sizeof(char) * namesSize * nameSize +
+		sizeof(uint);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -322,9 +334,12 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 		bytes = sizeof(char) * nameSize;
 		memcpy(cursor, shaderObjectName, bytes);
 
-		if (i < namesSize - 1)
-			cursor += bytes;
+		cursor += bytes;
 	}
+
+	// 8. Store shader program type
+	bytes = sizeof(uint);
+	memcpy(cursor, &shaderProgramType, bytes);
 
 	// --------------------------------------------------
 
@@ -464,20 +479,30 @@ bool ResourceShaderProgram::DeleteShaderProgram(uint shaderProgram)
 
 // ----------------------------------------------------------------------------------------------------
 
+void ResourceShaderProgram::SetShaderProgramType(ShaderProgramTypes shaderProgramType)
+{
+	shaderProgramData.shaderProgramType = shaderProgramType;
+}
+
+ShaderProgramTypes ResourceShaderProgram::GetShaderProgramType() const
+{
+	return shaderProgramData.shaderProgramType;
+}
+
 void ResourceShaderProgram::SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects)
 {
 	shaderProgramData.shaderObjects = shaderObjects;
 }
 
-std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderTypes shaderType) const
+std::list<ResourceShaderObject*> ResourceShaderProgram::GetShaderObjects(ShaderObjectTypes shaderType) const
 {
 	std::list<ResourceShaderObject*> shaderObjects;
 
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderProgramData.shaderObjects.begin(); it != shaderProgramData.shaderObjects.end(); ++it)
 	{
-		if (shaderType != ShaderTypes::NoShaderType && (*it)->GetShaderType() == shaderType)
+		if (shaderType != ShaderObjectTypes::NoShaderObjectType && (*it)->GetShaderObjectType() == shaderType)
 			shaderObjects.push_back(*it);
-		else if (shaderType == ShaderTypes::NoShaderType)
+		else if (shaderType == ShaderObjectTypes::NoShaderObjectType)
 			shaderObjects.push_back(*it);
 	}
 

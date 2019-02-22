@@ -22,7 +22,7 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 
 		for (uint i = 0; i < MAX_TEXTURES; ++i)
 		{
-			MaterialResource materialResource;
+			MaterialResource1 materialResource;
 			res.push_back(materialResource);
 		}
 	}
@@ -280,7 +280,7 @@ void ComponentMaterial::OnUniqueEditor()
 
 		if (ImGui::BeginDragDropTarget())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_INSPECTOR_SELECTOR"))
 			{
 				uint payload_n = *(uint*)payload->Data;
 				SetResource(payload_n, i);

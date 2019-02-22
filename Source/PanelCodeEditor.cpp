@@ -81,8 +81,9 @@ bool PanelCodeEditor::Draw()
 			else
 				shaderObject->isValid = true;
 
+			// Export the existing file
 			std::string outputFile;
-			App->res->ExportFile(ResourceTypes::ShaderObjectResource, shaderObject->GetData(), &shaderObject->GetSpecificData(), outputFile, true);
+			App->res->ExportFile(ResourceTypes::ShaderObjectResource, shaderObject->GetData(), &shaderObject->GetSpecificData(), outputFile, true, false);
 		}
 
 		ImGui::SameLine();
@@ -99,15 +100,15 @@ bool PanelCodeEditor::Draw()
 			editor.SetErrorMarkers(markers);
 		}
 
-		switch (shaderObject->GetShaderType())
+		switch (shaderObject->GetShaderObjectType())
 		{
-		case ShaderTypes::VertexShaderType:
+		case ShaderObjectTypes::VertexType:
 			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 				"Vertex Shader",
 				shaderObject->GetName());
 			break;
-		case ShaderTypes::FragmentShaderType:
+		case ShaderObjectTypes::FragmentType:
 			ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 				editor.GetLanguageDefinition().mName.c_str(), fileToEdit,
 				"Vertex Shader",
@@ -166,7 +167,7 @@ bool PanelCodeEditor::TryCompile()
 	editor.SetErrorMarkers(markers);
 
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUuid);
-	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->GetShaderType());
+	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->GetShaderObjectType());
 
 	if (tryCompile > 0)
 		ret = true;

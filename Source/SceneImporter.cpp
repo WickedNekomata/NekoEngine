@@ -457,7 +457,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			memcpy(cursor, meshName, bytes);
 
 			std::string outputFile = std::to_string(gameObject->cmp_mesh->res);
-			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFile) > 0)
+			if (App->fs->SaveInGame(data, size, FileTypes::MeshFile, outputFile) > 0)
 			{
 				CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 				outputFiles.push_back(outputFile);

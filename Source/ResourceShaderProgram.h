@@ -10,8 +10,17 @@
 #include <list>
 #include <vector>
 
+enum ShaderProgramTypes
+{
+	Standard,
+	Particles,
+	Custom
+};
+
 struct ResourceShaderProgramData
 {
+	ShaderProgramTypes shaderProgramType = ShaderProgramTypes::Standard;
+
 	std::list<ResourceShaderObject*> shaderObjects;
 
 	std::list<std::string> GetShaderObjectsNames() const;	
@@ -28,10 +37,12 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 
-	static bool ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputFile);
+	static bool ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes& shaderProgramType, std::string& outputFile);
 	static bool ExportFile(ResourceData& data, ResourceShaderProgramData& shaderProgramData, std::string& outputFile, bool overwrite = false);
-	static uint CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile);
-	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames);
+	static bool LoadFile(const char* file, ResourceShaderProgramData& outputShaderProgramData, uint& shaderProgram);
+
+	static uint CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes shaderProgramType, std::string& outputMetaFile);
+	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes& shaderProgramType);
 	static uint SetNameToMeta(const char* metaFile, const std::string& name);
 
 	// ----------------------------------------------------------------------------------------------------
@@ -47,8 +58,10 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	inline ResourceShaderProgramData& GetSpecificData() { return shaderProgramData; }
+	void SetShaderProgramType(ShaderProgramTypes shaderProgramType);
+	ShaderProgramTypes GetShaderProgramType() const;
 	void SetShaderObjects(std::list<ResourceShaderObject*> shaderObjects);
-	std::list<ResourceShaderObject*> GetShaderObjects(ShaderTypes shaderType = ShaderTypes::NoShaderType) const;
+	std::list<ResourceShaderObject*> GetShaderObjects(ShaderObjectTypes shaderType = ShaderObjectTypes::NoShaderObjectType) const;
 	std::list<std::string> GetShaderObjectsNames() const;
 	void GetUniforms(std::vector<Uniform>& result) const;
 

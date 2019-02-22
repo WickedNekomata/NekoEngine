@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleGui.h"
 #include "PanelShaderEditor.h"
 #include "PanelCodeEditor.h"
@@ -29,11 +30,11 @@
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 #include "ResourceScript.h"
+#include "ResourceMaterial.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
-
-#include "imgui/imgui_stl.h"
+#include "imgui\imgui_stl.h"
 
 PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
@@ -68,12 +69,14 @@ bool PanelInspector::Draw()
 			case ResourceTypes::ShaderProgramResource:
 				ShowShaderProgramInspector();
 				break;
+			case ResourceTypes::MaterialResource:
+				ShowMaterialInspector();
+				break;
 			}
 			break;
 		}
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
-			break;
 			break;
 		}
 	}
@@ -565,12 +568,12 @@ void PanelInspector::ShowShaderObjectInspector() const
 {
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->scene->selectedObject.Get();
 
-	switch (shaderObject->GetShaderType())
+	switch (shaderObject->GetShaderObjectType())
 	{
-	case ShaderTypes::VertexShaderType:
+	case ShaderObjectTypes::VertexType:
 		ImGui::Text("Vertex Shader Object");
 		break;
-	case ShaderTypes::FragmentShaderType:
+	case ShaderObjectTypes::FragmentType:
 		ImGui::Text("Fragment Shader Object");
 		break;
 	}
@@ -667,6 +670,56 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
 		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUuid());
+}
+
+void PanelInspector::ShowMaterialInspector() const
+{
+	ImGui::Text("Material");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ResourceMaterial* material = (ResourceMaterial*)App->scene->selectedObject.Get();
+
+	// Shader
+	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
+	assert(shader != nullptr);
+
+	const char* shaderTypes[] = { "Standard", "Particles", "Custom" };
+
+	if (ImGui::Button("Shader"))
+		ImGui::OpenPopup("shader_popup");
+	if (ImGui::BeginPopup("shader_popup"))
+	{
+		std::vector<Resource*> shaderResources = App->res->GetResourcesByType(ResourceTypes::ShaderProgramResource);
+		std::vector<Resource*> shaderResourcesByType;
+		char id[DEFAULT_BUF_SIZE];
+
+		for (uint i = 0; i < IM_ARRAYSIZE(shaderTypes); ++i)
+		{
+			for (uint j = 0; j < shaderResources.size(); ++j)
+			{
+				ResourceShaderProgram* shaderProgramResource = (ResourceShaderProgram*)shaderResources[j];
+				if (shaderProgramResource->GetShaderProgramType() == i)
+					shaderResourcesByType.push_back(shaderProgramResource);
+			}
+
+			if (shaderResourcesByType.empty())
+				continue;
+
+			if (ImGui::BeginMenu(shaderTypes[i]))
+			{
+				for (uint j = 0; j < shaderResourcesByType.size(); ++j)
+				{
+					sprintf(id, "%s##%u", shaderResourcesByType[j]->GetName(), shaderResourcesByType[j]->GetUuid());
+					ImGui::MenuItem(id);
+				}
+				ImGui::EndMenu();
+			}
+
+			shaderResourcesByType.clear();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 #endif // GAME

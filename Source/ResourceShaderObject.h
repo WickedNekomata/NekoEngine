@@ -6,28 +6,19 @@
 #define IS_VERTEX_SHADER(extension) strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
 #define IS_FRAGMENT_SHADER(extension) strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0
 
-enum ShaderTypes
+enum ShaderObjectTypes
 {
-	NoShaderType,
-	VertexShaderType,
-	FragmentShaderType
+	NoShaderObjectType,
+	VertexType,
+	FragmentType
 };
 
 struct ResourceShaderObjectData
 {
-	ShaderTypes shaderType = ShaderTypes::NoShaderType;
+	ShaderObjectTypes shaderObjectType = ShaderObjectTypes::NoShaderObjectType;
 
-	void SetSource(const char* source, uint size)
-	{
-		RELEASE_ARRAY(this->source);
-		this->source = new char[size + 1];
-		strcpy_s(this->source, size + 1, source);
-	}
-
-	const char* GetSource() const
-	{
-		return source;
-	}
+	void SetSource(const char* source, uint size);
+	const char* GetSource() const;
 
 private:
 
@@ -47,6 +38,8 @@ public:
 
 	static bool ImportFile(const char* file, std::string& name, std::string& outputFile);
 	static bool ExportFile(ResourceData& data, ResourceShaderObjectData& shaderObjectData, std::string& outputFile, bool overwrite = false);
+	static bool LoadFile(const char* file, ResourceShaderObjectData& outputShaderObjectData, uint& shaderObject);
+	
 	static uint CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid, std::string& name);
 	static uint SetNameToMeta(const char* metaFile, const std::string& name);
@@ -54,16 +47,18 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	bool Compile();
-	static uint Compile(const char* source, ShaderTypes shaderType);
+	static uint Compile(const char* source, ShaderObjectTypes shaderType);
 
 	static bool DeleteShaderObject(uint shaderObject);
 
 	// ----------------------------------------------------------------------------------------------------
 
 	inline ResourceShaderObjectData& GetSpecificData() { return shaderObjectData; }
-	ShaderTypes GetShaderType() const;
+	ShaderObjectTypes GetShaderObjectType() const;
 	void SetSource(const char* source, uint size);
 	const char* GetSource() const;
+
+	static ShaderObjectTypes GetShaderObjectTypeByExtension(const char* extension);
 
 private:
 

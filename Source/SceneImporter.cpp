@@ -9,6 +9,8 @@
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 
+#include "ResourcePrefab.h"
+
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -156,6 +158,15 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		- App->res in switch calls exportFile from this prefab resource
 		- Returns a resource already in memory (not needed here)
 		*/
+
+		ResourceData data;
+		PrefabData prefab_data;
+
+		data.name = "Prefab_test";
+
+		prefab_data.root = rootGameObject;
+		std::string outputFile;
+		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
 
 		aiReleaseImport(scene);
 

@@ -2,8 +2,10 @@
 
 #include "Application.h"
 #include "ModuleResourceManager.h"
+
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
+#include "ResourceMaterial.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 
@@ -12,6 +14,7 @@ bool ModuleInternalResHandler::Start()
 	CreatePlane();
 	CreateCube();
 	CreateDefaultShaderProgram();
+	CreateDefaultMaterial();
 
 	return true;
 }
@@ -85,7 +88,7 @@ void ModuleInternalResHandler::CreatePlane()
 	ResourceData data;
 	data.name = "Default Plane";
 
-	defaultPlane = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, DEFAULT_PLANE_UUID)->GetUuid();
+	plane = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, PLANE_UUID)->GetUuid();
 }
 
 void ModuleInternalResHandler::CreateCube()
@@ -130,7 +133,7 @@ void ModuleInternalResHandler::CreateCube()
 	ResourceData data;
 	data.name = "Default Cube";
 
-	defaultCube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, DEFAULT_CUBE_UUID)->GetUuid();
+	cube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, CUBE_UUID)->GetUuid();
 }
 
 void ModuleInternalResHandler::CreateDefaultShaderProgram()
@@ -167,4 +170,13 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 void ModuleInternalResHandler::CreateCubemapShaderProgram()
 {
 	// CUBEMAP_SHADER_PROGRAM_UUID
+}
+
+void ModuleInternalResHandler::CreateDefaultMaterial()
+{
+	ResourceData data;
+	ResourceMaterialData materialData;
+	data.name = "Default material";
+	materialData.shaderUuid = DEFAULT_SHADER_PROGRAM_UUID;
+	App->res->CreateResource(ResourceTypes::MaterialResource, data, &materialData, DEFAULT_MATERIAL_UUID);
 }

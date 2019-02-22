@@ -189,7 +189,7 @@ void Particle::Draw()
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture
+		//glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture // TODO UNIFORMS
 
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);

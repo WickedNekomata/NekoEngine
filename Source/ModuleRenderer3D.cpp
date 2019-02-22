@@ -787,12 +787,13 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 
 	// Shader
-	const ResourceShaderProgram* shader = (const ResourceShaderProgram*)App->res->GetResource(materialRenderer->shaderProgramUUID);
-	GLuint shaderProgram = shader != nullptr ? shader->shaderProgram : App->shaderImporter->GetDefaultShaderProgram();
-	shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+	//const ResourceShaderProgram* shader = (const ResourceShaderProgram*)App->res->GetResource(materialRenderer->shaderProgramUUID);
+	//GLuint shaderProgram = shader != nullptr ? shader->shaderProgram : App->shaderImporter->GetDefaultShaderProgram();
+	GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
 
 	glUseProgram(shaderProgram);
 
+	/* // TODO UNIFORMS
 	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -820,7 +821,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
 			break;
 		}
-	}
+	}*/
 
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	model_matrix = model_matrix.Transposed();
@@ -868,6 +869,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		break;
 	}
 
+	/* // TODO UNIFORMS
 	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
 	{
 		switch ((*it).common.type)
@@ -898,6 +900,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 			break;
 		}
 	}
+	*/
 
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
@@ -907,11 +910,12 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
 	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 
+	/* // TODO UNIFORMS
 	for (uint i = 0; i < materialRenderer->res.size(); ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
-	}
+	}*/
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

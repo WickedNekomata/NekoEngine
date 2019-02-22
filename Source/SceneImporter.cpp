@@ -363,7 +363,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 								uuid = App->res->ImportFile(outputFile.data())->GetUuid();
 
 							assert(uuid > 0);
-							gameObject->cmp_material->res[0].res = uuid;
+							//gameObject->cmp_material->res[0].res = uuid; // TODO UNIFORMS
 						}
 					}
 				}

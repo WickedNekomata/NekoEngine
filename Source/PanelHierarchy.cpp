@@ -55,13 +55,13 @@ bool PanelHierarchy::Draw()
 			{
 				GameObject* go = App->GOs->CreateGameObject("Cube", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
-				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+				go->cmp_mesh->SetResource(App->resHandler->cube);
 			}
 			if (ImGui::Selectable("Create Plane"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("Plane", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
-				go->cmp_mesh->SetResource(App->resHandler->defaultPlane);
+				go->cmp_mesh->SetResource(App->resHandler->plane);
 			}
 			ImGui::EndPopup();
 		}
@@ -169,7 +169,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 		{
 			GameObject* go = App->GOs->CreateGameObject("Cube", child);
 			go->AddComponent(ComponentTypes::MeshComponent);
-			go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+			go->cmp_mesh->SetResource(App->resHandler->cube);
 			ImGui::CloseCurrentPopup();
 		}
 		if (ImGui::Selectable("Delete")) 

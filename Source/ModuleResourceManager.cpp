@@ -183,6 +183,14 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		RecursiveDeleteUnusedEntries(DIR_LIBRARY, path);
 	}
 	break;
+
+	case System_Event_Type::ShaderProgramChanged:
+		//cmp_material->UpdateUniforms(); // TODO UNIFORMS
+		break;
+
+	case System_Event_Type::ResourceDestroyed:
+		// TODO INVALIDATE RESOURCE (Material)
+		break;
 	}
 }
 

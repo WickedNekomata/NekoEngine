@@ -7,6 +7,7 @@ class GameObject;
 
 struct PrefabData
 {
+	GameObject* root = nullptr;
 };
 
 class ResourcePrefab : public Resource
@@ -19,8 +20,6 @@ class ResourcePrefab : public Resource
 	bool LoadInMemory();
 	bool UnloadFromMemory();
 
-private:
-	GameObject* root = nullptr;
 };
 
 #endif

@@ -149,6 +149,14 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		RecursiveProcessBones(scene, scene->mRootNode);
 
+		// TODO_G : export prefab.
+		/*
+		Needs ResourceData, and CustomData
+		- Create resource prefab (Call exportFile in App->res Generate a file, meta)
+		- App->res in switch calls exportFile from this prefab resource
+		- Returns a resource already in memory (not needed here)
+		*/
+
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene

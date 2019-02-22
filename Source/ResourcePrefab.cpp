@@ -11,6 +11,7 @@ ResourcePrefab::ResourcePrefab(uint uuid, ResourceData data, PrefabData customDa
 
 ResourcePrefab::~ResourcePrefab()
 {
+	//TODO: DESTROY THE ROOT IF LOADED
 }
 
 void ResourcePrefab::OnPanelAssets()

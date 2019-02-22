@@ -425,6 +425,13 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		resource = App->scripting->ImportScriptResource(file);
 		break;
 	}
+	//TODO_G :
+	/*
+		-New case for prefab
+		-Static function that imports from char* file_fir, check metas etc RETURNS resource
+		- META: last_mod_time of the file | 
+	*/
+
 	}
 
 	return resource;

@@ -24,6 +24,7 @@ void ComponentCanvasRenderer::Update()
 
 void ComponentCanvasRenderer::OnEditor()
 {
+	OnUniqueEditor();
 }
 
 uint ComponentCanvasRenderer::GetInternalSerializationBytes()
@@ -42,5 +43,4 @@ void ComponentCanvasRenderer::OnInternalLoad(char *& cursor)
 void ComponentCanvasRenderer::OnUniqueEditor()
 {
 	ImGui::Text("Canvas Renderer");
-	ImGui::Spacing();
 }

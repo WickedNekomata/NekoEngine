@@ -49,14 +49,6 @@ bool ModuleUI::Start()
 	ui_fragment = (ResourceShaderObject*)App->res->ImportFile("Assets/Shaders/Objects/UIFragment.fsh");
 	ui_shader = App->shaderImporter->LoadShaderProgram(ui_vertex->shaderObject, ui_fragment->shaderObject);
 
-
-	/*
-	texture_test = new TextureImportSettings();
-	texture_loaded = new ResourceTexture(ResourceType::TextureResource, App->GenerateRandomNumber());
-	std::string uoutput_file;
-	App->materialImporter->Import("Assets/Textures/Baker_house.dds", uoutput_file, texture_test);
-	App->materialImporter->Load(uoutput_file.c_str(), texture_loaded, texture_test);
-	*/
 	rect_test = new ComponentRectTransform(nullptr);
 	rect_test->SetRect(0,0,100,100);
 
@@ -105,14 +97,14 @@ void ModuleUI::initRenderData()
 	// Configure VAO/VBO
 	GLuint VBO;
 	GLfloat vertices[] = {
-		// Pos      
-		1.0f,  1.0f, 
-		1.0f, -1.0f, 
-		-1.0f,  1.0f,
+		// Pos			//Tex
+		1.0f,  1.0f,	1.0f, 1.0f,
+		1.0f, -1.0f,	1.0f, 0.0f,
+		-1.0f,  1.0f,	0.0f, 1.0f,
 
-		 1.0f, -1.0f,
-		-1.0f, -1.0f,
-		-1.0f,  1.0f
+		 1.0f, -1.0f,	1.0f, 0.0f,
+		-1.0f, -1.0f,	0.0f, 0.0f,
+		-1.0f,  1.0f,	0.0f, 1.0f
 	};
 
 	glGenVertexArrays(1, &reference_vertex);
@@ -123,7 +115,9 @@ void ModuleUI::initRenderData()
 
 	glBindVertexArray(reference_vertex);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -153,13 +147,11 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
 
 	setFloat(ui_shader, "spriteColor", color);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, texture_loaded->id);
-	//setInt(shaderID, "image", 0);
+
 
 	glBindVertexArray(reference_vertex);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	//glBindTexture(GL_TEXTURE_2D, 0);
+
 	glBindVertexArray(0);
 
 	glEnable(GL_DEPTH_TEST);

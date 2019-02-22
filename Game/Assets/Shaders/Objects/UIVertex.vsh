@@ -1,5 +1,6 @@
 #version 330 core
 layout (location = 0) in vec2 vertex; // <vec2 position, vec2 texCoords>
+layout (location = 1) in vec2 texture_coords; // <vec2 position, vec2 texCoords>
 
 out vec2 TexCoords;
 
@@ -21,6 +22,6 @@ void main()
 	else if(vertex.x < 0.0 && vertex.y < 0.0)
 		position = bottomLeft;
 	
-
+	TexCoords = texture_coords;
     gl_Position = vec4(position,0.0, 1.0);
 }

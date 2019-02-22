@@ -58,9 +58,6 @@ private:
 	ResourceShaderObject* ui_fragment = nullptr;
 	ResourceShaderObject* ui_vertex = nullptr;
 
-	TextureImportSettings* texture_test = nullptr;
-	ResourceTexture* texture_loaded = nullptr;
-
 	ComponentRectTransform* rect_test = nullptr;
 
 	bool uiMode = false;

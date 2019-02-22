@@ -17,6 +17,7 @@ std::vector<std::string>ResourceScript::scriptNames;
 ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
 {
 	scriptName = data.name;
+	scriptNames.push_back(scriptName);
 }
 
 ResourceScript::~ResourceScript()
@@ -85,7 +86,14 @@ void ResourceScript::SerializeToMeta(char*& cursor) const
 
 void ResourceScript::DeSerializeFromMeta(char*& cursor)
 {
-	uint bytes = sizeof(UUID);
+	//lastModTime + numUids + uid + Script State + nameLenght + name
+	uint bytes = sizeof(int64_t);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	cursor += bytes;
+
+	bytes = sizeof(uint32_t);
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 

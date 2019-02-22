@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ScriptingModule.h"
 
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
@@ -33,7 +34,9 @@ bool ModuleResourceManager::Start()
 
 bool ModuleResourceManager::CleanUp()
 {
-	DeleteResources();
+	for (std::unordered_map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+		RELEASE(it->second);
+	resources.clear();
 
 	return true;
 }
@@ -53,13 +56,29 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	case System_Event_Type::FileOverwritten:
 	case System_Event_Type::ReImportFile:
 	{
-		// 1. Delete resource(s)
-		std::vector<uint> resourcesUuids;
-		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-			DeleteResources(resourcesUuids); // TODO: don't delete script resources
+		std::string extension;
+		App->fs->GetExtension(event.fileEvent.file, extension);
+		ResourceTypes type = GetResourceTypeByExtension(extension.data());
+		switch (type)
+		{
+			case ResourceTypes::ScriptResource:
+			{
+				App->scripting->ScriptModified(event.fileEvent.file);
+				break;
+			}
+			default:
+			{
+				// 1. Delete resource(s)
+				std::vector<uint> resourcesUuids;
+				if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
+					DeleteResources(resourcesUuids);
 
-		// 2. Import file
-		ImportFile(event.fileEvent.file);
+				// 2. Import file
+				ImportFile(event.fileEvent.file);
+
+				break;
+			}
+		}	
 	}
 	break;
 
@@ -135,10 +154,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 
 		// 3. Delete resource(s)
+
+		//TODO: SEND EVENTS ABOUT THE DELETED RESOURCES, COMPONENTSCRIPTS NEED THAT IN ORDER TO DELETE THEIRSELVES
+
 		if (resources)
 			DeleteResources(resourcesUuids);
 
-		// 4. Import file
+		// 4. Import file	
 		ImportFile(event.fileEvent.file);
 	}
 	break;
@@ -297,6 +319,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				if (success)
 					shaderObjectResource->shaderObject = shaderObject;
 			}
+			else
+				resource = GetResource(resourcesUuids.front());
 
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
@@ -383,6 +407,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				if (success)
 					shaderProgramResource->shaderProgram = shaderProgram;
 			}
+			else
+				resource = GetResource(resourcesUuids.front());
 
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
@@ -394,17 +420,24 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	}
 	break;
 
-		case ResourceTypes::ScriptResource:
-		{
+	case ResourceTypes::ScriptResource:
+	{
+		resource = App->scripting->ImportScriptResource(file);
+		break;
+	}
+	//TODO_G :
+	/*
+		-New case for prefab
+		-Static function that imports from char* file_fir, check metas etc RETURNS resource
+		- META: last_mod_time of the file | 
+	*/
 
-			break;
-		}
 	}
 
 	return resource;
 }
 
-Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, bool overwrite)
+Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite)
 {
 	assert(type != ResourceTypes::NoResourceType);
 
@@ -414,21 +447,40 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	{
 	case ResourceTypes::ShaderObjectResource:
 	{
-		std::string outputFile;
-		if (ResourceShaderObject::ExportFile(*(ResourceShaderObjectData*)specificData, data, outputFile, overwrite))
-			resource = ImportFile(outputFile.data());
+		if (ResourceShaderObject::ExportFile(data, *(ResourceShaderObjectData*)specificData, outputFile, overwrite))
+		{
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
 	}
 	break;
 
 	case ResourceTypes::ShaderProgramResource:
 	{
-		std::string outputFile;
-		if (ResourceShaderProgram::ExportFile(*(ResourceShaderProgramData*)specificData, data, outputFile, overwrite))
-			resource = ImportFile(outputFile.data());
+		if (ResourceShaderProgram::ExportFile(data, *(ResourceShaderProgramData*)specificData, outputFile, overwrite))
+		{
+			// Meta
+			std::string outputMetaFile;
+
+			uint uuid = 0;
+			std::vector<uint> resourcesUuids;
+			if (GetResourcesUuidsByFile(outputFile.data(), resourcesUuids))
+				uuid = resourcesUuids.front();
+			ResourceShaderProgramData shaderProgramData = *(ResourceShaderProgramData*)specificData;
+			std::list<std::string> shaderObjectsNames = shaderProgramData.GetShaderObjectsNames();
+			std::vector<std::string> names;
+			for (std::list<std::string>::const_iterator it = shaderObjectsNames.begin(); it != shaderObjectsNames.end(); ++it)
+				names.push_back(*it);
+
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, outputMetaFile);
+			assert(lastModTime > 0);
+
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
 	}
 	break;
 	}
-	assert(resource != nullptr);
 
 	return resource;
 }
@@ -448,16 +500,17 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 		case ResourceTypes::TextureResource:
 			resource = new ResourceTexture(ResourceTypes::TextureResource, uuid, data, *(ResourceTextureData*)specificData);
 			break;
-			case ResourceTypes::ShaderObjectResource:
-				resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
-				break;
-			case ResourceTypes::ShaderProgramResource:
-				resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
-				break;
+		case ResourceTypes::ShaderObjectResource:
+			resource = new ResourceShaderObject(ResourceTypes::ShaderObjectResource, uuid, data, *(ResourceShaderObjectData*)specificData);
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			resource = new ResourceShaderProgram(ResourceTypes::ShaderProgramResource, uuid, data, *(ResourceShaderProgramData*)specificData);
+			break;
 		case ResourceTypes::ScriptResource:
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;
 	}
+
 	assert(resource != nullptr);
 
 	resources[uuid] = resource;
@@ -494,8 +547,11 @@ bool ModuleResourceManager::DeleteResource(uint uuid)
 	if (it == resources.end())
 		return false;
 
-	RELEASE(it->second);
-	resources.erase(uuid);
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::ResourceDestroyed;
+	newEvent.resEvent.resource = it->second;
+	App->PushSystemEvent(newEvent);
+
 	return true;
 }
 
@@ -508,8 +564,10 @@ bool ModuleResourceManager::DeleteResources(std::vector<uint> uuids)
 		if (resource == resources.end())
 			return false;
 
-		RELEASE(resource->second);
-		resources.erase(*it);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::ResourceDestroyed;
+		newEvent.resEvent.resource = resource->second;
+		App->PushSystemEvent(newEvent);
 	}
 
 	return true;
@@ -521,10 +579,27 @@ bool ModuleResourceManager::DeleteResources()
 
 	for (std::unordered_map<uint, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
 	{
-		assert(!it->second->IsInMemory());
-		RELEASE(it->second);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::ResourceDestroyed;
+		newEvent.resEvent.resource = it->second;
+		App->PushSystemEvent(newEvent);
+
 		ret = true;
 	}
+
+	return ret;
+}
+
+bool ModuleResourceManager::EraseResource(Resource* toErase)
+{
+	assert(toErase != nullptr);
+	bool ret = false;
+
+	std::unordered_map<uint, Resource*>::iterator it = resources.find(toErase->GetUuid());
+	ret = it != resources.end();
+
+	if (ret)
+		resources.erase(it);
 
 	return ret;
 }
@@ -674,4 +749,17 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	}
 
 	return ResourceTypes::NoResourceType;
+}
+
+std::vector<Resource*> ModuleResourceManager::GetResourcesByType(ResourceTypes type)
+{
+	std::vector<Resource*> ret;
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->GetType() == type)
+		{
+			ret.push_back(it->second);
+		}
+	}
+	return ret;
 }

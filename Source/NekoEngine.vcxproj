@@ -22,7 +22,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -206,6 +206,7 @@
     <ClInclude Include="BoneImporter.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="PhysicsConstants.h" />
+    <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="SceneQueries.h" />
     <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
@@ -596,6 +597,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
+    <ClCompile Include="ResourcePrefab.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />

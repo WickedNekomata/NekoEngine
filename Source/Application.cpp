@@ -436,11 +436,13 @@ void Application::Play()
 	case engine_states::ENGINE_EDITOR:
 	{
 		// Enter play mode
-		engineState = engine_states::ENGINE_PLAY;
-
-		System_Event event;
-		event.type = System_Event_Type::Play;
-		PushSystemEvent(event);
+		if (renderer3D->SetCurrentCamera())
+		{
+			engineState = engine_states::ENGINE_PLAY;
+			System_Event event;
+			event.type = System_Event_Type::Play;
+			PushSystemEvent(event);
+		}
 		break;
 	}
 	case engine_states::ENGINE_STEP:

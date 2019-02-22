@@ -7,7 +7,7 @@ enum System_Event_Type
 	CopyShadersIntoLibrary,
 
 	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
-	
+
 	RecalculateBBoxes, // GameObjectEvent
 	ShaderProgramChanged,
 	RecreateQuadtree,
@@ -23,7 +23,10 @@ enum System_Event_Type
 	// LayerEvent
 	LayerNameReset,
 	LayerChanged,
-	LayerFilterMaskChanged
+	LayerFilterMaskChanged,
+
+	//Scripting events
+	ScriptingDomainReloaded
 };
 
 class GameObject;

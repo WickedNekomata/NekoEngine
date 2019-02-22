@@ -5,6 +5,7 @@
 #include "ModuleResourceManager.h"
 #include "ModulePhysics.h"
 #include "ResourceMesh.h"
+#include "ScriptingModule.h"
 
 #include "ComponentTypes.h"
 #include "Component.h"
@@ -84,6 +85,11 @@ GameObject::GameObject(const GameObject& gameObject)
 			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter);
 			cmp_emitter->SetParent(this);
 			components.push_back(cmp_emitter);
+			break;
+		case ComponentTypes::BoneComponent:
+			cmp_bone = new ComponentBone(*gameObject.cmp_bone);
+			cmp_bone->SetParent(this);
+			components.push_back(cmp_bone);
 			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
@@ -234,6 +240,17 @@ void GameObject::OnSystemEvent(System_Event event)
 	case System_Event_Type::ShaderProgramChanged:
 		cmp_material->UpdateUniforms();
 		break;
+	case System_Event_Type::ScriptingDomainReloaded:
+	case System_Event_Type::Stop:
+	{
+		monoObjectHandle = 0;
+
+		for (auto component = components.begin(); component != components.end(); ++component)
+		{
+			(*component)->OnSystemEvent(event);
+		}
+		break;
+	}
 	}
 }
 
@@ -340,8 +357,6 @@ bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 
 Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
 {
-	assert(componentType != ComponentTypes::MaterialComponent);
-
 	Component* newComponent;
 	Component* newMaterial = 0;
 
@@ -359,6 +374,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 			assert(cmp_material == NULL);
 			newMaterial = cmp_material = new ComponentMaterial(this);
 		}
+		break;
+	case ComponentTypes::MaterialComponent:
+		assert(cmp_material == NULL);
+		newComponent = cmp_material = new ComponentMaterial(this);
 		break;
 	case ComponentTypes::CameraComponent:
 		assert(cmp_camera == NULL);
@@ -378,6 +397,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_rigidActor == nullptr);
 		newComponent = cmp_rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
 		break;
+	case ComponentTypes::BoneComponent:
+		assert(cmp_bone == NULL);
+		newComponent = cmp_bone = new ComponentBone(this);
+		break;
 	case ComponentTypes::BoxColliderComponent:
 	case ComponentTypes::SphereColliderComponent:
 	case ComponentTypes::CapsuleColliderComponent:
@@ -386,8 +409,17 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_collider == nullptr);
 		newComponent = cmp_collider = App->physics->CreateColliderComponent(this, componentType);
 		break;
-	}
+		
+		case ComponentTypes::ScriptComponent:
+		{
+			newComponent = new ComponentScript("", this);
 
+			//TODO: CORRECT THIS
+			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+			break;
+		}
+	}
+	
 	components.push_back(newComponent);
 
 	if (newMaterial)
@@ -472,7 +504,7 @@ void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
 }
 
 uint GameObject::GetSerializationBytes() const
-{
+{				   // uuid + parent + layer + active + static + name + number of components
 	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
 
 	for (int i = 0; i < components.size(); ++i)

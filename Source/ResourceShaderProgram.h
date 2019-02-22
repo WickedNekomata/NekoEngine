@@ -14,15 +14,7 @@ struct ResourceShaderProgramData
 {
 	std::list<ResourceShaderObject*> shaderObjects;
 
-	std::list<std::string> GetShaderObjectsNames() const
-	{
-		std::list<std::string> shaderObjectsNames;
-
-		for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
-			shaderObjectsNames.push_back((*it)->GetName());
-
-		return shaderObjectsNames;
-	}
+	std::list<std::string> GetShaderObjectsNames() const;	
 };
 
 class ResourceShaderProgram : public Resource
@@ -37,7 +29,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	static bool ImportFile(const char* file, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputFile);
-	static bool ExportFile(ResourceShaderProgramData& shaderProgramData, ResourceData& data, std::string& outputFile, bool overwrite = false);
+	static bool ExportFile(ResourceData& data, ResourceShaderProgramData& shaderProgramData, std::string& outputFile, bool overwrite = false);
 	static uint CreateMeta(const char* file, uint shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames);
 	static uint SetNameToMeta(const char* metaFile, const std::string& name);

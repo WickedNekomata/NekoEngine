@@ -147,7 +147,15 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		//RecursiveProcessBones(scene, scene->mRootNode);
+		RecursiveProcessBones(scene, scene->mRootNode);
+
+		// TODO_G : export prefab.
+		/*
+		Needs ResourceData, and CustomData
+		- Create resource prefab (Call exportFile in App->res Generate a file, meta)
+		- App->res in switch calls exportFile from this prefab resource
+		- Returns a resource already in memory (not needed here)
+		*/
 
 		aiReleaseImport(scene);
 
@@ -182,14 +190,16 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		gameObject = (GameObject*)parent;
 	// If the previous game object was a transformation, keep the transformation
 	else if (transformation != nullptr)
-		gameObject = (GameObject*)transformation;
+		gameObject = new GameObject(name.data(), (GameObject*)parent);
 	// If the previous game object wasn't a transformation, create a new game object
 	else
 		gameObject = new GameObject(name.data(), (GameObject*)parent);
-	
+
 	// If the current game object is not a transformation, update its name (just in case the previous one was)
 	if (!isTransformation)
 		gameObject->SetName(name.data());
+
+	relations[node] = gameObject;
 
 	// Transform
 	aiVector3D position;
@@ -290,28 +300,26 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				normals = new float[normalsSize * 3];
 				memcpy(normals, nodeMesh->mNormals, sizeof(float) * normalsSize * 3);
 			}
-			
+
 			// Tangents and Bitangents
 			if (nodeMesh->HasTangentsAndBitangents())
 			{
 				tangentsSize = verticesSize;
 				tangents = new float[tangentsSize * 3];
 				memcpy(tangents, nodeMesh->mTangents, sizeof(float) * tangentsSize * 3);
-				
+
 				bitangentsSize = verticesSize;
 				bitangents = new float[bitangentsSize * 3];
 				memcpy(bitangents, nodeMesh->mBitangents, sizeof(float) * bitangentsSize * 3);
 			}
-			
+
 			// Color
-			if (nodeMesh->HasVertexColors(0))
+			/*if (nodeMesh->HasVertexColors(0))
 			{
 				colorsSize = verticesSize;
 				colors = new uchar[colorsSize * 4];
 				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
-			}
-
-			relations[node] = gameObject;
+			}*/
 
 			// Bone
 			if (nodeMesh->HasBones() == true && gameObject->GetComponent(ComponentTypes::MeshComponent))
@@ -409,7 +417,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 4. Store tangents
 			if (tangentsSize > 0)
 			{
@@ -427,7 +435,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 6. Store colors
 			if (colorsSize > 0)
 			{
@@ -653,7 +661,7 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 	// Bind the VAO
 	glBindVertexArray(VAO);
 
-	// Bind the VBO 
+	// Bind the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	// Set the vertex attributes pointers
@@ -717,7 +725,7 @@ uint SceneImporter::GetAssimpRevisionVersion() const
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
 	float skyboxVertices[] = {
-        
+
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -860,6 +868,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		aiBone* bone = it->second;
 
 		GameObject* go = relations[node];
+
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;

@@ -80,7 +80,7 @@ bool ResourceShaderObject::ImportFile(const char* file, std::string& name, std::
 	return true;
 }
 
-bool ResourceShaderObject::ExportFile(ResourceShaderObjectData& shaderObjectData, ResourceData& data, std::string& outputFile, bool overwrite)
+bool ResourceShaderObject::ExportFile(ResourceData& data, ResourceShaderObjectData& shaderObjectData, std::string& outputFile, bool overwrite)
 {
 	return App->shaderImporter->SaveShaderObject(data, shaderObjectData, outputFile, overwrite);
 }

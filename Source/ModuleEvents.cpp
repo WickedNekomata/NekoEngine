@@ -22,8 +22,10 @@
 
 #include "Application.h"
 #include "ModuleGOs.h"
+#include "ModuleResourceManager.h"
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
+#include "ScriptingModule.h"
 
 void ModuleEvents::OnSystemEvent(System_Event event)
 {
@@ -41,6 +43,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		}
 		case System_Event_Type::ResourceDestroyed:
 		{
+			App->res->EraseResource(event.resEvent.resource);
 			delete event.resEvent.resource;
 			break;
 		}
@@ -86,6 +89,13 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			else
 				DEPRECATED_LOG("CANT FIND SCENE IN ASSETS");
 			break;
+		}
+
+		case System_Event_Type::ScriptingDomainReloaded:
+		{
+			App->scripting->CreateDomain();
+			App->scripting->RecompileScripts();
+			App->scripting->ReInstance();
 		}
 	}
 }

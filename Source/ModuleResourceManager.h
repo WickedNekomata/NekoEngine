@@ -46,7 +46,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	Resource* ImportFile(const char* file);
-	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, bool overwrite = false);
+	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false);
 	Resource* CreateResource(ResourceTypes type, ResourceData& data, void* specificData, uint forcedUuid = 0);
 
 	// ----------------------------------------------------------------------------------------------------
@@ -57,6 +57,7 @@ public:
 	bool DeleteResource(uint uuid);
 	bool DeleteResources(std::vector<uint> uuids);
 	bool DeleteResources();
+	bool EraseResource(Resource* toErase);
 
 	void RecursiveDeleteUnusedEntries(const char* dir, std::string& path);
 	void RecursiveDeleteUnusedMetas(const char* dir, std::string& path);
@@ -67,6 +68,7 @@ public:
 	bool GetResourcesUuidsByFile(const char* file, std::vector<uint>& resourcesUuids) const;
 	bool GetResourceUuidByExportedFile(const char* file, uint& resourceUuid) const;
 	ResourceTypes GetResourceTypeByExtension(const char* extension) const;
+	std::vector<Resource*> GetResourcesByType(ResourceTypes type);
 
 private:
 

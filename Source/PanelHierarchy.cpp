@@ -4,9 +4,11 @@
 
 #include "Application.h"
 #include "GameObject.h"
+#include "ComponentMesh.h"
 #include "ModuleScene.h"
 #include "ModuleInput.h"
 #include "ModuleGui.h"
+#include "ModuleInternalResHandler.h"
 
 #include "SDL\include\SDL_scancode.h"
 #include "ModuleGOs.h"
@@ -48,6 +50,18 @@ bool PanelHierarchy::Draw()
 			{
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Selectable("Create Cube"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("Cube", root);
+				go->AddComponent(ComponentTypes::MeshComponent);
+				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+			}
+			if (ImGui::Selectable("Create Plane"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("Plane", root);
+				go->AddComponent(ComponentTypes::MeshComponent);
+				go->cmp_mesh->SetResource(App->resHandler->defaultPlane);
 			}
 			ImGui::EndPopup();
 		}
@@ -149,6 +163,13 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 		if (ImGui::Selectable("Create Empty")) 
 		{
 			App->GOs->CreateGameObject("GameObject", child);
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::Selectable("Create Cube"))
+		{
+			GameObject* go = App->GOs->CreateGameObject("Cube", child);
+			go->AddComponent(ComponentTypes::MeshComponent);
+			go->cmp_mesh->SetResource(App->resHandler->defaultCube);
 			ImGui::CloseCurrentPopup();
 		}
 		if (ImGui::Selectable("Delete")) 

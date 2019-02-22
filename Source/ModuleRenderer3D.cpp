@@ -402,7 +402,6 @@ void ModuleRenderer3D::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 	case System_Event_Type::Play:
-		SetCurrentCamera();
 		break;
 	case System_Event_Type::Stop:
 #ifndef GAMEMODE

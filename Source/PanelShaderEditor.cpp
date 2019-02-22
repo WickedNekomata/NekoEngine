@@ -139,14 +139,15 @@ bool PanelShaderEditor::Draw()
 				std::list<ResourceShaderObject*> shaderObjects;
 				if (GetShaderObjects(shaderObjects))
 				{			
+					std::string outputFile;
 					if (shaderProgram != nullptr)
 					{
 						// Update the existing shader program
-						shaderProgram->SetName(name);
+						shaderProgram->SetName(shaderProgramName);
 						shaderProgram->SetShaderObjects(shaderObjects);
 						shaderProgram->Link();
-
-						App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), true);
+						
+						App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), outputFile, true);
 					}
 					else
 					{
@@ -156,7 +157,7 @@ bool PanelShaderEditor::Draw()
 						data.name = shaderProgramName;
 						shaderProgramData.shaderObjects = shaderObjects;
 
-						shaderProgram = (ResourceShaderProgram*)App->res->ExportFile(ResourceTypes::ShaderProgramResource, data, &shaderProgramData);
+						shaderProgram = (ResourceShaderProgram*)App->res->ExportFile(ResourceTypes::ShaderProgramResource, data, &shaderProgramData, outputFile);
 						shaderProgramUuid = shaderProgram->GetUuid();
 					}
 				}

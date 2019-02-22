@@ -272,8 +272,11 @@ void PanelInspector::ShowGameObjectInspector() const
 					uint size = App->fs->Load("Assets/Scripts/" + scriptNames[i] + ".cs.meta", &metaBuffer);
 					if (size > 0)
 					{
+						char* cursor = metaBuffer;
+						cursor += sizeof(int64_t) + sizeof(uint);
+
 						uint32_t UUID;
-						memcpy(&UUID, metaBuffer, sizeof(uint32_t));
+						memcpy(&UUID, cursor, sizeof(uint32_t));
 
 						res = (ResourceScript*)App->res->GetResource(UUID);
 

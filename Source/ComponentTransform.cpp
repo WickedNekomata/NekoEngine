@@ -201,6 +201,7 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 
 uint ComponentTransform::GetInternalSerializationBytes()
 {
+	// position + scale + rotation
 	return sizeof(math::float3) * 2 + sizeof(math::Quat);
 }
 

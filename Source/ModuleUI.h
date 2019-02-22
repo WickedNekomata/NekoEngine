@@ -55,8 +55,6 @@ private:
 	uint reference_vertex;
 
 	uint ui_shader = 0;
-	ResourceShaderObject* ui_fragment = nullptr;
-	ResourceShaderObject* ui_vertex = nullptr;
 
 	ComponentRectTransform* rect_test = nullptr;
 

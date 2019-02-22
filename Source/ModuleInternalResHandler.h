@@ -130,6 +130,43 @@
 "	FragColor = texture(skybox, ourTexCoord);\n" \
 "}"
 
+//UI
+
+#define uivShader \
+"#version 330 core\n" \
+"layout(location = 0) in vec2 vertex; // <vec2 position, vec2 texCoords>\n" \
+"layout(location = 1) in vec2 texture_coords; // <vec2 position, vec2 texCoords>\n" \
+"out vec2 TexCoords;\n" \
+"uniform vec2 topRight;\n" \
+"uniform vec2 topLeft;\n" \
+"uniform vec2 bottomLeft;\n" \
+"uniform vec2 bottomRight;\n" \
+"void main()\n" \
+"{\n" \
+"	vec2 position = topRight;\n" \
+"	if (vertex.x > 0.0 && vertex.y > 0.0)\n" \
+"		position = topRight;\n" \
+"	else if (vertex.x > 0.0 && vertex.y < 0.0)\n" \
+"		position = bottomRight;\n" \
+"	else if (vertex.x < 0.0 && vertex.y > 0.0)\n" \
+"		position = topLeft;\n" \
+"	else if (vertex.x < 0.0 && vertex.y < 0.0)\n" \
+"		position = bottomLeft;\n" \
+"	TexCoords = texture_coords;\n" \
+"	gl_Position = vec4(position, 0.0, 1.0);\n" \
+"}"
+
+#define uifShader \
+"#version 330 core\n" \
+"in vec2 TexCoords;\n" \
+"out vec4 color;\n" \
+"uniform sampler2D image;\n" \
+"uniform vec3 spriteColor;\n" \
+"void main()\n" \
+"{\n" \
+"	color = vec4(spriteColor, 0.5) * texture(image, TexCoords);\n" \
+"}"
+
 #pragma endregion
 
 class ModuleInternalResHandler : public Module
@@ -142,6 +179,7 @@ public:
 
 	void CreateDefaultShaderProgram();
 	void CreateCubemapShaderProgram();
+	void CreateUIShaderProgram();
 
 public:
 	//RESOURCES
@@ -160,6 +198,9 @@ public:
 	uint defaultFragmentShaderObject;
 	uint defaultShaderProgram;
 	uint cubemapShaderProgram;
+	uint UIVertexShaderObject;	
+	uint UIFragmentShaderObject;
+	uint UIShaderProgram;
 };
 
 #endif

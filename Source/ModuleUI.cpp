@@ -15,6 +15,7 @@
 #include "ResourceTexture.h"
 #include "ModuleWindow.h"
 #include "ModuleGOs.h"
+#include "ModuleInternalResHandler.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -45,9 +46,8 @@ bool ModuleUI::Start()
 	initRenderData();
 
 	//Shader
-	ui_vertex = (ResourceShaderObject*)App->res->ImportFile("Assets/Shaders/Objects/UIVertex.vsh");
-	ui_fragment = (ResourceShaderObject*)App->res->ImportFile("Assets/Shaders/Objects/UIFragment.fsh");
-	ui_shader = App->shaderImporter->LoadShaderProgram(ui_vertex->shaderObject, ui_fragment->shaderObject);
+	App->resHandler->CreateUIShaderProgram();
+	ui_shader = App->resHandler->UIShaderProgram;
 
 	rect_test = new ComponentRectTransform(nullptr);
 	rect_test->SetRect(0,0,100,100);

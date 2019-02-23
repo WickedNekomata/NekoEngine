@@ -10,6 +10,7 @@
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
 #include "ModuleInternalResHandler.h"
+#include "ScriptingModule.h"
 
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
@@ -17,7 +18,8 @@
 #include "Resource.h"
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
-#include "ScriptingModule.h"
+#include "ResourceMaterial.h"
+#include "ResourceShaderProgram.h"
 
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
@@ -48,7 +50,7 @@ bool PanelAssets::Draw()
 		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
-		CreateShaderPopUp(DIR_ASSETS);
+		CreateResourcePopUp(DIR_ASSETS);
 		if (treeNodeOpened)
 		{
 			RecursiveDrawAssetsDir(App->fs->rootAssets);
@@ -57,15 +59,42 @@ bool PanelAssets::Draw()
 	}
 	ImGui::End();
 
-	if (showCreateShaderConfirmationPopUp)
+	if (showCreateResourceConfirmationPopUp)
 	{
-		ImGui::OpenPopup("Create Shader");
-		CreateShaderConfirmationPopUp();
+		char resource[DEFAULT_BUF_SIZE];
+		ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+		switch (resourceType)
+		{
+		case ResourceTypes::ShaderObjectResource:
+			strcpy_s(resource, strlen("Create Shader Object") + 1, "Create Shader Object");
+			break;
+		case ResourceTypes::MaterialResource:
+			strcpy_s(resource, strlen("Create Material") + 1, "Create Material");
+			break;
+		}
+
+		ImGui::OpenPopup(resource);
+		CreateResourceConfirmationPopUp();
 	}
-	else if (showDeleteShaderConfirmationPopUp)
+	else if (showDeleteResourceConfirmationPopUp)
 	{
-		ImGui::OpenPopup("Delete Shader");
-		DeleteShaderConfirmationPopUp();
+		char resource[DEFAULT_BUF_SIZE];
+		ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+		switch (resourceType)
+		{
+		case ResourceTypes::ShaderObjectResource:
+			strcpy_s(resource, strlen("Delete Shader Object") + 1, "Delete Shader Object");
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			strcpy_s(resource, strlen("Delete Shader Program") + 1, "Delete Shader Program");
+			break;
+		case ResourceTypes::MaterialResource:
+			strcpy_s(resource, strlen("Delete Material") + 1, "Delete Material");
+			break;
+		}
+
+		ImGui::OpenPopup(resource);
+		DeleteResourceConfirmationPopUp();
 	}
 
 	return true;
@@ -100,23 +129,11 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 
 		std::string extension;
 		App->fs->GetExtension(file.name.data(), extension);
+		ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
 
-		union
+		switch (resourceType)
 		{
-			char ext[4];
-			uint32_t asciiValue;
-		} asciiUnion;
-
-		memcpy(asciiUnion.ext, extension.data(), sizeof(char) * 4);
-
-		switch (asciiUnion.asciiValue)
-		{
-			case ASCIIFBX:
-			case ASCIIfbx:
-			case ASCIIOBJ:
-			case ASCIIobj:
-			case ASCIIdae:
-			case ASCIIDAE:
+		case ResourceTypes::MeshResource:
 			{		
 				ImGuiTreeNodeFlags flags = 0;
 				flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow;
@@ -171,8 +188,13 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				memcpy(&uid, cursor, sizeof(uint));
 
 				Resource* res = (Resource*)App->res->GetResource(uid);
-				if(res)
+				if (res)
 					res->OnPanelAssets();
+
+				if (resourceType == ResourceTypes::ShaderObjectResource ||
+					resourceType == ResourceTypes::ShaderProgramResource ||
+					resourceType == ResourceTypes::MaterialResource)
+					DeleteResourcePopUp(res->GetFile());
 
 				break;
 			}
@@ -196,13 +218,11 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 		if (ImGui::TreeNodeEx(id, flags))
 			treeNodeOpened = true;
 
-		//TODO: WHY ARE DIRECTORIES BEING SELECTED?
 		if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
 			&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 			SELECT(NULL);
 
-		//TODO: WHAT IS THIS?
-		CreateShaderPopUp(dir.fullPath.data());
+		CreateResourcePopUp(dir.fullPath.data());
 
 		if (treeNodeOpened)
 		{
@@ -213,94 +233,145 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 	}
 }
 
-void PanelAssets::CreateShaderPopUp(const char* path)
+void PanelAssets::CreateResourcePopUp(const char* path)
 {
 	if (ImGui::BeginPopupContextItem(path))
 	{
 		if (ImGui::Selectable("Create Vertex Shader"))
 		{
-			shaderType = ShaderTypes::VertexShaderType;
-			strcpy_s(shaderName, strlen("New Vertex Shader") + 1, "New Vertex Shader");
-			shaderFile = path;
-			shaderFile.append("/");
+			extension = EXTENSION_VERTEX_SHADER_OBJECT;
+			strcpy_s(resourceName, strlen("New Vertex Shader") + 1, "New Vertex Shader");
+			file = path;
+			file.append("/");
 
-			showCreateShaderConfirmationPopUp = true;
+			showCreateResourceConfirmationPopUp = true;
 			ImGui::CloseCurrentPopup();
 		}
 		else if (ImGui::Selectable("Create Fragment Shader"))
 		{
-			shaderType = ShaderTypes::FragmentShaderType;
-			strcpy_s(shaderName, strlen("New Fragment Shader") + 1, "New Fragment Shader");
-			shaderFile = path;
-			shaderFile.append("/");
+			extension = EXTENSION_FRAGMENT_SHADER_OBJECT;
+			strcpy_s(resourceName, strlen("New Fragment Shader") + 1, "New Fragment Shader");
+			file = path;
+			file.append("/");
 
-			showCreateShaderConfirmationPopUp = true;
+			showCreateResourceConfirmationPopUp = true;
+			ImGui::CloseCurrentPopup();
+		}
+		else if (ImGui::Selectable("Create Material"))
+		{
+			extension = EXTENSION_MATERIAL;
+			strcpy_s(resourceName, strlen("New Material") + 1, "New Material");
+			file = path;
+			file.append("/");
+
+			showCreateResourceConfirmationPopUp = true;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
 }
 
-void PanelAssets::DeleteShaderPopUp(const char* path)
+void PanelAssets::DeleteResourcePopUp(const char* path)
 {
 	if (ImGui::BeginPopupContextItem(path))
 	{
-		if (ImGui::Selectable("Delete Shader"))
+		char resource[DEFAULT_BUF_SIZE];
+		App->fs->GetExtension(path, extension);
+		ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+		switch (resourceType)
 		{
-			shaderFile = path;
+		case ResourceTypes::ShaderObjectResource:
+			strcpy_s(resource, strlen("Delete Shader Object") + 1, "Delete Shader Object");
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			strcpy_s(resource, strlen("Delete Shader Program") + 1, "Delete Shader Program");
+			break;
+		case ResourceTypes::MaterialResource:
+			strcpy_s(resource, strlen("Delete Material") + 1, "Delete Material");
+			break;
+		}
 
-			showDeleteShaderConfirmationPopUp = true;
+		if (ImGui::Selectable(resource))
+		{
+			file = path;
+
+			showDeleteResourceConfirmationPopUp = true;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
 }
 
-void PanelAssets::CreateShaderConfirmationPopUp()
+void PanelAssets::CreateResourceConfirmationPopUp()
 {
-	if (ImGui::BeginPopupModal("Create Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	char resource[DEFAULT_BUF_SIZE];
+	ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+	switch (resourceType)
 	{
-		ImGui::Text("%s", shaderFile.data());
+	case ResourceTypes::ShaderObjectResource:
+		strcpy_s(resource, strlen("Create Shader Object") + 1, "Create Shader Object");
+		break;
+	case ResourceTypes::MaterialResource:
+		strcpy_s(resource, strlen("Create Material") + 1, "Create Material");
+		break;
+	}
+
+	if (ImGui::BeginPopupModal(resource, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("%s", file.data());
 
 		ImGui::PushItemWidth(200.0f);
-		ImGui::InputText("##shaderName", shaderName, INPUT_BUF_SIZE);
+		ImGui::InputText("##name", resourceName, INPUT_BUF_SIZE);
 
-		switch (shaderType)
-		{
-		case ShaderTypes::VertexShaderType:
-			ImGui::Text(EXTENSION_VERTEX_SHADER_OBJECT);
-			break;
-		case ShaderTypes::FragmentShaderType:
-			ImGui::Text(EXTENSION_FRAGMENT_SHADER_OBJECT);
-			break;
-		}
-
+		ImGui::Text(extension.data());
+		
 		if (ImGui::Button("Create", ImVec2(120.0f, 0)))
 		{
-			shaderFile.append(shaderName);
+			file.append(resourceName);
+			file.append(extension.data());
 
 			ResourceData data;
-			ResourceShaderObjectData shaderObjectData;
-	
-			switch (shaderType)
+			data.file = file;
+
+			switch (resourceType)
 			{
-			case ShaderTypes::VertexShaderType:
-				shaderObjectData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
-				shaderFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
-				break;
-			case ShaderTypes::FragmentShaderType:
-				shaderObjectData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
-				shaderFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
-				break;
+			case ResourceTypes::ShaderObjectResource:
+			{
+				// Basic shader object
+				ResourceShaderObjectData shaderObjectData;
+				ShaderObjectTypes shaderObjectType = ResourceShaderObject::GetShaderObjectTypeByExtension(extension.data());
+				shaderObjectData.shaderObjectType = shaderObjectType;
+				switch (shaderObjectType)
+				{
+				case ShaderObjectTypes::VertexType:
+					shaderObjectData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
+					break;
+				case ShaderObjectTypes::FragmentType:
+					shaderObjectData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
+					break;
+				}
+
+				// Export the new file
+				std::string outputFile;
+				App->res->ExportFile(resourceType, data, &shaderObjectData, outputFile, true); // overwrite true since we already know the path
+			}
+			break;
+
+			case ResourceTypes::MaterialResource:
+			{
+				// Basic material info
+				ResourceMaterialData materialData;
+				materialData.shaderUuid = App->resHandler->defaultShaderProgram;
+				((ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid))->GetUniforms(materialData.uniforms);
+
+				// Export the new file
+				std::string outputFile;
+				App->res->ExportFile(resourceType, data, &materialData, outputFile, true); // overwrite true since we already know the path
+			}
+			break;
 			}
 
-			data.file = shaderFile;
-			shaderObjectData.shaderType = shaderType;
-
-			std::string outputFile;
-			App->res->ExportFile(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, outputFile, true);
-
-			showCreateShaderConfirmationPopUp = false;
+			showCreateResourceConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -309,32 +380,51 @@ void PanelAssets::CreateShaderConfirmationPopUp()
 
 		if (ImGui::Button("Cancel", ImVec2(120.0f, 0)))
 		{
-			showCreateShaderConfirmationPopUp = false;
+			showCreateResourceConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
 }
 
-void PanelAssets::DeleteShaderConfirmationPopUp()
+void PanelAssets::DeleteResourceConfirmationPopUp()
 {
-	if (ImGui::BeginPopupModal("Delete Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	char resource[DEFAULT_BUF_SIZE];
+	ResourceTypes resourceType = App->res->GetResourceTypeByExtension(extension.data());
+	switch (resourceType)
 	{
-		std::string extension;
-		App->fs->GetExtension(shaderFile.data(), extension);
+	case ResourceTypes::ShaderObjectResource:
+		strcpy_s(resource, strlen("Delete Shader Object") + 1, "Delete Shader Object");
+		break;
+	case ResourceTypes::ShaderProgramResource:
+		strcpy_s(resource, strlen("Delete Shader Program") + 1, "Delete Shader Program");
+		break;
+	case ResourceTypes::MaterialResource:
+		strcpy_s(resource, strlen("Delete Material") + 1, "Delete Material");
+		break;
+	}
 
-		if (strcmp(extension.data(), EXTENSION_VERTEX_SHADER_OBJECT) == 0
-			|| strcmp(extension.data(), EXTENSION_FRAGMENT_SHADER_OBJECT) == 0)
-			ImGui::Text("Are you sure that you want to delete the following shader object?");
-		else if (strcmp(extension.data(), EXTENSION_SHADER_PROGRAM) == 0)
-			ImGui::Text("Are you sure that you want to delete the following shader program?");
-		ImGui::TextColored(BLUE, "%s", shaderFile.data());
+	if (ImGui::BeginPopupModal(resource, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		switch (resourceType)
+		{
+		case ResourceTypes::ShaderObjectResource:
+			ImGui::Text("Are you sure that you want to delete the following Shader Object?");
+			break;
+		case ResourceTypes::ShaderProgramResource:
+			ImGui::Text("Are you sure that you want to delete the following Shader Program?");
+			break;
+		case ResourceTypes::MaterialResource:
+			ImGui::Text("Are you sure that you want to delete the following Material?");
+			break;
+		}
+		ImGui::TextColored(BLUE, "%s", file.data());
 
 		if (ImGui::Button("Delete", ImVec2(120.0f, 0)))
 		{
-			App->fs->DeleteFileOrDir(shaderFile.data());
+			App->fs->DeleteFileOrDir(file.data());
 
-			showDeleteShaderConfirmationPopUp = false;
+			showDeleteResourceConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -343,7 +433,7 @@ void PanelAssets::DeleteShaderConfirmationPopUp()
 
 		if (ImGui::Button("Cancel", ImVec2(120.0f, 0)))
 		{
-			showDeleteShaderConfirmationPopUp = false;
+			showDeleteResourceConfirmationPopUp = false;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

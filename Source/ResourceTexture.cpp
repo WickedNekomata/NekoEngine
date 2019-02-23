@@ -34,7 +34,7 @@ void ResourceTexture::OnPanelAssets()
 
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 	{
-		ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
+		ImGui::SetDragDropPayload("TEXTURE_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
 }

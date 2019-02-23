@@ -253,9 +253,6 @@ void GameObject::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;
-	case System_Event_Type::ShaderProgramChanged:
-		cmp_material->UpdateUniforms();
-		break;
 	case System_Event_Type::ScriptingDomainReloaded:
 	case System_Event_Type::Stop:
 	{
@@ -609,12 +606,7 @@ void GameObject::OnLoad(char*& cursor)
 void GameObject::RecursiveForceAllResources(uint forceRes) const
 {
 	if (cmp_material != nullptr)
-	{
-		for (int i = 0; i < cmp_material->res.size(); ++i)
-			cmp_material->res[i].res = forceRes;
-
-		cmp_material->shaderProgramUUID = forceRes;
-	}
+		cmp_material->res = forceRes;
 
 	if (cmp_mesh != nullptr)
 		cmp_mesh->res = forceRes;

@@ -26,11 +26,6 @@ void ResourceMesh::OnPanelAssets()
 	if (App->scene->selectedObject == this)
 		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
 
-	/*if (App->scene->selectedObject == ((MeshImportSettings*)child->importSettings))
-		treeNodeFlags |= ImGuiTreeNodeFlags_Selected;*/
-
-		//Create the leaf
-
 	char id[DEFAULT_BUF_SIZE];
 	sprintf(id, "%s##%d", data.name.data(), uuid);
 

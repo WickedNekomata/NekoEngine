@@ -27,19 +27,20 @@ private:
 
 	void RecursiveDrawAssetsDir(const Directory& assetsFile);
 	
-	void CreateShaderPopUp(const char* path);
-	void DeleteShaderPopUp(const char* path);
-	void CreateShaderConfirmationPopUp();
-	void DeleteShaderConfirmationPopUp();
+	void CreateResourcePopUp(const char* path);
+	void DeleteResourcePopUp(const char* path);
+	void CreateResourceConfirmationPopUp();
+	void DeleteResourceConfirmationPopUp();
 
 public:
 
-	ShaderTypes shaderType = ShaderTypes::NoShaderType;
-	std::string shaderFile;
-	char shaderName[INPUT_BUF_SIZE];
-
-	bool showCreateShaderConfirmationPopUp = false;
-	bool showDeleteShaderConfirmationPopUp = false;
+	// Create resource
+	std::string file;
+	std::string extension;
+	char resourceName[INPUT_BUF_SIZE];
+	
+	bool showCreateResourceConfirmationPopUp = false;
+	bool showDeleteResourceConfirmationPopUp = false;
 };
 
 #endif

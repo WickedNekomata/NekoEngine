@@ -29,6 +29,8 @@
 #define ASCIICS 5456686
 #define ASCIIpfb 1650880558
 #define ASCIIPFB 1111904302
+#define ASCIImat 1952541998
+#define ASCIIMAT 1413565742
 
 class Resource;
 struct ResourceData;
@@ -48,7 +50,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	Resource* ImportFile(const char* file);
-	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false);
+	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false, bool resources = true);
 	Resource* CreateResource(ResourceTypes type, ResourceData& data, void* specificData, uint forcedUuid = 0);
 
 	// ----------------------------------------------------------------------------------------------------

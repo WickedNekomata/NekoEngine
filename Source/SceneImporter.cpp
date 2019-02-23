@@ -377,7 +377,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 								uuid = App->res->ImportFile(outputFile.data())->GetUuid();
 
 							assert(uuid > 0);
-							gameObject->cmp_material->res[0].res = uuid;
+							//gameObject->cmp_material->res[0].res = uuid; // TODO UNIFORMS
 						}
 					}
 				}
@@ -471,7 +471,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			memcpy(cursor, meshName, bytes);
 
 			std::string outputFile = std::to_string(gameObject->cmp_mesh->res);
-			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFile) > 0)
+			if (App->fs->SaveInGame(data, size, FileTypes::MeshFile, outputFile) > 0)
 			{
 				CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 				outputFiles.push_back(outputFile);
@@ -702,11 +702,13 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 void SceneImporter::DeleteBufferObject(uint& name) const
 {
 	glDeleteBuffers(1, &name);
+	name = 0;
 }
 
 void SceneImporter::DeleteVertexArrayObject(uint& name) const
 {
 	glDeleteVertexArrays(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------

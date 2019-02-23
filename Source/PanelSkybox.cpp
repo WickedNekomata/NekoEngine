@@ -55,7 +55,7 @@ bool PanelSkybox::Draw()
 
 		if (ImGui::BeginDragDropTarget())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_INSPECTOR_SELECTOR"))
 			{
 				if (tex != nullptr)
 					App->res->SetAsUnused(tex->GetUuid());

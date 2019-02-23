@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleFileSystem.h"
+#include "ModuleInternalResHandler.h"
 #include "ScriptingModule.h"
 
 #include "SceneImporter.h"
@@ -62,27 +63,27 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		ResourceTypes type = GetResourceTypeByExtension(extension.data());
 		switch (type)
 		{
-			case ResourceTypes::ScriptResource:
-			{
-				App->scripting->ScriptModified(event.fileEvent.file);
-				break;
-			}
-			default:
-			{
-				// 1. Delete resource(s)
-				std::vector<uint> resourcesUuids;
-				if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-					DeleteResources(resourcesUuids);
+		case ResourceTypes::ScriptResource:
+		{
+			App->scripting->ScriptModified(event.fileEvent.file);
+			break;
+		}
+		default:
+		{
+			// 1. Delete resource(s)
+			std::vector<uint> resourcesUuids;
+			if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
+				DeleteResources(resourcesUuids);
 
-				// 2. Import file
-				System_Event newEvent;
-				newEvent.type = System_Event_Type::ImportFile;
-				strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
-				App->PushSystemEvent(newEvent);
+			// 2. Import file
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::ImportFile;
+			strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
+			App->PushSystemEvent(newEvent);
 
-				break;
-			}
-		}	
+			break;
+		}
+		}
 	}
 	break;
 
@@ -189,8 +190,43 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		break;
 
 	case System_Event_Type::ResourceDestroyed:
-		// TODO INVALIDATE RESOURCE (Material)
+	{
+		switch (event.resEvent.resource->GetType())
+		{
+		case ResourceTypes::TextureResource:
+		{
+			uint uuid = event.resEvent.resource->GetUuid();
+
+			std::vector<Resource*> materials = GetResourcesByType(ResourceTypes::MaterialResource);
+			for (uint i = 0; i < materials.size(); ++i)
+			{
+				ResourceMaterial* material = (ResourceMaterial*)materials[i];
+				if (material->materialData.albedoUuid == uuid)
+					material->SetResourceTexture(0, TextureTypes::Albedo);
+				else if (material->materialData.specularUuid == uuid)
+					material->SetResourceTexture(0, TextureTypes::Specular);
+				else if (material->materialData.normalMapUuid == uuid)
+					material->SetResourceTexture(0, TextureTypes::NormalMap);
+			}
+		}
 		break;
+
+		case ResourceTypes::ShaderProgramResource:
+		{
+			uint uuid = event.resEvent.resource->GetUuid();
+
+			std::vector<Resource*> materials = GetResourcesByType(ResourceTypes::MaterialResource);
+			for (uint i = 0; i < materials.size(); ++i)
+			{
+				ResourceMaterial* material = (ResourceMaterial*)materials[i];
+				if (material->materialData.shaderUuid == uuid)
+					material->SetResourceShader(App->resHandler->defaultShaderProgram);
+			}
+		}
+		break;
+		}
+	}
+	break;
 	}
 }
 

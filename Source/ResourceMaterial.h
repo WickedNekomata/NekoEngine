@@ -3,7 +3,15 @@
 
 #include "Resource.h"
 
+#include "MathGeoLib\include\Math\float4.h"
 #include "MathGeoLib\include\Math\float4x4.h"
+
+enum TextureTypes
+{
+	Albedo,
+	Specular,
+	NormalMap
+};
 
 struct ResourceMaterialData
 {
@@ -41,8 +49,12 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 	
 	inline ResourceMaterialData& GetSpecificData() { return materialData; }
-	void SetShaderUuid(uint shaderUuid);
+	void SetResourceShader(uint shaderUuid);
 	uint GetShaderUuid() const;
+	void SetResourceTexture(uint textureUuid, TextureTypes textureType);
+	uint GetTextureUuid(TextureTypes textureType) const;
+	void SetColor(math::float4& color, TextureTypes textureType);
+	math::float4 GetColor(TextureTypes& textureType) const;
 
 private:
 

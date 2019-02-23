@@ -255,7 +255,7 @@ bool ResourceMaterial::ReadMeta(const char* metaFile, int64_t& lastModTime, uint
 
 // ----------------------------------------------------------------------------------------------------
 
-void ResourceMaterial::SetShaderUuid(uint shaderUuid)
+void ResourceMaterial::SetResourceShader(uint shaderUuid)
 {
 	materialData.shaderUuid = shaderUuid;
 }
@@ -263,6 +263,108 @@ void ResourceMaterial::SetShaderUuid(uint shaderUuid)
 uint ResourceMaterial::GetShaderUuid() const
 {
 	return materialData.shaderUuid;
+}
+
+void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes textureType)
+{
+	switch (textureType)
+	{
+	case TextureTypes::Albedo:
+
+		if (materialData.albedoUuid > 0)
+			assert(App->res->SetAsUnused(materialData.albedoUuid) > 0);
+
+		if (textureUuid > 0)
+			assert(App->res->SetAsUsed(textureUuid) > 0);
+
+		materialData.albedoUuid = textureUuid;
+
+		break;
+
+	case TextureTypes::Specular:
+
+		if (materialData.specularUuid > 0)
+			assert(App->res->SetAsUnused(materialData.specularUuid) > 0);
+
+		if (textureUuid > 0)
+			assert(App->res->SetAsUsed(textureUuid) > 0);
+
+		materialData.specularUuid = textureUuid;
+
+		break;
+
+	case TextureTypes::NormalMap:
+
+		if (materialData.normalMapUuid > 0)
+			assert(App->res->SetAsUnused(materialData.normalMapUuid) > 0);
+
+		if (textureUuid > 0)
+			assert(App->res->SetAsUsed(textureUuid) > 0);
+
+		materialData.normalMapUuid = textureUuid;
+
+		break;
+	}
+}
+
+uint ResourceMaterial::GetTextureUuid(TextureTypes textureType) const
+{
+	uint textureUuid = 0;
+
+	switch (textureType)
+	{
+	case TextureTypes::Albedo:
+		textureUuid = materialData.albedoUuid;
+		break;
+
+	case TextureTypes::Specular:
+		textureUuid = materialData.specularUuid;
+		break;
+
+	case TextureTypes::NormalMap:
+		textureUuid = materialData.normalMapUuid;
+		break;
+	}
+
+	return textureUuid;
+}
+
+void ResourceMaterial::SetColor(math::float4& color, TextureTypes textureType)
+{
+	switch (textureType)
+	{
+	case TextureTypes::Albedo:
+		materialData.albedoColor[0] = color.x;
+		materialData.albedoColor[1] = color.y;
+		materialData.albedoColor[2] = color.z;
+		materialData.albedoColor[3] = color.w;
+		break;
+
+	case TextureTypes::Specular:
+		materialData.specularColor[0] = color.x;
+		materialData.specularColor[1] = color.y;
+		materialData.specularColor[2] = color.z;
+		materialData.specularColor[3] = color.w;
+		break;
+	}
+}
+
+math::float4 ResourceMaterial::GetColor(TextureTypes& textureType) const
+{
+	math::float4 color = math::float4();
+
+	switch (textureType)
+	{
+	case TextureTypes::Albedo:
+		color = { materialData.albedoColor[0], materialData.albedoColor[1], materialData.albedoColor[2], materialData.albedoColor[3] };
+		break;
+
+	case TextureTypes::Specular:
+		color = { materialData.specularColor[0], materialData.specularColor[1], materialData.specularColor[2], materialData.specularColor[3] };
+		break;
+	}
+
+	return color;
 }
 
 // ----------------------------------------------------------------------------------------------------

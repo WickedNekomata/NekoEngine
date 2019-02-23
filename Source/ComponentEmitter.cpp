@@ -17,6 +17,7 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
+	SetAABB(GetParent()->boundingBox, math::float3::one);
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
@@ -498,10 +499,9 @@ void ComponentEmitter::ParticleAABB()
 		{
 			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
-
+				SetAABB(GetParent()->boundingBox, size);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
+				SetAABB(GetParent()->boundingBox, size);
 		}
 	}
 #endif
@@ -652,6 +652,11 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 
 #endif
 	return ret;
+}
+
+void ComponentEmitter::SetAABB(math::AABB& boundingBox, const math::float3 size)
+{
+	boundingBox.SetFromCenterAndSize(posDifAABB, size);
 }
 
 #ifndef GAMEMODE

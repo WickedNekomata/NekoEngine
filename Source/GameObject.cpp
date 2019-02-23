@@ -219,7 +219,8 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
-	boundingBox.SetNegativeInfinity();
+	if (cmp_emitter == nullptr)
+		boundingBox.SetNegativeInfinity();
 
 	// Grow bounding box
 	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
@@ -231,7 +232,11 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		boundingBox.Enclose((const math::float3*)vertices, nVerts);
 		delete[] vertices;
 	}
-
+	else if (cmp_emitter != nullptr)
+	{
+		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
+		comp->SetAABB(boundingBox, boundingBox.Size());
+	}
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);

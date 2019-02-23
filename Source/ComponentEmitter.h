@@ -121,20 +121,16 @@ public:
 	void SoftClearEmitter();
 	void CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos = math::float3::zero);
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
+	void SetAABB(math::AABB & boundingBox, const math::float3 size);
 
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
-	ShapeType GetDebugShapeDraw() const;
-	math::float3 GetAABBDimShape() const;
-	float GetRadSphereShape() const;
-	float GetRadCircleShape() const;
 #endif
+	int GetEmition() const;
 
 	uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
-
-	int GetEmition() const;
 public:
 	GameTimer timer;
 	GameTimer burstTime;

@@ -44,11 +44,15 @@ public:
 
 	bool HandleBuild();
 
+	int  GetNavMeshSerialitzationBytes() const;
+	void SaveNavmesh(char*& cursor);
+	void LoadNavmesh(char*& cursor);
+
 private:
 
 	void cleanup();
 	void InitCrowd();
-	int a = 0;
+
 protected:
 
 	class dtNavMesh* m_navMesh = 0;

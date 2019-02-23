@@ -583,3 +583,78 @@ bool ModuleNavigation::HandleBuild()
 
 	return true;
 }
+
+int ModuleNavigation::GetNavMeshSerialitzationBytes() const
+{
+	if (!m_navMesh)
+		return sizeof(size_t);
+
+	size_t size = sizeof(size_t);
+	const dtMeshTile* tile;
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		size += tile->dataSize;
+	}
+	return size;
+}
+
+void ModuleNavigation::SaveNavmesh(char*& cursor)
+{
+	if (!m_navMesh)
+	{
+		size_t noData = 0;
+		memcpy(cursor, &noData, sizeof(size_t));
+		return;
+	}
+	size_t size = 0;
+	const dtMeshTile* tile;
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		size += tile->dataSize;
+	}
+	memcpy(cursor, &size, sizeof(size_t));
+	cursor += sizeof(size_t);
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		memcpy(cursor, tile->data, sizeof(uchar) * tile->dataSize);
+		cursor += sizeof(uchar) * tile->dataSize;
+	}
+}
+
+void ModuleNavigation::LoadNavmesh(char*& cursor)
+{
+	if (m_navMesh)
+		cleanup();
+
+	size_t size;
+	memcpy(&size, cursor, sizeof(size_t));
+	cursor += sizeof(size_t);
+
+	if (size <= 0)
+		return;
+
+	uchar* data = (uchar*)dtAlloc(size, dtAllocHint::DT_ALLOC_PERM);
+	memcpy(data, cursor, size);
+	cursor += size;
+
+	m_navMesh = dtAllocNavMesh();
+	if (!m_navMesh)
+	{
+		dtFree(data);
+		CONSOLE_LOG(LogTypes::Error, "Could not create Detour navmesh");
+		return;
+	}
+
+	dtStatus status;
+
+	status = m_navMesh->init(data, size, DT_TILE_FREE_DATA);
+	if (dtStatusFailed(status))
+	{
+		dtFree(data);
+		CONSOLE_LOG(LogTypes::Error, "Could not init Detour navmesh");
+		return;
+	}
+}

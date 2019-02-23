@@ -45,6 +45,7 @@ public:
 	
 	static uint CreateMeta(const char* file, uint materialUuid, std::string& name, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& materialUuid, std::string& name);
+	static uint SetNameToMeta(const char* metaFile, const std::string& name);
 
 	// ----------------------------------------------------------------------------------------------------
 	

@@ -107,6 +107,7 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 		sizeof(uint) +
 		sizeof(uint) * uuidsSize +
 
+		sizeof(uint) +
 		sizeof(char) * nameSize;
 
 	char* data = new char[size];
@@ -216,6 +217,7 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 	return true;
 }
 
+// Returns the last modification time of the file
 uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string& name)
 {
 	assert(metaFile != nullptr);
@@ -237,6 +239,7 @@ uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string
 		sizeof(uint) +
 		sizeof(uint) * uuidsSize +
 
+		sizeof(uint) +
 		sizeof(char) * nameSize;
 
 	char* data = new char[size];

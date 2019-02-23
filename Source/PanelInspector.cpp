@@ -546,7 +546,6 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT"))
 	{
-		// cambiar meta
 		ResourceTexture* res = (ResourceTexture*)App->scene->selectedObject.Get();
 		
 		// Search for the meta associated to the file
@@ -580,6 +579,7 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::Separator();
 	ImGui::Spacing();
 
+	// Name
 	ImGui::Text("Name:"); ImGui::SameLine();
 	static char name[INPUT_BUF_SIZE];
 	strcpy_s(name, INPUT_BUF_SIZE, shaderObject->GetName());
@@ -596,16 +596,15 @@ void PanelInspector::ShowShaderObjectInspector() const
 		std::string shaderName = name;
 		ResourceShaderObject::SetNameToMeta(metaFile, shaderName);
 	}
+
 	ImGui::Spacing();
 
+	// Data
 	ImGui::Text("File:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%s", shaderObject->GetFile());
-	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderObject->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderObject->GetUuid());
 
-	// Shader Object info
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER OBJECT"))
@@ -620,6 +619,7 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->scene->selectedObject.Get();
 
+	// Name
 	ImGui::Text("Name:"); ImGui::SameLine();
 	static char name[INPUT_BUF_SIZE];
 	strcpy_s(name, INPUT_BUF_SIZE, shaderProgram->GetName());
@@ -636,14 +636,15 @@ void PanelInspector::ShowShaderProgramInspector() const
 		std::string shaderName = name;
 		ResourceShaderProgram::SetNameToMeta(metaFile, shaderName);
 	}
+
 	ImGui::Spacing();
 
+	// Data
 	ImGui::Text("File:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%s", shaderProgram->GetFile());
-	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderProgram->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUuid());
+
 	ImGui::Spacing();
 
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
@@ -652,7 +653,7 @@ void PanelInspector::ShowShaderProgramInspector() const
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 	ImGui::Spacing();
 
-	// Shader Program info
+	// Info
 	ImGui::Text("Shader Objects:");
 
 	char shaderObject[DEFAULT_BUF_SIZE];
@@ -679,6 +680,34 @@ void PanelInspector::ShowMaterialInspector() const
 	ImGui::Spacing();
 
 	ResourceMaterial* material = (ResourceMaterial*)App->scene->selectedObject.Get();
+
+	// Name
+	ImGui::Text("Name:"); ImGui::SameLine();
+	static char name[INPUT_BUF_SIZE];
+	strcpy_s(name, INPUT_BUF_SIZE, material->GetName());
+	ImGui::PushItemWidth(150.0f);
+	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
+	{
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(material->GetFile()) + 1, material->GetFile()); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		material->SetName(name);
+		std::string materialName = name;
+		ResourceMaterial::SetNameToMeta(metaFile, materialName);
+	}
+
+	ImGui::Spacing();
+
+	// Data
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", material->GetFile());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", material->GetUuid());
+
+	ImGui::Spacing();
 
 	// Shader
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
@@ -713,7 +742,14 @@ void PanelInspector::ShowMaterialInspector() const
 					sprintf(id, "%s##%u", shaderResourcesByType[j]->GetName(), shaderResourcesByType[j]->GetUuid());
 					bool selected = shader == shaderResourcesByType[j];
 					if (ImGui::MenuItem(id, "", selected))
-						material->SetShaderUuid(shaderResourcesByType[j]->GetUuid());
+					{
+						// Update the existing shader program
+						material->SetResourceShader(shaderResourcesByType[j]->GetUuid());
+						
+						// Export the existing file
+						std::string outputFile;
+						App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
+					}
 				}
 				ImGui::EndMenu();
 			}
@@ -722,6 +758,11 @@ void PanelInspector::ShowMaterialInspector() const
 		}
 		ImGui::EndPopup();
 	}
+
+	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
+
+	// Uniforms
+
 }
 
 #endif // GAME

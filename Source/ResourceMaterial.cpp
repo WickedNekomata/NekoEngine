@@ -253,6 +253,77 @@ bool ResourceMaterial::ReadMeta(const char* metaFile, int64_t& lastModTime, uint
 	return true;
 }
 
+uint ResourceMaterial::SetNameToMeta(const char* metaFile, const std::string& name)
+{
+	assert(metaFile != nullptr);
+
+	int64_t lastModTime = 0;
+	uint materialUuid = 0;
+	std::string oldName;
+	ReadMeta(metaFile, lastModTime, materialUuid, oldName);
+
+	uint uuidsSize = 1;
+	uint nameSize = DEFAULT_BUF_SIZE;
+
+	// Name
+	char materialName[DEFAULT_BUF_SIZE];
+	strcpy_s(materialName, DEFAULT_BUF_SIZE, name.data());
+
+	uint size =
+		sizeof(int64_t) +
+		sizeof(uint) +
+		sizeof(uint) * uuidsSize +
+
+		sizeof(char) * nameSize;
+
+	char* data = new char[size];
+	char* cursor = data;
+
+	// 1. Store last modification time
+	uint bytes = sizeof(int64_t);
+	memcpy(cursor, &lastModTime, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuidsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store material uuid
+	bytes = sizeof(uint) * uuidsSize;
+	memcpy(cursor, &materialUuid, bytes);
+
+	cursor += bytes;
+
+	// 4. Store shader object name size
+	bytes = sizeof(uint);
+	memcpy(cursor, &nameSize, bytes);
+
+	cursor += bytes;
+
+	// 5. Store material name
+	bytes = sizeof(char) * nameSize;
+	memcpy(cursor, materialName, bytes);
+
+	// --------------------------------------------------
+
+	// Build the path of the meta file and save it
+	uint resultSize = App->fs->Save(metaFile, data, size);
+	if (resultSize > 0)
+	{
+		CONSOLE_LOG(LogTypes::Normal, "Resource Material: Successfully saved meta '%s'", metaFile);
+	}
+	else
+	{
+		CONSOLE_LOG(LogTypes::Error, "Resource Material: Could not save meta '%s'", metaFile);
+		return 0;
+	}
+
+	return lastModTime;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ResourceMaterial::SetResourceShader(uint shaderUuid)

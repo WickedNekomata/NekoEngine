@@ -16,11 +16,18 @@ class ComponentCapsuleCollider : public ComponentCollider
 public:
 
 	ComponentCapsuleCollider(GameObject* parent);
-	//ComponentCollider(const ComponentRigidActor& componentRigidActor);
+	ComponentCapsuleCollider(const ComponentCapsuleCollider& componentCapsuleCollider);
 	~ComponentCapsuleCollider();
 
 	void OnUniqueEditor();
 
+	uint GetInternalSerializationBytes();
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	void EncloseGeometry();
 	void RecalculateShape();
 
 	// Sets
@@ -32,9 +39,6 @@ public:
 	// Gets
 	physx::PxCapsuleGeometry GetCapsuleGeometry() const;
 
-	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

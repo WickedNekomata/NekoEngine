@@ -43,6 +43,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::LayerNameReset:
 
+		// Reset layer to default (all game objects)
 		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
 			if ((*it)->GetLayer() == event.layerEvent.layer)
@@ -101,7 +102,6 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		}
 		break;
 	}
-
 	case System_Event_Type::ResourceDestroyed:
 		InvalidateResource(event.resEvent.resource);
 		break;

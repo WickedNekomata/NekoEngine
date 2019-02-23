@@ -4,7 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
@@ -12,12 +12,21 @@
 
 ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::BoxColliderComponent)
 {
-	RecalculateShape();
+	EncloseGeometry();
+
+	colliderType = ColliderTypes::BoxCollider;
+
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentBoxCollider::ComponentBoxCollider(const ComponentBoxCollider& componentBoxCollider) : ComponentCollider(componentBoxCollider, ComponentTypes::BoxColliderComponent)
+{
+
 }
 
 ComponentBoxCollider::~ComponentBoxCollider() {}
@@ -47,7 +56,41 @@ void ComponentBoxCollider::OnUniqueEditor()
 #endif
 }
 
+uint ComponentBoxCollider::GetInternalSerializationBytes()
+{
+	return uint();
+}
+
+void ComponentBoxCollider::OnInternalSave(char*& cursor)
+{
+}
+
+void ComponentBoxCollider::OnInternalLoad(char*& cursor)
+{
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentBoxCollider::EncloseGeometry()
+{
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	math::AABB boundingBox = parent->boundingBox;
+
+	if (globalMatrix.IsFinite() && parent->boundingBox.IsFinite())
+	{
+		math::float3 pos = math::float3::zero;
+		math::Quat rot = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+		globalMatrix.Decompose(pos, rot, scale);
+
+		center = parent->boundingBox.CenterPoint() - pos;
+		center = globalMatrix.Float3x3Part().Inverted() * center;
+
+		halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
+	}
+
+	RecalculateShape();
+}
 
 void ComponentBoxCollider::RecalculateShape()
 {
@@ -85,9 +128,4 @@ physx::PxBoxGeometry ComponentBoxCollider::GetBoxGeometry() const
 	physx::PxBoxGeometry boxGeometry;
 	gShape->getBoxGeometry(boxGeometry);
 	return boxGeometry;
-}
-
-uint ComponentBoxCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

@@ -4,7 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
@@ -14,12 +14,21 @@
 
 ComponentPlaneCollider::ComponentPlaneCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::PlaneColliderComponent)
 {
-	RecalculateShape();
+	EncloseGeometry();
+
+	colliderType = ColliderTypes::PlaneCollider;
+
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentPlaneCollider::ComponentPlaneCollider(const ComponentPlaneCollider& componentPlaneCollider) : ComponentCollider(componentPlaneCollider, ComponentTypes::PlaneColliderComponent)
+{
+
 }
 
 ComponentPlaneCollider::~ComponentPlaneCollider() {}
@@ -55,7 +64,25 @@ void ComponentPlaneCollider::OnUniqueEditor()
 #endif
 }
 
+uint ComponentPlaneCollider::GetInternalSerializationBytes()
+{
+	return uint();
+}
+
+void ComponentPlaneCollider::OnInternalSave(char*& cursor)
+{
+}
+
+void ComponentPlaneCollider::OnInternalLoad(char*& cursor)
+{
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentPlaneCollider::EncloseGeometry()
+{
+	RecalculateShape();
+}
 
 void ComponentPlaneCollider::RecalculateShape()
 {
@@ -115,9 +142,4 @@ physx::PxPlaneGeometry ComponentPlaneCollider::GetPlaneGeometry() const
 	physx::PxPlaneGeometry planeGeometry;
 	gShape->getPlaneGeometry(planeGeometry);
 	return planeGeometry;
-}
-
-uint ComponentPlaneCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

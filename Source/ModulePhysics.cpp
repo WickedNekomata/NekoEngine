@@ -9,22 +9,31 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleCameraEditor.h"
+#include "ModuleGui.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
+#include "DebugDrawer.h"
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 #include "MathGeoLib\include\Geometry\LineSegment.h"
 #include "MathGeoLib\include\Geometry\Ray.h"
 //_*****Debug*****
 
+#include "ComponentRigidActor.h"
+#include "ComponentRigidStatic.h"
+#include "ComponentRigidDynamic.h"
 #include "ComponentCollider.h"
 #include "ComponentBoxCollider.h"
 #include "ComponentSphereCollider.h"
 #include "ComponentCapsuleCollider.h"
 #include "ComponentPlaneCollider.h"
-#include "ComponentRigidActor.h"
-#include "ComponentRigidStatic.h"
-#include "ComponentRigidDynamic.h"
+#include "ComponentJoint.h"
+#include "ComponentFixedJoint.h"
+#include "ComponentDistanceJoint.h"
+#include "ComponentSphericalJoint.h"
+#include "ComponentRevoluteJoint.h"
+#include "ComponentPrismaticJoint.h"
+#include "ComponentD6Joint.h"
 
 #include "PhysicsConstants.h"
 #include "SimulationEvents.h"
@@ -34,17 +43,17 @@
 #include "MathGeoLib\include\Math\float2.h"
 
 #ifdef _DEBUG
-	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysX_32.lib")
-	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXCommon_32.lib")
-	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXFoundation_32.lib")
-	#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXExtensions_static_32.lib")
+#pragma comment(lib, "physx\\libx86\\debugx86\\PhysX_32.lib")
+#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXCommon_32.lib")
+#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXFoundation_32.lib")
+#pragma comment(lib, "physx\\libx86\\debugx86\\PhysXExtensions_static_32.lib")
 #endif
 
 #ifdef NDEBUG
-	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysX_32.lib")
-	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXCommon_32.lib")
-	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXFoundation_32.lib")
-	#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXExtensions_static_32.lib")
+#pragma comment(lib, "physx\\libx86\\releasex86\\PhysX_32.lib")
+#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXCommon_32.lib")
+#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXFoundation_32.lib")
+#pragma comment(lib, "physx\\libx86\\releasex86\\PhysXExtensions_static_32.lib")
 #endif
 
 DefaultErrorCallback::DefaultErrorCallback() {}
@@ -173,6 +182,8 @@ bool ModulePhysics::Start()
 	planeShape->setSimulationFilterData(filterData);
 	physx::PxRigidStatic* groundPlane = CreateRigidStatic(physx::PxTransformFromPlaneEquation(physx::PxPlane(0.0f, 1.0f, 0.0f, 0.0f)), *planeShape);
 
+	debugRay = math::Ray(math::float3::zero, math::float3::zero);
+
 	return true;
 }
 
@@ -185,36 +196,44 @@ update_status ModulePhysics::Update()
 {
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	if (App->GetEngineState() == engine_states::ENGINE_PLAY
-		|| App->GetEngineState() == engine_states::ENGINE_STEP)
-	{
+	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		//|| App->GetEngineState() == engine_states::ENGINE_STEP)
+	//{
 		// Step physics
-		gAccumulator += App->timeManager->GetDt();
-		//gAccumulator += App->timeManager->GetRealDt();
-		if (gAccumulator >= PhysicsConstants::FIXED_DT)
-		{
-			gAccumulator = 0.0f;
+		//gAccumulator += App->timeManager->GetDt();
+	gAccumulator += App->timeManager->GetRealDt();
+	if (gAccumulator >= PhysicsConstants::FIXED_DT)
+	{
+		gAccumulator = 0.0f;
 
-			updateStatus = FixedUpdate();
+		updateStatus = FixedUpdate();
 
-			gScene->simulate(PhysicsConstants::FIXED_DT); // moves all objects in the scene forward by FIXED_DT
-			gScene->fetchResults(true); // allows the simulation to finish and return the results
+		gScene->simulate(PhysicsConstants::FIXED_DT); // moves all objects in the scene forward by FIXED_DT
+		gScene->fetchResults(true); // allows the simulation to finish and return the results
 
-			// Update colliders
-			for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
-				(*it)->Update();
+		// Update colliders
+		for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
+			(*it)->Update();
 
-			// Update rigid actors
-			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
-				(*it)->Update();
-		}
+		// Update rigid actors
+		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+			(*it)->Update();
 	}
+	//}
+
+	// *****Debug*****
+	if (debugRay.IsFinite())
+		App->debugDrawer->DebugDraw(debugRay, Red);
+	//_*****Debug*****
 
 	return updateStatus;
 }
 
 update_status ModulePhysics::FixedUpdate()
 {
+	if (App->gui->WantTextInput() || App->gui->IsMouseHoveringAnyWindow())
+		return UPDATE_CONTINUE;
+
 	Debug();
 
 	return UPDATE_CONTINUE;
@@ -294,6 +313,8 @@ void ModulePhysics::Debug()
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 	{
 		// Raycast
+		debugRay = ray;
+
 		RaycastHit hitInfo;
 		std::vector<RaycastHit> touchesInfo;
 		if (Raycast(ray.pos, ray.dir, hitInfo, touchesInfo, FLT_MAX, BIT_SHIFT(0) | BIT_SHIFT(1) | BIT_SHIFT(2)))
@@ -461,6 +482,35 @@ physx::PxShape* ModulePhysics::CreateShape(const physx::PxGeometry& geometry, co
 	return gPhysics->createShape(geometry, material, isExclusive);
 }
 
+physx::PxJoint* ModulePhysics::CreateJoint(JointTypes jointType, physx::PxRigidActor* actor0, const physx::PxTransform& localFrame0, physx::PxRigidActor* actor1, physx::PxTransform& localFrame1) const
+{
+	assert(actor0 != nullptr && actor1 != nullptr && localFrame0.isFinite() && localFrame1.isFinite());
+
+	switch (jointType)
+	{
+	case JointTypes::FixedJoint:
+		return physx::PxFixedJointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	case JointTypes::DistanceJoint:
+		return physx::PxDistanceJointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	case JointTypes::SphericalJoint:
+		return physx::PxSphericalJointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	case JointTypes::RevoluteJoint:
+		return physx::PxRevoluteJointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	case JointTypes::PrismaticJoint:
+		return physx::PxPrismaticJointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	case JointTypes::D6Joint:
+		return physx::PxD6JointCreate(*gPhysics, actor0, localFrame0, actor1, localFrame1);
+		break;
+	}
+
+	return nullptr;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 ComponentRigidActor* ModulePhysics::CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType)
@@ -479,7 +529,6 @@ ComponentRigidActor* ModulePhysics::CreateRigidActorComponent(GameObject* parent
 
 	std::vector<ComponentRigidActor*>::const_iterator it = std::find(rigidActorComponents.begin(), rigidActorComponents.end(), newComponent);
 	assert(it == rigidActorComponents.end());
-
 	rigidActorComponents.push_back(newComponent);
 
 	return newComponent;
@@ -552,7 +601,6 @@ ComponentCollider* ModulePhysics::CreateColliderComponent(GameObject* parent, Co
 
 	std::vector<ComponentCollider*>::const_iterator it = std::find(colliderComponents.begin(), colliderComponents.end(), newComponent);
 	assert(it == colliderComponents.end());
-
 	colliderComponents.push_back(newComponent);
 
 	return newComponent;
@@ -603,6 +651,84 @@ ComponentCollider* ModulePhysics::FindColliderComponentByShape(physx::PxShape* s
 	return nullptr;
 }
 
+ComponentJoint* ModulePhysics::CreateJointComponent(GameObject* parent, ComponentTypes componentJointType)
+{
+	ComponentJoint* newComponent = nullptr;
+	switch (componentJointType)
+	{
+	case ComponentTypes::FixedJointComponent:
+		newComponent = new ComponentFixedJoint(parent, componentJointType);
+		break;
+	case ComponentTypes::DistanceJointComponent:
+		newComponent = new ComponentDistanceJoint(parent, componentJointType);
+		break;
+	case ComponentTypes::SphericalJointComponent:
+		newComponent = new ComponentSphericalJoint(parent, componentJointType);
+		break;
+	case ComponentTypes::RevoluteJointComponent:
+		newComponent = new ComponentRevoluteJoint(parent, componentJointType);
+		break;
+	case ComponentTypes::PrismaticJointComponent:
+		newComponent = new ComponentPrismaticJoint(parent, componentJointType);
+		break;
+	case ComponentTypes::D6JointComponent:
+		newComponent = new ComponentD6Joint(parent, componentJointType);
+		break;
+	}
+	assert(newComponent != nullptr);
+
+	std::vector<ComponentJoint*>::const_iterator it = std::find(jointComponents.begin(), jointComponents.end(), newComponent);
+	assert(it == jointComponents.end());
+	jointComponents.push_back(newComponent);
+
+	return newComponent;
+}
+
+bool ModulePhysics::AddJointComponent(ComponentJoint* toAdd)
+{
+	assert(toAdd != nullptr);
+	bool ret = true;
+
+	std::vector<ComponentJoint*>::const_iterator it = std::find(jointComponents.begin(), jointComponents.end(), toAdd);
+	ret = it == jointComponents.end();
+
+	if (ret)
+		jointComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModulePhysics::EraseJointComponent(ComponentJoint* toErase)
+{
+	assert(toErase != nullptr);
+	bool ret = false;
+
+	std::vector<ComponentJoint*>::const_iterator it = std::find(jointComponents.begin(), jointComponents.end(), toErase);
+	ret = it != jointComponents.end();
+
+	if (ret)
+		jointComponents.erase(it);
+
+	return ret;
+}
+
+std::vector<ComponentJoint*> ModulePhysics::GetJointComponents() const
+{
+	return jointComponents;
+}
+
+ComponentJoint* ModulePhysics::FindJointComponentByJoint(physx::PxJoint* joint) const
+{
+	assert(joint != nullptr);
+	for (std::vector<ComponentJoint*>::const_iterator it = jointComponents.begin(); it != jointComponents.end(); ++it)
+	{
+		if ((*it)->GetJoint() == joint)
+			return *it;
+	}
+
+	return nullptr;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ModulePhysics::OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const
@@ -623,7 +749,9 @@ void ModulePhysics::OnSimulationEvent(ComponentRigidActor* actor, SimulationEven
 
 void ModulePhysics::OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const
 {
-	assert(collider != nullptr);
+	if (collider == nullptr)
+		return;
+
 	switch (collisionType)
 	{
 	case OnCollisionEnter:
@@ -668,7 +796,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 
 	bool status = gScene->raycast(physx::PxVec3(origin.x, origin.y, origin.z), physx::PxVec3(direction.x, direction.y, direction.z),
 		maxDistance, hitsBuffer, hitFlags, filterData);
-	
+
 	if (status)
 	{
 		// Touches
@@ -926,4 +1054,9 @@ void ModulePhysics::SetDefaultMaterial(physx::PxMaterial* material)
 physx::PxMaterial* ModulePhysics::GetDefaultMaterial() const
 {
 	return defaultMaterial;
+}
+
+physx::PxTolerancesScale ModulePhysics::GetTolerancesScale() const
+{
+	return gPhysics->getTolerancesScale();
 }

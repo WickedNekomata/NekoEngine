@@ -27,6 +27,8 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *gShape);
 	assert(gActor != nullptr);
 
+	rigidActorType = RigidActorTypes::RigidStatic;
+
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 	if (parent->cmp_collider != nullptr)
 		UpdateShape(parent->cmp_collider->GetShape());
@@ -39,23 +41,20 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	useGravity = !(actorFlags & physx::PxActorFlag::eDISABLE_GRAVITY);
 }
 
+ComponentRigidStatic::ComponentRigidStatic(const ComponentRigidStatic& componentRigidStatic) : ComponentRigidActor(componentRigidStatic, ComponentTypes::RigidStaticComponent)
+{
+
+}
+
 ComponentRigidStatic::~ComponentRigidStatic() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidStatic::OnUniqueEditor()
-{
-#ifndef GAMEMODE
-	ImGui::Text("Rigid Static");
-	ImGui::Spacing();
-
-	ComponentRigidActor::OnUniqueEditor();
-#endif
-}
+void ComponentRigidStatic::OnUniqueEditor() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidStatic::Update() 
+void ComponentRigidStatic::Update()
 {
 	if (useGravity)
 		UpdateGameObjectTransform();
@@ -63,5 +62,15 @@ void ComponentRigidStatic::Update()
 
 uint ComponentRigidStatic::GetInternalSerializationBytes()
 {
-	return 0;
+	return uint();
 }
+
+void ComponentRigidStatic::OnInternalSave(char*& cursor)
+{
+}
+
+void ComponentRigidStatic::OnInternalLoad(char*& cursor)
+{
+}
+
+// ----------------------------------------------------------------------------------------------------

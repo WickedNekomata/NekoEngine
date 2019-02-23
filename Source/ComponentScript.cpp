@@ -2,7 +2,7 @@
 #include "ModuleInput.h"
 #include "ModuleResourceManager.h"
 #include "ScriptingModule.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentScript.h"
 #include "ResourceScript.h"

@@ -22,6 +22,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 #include "ComponentRigidActor.h"
+#include "ComponentRigidDynamic.h"
 #include "ComponentCollider.h"
 #include "ComponentEmitter.h"
 
@@ -255,21 +256,19 @@ update_status ModuleRenderer3D::PostUpdate()
 			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
 			for (uint i = 0; i < colliderComponents.size(); ++i)
 			{
+				if (colliderComponents[i]->GetParent()->cmp_rigidActor == nullptr)
+					continue;
+
 				physx::PxShape* gShape = colliderComponents[i]->GetShape();
 				if (gShape == nullptr)
 					continue;
 
-				math::float4x4 gameObjectGlobalMatrix = colliderComponents[i]->GetParent()->transform->GetGlobalMatrix();
-				math::float3 position = math::float3::zero;
-				math::Quat rotation = math::Quat::identity;
-				math::float3 scale = math::float3::one;
-				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
-				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+				physx::PxTransform actorGlobalPose = gShape->getActor()->getGlobalPose();
+				physx::PxTransform shapeLocalPose = gShape->getLocalPose();
+				physx::PxTransform globalPose = actorGlobalPose * shapeLocalPose;
 
-				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
-				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
-					math::float3(transform.p.x, transform.p.y, transform.p.z));
+				math::float4x4 globalMatrix(math::Quat(globalPose.q.x, globalPose.q.y, globalPose.q.z, globalPose.q.w),
+					math::float3(globalPose.p.x, globalPose.p.y, globalPose.p.z));
 
 				switch (gShape->getGeometryType())
 				{
@@ -298,7 +297,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), collidersColor, globalMatrix);
+					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 10.0f, 10.0f), collidersColor, globalMatrix);
 					break;
 				}
 			}
@@ -319,7 +318,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 				if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidStaticComponent)
 					rigidActorsColor = Orange;
-				else if (gActor->is<physx::PxRigidDynamic>()->isSleeping())
+				else if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidDynamicComponent
+					&& !((ComponentRigidDynamic*)rigidActorComponents[i])->IsSleeping())
 					rigidActorsColor = DarkRed;
 				else
 					rigidActorsColor = Red;

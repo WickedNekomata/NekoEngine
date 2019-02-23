@@ -7,17 +7,30 @@
 
 #include "MathGeoLib\include\Math\float4x4.h"
 
+enum RigidActorTypes
+{
+	NoRigidActor,
+	RigidStatic,
+	RigidDynamic
+};
+
 class ComponentRigidActor : public Component
 {
 public:
 
-	ComponentRigidActor(GameObject* parent, ComponentTypes componentType);
-	//ComponentRigidActor(const ComponentRigidActor& componentRigidActor);
+	ComponentRigidActor(GameObject* parent, ComponentTypes componentRigidActorType);
+	ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType);
 	virtual ~ComponentRigidActor();
 
 	virtual void OnUniqueEditor();
 
 	virtual void Update();
+
+	virtual uint GetInternalSerializationBytes() = 0;
+	virtual void OnInternalSave(char*& cursor) = 0;
+	virtual void OnInternalLoad(char*& cursor) = 0;
+
+	// ----------------------------------------------------------------------------------------------------
 
 	void UpdateShape(physx::PxShape* shape) const;
 	void UpdateTransform(math::float4x4& globalMatrix) const;
@@ -28,16 +41,11 @@ public:
 
 	// Gets
 	physx::PxRigidActor* GetActor() const;
+	RigidActorTypes GetRigidActorType() const;
 
 	// Callbacks
 	void OnWake();
 	void OnSleep();
-
-	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
 
 protected:
 
@@ -46,6 +54,7 @@ protected:
 	// -----
 
 	physx::PxRigidActor* gActor = nullptr;
+	RigidActorTypes rigidActorType = RigidActorTypes::NoRigidActor;
 };
 
 #endif

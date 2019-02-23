@@ -1,4 +1,4 @@
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "Application.h"
 #include "EventSystem.h"
@@ -42,8 +42,10 @@ uint Layer::GetFilterMask() const
 // ----------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------
 
-Layers::Layers() 
+ModuleLayers::ModuleLayers(bool start_enabled) : Module(start_enabled)
 {
+	name = "Layers";
+
 	layers.reserve(MAX_NUM_LAYERS);
 	layers.shrink_to_fit();
 
@@ -55,28 +57,66 @@ Layers::Layers()
 
 	layers[0]->name = "Default";
 	layers[0]->builtin = true;
+
+	layers[1]->name = "UI";
+	layers[1]->builtin = true;
 }
 
-Layers::~Layers() {}
+ModuleLayers::~ModuleLayers() {}
 
-bool Layers::Init(JSON_Object * jObject)
+bool ModuleLayers::Init(JSON_Object* jObject)
 {
+	LoadStatus(jObject);
+
 	return true;
 }
 
-bool Layers::Start()
+void ModuleLayers::SaveStatus(JSON_Object* jObject) const
 {
-	return true;
+	char layerName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+	{
+		if (layers[i]->builtin || strcmp(layers[i]->name.data(), "") == 0)
+			continue;
+
+		JSON_Value* layerValue = json_value_init_object();
+		JSON_Object* layerObject = json_value_get_object(layerValue);
+		sprintf_s(layerName, DEFAULT_BUF_SIZE, "Layer %i", layers[i]->GetNumber());
+		json_object_set_value(jObject, layerName, layerValue);
+
+		json_object_set_string(layerObject, "Name", layers[i]->name.data());
+		json_object_set_number(layerObject, "Filter mask", layers[i]->GetFilterMask());
+	}
 }
 
-bool Layers::CleanUp()
+void ModuleLayers::LoadStatus(const JSON_Object* jObject)
 {
-	return true;
+	if (jObject == nullptr)
+		return;
+
+	char layerName[DEFAULT_BUF_SIZE];
+	for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+	{
+		if (layers[i]->builtin)
+			continue;
+
+		sprintf_s(layerName, DEFAULT_BUF_SIZE, "Layer %i", layers[i]->GetNumber());
+		JSON_Object* layerObject = json_object_get_object(jObject, layerName);		
+		if (layerObject == nullptr)
+			continue;
+
+		const char* name = json_object_get_string(layerObject, "Name");
+		if (name == nullptr || strcmp(name, "") == 0)
+			continue;
+		layers[i]->name = name;
+
+		layers[i]->SetFilterMask(json_object_get_number(layerObject, "Filter mask"));
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void Layers::SetLayerName(uint layerNumber, const char* layerName) const
+void ModuleLayers::SetLayerName(uint layerNumber, const char* layerName) const
 {
 	assert(layerName != nullptr
 		&& layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
@@ -95,14 +135,14 @@ void Layers::SetLayerName(uint layerNumber, const char* layerName) const
 }
 
 // Returns the name of the layer. "" means no name
-const char* Layers::NumberToName(uint layerNumber) const
+const char* ModuleLayers::NumberToName(uint layerNumber) const
 {
 	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
 	return layers[layerNumber]->name.data();
 }
 
 // Returns the number of the layer. -1 if error
-int Layers::NameToNumber(const char* layerName) const
+int ModuleLayers::NameToNumber(const char* layerName) const
 {
 	assert(layerName != nullptr);
 	for (uint i = 0; i < layers.size(); ++i)
@@ -116,13 +156,13 @@ int Layers::NameToNumber(const char* layerName) const
 
 // ----------------------------------------------------------------------------------------------------
 
-Layer* Layers::GetLayer(uint layerNumber) const
+Layer* ModuleLayers::GetLayer(uint layerNumber) const
 {
 	assert(layerNumber >= 0 && layerNumber < MAX_NUM_LAYERS);
 	return layers[layerNumber];
 }
 
-std::vector<Layer*> Layers::GetLayers() const
+std::vector<Layer*> ModuleLayers::GetLayers() const
 {
 	return layers;
 }

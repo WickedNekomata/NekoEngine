@@ -22,7 +22,7 @@
 #include "ScriptingModule.h"
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -48,7 +48,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	scripting = new ScriptingModule();
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
-	layers = new Layers();
+	layers = new ModuleLayers();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -59,6 +59,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
+	
+	AddModule(layers);
 	AddModule(res);
 	AddModule(resHandler);
 	AddModule(timeManager);
@@ -102,7 +104,6 @@ Application::~Application()
 	RELEASE(boneImporter);
 	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
-	RELEASE(layers);
 }
 
 bool Application::Init()

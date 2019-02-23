@@ -102,12 +102,11 @@ private:
 	bool isActive = true;
 	bool isStatic = false; // coordinate with statics and dynamics vector at go module
 
-	// scripting
+	// Scripting
 	uint32_t monoObjectHandle = 0;
 
 	// Physics
-	uint layer;
-
+	uint layer = 0; // in the range [0...31]
 };
 
 #endif

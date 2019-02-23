@@ -5,6 +5,8 @@
 
 #include "glew\include\GL\glew.h"
 
+#include <assert.h>
+
 DebugDrawer::DebugDrawer() {}
 
 DebugDrawer::~DebugDrawer() {}
@@ -32,7 +34,9 @@ void DebugDrawer::EndDebugDraw()
 
 void DebugDrawer::DebugDraw(const math::AABB& aabb, const Color& color, const math::float4x4& globalTransform) const
 {
-	static math::float3 corners[8];
+	assert(aabb.IsFinite() && globalTransform.IsFinite());
+
+	math::float3 corners[8];
 	aabb.GetCornerPoints(corners);
 
 	DebugDrawBox(corners, color, globalTransform);
@@ -40,14 +44,28 @@ void DebugDrawer::DebugDraw(const math::AABB& aabb, const Color& color, const ma
 
 void DebugDrawer::DebugDraw(const math::Frustum& frustum, const Color& color, const math::float4x4& globalTransform) const
 {
-	static math::float3 corners[8];
+	assert(frustum.IsFinite() && globalTransform.IsFinite());
+
+	math::float3 corners[8];
 	frustum.GetCornerPoints(corners);
 
 	DebugDrawBox(corners, color, globalTransform);
 }
 
+#define RAY_LENGTH 100.0f
+
+void DebugDrawer::DebugDraw(const math::Ray& ray, const Color& color, const math::float4x4& globalTransform) const
+{
+	assert(ray.IsFinite() && globalTransform.IsFinite());
+
+	math::float3 direction = ray.dir * RAY_LENGTH;
+	DebugDrawLine(ray.pos, direction, color, globalTransform);
+}
+
 void DebugDrawer::DebugDrawBox(const math::float3* vertices, const Color& color, const math::float4x4& globalTransform) const
 {
+	assert(vertices->IsFinite() && globalTransform.IsFinite());
+
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
 	glMultMatrixf(globalTransform.Transposed().ptr());
@@ -89,6 +107,8 @@ void DebugDrawer::DebugDrawBox(const math::float3* vertices, const Color& color,
 
 void DebugDrawer::DebugDrawBox(const math::float3& halfExtents, const Color& color, const math::float4x4& globalTransform) const
 {
+	assert(halfExtents.IsFinite() && globalTransform.IsFinite());
+
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
 	glMultMatrixf(globalTransform.Transposed().ptr());
@@ -132,6 +152,8 @@ void DebugDrawer::DebugDrawBox(const math::float3& halfExtents, const Color& col
 
 void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::float4x4& globalTransform) const
 {
+	assert(globalTransform.IsFinite());
+
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
 	glMultMatrixf(globalTransform.Transposed().ptr());
@@ -152,21 +174,6 @@ void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::
 	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
 		glVertex3f(0.0f, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
 	glEnd();
-	glPopMatrix();
-}
-
-void DebugDrawer::DebugDrawCone(float radius, float height, const Color & color, const math::float4x4 & globalTransform) const
-{
-	glColor3f(color.r, color.g, color.b);
-	glPushMatrix();
-	glMultMatrixf(globalTransform.Transposed().ptr());
-
-	float deltaAngle = 360.0f / (float)SPHERE_SIDES;
-
-	glBegin(GL_LINE_LOOP);
-	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
-		glVertex3f(radius * cosf(DEGTORAD * angle), height, radius * sinf(DEGTORAD * angle));
-	glEnd();
 
 	glPopMatrix();
 }
@@ -175,6 +182,8 @@ void DebugDrawer::DebugDrawCone(float radius, float height, const Color & color,
 
 void DebugDrawer::DebugDrawCapsule(float radius, float halfHeight, const Color& color, const math::float4x4& globalTransform) const
 {
+	assert(globalTransform.IsFinite());
+
 	glColor3f(color.r, color.g, color.b);
 	glPushMatrix();
 	glMultMatrixf(globalTransform.Transposed().ptr());
@@ -220,7 +229,7 @@ void DebugDrawer::DebugDrawCapsule(float radius, float halfHeight, const Color& 
 	glVertex3f(halfHeight, -radius, 0.0f);
 	glVertex3f(-halfHeight, -radius, 0.0f);
 	glEnd();
-	
+
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(halfHeight, 0.0f, radius);
 	glVertex3f(-halfHeight, 0.0f, radius);
@@ -229,6 +238,38 @@ void DebugDrawer::DebugDrawCapsule(float radius, float halfHeight, const Color& 
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(halfHeight, 0.0f, -radius);
 	glVertex3f(-halfHeight, 0.0f, -radius);
+	glEnd();
+
+	glPopMatrix();
+}
+
+void DebugDrawer::DebugDrawLine(const math::float3& origin, const math::float3& destination, const Color& color, const math::float4x4& globalTransform) const
+{
+	assert(origin.IsFinite() && destination.IsFinite() && globalTransform.IsFinite());
+
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	glBegin(GL_LINES);
+	glVertex3f(origin.x, origin.y, origin.z);
+	glVertex3f(destination.x, destination.y, destination.z);
+	glEnd();
+
+	glPopMatrix();
+}
+
+void DebugDrawer::DebugDrawCone(float radius, float height, const Color & color, const math::float4x4 & globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	float deltaAngle = 360.0f / (float)SPHERE_SIDES;
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), height, radius * sinf(DEGTORAD * angle));
 	glEnd();
 
 	glPopMatrix();

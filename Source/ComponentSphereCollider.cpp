@@ -4,34 +4,32 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
 #include "imgui\imgui.h"
 
 #include "MathGeoLib\include\Math\float4x4.h"
+#include "MathGeoLib/include/Math/float4.h"
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
-	if (parent->boundingBox.IsFinite()) // TODO: finish this together with the rest of the shapes
-	{
-		math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
-		math::float3 position = math::float3::zero;
-		math::Quat rotation = math::Quat::identity;
-		math::float3 scale = math::float3::one;
-		globalMatrix.Decompose(position, rotation, scale);
+	EncloseGeometry();
 
-		center = parent->boundingBox.CenterPoint() - position;
-		radius = parent->boundingBox.HalfDiagonal().Length();
-	}
+	colliderType = ColliderTypes::SphereCollider;
 
-	RecalculateShape();
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider) : ComponentCollider(componentSphereCollider, ComponentTypes::SphereColliderComponent)
+{
+
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
@@ -54,7 +52,41 @@ void ComponentSphereCollider::OnUniqueEditor()
 #endif
 }
 
+uint ComponentSphereCollider::GetInternalSerializationBytes()
+{
+	return uint();
+}
+
+void ComponentSphereCollider::OnInternalSave(char*& cursor)
+{
+}
+
+void ComponentSphereCollider::OnInternalLoad(char*& cursor)
+{
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentSphereCollider::EncloseGeometry()
+{
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	math::AABB boundingBox = parent->boundingBox;
+
+	if (globalMatrix.IsFinite() && parent->boundingBox.IsFinite())
+	{
+		math::float3 pos = math::float3::zero;
+		math::Quat rot = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+		globalMatrix.Decompose(pos, rot, scale);
+
+		center = parent->boundingBox.CenterPoint() - pos;
+		center = globalMatrix.Float3x3Part().Inverted() * center;
+
+		radius = parent->boundingBox.HalfSize().Length();
+	}
+
+	RecalculateShape();
+}
 
 void ComponentSphereCollider::RecalculateShape()
 {
@@ -91,9 +123,4 @@ physx::PxSphereGeometry ComponentSphereCollider::GetSphereGeometry() const
 	physx::PxSphereGeometry sphereGeometry;
 	gShape->getSphereGeometry(sphereGeometry);
 	return sphereGeometry;
-}
-
-uint ComponentSphereCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

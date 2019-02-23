@@ -10,6 +10,7 @@
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
 #include "ModuleInternalResHandler.h"
+#include "ScriptingModule.h"
 
 #include "imgui\imgui.h"
 #include "Brofiler\Brofiler.h"
@@ -18,7 +19,7 @@
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
 #include "ResourceMaterial.h"
-#include "ScriptingModule.h"
+#include "ResourceShaderProgram.h"
 
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
@@ -358,6 +359,7 @@ void PanelAssets::CreateResourceConfirmationPopUp()
 				// Basic material info
 				ResourceMaterialData materialData;
 				materialData.shaderUuid = App->resHandler->defaultShaderProgram;
+				((ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid))->GetUniforms(materialData.uniforms);
 
 				// Export the new file
 				std::string outputFile;

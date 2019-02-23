@@ -10,24 +10,12 @@
 
 #include <vector>
 
-enum TextureTypes
-{
-	Albedo,
-	Specular,
-	NormalMap
-};
-
 struct ResourceMaterialData
 {
 	uint shaderUuid = 0;
 
-	uint albedoUuid = 0;
-	float albedoColor[4] = { 255.0f, 255.0f, 255.0f, 255.0f };
-	uint specularUuid = 0;
-	float specularColor[4] = { 51.0f, 51.0f, 51.0f, 255.0f };
-	float shininess = 1.0f;
-	uint normalMapUuid = 0;
-	
+	std::vector<Uniform> uniforms;
+
 	//math::float4x4 matrix = math::float4x4::identity;
 };
 
@@ -54,15 +42,20 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 	
 	inline ResourceMaterialData& GetSpecificData() { return materialData; }
+
 	void SetResourceShader(uint shaderUuid);
 	uint GetShaderUuid() const;
+
+	void SetResourceTexture(uint textureUuid, uint& textureUuidUniform, uint& textureIdUniform);
 	std::vector<Uniform>& GetUniforms();
-	void SetResourceTexture(uint textureUuid, TextureTypes textureType);
-	uint GetTextureUuid(TextureTypes textureType) const;
-	void SetColor(math::float4& color, TextureTypes textureType);
-	math::float4 GetColor(TextureTypes& textureType) const;
+
+	void InitResources();
+	void DeinitResources();
 
 private:
+
+	void SetUniformsAsUsed() const;
+	void SetUniformsAsUnused() const;
 
 	void EditTextureMatrix(uint textureUuid);
 
@@ -72,10 +65,6 @@ private:
 public:
 
 	ResourceMaterialData materialData;
-
-private:
-
-	std::vector<Uniform> uniforms;
 };
 
 #endif

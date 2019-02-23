@@ -13,36 +13,12 @@
 
 ResourceMaterial::ResourceMaterial(ResourceTypes type, uint uuid, ResourceData data, ResourceMaterialData materialData) : Resource(type, uuid, data), materialData(materialData) 
 {
-	if (materialData.shaderUuid > 0)
-		App->res->SetAsUsed(materialData.shaderUuid);
-
-	uniforms.clear();
-	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid);
-	shader->GetUniforms(uniforms);
-
-	if (materialData.albedoUuid > 0)
-		App->res->SetAsUsed(materialData.albedoUuid);
-
-	if (materialData.specularUuid > 0)
-		App->res->SetAsUsed(materialData.specularUuid);
-
-	if (materialData.normalMapUuid > 0)
-		App->res->SetAsUsed(materialData.normalMapUuid);
+	InitResources();
 }
 
 ResourceMaterial::~ResourceMaterial() 
 {
-	if (materialData.shaderUuid > 0)
-		App->res->SetAsUnused(materialData.shaderUuid);
-
-	if (materialData.albedoUuid > 0)
-		App->res->SetAsUnused(materialData.albedoUuid);
-
-	if (materialData.specularUuid > 0)
-		App->res->SetAsUnused(materialData.specularUuid);
-
-	if (materialData.normalMapUuid > 0)
-		App->res->SetAsUnused(materialData.normalMapUuid);
+	DeinitResources();
 }
 
 void ResourceMaterial::OnPanelAssets()
@@ -108,10 +84,38 @@ bool ResourceMaterial::SaveFile(ResourceData& data, ResourceMaterialData& materi
 {
 	bool ret = false;
 
-	// Store material data
-	uint size = sizeof(materialData);
+	uint uniformsSize = materialData.uniforms.size();
+
+	uint size =
+		sizeof(uint) +
+		sizeof(uint) +
+		sizeof(Uniform) * uniformsSize;
+
 	char* buffer = new char[size];
-	memcpy(buffer, &materialData, size);
+	char* cursor = buffer;
+
+	// 1. Store shader uuid
+	uint bytes = sizeof(uint);
+	memcpy(cursor, &materialData.shaderUuid, bytes);
+
+	cursor += bytes;
+
+	// 2. Store uniforms size
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &uniformsSize, bytes);
+
+	cursor += bytes;
+
+	// 3. Store uniforms
+	for (uint i = 0; i < uniformsSize; ++i)
+	{
+		bytes = sizeof(Uniform);
+		memcpy(cursor, &materialData.uniforms[i], bytes);
+
+		if (i < uniformsSize - 1)
+			cursor += bytes;
+	}
 
 	// --------------------------------------------------
 
@@ -146,8 +150,34 @@ bool ResourceMaterial::LoadFile(const char* file, ResourceMaterialData& outputMa
 	uint size = App->fs->Load(file, &buffer);
 	if (size > 0)
 	{
-		// Retrieve material data
-		memcpy(&outputMaterialData, buffer, size);
+		char* cursor = (char*)buffer;
+
+		// 1. Load shader uuid
+		uint bytes = sizeof(uint);
+		memcpy(&outputMaterialData.shaderUuid, cursor, bytes);
+
+		cursor += bytes;
+
+		// 2. Load uniforms size
+		uint uniformsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uniformsSize, cursor, bytes);
+
+		cursor += bytes;
+
+		// 3. Load uniforms
+		outputMaterialData.uniforms.reserve(uniformsSize);
+		for (uint i = 0; i < uniformsSize; ++i)
+		{
+			bytes = sizeof(Uniform);
+			Uniform uniform;
+			memcpy(&uniform, cursor, bytes);
+			outputMaterialData.uniforms.push_back(uniform);
+
+			if (i < uniformsSize - 1)
+				cursor += bytes;
+		}
+		outputMaterialData.uniforms.shrink_to_fit();
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Material: Successfully loaded Material '%s'", file);
 		RELEASE_ARRAY(buffer);
@@ -368,9 +398,14 @@ void ResourceMaterial::SetResourceShader(uint shaderUuid)
 
 	materialData.shaderUuid = shaderUuid;
 
-	uniforms.clear();
+	// Set as unused (uniforms)
+	SetUniformsAsUnused();
+
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
-	shader->GetUniforms(uniforms);
+	shader->GetUniforms(materialData.uniforms);
+
+	// Set as used (uniforms)
+	SetUniformsAsUsed();
 }
 
 uint ResourceMaterial::GetShaderUuid() const
@@ -378,114 +413,76 @@ uint ResourceMaterial::GetShaderUuid() const
 	return materialData.shaderUuid;
 }
 
+void ResourceMaterial::SetResourceTexture(uint textureUuid, uint& textureUuidUniform, uint& textureIdUniform)
+{
+	if (textureUuidUniform > 0)
+		App->res->SetAsUnused(textureUuidUniform);
+	if (textureUuid > 0)
+		App->res->SetAsUsed(textureUuid);
+
+	textureUuidUniform = textureUuid;
+	ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(textureUuid);
+	textureIdUniform = texture == nullptr ? 0 : texture->GetId();
+}
+
 std::vector<Uniform>& ResourceMaterial::GetUniforms()
 {
-	return uniforms;
+	return materialData.uniforms;
 }
 
-void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes textureType)
+void ResourceMaterial::InitResources()
 {
-	switch (textureType)
-	{
-	case TextureTypes::Albedo:
+	// Set as used (shader)
+	if (materialData.shaderUuid > 0)
+		App->res->SetAsUsed(materialData.shaderUuid);
 
-		if (materialData.albedoUuid > 0)
-			App->res->SetAsUnused(materialData.albedoUuid);
-
-		if (textureUuid > 0)
-			App->res->SetAsUsed(textureUuid);
-
-		materialData.albedoUuid = textureUuid;
-
-		break;
-
-	case TextureTypes::Specular:
-
-		if (materialData.specularUuid > 0)
-			App->res->SetAsUnused(materialData.specularUuid);
-
-		if (textureUuid > 0)
-			App->res->SetAsUsed(textureUuid);
-
-		materialData.specularUuid = textureUuid;
-
-		break;
-
-	case TextureTypes::NormalMap:
-
-		if (materialData.normalMapUuid > 0)
-			App->res->SetAsUnused(materialData.normalMapUuid);
-
-		if (textureUuid > 0)
-			App->res->SetAsUsed(textureUuid);
-
-		materialData.normalMapUuid = textureUuid;
-
-		break;
-	}
+	// Set as used (uniforms)
+	SetUniformsAsUsed();
 }
 
-uint ResourceMaterial::GetTextureUuid(TextureTypes textureType) const
+void ResourceMaterial::DeinitResources()
 {
-	uint textureUuid = 0;
+	// Set as unused (shader)
+	if (materialData.shaderUuid > 0)
+		App->res->SetAsUnused(materialData.shaderUuid);
 
-	switch (textureType)
-	{
-	case TextureTypes::Albedo:
-		textureUuid = materialData.albedoUuid;
-		break;
-
-	case TextureTypes::Specular:
-		textureUuid = materialData.specularUuid;
-		break;
-
-	case TextureTypes::NormalMap:
-		textureUuid = materialData.normalMapUuid;
-		break;
-	}
-
-	return textureUuid;
-}
-
-void ResourceMaterial::SetColor(math::float4& color, TextureTypes textureType)
-{
-	switch (textureType)
-	{
-	case TextureTypes::Albedo:
-		materialData.albedoColor[0] = color.x;
-		materialData.albedoColor[1] = color.y;
-		materialData.albedoColor[2] = color.z;
-		materialData.albedoColor[3] = color.w;
-		break;
-
-	case TextureTypes::Specular:
-		materialData.specularColor[0] = color.x;
-		materialData.specularColor[1] = color.y;
-		materialData.specularColor[2] = color.z;
-		materialData.specularColor[3] = color.w;
-		break;
-	}
-}
-
-math::float4 ResourceMaterial::GetColor(TextureTypes& textureType) const
-{
-	math::float4 color = math::float4();
-
-	switch (textureType)
-	{
-	case TextureTypes::Albedo:
-		color = { materialData.albedoColor[0], materialData.albedoColor[1], materialData.albedoColor[2], materialData.albedoColor[3] };
-		break;
-
-	case TextureTypes::Specular:
-		color = { materialData.specularColor[0], materialData.specularColor[1], materialData.specularColor[2], materialData.specularColor[3] };
-		break;
-	}
-
-	return color;
+	// Set as unused (uniforms)
+	SetUniformsAsUnused();
 }
 
 // ----------------------------------------------------------------------------------------------------
+
+void ResourceMaterial::SetUniformsAsUsed() const
+{
+	for (uint i = 0; i < materialData.uniforms.size(); ++i)
+	{
+		switch (materialData.uniforms[i].common.type)
+		{
+		case Uniforms_Values::Sampler2U_value:
+		{
+			if (materialData.uniforms[i].sampler2DU.value.uuid > 0)
+				App->res->SetAsUsed(materialData.uniforms[i].sampler2DU.value.uuid);
+		}
+		break;
+		}
+	}
+}
+
+void ResourceMaterial::SetUniformsAsUnused() const
+{
+	for (uint i = 0; i < materialData.uniforms.size(); ++i)
+	{
+		switch (materialData.uniforms[i].common.type)
+		{
+		case Uniforms_Values::Sampler2U_value:
+		{
+			if (materialData.uniforms[i].sampler2DU.value.uuid > 0)
+				App->res->SetAsUnused(materialData.uniforms[i].sampler2DU.value.uuid);
+		}
+		break;
+		}
+	}
+}
 
 void ResourceMaterial::EditTextureMatrix(uint textureUuid)
 {
@@ -494,26 +491,10 @@ void ResourceMaterial::EditTextureMatrix(uint textureUuid)
 
 bool ResourceMaterial::LoadInMemory()
 {
-	App->res->SetAsUsed(materialData.shaderUuid) > 0;
-	if (materialData.albedoUuid > 0)
-		App->res->SetAsUsed(materialData.albedoUuid);
-	if (materialData.specularUuid > 0)
-		App->res->SetAsUsed(materialData.specularUuid);
-	if (materialData.normalMapUuid > 0)
-		App->res->SetAsUsed(materialData.normalMapUuid);
-
 	return true;
 }
 
 bool ResourceMaterial::UnloadFromMemory()
 {
-	App->res->SetAsUnused(materialData.shaderUuid);
-	if (materialData.albedoUuid > 0)
-		App->res->SetAsUnused(materialData.albedoUuid);
-	if (materialData.specularUuid > 0)
-		App->res->SetAsUnused(materialData.specularUuid);
-	if (materialData.normalMapUuid > 0)
-		App->res->SetAsUnused(materialData.normalMapUuid);
-
 	return true;
 }

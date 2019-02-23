@@ -609,6 +609,11 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform>& uniforms)
 			uniform.vec4IU.type = type;
 			uniform.vec4IU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
 			break;
+		case Uniforms_Values::Sampler2U_value:
+			strcpy_s(uniform.sampler2DU.name, name);
+			uniform.sampler2DU.type = type;
+			uniform.sampler2DU.location = glGetUniformLocation(shaderProgram, uniform.common.name);
+			break;
 		default:
 			continue;
 			break;

@@ -178,5 +178,7 @@ void ModuleInternalResHandler::CreateDefaultMaterial()
 	ResourceMaterialData materialData;
 	data.name = "Default material";
 	materialData.shaderUuid = DEFAULT_SHADER_PROGRAM_UUID;
+	((ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid))->GetUniforms(materialData.uniforms);
+
 	defaultMaterial = App->res->CreateResource(ResourceTypes::MaterialResource, data, &materialData, DEFAULT_MATERIAL_UUID)->GetUuid();
 }

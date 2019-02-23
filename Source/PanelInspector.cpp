@@ -752,7 +752,7 @@ void PanelInspector::ShowMaterialInspector() const
 					bool selected = shader == shaderResourcesByType[j];
 					if (ImGui::MenuItem(id, "", selected))
 					{
-						// Update the existing shader program
+						// Update the existing material
 						material->SetResourceShader(shaderResourcesByType[j]->GetUuid());
 						
 						// Export the existing file
@@ -843,6 +843,38 @@ void PanelInspector::ShowMaterialInspector() const
 			uniform.vec4IU.value.y = v[1];
 			uniform.vec4IU.value.z = v[2];
 			uniform.vec4IU.value.w = v[3];
+			break;
+		}
+		case Uniforms_Values::Sampler2U_value:
+		{
+			ImGui::PushID("texture");
+			ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(uniform.sampler2DU.value.uuid);
+			ImGui::Button(texture == nullptr ? "Empty texture" : texture->GetName(), ImVec2(150.0f, 0.0f));
+			ImGui::PopID();
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("%u", uniform.sampler2DU.value.id);
+				ImGui::EndTooltip();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_INSPECTOR_SELECTOR"))
+				{
+					uint payload_n = *(uint*)payload->Data;
+
+					// Update the existing material
+					material->SetResourceTexture(payload_n, uniform.sampler2DU.value.uuid, uniform.sampler2DU.value.id);
+
+					// Export the existing file
+					std::string outputFile;
+					App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
+				}
+				ImGui::EndDragDropTarget();
+			}
+			
 			break;
 		}
 		}

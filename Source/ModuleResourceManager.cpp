@@ -201,12 +201,20 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			for (uint i = 0; i < materials.size(); ++i)
 			{
 				ResourceMaterial* material = (ResourceMaterial*)materials[i];
-				if (material->materialData.albedoUuid == uuid)
-					material->SetResourceTexture(0, TextureTypes::Albedo);
-				else if (material->materialData.specularUuid == uuid)
-					material->SetResourceTexture(0, TextureTypes::Specular);
-				else if (material->materialData.normalMapUuid == uuid)
-					material->SetResourceTexture(0, TextureTypes::NormalMap);
+
+				std::vector<Uniform>& uniforms = material->GetUniforms();
+				for (uint i = 0; i < uniforms.size(); ++i)
+				{
+					switch (uniforms[i].common.type)
+					{
+					case Uniforms_Values::Sampler2U_value:
+					{
+						if (uniforms[i].sampler2DU.value.uuid == uuid)
+							material->SetResourceTexture(0, uniforms[i].sampler2DU.value.uuid, uniforms[i].sampler2DU.value.id);
+					}
+					break;
+					}
+				}
 			}
 		}
 		break;

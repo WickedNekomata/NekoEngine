@@ -33,10 +33,9 @@ public:
 	bool LoadScene(char*& buffer, size_t sizeBuffer);
   
 	//UI
-  GameObject* CreateCanvas(const char* name, GameObject* parent);
+	GameObject* CreateCanvas(const char* name, GameObject* parent);
  	void DeleteCanvasPointer();
 	bool ExistCanvas() const;
-	bool IsCanvas(GameObject* go_canvas) const;
 	GameObject* GetCanvas()const;
 
 	bool InvalidateResource(Resource* resource);

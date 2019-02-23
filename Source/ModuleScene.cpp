@@ -133,7 +133,7 @@ void ModuleScene::Draw() const
 #ifndef GAMEMODE
 void ModuleScene::OnGizmos(GameObject* gameObject) const
 {
-	if (!App->GOs->IsCanvas(gameObject))
+	if (!(gameObject->GetLayer() == UILAYER))
 	{
 		ImGuiViewport* vport = ImGui::GetMainViewport();
 		ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);

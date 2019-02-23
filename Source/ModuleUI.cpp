@@ -16,6 +16,7 @@
 #include "ModuleWindow.h"
 #include "ModuleGOs.h"
 #include "ModuleInternalResHandler.h"
+#include "Layers.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -56,6 +57,8 @@ bool ModuleUI::Start()
 	ui_size_draw[UI_YRECT] = 0;
 	ui_size_draw[UI_WIDTHRECT] = App->window->GetWindowWidth();
 	ui_size_draw[UI_HEIGHTRECT] = App->window->GetWindowHeight();
+
+	App->layers->SetLayerName(UILAYER, "UI");
 
 	return true;
 }

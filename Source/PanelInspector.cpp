@@ -187,7 +187,7 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 
-		if (App->GOs->IsCanvas(gameObject))
+		if (gameObject->GetLayer() == UILAYER)
 		{
 			if (gameObject->cmp_image == nullptr)
 				if (ImGui::Selectable("Image UI")) {

@@ -128,6 +128,7 @@ GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
 	assert(canvas == nullptr);
 	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
 	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
+	newGameObject->SetLayer(UILAYER);
 	gameobjects.push_back(newGameObject);
 	dynamicGos.push_back(newGameObject);
 	return newGameObject;
@@ -321,11 +322,6 @@ bool ModuleGOs::InvalidateResource(Resource* resource)
 bool ModuleGOs::ExistCanvas() const
 {
 	return (canvas != nullptr);
-}
-
-bool ModuleGOs::IsCanvas(GameObject * go_canvas) const
-{
-	return (canvas == go_canvas);
 }
 
 GameObject * ModuleGOs::GetCanvas() const

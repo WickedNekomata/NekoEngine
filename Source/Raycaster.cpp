@@ -49,7 +49,7 @@ void Raycaster::ScreenPointToRay(int posX, int posY, float& shortestDistance, ma
 	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
 	{
 		// TODO CHECK THIS
-		if (raycast.Intersects(dynamicGameObjects[i]->boundingBox))
+		if (dynamicGameObjects[i]->GetLayer() != UILAYER && raycast.Intersects(dynamicGameObjects[i]->boundingBox))
 			hits.push_back(dynamicGameObjects[i]);
 	}
 

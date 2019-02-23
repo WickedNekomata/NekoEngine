@@ -186,7 +186,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 			if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
 				App->scene->selectedObject = CurrentSelection::SelectedType::null;
 			App->GOs->DeleteGameObject(child);
-			if (App->GOs->IsCanvas(child))
+			if (child->GetLayer() == UILAYER && child->GetParent()->GetParent() == nullptr)
 				App->GOs->DeleteCanvasPointer();
 			ImGui::CloseCurrentPopup();
 		}

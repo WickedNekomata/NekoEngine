@@ -4,6 +4,13 @@
 #include "Module.h"
 #include "Globals.h"
 
+#define PLANE_UUID 1428675893
+#define CUBE_UUID 1451315056
+#define DEFAULT_SHADER_PROGRAM_UUID 1608702687
+#define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
+#define DEFAULT_MATERIAL_UUID 2168314292
+#define REPLACE_ME_TEXTURE_UUID 3462814329
+
 #pragma region ShadersTemplate
 
 #define vShaderTemplate \
@@ -135,29 +142,37 @@
 class ModuleInternalResHandler : public Module
 {
 public:
+
 	bool Start();
 
+	// Mesh resources
 	void CreatePlane();
 	void CreateCube();
 
+	// Shader resources
 	void CreateDefaultShaderProgram();
 	void CreateCubemapShaderProgram();
 
+	// Material resources
+	void CreateDefaultMaterial();
+
 public:
-	//RESOURCES
 
 	// Mesh resources
-	uint defaultPlane;
-	uint defaultCube;
+	uint plane;
+	uint cube;
 
 	// Texture resources
 	uint checkers;
 	uint defaultTexture;
-	// todo cubemap textures
+	// TODO: cubemap textures
 
 	// Shader resources
 	uint defaultShaderProgram;
 	uint cubemapShaderProgram;
+
+	// Material resources
+	uint defaultMaterial;
 };
 
 #endif

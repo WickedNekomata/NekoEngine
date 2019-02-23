@@ -92,7 +92,7 @@ bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, st
 	else
 		outputFile = data.name;
 
-	ret = App->fs->SaveInGame(buffer, size, FileType::PrefabFile, outputFile, overwrite) > 0;
+	ret = App->fs->SaveInGame(buffer, size, FileTypes::PrefabFile, outputFile, overwrite) > 0;
 
 	if (ret) {
 		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Successfully saved prefab '%s'", outputFile.data());

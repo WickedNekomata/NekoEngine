@@ -41,21 +41,6 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 		break;
 
-	case System_Event_Type::ShaderProgramChanged:
-
-		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if ((*it)->cmp_material != nullptr)
-			{
-				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource((*it)->cmp_material->shaderProgramUUID);
-
-				if (shaderProgram != nullptr && shaderProgram->shaderProgram == event.shaderEvent.shader)
-					(*it)->OnSystemEvent(event);
-			}
-		}
-
-		break;
-
 	case System_Event_Type::LayerNameReset:
 
 		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
@@ -116,7 +101,6 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		}
 		break;
 	}
-
 
 	case System_Event_Type::ResourceDestroyed:
 		InvalidateResource(event.resEvent.resource);
@@ -302,14 +286,8 @@ bool ModuleGOs::InvalidateResource(Resource* resource)
 				gameobjects[i]->cmp_mesh->SetResource(0);
 			break;
 		case ResourceTypes::TextureResource:
-			if (gameobjects[i]->cmp_material != nullptr)
-			{
-				for (uint j = 0; j < gameobjects[i]->cmp_material->res.size(); ++j)
-				{
-					if (gameobjects[i]->cmp_material->res[j].res == resource->GetUuid())
-						gameobjects[i]->cmp_material->SetResource(0, j);
-				}
-			}
+			if (gameobjects[i]->cmp_material != nullptr && gameobjects[i]->cmp_material->res == resource->GetUuid())
+				gameobjects[i]->cmp_material->SetResource(0);
 			break;
 		}
 	}

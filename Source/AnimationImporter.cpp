@@ -187,7 +187,7 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string 
 
 	// -------------- Saving animation data in file --------------
 
-	if (App->fs->SaveInGame((char*)data, final_size, FileType::AnimationFile, output) > 0)
+	if (App->fs->SaveInGame((char*)data, final_size, FileTypes::AnimationFile, output) > 0)
 		ret = true;
 
 	/*std::string tmp_str(L_ANIMATIONS_DIR);

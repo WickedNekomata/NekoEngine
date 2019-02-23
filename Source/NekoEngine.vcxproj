@@ -211,6 +211,7 @@
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="ResourcePrefab.h" />
+    <ClInclude Include="ResourceMaterial.h" />
     <ClInclude Include="SceneQueries.h" />
     <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
@@ -605,6 +606,7 @@
     <ClCompile Include="ModuleAnimation.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
+    <ClCompile Include="ResourceMaterial.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />

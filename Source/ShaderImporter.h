@@ -14,7 +14,7 @@ struct ResourceData;
 struct ResourceShaderObjectData;
 struct ResourceShaderProgramData;
 
-enum ShaderTypes;
+enum ShaderObjectTypes;
 
 class ShaderImporter
 {
@@ -23,21 +23,11 @@ public:
 	ShaderImporter();
 	~ShaderImporter();
 
-	// Shader Object (save)
 	bool SaveShaderObject(ResourceData& data, ResourceShaderObjectData& outputShaderObjectData, std::string& outputFile, bool overwrite = false) const;
-	bool SaveShaderObject(const void* buffer, uint size, ShaderTypes shaderType, std::string& outputFile, bool overwrite = false) const;
-
-	// Shader Program (save)
 	bool SaveShaderProgram(ResourceData& data, ResourceShaderProgramData& outputShaderProgramData, std::string& outputFile, bool overwrite = false) const;
-	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile, bool overwrite = false) const;
-
-	// Shader Object (load)
+	
 	bool LoadShaderObject(const char* objectFile, ResourceShaderObjectData& outputShaderObjectData, uint& shaderObject) const;
-	bool LoadShaderObject(const void* buffer, uint size, ResourceShaderObjectData& outputShaderObjectData, uint& shaderObject) const;
-
-	// Shader Program (load)
 	bool LoadShaderProgram(const char* programFile, ResourceShaderProgramData& outputShaderProgramData, uint& shaderProgram) const;
-	bool LoadShaderProgram(const void* buffer, uint size, ResourceShaderProgramData& outputShaderProgramData, uint& shaderProgram) const;
 	
 	// ----------------------------------------------------------------------------------------------------
 
@@ -49,7 +39,7 @@ public:
 	// *****TODO*****
 	void LoadDefaultShader();
 	void LoadCubemapShader();
-	uint LoadDefaultShaderObject(ShaderTypes shaderType) const;
+	uint LoadDefaultShaderObject(ShaderObjectTypes shaderType) const;
 	uint LoadShaderProgram(uint vertexShaderObject, uint fragmentShaderObject) const;
 
 	uint GetDefaultVertexShaderObject() const;
@@ -57,6 +47,14 @@ public:
 	uint GetDefaultShaderProgram() const;
 	uint GetCubemapShaderProgram() const;
 	//_*****TODO*****
+
+private:
+
+	bool SaveShaderObject(const void* buffer, uint size, ShaderObjectTypes shaderType, std::string& outputFile, bool overwrite = false) const;
+	bool SaveShaderProgram(const void* buffer, uint size, std::string& outputFile, bool overwrite = false) const;
+	
+	bool LoadShaderObject(const void* buffer, uint size, ResourceShaderObjectData& outputShaderObjectData, uint& shaderObject) const;
+	bool LoadShaderProgram(const void* buffer, uint size, ResourceShaderProgramData& outputShaderProgramData, uint& shaderProgram) const;
 
 private:
 

@@ -59,7 +59,7 @@ private:
 	float life = 0.0f;
 
 	float speed = 0.0f;
-	float acceleration = 0.0f;
+	math::float3 acceleration3 = math::float3::zero;
 	math::float3 direction = math::float3::zero;
 
 	float rotationSpeed = 0.0f;

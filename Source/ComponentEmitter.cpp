@@ -222,7 +222,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	{
 	case ShapeType_BOX:
 		spawn = boxCreation.RandomPointInside(App->randomMathLCG);
-		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
+		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3().Transposed()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
@@ -247,8 +247,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		angle = (2 * PI) * (float)App->GenerateRandomNumber() / MAXUINT;
 		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
-		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
-		circleCreation.normal = -circleCreation.pos;
+		circleCreation.pos = (math::float3(0, coneHeight, 0) * parent->transform->rotation.ToFloat3x3().Transposed());
 		startValues.particleDirection = (circleCreation.GetPoint(angle, centerDist)).Normalized();
 		break;
 	}
@@ -296,10 +295,6 @@ void ComponentEmitter::ParticleValues()
 			EqualsMinMaxValues(startValues.speed);
 		ShowFloatValue(startValues.speed, checkSpeed, "Speed", 0.25f, 0.25f, 20.0f);
 
-		if (ImGui::Checkbox("##Acceleration", &checkAcceleration))
-			EqualsMinMaxValues(startValues.acceleration);
-		ShowFloatValue(startValues.acceleration, checkAcceleration, "Acceleration", 0.25f, -5.0f, 5.0f);
-
 		if (ImGui::Checkbox("##Rotation", &checkRotation))
 			EqualsMinMaxValues(startValues.rotation);
 		ShowFloatValue(startValues.rotation, checkRotation, "Initial Rotation", 0.25f, -360.0f, 360.0f);
@@ -323,6 +318,10 @@ void ComponentEmitter::ParticleValues()
 		if (ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime))
 			EqualsMinMaxValues(startValues.sizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
+
+		ImGui::PushItemWidth(127.0f);
+		ImGui::DragFloat3("Acceleration", &startValues.acceleration3.x, 0.1f, -5.0f, 5.0f, "%.2f");
+		ImGui::PopItemWidth();
 
 		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Emition", &rateOverTime, 1.0f, 0.0f, 300.0f, "%.2f");
@@ -351,7 +350,6 @@ void ComponentEmitter::ParticleShape()
 				normalShapeType = ShapeType_CONE;
 			ImGui::End();
 		}
-
 
 		math::float3 pos;
 		switch (normalShapeType)
@@ -386,11 +384,14 @@ void ComponentEmitter::ParticleShape()
 		case ShapeType_CONE:
 			ImGui::Text("Cone");
 			ImGui::DragFloat("Sphere Size", &circleCreation.r, 0.25f, 0.25f, 20.0f, "%.2f");
+			ImGui::DragFloat("Height Cone", &coneHeight, 0.0f, 0.25f, 20.0f, "%.2f");
 
 			break;
 		default:
 			break;
 		}
+
+		ImGui::Checkbox("Debug Draw", &drawShape);
 	}
 #endif
 }

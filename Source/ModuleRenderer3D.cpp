@@ -7,6 +7,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
 #include "ModulePhysics.h"
+#include "ModuleParticles.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "ModuleParticles.h"
@@ -362,6 +363,29 @@ update_status ModuleRenderer3D::PostUpdate()
 		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
+		for (std::list<ComponentEmitter*>::iterator emitter = App->particle->emitters.begin(); emitter != App->particle->emitters.end(); ++emitter)
+		{
+			if ((*emitter)->drawShape)
+			{
+				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();
+				switch ((*emitter)->normalShapeType)
+				{
+				case ShapeType_BOX:
+					App->debugDrawer->DebugDraw((*emitter)->boxCreation, White, globalMat);
+					break;
+				case ShapeType_SPHERE:
+				case ShapeType_SPHERE_BORDER:
+				case ShapeType_SPHERE_CENTER:
+					App->debugDrawer->DebugDrawSphere((*emitter)->sphereCreation.r, White, globalMat);
+					break;
+				case ShapeType_CONE:
+					App->debugDrawer->DebugDrawCone((*emitter)->circleCreation.r, (*emitter)->coneHeight, White, globalMat);
+					break;
+				default:
+					break;
+				}
+			}
+		}
 		App->debugDrawer->EndDebugDraw();
 	}
 

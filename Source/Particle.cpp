@@ -35,7 +35,7 @@ void Particle::SetActive(math::float3 pos, StartValues data, ParticleAnimation p
 	life = 0.0f;
 
 	speed = CreateRandomNum(data.speed);
-	acceleration = CreateRandomNum(data.acceleration);
+	acceleration3 = data.acceleration3;
 	direction = data.particleDirection;
 
 	angle = CreateRandomNum(data.rotation) * DEGTORAD;
@@ -79,8 +79,14 @@ bool Particle::Update(float dt)
 	life += dt;
 	if (life < lifeTime || owner->dieOnAnimation)
 	{
-		speed += acceleration * dt;
-		transform.position += direction * (speed * dt);
+		acceleration3 += acceleration3 * dt;
+		math::float3 movement = direction * (speed * dt);
+
+		if(acceleration3.Equals(math::float3::zero))
+			transform.position +=  movement;
+		else
+			transform.position += (movement + acceleration3 * dt)/2;
+
 		LookAtCamera();
 
 		if (color.size() == 1 || !multicolor)

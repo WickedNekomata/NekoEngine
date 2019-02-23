@@ -229,7 +229,7 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	App->PushSystemEvent(newEvent);
 }
 
-bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer)
+bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)
 {
 	std::vector<GameObject*> go;
 	node->GetChildrenVector(go);
@@ -238,6 +238,7 @@ bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_
 		sizeBuffer += go[i]->GetSerializationBytes();
 
 	// Get size navmesh tiles data
+	if (navmesh)
 	sizeBuffer += App->navigation->GetNavMeshSerialitzationBytes();
 
 	outStateBuffer = new char[sizeBuffer];
@@ -251,12 +252,13 @@ bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_
 		go[i]->OnSave(cursor);
 
 	// Discuss if this should be a resource
-	App->navigation->SaveNavmesh(cursor);
+	if (navmesh)
+		App->navigation->SaveNavmesh(cursor);
 
 	return true;
 }
 
-bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
+bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 {
 	char* cursor = buffer;
 	size_t bytes = sizeof(uint);
@@ -295,7 +297,8 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 	}
 
 	// Discuss if this should be a resource
-	App->navigation->LoadNavmesh(cursor);
+	if (navmesh)
+		App->navigation->LoadNavmesh(cursor);
 
 	return true;
 }

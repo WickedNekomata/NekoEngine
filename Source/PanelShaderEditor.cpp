@@ -262,9 +262,10 @@ bool PanelShaderEditor::TryLink() const
 		uint tryLink = ResourceShaderProgram::Link(shaderObjects);
 
 		if (tryLink > 0)
+		{
 			ret = true;
-
-		ResourceShaderProgram::DeleteShaderProgram(tryLink);
+			ResourceShaderProgram::DeleteShaderProgram(tryLink);
+		}
 	}
 	else
 		CONSOLE_LOG(LogTypes::Error, "Shader Program could not be linked since one or more shader objects are null or don't exist");

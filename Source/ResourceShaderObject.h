@@ -49,7 +49,7 @@ public:
 	bool Compile();
 	static uint Compile(const char* source, ShaderObjectTypes shaderType);
 
-	static bool DeleteShaderObject(uint shaderObject);
+	static bool DeleteShaderObject(uint& shaderObject);
 
 	// ----------------------------------------------------------------------------------------------------
 

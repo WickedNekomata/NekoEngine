@@ -80,15 +80,23 @@ bool ShaderImporter::SaveShaderProgram(ResourceData& data, ResourceShaderProgram
 		outputFile = data.name;
 
 	uchar* buffer;
-	uint size = ResourceShaderProgram::GetBinary(ResourceShaderProgram::Link((outputShaderProgramData.shaderObjects)), &buffer);
-	if (size > 0)
+	uint link = ResourceShaderProgram::Link(outputShaderProgramData.shaderObjects);
+	if (link > 0)
 	{
-		CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
-		ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
-		RELEASE_ARRAY(buffer);
+		uint size = ResourceShaderProgram::GetBinary(link, &buffer, outputShaderProgramData.format);
+		if (size > 0)
+		{
+			CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
+			ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
+			RELEASE_ARRAY(buffer);
+		}
+		else
+			CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+
+		ResourceShaderProgram::DeleteShaderProgram(link);
 	}
 	else
-		CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+		CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not link Shader Program '%s'", outputFile.data());
 
 	return ret;
 }
@@ -182,7 +190,7 @@ bool ShaderImporter::LoadShaderProgram(const void* buffer, uint size, ResourceSh
 	assert(buffer != nullptr && size > 0);
 
 	// Try to link the shader program
-	shaderProgram = ResourceShaderProgram::LoadBinary(buffer, size);
+	shaderProgram = ResourceShaderProgram::LoadBinary(buffer, size, outputShaderProgramData.format);
 
 	if (shaderProgram > 0)
 	{

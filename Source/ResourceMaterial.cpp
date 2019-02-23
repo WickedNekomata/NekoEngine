@@ -5,13 +5,45 @@
 #include "ModuleResourceManager.h"
 #include "ModuleScene.h"
 
+#include "ResourceShaderProgram.h"
+
 #include "imgui\imgui.h"
 
 #include <assert.h>
 
-ResourceMaterial::ResourceMaterial(ResourceTypes type, uint uuid, ResourceData data, ResourceMaterialData materialData) : Resource(type, uuid, data), materialData(materialData) {}
+ResourceMaterial::ResourceMaterial(ResourceTypes type, uint uuid, ResourceData data, ResourceMaterialData materialData) : Resource(type, uuid, data), materialData(materialData) 
+{
+	if (materialData.shaderUuid > 0)
+		App->res->SetAsUsed(materialData.shaderUuid);
 
-ResourceMaterial::~ResourceMaterial() {}
+	uniforms.clear();
+	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid);
+	shader->GetUniforms(uniforms);
+
+	if (materialData.albedoUuid > 0)
+		App->res->SetAsUsed(materialData.albedoUuid);
+
+	if (materialData.specularUuid > 0)
+		App->res->SetAsUsed(materialData.specularUuid);
+
+	if (materialData.normalMapUuid > 0)
+		App->res->SetAsUsed(materialData.normalMapUuid);
+}
+
+ResourceMaterial::~ResourceMaterial() 
+{
+	if (materialData.shaderUuid > 0)
+		App->res->SetAsUnused(materialData.shaderUuid);
+
+	if (materialData.albedoUuid > 0)
+		App->res->SetAsUnused(materialData.albedoUuid);
+
+	if (materialData.specularUuid > 0)
+		App->res->SetAsUnused(materialData.specularUuid);
+
+	if (materialData.normalMapUuid > 0)
+		App->res->SetAsUnused(materialData.normalMapUuid);
+}
 
 void ResourceMaterial::OnPanelAssets()
 {
@@ -328,12 +360,27 @@ uint ResourceMaterial::SetNameToMeta(const char* metaFile, const std::string& na
 
 void ResourceMaterial::SetResourceShader(uint shaderUuid)
 {
+	if (materialData.shaderUuid > 0)
+		App->res->SetAsUnused(materialData.shaderUuid);
+
+	if (shaderUuid > 0)
+		App->res->SetAsUsed(shaderUuid);
+
 	materialData.shaderUuid = shaderUuid;
+
+	uniforms.clear();
+	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	shader->GetUniforms(uniforms);
 }
 
 uint ResourceMaterial::GetShaderUuid() const
 {
 	return materialData.shaderUuid;
+}
+
+std::vector<Uniform> ResourceMaterial::GetUniforms() const
+{
+	return uniforms;
 }
 
 void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes textureType)

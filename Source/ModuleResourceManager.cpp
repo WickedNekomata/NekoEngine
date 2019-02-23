@@ -389,7 +389,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		std::string name;
 		std::vector<std::string> shaderObjectsNames;
 		ShaderProgramTypes shaderProgramType = ShaderProgramTypes::Custom;
-		if (ResourceShaderProgram::ImportFile(file, name, shaderObjectsNames, shaderProgramType, outputFile))
+		uint format = 0;
+		if (ResourceShaderProgram::ImportFile(file, name, shaderObjectsNames, shaderProgramType, format, outputFile))
 		{
 			std::vector<uint> resourcesUuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
@@ -410,6 +411,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					App->fs->GetFileName(file, data.name);
 				else
 					data.name = name.data();
+				shaderProgramData.format = format;
 
 				uint shaderProgram = 0;
 				bool success = ResourceShaderProgram::LoadFile(file, shaderProgramData, shaderProgram);
@@ -468,7 +470,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
 			std::string name = resource->GetName();
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), name, shaderObjectsNames, shaderProgramType, outputMetaFile);
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(file, resourcesUuids.front(), name, shaderObjectsNames, shaderProgramType, format, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -561,7 +563,7 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 			for (std::list<std::string>::const_iterator it = shaderObjectsNames.begin(); it != shaderObjectsNames.end(); ++it)
 				names.push_back(*it);
 
-			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, shaderProgramData.shaderProgramType, outputMetaFile);
+			int64_t lastModTime = ResourceShaderProgram::CreateMeta(outputFile.data(), uuid == 0 ? App->GenerateRandomNumber() : uuid, data.name, names, shaderProgramData.shaderProgramType, shaderProgramData.format, outputMetaFile);
 			assert(lastModTime > 0);
 
 			if (resources)
@@ -626,7 +628,7 @@ uint ModuleResourceManager::SetAsUsed(uint uuid) const
 {
 	std::unordered_map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
-	if (it != resources.end())
+	if (it != resources.end() && it->second != nullptr)
 		return it->second->IncreaseReferences();
 
 	return 0;
@@ -636,7 +638,7 @@ uint ModuleResourceManager::SetAsUnused(uint uuid) const
 {
 	std::unordered_map<uint, Resource*>::const_iterator it = resources.find(uuid);
 
-	if (it != resources.end())
+	if (it != resources.end() && it->second != nullptr)
 		return it->second->DecreaseReferences();
 
 	return 0;

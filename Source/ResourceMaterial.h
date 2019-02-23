@@ -3,8 +3,12 @@
 
 #include "Resource.h"
 
+#include "Uniforms.h"
+
 #include "MathGeoLib\include\Math\float4.h"
 #include "MathGeoLib\include\Math\float4x4.h"
+
+#include <vector>
 
 enum TextureTypes
 {
@@ -52,6 +56,7 @@ public:
 	inline ResourceMaterialData& GetSpecificData() { return materialData; }
 	void SetResourceShader(uint shaderUuid);
 	uint GetShaderUuid() const;
+	std::vector<Uniform> GetUniforms() const;
 	void SetResourceTexture(uint textureUuid, TextureTypes textureType);
 	uint GetTextureUuid(TextureTypes textureType) const;
 	void SetColor(math::float4& color, TextureTypes textureType);
@@ -67,6 +72,10 @@ private:
 public:
 
 	ResourceMaterialData materialData;
+
+private:
+
+	std::vector<Uniform> uniforms;
 };
 
 #endif

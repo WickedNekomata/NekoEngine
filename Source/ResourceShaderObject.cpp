@@ -409,7 +409,7 @@ uint ResourceShaderObject::Compile(const char* source, ShaderObjectTypes shaderT
 	return shaderObject;
 }
 
-bool ResourceShaderObject::DeleteShaderObject(uint shaderObject)
+bool ResourceShaderObject::DeleteShaderObject(uint& shaderObject)
 {
 	bool ret = false;
 

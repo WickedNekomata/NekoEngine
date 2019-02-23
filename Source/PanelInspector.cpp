@@ -607,6 +607,13 @@ void PanelInspector::ShowShaderObjectInspector() const
 
 	ImGui::Spacing();
 
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool isValid = shaderObject->isValid;
+	ImGui::Checkbox("Is valid", &isValid);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
+	ImGui::Spacing();
+
 	if (ImGui::Button("EDIT SHADER OBJECT"))
 		App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObject->GetUuid());
 }
@@ -651,6 +658,7 @@ void PanelInspector::ShowShaderProgramInspector() const
 	bool isValid = shaderProgram->isValid;
 	ImGui::Checkbox("Is valid", &isValid);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
 	ImGui::Spacing();
 
 	// Info
@@ -709,6 +717,8 @@ void PanelInspector::ShowMaterialInspector() const
 
 	ImGui::Spacing();
 
+	char id[DEFAULT_BUF_SIZE];
+
 	// Shader
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
 	assert(shader != nullptr);
@@ -721,7 +731,6 @@ void PanelInspector::ShowMaterialInspector() const
 	{
 		std::vector<Resource*> shaderResources = App->res->GetResourcesByType(ResourceTypes::ShaderProgramResource);
 		std::vector<Resource*> shaderResourcesByType;
-		char id[DEFAULT_BUF_SIZE];
 
 		for (uint i = 0; i < IM_ARRAYSIZE(shaderTypes); ++i)
 		{
@@ -762,8 +771,83 @@ void PanelInspector::ShowMaterialInspector() const
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
 
 	// Uniforms
+	std::vector<Uniform> uniforms = material->GetUniforms();
+	for (uint i = 0; i < uniforms.size(); ++i)
+	{
+		if (i == 0)
+			ImGui::Text("Uniforms");
 
+		Uniform uniform = uniforms[i];
+		ImGui::Text(uniform.common.name);
+		ImGui::SameLine();
 
+		sprintf(id, "##uniform%u", i);
+		ImGui::PushItemWidth(100.0f);
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::FloatU_value:
+			ImGui::InputFloat(id, &uniform.floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			ImGui::InputInt(id, (int*)&uniform.intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+		{
+			float v[] = { uniform.vec2FU.value.x, uniform.vec2FU.value.y };
+			ImGui::InputFloat2(id, v);
+			uniform.vec2FU.value.x = v[0];
+			uniform.vec2FU.value.y = v[1];
+			break;
+		}
+		case Uniforms_Values::Vec3FU_value:
+		{
+			float v[] = { uniform.vec3FU.value.x, uniform.vec3FU.value.y , uniform.vec3FU.value.z };
+			ImGui::InputFloat3(id, v);
+			uniform.vec3FU.value.x = v[0];
+			uniform.vec3FU.value.y = v[1];
+			uniform.vec3FU.value.z = v[2];
+			break;
+		}
+		case Uniforms_Values::Vec4FU_value:
+		{
+			float v[] = { uniform.vec4FU.value.x, uniform.vec4FU.value.y , uniform.vec4FU.value.z, uniform.vec4FU.value.w };
+			ImGui::InputFloat4(id, v);
+			uniform.vec4FU.value.x = v[0];
+			uniform.vec4FU.value.y = v[1];
+			uniform.vec4FU.value.z = v[2];
+			uniform.vec4FU.value.w = v[3];
+			break;
+		}
+		case Uniforms_Values::Vec2IU_value:
+		{
+			int v[] = { uniform.vec2IU.value.x, uniform.vec2IU.value.y };
+			ImGui::InputInt2(id, v);
+			uniform.vec2IU.value.x = v[0];
+			uniform.vec2IU.value.y = v[1];
+			break;
+		}
+		case Uniforms_Values::Vec3IU_value:
+		{
+			int v[] = { uniform.vec3IU.value.x, uniform.vec3IU.value.y , uniform.vec3IU.value.z };
+			ImGui::InputInt3(id, v);
+			uniform.vec3IU.value.x = v[0];
+			uniform.vec3IU.value.y = v[1];
+			uniform.vec3IU.value.z = v[2];
+			break;
+		}
+		case Uniforms_Values::Vec4IU_value:
+		{
+			int v[] = { uniform.vec4IU.value.x, uniform.vec4IU.value.y , uniform.vec4IU.value.z, uniform.vec4IU.value.w };
+			ImGui::InputInt4(id, v);
+			uniform.vec4IU.value.x = v[0];
+			uniform.vec4IU.value.y = v[1];
+			uniform.vec4IU.value.z = v[2];
+			uniform.vec4IU.value.w = v[3];
+			break;
+		}
+		}
+		ImGui::PopItemWidth();
+	}
 }
 
 #endif // GAME

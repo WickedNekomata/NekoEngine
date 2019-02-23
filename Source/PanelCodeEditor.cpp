@@ -170,9 +170,10 @@ bool PanelCodeEditor::TryCompile()
 	uint tryCompile = ResourceShaderObject::Compile(editor.GetText().data(), shaderObject->GetShaderObjectType());
 
 	if (tryCompile > 0)
+	{
 		ret = true;
-
-	ResourceShaderObject::DeleteShaderObject(tryCompile);
+		ResourceShaderObject::DeleteShaderObject(tryCompile);
+	}
 
 	return ret;
 }

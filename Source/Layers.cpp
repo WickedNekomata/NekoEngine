@@ -55,6 +55,8 @@ Layers::Layers()
 
 	layers[0]->name = "Default";
 	layers[0]->builtin = true;
+	layers[UILAYER]->name = "UI";
+	layers[UILAYER]->builtin = true;
 }
 
 Layers::~Layers() {}

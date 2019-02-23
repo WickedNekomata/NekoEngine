@@ -12,10 +12,12 @@
 #include "ModuleFileSystem.h"
 #include "ComponentTransform.h"
 #include "ComponentRectTransform.h"
+#include "ComponentCanvasRenderer.h"
 #include "ResourceTexture.h"
 #include "ModuleWindow.h"
 #include "ModuleGOs.h"
 #include "ModuleInternalResHandler.h"
+#include "GameObject.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -28,12 +30,34 @@ ModuleUI::~ModuleUI()
 {
 }
 
-void ModuleUI::DrawTest()
+void ModuleUI::DrawCanvas()
 {
 	if (App->GOs->ExistCanvas())
-		DrawUI((ComponentRectTransform*)App->GOs->GetCanvas()->GetComponent(ComponentTypes::RectTransformComponent), 0.0f, { 0.0f, 1.0f, 0.0f });
-	else
-		DrawUI(rect_test, 0.0f, { 0.0f, 1.0f, 0.0f });
+	{
+		GameObject* canvas = App->GOs->GetCanvas();
+
+		ComponentCanvasRenderer* ui_rend = (ComponentCanvasRenderer*)canvas->GetComponent(ComponentTypes::CanvasRendererComponent);
+		if (ui_rend)
+		{
+			ui_rend->Update();
+			ComponentCanvasRenderer::ToUIRend* rend = ui_rend->GetFistQueue();
+			while (rend != nullptr)
+			{
+				switch (rend->GetType())
+				{
+				case ComponentCanvasRenderer::RenderTypes::COLOR_VECTOR:
+					DrawUIColor((ComponentRectTransform*)canvas->GetComponent(ComponentTypes::RectTransformComponent), rend->GetColor());
+					break;
+				case ComponentCanvasRenderer::RenderTypes::TEXTURE:
+					DrawUITexture((ComponentRectTransform*)canvas->GetComponent(ComponentTypes::RectTransformComponent), rend->GetTexture());
+					break;
+				}
+
+				ui_rend->Drawed();
+				rend = ui_rend->GetFistQueue();
+			}
+		}
+	}
 }
 
 bool ModuleUI::Init(JSON_Object * jObject)
@@ -48,9 +72,6 @@ bool ModuleUI::Start()
 	//Shader
 	App->resHandler->CreateUIShaderProgram();
 	ui_shader = App->resHandler->UIShaderProgram;
-
-	rect_test = new ComponentRectTransform(nullptr);
-	rect_test->SetRect(0,0,100,100);
 
 	ui_size_draw[UI_XRECT] = 0;
 	ui_size_draw[UI_YRECT] = 0;
@@ -122,7 +143,7 @@ void ModuleUI::initRenderData()
 	glBindVertexArray(0);
 }
 
-void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3 color)
+void ModuleUI::DrawUIColor(ComponentRectTransform* rect, math::float4& color, float rotation)
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -130,30 +151,36 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	glDisable(GL_LIGHTING);
 
 	use(ui_shader);
+	SetRectToShader(rect);
+	setFloat(ui_shader, "spriteColor", color.x, color.y, color.z, color.w);
 
-	float w_width = ui_size_draw[UI_WIDTHRECT];
-	float w_height = ui_size_draw[UI_HEIGHTRECT];
+	glBindVertexArray(reference_vertex);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	const uint* rect_points = rect->GetRect();
-	
-	math::float2 pos;
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
-	setFloat(ui_shader, "topLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
-	setFloat(ui_shader, "topRight", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
-	setFloat(ui_shader, "bottomLeft", pos.x, pos.y);
-	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
-	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
+	glBindVertexArray(0);
 
-	setFloat(ui_shader, "spriteColor", color);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	//glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+
+	use(0);
+}
+
+void ModuleUI::DrawUITexture(ComponentRectTransform * rect, uint texture, float rotation)
+{
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	//glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+
+	use(ui_shader);
+	SetRectToShader(rect);
 	setFloat(ui_shader, "image", 0);
-
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetCheckers());
 
-	
 	glBindVertexArray(reference_vertex);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -166,6 +193,24 @@ void ModuleUI::DrawUI(ComponentRectTransform* rect, float rotation, math::float3
 	glEnable(GL_LIGHTING);
 
 	use(0);
+}
+
+void ModuleUI::SetRectToShader(ComponentRectTransform * rect)
+{
+	const uint* rect_points = rect->GetRect();
+
+	float w_width = ui_size_draw[UI_WIDTHRECT];
+	float w_height = ui_size_draw[UI_HEIGHTRECT];
+
+	math::float2 pos;
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
+	setFloat(ui_shader, "topLeft", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] }, w_width, w_height);
+	setFloat(ui_shader, "topRight", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
+	setFloat(ui_shader, "bottomLeft", pos.x, pos.y);
+	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
+	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
 }
 
 

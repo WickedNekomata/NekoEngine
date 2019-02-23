@@ -36,6 +36,21 @@ void ComponentImage::OnEditor()
 	OnUniqueEditor();
 }
 
+const float * ComponentImage::GetColor() const
+{
+	return color;
+}
+
+uint ComponentImage::GetResImage()const
+{
+	return res_image;
+}
+
+bool ComponentImage::UseColor() const
+{
+	return use_color_vec;
+}
+
 uint ComponentImage::GetInternalSerializationBytes()
 {
 	if(use_color_vec)

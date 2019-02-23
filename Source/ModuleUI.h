@@ -3,7 +3,7 @@
 
 #include "Module.h"
 
-#include "MathGeoLib/include/MathGeoLib.h"
+#include "MathGeoLib/include/Math/float4.h"
 
 #define UI_XRECT 0
 #define UI_YRECT 1
@@ -25,7 +25,7 @@ public:
 	ModuleUI(bool start_enabled = true);
 	~ModuleUI();
 
-	void DrawTest();
+	void DrawCanvas();
 
 	bool GetUIMode() const;
 	void SetUIMode(bool stat);
@@ -47,7 +47,10 @@ private:
 	void OnSystemEvent(System_Event event);
 
 	void initRenderData();
-	void DrawUI(ComponentRectTransform* rect, float rotation = 0.0f, math::float3 color = math::float3::one);
+	void DrawUIColor(ComponentRectTransform* rect, math::float4& color, float rotation = 0.0f);
+	void DrawUITexture(ComponentRectTransform* rect, uint texture = 0, float rotation = 0.0f);
+
+	void SetRectToShader(ComponentRectTransform* rect);
 
 	uint ui_size_draw[4];
 
@@ -55,8 +58,6 @@ private:
 	uint reference_vertex;
 
 	uint ui_shader = 0;
-
-	ComponentRectTransform* rect_test = nullptr;
 
 	bool uiMode = false;
 

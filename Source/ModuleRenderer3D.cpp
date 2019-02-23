@@ -372,7 +372,7 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	//UIOnEditor
 	if (App->ui->GetUIMode())
-		App->ui->DrawTest();
+		App->ui->DrawCanvas();
 #endif // GAME
 
 	// 4. Swap buffers

@@ -46,14 +46,14 @@ private:
 	std::vector<GameObject*> staticGos;
 	std::vector<GameObject*> dynamicGos;
 
+	//Canvas
+	GameObject* canvas = nullptr;
+
 public:
 	// This is for saving and loading scenes from ModuleEvents ;( (friendship?)
 	char* sceneStateBuffer = 0;
 	size_t sceneStateSize;
 
 	char nameScene[DEFAULT_BUF_SIZE];
-
-	//Canvas
-	GameObject* canvas = nullptr;
 };
 #endif

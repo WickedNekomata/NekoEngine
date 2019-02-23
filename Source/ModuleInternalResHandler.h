@@ -161,10 +161,10 @@
 "in vec2 TexCoords;\n" \
 "out vec4 color;\n" \
 "uniform sampler2D image;\n" \
-"uniform vec3 spriteColor;\n" \
+"uniform vec4 spriteColor;\n" \
 "void main()\n" \
 "{\n" \
-"	color = texture(image, TexCoords);\n" \
+"	color = spriteColor;\n" \
 "}"
 
 #pragma endregion

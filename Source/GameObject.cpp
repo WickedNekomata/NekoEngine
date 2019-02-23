@@ -398,7 +398,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		break;
 	case ComponentTypes::ImageComponent:
 		if (cmp_canvasRenderer == nullptr)
-			components.push_back(cmp_canvasRenderer = new ComponentCanvasRenderer(this));
+			AddComponent(ComponentTypes::CanvasRendererComponent);
 		newComponent = cmp_image = new ComponentImage(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:

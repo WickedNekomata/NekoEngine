@@ -23,6 +23,11 @@ public:
 	void Update();
 	void OnEditor();
 
+	const float* GetColor()const;
+	uint GetResImage()const;
+
+	bool UseColor()const;
+
 private:
 	uint GetInternalSerializationBytes();
 	void OnInternalSave(char*& cursor);

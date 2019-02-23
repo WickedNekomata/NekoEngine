@@ -184,7 +184,7 @@ void ModuleNavigation::InitCrowd()
 
 void ModuleNavigation::Draw() const
 {
-	if (m_navMesh)
+	if (m_navMesh && drawNavmesh)
 	{
 		NMDebugDraw dd;
 		duDebugDrawNavMesh(&dd, *m_navMesh, 0);

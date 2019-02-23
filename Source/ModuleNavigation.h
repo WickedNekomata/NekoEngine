@@ -53,6 +53,10 @@ private:
 	void cleanup();
 	void InitCrowd();
 
+public:
+
+	bool drawNavmesh = true;
+
 protected:
 
 	class dtNavMesh* m_navMesh = 0;

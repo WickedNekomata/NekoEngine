@@ -26,10 +26,10 @@ void ComponentMaterial::Update() {}
 void ComponentMaterial::SetResource(uint materialUuid)
 {
 	if (res > 0)
-		assert(App->res->SetAsUnused(res) > 0);
+		App->res->SetAsUnused(res);
 
 	if (materialUuid > 0)
-		assert(App->res->SetAsUsed(materialUuid) > 0);
+		App->res->SetAsUsed(materialUuid);
 
 	res = materialUuid;
 }
@@ -62,6 +62,9 @@ void ComponentMaterial::OnUniqueEditor()
 			}
 			ImGui::EndDragDropTarget();
 		}
+
+		if (ImGui::SmallButton("Use default material"))
+			SetResource(App->resHandler->defaultMaterial);
 	}
 #endif
 }

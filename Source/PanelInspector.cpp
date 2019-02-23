@@ -763,6 +763,7 @@ void PanelInspector::ShowMaterialInspector() const
 
 	// Uniforms
 
+
 }
 
 #endif // GAME

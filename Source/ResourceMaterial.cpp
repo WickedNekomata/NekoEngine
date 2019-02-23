@@ -343,10 +343,10 @@ void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes texture
 	case TextureTypes::Albedo:
 
 		if (materialData.albedoUuid > 0)
-			assert(App->res->SetAsUnused(materialData.albedoUuid) > 0);
+			App->res->SetAsUnused(materialData.albedoUuid);
 
 		if (textureUuid > 0)
-			assert(App->res->SetAsUsed(textureUuid) > 0);
+			App->res->SetAsUsed(textureUuid);
 
 		materialData.albedoUuid = textureUuid;
 
@@ -355,10 +355,10 @@ void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes texture
 	case TextureTypes::Specular:
 
 		if (materialData.specularUuid > 0)
-			assert(App->res->SetAsUnused(materialData.specularUuid) > 0);
+			App->res->SetAsUnused(materialData.specularUuid);
 
 		if (textureUuid > 0)
-			assert(App->res->SetAsUsed(textureUuid) > 0);
+			App->res->SetAsUsed(textureUuid);
 
 		materialData.specularUuid = textureUuid;
 
@@ -367,10 +367,10 @@ void ResourceMaterial::SetResourceTexture(uint textureUuid, TextureTypes texture
 	case TextureTypes::NormalMap:
 
 		if (materialData.normalMapUuid > 0)
-			assert(App->res->SetAsUnused(materialData.normalMapUuid) > 0);
+			App->res->SetAsUnused(materialData.normalMapUuid);
 
 		if (textureUuid > 0)
-			assert(App->res->SetAsUsed(textureUuid) > 0);
+			App->res->SetAsUsed(textureUuid);
 
 		materialData.normalMapUuid = textureUuid;
 
@@ -447,9 +447,7 @@ void ResourceMaterial::EditTextureMatrix(uint textureUuid)
 
 bool ResourceMaterial::LoadInMemory()
 {
-	bool ret = false;
-
-	ret = App->res->SetAsUsed(materialData.shaderUuid);
+	App->res->SetAsUsed(materialData.shaderUuid) > 0;
 	if (materialData.albedoUuid > 0)
 		App->res->SetAsUsed(materialData.albedoUuid);
 	if (materialData.specularUuid > 0)
@@ -457,14 +455,12 @@ bool ResourceMaterial::LoadInMemory()
 	if (materialData.normalMapUuid > 0)
 		App->res->SetAsUsed(materialData.normalMapUuid);
 
-	return ret;
+	return true;
 }
 
 bool ResourceMaterial::UnloadFromMemory()
 {
-	bool ret = false;
-
-	ret = App->res->SetAsUnused(materialData.shaderUuid);
+	App->res->SetAsUnused(materialData.shaderUuid);
 	if (materialData.albedoUuid > 0)
 		App->res->SetAsUnused(materialData.albedoUuid);
 	if (materialData.specularUuid > 0)
@@ -472,5 +468,5 @@ bool ResourceMaterial::UnloadFromMemory()
 	if (materialData.normalMapUuid > 0)
 		App->res->SetAsUnused(materialData.normalMapUuid);
 
-	return ret;
+	return true;
 }

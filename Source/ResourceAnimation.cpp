@@ -43,3 +43,28 @@ void ResourceAnimation::OnPanelAssets()
 		ImGui::EndDragDropSource();
 	}
 }
+
+bool ResourceAnimation::ImportFile(const char * file, std::string & name, std::string & outputFile)
+{
+	return false;
+}
+
+bool ResourceAnimation::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
+{
+	return false;
+}
+
+uint ResourceAnimation::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
+{
+	return uint();
+}
+
+bool ResourceAnimation::ReadMeta(const char * metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
+{
+	return false;
+}
+
+bool ResourceAnimation::LoadFile(const char * file, PrefabData & prefab_data_output)
+{
+	return false;
+}

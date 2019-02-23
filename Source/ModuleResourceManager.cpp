@@ -432,7 +432,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		std::string outputFile;
 		std::string name;
 		if (ResourcePrefab::ImportFile(file, name, outputFile)) {
-
+			//
 		}
 		break;
 	}

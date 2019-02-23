@@ -52,15 +52,21 @@ bool ResourcePrefab::ImportFile(const char * file, std::string & name, std::stri
 
 	// TODO_G
 
+	// meta?
+	// look for uuid and force force it (outputFile)
+
+
 	return imported;
 }
 
 bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
 {
 	bool ret = false;
-	char* buffer;
 	uint size = 0u;
-	App->GOs->SerializeFromNode(prefabData.root, buffer, size);
+	char* buffer;
+	prefabData.size = 0u;
+	
+	App->GOs->SerializeFromNode(prefabData.root, prefabData.buffer, prefabData.size);
 
 	if (overwrite)
 		outputFile = data.file;
@@ -74,14 +80,15 @@ bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, st
 	}else
 		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Error saving prefab '%s'", outputFile.data());
 
-	RELEASE_ARRAY(buffer);
-
 	return true;
 }
 
 bool ResourcePrefab::LoadInMemory()
 {
 	//TODO: LOAD THE ROOT
+
+	App->GOs->LoadScene(my_data.buffer, my_data.size);
+
 	return true;
 }
 

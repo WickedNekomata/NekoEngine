@@ -158,7 +158,9 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		prefab_data.root = rootGameObject;
 		std::string outputFile;
-		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
+		ResourcePrefab* prefaby = (ResourcePrefab*)App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
+
+		prefaby->my_data = prefab_data; //omegalul
 
 		aiReleaseImport(scene);
 

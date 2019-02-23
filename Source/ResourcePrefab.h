@@ -8,6 +8,8 @@ class GameObject;
 struct PrefabData
 {
 	GameObject* root = nullptr;
+	char* buffer;
+	uint size;
 };
 
 class ResourcePrefab : public Resource
@@ -23,6 +25,11 @@ public:
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();
+
+	PrefabData my_data;
+
+	//tmp
+	
 
 };
 

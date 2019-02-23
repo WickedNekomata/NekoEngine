@@ -477,7 +477,7 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
 			outputFile.append(EXTENSION_SHADER_PROGRAM);
 			break;
-		case FileType::PrefabFile:
+		case FileTypes::PrefabFile:
 			outputFile.insert(0, DIR_ASSETS_PREFAB);
 			outputFile.insert(strlen(DIR_ASSETS_PREFAB), "/");
 			outputFile.append(EXTENSION_PREFAB);

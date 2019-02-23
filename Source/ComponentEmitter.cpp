@@ -295,10 +295,6 @@ void ComponentEmitter::ParticleValues()
 			EqualsMinMaxValues(startValues.speed);
 		ShowFloatValue(startValues.speed, checkSpeed, "Speed", 0.25f, 0.25f, 20.0f);
 
-		if (ImGui::Checkbox("##Acceleration", &checkAcceleration))
-			EqualsMinMaxValues(startValues.acceleration);
-		ShowFloatValue(startValues.acceleration, checkAcceleration, "Acceleration", 0.25f, -5.0f, 5.0f);
-
 		if (ImGui::Checkbox("##Rotation", &checkRotation))
 			EqualsMinMaxValues(startValues.rotation);
 		ShowFloatValue(startValues.rotation, checkRotation, "Initial Rotation", 0.25f, -360.0f, 360.0f);
@@ -322,6 +318,10 @@ void ComponentEmitter::ParticleValues()
 		if (ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime))
 			EqualsMinMaxValues(startValues.sizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
+
+		ImGui::PushItemWidth(127.0f);
+		ImGui::DragFloat3("Acceleration", &startValues.acceleration3.x, 0.1f, -5.0f, 5.0f, "%.2f");
+		ImGui::PopItemWidth();
 
 		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Emition", &rateOverTime, 1.0f, 0.0f, 300.0f, "%.2f");

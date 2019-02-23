@@ -42,7 +42,7 @@ bool PanelNavigation::Draw()
 			ImGui::SameLine();
 			if (ImGui::Checkbox("##Static", &isStatic))
 			{
-				// swap to dynamic
+				curr->ToggleIsStatic();
 			}
 
 			ImGui::AlignTextToFramePadding();

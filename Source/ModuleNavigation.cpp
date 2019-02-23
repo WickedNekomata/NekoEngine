@@ -20,6 +20,8 @@
 #include "DebugDrawer.h"
 
 #include "Globals.h"
+
+#include "MathGeoLib/include/Math/MathAll.h"
 #include <math.h>
 
 // Useful sites to understand the process
@@ -51,12 +53,35 @@ update_status ModuleNavigation::Update()
 
 		for each(ComponentNavAgent* agent in c_agents)
 		{
+			
 			int index = agent->GetIndex();
 			const dtCrowdAgent* ag = m_crowd->getAgent(index);
-			// if (ag->targetState == 0 ??)
-			ComponentTransform* trm = agent->GetParent()->transform;
-			memcpy(&trm->position, ag->npos, sizeof(float) * 3);
-			// TODO rotate character using desire velocity here
+			if (ag->targetState == DT_CROWDAGENT_STATE_WALKING || ag->targetState == DT_CROWDAGENT_STATE_OFFMESH)
+			{
+				// Here we are forcing new position and rotation and manually sending an event to recaculcate bb.
+				// We are ignoring to update physics position and/or camera->frustum position.
+
+				// Set new gameobject's position
+				ComponentTransform* trm = agent->GetParent()->transform;
+				memcpy(&trm->position, ag->npos, sizeof(float) * 3);
+
+				// Face gameobject to velocity dir
+				// vel equals to current velocity, nvel equals to desired velocity
+				// using nvel instead of vel would end up with a non smoothy rotation.
+				math::float3 direction;
+				memcpy(&direction, ag->vel, sizeof(float) * 3);
+				direction.Normalize();
+				float angle = math::Atan2(direction.x, direction.z);
+				math::Quat new_rotation;
+				new_rotation.SetFromAxisAngle(math::float3(0, 1, 0), angle);
+				trm->rotation = new_rotation;
+
+				// Recalculate bounding box
+				System_Event newEvent;
+				newEvent.goEvent.gameObject = trm->GetParent();
+				newEvent.type = System_Event_Type::RecalculateBBoxes;
+				App->PushSystemEvent(newEvent);		
+			}
 		}
 	}
 
@@ -271,10 +296,13 @@ void ModuleNavigation::SetDestination(const float* p, int indx) const
 	float targetPos[3];
 	m_navQuery->findNearestPoly(p, m_crowd->getQueryExtents(), m_crowd->getFilter(ag->params.queryFilterType), &polyRefTarget, targetPos);
 	if (ag && ag->active)
-	{
-		calcVel(vel, ag->npos, p, ag->params.maxSpeed);
 		m_crowd->requestMoveTarget(indx, polyRefTarget, targetPos);
-	}
+}
+
+bool ModuleNavigation::IsWalking(int index) const
+{
+	const dtCrowdAgent* ag = m_crowd->getAgent(index);
+	return ag->state == DT_CROWDAGENT_STATE_WALKING;
 }
 
 void ModuleNavigation::calcVel(float* vel, const float* pos, const float* tgt, const float speed)

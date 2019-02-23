@@ -36,6 +36,7 @@ public:
 						   unsigned char obstacleAvoidanceType) const;
 	void RemoveAgent(int indx) const;
 	void SetDestination(const float* p, int indx) const;
+	bool IsWalking(int index) const;
 
 	static void calcVel(float* vel, const float* pos, const float* tgt, const float speed);
 
@@ -47,7 +48,7 @@ private:
 
 	void cleanup();
 	void InitCrowd();
-
+	int a = 0;
 protected:
 
 	class dtNavMesh* m_navMesh = 0;

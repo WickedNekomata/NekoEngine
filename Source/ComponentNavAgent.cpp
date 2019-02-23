@@ -103,6 +103,11 @@ void ComponentNavAgent::SetDestination(const float* pos) const
 	App->navigation->SetDestination(pos, index);
 }
 
+bool ComponentNavAgent::IsWalking()
+{
+	return App->navigation->IsWalking(index);
+}
+
 uint ComponentNavAgent::GetInternalSerializationBytes()
 {
 	return sizeof(float) * 5 + sizeof(unsigned int) + sizeof(int) * 2;

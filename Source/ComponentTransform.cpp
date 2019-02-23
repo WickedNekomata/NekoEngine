@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "ComponentCamera.h"
 #include "ComponentRigidActor.h"
+#include "ModuleInput.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -54,15 +55,10 @@ void ComponentTransform::OnUniqueEditor()
 		scale = math::float3::one;
 	}
 
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
-
+	math::float4x4 matrix = parent->transform->GetMatrix();
 	ImGui::Text("Position");
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosY", ImGuiDataType_Float, (void*)&position.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+	if (ImGui::DragFloat3("##Pos", &position[0], 0.01f, 0.0f, 0.0f, "%.3f"))
+		SavePrevTransform(matrix);
 
 	ImGui::Text("Rotation");
 	math::float3 axis;
@@ -70,22 +66,16 @@ void ComponentTransform::OnUniqueEditor()
 	rotation.ToAxisAngle(axis, angle);
 	axis *= angle;
 	axis *= RADTODEG;
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleX", ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleY", ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleZ", ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-	axis *= DEGTORAD;
-	rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
+	if (ImGui::DragFloat3("##Rot", &axis[0], 0.1f, 0.0f, 0.0f, "%.3f"))
+	{
+		SavePrevTransform(matrix);
+		axis *= DEGTORAD;
+		rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
+	}
 
 	ImGui::Text("Scale");
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+	if (ImGui::DragFloat3("##Scale", &scale[0], 0.01f, 0.0f, 0.0f, "%.3f"))
+		SavePrevTransform(matrix);
 
 	if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
 	{
@@ -120,7 +110,19 @@ void ComponentTransform::OnUniqueEditor()
 			App->PushSystemEvent(newEvent);
 		}
 	}
+	if ((App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP || App->input->GetKey(SDL_SCANCODE_KP_ENTER) == KEY_DOWN
+		|| App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) && !dragTransform)
+		dragTransform = true;
 #endif // !GAMEMODE
+}
+
+void ComponentTransform::SavePrevTransform(const math::float4x4 & prevTransformMat)
+{
+	if (dragTransform)
+	{
+		App->scene->SaveLastTransform(prevTransformMat);
+		dragTransform = false;
+	}
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const

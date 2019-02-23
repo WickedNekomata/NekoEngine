@@ -25,6 +25,8 @@ public:
 
 	void OnUniqueEditor();
 
+	void SavePrevTransform(const math::float4x4 & prevTransformMat);
+
 	math::float4x4& GetMatrix() const;
 	math::float4x4& GetGlobalMatrix() const;
 	void SetMatrixFromGlobal(math::float4x4& globalMatrix);
@@ -38,6 +40,8 @@ public:
 	math::float3 position = math::float3::zero;
 	math::Quat rotation = math::Quat::identity;
 	math::float3 scale = math::float3::one;
+
+	bool dragTransform = false;
 };
 
 #endif

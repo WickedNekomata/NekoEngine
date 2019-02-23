@@ -14,9 +14,16 @@
 #include "ImGuizmo\ImGuizmo.h"
 
 #define SELECT(x) App->scene->selectedObject = x;
+#define MAX_UNDO 20
 
 class PrimitiveGrid;
 class GameObject;
+
+struct LastTransform
+{
+	math::float4x4 matrix;
+	GameObject* object;
+};
 
 class ModuleScene : public Module
 {
@@ -38,9 +45,11 @@ public:
 	void Draw() const;
 
 	// ImGuizmo
-	void OnGizmos(GameObject* gameObject) const;
+	void OnGizmos(GameObject* gameObject);
 
 #ifndef GAMEMODE
+	void SaveLastTransform(math::float4x4 matrix);
+	void GetPreviousTransform();
 	void SetImGuizmoOperation(ImGuizmo::OPERATION operation);
 	ImGuizmo::OPERATION GetImGuizmoOperation() const;
 
@@ -70,6 +79,12 @@ private:
 #endif
 
 public:
+
+#ifndef GAMEMODE
+	math::float4x4 lastMat;
+	std::list<LastTransform> prevTransforms;
+	bool saveTransform = false;
+#endif
 
 	CurrentSelection selectedObject;
 

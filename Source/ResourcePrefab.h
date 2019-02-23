@@ -18,6 +18,7 @@ public:
 
 	void OnPanelAssets();
 
+	static bool ImportFile(const char* file, std::string& name, std::string& outputFile);
 	static bool ExportFile(ResourceData& data, PrefabData& prefabData, std::string& outputFile, bool overwrite = false);
 
 	bool LoadInMemory();

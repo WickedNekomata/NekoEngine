@@ -43,6 +43,18 @@ void ResourcePrefab::OnPanelAssets()
 	}
 }
 
+bool ResourcePrefab::ImportFile(const char * file, std::string & name, std::string & outputFile)
+{
+
+	assert(file != nullptr);
+
+	bool imported = false;
+
+	// TODO_G
+
+	return imported;
+}
+
 bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
 {
 	bool ret = false;

@@ -426,12 +426,16 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		resource = App->scripting->ImportScriptResource(file);
 		break;
 	}
-	//TODO_G :
-	/*
-		-New case for prefab
-		-Static function that imports from char* file_fir, check metas etc RETURNS resource
-		- META: last_mod_time of the file | 
-	*/
+
+	case ResourceTypes::PrefabResource:
+	{
+		std::string outputFile;
+		std::string name;
+		if (ResourcePrefab::ImportFile(file, name, outputFile)) {
+
+		}
+		break;
+	}
 
 	}
 

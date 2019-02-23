@@ -150,15 +150,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
 		RecursiveProcessBones(scene, scene->mRootNode);
-
-		// TODO_G : export prefab.
-		/*
-		Needs ResourceData, and CustomData
-		- Create resource prefab (Call exportFile in App->res Generate a file, meta)
-		- App->res in switch calls exportFile from this prefab resource
-		- Returns a resource already in memory (not needed here)
-		*/
-
+		// Prefab creation
 		ResourceData data;
 		PrefabData prefab_data;
 

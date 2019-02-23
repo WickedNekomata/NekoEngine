@@ -771,13 +771,13 @@ void PanelInspector::ShowMaterialInspector() const
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
 
 	// Uniforms
-	std::vector<Uniform> uniforms = material->GetUniforms();
+	std::vector<Uniform>& uniforms = material->GetUniforms();
 	for (uint i = 0; i < uniforms.size(); ++i)
 	{
 		if (i == 0)
 			ImGui::Text("Uniforms");
 
-		Uniform uniform = uniforms[i];
+		Uniform& uniform = uniforms[i];
 		ImGui::Text(uniform.common.name);
 		ImGui::SameLine();
 

@@ -56,7 +56,7 @@ public:
 	inline ResourceMaterialData& GetSpecificData() { return materialData; }
 	void SetResourceShader(uint shaderUuid);
 	uint GetShaderUuid() const;
-	std::vector<Uniform> GetUniforms() const;
+	std::vector<Uniform>& GetUniforms();
 	void SetResourceTexture(uint textureUuid, TextureTypes textureType);
 	uint GetTextureUuid(TextureTypes textureType) const;
 	void SetColor(math::float4& color, TextureTypes textureType);

@@ -378,7 +378,7 @@ uint ResourceMaterial::GetShaderUuid() const
 	return materialData.shaderUuid;
 }
 
-std::vector<Uniform> ResourceMaterial::GetUniforms() const
+std::vector<Uniform>& ResourceMaterial::GetUniforms()
 {
 	return uniforms;
 }

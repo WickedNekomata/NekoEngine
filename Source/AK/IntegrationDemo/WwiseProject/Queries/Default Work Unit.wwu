@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{6653724E-5249-4942-ADBE-EE9F2AE0C341}" SchemaVersion="85">
+	<Queries>
+		<WorkUnit Name="Default Work Unit" ID="{6653724E-5249-4942-ADBE-EE9F2AE0C341}" PersistMode="Standalone">
+			<ChildrenList>
+				<Query Name="ShortID" ID="{68E0AA1B-ACB1-4B1D-87EF-2255FD518498}">
+					<PropertyList>
+						<Property Name="Platform" Type="int16" Value="1"/>
+					</PropertyList>
+					<ChildrenList>
+						<SearchCriteria Name="GeneralShort ID" ID="{FFC22479-A1C3-4B89-A81A-9E6674C551BB}" SearchOperationID="{5A52DB39-C09B-4D8C-9AAF-2EB9016E2E66}">
+							<PropertyList>
+								<Property Name="UIntValue" Type="Uint32" Value="2281484271"/>
+							</PropertyList>
+						</SearchCriteria>
+					</ChildrenList>
+				</Query>
+			</ChildrenList>
+		</WorkUnit>
+	</Queries>
+</WwiseDocument>

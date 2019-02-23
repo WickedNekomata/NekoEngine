@@ -1,0 +1,8 @@
+; Perforce.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Perforce"
+
+EXPORTS
+	AkSourceControlGetPluginIDList
+	AkSourceControlGetPluginInfo
+    AkSourceControlCreatePlugin

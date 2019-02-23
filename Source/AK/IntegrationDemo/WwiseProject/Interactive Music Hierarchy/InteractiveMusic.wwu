@@ -1,0 +1,3106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" SchemaVersion="85">
+	<InteractiveMusic>
+		<WorkUnit Name="InteractiveMusic" ID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" PersistMode="Standalone">
+			<ChildrenList>
+				<MusicSwitchContainer Name="In-Game Music" ID="{9A47F923-9470-440D-8447-81F163F4B456}" ShortID="523495112">
+					<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+					<PropertyList>
+						<Property Name="ContinuePlay" Type="bool" Value="True"/>
+						<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+						<Property Name="Tempo" Type="Real64" Value="80"/>
+						<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-12</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Music" ID="{7A8858E3-8A2D-4BB7-A53D-2DE16D1A752B}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Music" ID="{4810BCA9-BA17-4C9F-B065-1F1CB8AC7DEE}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicPlaylistContainer Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" ShortID="818772511">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Intro2" ID="{219ACB08-83EB-4840-890E-0E8117CE7A2B}" ShortID="296776915">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="Tempo" Type="Real64" Value="80"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass" ID="{0155335E-38F1-4A05-9EE5-94CE3DC2A8B1}" ShortID="6406078">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass" ID="{F3CEB698-150D-41A3-B125-B2CA2268AFBB}" ShortID="939972569">
+													<Language>SFX</Language>
+													<AudioFile>Bass.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1748691"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{F71A2C75-986E-4539-8889-CEA33B26D28D}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{4C9A7E10-5C4A-40F0-BFE1-0E346F605F95}">
+													<ClipList>
+														<MusicClip Name="Bass" ID="{1B83B20A-54AB-4B30-A8EE-EC58B126B311}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass" ID="{F3CEB698-150D-41A3-B125-B2CA2268AFBB}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum" ID="{D4E3A0EF-9F5E-4296-AB27-4FBD8ED1FA9A}" ShortID="662587870">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum" ID="{E8FFFEFA-8BA7-4978-8F4A-9320AD0094D7}" ShortID="1068895336">
+													<Language>SFX</Language>
+													<AudioFile>Drum.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="235997884"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{44D506C7-320A-4436-AA35-F9F3B3651014}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{33D650E2-4384-4925-8290-FE67275E1C47}">
+													<ClipList>
+														<MusicClip Name="Drum" ID="{7C6C1A59-C3E9-4E26-98C7-9D98B08F6CE1}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum" ID="{E8FFFEFA-8BA7-4978-8F4A-9320AD0094D7}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Keys" ID="{9BC8C94D-A12E-45B2-AEC3-FAD1A7CFD0B5}" ShortID="982345881">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Keys" ID="{B0C251D4-9C5D-4733-B1BD-635092EECA72}" ShortID="968140580">
+													<Language>SFX</Language>
+													<AudioFile>Keys.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1099684"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{C2EE3B04-EFFC-4396-8523-2EB33E1BC2A1}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{9B5F46C0-1845-426A-9374-465E8AA6B7DD}">
+													<ClipList>
+														<MusicClip Name="Keys" ID="{8DDE8CC7-6A0A-40B5-AE73-147D5A14417B}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="-12000"/>
+																<Property Name="PlayAt" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{B0C251D4-9C5D-4733-B1BD-635092EECA72}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{123AA113-113F-4463-81B5-9EF9985CE2E4}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{A573D914-627F-4F18-A432-E0D52667477A}"/>
+										<MusicCue Name="Exit Cue" ID="{25B2D7E9-1E32-428B-868D-CC10872D4911}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="12000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+								<MusicSegment Name="Loop" ID="{BBBFE5C3-8796-44AB-9606-2A456A4AF60D}" ShortID="1053045481">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="Tempo" Type="Real64" Value="80"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Music" ID="{7A8858E3-8A2D-4BB7-A53D-2DE16D1A752B}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass" ID="{F041B4A7-66AA-4087-A48E-85938511D501}" ShortID="723044251">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass" ID="{A9B6718E-8210-466F-82C7-5FB7C1043C66}" ShortID="499566305">
+													<Language>SFX</Language>
+													<AudioFile>Bass.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1748691"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{5BF77406-2300-463C-82B2-5698534257F7}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{46AE4E55-DC0F-4CD2-97AA-398A973AE9C2}">
+													<ClipList>
+														<MusicClip Name="Bass" ID="{4E5475F5-6404-411C-96A5-B7B48B5A1505}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass" ID="{A9B6718E-8210-466F-82C7-5FB7C1043C66}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum" ID="{77B31997-3776-4646-B7EC-76A928972BBA}" ShortID="553258530">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum" ID="{2234E4BE-966B-48A1-8143-1830B19302A3}" ShortID="504684226">
+													<Language>SFX</Language>
+													<AudioFile>Drum.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="235997884"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{2197A399-FE63-4BA1-B39D-4FD1B030CC03}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{AB0358DA-210A-4DC8-9092-4AFC7C71880E}">
+													<ClipList>
+														<MusicClip Name="Drum" ID="{06105DE3-2952-4992-80CD-B163A8C78A85}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum" ID="{2234E4BE-966B-48A1-8143-1830B19302A3}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Keys" ID="{A52F6B9F-91A1-440C-A623-EDD792F4AF6F}" ShortID="255339413">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Keys" ID="{4BC0F322-2889-4981-9734-011EF44ED526}" ShortID="532486631">
+													<Language>SFX</Language>
+													<AudioFile>Keys.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1099684"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{0BF4A261-9005-4384-8AB6-7E0CCE11F1EA}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{5E7F4A07-4AC4-48CC-A642-E6169E272B48}">
+													<ClipList>
+														<MusicClip Name="Keys" ID="{D7512D4B-49E2-4B53-827E-E74C81542912}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="12000"/>
+																<Property Name="EndTrimOffset" Type="Real64" Value="18000"/>
+																<Property Name="FadeInDuration" Type="Real64" Value="-6000"/>
+																<Property Name="FadeOutDuration" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="-12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{4BC0F322-2889-4981-9734-011EF44ED526}"/>
+														</MusicClip>
+														<MusicClip Name="Keys" ID="{119B80C0-EC20-47DF-B727-60D953F0A683}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="12000"/>
+																<Property Name="EndTrimOffset" Type="Real64" Value="18000"/>
+																<Property Name="FadeInDuration" Type="Real64" Value="-6000"/>
+																<Property Name="FadeOutDuration" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="-6000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{4BC0F322-2889-4981-9734-011EF44ED526}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{F161811C-2F10-476F-80A9-EE926EA9EC78}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{F0D7450F-F0A9-411A-8C15-F8BECDCFBC9E}"/>
+										<MusicCue Name="Exit Cue" ID="{50C428ED-5609-463F-B041-06B260CEBD93}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="12000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+								<MusicSegment Name="Intro1" ID="{D6014A46-2F30-42EF-AA45-0C492737D0A0}" ShortID="76096564">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="6000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="Tempo" Type="Real64" Value="80"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Music" ID="{7A8858E3-8A2D-4BB7-A53D-2DE16D1A752B}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Keys" ID="{587807F6-ECE3-47D4-80DD-B0D4133036B3}" ShortID="819975487">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Keys" ID="{DEEDD8CE-5A98-4170-93E6-032852556B00}" ShortID="1099684">
+													<Language>SFX</Language>
+													<AudioFile>Keys.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{707A617A-91B3-4ABC-A330-81017EE67DE6}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{65935911-C356-416C-9ADA-B4DEC76AEB11}">
+													<ClipList>
+														<MusicClip Name="Keys" ID="{D2F37BCD-59E4-48CD-8B71-EBC671358E10}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="7.64455165835898E-12"/>
+																<Property Name="EndTrimOffset" Type="Real64" Value="6000.00000000001"/>
+																<Property Name="FadeInDuration" Type="Real64" Value="-3.82227582917949E-12"/>
+																<Property Name="FadeOutDuration" Type="Real64" Value="-3.82227582917949E-12"/>
+																<Property Name="PlayAt" Type="Real64" Value="-7.64455165835898E-12"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{DEEDD8CE-5A98-4170-93E6-032852556B00}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{96A8A503-E26A-4D23-A76C-657717603808}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{CF81D6AC-5D26-4963-A677-E4D6C47E20BA}"/>
+										<MusicCue Name="Exit Cue" ID="{D7DBCAD3-9406-4127-A979-F4A53B03098F}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="6000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{E328D47B-CCE3-4C61-BCAB-E2159567B109}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{10646E46-2643-43D8-A106-3679701C03D0}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+										<MusicTransition Name="Transition" ID="{6D158953-9E44-4A48-9E0F-F57E5265EB39}">
+											<PropertyList>
+												<Property Name="DestinationContextType" Type="int16" Value="2"/>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+												<Property Name="SourceContextType" Type="int16" Value="2"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="DestinationContextObject">
+													<ObjectRef Name="Intro2" ID="{219ACB08-83EB-4840-890E-0E8117CE7A2B}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+												</Reference>
+												<Reference Name="SourceContextObject">
+													<ObjectRef Name="Intro1" ID="{D6014A46-2F30-42EF-AA45-0C492737D0A0}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+												</Reference>
+											</ReferenceList>
+											<TransitionInfo>
+												<SourceFadeOut>
+													<MusicFade Name="Source Fade-out" ID="{D2D5AA54-94AE-4163-BEAC-D30298EEA47F}">
+														<PropertyList>
+															<Property Name="FadeType" Type="int16" Value="1"/>
+														</PropertyList>
+													</MusicFade>
+												</SourceFadeOut>
+												<DestinationFadeIn>
+													<MusicFade Name="Destination Fade-in" ID="{256A89DD-ECCE-4918-8F23-C5EF87859398}"/>
+												</DestinationFadeIn>
+											</TransitionInfo>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{2999C617-1A6D-45E7-8C87-25A521B3A37D}" ShortID="603721423">
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{9E3E8DDF-6D27-44EB-97B0-666031E85821}" ShortID="710652026">
+											<PropertyList>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Intro1" ID="{D6014A46-2F30-42EF-AA45-0C492737D0A0}"/>
+										</MusicPlaylistItem>
+										<MusicPlaylistItem Name="" ID="{FF858BF4-EE4D-443C-B64B-D2CA90B7CF15}" ShortID="116292428">
+											<PropertyList>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Intro2" ID="{219ACB08-83EB-4840-890E-0E8117CE7A2B}"/>
+										</MusicPlaylistItem>
+										<MusicPlaylistItem Name="" ID="{92E6CBC1-C6E4-42F6-A90E-313F53A87595}" ShortID="715918034">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Loop" ID="{BBBFE5C3-8796-44AB-9606-2A456A4AF60D}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicPlaylistContainer Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" ShortID="800667958">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="Tempo" Type="Real64" Value="80"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Segment" ID="{0AE7DCB6-DD5F-4F27-A48B-BA7A2F27CCE6}" ShortID="935667171">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="Tempo" Type="Real64" Value="80"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass" ID="{D428943C-DF04-4297-925B-72A482AEBF41}" ShortID="712396195">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass" ID="{72A9BF23-DA89-4BE9-A9BB-0EB6EB781A8B}" ShortID="190079829">
+													<Language>SFX</Language>
+													<AudioFile>Bass.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1748691"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{DA24ADD1-6D3C-4D0E-9C38-EFF23797E134}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{60BB11F6-EBC3-42EC-9A31-C10C66A45125}">
+													<ClipList>
+														<MusicClip Name="Bass" ID="{F868C70B-6A06-48FD-B5AA-EF4997BD2DC3}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass" ID="{72A9BF23-DA89-4BE9-A9BB-0EB6EB781A8B}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum" ID="{5273B4BF-98EF-437B-8553-66037E3D539C}" ShortID="749479588">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum" ID="{864BF2D5-E4AE-4932-A5A9-C6ED9C6A5328}" ShortID="451065938">
+													<Language>SFX</Language>
+													<AudioFile>Drum.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="235997884"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{70D5EF48-8A33-4344-A41A-D170222FC44C}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{90B2B3E4-ABBB-4D89-A176-6FFE80B4C11F}">
+													<ClipList>
+														<MusicClip Name="Drum" ID="{A276EE7A-A201-4F73-BBE2-4F140A8C9DAB}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum" ID="{864BF2D5-E4AE-4932-A5A9-C6ED9C6A5328}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Keys" ID="{141CA597-889D-4C8B-89B9-24BF7C07C2E0}" ShortID="123266263">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Keys" ID="{C6418595-D5ED-4F56-9AF2-66943F088C82}" ShortID="725471993">
+													<Language>SFX</Language>
+													<AudioFile>Keys.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1099684"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{CC6B38AB-8C29-49DA-BAA3-4FD100FDA41D}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{6C30077F-B4A1-43EB-BA93-57D58B337D38}">
+													<ClipList>
+														<MusicClip Name="Keys" ID="{1323D417-DD82-4B6A-8CD0-3B50B312FD3E}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="6000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{C6418595-D5ED-4F56-9AF2-66943F088C82}"/>
+														</MusicClip>
+														<MusicClip Name="Keys" ID="{3480C7DC-6F12-4F4B-B545-D9B8B4CF2E3E}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{C6418595-D5ED-4F56-9AF2-66943F088C82}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Voice" ID="{6232C463-6C14-4542-B697-615B04BB668E}" ShortID="120867503">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Voice" ID="{988BC566-DD40-4CDB-9164-09CFE53A0039}" ShortID="145846593">
+													<Language>SFX</Language>
+													<AudioFile>Voice.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{0B1DA445-05E2-44B3-A007-3568F289583F}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{52CE20B0-6D29-4A99-9392-AA7399360776}">
+													<ClipList>
+														<MusicClip Name="Voice" ID="{BA1DD432-B0D5-4114-B424-7B069ECFD291}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Voice" ID="{988BC566-DD40-4CDB-9164-09CFE53A0039}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{B8159324-73BD-4FB5-AD3C-74D53B09FBAE}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{A72A89A1-1E5D-44F7-B858-BA1224A6EF30}"/>
+										<MusicCue Name="Exit Cue" ID="{A2A90D9D-4609-463C-8560-6DFC0EFA7868}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="12000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+								<MusicSegment Name="Segment_WithoutVoice" ID="{1365B489-2B48-425C-AB7E-AFC7E2360B55}" ShortID="210706561">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="Tempo" Type="Real64" Value="80"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass" ID="{5F900E89-186B-418B-BD51-1CDC16C85159}" ShortID="681044172">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass" ID="{E00C2960-90DF-465A-9D25-4A551F44FAF1}" ShortID="1748691">
+													<Language>SFX</Language>
+													<AudioFile>Bass.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{2E85DD47-21BD-4FF4-849E-6C68BC33C337}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{85B6FB19-856E-4D93-AE7F-0BB88D725C40}">
+													<ClipList>
+														<MusicClip Name="Bass" ID="{5F5083E6-5209-41EE-AF05-9D0517B77A38}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass" ID="{E00C2960-90DF-465A-9D25-4A551F44FAF1}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum" ID="{76580E12-5473-4516-8F16-3B9658F77693}" ShortID="702746093">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum" ID="{C3B3C5B4-D323-4D89-96E0-865CEAEBBE76}" ShortID="235997884">
+													<Language>SFX</Language>
+													<AudioFile>Drum.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{B1516D1C-EEAD-4283-B673-0C5BE4DE16A8}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{F1F827E5-B06E-4C6B-998F-0032E6F5052F}">
+													<ClipList>
+														<MusicClip Name="Drum" ID="{C902E180-5535-46D6-94F9-ACE3C175F139}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum" ID="{C3B3C5B4-D323-4D89-96E0-865CEAEBBE76}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Keys" ID="{5798C2D9-1764-411E-97CA-CB93EC13DB72}" ShortID="490567170">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Keys" ID="{B2B29963-FEAB-4220-9A46-6A56CBDD9186}" ShortID="672946144">
+													<Language>SFX</Language>
+													<AudioFile>Keys.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1099684"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{DE7208B1-A5BE-4C65-8882-32313323AD73}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{2E902AAB-CE92-4F15-AB1E-2BF879D243A3}">
+													<ClipList>
+														<MusicClip Name="Keys" ID="{19CA2A83-3507-4256-8941-3D549358C9CC}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="6000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{B2B29963-FEAB-4220-9A46-6A56CBDD9186}"/>
+														</MusicClip>
+														<MusicClip Name="Keys" ID="{7ECD412B-96A2-4F04-9BDD-48BB2383571C}">
+															<PropertyList>
+																<Property Name="BeginTrimOffset" Type="Real64" Value="-6000"/>
+																<Property Name="PlayAt" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Keys" ID="{B2B29963-FEAB-4220-9A46-6A56CBDD9186}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{67C9B691-4F34-4646-B9E3-7B6BA73177A5}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{77421FAF-DE2B-40A0-B93C-029C71954103}"/>
+										<MusicCue Name="Exit Cue" ID="{6BAC6BE8-983D-42ED-ABA1-B6D739783BA7}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="12000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{4E676693-F276-4497-BFD5-25436F8A645A}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{BC22A92B-983B-4857-867B-46AC0CE22C86}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{62342A3D-D448-4449-AE97-CC0FA3A27D00}" ShortID="672385111">
+									<PropertyList>
+										<Property Name="LoopCount" Type="int16" Value="0"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{0488A6F5-9F97-4F12-9C74-AFC99F9889E4}" ShortID="737489390">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="2"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Segment" ID="{0AE7DCB6-DD5F-4F27-A48B-BA7A2F27CCE6}"/>
+										</MusicPlaylistItem>
+										<MusicPlaylistItem Name="" ID="{F75921B5-57A2-42A5-8A73-107A0263B506}" ShortID="789401877">
+											<PropertyList>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Segment_WithoutVoice" ID="{1365B489-2B48-425C-AB7E-AFC7E2360B55}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicSegment Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" ShortID="1003257229">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="6000"/>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="Tempo" Type="Real64" Value="80"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="Bass" ID="{80B3DFEA-614E-4B16-BC1C-AC38E80DDDCE}" ShortID="881110723">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Bass" ID="{761D93B5-26BE-4ADD-952A-DA3182BE03CF}" ShortID="589692704">
+											<Language>SFX</Language>
+											<AudioFile>Bass.wav</AudioFile>
+											<ConvertedFileIDList>
+												<File ID="1748691"/>
+											</ConvertedFileIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{52D94589-5923-4374-BCEA-E3518B2BDF33}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{E5F2D3CB-A27A-423C-8AC6-C2753FE0FD29}">
+											<ClipList>
+												<MusicClip Name="Bass" ID="{3A5E94E8-0429-4800-BDCB-598F273EC327}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="6000"/>
+														<Property Name="PlayAt" Type="Real64" Value="3.5527136788005E-12"/>
+													</PropertyList>
+													<AudioSourceRef Name="Bass" ID="{761D93B5-26BE-4ADD-952A-DA3182BE03CF}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+								<MusicTrack Name="Keys" ID="{C472EAB5-72AF-489A-BF91-5311B83048AA}" ShortID="515216091">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Keys" ID="{18C0F0AC-9E29-4CE8-9600-EC09F885909D}" ShortID="780687963">
+											<Language>SFX</Language>
+											<AudioFile>Keys.wav</AudioFile>
+											<ConvertedFileIDList>
+												<File ID="1099684"/>
+											</ConvertedFileIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{D9C337D8-D302-4050-8FE7-977A9943D91F}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{FBA00D23-2A8D-4403-A9C3-2829B26711FD}">
+											<ClipList>
+												<MusicClip Name="Keys" ID="{8B8BF76A-DD62-4648-B165-08139FED64AD}">
+													<PropertyList>
+														<Property Name="BeginTrimOffset" Type="Real64" Value="12000"/>
+														<Property Name="EndTrimOffset" Type="Real64" Value="18000"/>
+														<Property Name="FadeInDuration" Type="Real64" Value="-6000"/>
+														<Property Name="FadeOutDuration" Type="Real64" Value="-6000"/>
+														<Property Name="PlayAt" Type="Real64" Value="-12000"/>
+													</PropertyList>
+													<AudioSourceRef Name="Keys" ID="{18C0F0AC-9E29-4CE8-9600-EC09F885909D}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+								<MusicTrack Name="Voice" ID="{6A119FFB-647F-42F7-A3B1-21004FC12696}" ShortID="408103622">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Voice2" ID="{E190EE4C-57E8-4B03-B392-8A6976C9088E}" ShortID="130569707">
+											<Language>SFX</Language>
+											<AudioFile>Voice2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{E8F77E5E-BF97-4CF9-91D0-9A9990977509}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{89C56A1A-0A4C-4D65-A874-FFD6D6E900CD}">
+											<ClipList>
+												<MusicClip Name="Voice2" ID="{F714C7FA-A239-4702-884B-17DBC7F94836}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="1500"/>
+														<Property Name="PlayAt" Type="Real64" Value="4500"/>
+													</PropertyList>
+													<AudioSourceRef Name="Voice2" ID="{E190EE4C-57E8-4B03-B392-8A6976C9088E}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{222C7626-AFD5-4623-930A-650E723565A3}"/>
+								<MusicCue Name="Exit Cue" ID="{092BBCE0-2B08-4F32-A0D4-477D3E1F3C32}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="6000"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+						<MusicSegment Name="AreYouListening" ID="{67C4FB5B-764A-40CC-A754-1448D2B6E286}" ShortID="420130014">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="18245.0793650794"/>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-6</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="AreYouListening" ID="{87CD45D8-9DE2-4133-A3AF-2FAAC50A4685}" ShortID="13388905">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="AreYouListening" ID="{309EE88D-99E3-42B3-80F2-C4749E1683A3}" ShortID="746738671">
+											<Language>SFX</Language>
+											<AudioFile>AreYouListening.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{70A3E3FC-6A33-4962-9182-25A1C87AEF5B}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{579ACEE4-2932-48A7-AF37-9FF498C19352}">
+											<ClipList>
+												<MusicClip Name="AreYouListening" ID="{1DDBD5C4-2485-4007-9EA3-DFFAB6B4B0A9}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="18245.0793650794"/>
+													</PropertyList>
+													<AudioSourceRef Name="AreYouListening" ID="{309EE88D-99E3-42B3-80F2-C4749E1683A3}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{76FB68A5-D75F-4257-BF1D-F54107375188}"/>
+								<MusicCue Name="Exit Cue" ID="{873693B2-32B7-480C-85F3-A4FD20BCB44E}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="18245.0793650794"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+						<MusicPlaylistContainer Name="FightLoopLevel1" ID="{4662C10B-4F04-4150-9EFB-8DD0AD254AFC}" ShortID="670183364">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+								<Property Name="Tempo" Type="Real64" Value="160"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Level1" ID="{ECC21AD4-E936-4178-969E-C8D02D17713A}" ShortID="94479330">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Drum160Fight" ID="{C3EA6998-F003-41B2-B6B4-43A267B70043}" ShortID="11981977">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum160Fight" ID="{56D89E7A-B931-4ED1-A9F1-516E9B6B7198}" ShortID="327383908">
+													<Language>SFX</Language>
+													<AudioFile>Drum160Fight.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{5AAB0EA9-B233-4EC5-B826-A3CEB0359225}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{ABBF1D6A-3DA4-4571-A680-96655DEFAC23}">
+													<ClipList>
+														<MusicClip Name="Drum160Fight" ID="{3F968BA1-E24B-417F-81F1-B8C1B1213A25}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum160Fight" ID="{56D89E7A-B931-4ED1-A9F1-516E9B6B7198}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Bass160Fight" ID="{EFDD5E21-481F-4E41-902E-305EC0FBE612}" ShortID="430023141">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass160Fight" ID="{2853E49F-7421-424A-9B34-75999A90C207}" ShortID="245854401">
+													<Language>SFX</Language>
+													<AudioFile>Bass160Fight.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{600AE2B4-0412-4147-BF5D-7CD9F39EB4C0}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{3A3A36D0-0D10-4B2A-8C7F-41CCD964ABB4}">
+													<ClipList>
+														<MusicClip Name="Bass160Fight" ID="{E36437CC-6429-4514-9A33-3C6749EC0A4A}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass160Fight" ID="{2853E49F-7421-424A-9B34-75999A90C207}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{3ACF1B1A-A9EC-4944-9876-5936F9775208}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{B52E1704-41E6-4C18-8F04-ED89F90253A6}"/>
+										<MusicCue Name="Exit Cue" ID="{99172465-4B4F-4072-823C-B2324B5E2C15}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="6000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{37BB41EA-A6CB-42AF-8872-924280EB68EB}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{297528D4-D47D-4119-9E80-6ABE914CC97E}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{2CBD4FDE-839D-4710-9A87-BA963869036F}" ShortID="248230788">
+									<PropertyList>
+										<Property Name="PlayMode" Type="int16" Value="2"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{EC0E6433-3318-4076-AF73-7B1E9CE3A584}" ShortID="625903628">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+												<Property Name="Weight" Type="Real64">
+													<ValueList>
+														<Value>0.001</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<SegmentRef Name="Level1" ID="{ECC21AD4-E936-4178-969E-C8D02D17713A}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicPlaylistContainer Name="FightLoopLevel2" ID="{1073CEF6-01FB-4778-BFB7-2FD856EE2299}" ShortID="83553818">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+								<Property Name="Tempo" Type="Real64" Value="160"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Level2" ID="{02AC0417-3D7B-4330-B19F-D9FD3E5B4BF9}" ShortID="874351537">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass160Fight2" ID="{31FC175D-8CDF-49B7-BF25-7AF0EF333FAD}" ShortID="939246027">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass160Fight2" ID="{B01B466F-8D28-4B66-BF50-B6BB8A3C43E0}" ShortID="1072570282">
+													<Language>SFX</Language>
+													<AudioFile>Bass160Fight2.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{0F09B62F-492A-4D10-869F-34E0A15FA5DB}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{0D841726-031C-43EA-84DF-B0590B665F79}">
+													<ClipList>
+														<MusicClip Name="Bass160Fight2" ID="{C9243BBF-D927-40D7-9B79-9B0F6634540D}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass160Fight2" ID="{B01B466F-8D28-4B66-BF50-B6BB8A3C43E0}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum160Fight2" ID="{CC14782B-4720-48F6-839B-2C097D678F89}" ShortID="1036914036">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum160Fight2" ID="{15166B6B-80C2-4B92-B22A-65F2EAD63B55}" ShortID="657754793">
+													<Language>SFX</Language>
+													<AudioFile>Drum160Fight2.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{2689BDAD-F267-4FA4-B37D-F7DC5D6E108F}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{A8B363BB-E9B7-4C80-81FA-1ED155881375}">
+													<ClipList>
+														<MusicClip Name="Drum160Fight2" ID="{434A363D-7421-4852-A1C5-715AD597F249}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum160Fight2" ID="{15166B6B-80C2-4B92-B22A-65F2EAD63B55}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{87A12B5D-548A-4DFE-BADE-5E34EC29C149}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{234D05FC-12BB-4CCA-9F6E-84060BE2BF51}"/>
+										<MusicCue Name="Exit Cue" ID="{6BF0BB09-2EEA-43E5-A73D-F2749C4D9AB2}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="6000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{3C3F2645-8921-434C-AFC8-18360F3F50CE}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{03B58DAD-BA96-4E6D-9ACE-2F79DD1002B9}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{35CA2D8C-847A-48E3-8D1A-9C55E00079CF}" ShortID="743856979">
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{C4BE09BE-1355-4793-9D32-C511C916CF81}" ShortID="173962207">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Level2" ID="{02AC0417-3D7B-4330-B19F-D9FD3E5B4BF9}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicPlaylistContainer Name="FightLoopLevel3" ID="{0AD2AA4A-53B4-4E91-9B74-784BBF0037F3}" ShortID="81192915">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+								<Property Name="Tempo" Type="Real64" Value="160"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Level3" ID="{97C6D505-C51F-47E7-AA69-BBCC23D47A2C}" ShortID="426628610">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass160Fight3" ID="{6762C63B-C467-4CB3-8B49-82168DAA15C3}" ShortID="709550235">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass160Fight3" ID="{251DDA3B-A496-4778-BE65-754B0BF939FC}" ShortID="849825588">
+													<Language>SFX</Language>
+													<AudioFile>Bass160Fight3.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File Platform="Android" ID="663670250"/>
+														<File Platform="iOS" ID="663670250"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{F485CD7B-1200-489C-A1C2-D3C5995E2DB7}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{A835552A-15E1-4012-AE08-0A2BF78F00FE}">
+													<ClipList>
+														<MusicClip Name="Bass160Fight3" ID="{0BEAB19A-9845-40C3-BA4E-88B5A0095F6C}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass160Fight3" ID="{251DDA3B-A496-4778-BE65-754B0BF939FC}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum160Fight3" ID="{0C927247-9480-4443-BA75-6B2F903BDD4E}" ShortID="836491269">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum160Fight3" ID="{97F60958-9604-4BF8-A96F-22704F5CC1AF}" ShortID="439557409">
+													<Language>SFX</Language>
+													<AudioFile>Drum160Fight3.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{FC962000-CBE9-47AB-B9C5-8050E260EDCB}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{DFAF3155-A9FB-4CC9-9032-A45D9123658F}">
+													<ClipList>
+														<MusicClip Name="Drum160Fight3" ID="{4B6F3F05-7F15-436D-8A51-01C60B357BB3}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum160Fight3" ID="{97F60958-9604-4BF8-A96F-22704F5CC1AF}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{5E95E712-C7AA-4E01-ACBD-1201CF81C78C}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{3FD481E7-A5FF-4EBE-AEAC-505D6AA16B5F}"/>
+										<MusicCue Name="Exit Cue" ID="{8A226722-6553-4AE7-A89B-99B541172491}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="6000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{41B625A8-9A29-4F87-AD2B-CC45232DF6D5}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{77D59771-8F11-4042-A4FB-423CF960127A}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{24F73D95-5C59-4729-BFE7-09A5C8EAB103}" ShortID="139870609">
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{C531BB8C-1F0A-48DB-BE08-8A5503E0DC58}" ShortID="916172525">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Level3" ID="{97C6D505-C51F-47E7-AA69-BBCC23D47A2C}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicPlaylistContainer Name="FightLoopLevel4" ID="{F74D2C3D-1C54-44A0-8B8E-D5414C0232C6}" ShortID="877612721">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+								<Property Name="Tempo" Type="Real64" Value="160"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Bass160Fight4" ID="{D04A33DD-FEC2-488E-86D4-4155DE480A8F}" ShortID="509780625">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="12000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+										<Property Name="Tempo" Type="Real64" Value="160"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Bass160Fight4" ID="{3BCD9283-9A16-4312-B2E9-0D1D65256FF9}" ShortID="110869211">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Bass160Fight4" ID="{792B8343-50E2-472D-AF6C-19E86C9EABF9}" ShortID="755384372">
+													<Language>SFX</Language>
+													<AudioFile>Bass160Fight4.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{0227CC99-79CD-40B3-AFDF-CE114675AC10}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{529FB29C-FC41-4575-B27A-99EB43170CB0}">
+													<ClipList>
+														<MusicClip Name="Bass160Fight4" ID="{0CB2D22C-3C32-41AC-8329-EC1F7831E38F}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Bass160Fight4" ID="{792B8343-50E2-472D-AF6C-19E86C9EABF9}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum160Fight4" ID="{50676FBE-5789-41DD-B964-08282D38F8A9}" ShortID="993501531">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum160Fight4" ID="{7D697F13-0861-44C2-8709-678B5797FA9D}" ShortID="493626518">
+													<Language>SFX</Language>
+													<AudioFile>Drum160Fight4.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="262485558"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{C7692973-22DD-46DD-A22A-9187BCB3A20E}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{BB736B69-94E4-4616-9472-4C1585AB4DF5}">
+													<ClipList>
+														<MusicClip Name="Drum160Fight4" ID="{5450C927-8BCF-4DC7-9E6E-BA2D2C6992C8}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="12000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum160Fight4" ID="{7D697F13-0861-44C2-8709-678B5797FA9D}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{79EFA963-B2C6-44F7-AE31-4D4366829D29}"/>
+										<MusicCue Name="Exit Cue" ID="{21F99DE1-B4B0-4E27-9EDE-40FA1F0012B9}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="6000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{12E440C6-F52E-4563-B5FE-08F61DDEEC7A}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{487B1550-2D56-44DC-95EE-4FA45AF86FD0}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<StingerList>
+								<MusicStinger Name="" ID="{9F478748-271C-44F2-83D2-E41EAD3E0207}"/>
+							</StingerList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{E6E4A44B-EAC7-4D0D-B0A9-1ADC67E43B5D}" ShortID="640983896">
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{E377FC49-25F7-4339-9416-08A725A3BE77}" ShortID="800659690">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Bass160Fight4" ID="{D04A33DD-FEC2-488E-86D4-4155DE480A8F}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicPlaylistContainer Name="WinTheFight" ID="{E7E3901E-5ADF-4A8C-951B-F4C9CE3E3263}" ShortID="436341931">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="OverrideClockSettings" Type="bool" Value="True"/>
+								<Property Name="Tempo" Type="Real64" Value="160"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicSegment Name="Level4" ID="{4FFAF71B-C947-4EE6-AA26-111ECE3043D2}" ShortID="1017089350">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="EndPosition" Type="Real64" Value="33000"/>
+										<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicTrack Name="Guitar" ID="{5C1288AB-75B1-4FBF-BEBD-932A1E22ED5A}" ShortID="835955192">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Guitar" ID="{AA8EAA09-F537-417B-A8CD-52B208DD84AC}" ShortID="614574385">
+													<Language>SFX</Language>
+													<AudioFile>Guitar.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{D9E18A76-4A84-4E3F-9BC5-BDBDF0F083FC}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{6C9C9402-E398-4018-9406-7E0EF6BCF09B}">
+													<ClipList>
+														<MusicClip Name="Guitar" ID="{04D1AF4E-07BF-47B3-BFA7-26D93FB09ED6}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="33000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Guitar" ID="{AA8EAA09-F537-417B-A8CD-52B208DD84AC}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Drum160" ID="{B1D2A12D-50EF-41C6-9FC0-00DBB6FBF965}" ShortID="209090453">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Drum160Fight4" ID="{8E560994-A8B5-4565-9637-B663511937C2}" ShortID="262485558">
+													<Language>SFX</Language>
+													<AudioFile>Drum160Fight4.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{F893DA57-4F3E-4975-A849-386A23D19BD0}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{B6AF991D-D7DB-4AE6-97B2-CB456C953B1E}">
+													<ClipList>
+														<MusicClip Name="Drum160Fight4" ID="{1CEA3AA0-87AA-4818-95DB-9543DA4E55D8}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="24000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Drum160Fight4" ID="{8E560994-A8B5-4565-9637-B663511937C2}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="Violins" ID="{8DE6A2DF-7268-4B00-9E3C-43C6E9EB4DBD}" ShortID="946252258">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Violins" ID="{248BE84B-C733-4AFC-A15F-358EBE21C54A}" ShortID="910161738">
+													<Language>SFX</Language>
+													<AudioFile>Violins.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{2FD23F72-F3B5-4C2C-87FF-F09BDE4E094F}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{0125EC06-7C85-4713-8EB3-C03AA3FBAEED}">
+													<ClipList>
+														<MusicClip Name="Violins" ID="{41EADF4E-B37C-4CE8-B6E4-BD6945823BE1}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="24000"/>
+															</PropertyList>
+															<AudioSourceRef Name="Violins" ID="{248BE84B-C733-4AFC-A15F-358EBE21C54A}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+										<MusicTrack Name="New Music Track" ID="{B8BC70D3-5E8D-42DB-951B-C022EC32FF8B}" ShortID="827722695">
+											<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+											<PropertyList>
+												<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-10</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="ISaidAreYaListening" ID="{308D2336-A240-4F88-95DF-28DCB759E752}" ShortID="753904288">
+													<Language>SFX</Language>
+													<AudioFile>ISaidAreYaListening.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="636342982"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<TransitionList>
+												<MusicTransition Name="Root" ID="{47CFDE6E-6F51-4798-A0FF-11B642B6B178}">
+													<PropertyList>
+														<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+														<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+														<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+														<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+													</PropertyList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</TransitionList>
+											<SequenceList>
+												<MusicTrackSequence Name="" ID="{5AC6464A-9D5B-4C11-AAB3-369217C1799E}">
+													<ClipList>
+														<MusicClip Name="ISaidAreYaListening" ID="{49A06190-9228-4469-A154-959B3EFFBE9C}">
+															<PropertyList>
+																<Property Name="EndTrimOffset" Type="Real64" Value="6187.50566893424"/>
+																<Property Name="PlayAt" Type="Real64" Value="23238.4615384615"/>
+															</PropertyList>
+															<AudioSourceRef Name="ISaidAreYaListening" ID="{308D2336-A240-4F88-95DF-28DCB759E752}"/>
+														</MusicClip>
+													</ClipList>
+												</MusicTrackSequence>
+											</SequenceList>
+										</MusicTrack>
+									</ChildrenList>
+									<StingerList>
+										<MusicStinger Name="" ID="{56DD854B-7836-4651-9125-2EEEB35A5D2F}"/>
+									</StingerList>
+									<CueList>
+										<MusicCue Name="Entry Cue" ID="{5B01819C-A9BC-41AF-A0C8-B8322246241D}"/>
+										<MusicCue Name="Exit Cue" ID="{0E6C8045-A07A-4FCA-8E71-C0DBF22AD1D3}">
+											<PropertyList>
+												<Property Name="CueType" Type="int16" Value="1"/>
+												<Property Name="TimeMs" Type="Real64" Value="27000"/>
+											</PropertyList>
+										</MusicCue>
+									</CueList>
+								</MusicSegment>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{8F9FA26E-5A52-4670-87B9-8FADA905077C}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<ChildrenList>
+										<MusicTransition Name="Transition" ID="{86A11145-3527-4CDD-A2EF-1B9BA8158D1F}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</ChildrenList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<Playlist>
+								<MusicPlaylistItem Name="" ID="{C8137C41-B198-49FE-8649-743545A37CE6}" ShortID="534574817">
+									<ChildrenList>
+										<MusicPlaylistItem Name="" ID="{DF04B8DB-8E36-479D-A417-5FBD152EA21D}" ShortID="18389232">
+											<PropertyList>
+												<Property Name="LoopCount" Type="int16" Value="0"/>
+												<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+											</PropertyList>
+											<SegmentRef Name="Level4" ID="{4FFAF71B-C947-4EE6-AA26-111ECE3043D2}"/>
+										</MusicPlaylistItem>
+									</ChildrenList>
+								</MusicPlaylistItem>
+							</Playlist>
+						</MusicPlaylistContainer>
+						<MusicSegment Name="GameOver" ID="{CA87BCBF-9615-4892-B961-62FD62A3889B}" ShortID="366529429">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="46875"/>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="GameOverBoy" ID="{9E22BAD8-85F1-43A3-9DAF-28A1225E51E0}" ShortID="417525434">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="GameOverBoy" ID="{42C7DA9A-C918-4E78-9F8F-8FA7A32AF06A}" ShortID="606985328">
+											<Language>SFX</Language>
+											<AudioFile>GameOverBoy.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{EB6B3DDA-5620-4610-9E1C-002342DAFD5D}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{A711B557-AB38-4A45-AAD5-75D9C8D3E7DA}">
+											<ClipList>
+												<MusicClip Name="GameOverBoy" ID="{3CE5D4CB-B45B-479B-B7BD-0A907F285FC5}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="46875"/>
+													</PropertyList>
+													<AudioSourceRef Name="GameOverBoy" ID="{42C7DA9A-C918-4E78-9F8F-8FA7A32AF06A}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{386FCEFA-6000-4262-8A16-32ABB9AFEF95}"/>
+								<MusicCue Name="Exit Cue" ID="{4503AC1B-1495-4239-B920-8F4E78E41214}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="1000"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+						<MusicSegment Name="ISaidAreYouListening" ID="{BEF3C783-FBA7-4407-A61F-9D6BDC47DF70}" ShortID="791938870">
+							<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="6187.50566893424"/>
+								<Property Name="GridFrequencyPreset" Type="int16" Value="50"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="ISaidAreYaListening" ID="{C3006F1D-EBC6-4248-AAD6-CABE1C62A155}" ShortID="766516833">
+									<Comment>Audiokinetic Inc. All rights reserved.
+Audio content provided by Stéphane Beauchemin and Kyle Bennett
+© 2010 Stéphane Beauchemin and Kyle Bennett
+beauchemin.stephane@gmail.com
+http://www.kylebennett.ca
+kylebenne@gmail.com
+
+The Audio Content contained in this file is the property of Stéphane Beauchemin and Kyle Bennett. Your sole right with regard to this Audio Content is to listen to the Audio Content as part of this Integration Demo Project. This Audio Content cannot be used or modified for a commercial purpose nor for public demonstration.</Comment>
+									<PropertyList>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-6</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="ISaidAreYaListening" ID="{0D49A692-63F9-44A6-9767-8C7AFC73EB18}" ShortID="636342982">
+											<Language>SFX</Language>
+											<AudioFile>ISaidAreYaListening.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{03EA0709-6040-4F18-91FE-121029D005D7}">
+											<PropertyList>
+												<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+												<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+												<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+												<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{0FDE8FD9-4BF7-4882-AD4F-D410F8367247}">
+											<ClipList>
+												<MusicClip Name="ISaidAreYaListening" ID="{ECD0C464-216F-4929-89F5-79DE6CE03F8B}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="6187.50566893424"/>
+													</PropertyList>
+													<AudioSourceRef Name="ISaidAreYaListening" ID="{0D49A692-63F9-44A6-9767-8C7AFC73EB18}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{3D7BEF96-05DE-4F91-86F9-03AECEAEC9F6}"/>
+								<MusicCue Name="Exit Cue" ID="{FA55F239-8490-43AD-B3F7-B0FE3E006DB4}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="6187.50566893424"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+					</ChildrenList>
+					<TransitionList>
+						<MusicTransition Name="Root" ID="{09181777-8752-4891-8D27-BFC05E7A3DBE}">
+							<PropertyList>
+								<Property Name="IsFolder" Type="bool" Value="True"/>
+							</PropertyList>
+							<ChildrenList>
+								<MusicTransition Name="Transition" ID="{1926A2E6-2725-4B1C-AD09-29788FAAD813}">
+									<PropertyList>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{16BAF7DF-16FC-4F4D-8220-3C9529AB742F}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{0557B2D4-E857-4798-963F-D2544A9CBCDB}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{62342A3D-D448-4449-AE97-CC0FA3A27D00}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{6EF65630-FD72-4E1A-AC0F-D471C0B9BDFC}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{4F4ABA00-A453-4E45-BF3A-24A42BC7EB2F}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel1" ID="{4662C10B-4F04-4150-9EFB-8DD0AD254AFC}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{2CBD4FDE-839D-4710-9A87-BA963869036F}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{C9983028-8A6B-4CF9-A83D-EE84FD273663}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{84931D13-DC91-48C2-A37E-0660D92425E3}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel2" ID="{1073CEF6-01FB-4778-BFB7-2FD856EE2299}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{35CA2D8C-847A-48E3-8D1A-9C55E00079CF}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{0C5CF06A-9FD7-4870-9147-FA3AF496ED2A}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{CE42D6EB-8503-45A1-9466-33BD832F4AB6}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel3" ID="{0AD2AA4A-53B4-4E91-9B74-784BBF0037F3}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{24F73D95-5C59-4729-BFE7-09A5C8EAB103}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{A986D89D-6040-4D00-B312-E6408C982F4F}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{916E955C-1E43-4F1E-BB7B-06342C7367D3}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel4" ID="{F74D2C3D-1C54-44A0-8B8E-D5414C0232C6}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{E6E4A44B-EAC7-4D0D-B0A9-1ADC67E43B5D}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{CC168C11-BF1A-4221-8A18-7FE577C7EE25}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{12AFFA49-8E6C-455D-94E6-8729C7F6071C}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel1" ID="{4662C10B-4F04-4150-9EFB-8DD0AD254AFC}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{2CBD4FDE-839D-4710-9A87-BA963869036F}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{04B937FA-BDCF-45F6-A592-78B6EF803569}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{A81EA3B6-AEEC-479E-9B8E-BCF98606DE5F}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel2" ID="{1073CEF6-01FB-4778-BFB7-2FD856EE2299}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{35CA2D8C-847A-48E3-8D1A-9C55E00079CF}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{8D7040F6-3F34-4BF5-A2DA-65F901C76CC0}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{9B188906-9447-4A9F-B34B-54D4844DB22E}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel3" ID="{0AD2AA4A-53B4-4E91-9B74-784BBF0037F3}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{24F73D95-5C59-4729-BFE7-09A5C8EAB103}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{790B1EF9-DFCE-4BEB-A4AA-63A2BAF82474}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{FBCDC107-B60F-47B3-B2AC-A78D92072B57}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+										<Property Name="UseTransitionObject" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="FightLoopLevel4" ID="{F74D2C3D-1C54-44A0-8B8E-D5414C0232C6}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{E6E4A44B-EAC7-4D0D-B0A9-1ADC67E43B5D}"/>
+										<TransitionObjectRef Name="Transition" ID="{206F183C-AA3A-4430-89A5-65F0F29B810D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{EB75ADBD-038C-4B45-BDC5-751AF3D97BB2}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.01"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{F7AC4E11-BA7D-4850-9188-A5F74F4EA82E}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableDestinationFadeIn" Type="bool" Value="True"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="WinTheFight" ID="{E7E3901E-5ADF-4A8C-951B-F4C9CE3E3263}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<JumpToPlaylistItemRef Name="" ID="{C8137C41-B198-49FE-8649-743545A37CE6}"/>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{6350F5A5-7B5F-4E34-AF63-72199124CD1F}">
+												<PropertyList>
+													<Property Name="FadeCurve" Type="int16" Value="1"/>
+													<Property Name="FadeOffset" Type="Real64" Value="5.1"/>
+													<Property Name="FadeTime" Type="Real64" Value="5"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+										<DestinationFadeIn>
+											<MusicFade Name="Destination Fade-in" ID="{19453B6D-87F8-477B-BA29-9629964526FB}">
+												<PropertyList>
+													<Property Name="FadeCurve" Type="int16" Value="1"/>
+													<Property Name="FadeTime" Type="Real64" Value="3.8"/>
+												</PropertyList>
+											</MusicFade>
+										</DestinationFadeIn>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{E8E4456E-CC62-4945-9082-5097EEEA8388}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="2"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="GameOver" ID="{CA87BCBF-9615-4892-B961-62FD62A3889B}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{CB9CE1F2-FC39-4D6F-8AC2-AFCB6DFDE729}">
+												<PropertyList>
+													<Property Name="FadeCurve" Type="int16" Value="1"/>
+													<Property Name="FadeOffset" Type="Real64" Value="0.9"/>
+													<Property Name="FadeTime" Type="Real64" Value="0.9"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{F160A537-2DA0-489B-843B-F0F38662600A}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="1"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{B704AB64-1482-46F7-82D9-B412F17F9A04}">
+												<PropertyList>
+													<Property Name="FadeCurve" Type="int16" Value="1"/>
+													<Property Name="FadeTime" Type="Real64" Value="3.5"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{2EAD75AA-4E16-4EEA-B2A6-B31D85CCA128}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="1"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="GameOver" ID="{CA87BCBF-9615-4892-B961-62FD62A3889B}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo/>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{E83A5DDF-2481-4AFD-AAFF-09FE8E1C9CC5}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="1"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="7"/>
+										<Property Name="PlayDestinationPreEntry" Type="bool" Value="True"/>
+										<Property Name="PlaySourcePostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPostExit" Type="bool" Value="True"/>
+										<Property Name="PlayTransitionPreEntry" Type="bool" Value="True"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="WinTheFight" ID="{E7E3901E-5ADF-4A8C-951B-F4C9CE3E3263}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</ChildrenList>
+							<TransitionInfo/>
+						</MusicTransition>
+					</TransitionList>
+					<ArgumentList>
+						<ArgumentRef Name="Music" ID="{382C9FD3-80EA-4989-8640-23D88CB9F8ED}"/>
+					</ArgumentList>
+					<EntryList>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Fight_Dying" ID="{6DADFB0C-9D0E-4C01-B6A3-B888EB4E345C}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="FightLoopLevel4" ID="{F74D2C3D-1C54-44A0-8B8E-D5414C0232C6}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Fight_Damaged" ID="{854E9525-151B-4E72-9BE7-7A70D391CBA8}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="FightLoopLevel2" ID="{1073CEF6-01FB-4778-BFB7-2FD856EE2299}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Fight" ID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="FightLoopLevel1" ID="{4662C10B-4F04-4150-9EFB-8DD0AD254AFC}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Exploring" ID="{6C0BB16B-B1C8-42CD-A760-50995219C615}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="LoopIntro" ID="{5620C901-1435-46FC-A08F-DDDD24C2150A}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Winning_TheFight" ID="{8F368476-25B8-460B-9760-F53397657B0D}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="WinTheFight" ID="{E7E3901E-5ADF-4A8C-951B-F4C9CE3E3263}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Playing" ID="{FB2C1D99-74D1-4E63-80A2-296AACFFBBC2}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="LoopWithVoice" ID="{8CE81806-C54E-49B7-A3E4-81027F493F6D}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Fight_LowHealth" ID="{9E38F9B5-E631-4D13-A8B1-C3D45C405DE5}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="FightLoopLevel3" ID="{0AD2AA4A-53B4-4E91-9B74-784BBF0037F3}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="GameOver" ID="{C0E5D5E8-C130-47CC-98E5-7C29A9638A35}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="GameOver" ID="{CA87BCBF-9615-4892-B961-62FD62A3889B}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+					</EntryList>
+				</MusicSwitchContainer>
+			</ChildrenList>
+		</WorkUnit>
+	</InteractiveMusic>
+</WwiseDocument>

@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug(StaticCRT)|Win32">
+      <Configuration>Debug(StaticCRT)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug(StaticCRT)|x64">
+      <Configuration>Debug(StaticCRT)</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|Win32">
+      <Configuration>Profile</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile(StaticCRT)|Win32">
+      <Configuration>Profile(StaticCRT)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile(StaticCRT)|x64">
+      <Configuration>Profile(StaticCRT)</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release(StaticCRT)|Win32">
+      <Configuration>Release(StaticCRT)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release(StaticCRT)|x64">
+      <Configuration>Release(StaticCRT)</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EA2ABC97-8EDC-D90C-9172-ACA6C8D74CE0}</ProjectGuid>
+    <RootNamespace>IntegrationDemo</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>IntegrationDemo</ProjectName>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <DefaultLanguage>en-US</DefaultLanguage>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/Debug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/Debug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/Debug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/Debug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../../../source/Build/PropertySheets/Win32/NDebug_StaticCRT_vc110.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|Win32'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">
+    <OutDir>..\..\..\$(Platform)_vc110\$(Configuration)\bin\</OutDir>
+    <IntDir>..\..\..\$(Platform)_vc110\$(Configuration)\obj\$(ProjectName)\</IntDir>
+    <TargetName>IntegrationDemo</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CommunicationCentral.lib;AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x86;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;AK_OPTIMIZED;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\SoundEngine\Common;..\..\SoundEngine\Win32;.;..\Common;..\MenuSystem;..\DemoPages;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>AkCompressorFX.lib;AkMeterFX.lib;AkRoomVerbFX.lib;AkSoundEngine.lib;AkSineSource.lib;AkSilenceSource.lib;AkMatrixReverbFX.lib;AkPeakLimiterFX.lib;AkMotionSink.lib;AkTremoloFX.lib;AkParametricEQFX.lib;AkVorbisDecoder.lib;AkHarmonizerFX.lib;AkToneSource.lib;AkStereoDelayFX.lib;AkGainFX.lib;AkStreamMgr.lib;AkPitchShifterFX.lib;AkSynthOneSource.lib;AkSpatialAudio.lib;AkGuitarDistortionFX.lib;AkMusicEngine.lib;AkTimeStretchFX.lib;AkExpanderFX.lib;AkMotionGeneratorSource.lib;AkDelayFX.lib;AkRecorderFX.lib;AkAudioInputSource.lib;AkMemoryMgr.lib;AkFlangerFX.lib;dxguid.lib;ws2_32.lib;dinput8.lib;Dsound.lib;XInput.lib;Msacm32.lib;Dbghelp.lib;d3d9.lib;D3dx9.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)IntegrationDemo.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\lib\x64;..\..\..\$(Platform)_vc110\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\Common\SoundInputBase.h" />
+    <ClInclude Include="..\Common\SoundInputMgrBase.h" />
+    <ClInclude Include="..\Common\IntegrationDemo.h" />
+    <ClInclude Include="..\Common\Helpers.h" />
+    <ClInclude Include="..\DemoPages\Demo3dBus.h" />
+    <ClInclude Include="..\DemoPages\DemoSpatialAudio.h" />
+    <ClInclude Include="..\DemoPages\DemoInteractiveMusic.h" />
+    <ClInclude Include="..\DemoPages\BaseMenuPage.h" />
+    <ClInclude Include="..\DemoPages\DemoDynamicDialogue.h" />
+    <ClInclude Include="..\DemoPages\DemoMIDIMetronome.h" />
+    <ClInclude Include="..\DemoPages\DemoPositioning.h" />
+    <ClInclude Include="..\DemoPages\DemoPositioningMenu.h" />
+    <ClInclude Include="..\DemoPages\DemoMotion.h" />
+    <ClInclude Include="..\DemoPages\DemoExternalSources.h" />
+    <ClInclude Include="..\DemoPages\MenuPages.h" />
+    <ClInclude Include="..\DemoPages\DemoMarkers.h" />
+    <ClInclude Include="..\DemoPages\DemoFootstepsManyVariables.h" />
+    <ClInclude Include="..\DemoPages\DemoLocalization.h" />
+    <ClInclude Include="..\DemoPages\DemoRTPCCarEngine.h" />
+    <ClInclude Include="..\DemoPages\DemoMusicCallbacks.h" />
+    <ClInclude Include="..\DemoPages\DemoMicrophone.h" />
+    <ClInclude Include="..\DemoPages\DemoBGM.h" />
+    <ClInclude Include="..\DemoPages\DemoDialogueMenu.h" />
+    <ClInclude Include="..\MenuSystem\MovableChip.h" />
+    <ClInclude Include="..\MenuSystem\ToggleControl.h" />
+    <ClInclude Include="..\MenuSystem\Page.h" />
+    <ClInclude Include="..\MenuSystem\NumericControl.h" />
+    <ClInclude Include="..\MenuSystem\UniversalInput.h" />
+    <ClInclude Include="..\MenuSystem\Control.h" />
+    <ClInclude Include="..\MenuSystem\MessagePage.h" />
+    <ClInclude Include="..\MenuSystem\MenuControls.h" />
+    <ClInclude Include="..\MenuSystem\Drawing.h" />
+    <ClInclude Include="..\MenuSystem\MultiplayerPage.h" />
+    <ClInclude Include="..\MenuSystem\ButtonControl.h" />
+    <ClInclude Include="..\MenuSystem\Menu.h" />
+    <ClInclude Include="..\..\SoundEngine\Win32\AkDefaultIOHookBlocking.h" />
+    <ClInclude Include="..\..\SoundEngine\Common\AkFilePackage.h" />
+    <ClInclude Include="..\..\SoundEngine\Common\AkFileLocationBase.h" />
+    <ClInclude Include="..\..\SoundEngine\Common\AkFilePackageLUT.h" />
+    <ClInclude Include="InputMgr.h" />
+    <ClInclude Include="SoundInput.h" />
+    <ClInclude Include="Platform.h" />
+    <ClInclude Include="SoundInputMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug(StaticCRT)|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile(StaticCRT)|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release(StaticCRT)|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Common\SoundInputBase.cpp">
+    </ClCompile>
+    <ClCompile Include="..\Common\Helpers.cpp">
+    </ClCompile>
+    <ClCompile Include="..\Common\SoundInputMgrBase.cpp">
+    </ClCompile>
+    <ClCompile Include="..\Common\IntegrationDemo.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoBGM.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoSpatialAudio.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoRTPCCarEngine.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoLocalization.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoPositioningMenu.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoExternalSources.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoMotion.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoInteractiveMusic.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoDynamicDialogue.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\Demo3dBus.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoMIDIMetronome.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoPositioning.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoMicrophone.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoMarkers.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoDialogueMenu.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoFootstepsManyVariables.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\DemoMusicCallbacks.cpp">
+    </ClCompile>
+    <ClCompile Include="..\DemoPages\BaseMenuPage.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\Menu.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\Control.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\Page.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\MovableChip.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\MessagePage.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\ButtonControl.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\UniversalInput.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\ToggleControl.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\MultiplayerPage.cpp">
+    </ClCompile>
+    <ClCompile Include="..\MenuSystem\NumericControl.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\SoundEngine\Win32\AkDefaultIOHookBlocking.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\SoundEngine\Common\AkFilePackage.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\SoundEngine\Common\AkFileLocationBase.cpp">
+    </ClCompile>
+    <ClCompile Include="..\..\SoundEngine\Common\AkFilePackageLUT.cpp">
+    </ClCompile>
+    <ClCompile Include="Drawing.cpp">
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+    </ClCompile>
+    <ClCompile Include="SoundInput.cpp">
+    </ClCompile>
+    <ClCompile Include="SoundInputMgr.cpp">
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+    </ClCompile>
+    <ClCompile Include="InputMgr.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

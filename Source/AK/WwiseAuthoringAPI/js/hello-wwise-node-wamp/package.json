@@ -1,0 +1,16 @@
+{
+  "name": "hello-wwise-node-wamp",
+  "version": "1.0.0",
+  "description": "Wwise Authoring API Example",
+  "main": "index.js",
+  "keywords": [
+    "wwise",
+    "waapi",
+    "wamp"
+  ],
+  "author": "Audiokinetic",
+  "dependencies": {
+    "autobahn": "18.3.2"
+  },
+  "devDependencies": {}
+}

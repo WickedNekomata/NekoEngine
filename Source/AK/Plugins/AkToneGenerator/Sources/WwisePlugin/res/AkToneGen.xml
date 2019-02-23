@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2006 Audiokinetic Inc. -->
+<PluginModule>
+  <SourcePlugin Name="Wwise Tone Generator" CompanyID="0" PluginID="102">
+    <PluginInfo CanUnlink="true">
+      <PlatformSupport>
+        <Platform Name="Windows"></Platform>
+        <Platform Name="Linux"></Platform>
+        <Platform Name="XboxOne"></Platform>
+        <Platform Name="Android"></Platform>
+        <Platform Name="Mac"></Platform>
+        <Platform Name="PS4"></Platform>
+        <Platform Name="iOS"></Platform>
+        <Platform Name="Switch"></Platform>
+        <Platform Name="Lumin"></Platform>
+        <Platform Name="Emscripten"></Platform>
+      </PlatformSupport>
+    </PluginInfo>
+    <Properties>
+      <Property Name="StartFreq" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Frequency" DisplayName="Start Frequency" DisplayGroup="Frequency">
+        <UserInterface Decimals="1"/>
+        <DefaultValue>1000.0</DefaultValue>
+        <AudioEnginePropertyID>1</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>20</Min>
+              <Max>20000</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="StartFreqRandMin" Type="Real32" DisplayName="Start Frequency Random Min" DisplayGroup="Frequency">
+        <UserInterface Decimals="0" UIMin="-1000"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>2</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>-12000</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="StartFreqRandMax" Type="Real32" DisplayName="Start Frequency Random Max" DisplayGroup="Frequency">
+        <UserInterface Decimals="0" UIMax="1000"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>3</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>12000</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="SweepFreq" Type="bool" DisplayName="Sweep Frequency" DisplayGroup="Frequency/Sweep Frequency">
+        <DefaultValue>false</DefaultValue>
+        <AudioEnginePropertyID>4</AudioEnginePropertyID>
+        <Dependencies>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="SweepFreqType" Type="int32" DisplayName="Sweep Frequency Type" DisplayGroup="Frequency/Sweep Frequency">
+        <DefaultValue>0</DefaultValue>
+        <AudioEnginePropertyID>5</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Enumeration Type="int32">
+              <Value DisplayName="Linear">0</Value>
+              <Value DisplayName="Logarithmic">1</Value>
+            </Enumeration>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="SweepFreq" Action="Enable">
+            <Condition>
+              <Enumeration Type="bool">
+                <Value>true</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="StopFreq" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Frequency" DisplayName="Stop Frequency" DisplayGroup="Frequency/Sweep Frequency">
+        <UserInterface Decimals="1"/>
+        <DefaultValue>1000.0</DefaultValue>
+        <AudioEnginePropertyID>6</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>20</Min>
+              <Max>20000</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="SweepFreq" Action="Enable">
+            <Condition>
+              <Enumeration Type="bool">
+                <Value>true</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="StopFreqRandMin" Type="Real32" DisplayName="Stop Frequency Random Min" DisplayGroup="Frequency/Sweep Frequency">
+        <UserInterface Decimals="0" UIMin="-1000"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>7</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>-12000</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="SweepFreq" Action="Enable">
+            <Condition>
+              <Enumeration Type="bool">
+                <Value>true</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="StopFreqRandMax" Type="Real32" DisplayName="Start Frequency Random Max" DisplayGroup="Frequency/Sweep Frequency">
+        <UserInterface Decimals="0" UIMax="1000"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>8</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>12000</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="SweepFreq" Action="Enable">
+            <Condition>
+              <Enumeration Type="bool">
+                <Value>true</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+          <PropertyDependency Name="WaveType" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Sine -->
+                <Value>0</Value>
+                <!-- Triangular -->
+                <Value>1</Value>
+                <!-- Squae -->
+                <Value>2</Value>
+                <!-- Sawtooth -->
+                <Value>3</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="WaveType" Type="int32" DisplayName="Waveform" DisplayGroup="Waveform">
+        <DefaultValue>0</DefaultValue>
+        <AudioEnginePropertyID>9</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Enumeration Type="int32">
+              <Value DisplayName="Sine">0</Value>
+              <Value DisplayName="Triangular">1</Value>
+              <Value DisplayName="Square">2</Value>
+              <Value DisplayName="Sawtooth">3</Value>
+              <Value DisplayName="White noise">4</Value>
+              <Value DisplayName="Pink noise">5</Value>
+            </Enumeration>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="WaveGain" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Decibels" DisplayName="Gain" DisplayGroup="Waveform">
+        <UserInterface Step="0.1" Decimals="1"/>
+        <DefaultValue>-12.0</DefaultValue>
+        <AudioEnginePropertyID>0</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>-96.3</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="ChannelMask" Type="int32" SupportLink="true" DisplayName="Channel" DisplayGroup="Waveform">
+        <DefaultValue>4</DefaultValue>
+        <AudioEnginePropertyID>17</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Enumeration Type="int32">
+              <Value DisplayName="Mono">4</Value>
+              <Value DisplayName="LFE">8</Value>
+            </Enumeration>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="DurMode" Type="int32" DisplayName="Duration Mode" DisplayGroup="Duration">
+        <DefaultValue>0</DefaultValue>
+        <AudioEnginePropertyID>10</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Enumeration Type="int32">
+              <Value DisplayName="Fixed Duration">0</Value>
+              <Value DisplayName="Envelope">1</Value>
+            </Enumeration>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="FixDur" Type="Real32" DisplayName="Fixed Duration" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Fine="0.01" Decimals="3" UIMax="10"/>
+        <DefaultValue>1.0</DefaultValue>
+        <AudioEnginePropertyID>11</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0.001</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Fixed Duration -->
+                <Value>0</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="AttackTime" Type="Real32" DisplayName="Attack Time" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Fine="0.01" Decimals="3" UIMax="10"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>12</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Envelope -->
+                <Value>1</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="DecayTime" Type="Real32" DisplayName="Decay Time" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Fine="0.01" Decimals="3" UIMax="10"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>13</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Envelope -->
+                <Value>1</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="SustainTime" Type="Real32" DisplayName="Sustain Time" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Fine="0.01" Decimals="3" UIMax="10"/>
+        <DefaultValue>1.0</DefaultValue>
+        <AudioEnginePropertyID>14</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Envelope -->
+                <Value>1</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="SustainLevel" Type="Real32" DataMeaning="Decibels" DisplayName="Sustain Level" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Decimals="1"/>
+        <DefaultValue>-12.0</DefaultValue>
+        <AudioEnginePropertyID>15</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>-96.3</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Envelope -->
+                <Value>1</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+      <Property Name="ReleaseTime" Type="Real32" DisplayName="Release Time" DisplayGroup="Duration">
+        <UserInterface Step="0.1" Fine="0.01" Decimals="3" UIMax="10"/>
+        <DefaultValue>0.0</DefaultValue>
+        <AudioEnginePropertyID>16</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+        <Dependencies>
+          <PropertyDependency Name="DurMode" Action="Enable">
+            <Condition>
+              <Enumeration Type="int32">
+                <!-- Envelope -->
+                <Value>1</Value>
+              </Enumeration>
+            </Condition>
+          </PropertyDependency>
+        </Dependencies>
+      </Property>
+    </Properties>
+  </SourcePlugin>
+</PluginModule>

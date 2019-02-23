@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2006 Audiokinetic Inc. -->
+<PluginModule>
+  <SourcePlugin Name="Wwise Sine" CompanyID="0" PluginID="100">
+    <PluginInfo CanUnlink="true">
+      <PlatformSupport>
+        <Platform Name="Windows"></Platform>
+        <Platform Name="Linux"></Platform>
+        <Platform Name="XboxOne"></Platform>
+        <Platform Name="PS4"></Platform>
+        <Platform Name="Android"></Platform>
+        <Platform Name="Mac"></Platform>
+        <Platform Name="iOS"></Platform>
+        <Platform Name="Switch"></Platform>
+        <Platform Name="Lumin"></Platform>
+        <Platform Name="Emscripten"></Platform>
+      </PlatformSupport>
+    </PluginInfo>
+    <Properties>
+      <Property Name="SineFrequency" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Frequency" DisplayName="Frequency" DisplayGroup="Sine Parameters">
+        <UserInterface Decimals="0" />
+        <DefaultValue>440.0</DefaultValue>
+        <AudioEnginePropertyID>0</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real64">
+              <Min>20</Min>
+              <Max>20000</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="SineGain" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Decibels" DisplayName="Gain" DisplayGroup="Sine Parameters">
+        <UserInterface Fine="0.1" Decimals="1" />
+        <DefaultValue>-12</DefaultValue>
+        <AudioEnginePropertyID>1</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real64">
+              <Min>-96.3</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="SineDuration" Type="Real32" SupportRTPCType="Exclusive" DisplayName="Duration" DisplayGroup="Sine Parameters">
+        <UserInterface Step="0.1" Fine="0.001" Decimals="3" UIMax="10" />
+        <DefaultValue>1.0</DefaultValue>
+        <AudioEnginePropertyID>2</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real64">
+              <Min>0.001</Min>
+              <Max>3600</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+      <Property Name="ChannelMask" Type="int32" SupportLink="true" DisplayName="Channel" DisplayGroup="Sine Parameters">
+        <DefaultValue>4</DefaultValue>
+        <AudioEnginePropertyID>3</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Enumeration Type="int32">
+              <Value DisplayName="Mono">4</Value>
+              <Value DisplayName="LFE">8</Value>
+            </Enumeration>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+    </Properties>
+  </SourcePlugin>
+</PluginModule>

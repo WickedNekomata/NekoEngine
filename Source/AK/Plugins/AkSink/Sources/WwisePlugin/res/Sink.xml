@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2006 Audiokinetic Inc. -->
+<PluginModule>
+  <SinkPlugin Name="AK Sink Plugin" CompanyID="0" PluginID="152">
+    <PluginInfo CanUnlink="true">
+      <PlatformSupport>
+        <Platform Name="Windows"></Platform>
+      </PlatformSupport>
+    </PluginInfo>
+	<Properties>
+      <Property Name="DirectGain" Type="Real32" SupportRTPCType="Additive">
+        <UserInterface DisplayName="Direct Gain" Step="0.1" Fine="0.001" Decimals="3"/>
+        <DefaultValue>1</DefaultValue>
+        <AudioEnginePropertyID>0</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>0</Min>
+              <Max>1</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+    </Properties>
+  </SinkPlugin>
+</PluginModule>

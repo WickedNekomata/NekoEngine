@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}" SchemaVersion="85">
+	<States>
+		<WorkUnit Name="Default Work Unit" ID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}" PersistMode="Standalone">
+			<ChildrenList>
+				<StateGroup Name="PlayerHealth" ID="{04DA61D8-C090-4BA1-A0A3-CCAD0587AE0E}">
+					<PropertyList>
+						<Property Name="DefaultTransitionTime" Type="Real64" Value="0"/>
+					</PropertyList>
+					<ChildrenList>
+						<State Name="None" ID="{77978341-EB33-48DF-BC59-343B5460E692}"/>
+						<State Name="Normal" ID="{37201C8B-7D86-4077-ABFE-12AAD2FBF798}"/>
+						<State Name="Blasted" ID="{AD983F7E-AFAE-4BD6-A9D8-ADB456C0A6BA}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="Music" ID="{382C9FD3-80EA-4989-8640-23D88CB9F8ED}">
+					<ChildrenList>
+						<State Name="None" ID="{242493C8-D1A5-4C38-9675-A788F8C2E1FA}"/>
+						<State Name="Exploring" ID="{6C0BB16B-B1C8-42CD-A760-50995219C615}"/>
+						<State Name="Playing" ID="{FB2C1D99-74D1-4E63-80A2-296AACFFBBC2}"/>
+						<State Name="Fight" ID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}"/>
+						<State Name="Fight_Damaged" ID="{854E9525-151B-4E72-9BE7-7A70D391CBA8}"/>
+						<State Name="Fight_LowHealth" ID="{9E38F9B5-E631-4D13-A8B1-C3D45C405DE5}"/>
+						<State Name="Fight_Dying" ID="{6DADFB0C-9D0E-4C01-B6A3-B888EB4E345C}"/>
+						<State Name="Winning_TheFight" ID="{8F368476-25B8-460B-9760-F53397657B0D}"/>
+						<State Name="GameOver" ID="{C0E5D5E8-C130-47CC-98E5-7C29A9638A35}"/>
+					</ChildrenList>
+				</StateGroup>
+			</ChildrenList>
+		</WorkUnit>
+	</States>
+</WwiseDocument>

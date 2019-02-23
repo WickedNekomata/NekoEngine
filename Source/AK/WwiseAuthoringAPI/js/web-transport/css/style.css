@@ -1,0 +1,19 @@
+.transport-window {
+    background-color: rgb(140, 140, 140);
+    border: 2px solid black;
+    border-radius: 20px;
+    width: 100%;
+    height: auto;
+    padding: 30px;
+}
+
+.cmd_btn{
+    margin: 5px;
+}
+
+.error{
+    color: red;
+}
+.good{
+    color: limegreen;
+}

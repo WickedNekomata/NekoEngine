@@ -1,0 +1,8 @@
+; SourceControlSample.def : Declares the module parameters for the DLL.
+
+LIBRARY      "SourceControlSample"
+
+EXPORTS
+    AkSourceControlGetPluginIDList
+    AkSourceControlGetPluginInfo
+    AkSourceControlCreatePlugin

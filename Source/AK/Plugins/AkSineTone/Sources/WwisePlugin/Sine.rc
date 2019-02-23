@@ -1,0 +1,163 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define AK_WWISESDK_SAMPLE_FILEDESC ""Sine Tone Wwise plug-in""\r\n"
+    "#define AK_WWISESDK_SAMPLE_INTERNALNAME ""Sine.dll""\r\n"
+    "#define AK_WWISESDK_SAMPLE_ORIGINALFILE ""Sine.dll""\r\n"
+    "#include ""AkWwiseSDKVersion.rc""\r\n"
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_SINEFREQ            "Frequency"
+    IDS_SINEGAIN            "Gain"
+    IDS_SINEDURATION        "Duration"
+    IDS_OUTPUTCHANNEL       "Output Channel"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SINEPLUGIN_SMALL DIALOGEX 0, 0, 366, 13
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Class=SuperRange;Prop=SineFrequency;Title=Frequency",IDC_RANGE_SINEFREQUENCY,3,0,47,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=SuperRange;Prop=SineGain;Title=Gain",IDC_RANGE_SINEGAIN,52,0,45,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=SuperRange;Prop=SineDuration;Title=Duration",IDC_RANGE_SINEDURATION,99,0,45,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=Combo;Prop=ChannelMask;Title=Channel",IDC_COMBO_WAVETYPE,147,0,41,13,WS_BORDER | WS_TABSTOP
+END
+
+IDD_SINEPLUGIN_BIG DIALOGEX 0, 0, 518, 280
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPCHILDREN
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Sine Parameters",IDC_BOX_SINESTATIC,6,0,283,45
+    LTEXT           "Class=SuperRange;Prop=SineFrequency",IDC_RANGE_SINEFREQUENCY,30,23,47,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=SuperRange;Prop=SineGain;Title=Gain",IDC_RANGE_SINEGAIN,80,23,47,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=SuperRange;Prop=SineDuration;Title=Duration",IDC_RANGE_SINEDURATION,130,23,47,13,WS_BORDER | WS_TABSTOP
+    LTEXT           "Class=Combo;Prop=ChannelMask;Title=Output Channel",IDC_COMBO_WAVETYPE,180,23,43,13,WS_BORDER | WS_TABSTOP
+    CTEXT           "Frequency",IDC_STATIC_SINEFREQUENCY,30,10,47,13,WS_TABSTOP
+    CTEXT           "Gain",IDC_STATIC_SINEGAIN,80,10,47,13,WS_TABSTOP
+    CTEXT           "Channel",IDC_STATIC_SINEDURATION,180,10,37,13,WS_TABSTOP
+    CTEXT           "Duration",IDC_STATIC_SINEDURATION2,130,10,47,13,WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SINEPLUGIN_SMALL, DIALOG
+    BEGIN
+        RIGHTMARGIN, 194
+        VERTGUIDE, 2
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define AK_WWISESDK_SAMPLE_FILEDESC "Sine Tone Wwise plug-in"
+#define AK_WWISESDK_SAMPLE_INTERNALNAME "Sine.dll"
+#define AK_WWISESDK_SAMPLE_ORIGINALFILE "Sine.dll"
+#include "AkWwiseSDKVersion.rc"
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

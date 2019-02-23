@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{A4CAED17-9E1F-4BDF-8BF5-21837EF7895A}" SchemaVersion="85">
+	<Events>
+		<WorkUnit Name="MIDI" ID="{A4CAED17-9E1F-4BDF-8BF5-21837EF7895A}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Metronome_PostMIDI" ID="{50D6E430-A5CE-4662-BADC-7415E5252978}">
+					<ChildrenList>
+						<Action Name="" ID="{6D430949-835B-42D6-830D-D04E5F88884D}" ShortID="830530053">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Metronome" ID="{3BB365E3-DA05-436E-B60E-3334D8CE9ADA}" WorkUnitID="{F5D6A1B7-0351-492B-A43C-CFCD9FE2A1EF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

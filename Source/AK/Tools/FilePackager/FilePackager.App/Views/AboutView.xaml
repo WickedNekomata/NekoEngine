@@ -1,0 +1,19 @@
+﻿<Window x:Class="FilePackager.Views.AboutView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="About" Height="151" Width="372"
+    WindowStartupLocation="CenterOwner"
+    Icon="pack://application:,,,/FilePackager_no256.ico">
+    <DockPanel Margin="7">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Image Source="pack://application:,,,/FilePackager_no256.ico" Height="48" Width="48" Margin="0,0,10,0"/>
+            <StackPanel>
+                <TextBlock Text="{Binding ApplicationName}" FontSize="14" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Build}"/>
+                <TextBlock Text="{Binding CopyrightNotice}"/>
+            </StackPanel>            
+        </StackPanel>
+
+        <Button Content="OK" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="Button_Click" />
+    </DockPanel>        
+</Window>

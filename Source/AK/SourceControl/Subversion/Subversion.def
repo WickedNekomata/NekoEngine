@@ -1,0 +1,8 @@
+; Subversion.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Subversion"
+
+EXPORTS
+    AkSourceControlGetPluginIDList
+    AkSourceControlGetPluginInfo
+    AkSourceControlCreatePlugin

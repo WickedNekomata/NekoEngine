@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A0D15CE4-DBD3-C2D0-D22A-DD4F6605486C}</ProjectGuid>
+    <RootNamespace>waSourceControl_Perforce</RootNamespace>
+    <Keyword>MFCDLLProj</Keyword>
+    <ProjectName>waSourceControl_Perforce</ProjectName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\..\Authoring\x64\Debug\bin\SourceControl\</OutDir>
+    <IntDir>..\..\..\..\Authoring\Build\vc120\Debug\obj\wasourcecontrolperforce\</IntDir>
+    <TargetName>Perforce</TargetName>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\..\Authoring\x64\Release\bin\SourceControl\</OutDir>
+    <IntDir>..\..\..\..\Authoring\Build\vc120\Release\obj\wasourcecontrolperforce\</IntDir>
+    <TargetName>Perforce</TargetName>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Debug\include;..\..\..\..\Authoring\source;..\..\..\include;..\..\Common;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;WIN64;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;WIN64;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Debug\include;..\..\..\..\Authoring\source;..\..\..\include;..\..\Common;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Debug\lib\libclient.lib;..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Debug\lib\librpc.lib;..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Debug\lib\libsupp.lib;..\..\..\..\Authoring\source\3rdParty\OpenSSL\lib\libeay32.lib;..\..\..\..\Authoring\source\3rdParty\OpenSSL\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Perforce.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\Authoring\x64\Debug\bin;..\..\..\..\Authoring\Build\vc120\Debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\Authoring\Build\vc120\Debug\lib\Perforce.lib</ImportLibrary>
+      <ModuleDefinitionFile>Perforce.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Release\include;..\..\..\..\Authoring\source;..\..\..\include;..\..\Common;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN64;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN64;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Release\include;..\..\..\..\Authoring\source;..\..\..\include;..\..\Common;..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Release\lib\libclient.lib;..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Release\lib\librpc.lib;..\..\..\..\Authoring\source\3rdParty\Perforce\x64\Release\lib\libsupp.lib;..\..\..\..\Authoring\source\3rdParty\OpenSSL\lib\libeay32.lib;..\..\..\..\Authoring\source\3rdParty\OpenSSL\lib\ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Perforce.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\..\..\..\Authoring\x64\Release\bin;..\..\..\..\Authoring\Build\vc120\Release\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\Authoring\Build\vc120\Release\lib\Perforce.lib</ImportLibrary>
+      <ModuleDefinitionFile>Perforce.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="DlgPerforceConfig.h" />
+    <ClInclude Include="DlgPerforceDescription.h" />
+    <ClInclude Include="DlgPerforceOnNewFiles.h" />
+    <ClInclude Include="DlgRename.h" />
+    <ClInclude Include="Perforce.h" />
+    <ClInclude Include="PerforcePlugin.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\Common\OperationResults.h" />
+    <ClInclude Include="..\Common\SourceControlHelpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DlgPerforceConfig.cpp">
+    </ClCompile>
+    <ClCompile Include="DlgPerforceDescription.cpp">
+    </ClCompile>
+    <ClCompile Include="DlgPerforceOnNewFiles.cpp">
+    </ClCompile>
+    <ClCompile Include="DlgRename.cpp">
+    </ClCompile>
+    <ClCompile Include="DllInterface.cpp">
+    </ClCompile>
+    <ClCompile Include="PerforceClientUser.cpp">
+    </ClCompile>
+    <ClCompile Include="PerforcePlugin.cpp">
+    </ClCompile>
+    <ClCompile Include="PerforceSourceControl.cpp">
+    </ClCompile>
+    <ClCompile Include="PerforceUtility.cpp">
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Common\OperationResults.cpp">
+    </ClCompile>
+    <ClCompile Include="..\Common\SourceControlHelpers.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Perforce.rc2" />
+    <None Include="Perforce.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Perforce.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Authoring\source\3rdParty\OpenSSL\bin\libeay32.dll">
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+if exist "$(OutDir)..\%(Filename).dll" del /F /Q "$(OutDir)..\%(Filename).dll"
+copy /y "%(FullPath)" "$(OutDir)..\%(Filename).dll"
+      </Command>
+      <Outputs>$(OutDir)..\%(Filename).dll;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Authoring\source\3rdParty\OpenSSL\bin\ssleay32.dll">
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+if exist "$(OutDir)..\%(Filename).dll" del /F /Q "$(OutDir)..\%(Filename).dll"
+copy /y "%(FullPath)" "$(OutDir)..\%(Filename).dll"
+      </Command>
+      <Outputs>$(OutDir)..\%(Filename).dll;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

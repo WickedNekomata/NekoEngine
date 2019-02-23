@@ -1,0 +1,27 @@
+body{
+    font-family: sans-serif;
+    text-align: center;
+}
+table {
+    margin: 0 auto;
+}
+canvas {
+    overflow: hidden;
+    border-radius: 10px;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+#xypad {
+    overflow: hidden;
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 45%;
+    margin: 0 auto;
+}
+.error{
+    color: red;
+}
+.good{
+    color: limegreen;
+}

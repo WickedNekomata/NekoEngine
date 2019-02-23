@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{E011F67A-12DF-4D37-9F94-E7ADCE684B41}" SchemaVersion="85">
+	<Conversions>
+		<WorkUnit Name="External Sources" ID="{E011F67A-12DF-4D37-9F94-E7ADCE684B41}" PersistMode="Standalone">
+			<ChildrenList>
+				<Conversion Name="External_Standard" ID="{E71F7E3D-1E7D-4616-B437-A0C3E29F604A}">
+					<PropertyList>
+						<Property Name="Channels" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">4</Value>
+								<Value Platform="Linux">4</Value>
+								<Value Platform="iOS">4</Value>
+								<Value Platform="Mac">4</Value>
+								<Value Platform="PS4">4</Value>
+								<Value Platform="XboxOne">4</Value>
+								<Value Platform="Windows">4</Value>
+								<Value Platform="Android">4</Value>
+							</ValueList>
+						</Property>
+						<Property Name="LRMix" Type="Real64">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MaxSampleRate" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MinSampleRate" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="SampleRate" Type="int32">
+							<ValueList>
+								<Value>0</Value>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ConversionPluginInfoList>
+						<ConversionPluginInfo Platform="Switch">
+							<ConversionPlugin Name="" ID="{116371B1-C379-49F8-B599-3BB59C18BE18}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Linux">
+							<ConversionPlugin Name="" ID="{959F9890-2B1B-435F-A24A-010FC7AD70CE}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="iOS">
+							<ConversionPlugin Name="" ID="{B42F628D-56DE-4063-A52D-BAE5563EDDE8}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Mac">
+							<ConversionPlugin Name="" ID="{913AAA76-40D1-4173-A0AC-50D301D4405E}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="PS4">
+							<ConversionPlugin Name="" ID="{A27E7579-3412-4A8C-B039-CE6EB60EF677}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="XboxOne">
+							<ConversionPlugin Name="" ID="{0C7C3F5A-A48B-4031-8150-67ED48DDAF07}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Windows">
+							<ConversionPlugin Name="" ID="{7EADD3E3-1D4B-413C-A22E-B6B9738086EF}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Android">
+							<ConversionPlugin Name="" ID="{B90BCF4E-7286-4FDA-B3C8-2D0044624AC1}" PluginName="ADPCM" CompanyID="0" PluginID="2">
+								<PropertyList>
+									<Property Name="FixLoopMethod" Type="int32" Value="1"/>
+								</PropertyList>
+							</ConversionPlugin>
+						</ConversionPluginInfo>
+					</ConversionPluginInfoList>
+				</Conversion>
+				<Conversion Name="External_HighQuality" ID="{22B619E9-AD28-4D8E-AC10-20A1A09F352E}">
+					<PropertyList>
+						<Property Name="Channels" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">4</Value>
+								<Value Platform="Linux">4</Value>
+								<Value Platform="iOS">4</Value>
+								<Value Platform="Mac">4</Value>
+								<Value Platform="PS4">4</Value>
+								<Value Platform="XboxOne">4</Value>
+								<Value Platform="Windows">4</Value>
+								<Value Platform="Android">4</Value>
+							</ValueList>
+						</Property>
+						<Property Name="LRMix" Type="Real64">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MaxSampleRate" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MinSampleRate" Type="int32">
+							<ValueList>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+						<Property Name="SampleRate" Type="int32">
+							<ValueList>
+								<Value>0</Value>
+								<Value Platform="Switch">0</Value>
+								<Value Platform="Linux">0</Value>
+								<Value Platform="iOS">0</Value>
+								<Value Platform="Mac">0</Value>
+								<Value Platform="PS4">0</Value>
+								<Value Platform="XboxOne">0</Value>
+								<Value Platform="Windows">0</Value>
+								<Value Platform="Android">0</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ConversionPluginInfoList>
+						<ConversionPluginInfo Platform="Switch">
+							<ConversionPlugin Name="" ID="{F2A986D2-D8FB-47B0-898D-1537C807028F}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Linux">
+							<ConversionPlugin Name="" ID="{F139B608-D18D-4D31-AE55-DA64F4DFF778}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="iOS">
+							<ConversionPlugin Name="" ID="{59361C1B-45AA-4DE3-B44F-F49B1768ADC7}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Mac">
+							<ConversionPlugin Name="" ID="{0965DB19-C61F-41CF-847E-391ECB045F47}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="PS4">
+							<ConversionPlugin Name="" ID="{4EC842A8-2390-433E-9F01-F4135BE2765C}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="XboxOne">
+							<ConversionPlugin Name="" ID="{3F698F93-A75A-4473-BC60-4352E4AA6643}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Windows">
+							<ConversionPlugin Name="" ID="{D39ABBF3-2981-4990-9DE9-E924D520DE3D}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+						<ConversionPluginInfo Platform="Android">
+							<ConversionPlugin Name="" ID="{82C26C5B-D9E6-4463-903C-90C60CC2489E}" PluginName="PCM" CompanyID="0" PluginID="1"/>
+						</ConversionPluginInfo>
+					</ConversionPluginInfoList>
+				</Conversion>
+			</ChildrenList>
+		</WorkUnit>
+	</Conversions>
+</WwiseDocument>

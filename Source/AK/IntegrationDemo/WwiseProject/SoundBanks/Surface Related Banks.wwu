@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{CB25BDE8-D032-4C04-B19B-3674E7C62703}" SchemaVersion="85">
+	<SoundBanks>
+		<WorkUnit Name="Surface Related Banks" ID="{CB25BDE8-D032-4C04-B19B-3674E7C62703}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="Dirt" ID="{6AB69E88-346A-4656-AF56-599F612A0AA3}">
+					<Comment>This banks contains all sounds that occur on the Dirt surface</Comment>
+					<ObjectInclusionList>
+						<ObjectRef Name="Footsteps" ID="{9CB2A2A7-05D7-4FB7-918A-368A80EE1807}" WorkUnitID="{39255352-6310-4790-ACD5-F0B3026DF735}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList>
+						<GameSyncRef Name="Metal" ID="{6A7D1036-445A-44D8-8D83-127D4907232D}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Gravel" ID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Wood" ID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Light" ID="{B0F764A0-8171-4899-A530-67C404CEF373}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Walk" ID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Run" ID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Heavy" ID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+					</GameSyncExclusionList>
+				</SoundBank>
+				<SoundBank Name="Metal" ID="{68BFA94C-3779-4183-B2FC-1A353E6D9194}">
+					<Comment>This banks contains all sounds that occur on the Metal surface</Comment>
+					<ObjectInclusionList>
+						<ObjectRef Name="Footsteps" ID="{9CB2A2A7-05D7-4FB7-918A-368A80EE1807}" WorkUnitID="{39255352-6310-4790-ACD5-F0B3026DF735}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList>
+						<GameSyncRef Name="Gravel" ID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Wood" ID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Light" ID="{B0F764A0-8171-4899-A530-67C404CEF373}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Dirt" ID="{44339A11-DC69-4A1B-9771-66244391C6ED}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Walk" ID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Run" ID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Heavy" ID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+					</GameSyncExclusionList>
+				</SoundBank>
+				<SoundBank Name="Gravel" ID="{19ED9BAE-53D7-4F46-BBB6-C15B18DD40FD}">
+					<Comment>This banks contains all sounds that occur on the Gravel surface</Comment>
+					<ObjectInclusionList>
+						<ObjectRef Name="Footsteps" ID="{9CB2A2A7-05D7-4FB7-918A-368A80EE1807}" WorkUnitID="{39255352-6310-4790-ACD5-F0B3026DF735}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList>
+						<GameSyncRef Name="Metal" ID="{6A7D1036-445A-44D8-8D83-127D4907232D}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Wood" ID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Light" ID="{B0F764A0-8171-4899-A530-67C404CEF373}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Dirt" ID="{44339A11-DC69-4A1B-9771-66244391C6ED}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Walk" ID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Run" ID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Heavy" ID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+					</GameSyncExclusionList>
+				</SoundBank>
+				<SoundBank Name="Wood" ID="{29BB555E-8846-4093-841E-ADF0BDABA2E7}">
+					<Comment>This banks contains all sounds that occur on the Wood surface</Comment>
+					<ObjectInclusionList>
+						<ObjectRef Name="Footsteps" ID="{9CB2A2A7-05D7-4FB7-918A-368A80EE1807}" WorkUnitID="{39255352-6310-4790-ACD5-F0B3026DF735}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList>
+						<GameSyncRef Name="Metal" ID="{6A7D1036-445A-44D8-8D83-127D4907232D}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Gravel" ID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+						<GameSyncRef Name="Dirt" ID="{44339A11-DC69-4A1B-9771-66244391C6ED}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}" Origin="Manual"/>
+					</GameSyncExclusionList>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

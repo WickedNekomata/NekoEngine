@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="bower_components/autobahnjs/autobahn.js"></script>
+    <script src="../../../../include/AK/WwiseAuthoringAPI/js/waapi.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/pixi.js/dist/pixi.min.js"></script>
+    <link href="css/waapidemo.css" rel="stylesheet">
+    <script src="js/app.js"></script>
+    <title>WAAPI XY pad Demo</title>
+</head>
+<body onload="init();">
+
+    <h1 class="page-title">Wwise Authoring API XY-Pad Demo</h1>
+    <p>Status: <span id="connectionStatus" class="error">DISCONNECTED</span></p>
+    <button onclick="connect()" id="connectbtn">Connect</button>
+    <p id="connectedVersion">--</p>
+
+    <table>
+    <tr>
+         <td>
+             <label>X : <select id="xParams">
+                     <option value="">None</option>
+                 </select>
+             </label>
+         </td>
+        <td></td>
+        <td></td>
+         <td>
+             <label>Y : <select id="yParams">
+                     <option value="">None</option>
+               </select>
+            </label>
+         </td>
+    </tr>
+    <tr>
+        <td>
+            <p>Value : <span id="xValue">50</span></p>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+            <p>Value : <span id="yValue">50</span></p>
+        </td>
+    </tr>
+    </table>
+
+    <div id="xypad"></div>
+</body>
+</html>

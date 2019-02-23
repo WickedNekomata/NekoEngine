@@ -1,0 +1,34 @@
+{
+	"id": "IntegrationDemo",	
+	"displayName": "Integration Demo",	
+	"description": "Code samples (C++) demonstrating different aspects of the Wwise SDK, with the companion Wwise project.",
+	"imagePath": "IntegrationDemo.png",
+	"wwiseProjectFilePath": "WwiseProject/IntegrationDemo.wproj",
+    "demos": [
+	{
+		"displayName":"Run Integration Demo (vc100/x64/Profile)",
+		"filePath":"../../x64_vc100/Profile/bin/IntegrationDemo.exe"
+	},
+	{
+		"displayName":"Run Integration Demo (vc110/x64/Profile)",
+		"filePath":"../../x64_vc110/Profile/bin/IntegrationDemo.exe"
+	},
+	{
+		"displayName":"Run Integration Demo (vc120/x64/Profile)",
+		"filePath":"../../x64_vc120/Profile/bin/IntegrationDemo.exe"
+	},
+	{
+		"displayName":"Run Integration Demo (vc140/x64/Profile)",
+		"filePath":"../../x64_vc140/Profile/bin/IntegrationDemo.exe"
+	},
+  {
+		"displayName":"Run Integration Demo (vc150/x64/Profile)",
+		"filePath":"../../x64_vc150/Profile/bin/IntegrationDemo.exe"
+	},
+  {
+		"displayName":"Run Integration Demo (Profile)",
+		"filePath":"../../Mac/Profile/bin/IntegrationDemo.app"
+	}
+    ],
+	"documentation": []
+}

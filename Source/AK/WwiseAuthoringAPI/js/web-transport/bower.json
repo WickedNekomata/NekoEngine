@@ -1,0 +1,20 @@
+{
+  "name": "web-transport",
+  "description": "Web-based sample to explpre transport control through WAAPI.",
+  "main": "js/app.js",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
+    "autobahnjs": "autobahn#^18.3.2",
+    "bootstrap-select": "^1.12.2"
+  }
+}

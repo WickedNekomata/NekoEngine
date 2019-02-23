@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{DC1BCA07-F4BB-483E-A207-A5D3F24C41B2}" SchemaVersion="85">
+	<Effects>
+		<WorkUnit Name="Default Work Unit" ID="{DC1BCA07-F4BB-483E-A207-A5D3F24C41B2}" PersistMode="Standalone">
+			<ChildrenList>
+				<Effect Name="Hangar_Env" ID="{C2817027-BAD4-4483-8762-64C45E56497E}" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+					<PropertyList>
+						<Property Name="DecayTime" Type="Real32" Value="6.1"/>
+						<Property Name="Density" Type="Real32" Value="100"/>
+						<Property Name="Diffusion" Type="Real32" Value="0.53"/>
+						<Property Name="DryLevel" Type="Real32" Value="-96"/>
+						<Property Name="ERFrontBackDelay" Type="Real32" Value="100"/>
+						<Property Name="ERLevel" Type="Real32" Value="-15"/>
+						<Property Name="ERPattern" Type="int32" Value="5"/>
+						<Property Name="Filter1Freq" Type="Real32" Value="490"/>
+						<Property Name="Filter1Gain" Type="Real32" Value="-4.5"/>
+						<Property Name="Filter2Freq" Type="Real32" Value="2200"/>
+						<Property Name="Filter2InsertPos" Type="int32" Value="0"/>
+						<Property Name="Filter2Q" Type="Real32" Value="0.1"/>
+						<Property Name="Filter3Freq" Type="Real32" Value="10240"/>
+						<Property Name="Filter3Gain" Type="Real32" Value="3"/>
+						<Property Name="HFDamping" Type="Real32" Value="6.9"/>
+						<Property Name="PreDelay" Type="Real32" Value="95"/>
+						<Property Name="Quality" Type="int32" Value="6"/>
+						<Property Name="ReverbLevel" Type="Real32" Value="-17"/>
+						<Property Name="RoomShape" Type="Real32" Value="0"/>
+						<Property Name="RoomSize" Type="Real32" Value="71"/>
+						<Property Name="StereoWidth" Type="Real32" Value="139"/>
+					</PropertyList>
+				</Effect>
+				<Effect Name="Hangar_Env_Low" ID="{02B9CCFE-D719-4F10-B10C-844791DA0F01}" PluginName="Wwise Matrix Reverb" CompanyID="0" PluginID="115" PluginType="3">
+					<PropertyList>
+						<Property Name="DryLevel" Type="Real32" Value="-96"/>
+						<Property Name="HFRatio" Type="Real32" Value="5.4"/>
+						<Property Name="PreDelay" Type="Real32" Value="0.15"/>
+						<Property Name="ReverbTime" Type="Real32" Value="4.2"/>
+						<Property Name="WetLevel" Type="Real32" Value="-23"/>
+					</PropertyList>
+				</Effect>
+			</ChildrenList>
+		</WorkUnit>
+	</Effects>
+</WwiseDocument>

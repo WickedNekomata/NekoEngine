@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2006 Audiokinetic Inc. -->
+<PluginModule>
+  <SourcePlugin Name="Wwise Audio Input" CompanyID="0" PluginID="200">
+    <PluginInfo CanUnlink="true">
+      <PlatformSupport>
+        <Platform Name="Android"></Platform>
+        <Platform Name="Windows"></Platform>
+        <Platform Name="Linux"></Platform>
+        <Platform Name="Mac"></Platform>
+        <Platform Name="XboxOne"></Platform>
+        <Platform Name="PS4"></Platform>
+        <Platform Name="iOS"></Platform>
+		<Platform Name="Switch"></Platform>
+		<Platform Name="Lumin"></Platform>
+      </PlatformSupport>
+    </PluginInfo>
+    <Properties>
+      <Property Name="AudioInputGain" Type="Real32" SupportRTPCType="Exclusive" DataMeaning="Decibels" DisplayName="Gain" DisplayGroup="Audio Input">
+        <UserInterface Step="0.1" Decimals="1" />
+        <DefaultValue>-12</DefaultValue>
+        <AudioEnginePropertyID>1</AudioEnginePropertyID>
+        <Restrictions>
+          <ValueRestriction>
+            <Range Type="Real32">
+              <Min>-96.3</Min>
+              <Max>0</Max>
+            </Range>
+          </ValueRestriction>
+        </Restrictions>
+      </Property>
+    </Properties>
+  </SourcePlugin>
+</PluginModule>

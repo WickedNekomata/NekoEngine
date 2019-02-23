@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}" SchemaVersion="85">
+	<Busses>
+		<WorkUnit Name="Default Work Unit" ID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}" PersistMode="Standalone">
+			<ChildrenList>
+				<Bus Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}">
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{869AEFF3-CB04-42C9-8AC4-48AE69C8EF6F}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Bus Name="Voices" ID="{FCDDF691-8885-4A61-BF35-24E9EA98700E}">
+							<PropertyList>
+								<Property Name="BusVolume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect" Type="bool">
+									<RTPCList>
+										<RTPC Name="" ID="{6458FE37-14E4-44DC-94A6-944431441F02}" ShortID="783660359">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Enable_Effect" ID="{3EECEA1A-734E-4564-AA6B-92B7E93BC4D7}" WorkUnitID="{42FB9DE8-6C07-4DA0-AEE9-800573790AE7}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{B6108D5C-9D69-4023-90C5-94C9EA826435}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="66049"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>1</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>49.8366013071895</XPos>
+														<YPos>0</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>0</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Effect0">
+									<Custom CreatedFrom="{FC9B2CA3-2F46-455A-8998-CE2C311CD26B}">
+										<Effect Name="_BigReverb (Define custom)" ID="{250E5FF9-A3D4-4017-904B-963821DB9B39}" ShortID="668148182" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+											<PropertyList>
+												<Property Name="DecayTime" Type="Real32" Value="6.8"/>
+												<Property Name="Density" Type="Real32" Value="70"/>
+												<Property Name="ERFrontBackDelay" Type="Real32" Value="100"/>
+												<Property Name="ERLevel" Type="Real32" Value="-31"/>
+												<Property Name="ERPattern" Type="int32" Value="9"/>
+												<Property Name="Filter1Freq" Type="Real32" Value="490"/>
+												<Property Name="Filter1Gain" Type="Real32" Value="-4.5"/>
+												<Property Name="Filter1InsertPos" Type="int32" Value="2"/>
+												<Property Name="Filter2InsertPos" Type="int32" Value="0"/>
+												<Property Name="Filter3Freq" Type="Real32" Value="11000"/>
+												<Property Name="Filter3Gain" Type="Real32" Value="-4.5"/>
+												<Property Name="HFDamping" Type="Real32" Value="5.7"/>
+												<Property Name="PreDelay" Type="Real32" Value="150"/>
+												<Property Name="Quality" Type="int32" Value="16"/>
+												<Property Name="ReverbLevel" Type="Real32" Value="-24"/>
+												<Property Name="RoomSize" Type="Real32" Value="100"/>
+											</PropertyList>
+										</Effect>
+									</Custom>
+								</Reference>
+							</ReferenceList>
+						</Bus>
+						<Bus Name="Environmental Bus" ID="{53D0C673-DFDE-4CD6-92E6-5A1C2D92FBE1}">
+							<ChildrenList>
+								<AuxBus Name="Hangar_Env" ID="{3C8A8587-751D-4B97-8508-FAB37723E482}">
+									<PropertyList>
+										<Property Name="BypassEffect0" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect1" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect2" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect3" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+											<ObjectRef Name="Hangar_Env" ID="{C2817027-BAD4-4483-8762-64C45E56497E}" WorkUnitID="{DC1BCA07-F4BB-483E-A207-A5D3F24C41B2}"/>
+										</Reference>
+										<Reference Name="Effect0" Platform="iOS" PluginName="Wwise Matrix Reverb" CompanyID="0" PluginID="115" PluginType="3">
+											<ObjectRef Name="Hangar_Env_Low" ID="{02B9CCFE-D719-4F10-B10C-844791DA0F01}" WorkUnitID="{DC1BCA07-F4BB-483E-A207-A5D3F24C41B2}"/>
+										</Reference>
+										<Reference Name="Effect1" Platform="iOS"/>
+										<Reference Name="Effect2" Platform="iOS"/>
+										<Reference Name="Effect3" Platform="iOS"/>
+									</ReferenceList>
+								</AuxBus>
+							</ChildrenList>
+						</Bus>
+						<Bus Name="Voices_Radio" ID="{84B0F2A1-5514-4C22-B77B-2E91CD9FDAFB}"/>
+						<Bus Name="Music" ID="{4810BCA9-BA17-4C9F-B065-1F1CB8AC7DEE}">
+							<PropertyList>
+								<Property Name="UsedForBackgroundMusic" Type="bool" Value="True"/>
+							</PropertyList>
+						</Bus>
+						<Bus Name="3D_Bus_Demo" ID="{BF81410F-8346-4EA6-9298-AF3265CA6553}">
+							<PropertyList>
+								<Property Name="HdrOutputGameParameterMax" Type="Real64">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="HdrRatio" Type="Real64">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="HdrReleaseTimeMode" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+								<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+								<Property Name="PositioningType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<Custom>
+										<Attenuation Name="Attenuation (Custom)" ID="{35AE5BE4-CEAD-4079-9ACD-FF940C667958}" ShortID="152822365">
+											<CurveUsageInfoList>
+												<VolumeDryUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="Custom">
+														<Curve Name="VolumeDry" ID="{C2689A75-D7AE-492F-9757-F6CB6A7D8B97}">
+															<PropertyList>
+																<Property Name="Flags" Type="int32" Value="3"/>
+															</PropertyList>
+															<PointList>
+																<Point>
+																	<XPos>0</XPos>
+																	<YPos>0</YPos>
+																	<Flags>5</Flags>
+																</Point>
+																<Point>
+																	<XPos>100</XPos>
+																	<YPos>-200</YPos>
+																	<Flags>37</Flags>
+																</Point>
+															</PointList>
+														</Curve>
+													</CurveUsageInfo>
+												</VolumeDryUsage>
+												<VolumeWetGameUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseVolumeDry"/>
+												</VolumeWetGameUsage>
+												<VolumeWetUserUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseVolumeDry"/>
+												</VolumeWetUserUsage>
+												<LowPassFilterUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</LowPassFilterUsage>
+												<HighPassFilterUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</HighPassFilterUsage>
+												<SpreadUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</SpreadUsage>
+												<FocusUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</FocusUsage>
+											</CurveUsageInfoList>
+										</Attenuation>
+									</Custom>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Bus Name="Wet_Path_3D" ID="{58F6FE3D-8D90-4331-973F-1DBABF55CC30}">
+									<PropertyList>
+										<Property Name="EnablePositioning" Type="bool" Value="True"/>
+										<Property Name="HdrOutputGameParameterMax" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrRatio" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrReleaseTimeMode" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+										<Property Name="PositioningType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Room_Attenuation" ID="{45FD3BB6-25F3-4FF2-9287-B640250A3C99}" WorkUnitID="{FA0B1D22-7FD9-4D5C-AE85-F167ACFF5AAC}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AuxBus Name="Room2" ID="{153E52F5-A0A8-48C7-B2E4-3DF02FB36388}">
+											<ReferenceList>
+												<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+													<ObjectRef Name="Hangar_Env" ID="{C2817027-BAD4-4483-8762-64C45E56497E}" WorkUnitID="{DC1BCA07-F4BB-483E-A207-A5D3F24C41B2}"/>
+												</Reference>
+											</ReferenceList>
+										</AuxBus>
+										<AuxBus Name="Room1" ID="{1F639A50-6448-48BE-8746-13491225CF24}">
+											<ReferenceList>
+												<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+													<ObjectRef Name="Bright_Small_Hall" ID="{D8AD1955-D2BA-4C88-A806-E2D8AB47A90B}" WorkUnitID="{E8613F7D-BAD3-45CD-A3ED-505576F31277}"/>
+												</Reference>
+											</ReferenceList>
+										</AuxBus>
+									</ChildrenList>
+								</Bus>
+								<Bus Name="Dry_Path" ID="{F94974A2-138F-4DAB-85F2-74F8EC51264D}">
+									<PropertyList>
+										<Property Name="HdrOutputGameParameterMax" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrRatio" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrReleaseTimeMode" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+									</PropertyList>
+								</Bus>
+								<Bus Name="Wet_Path_Omni" ID="{ECB22ED7-D41D-4B61-BB7C-DB1E51CFCA8B}">
+									<PropertyList>
+										<Property Name="HdrOutputGameParameterMax" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrRatio" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrReleaseTimeMode" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+									</PropertyList>
+									<ChildrenList>
+										<AuxBus Name="ListenerEnv" ID="{6F9B1762-59A1-4B3D-8365-1EFFB8891957}">
+											<ReferenceList>
+												<Reference Name="Effect0">
+													<Custom>
+														<Effect Name="Wwise Stereo Delay (Custom)" ID="{0B2C52C7-1D59-4230-989F-1ABE10AA66C2}" ShortID="204868897" PluginName="Wwise Stereo Delay" CompanyID="0" PluginID="135" PluginType="3">
+															<PropertyList>
+																<Property Name="DryLevel" Type="Real32" Value="-96"/>
+																<Property Name="EnableFeedback" Type="bool" Value="True"/>
+																<Property Name="FilterType" Type="int32" Value="4"/>
+																<Property Name="LeftDelayTime" Type="Real32" Value="0.15"/>
+																<Property Name="LeftFeedback" Type="Real32" Value="-8"/>
+																<Property Name="RightDelayTime" Type="Real32" Value="0.15"/>
+																<Property Name="RightFeedback" Type="Real32" Value="-8"/>
+															</PropertyList>
+														</Effect>
+													</Custom>
+												</Reference>
+											</ReferenceList>
+										</AuxBus>
+									</ChildrenList>
+								</Bus>
+								<Bus Name="3D-Submix_Bus" ID="{12EED55E-09CE-4462-881F-54FCD179B80C}">
+									<PropertyList>
+										<Property Name="EnablePositioning" Type="bool" Value="True"/>
+										<Property Name="HdrOutputGameParameterMax" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrRatio" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrReleaseTimeMode" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+										<Property Name="PositioningType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Source_Attenuation" ID="{30EC8FB7-20F4-49A2-A504-920C2ECE3407}" WorkUnitID="{FA0B1D22-7FD9-4D5C-AE85-F167ACFF5AAC}"/>
+										</Reference>
+									</ReferenceList>
+								</Bus>
+								<Bus Name="Portals" ID="{552AEEE8-CFB8-4ED3-BB10-825BB2670524}">
+									<PropertyList>
+										<Property Name="DivergenceCenter" Type="int32">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrOutputGameParameterMax" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrRatio" Type="Real64">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="HdrReleaseTimeMode" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+									</PropertyList>
+									<ChildrenList>
+										<AuxBus Name="Room" ID="{9FD1C458-C391-47F3-9372-CEAF85DC2607}">
+											<Comment>Room has more character so we exaggerate coupling into Outside by having a large "Game-Defined Send" level compared to the direct output ("Output Bus Volume").</Comment>
+											<PropertyList>
+												<Property Name="EnablePositioning" Type="bool" Value="True"/>
+												<Property Name="OutputBusVolume" Type="Real64">
+													<ValueList>
+														<Value>-12</Value>
+													</ValueList>
+												</Property>
+												<Property Name="PositioningType" Type="int16" Value="1"/>
+												<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Portal_Attenuation_Portal_Demo" ID="{3E93C2C8-E9B6-4998-9B98-4E25A368E123}" WorkUnitID="{FA0B1D22-7FD9-4D5C-AE85-F167ACFF5AAC}"/>
+												</Reference>
+												<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+													<ObjectRef Name="Room_Medium_Tiled" ID="{0C0A3A92-A571-4FDB-AB40-ACFED04E0217}" WorkUnitID="{E8613F7D-BAD3-45CD-A3ED-505576F31277}"/>
+												</Reference>
+											</ReferenceList>
+										</AuxBus>
+										<AuxBus Name="Outside" ID="{2E789ECD-A9C0-4E30-8580-E3C417A3C9DC}">
+											<Comment>Because it is more prominent (in terms of length), it sends less in Room than Room sends in it.</Comment>
+											<PropertyList>
+												<Property Name="BusVolume" Type="Real64">
+													<ValueList>
+														<Value>-12</Value>
+													</ValueList>
+												</Property>
+												<Property Name="DivergenceCenter" Type="int32">
+													<ValueList>
+														<Value>100</Value>
+													</ValueList>
+												</Property>
+												<Property Name="EnablePositioning" Type="bool" Value="True"/>
+												<Property Name="PositioningType" Type="int16" Value="1"/>
+												<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Portal_Attenuation_Portal_Demo" ID="{3E93C2C8-E9B6-4998-9B98-4E25A368E123}" WorkUnitID="{FA0B1D22-7FD9-4D5C-AE85-F167ACFF5AAC}"/>
+												</Reference>
+												<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+													<ObjectRef Name="Huge_Space_Garage" ID="{1AF92D84-49DD-4BBC-8F29-6C6D10082B6E}" WorkUnitID="{E8613F7D-BAD3-45CD-A3ED-505576F31277}"/>
+												</Reference>
+											</ReferenceList>
+										</AuxBus>
+									</ChildrenList>
+								</Bus>
+							</ChildrenList>
+						</Bus>
+					</ChildrenList>
+					<StateInfo>
+						<StateGroupList>
+							<StateGroupInfo>
+								<StateGroupRef Name="PlayerHealth" ID="{04DA61D8-C090-4BA1-A0A3-CCAD0587AE0E}"/>
+							</StateGroupInfo>
+						</StateGroupList>
+						<CustomStateList>
+							<CustomState>
+								<StateRef Name="Normal" ID="{37201C8B-7D86-4077-ABFE-12AAD2FBF798}"/>
+								<State Name="Custom State" ID="{91E6DE08-CE61-49F3-9DF4-A2E90BA06E9C}" ShortID="919233327"/>
+							</CustomState>
+							<CustomState>
+								<StateRef Name="Blasted" ID="{AD983F7E-AFAE-4BD6-A9D8-ADB456C0A6BA}"/>
+								<State Name="Custom State" ID="{ED1354D6-AAB8-48D2-BF29-507176C5268C}" ShortID="416526659">
+									<PropertyList>
+										<Property Name="Lowpass" Type="int16" Value="57"/>
+										<Property Name="Pitch" Type="int32" Value="-860"/>
+									</PropertyList>
+								</State>
+							</CustomState>
+						</CustomStateList>
+					</StateInfo>
+				</Bus>
+				<Bus Name="Motion Bus" ID="{20A630BA-3398-4676-B927-1004DFE41FD8}">
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="Wwise Motion" CompanyID="0" PluginID="507" PluginType="7">
+							<ObjectRef Name="Wwise_Motion" ID="{85BDB6B5-6231-4791-8987-36E4BC9B6FD3}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AuxBus Name="Master_Motion_Bus_Aux" ID="{2419781F-599B-449A-9504-E8E98FC50D1E}"/>
+					</ChildrenList>
+				</Bus>
+				<Bus Name="Non Recordable Bus" ID="{D2E0BC7E-7B3F-4FFE-A670-FAE02761B631}">
+					<PropertyList>
+						<Property Name="HdrOutputGameParameterMax" Type="Real64">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="HdrRatio" Type="Real64">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="HdrReleaseTimeMode" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{869AEFF3-CB04-42C9-8AC4-48AE69C8EF6F}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+						<Reference Name="AudioDevice" Platform="XboxOne">
+							<ObjectRef Name="DVR_Bypass" ID="{D076D990-C00C-492C-A4C4-656613E9CD48}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+						<Reference Name="AudioDevice" Platform="PS4">
+							<ObjectRef Name="DVR_Bypass" ID="{D076D990-C00C-492C-A4C4-656613E9CD48}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Bus Name="Muted for User Music" ID="{C0577AEB-0E9B-4632-844A-A7C82B58D4B4}">
+							<PropertyList>
+								<Property Name="DivergenceCenter" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="HdrOutputGameParameterMax" Type="Real64">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="HdrRatio" Type="Real64">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="HdrReleaseTimeMode" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+								<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+								<Property Name="UsedForBackgroundMusic" Type="bool" Value="True"/>
+							</PropertyList>
+						</Bus>
+					</ChildrenList>
+				</Bus>
+				<Bus Name="Game Pad Bus" ID="{831EDEB8-142B-454B-B7D7-0E412F47FF4E}">
+					<PropertyList>
+						<Property Name="DivergenceCenter" Type="int32">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="HdrOutputGameParameterMax" Type="Real64">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="HdrRatio" Type="Real64">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="HdrReleaseTimeMode" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
+						<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{869AEFF3-CB04-42C9-8AC4-48AE69C8EF6F}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+						<Reference Name="AudioDevice" Platform="XboxOne" PluginName="Controller Headphones" CompanyID="0" PluginID="177" PluginType="7">
+							<ObjectRef Name="Controller_Headphones" ID="{78F95FEC-E228-45C0-8FA5-C8DEC3D47051}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+						<Reference Name="AudioDevice" Platform="PS4" PluginName="Controller Speaker" CompanyID="0" PluginID="179" PluginType="7">
+							<ObjectRef Name="Pad_Output" ID="{48154961-0A00-4FB7-8F13-EB143DE4B518}" WorkUnitID="{0CB25EE0-4A76-4A92-A48A-4A708C73630A}"/>
+						</Reference>
+					</ReferenceList>
+				</Bus>
+			</ChildrenList>
+		</WorkUnit>
+	</Busses>
+</WwiseDocument>

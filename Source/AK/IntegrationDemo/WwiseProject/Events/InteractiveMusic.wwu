@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{4588E860-75BD-4832-A6F1-CF26E21EA914}" SchemaVersion="85">
+	<Events>
+		<WorkUnit Name="InteractiveMusic" ID="{4588E860-75BD-4832-A6F1-CF26E21EA914}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="IM_Start" ID="{6696EC31-FB53-4B60-8E79-C2DC04AB7E0A}">
+					<ChildrenList>
+						<Action Name="" ID="{301CD2A3-F77B-4C1B-9B36-A0DD27AF4EF7}" ShortID="199372952">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="22"/>
+								<Property Name="Scope" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Exploring" ID="{6C0BB16B-B1C8-42CD-A760-50995219C615}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{72F507C6-AF11-46A3-AE6A-D3FDD57A17A3}" ShortID="859830582">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="In-Game Music" ID="{9A47F923-9470-440D-8447-81F163F4B456}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="IM_GameOver" ID="{5B25F3CD-B067-4769-9363-0F50122ADAD0}">
+					<ChildrenList>
+						<Action Name="" ID="{ED0FD670-870B-4FED-9332-9283DC60D1C2}" ShortID="914691225">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="ISaidAreYouListening" ID="{BEF3C783-FBA7-4407-A61F-9D6BDC47DF70}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{4D06857F-F0FF-49AF-A243-7B10E015B9E3}" ShortID="672210130">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="22"/>
+								<Property Name="Scope" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="GameOver" ID="{C0E5D5E8-C130-47CC-98E5-7C29A9638A35}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="IM_WinTheFight" ID="{A2114227-7B56-4E47-A58F-C106CEAC6572}">
+					<ChildrenList>
+						<Action Name="" ID="{8075C81A-C2DA-4445-BCFD-0FF690DD5DAD}" ShortID="546168429">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="22"/>
+								<Property Name="Scope" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Winning_TheFight" ID="{8F368476-25B8-460B-9760-F53397657B0D}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Folder Name="Battle" ID="{366AE882-22FD-4E9D-8299-C7AC5ECCE7DC}" ShortID="1011115559">
+					<ChildrenList>
+						<Event Name="IM_3_Surronded_by_enemies" ID="{98F7A0DD-2CF6-4451-B8B8-D1CE63FC1D64}">
+							<ChildrenList>
+								<Action Name="" ID="{9280A0E4-6E09-4B2C-9B30-4EC6C48E8DBE}" ShortID="563238594">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fight_LowHealth" ID="{9E38F9B5-E631-4D13-A8B1-C3D45C405DE5}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="IM_1_One_enemy_wants_to_fight" ID="{24708A85-D557-4D8B-B763-CC9552E9E78B}">
+							<ChildrenList>
+								<Action Name="" ID="{F1B963E4-582E-437C-96CD-3CC28B69B7DF}" ShortID="900827783">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fight" ID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="IM_2_Two_enemies_want_to_fight" ID="{FC454EF4-8C9F-41F1-94A5-5C034F150C4D}">
+							<ChildrenList>
+								<Action Name="" ID="{40162CD1-415E-44E8-91D3-015EE9251BFC}" ShortID="106680232">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fight_Damaged" ID="{854E9525-151B-4E72-9BE7-7A70D391CBA8}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="IM_4_Death_is_coming" ID="{7EE04257-63AD-41A1-B742-9293AF1BB804}">
+							<ChildrenList>
+								<Action Name="" ID="{56011B8C-7A8C-4B12-91F8-D60553FD35C1}" ShortID="886600583">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fight_Dying" ID="{6DADFB0C-9D0E-4C01-B6A3-B888EB4E345C}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="IM_TheyAreHostile" ID="{21837F75-70A9-40A0-AA85-86ECB8DFCCA7}">
+							<ChildrenList>
+								<Action Name="" ID="{E6C2FC41-1113-4085-8064-ED08ECEED74F}" ShortID="281951988">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fight" ID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+								<Action Name="" ID="{708450FC-89D6-4711-B095-57DC1D77D762}" ShortID="161640732">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="AreYouListening" ID="{67C4FB5B-764A-40CC-A754-1448D2B6E286}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="LookingForOtherSpecies" ID="{7FDD5116-B2AA-4691-8F5F-8C093B102E52}" ShortID="762810743">
+					<ChildrenList>
+						<Event Name="IM_Communication_Begin" ID="{35263DEB-AE2D-449D-A9D1-150637A53ECA}">
+							<ChildrenList>
+								<Action Name="" ID="{84371357-8D2E-457A-B01D-2CCA60DB7E5E}" ShortID="834837779">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Playing" ID="{FB2C1D99-74D1-4E63-80A2-296AACFFBBC2}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+								<Action Name="" ID="{C1E80817-E6CF-48C6-A676-10C4E84F315A}" ShortID="278662470">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="AreYouListening" ID="{67C4FB5B-764A-40CC-A754-1448D2B6E286}" WorkUnitID="{1BDEE0E7-7F39-4966-83D4-9E9185A4D4CF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="IM_Explore" ID="{1B70BE3D-8EB7-43A1-8B5C-677DD1E17873}">
+							<ChildrenList>
+								<Action Name="" ID="{8ACA2C79-5A77-4C4F-A65F-E7E08A7680E0}" ShortID="703963378">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="22"/>
+										<Property Name="Scope" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Exploring" ID="{6C0BB16B-B1C8-42CD-A760-50995219C615}" WorkUnitID="{6A8E32AE-15EA-4D76-97F1-D5F0C67A32DF}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

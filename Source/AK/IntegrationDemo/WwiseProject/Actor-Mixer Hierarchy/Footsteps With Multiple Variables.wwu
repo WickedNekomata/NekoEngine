@@ -1,0 +1,1544 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{39255352-6310-4790-ACD5-F0B3026DF735}" SchemaVersion="85">
+	<AudioObjects>
+		<WorkUnit Name="Footsteps With Multiple Variables" ID="{39255352-6310-4790-ACD5-F0B3026DF735}" PersistMode="Standalone">
+			<ChildrenList>
+				<SwitchContainer Name="Footsteps" ID="{9CB2A2A7-05D7-4FB7-918A-368A80EE1807}" ShortID="400530090">
+					<Comment>This structure deals with all 3 variables pertaining to Footsteps (in this example!): surface, weight and walking speed.  The Weight is handled by an RTPC on the volume (on Footstep switch) and RTPC curves on each sub-structure to play with both pitch and LPF depending on the actual samples.  Surface is handled with a switch container.  Randomizers in many levels to add some variations.</Comment>
+					<PropertyList>
+						<Property Name="BelowThresholdBehavior" Type="int16" Value="1"/>
+						<Property Name="OverrideGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ModifierList>
+								<ModifierInfo>
+									<Modifier Name="" ID="{3504FE27-C278-43A0-B302-928B52A66977}">
+										<PropertyList>
+											<Property Name="Max" Type="Real64" Value="2"/>
+											<Property Name="Min" Type="Real64" Value="-2"/>
+										</PropertyList>
+									</Modifier>
+								</ModifierInfo>
+							</ModifierList>
+							<RTPCList>
+								<RTPC Name="" ID="{D70DAF3D-9730-448E-BF09-8DA1D4CF5151}" ShortID="438173458">
+									<ReferenceList>
+										<Reference Name="ControlInput">
+											<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+										</Reference>
+									</ReferenceList>
+									<Curve Name="" ID="{14377EF1-BA0F-45DD-90A1-871B5CB5889C}">
+										<PropertyList>
+											<Property Name="Flags" Type="int32" Value="3"/>
+										</PropertyList>
+										<PointList>
+											<Point>
+												<XPos>0</XPos>
+												<YPos>-10</YPos>
+												<Flags>5</Flags>
+											</Point>
+											<Point>
+												<XPos>100</XPos>
+												<YPos>0</YPos>
+												<Flags>37</Flags>
+											</Point>
+										</PointList>
+									</Curve>
+								</RTPC>
+							</RTPCList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Environmental Bus" ID="{53D0C673-DFDE-4CD6-92E6-5A1C2D92FBE1}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+						</Reference>
+						<Reference Name="SwitchGroupOrStateGroup">
+							<ObjectRef Name="Surface" ID="{EAB62AA7-5069-491B-BC8F-495B01CA7501}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="Gravel_Any" ID="{BE0EBDB7-5EAF-4B26-8F00-C24548E07A1E}" ShortID="802087033">
+							<Comment>Variation is created with pitch, LPF randomization.  Using an EQ to simulate the footstep weight. 
+Walking/Running speed is a simple offset in volume and pitch also done with an RTPC</Comment>
+							<PropertyList>
+								<Property Name="Lowpass" Type="int16">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{22D69067-39EE-42EF-92EB-0ADE71163904}">
+												<PropertyList>
+													<Property Name="Max" Type="Real64" Value="40"/>
+													<Property Name="Min" Type="Real64" Value="-40"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="OverrideEffect" Type="bool" Value="True"/>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{3AEF417A-3E16-4BD6-BCF3-479080F72AC6}">
+												<PropertyList>
+													<Property Name="Max" Type="Real64" Value="101"/>
+													<Property Name="Min" Type="Real64" Value="-177"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+									<RTPCList>
+										<RTPC Name="" ID="{C7EE43ED-025A-4613-868F-E4AA88F61863}" ShortID="585963557">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Footstep_Speed" ID="{90B8D510-B555-4C88-93AE-F2326AC1DC26}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{B1B38C17-BA2C-4EC9-A8BB-2E4720E215ED}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-300</YPos>
+														<Flags>5</Flags>
+														<SegmentShape>SCurve</SegmentShape>
+													</Point>
+													<Point>
+														<XPos>10</XPos>
+														<YPos>600</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+										<RTPC Name="" ID="{C76D8EF0-0858-454B-A5D5-E5690FF3F7DE}" ShortID="298101273">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{A0C96220-920A-4EAB-8279-80A081029D6F}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>-500</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+								<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-6</Value>
+									</ValueList>
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{F5689B62-0764-4EA3-ACED-354A00D0341E}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="False"/>
+													<Property Name="Max" Type="Real64" Value="2"/>
+													<Property Name="Min" Type="Real64" Value="-2"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+									<RTPCList>
+										<RTPC Name="" ID="{9EC12B71-D46E-46BE-AF9E-C5B41F88B788}" ShortID="10127129">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Footstep_Speed" ID="{90B8D510-B555-4C88-93AE-F2326AC1DC26}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{B43A9A63-3974-4360-8F05-7D966F2C7189}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="3"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+														<SegmentShape>Exp2</SegmentShape>
+													</Point>
+													<Point>
+														<XPos>10</XPos>
+														<YPos>6</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Effect0" PluginName="Wwise Parametric EQ" CompanyID="0" PluginID="105" PluginType="3">
+									<ObjectRef Name="GravelEQ" ID="{34A4C6AF-F669-40BA-8351-0C6C1772D137}" WorkUnitID="{81786A24-8893-4DE1-81AF-602DBDFCFF71}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="AK_FS_Run_Gravel_01" ID="{61B33DF6-7380-46E0-8EF7-BC25BDF41139}" ShortID="980457367">
+									<PropertyList>
+										<Property Name="PositioningType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="AK_FS_Run_Gravel_02" ID="{A2DFC28A-8D9E-49B7-8B3D-4F38F5EAE659}" ShortID="996471891">
+											<Language>SFX</Language>
+											<AudioFile>footsteps\Gravel\AK_FS_Run_Gravel_01.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="AK_FS_Run_Gravel_02" ID="{A2DFC28A-8D9E-49B7-8B3D-4F38F5EAE659}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="AK_FS_Run_Gravel_02" ID="{AEC6B32E-0167-4582-BEAF-9ED3CD539C9A}" ShortID="688801585">
+									<PropertyList>
+										<Property Name="PositioningType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="AK_FS_Run_Gravel_01" ID="{0891FBB7-DBD6-4CFF-9100-E0F49D8F0BEA}" ShortID="461944601">
+											<Language>SFX</Language>
+											<AudioFile>footsteps\Gravel\AK_FS_Run_Gravel_02.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="AK_FS_Run_Gravel_01" ID="{0891FBB7-DBD6-4CFF-9100-E0F49D8F0BEA}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="AK_FS_Run_Gravel_03" ID="{D2C9B0EB-5825-445C-8A7F-90345EA3C29A}" ShortID="321934475">
+									<PropertyList>
+										<Property Name="PositioningType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Effect0">
+											<Custom CreatedFrom="{C2817027-BAD4-4483-8762-64C45E56497E}">
+												<Effect Name="Hangar_Env (Define custom)" ID="{8CC52879-4B17-4F3E-B613-DCC8004E4A3E}" ShortID="685399972" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+													<PropertyList>
+														<Property Name="DecayTime" Type="Real32" Value="6.1"/>
+														<Property Name="Density" Type="Real32" Value="100"/>
+														<Property Name="Diffusion" Type="Real32" Value="0.53"/>
+														<Property Name="ERFrontBackDelay" Type="Real32" Value="100"/>
+														<Property Name="ERLevel" Type="Real32" Value="-15"/>
+														<Property Name="ERPattern" Type="int32" Value="5"/>
+														<Property Name="Filter1Freq" Type="Real32" Value="490"/>
+														<Property Name="Filter1Gain" Type="Real32" Value="-4.5"/>
+														<Property Name="Filter2Freq" Type="Real32" Value="2200"/>
+														<Property Name="Filter2InsertPos" Type="int32" Value="0"/>
+														<Property Name="Filter2Q" Type="Real32" Value="0.1"/>
+														<Property Name="Filter3Freq" Type="Real32" Value="10240"/>
+														<Property Name="Filter3Gain" Type="Real32" Value="3"/>
+														<Property Name="HFDamping" Type="Real32" Value="6.9"/>
+														<Property Name="PreDelay" Type="Real32" Value="95"/>
+														<Property Name="Quality" Type="int32" Value="6"/>
+														<Property Name="ReverbLevel" Type="Real32" Value="-17"/>
+														<Property Name="RoomShape" Type="Real32" Value="0"/>
+														<Property Name="RoomSize" Type="Real32" Value="71"/>
+														<Property Name="StereoWidth" Type="Real32" Value="139"/>
+													</PropertyList>
+												</Effect>
+											</Custom>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="AK_FS_Run_Gravel_01" ID="{67B5E2E3-C582-42C8-BBC2-48667E62EF4F}" ShortID="407913791">
+											<Language>SFX</Language>
+											<AudioFile>footsteps\Gravel\AK_FS_Run_Gravel_03.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="AK_FS_Run_Gravel_01" ID="{67B5E2E3-C582-42C8-BBC2-48667E62EF4F}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<SwitchContainer Name="Wood" ID="{DF7FD4E5-D3B4-44D1-943D-D1D91B89108F}" ShortID="647863731">
+							<Comment>Running and walking on wood have very different sounds so they are split in two discrete containers, switched with the Speed RTPC-driven switch.</Comment>
+							<PropertyList>
+								<Property Name="BypassEffect0" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect1" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect2" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect3" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect0" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect1" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect2" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect3" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="DefaultSwitchOrState">
+									<ObjectRef Name="Walk" ID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}"/>
+								</Reference>
+								<Reference Name="Effect0" Platform="iOS"/>
+								<Reference Name="Effect1" Platform="iOS"/>
+								<Reference Name="Effect2" Platform="iOS"/>
+								<Reference Name="Effect3" Platform="iOS"/>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="Footstep_Gait" ID="{BB88E245-BA7F-4FCB-9108-08751641F08B}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<SwitchContainer Name="Wood_Walk" ID="{79176050-B699-4E7B-B31C-BD082583FE8D}" ShortID="158991653">
+									<Comment>Using different samples for light and heavy footsteps.  The RTPC alone on effects and parameter wasn't enough.</Comment>
+									<PropertyList>
+										<Property Name="BypassEffect0" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect1" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect2" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="BypassEffect3" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="MakeUpGain" Type="Real64">
+											<ValueList>
+												<Value>-12</Value>
+											</ValueList>
+										</Property>
+										<Property Name="RenderEffect0" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="RenderEffect1" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="RenderEffect2" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="RenderEffect3" Type="bool">
+											<ValueList>
+												<Value Platform="iOS">False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{08A2CAA4-1AE0-4730-ADF1-028C5215860A}">
+														<PropertyList>
+															<Property Name="Enabled" Type="bool" Value="False"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DefaultSwitchOrState">
+											<ObjectRef Name="Light" ID="{B0F764A0-8171-4899-A530-67C404CEF373}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}"/>
+										</Reference>
+										<Reference Name="Effect0" Platform="iOS"/>
+										<Reference Name="Effect1" Platform="iOS"/>
+										<Reference Name="Effect2" Platform="iOS"/>
+										<Reference Name="Effect3" Platform="iOS"/>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+										<Reference Name="SwitchGroupOrStateGroup">
+											<ObjectRef Name="Footstep_Weight" ID="{648DF293-402C-4794-BB75-E8DAA57AB5CB}" WorkUnitID="{B20FB0D4-883A-4F6E-8912-3864DE39DCAB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<RandomSequenceContainer Name="Light" ID="{B132F770-0054-40DA-B8FB-CB6E82842906}" ShortID="366103202">
+											<PropertyList>
+												<Property Name="Lowpass" Type="int16">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{64757851-0CD5-45E6-A5E9-56320A5CD91F}">
+																<PropertyList>
+																	<Property Name="Max" Type="Real64" Value="20"/>
+																	<Property Name="Min" Type="Real64" Value="-10"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="MakeUpGain" Type="Real64">
+													<ValueList>
+														<Value>-3</Value>
+													</ValueList>
+												</Property>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{C181F651-1840-4552-A550-B1BCDD1BA743}">
+																<PropertyList>
+																	<Property Name="Max" Type="Real64" Value="400"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+													<RTPCList>
+														<RTPC Name="" ID="{2E6F6DBA-BC7F-4804-9197-BBA532891D86}" ShortID="90994158">
+															<ReferenceList>
+																<Reference Name="ControlInput">
+																	<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+																</Reference>
+															</ReferenceList>
+															<Curve Name="" ID="{20CD53AD-4671-436C-B500-2EB9BB0203C8}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="65537"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>100</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>-400</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</RTPC>
+													</RTPCList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="f_woodsolid_walk_01_res" ID="{78C6375F-FDD4-4347-B207-EC34935D0453}" ShortID="740911467">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Footstep_Walking_Hardwood_01" ID="{E2C2D1EE-32D6-4203-B6FF-892D06F563E0}" ShortID="208992552">
+															<Language>SFX</Language>
+															<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_01.wav</AudioFile>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Footstep_Walking_Hardwood_01" ID="{E2C2D1EE-32D6-4203-B6FF-892D06F563E0}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="f_woodsolid_walk_03_res" ID="{FB3B7E94-6913-4C46-8474-4B2EF02808F1}" ShortID="554585243">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Footstep_Walking_Hardwood_03" ID="{4CBED6AB-DD41-44C3-AF31-548F1E632C84}" ShortID="863956307">
+															<Language>SFX</Language>
+															<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_03.wav</AudioFile>
+															<ConvertedFileIDList>
+																<File ID="338845088"/>
+															</ConvertedFileIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Footstep_Walking_Hardwood_03" ID="{4CBED6AB-DD41-44C3-AF31-548F1E632C84}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="f_woodsolid_walk_04_res" ID="{78AA23CB-AE64-4636-BF5E-B1776BBCEF0F}" ShortID="49493099">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Footstep_Walking_Hardwood_04" ID="{E5B12B88-C35C-44CB-9926-FA5D3A4013C3}" ShortID="409943">
+															<Language>SFX</Language>
+															<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_04.wav</AudioFile>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Footstep_Walking_Hardwood_04" ID="{E5B12B88-C35C-44CB-9926-FA5D3A4013C3}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="Heavy" ID="{3E2AFE98-75B6-46DE-9107-77D81622F256}" ShortID="24927329">
+											<Comment>Didn't have lots of good samples to work with...</Comment>
+											<PropertyList>
+												<Property Name="Lowpass" Type="int16">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{AD77133F-3381-4D8E-AE3F-B4EDC206DBF6}">
+																<PropertyList>
+																	<Property Name="Max" Type="Real64" Value="10"/>
+																	<Property Name="Min" Type="Real64" Value="-10"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+													<RTPCList>
+														<RTPC Name="" ID="{5259BEC3-F7C1-43AD-BEAD-6E0AA21478A6}" ShortID="311801600">
+															<ReferenceList>
+																<Reference Name="ControlInput">
+																	<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+																</Reference>
+															</ReferenceList>
+															<Curve Name="" ID="{FB0E0D1A-BE31-4CFC-9C25-1192EE971817}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="65537"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>0</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>50.1477832512315</XPos>
+																		<YPos>0</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>46</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</RTPC>
+													</RTPCList>
+												</Property>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{0AF2F3DE-58AA-46B6-A818-98DD84BA3CED}">
+																<PropertyList>
+																	<Property Name="Min" Type="Real64" Value="-200"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+													<RTPCList>
+														<RTPC Name="" ID="{8D1DAF3A-2C46-4DAB-A336-0EEC30CA3A80}" ShortID="207753143">
+															<ReferenceList>
+																<Reference Name="ControlInput">
+																	<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+																</Reference>
+															</ReferenceList>
+															<Curve Name="" ID="{FB713B54-0A2F-4ECD-9756-2DD25A61CDC6}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="65537"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>0</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>50.04926</XPos>
+																		<YPos>99</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>-400</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</RTPC>
+													</RTPCList>
+												</Property>
+												<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="f_woodsolid_walk_02_res" ID="{36E8E54E-ECEF-4550-B4F5-5314DB19089E}" ShortID="393681894">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Footstep_Walking_Hardwood_02" ID="{0658DE0E-95F1-4959-84A3-247CBDA3F332}" ShortID="45272899">
+															<Language>SFX</Language>
+															<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_02.wav</AudioFile>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Footstep_Walking_Hardwood_02" ID="{0658DE0E-95F1-4959-84A3-247CBDA3F332}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="f_woodsolid_walk_05_res" ID="{72F8A4B9-23F1-4832-AF21-C63C8D7B239B}" ShortID="514094160">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Footstep_Walking_Hardwood_05" ID="{03ED3A1B-8FA1-4A51-9452-3ABA0403BA29}" ShortID="730210630">
+															<Language>SFX</Language>
+															<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_05.wav</AudioFile>
+															<ConvertedFileIDList>
+																<File ID="677704873"/>
+															</ConvertedFileIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Footstep_Walking_Hardwood_05" ID="{03ED3A1B-8FA1-4A51-9452-3ABA0403BA29}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+									</ChildrenList>
+									<GroupingInfo>
+										<GroupingBehaviorList>
+											<GroupingBehavior>
+												<ItemRef Name="Light" ID="{B132F770-0054-40DA-B8FB-CB6E82842906}"/>
+											</GroupingBehavior>
+											<GroupingBehavior>
+												<ItemRef Name="Heavy" ID="{3E2AFE98-75B6-46DE-9107-77D81622F256}"/>
+											</GroupingBehavior>
+										</GroupingBehaviorList>
+										<GroupingList>
+											<Grouping>
+												<SwitchRef Name="Heavy" ID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}"/>
+												<ItemList>
+													<ItemRef Name="Heavy" ID="{3E2AFE98-75B6-46DE-9107-77D81622F256}"/>
+												</ItemList>
+											</Grouping>
+											<Grouping>
+												<SwitchRef Name="Light" ID="{B0F764A0-8171-4899-A530-67C404CEF373}"/>
+												<ItemList>
+													<ItemRef Name="Light" ID="{B132F770-0054-40DA-B8FB-CB6E82842906}"/>
+												</ItemList>
+											</Grouping>
+										</GroupingList>
+									</GroupingInfo>
+								</SwitchContainer>
+								<RandomSequenceContainer Name="Wood_Run" ID="{7C6575A7-BD28-4332-A18E-43CE419352C0}" ShortID="246182632">
+									<PropertyList>
+										<Property Name="Lowpass" Type="int16">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{8350BA9C-AD98-4D13-AD27-0A3DFEE52386}">
+														<PropertyList>
+															<Property Name="Max" Type="Real64" Value="10"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+										<Property Name="MakeUpGain" Type="Real64">
+											<ValueList>
+												<Value>-6</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Pitch" Type="int32">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{5C904D02-0348-4A94-A4C3-FEDD3251ADC5}">
+														<PropertyList>
+															<Property Name="Max" Type="Real64" Value="200"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+											<RTPCList>
+												<RTPC Name="" ID="{C5883004-64E7-4717-AE6C-D93282078D8B}" ShortID="641342530">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{B9662F1D-AAFC-4D5B-B3FD-675373FA8928}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+																<SegmentShape>InvertedSCurve</SegmentShape>
+															</Point>
+															<Point>
+																<XPos>50.04926</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+																<SegmentShape>Exp2</SegmentShape>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>-300</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+												<RTPC Name="" ID="{2713A44C-3439-4A50-BE9D-455999D18052}" ShortID="586858586">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="Footstep_Speed" ID="{90B8D510-B555-4C88-93AE-F2326AC1DC26}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{32812570-8E4D-42BC-B7C4-1EABF47B974B}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>6.00985</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>10</XPos>
+																<YPos>500</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
+										</Property>
+										<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{DC8FE0DD-8C35-43D0-8BA2-F58E12034FAD}">
+														<PropertyList>
+															<Property Name="Max" Type="Real64" Value="2"/>
+															<Property Name="Min" Type="Real64" Value="-2"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+											<RTPCList>
+												<RTPC Name="" ID="{461D4F3F-9928-4775-A8BF-4E55AF3788E1}" ShortID="886139338">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{841769CB-CD4A-4AC0-9EBB-CCE7AFDAFB83}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-1</YPos>
+																<Flags>5</Flags>
+																<SegmentShape>Exp2</SegmentShape>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>6</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+												<RTPC Name="" ID="{B89CBCE6-96CC-41E9-BBCE-76B4B11F72C9}" ShortID="884327782">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="Footstep_Speed" ID="{90B8D510-B555-4C88-93AE-F2326AC1DC26}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{1271F85B-C3B4-4627-B20A-6798927E920E}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>4.99507</XPos>
+																<YPos>-6.14906</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>10</XPos>
+																<YPos>6</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="f_woodsolid_run_01_res" ID="{DD3FDCB3-2BFA-44D9-B041-CC04B28809F3}" ShortID="927768345">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardwood_01" ID="{3E2ED62F-0965-40A5-AFB3-3A6B3BBF087F}" ShortID="248616279">
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_01.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="208992552"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardwood_01" ID="{3E2ED62F-0965-40A5-AFB3-3A6B3BBF087F}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="f_woodsolid_run_02_res" ID="{278EB28D-EFA0-44C0-B81F-976472D15473}" ShortID="326159860">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardwood_02" ID="{52D3DC53-4379-4155-9FFF-536460C5ED4C}" ShortID="73726219">
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_02.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="45272899"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardwood_02" ID="{52D3DC53-4379-4155-9FFF-536460C5ED4C}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="f_woodsolid_run_03_res" ID="{1E565CD3-0B8B-4238-B59A-7D99A3430DD3}" ShortID="23456958">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardwood_03" ID="{EF300D0C-3913-4F84-B349-E656C9E1DC1F}" ShortID="338845088">
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardwood_03" ID="{EF300D0C-3913-4F84-B349-E656C9E1DC1F}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="f_woodsolid_run_04_res" ID="{3708F499-8419-48BA-BB07-9BB179DC0968}" ShortID="92220105">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardwood_04" ID="{ACBD1910-0FB3-4FB3-B350-C5848C648036}" ShortID="521616613">
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_04.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="409943"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardwood_04" ID="{ACBD1910-0FB3-4FB3-B350-C5848C648036}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="f_woodsolid_run_05_res" ID="{D8DF3917-C732-4FB4-A415-657436121CB4}" ShortID="1013428228">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardwood_05" ID="{2D2ACEB4-B434-48AF-9F58-ECA8756C259A}" ShortID="677704873">
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\WoodSolid\Footstep_Walking_Hardwood_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardwood_05" ID="{2D2ACEB4-B434-48AF-9F58-ECA8756C259A}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+							<GroupingInfo>
+								<GroupingBehaviorList>
+									<GroupingBehavior>
+										<ItemRef Name="Wood_Walk" ID="{79176050-B699-4E7B-B31C-BD082583FE8D}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Wood_Run" ID="{7C6575A7-BD28-4332-A18E-43CE419352C0}"/>
+									</GroupingBehavior>
+								</GroupingBehaviorList>
+								<GroupingList>
+									<Grouping>
+										<SwitchRef Name="Run" ID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}"/>
+										<ItemList>
+											<ItemRef Name="Wood_Run" ID="{7C6575A7-BD28-4332-A18E-43CE419352C0}"/>
+										</ItemList>
+									</Grouping>
+									<Grouping>
+										<SwitchRef Name="Walk" ID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}"/>
+										<ItemList>
+											<ItemRef Name="Wood_Walk" ID="{79176050-B699-4E7B-B31C-BD082583FE8D}"/>
+										</ItemList>
+									</Grouping>
+								</GroupingList>
+							</GroupingInfo>
+						</SwitchContainer>
+						<RandomSequenceContainer Name="Metal_Any" ID="{4C6A39DA-DA9D-480B-A100-A506CF360548}" ShortID="655955236">
+							<Comment>Here, I split my 5 original sounds in two parts: the heel impact and the toe impact stiched together using a sample-accurate sequence.  This makes 10 sounds but, when combined, it  makes 25 different footsteps sounds for the same media memory footprint.  Add a bit of pitch and LPF randomization on each part, this will create a lot more variation.  Plus the built-in Sound Seed Impact randomization.</Comment>
+							<PropertyList>
+								<Property Name="BypassEffect0" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect1" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect2" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="BypassEffect3" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Lowpass" Type="int16">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{C45AA597-B487-4F48-860E-F5A22C9CC492}">
+												<PropertyList>
+													<Property Name="Max" Type="Real64" Value="20"/>
+													<Property Name="Min" Type="Real64" Value="-10"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+									<RTPCList>
+										<RTPC Name="" ID="{ABAECC25-7014-48F2-BACB-DDCD0E50B7D4}" ShortID="728955669">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{4107C33E-3663-4370-93F0-61DAA886303A}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>32</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{4210B5E4-46AA-4D73-B395-AE71EB5A5B2E}">
+												<PropertyList>
+													<Property Name="Max" Type="Real64" Value="200"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+									<RTPCList>
+										<RTPC Name="" ID="{4D5548D3-D933-4392-A8C7-0315878E6D61}" ShortID="598876160">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Footstep_Weight" ID="{8552C51B-A366-48C0-9248-D559631D031E}" WorkUnitID="{4B8031BB-C20D-491D-A4B9-B961C1D4252F}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{C0D56290-4F2D-43AB-B17B-68D71125FD50}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>500</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>-3</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
+								<Property Name="PlayMechanismInfiniteOrNumberOfLoops" Type="int16" Value="0"/>
+								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismLoopCount" Type="int32" Value="1"/>
+								<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="2"/>
+								<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+								<Property Name="RandomOrSequence" Type="int16" Value="0"/>
+								<Property Name="RenderEffect0" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect1" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect2" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="RenderEffect3" Type="bool">
+									<ValueList>
+										<Value Platform="iOS">False</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{91A5FA1E-23C1-425E-8EEB-8013F898FACB}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="False"/>
+													<Property Name="Max" Type="Real64" Value="2"/>
+													<Property Name="Min" Type="Real64" Value="-2"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Effect0" Platform="iOS"/>
+								<Reference Name="Effect1" Platform="iOS"/>
+								<Reference Name="Effect2" Platform="iOS"/>
+								<Reference Name="Effect3" Platform="iOS"/>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="Heel" ID="{50DA88B2-844E-4564-BC43-DA3881881A7D}" ShortID="488988616">
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="metalsheet_walk_heel_01_res" ID="{74A1FDFE-4AC6-41A8-991B-3B13103DAD2A}" ShortID="140858249">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_01" ID="{8F233BC3-E0E5-4173-9363-BF58047845E0}" ShortID="664900215">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="1.72546296296296E-02"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimEnd" Type="Real64" Value="0.112888336347197"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_01.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_01" ID="{8F233BC3-E0E5-4173-9363-BF58047845E0}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_heel_02_res" ID="{36E8406F-9C18-4863-B993-8BD5A7E4DD09}" ShortID="706965595">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_02" ID="{EC98E65E-1E8F-41F9-BA0D-A2D9B5FC4E35}" ShortID="209481135">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="0.01338"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="9.98056057866185E-03"/>
+														<Property Name="TrimEnd" Type="Real64" Value="0.133830244122966"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_02" ID="{EC98E65E-1E8F-41F9-BA0D-A2D9B5FC4E35}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_heel_03_res" ID="{38272B67-03A2-474E-9E0F-FD9575A87DEA}" ShortID="303209786">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_03" ID="{20DA6245-7138-45C7-945D-D797B3AB28BF}" ShortID="715100575">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="6.08351851851852E-03"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimEnd" Type="Real64" Value="0.128710970464135"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_03" ID="{20DA6245-7138-45C7-945D-D797B3AB28BF}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_heel_04_res" ID="{F6E4C32D-D76D-4315-A9AA-9464668F7312}" ShortID="459242362">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_04" ID="{FE581148-5B9E-4D5F-A48B-C0410C7911FD}" ShortID="121114457">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="7.79219409282701E-03"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="7.23560880048222E-03"/>
+														<Property Name="TrimEnd" Type="Real64" Value="9.29497438215793E-02"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_04.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_04" ID="{FE581148-5B9E-4D5F-A48B-C0410C7911FD}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_heel_05_res" ID="{C85915B9-67B8-48EA-8E2A-6F28654AB818}" ShortID="169187790">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_05" ID="{F6C2D8E1-45A3-4B56-8123-CE210CF938E3}" ShortID="906530360">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="6.98274562989752E-03"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="1.01567209162146E-02"/>
+														<Property Name="TrimEnd" Type="Real64" Value="0.126324216395419"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_05" ID="{F6C2D8E1-45A3-4B56-8123-CE210CF938E3}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+								<RandomSequenceContainer Name="Toe" ID="{534FF0C8-2726-418F-A551-1A58602824F5}" ShortID="17933237">
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="metalsheet_walk_toe_01_res" ID="{EF428348-6E50-414B-8ECC-081540EB15C4}" ShortID="17119066">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_01" ID="{17D74CE8-EF67-47B4-AE7B-64796F3B997F}" ShortID="269683302">
+													<PropertyList>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.112326702833032"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_01.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_01" ID="{17D74CE8-EF67-47B4-AE7B-64796F3B997F}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_toe_02_res" ID="{13F95DC0-6D8C-4244-B5D4-88E7D2FD0064}" ShortID="198695826">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_02" ID="{93F6A5CB-3961-43B8-B3F0-83F29FEC2D41}" ShortID="241699658">
+													<PropertyList>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.13519122965642"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_02" ID="{93F6A5CB-3961-43B8-B3F0-83F29FEC2D41}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_toe_03_res" ID="{B5B5ECBD-65ED-4CDF-96E8-50633EBD26BC}" ShortID="949660955">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_03" ID="{FD5E80A1-00B8-4160-AB6D-F9044C9EF7B6}" ShortID="535268333">
+													<PropertyList>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.129418173598553"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_03" ID="{FD5E80A1-00B8-4160-AB6D-F9044C9EF7B6}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_toe_04_res" ID="{3780234E-2AD7-43CE-9197-D43DD265A3ED}" ShortID="841918285">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_04" ID="{ABC4C637-D945-45B2-BFF9-07B6FA4CFCEE}" ShortID="667657885">
+													<PropertyList>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="9.35063291139241E-02"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_04.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_04" ID="{ABC4C637-D945-45B2-BFF9-07B6FA4CFCEE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="metalsheet_walk_toe_05_res" ID="{CDCE5EBB-D1B0-46B0-87AC-3AF25A5BF117}" ShortID="718053396">
+											<ReferenceList>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Footstep_Walking_Hardmetal_05" ID="{E63AEF15-2AE4-4961-87E2-F7AA8682CFD7}" ShortID="753066208">
+													<PropertyList>
+														<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.128228601567209"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Footsteps\MetalSheet\Footstep_Walking_Hardmetal_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Footstep_Walking_Hardmetal_05" ID="{E63AEF15-2AE4-4961-87E2-F7AA8682CFD7}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+							<Playlist>
+								<ItemRef Name="Heel" ID="{50DA88B2-844E-4564-BC43-DA3881881A7D}"/>
+								<ItemRef Name="Toe" ID="{534FF0C8-2726-418F-A551-1A58602824F5}"/>
+							</Playlist>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Dirt" ID="{20B04774-9391-4266-A8F9-D7753CDFA2CF}" ShortID="550567365">
+							<PropertyList>
+								<Property Name="HdrEnvelopeSensitivity" Type="Real64" Value="20"/>
+								<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
+								<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-6</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="FS_Dirt_01" ID="{42CA40C0-BEA9-468F-90CE-1C1E0C9F0DE5}" ShortID="617572384">
+									<PropertyList>
+										<Property Name="HdrEnvelopeSensitivity" Type="Real64" Value="20"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="FS_Dirt_01" ID="{542EF082-B6AD-48C2-84FC-9077CE767E62}" ShortID="443382262">
+											<PropertyList>
+												<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Footsteps\Dirt\FS_Dirt_01.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="FS_Dirt_01" ID="{542EF082-B6AD-48C2-84FC-9077CE767E62}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="FS_Dirt_02" ID="{F4931724-C84A-40E8-AA65-5557A33CA828}" ShortID="777910535">
+									<PropertyList>
+										<Property Name="HdrEnvelopeSensitivity" Type="Real64" Value="20"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="FS_Dirt_02" ID="{E4FE113E-40A9-4505-B1A9-5A75C3E0F1A3}" ShortID="180276440">
+											<PropertyList>
+												<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Footsteps\Dirt\FS_Dirt_02.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="FS_Dirt_02" ID="{E4FE113E-40A9-4505-B1A9-5A75C3E0F1A3}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="FS_Dirt_03" ID="{F96FF7CD-FEEA-4C49-86AE-57A78FE8926A}" ShortID="521273252">
+									<PropertyList>
+										<Property Name="HdrEnvelopeSensitivity" Type="Real64" Value="20"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="FS_Dirt_03" ID="{416B777A-5FB6-42EB-AD01-E43EAAF3452A}" ShortID="757197798">
+											<PropertyList>
+												<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Footsteps\Dirt\FS_Dirt_03.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="FS_Dirt_03" ID="{416B777A-5FB6-42EB-AD01-E43EAAF3452A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="FS_Dirt_04" ID="{B427033B-B30F-4051-B67E-6986279C1283}" ShortID="945342129">
+									<PropertyList>
+										<Property Name="HdrEnvelopeSensitivity" Type="Real64" Value="20"/>
+										<Property Name="VirtualVoiceQueueBehavior" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="SFX" ID="{3A429FCB-87D8-458B-B315-DBE8023064B3}" WorkUnitID="{5793A36C-0278-4AE3-B21C-4737AF9F120D}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{B90D7019-72C6-46E8-990C-3BC04B2724DB}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="FS_Dirt_04" ID="{A32E1971-7CCE-460B-B34E-553C03171618}" ShortID="380879024">
+											<PropertyList>
+												<Property Name="LoopEnd" Type="Real64" Value="-1"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Footsteps\Dirt\FS_Dirt_04.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="FS_Dirt_04" ID="{A32E1971-7CCE-460B-B34E-553C03171618}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+					</ChildrenList>
+					<GroupingInfo>
+						<GroupingBehaviorList>
+							<GroupingBehavior>
+								<ItemRef Name="Dirt" ID="{20B04774-9391-4266-A8F9-D7753CDFA2CF}"/>
+							</GroupingBehavior>
+							<GroupingBehavior>
+								<ItemRef Name="Gravel_Any" ID="{BE0EBDB7-5EAF-4B26-8F00-C24548E07A1E}"/>
+							</GroupingBehavior>
+							<GroupingBehavior>
+								<ItemRef Name="Metal_Any" ID="{4C6A39DA-DA9D-480B-A100-A506CF360548}"/>
+							</GroupingBehavior>
+							<GroupingBehavior>
+								<ItemRef Name="Wood" ID="{DF7FD4E5-D3B4-44D1-943D-D1D91B89108F}"/>
+							</GroupingBehavior>
+						</GroupingBehaviorList>
+						<GroupingList>
+							<Grouping>
+								<SwitchRef Name="Dirt" ID="{44339A11-DC69-4A1B-9771-66244391C6ED}"/>
+								<ItemList>
+									<ItemRef Name="Dirt" ID="{20B04774-9391-4266-A8F9-D7753CDFA2CF}"/>
+								</ItemList>
+							</Grouping>
+							<Grouping>
+								<SwitchRef Name="Metal" ID="{6A7D1036-445A-44D8-8D83-127D4907232D}"/>
+								<ItemList>
+									<ItemRef Name="Metal_Any" ID="{4C6A39DA-DA9D-480B-A100-A506CF360548}"/>
+								</ItemList>
+							</Grouping>
+							<Grouping>
+								<SwitchRef Name="Gravel" ID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}"/>
+								<ItemList>
+									<ItemRef Name="Gravel_Any" ID="{BE0EBDB7-5EAF-4B26-8F00-C24548E07A1E}"/>
+								</ItemList>
+							</Grouping>
+							<Grouping>
+								<SwitchRef Name="Wood" ID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}"/>
+								<ItemList>
+									<ItemRef Name="Wood" ID="{DF7FD4E5-D3B4-44D1-943D-D1D91B89108F}"/>
+								</ItemList>
+							</Grouping>
+						</GroupingList>
+					</GroupingInfo>
+				</SwitchContainer>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

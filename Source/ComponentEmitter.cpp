@@ -248,7 +248,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
 		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
-		circleCreation.normal = -circleCreation.pos;
+		//circleCreation.normal = -circleCreation.pos;
 		startValues.particleDirection = (circleCreation.GetPoint(angle, centerDist)).Normalized();
 		break;
 	}
@@ -352,7 +352,6 @@ void ComponentEmitter::ParticleShape()
 			ImGui::End();
 		}
 
-
 		math::float3 pos;
 		switch (normalShapeType)
 		{
@@ -391,6 +390,8 @@ void ComponentEmitter::ParticleShape()
 		default:
 			break;
 		}
+
+		ImGui::Checkbox("Debug Draw", &drawShape);
 	}
 #endif
 }

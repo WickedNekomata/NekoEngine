@@ -124,6 +124,10 @@ public:
 
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
+	ShapeType GetDebugShapeDraw() const;
+	math::float3 GetAABBDimShape() const;
+	float GetRadSphereShape() const;
+	float GetRadCircleShape() const;
 #endif
 
 	uint GetInternalSerializationBytes();
@@ -136,6 +140,12 @@ public:
 	GameTimer burstTime;
 
 	bool drawAABB = false;
+	bool drawShape = false;
+
+	//Posibility space where particle is created
+	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
+	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
+	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
 
 	// Emitter particles
 	std::list<Particle*> particles;
@@ -190,11 +200,6 @@ private:
 
 	math::float3 posDifAABB = math::float3::zero;
 	float gravity = 0.0f;
-
-	//Posibility space where particle is created
-	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
-	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
-	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
 
 	ShapeType burstType = ShapeType_BOX;
 	std::string burstTypeName = "Box Burst";

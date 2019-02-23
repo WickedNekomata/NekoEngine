@@ -152,6 +152,21 @@ void DebugDrawer::DebugDrawSphere(float radius, const Color& color, const math::
 	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
 		glVertex3f(0.0f, radius * sinf(DEGTORAD * angle), radius * cosf(DEGTORAD * angle));
 	glEnd();
+	glPopMatrix();
+}
+
+void DebugDrawer::DebugDrawCone(float radius, float height, const Color & color, const math::float4x4 & globalTransform) const
+{
+	glColor3f(color.r, color.g, color.b);
+	glPushMatrix();
+	glMultMatrixf(globalTransform.Transposed().ptr());
+
+	float deltaAngle = 360.0f / (float)SPHERE_SIDES;
+
+	glBegin(GL_LINE_LOOP);
+	for (float angle = 0.0f; angle <= 360.0f; angle += deltaAngle)
+		glVertex3f(radius * cosf(DEGTORAD * angle), height, radius * sinf(DEGTORAD * angle));
+	glEnd();
 
 	glPopMatrix();
 }

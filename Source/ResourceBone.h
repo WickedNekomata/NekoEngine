@@ -20,6 +20,12 @@ public:
 	bool LoadInMemory();
 	bool UnloadFromMemory();
 
+	static bool ImportFile(const char* file, std::string& name, std::string& outputFile);
+	static bool ExportFile(ResourceData& data, ResourceBoneData& prefabData, std::string& outputFile, bool overwrite = false);
+	static uint CreateMeta(const char* file, uint prefab_uuid, std::string& name, std::string& outputMetaFile);
+	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& prefab_uuid, std::string& name);
+	static bool LoadFile(const char* file, ResourceBoneData& prefab_data_output);
+
 	void OnPanelAssets();
 
 public:

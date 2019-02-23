@@ -688,11 +688,13 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 void SceneImporter::DeleteBufferObject(uint& name) const
 {
 	glDeleteBuffers(1, &name);
+	name = 0;
 }
 
 void SceneImporter::DeleteVertexArrayObject(uint& name) const
 {
 	glDeleteVertexArrays(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------

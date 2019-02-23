@@ -430,6 +430,8 @@ std::vector<Uniform>& ResourceMaterial::GetUniforms()
 	return materialData.uniforms;
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ResourceMaterial::InitResources()
 {
 	// Set as used (shader)
@@ -449,8 +451,6 @@ void ResourceMaterial::DeinitResources()
 	// Set as unused (uniforms)
 	SetUniformsAsUnused();
 }
-
-// ----------------------------------------------------------------------------------------------------
 
 void ResourceMaterial::SetUniformsAsUsed() const
 {

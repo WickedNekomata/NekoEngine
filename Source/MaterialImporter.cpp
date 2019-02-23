@@ -335,6 +335,7 @@ void MaterialImporter::DeleteTexture(uint& name) const
 {
 	if (glIsTexture(name))
 		glDeleteTextures(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------

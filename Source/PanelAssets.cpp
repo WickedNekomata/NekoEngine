@@ -191,7 +191,10 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				if (res)
 					res->OnPanelAssets();
 
-				DeleteResourcePopUp(res->GetFile());
+				if (resourceType == ResourceTypes::ShaderObjectResource ||
+					resourceType == ResourceTypes::ShaderProgramResource ||
+					resourceType == ResourceTypes::MaterialResource)
+					DeleteResourcePopUp(res->GetFile());
 
 				break;
 			}

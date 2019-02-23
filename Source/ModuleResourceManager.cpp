@@ -68,7 +68,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			App->scripting->ScriptModified(event.fileEvent.file);
 			break;
 		}
-		default:
+		case MeshResource:
+		case TextureResource:
 		{
 			// 1. Delete resource(s)
 			std::vector<uint> resourcesUuids;

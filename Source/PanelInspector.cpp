@@ -770,6 +770,8 @@ void PanelInspector::ShowMaterialInspector() const
 
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
 
+	ImGui::Spacing();
+
 	// Uniforms
 	std::vector<Uniform>& uniforms = material->GetUniforms();
 	for (uint i = 0; i < uniforms.size(); ++i)

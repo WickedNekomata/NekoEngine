@@ -49,10 +49,10 @@ public:
 	void SetResourceTexture(uint textureUuid, uint& textureUuidUniform, uint& textureIdUniform);
 	std::vector<Uniform>& GetUniforms();
 
+private:
+
 	void InitResources();
 	void DeinitResources();
-
-private:
 
 	void SetUniformsAsUsed() const;
 	void SetUniformsAsUnused() const;

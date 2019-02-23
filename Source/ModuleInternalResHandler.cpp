@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleResourceManager.h"
+#include "MaterialImporter.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -179,6 +180,19 @@ void ModuleInternalResHandler::CreateDefaultMaterial()
 	data.name = "Default material";
 	materialData.shaderUuid = DEFAULT_SHADER_PROGRAM_UUID;
 	((ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid))->GetUniforms(materialData.uniforms);
+	for (uint i = 0; i < materialData.uniforms.size(); ++i)
+	{
+		Uniform& uniform = materialData.uniforms[i];
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::Sampler2U_value:
+		{
+			if (strcmp(uniform.common.name, "material.albedo") == 0)
+				uniform.sampler2DU.value.id = App->materialImporter->GetDefaultTexture();
+		}
+		break;
+		}
+	}
 
 	defaultMaterial = App->res->CreateResource(ResourceTypes::MaterialResource, data, &materialData, DEFAULT_MATERIAL_UUID)->GetUuid();
 }

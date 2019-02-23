@@ -3,7 +3,7 @@ using JellyBitEngine;
 
 public class RayCaster : JellyScript
 {
-    public LayerMask mask;
+    public LayerMask mask = new LayerMask();
     //Use this method for initialization
     public override void Awake()
     {
@@ -18,7 +18,7 @@ public class RayCaster : JellyScript
         if (Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)mask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
             NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
-            //agent.
+            agent.SetDestination(hitInfo.point);
         }
     }
 }

@@ -296,7 +296,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), collidersColor, globalMatrix);
+					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 10.0f, 10.0f), collidersColor, globalMatrix);
 					break;
 				}
 			}

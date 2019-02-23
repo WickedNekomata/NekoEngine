@@ -120,8 +120,6 @@ void ModuleNavigation::InitCrowd()
 	//args 1- Max agents, 2- radius agent, 3- navmesh
 	m_crowd->init(max_Agents, m_cfg.walkableRadius * m_cfg.cs, m_navMesh);
 
-	//m_crowd->getEditableFilter(0)->setExcludeFlags(SAMPLE_POLYFLAGS_DISABLED);
-
 	// Setup local avoidance params to different qualities.
 	dtObstacleAvoidanceParams params;
 	// Use mostly default settings, copy from dtCrowd.
@@ -265,14 +263,17 @@ void ModuleNavigation::RemoveAgent(int indx) const
 
 void ModuleNavigation::SetDestination(const float* p, int indx) const
 {
-	if (!m_navMesh || !!m_crowd) return;
+	if (!m_navMesh || !m_crowd) return;
 
 	float vel[3];
 	const dtCrowdAgent* ag = m_crowd->getAgent(indx);
+	dtPolyRef polyRefTarget;
+	float targetPos[3];
+	m_navQuery->findNearestPoly(p, m_crowd->getQueryExtents(), m_crowd->getFilter(ag->params.queryFilterType), &polyRefTarget, targetPos);
 	if (ag && ag->active)
 	{
 		calcVel(vel, ag->npos, p, ag->params.maxSpeed);
-		m_crowd->requestMoveVelocity(indx, vel);
+		m_crowd->requestMoveTarget(indx, polyRefTarget, targetPos);
 	}
 }
 
@@ -481,6 +482,12 @@ bool ModuleNavigation::HandleBuild()
 	rcFreeContourSet(m_cset);
 	m_cset = 0;
 
+	for (int i = 0; i < m_pmesh->npolys; ++i)
+	{
+		if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
+			m_pmesh->flags[i] = 0x01;
+		
+	}
 	// The GUI may allow more max points per polygon than Detour can handle.
 	// Only build the detour navmesh if we do not exceed the limit.
 	if (m_cfg.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)

@@ -106,8 +106,7 @@ private:
 	uint32_t monoObjectHandle = 0;
 
 	// Physics
-	uint layer;
-
+	uint layer = 0;
 };
 
 #endif

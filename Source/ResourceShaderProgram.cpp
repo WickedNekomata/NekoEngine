@@ -566,6 +566,7 @@ void ResourceShaderProgram::GetUniforms(std::vector<Uniform>& uniforms)
 			continue;
 
 		Uniform uniform;
+		memset(&uniform, 0, sizeof(Uniform));
 		switch (type)
 		{
 		case Uniforms_Values::FloatU_value:

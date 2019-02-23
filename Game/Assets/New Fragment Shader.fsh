@@ -26,7 +26,7 @@ struct Light
 uniform vec3 viewPos;
 uniform Light light;
 uniform Material material;
-uniform float i;
+uniform float jo;
 
 vec3 phong(vec3 ambient, vec3 diffuse, vec3 specular, float shininess, bool blinn)
 {
@@ -62,7 +62,7 @@ void main()
 	if (albedo.a < 0.1)
 		discard;
 
-	vec3 a = vec3(albedo) * i;
+	vec3 a = vec3(albedo) * jo;
 	vec3 s = vec3(texture(material.specular, fTexCoord));
 	vec3 phong = phong(a, a, s, 32.0, true);
 	FragColor = vec4(phong, albedo.a);

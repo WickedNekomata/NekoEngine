@@ -222,7 +222,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	{
 	case ShapeType_BOX:
 		spawn = boxCreation.RandomPointInside(App->randomMathLCG);
-		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
+		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3().Transposed()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
@@ -247,8 +247,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		angle = (2 * PI) * (float)App->GenerateRandomNumber() / MAXUINT;
 		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
-		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
-		//circleCreation.normal = -circleCreation.pos;
+		circleCreation.pos = (math::float3(0, coneHeight, 0) * parent->transform->rotation.ToFloat3x3().Transposed());
 		startValues.particleDirection = (circleCreation.GetPoint(angle, centerDist)).Normalized();
 		break;
 	}
@@ -385,6 +384,7 @@ void ComponentEmitter::ParticleShape()
 		case ShapeType_CONE:
 			ImGui::Text("Cone");
 			ImGui::DragFloat("Sphere Size", &circleCreation.r, 0.25f, 0.25f, 20.0f, "%.2f");
+			ImGui::DragFloat("Height Cone", &coneHeight, 0.0f, 0.25f, 20.0f, "%.2f");
 
 			break;
 		default:

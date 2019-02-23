@@ -379,7 +379,7 @@ update_status ModuleRenderer3D::PostUpdate()
 					App->debugDrawer->DebugDrawSphere((*emitter)->sphereCreation.r, White, globalMat);
 					break;
 				case ShapeType_CONE:
-					App->debugDrawer->DebugDrawCone((*emitter)->circleCreation.r, (*emitter)->circleCreation.pos.y, White, globalMat);
+					App->debugDrawer->DebugDrawCone((*emitter)->circleCreation.r, (*emitter)->coneHeight, White, globalMat);
 					break;
 				default:
 					break;

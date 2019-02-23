@@ -146,6 +146,7 @@ public:
 	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
 	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
 	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
+	float coneHeight = 1.0f;
 
 	// Emitter particles
 	std::list<Particle*> particles;

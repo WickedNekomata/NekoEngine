@@ -181,6 +181,9 @@
     <Filter Include="Sources\Helpers\Physics">
       <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\UI">
+      <UniqueIdentifier>{c03b2566-4186-426c-a40f-1419da72d723}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1475,13 +1478,13 @@
       <Filter>Sources\Modules</Filter>
     </ClInclude>
     <ClInclude Include="ComponentRectTransform.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
     <ClInclude Include="ComponentCanvasRenderer.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
     <ClInclude Include="ComponentImage.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1942,13 +1945,13 @@
       <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="ComponentRectTransform.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCanvasRenderer.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentImage.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

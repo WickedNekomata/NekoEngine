@@ -364,16 +364,16 @@ void WwiseT::AudioSource::SetPos(float pos_x, float pos_y, float pos_z, float fr
 		LOG("SET POSITION to Emmiter failed. Vectors are not orthogonal.");
 		return;
 	}
-		
+
 	// Convert float3 vectors to AkVectors
 	AkVector ak_pos;
 	AkVector ak_rot_front;
 	AkVector ak_rot_top;
-	
+
 	ak_pos.X = pos.x;
 	ak_pos.Y = pos.y;
 	ak_pos.Z = pos.z;
-	
+
 	ak_rot_front.X = rot_front.x;
 	ak_rot_front.Y = rot_front.y;
 	ak_rot_front.Z = rot_front.z;

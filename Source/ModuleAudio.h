@@ -7,7 +7,7 @@
 class ModuleAudio : public Module
 {
 public:
-	ModuleAudio(bool start_enabled = true);
+	ModuleAudio();
 	~ModuleAudio();
 	bool Start();
 	update_status Update(/*float dt*/);
@@ -17,14 +17,14 @@ public:
 	// Set listener
 	WwiseT::AudioSource* CreateSoundEmitter(const char * name);
 	uint GetListenerID()const;
-	
+
 	// Utils
 	void PlayOnAwake()const;
 	void Stop()const;
 	void Pause()const;
 	void Resume()const;
 	void SetListener(WwiseT::AudioSource* new_listener);
-	
+
 private:
 	std::list<WwiseT::AudioSource*> event_list;
 	WwiseT::AudioSource* listener;

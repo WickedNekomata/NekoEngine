@@ -71,7 +71,7 @@ namespace WwiseT
 		// Geters
 		uint GetID()const;
 		const char* GetName()const;
-		
+
 	private:
 		uint id;
 		const char* name = nullptr; // Event name

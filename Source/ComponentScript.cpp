@@ -889,7 +889,7 @@ void ComponentScript::OnUniqueEditor()
 						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
 
 						ImGui::PushItemWidth(150.0f);
-						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
+						if (ImGui::BeginCombo((fieldName + "##" + std::to_string(UUID)).data(), title))
 						{
 							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 							{
@@ -1089,6 +1089,13 @@ uint ComponentScript::GetPublicVarsSerializationBytes() const
 			else if (typeName == "JellyBitEngine.Transform")
 			{
 				varType = VarType::TRANSFORM;
+
+				uint nameLenght = fieldName.length();
+				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(uint32_t));
+			}
+			else if (typeName == "JellyBitEngine.LayerMask")
+			{
+				varType = VarType::LAYERMASK;
 
 				uint nameLenght = fieldName.length();
 				bytes += (sizeof(varType) + sizeof(uint) + nameLenght + sizeof(uint32_t));
@@ -1549,6 +1556,38 @@ void ComponentScript::SavePublicVars(char*& cursor) const
 				uint32_t uid = serializableGO ? serializableGO->GetUUID() : 0;
 				bytes = sizeof(uint32_t);
 				memcpy(cursor, &uid, bytes);
+				cursor += bytes;
+			}
+			else if (typeName == "JellyBitEngine.LayerMask")
+			{
+				varType = VarType::LAYERMASK;
+
+				//Serialize the varType
+				bytes = sizeof(varType);
+				memcpy(cursor, &varType, bytes);
+				cursor += bytes;
+
+				//Serialize the varName (length + string)
+
+				bytes = sizeof(uint);
+				uint nameLenght = fieldName.length();
+				memcpy(cursor, &nameLenght, bytes);
+				cursor += bytes;
+
+				bytes = nameLenght;
+				memcpy(cursor, fieldName.c_str(), bytes);
+				cursor += bytes;
+
+				//Serialize the var value
+
+				MonoObject* layerMask;
+				mono_field_get_value(classInstance, field, &layerMask);
+				
+				uint32_t varState = 0;
+				mono_field_get_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &varState);
+			
+				bytes = sizeof(uint32_t);
+				memcpy(cursor, &varState, bytes);
 				cursor += bytes;
 			}
 		}
@@ -2072,6 +2111,39 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 				}
 
+				break;
+			}
+			case VarType::LAYERMASK:
+			{
+				//DeSerialize the var value
+				bytes = sizeof(uint32_t);
+				uint32_t var;
+				memcpy(&var, cursor, bytes);
+				cursor += bytes;
+		
+				void* iterator = 0;
+				MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+				while (field != nullptr)
+				{
+					uint32_t flags = mono_field_get_flags(field);
+					if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+					{
+						MonoType* type = mono_field_get_type(field);
+						std::string typeName = mono_type_full_name(type);
+						std::string fieldName = mono_field_get_name(field);
+
+						if (typeName == "JellyBitEngine.LayerMask" && fieldName == varName)
+						{
+							MonoObject* layerMask;
+							mono_field_get_value(classInstance, field, &layerMask);
+
+							mono_field_set_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &var);
+							break;
+						}
+					}
+					field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+				}
 				break;
 			}
 			default:

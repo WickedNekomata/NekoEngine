@@ -1382,7 +1382,7 @@ void SetDestination(MonoObject* navMeshAgent, MonoArray* newDestination)
 {
 	math::float3 newDestinationcpp(mono_array_get(newDestination, float, 0), mono_array_get(newDestination, float, 1), mono_array_get(newDestination, float, 2));
 	int compAddress;
-	mono_field_get_value(navMeshAgent, mono_class_get_field_from_name(mono_object_get_class(navMeshAgent), "compAddress"), &compAddress);
+	mono_field_get_value(navMeshAgent, mono_class_get_field_from_name(mono_object_get_class(navMeshAgent), "componentAddress"), &compAddress);
 	ComponentNavAgent* agent = (ComponentNavAgent*)compAddress;
 	agent->SetDestination(newDestinationcpp.ptr());
 }

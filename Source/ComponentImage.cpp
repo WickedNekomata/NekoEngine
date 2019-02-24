@@ -1,12 +1,15 @@
 #include "ComponentImage.h"
 
 #include "GameObject.h"
+#include "ModuleUI.h"
+#include "Application.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
 
 ComponentImage::ComponentImage(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::ImageComponent)
 {
+	App->ui->componentsUI.push_back(this);
 }
 
 ComponentImage::ComponentImage(const ComponentImage & componentRectTransform) : Component(parent, ComponentTypes::ImageComponent)
@@ -21,10 +24,13 @@ ComponentImage::ComponentImage(const ComponentImage & componentRectTransform) : 
 	}
 	else
 		res_image = componentRectTransform.res_image;
+	App->ui->componentsUI.push_back(this);
+
 }
 
 ComponentImage::~ComponentImage()
 {
+	App->ui->componentsUI.remove(this);
 }
 
 void ComponentImage::Update()

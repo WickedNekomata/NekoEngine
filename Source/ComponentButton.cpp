@@ -17,6 +17,7 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 ComponentButton::ComponentButton(const ComponentButton & componentButton) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	state = componentButton.state;
+	App->ui->componentsUI.push_back(this);
 }
 
 ComponentButton::~ComponentButton()

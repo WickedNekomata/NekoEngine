@@ -10,6 +10,7 @@
 
 ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::RectTransformComponent)
 {
+	App->ui->componentsUI.push_back(this);
 	ui_rect = App->ui->GetRectUI();
 
 	Component* rect = nullptr;
@@ -28,6 +29,7 @@ ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTyp
 
 ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & componentRectTransform) : Component(componentRectTransform.parent, ComponentTypes::RectTransformComponent)
 {
+
 	ui_rect = App->ui->GetRectUI();
 
 	rectTransform[X_RECT] = componentRectTransform.rectTransform[X_RECT];
@@ -57,10 +59,12 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 	}
 
 	RecaculateAnchors();
+	App->ui->componentsUI.push_back(this);
 }
 
 ComponentRectTransform::~ComponentRectTransform()
 {
+	App->ui->componentsUI.remove(this);
 }
 
 void ComponentRectTransform::Update()

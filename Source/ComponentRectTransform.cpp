@@ -82,7 +82,7 @@ void ComponentRectTransform::SetRect(uint x, uint y, uint x_dist, uint y_dist)
 	RecaculateAnchors();
 }
 
-const uint * ComponentRectTransform::GetRect() const
+const uint* ComponentRectTransform::GetRect() const
 {
 	return rectTransform;
 }

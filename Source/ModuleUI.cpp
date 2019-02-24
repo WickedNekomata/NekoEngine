@@ -96,6 +96,10 @@ update_status ModuleUI::PreUpdate()
 
 update_status ModuleUI::Update()
 {
+	for (std::list<Component*>::iterator iteratorUI = componentsUI.begin(); iteratorUI != componentsUI.end(); ++iteratorUI)
+	{
+		(*iteratorUI)->Update();
+	}
 
 	return update_status::UPDATE_CONTINUE;
 }

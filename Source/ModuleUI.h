@@ -4,6 +4,7 @@
 #include "Module.h"
 
 #include "MathGeoLib/include/Math/float4.h"
+#include <list>
 
 #define UI_XRECT 0
 #define UI_YRECT 1
@@ -12,6 +13,14 @@
 
 //Possible Solution
 //https://stackoverflow.com/questions/47026863/opengl-geometry-shader-with-orthographic-projection
+
+enum UIState
+{
+	IDLE,
+	HOVERED,
+	R_CLICK,
+	L_CLICK
+};
 
 class ResourceShaderProgram;
 class ResourceShaderObject;
@@ -54,6 +63,10 @@ private:
 
 	void SetRectToShader(ComponentRectTransform* rect);
 
+public:
+	std::list<Component*> componentsUI;
+
+private:
 	uint ui_size_draw[4];
 
 	//math::float4x4 orthonormalMatrix = math::float4x4::identity;

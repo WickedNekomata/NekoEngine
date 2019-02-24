@@ -208,6 +208,7 @@
     <ClInclude Include="ComponentAnimation.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ModuleAnimation.h" />
+    <ClInclude Include="ModuleAudio.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="ResourcePrefab.h" />
@@ -595,6 +596,7 @@
     <ClInclude Include="ShaderImporter.h" />
     <ClInclude Include="ComponentRigidDynamic.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="WwiseT.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationImporter.cpp" />
@@ -603,6 +605,7 @@
     <ClCompile Include="ComponentAnimation.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />
+    <ClCompile Include="ModuleAudio.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
@@ -752,6 +755,7 @@
     <ClCompile Include="ShaderImporter.cpp" />
     <ClCompile Include="ComponentRigidDynamic.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="WwiseT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assimp\include\.editorconfig" />

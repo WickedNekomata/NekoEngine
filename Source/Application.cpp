@@ -22,6 +22,7 @@
 #include "ScriptingModule.h"
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
+#include "ModuleAudio.h"
 #include "Layers.h"
 
 #include "parson\parson.h"
@@ -48,6 +49,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	scripting = new ScriptingModule();
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
+	audio = new ModuleAudio();
 	layers = new Layers();
 
 #ifndef GAMEMODE
@@ -70,6 +72,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	AddModule(particle);
 	AddModule(physics);
+	AddModule(audio);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);

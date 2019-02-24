@@ -52,6 +52,7 @@ struct ModuleNavigation;
 struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
+struct ModuleAudio;
 struct Layers;
 
 class Application
@@ -139,6 +140,7 @@ public:
 	ScriptingModule*		  scripting;
 	ModuleEvents*			  events;
 	ModulePhysics*			  physics;
+	ModuleAudio*              audio;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
 	Layers*					  layers;

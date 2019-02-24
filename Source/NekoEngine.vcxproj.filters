@@ -181,6 +181,9 @@
     <Filter Include="Sources\Helpers\Physics">
       <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Wwise">
+      <UniqueIdentifier>{aac085d1-59af-4c5d-988e-c5f94c4e6248}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1483,6 +1486,12 @@
     <ClInclude Include="ModuleAnimation.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="WwiseT.h">
+      <Filter>Sources\3rd Party\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleAudio.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1948,6 +1957,12 @@
       <Filter>Sources\Modules\Importers</Filter>
     </ClCompile>
     <ClCompile Include="ModuleAnimation.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="WwiseT.cpp">
+      <Filter>Sources\3rd Party\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleAudio.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

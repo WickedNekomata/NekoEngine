@@ -366,9 +366,9 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		for (std::list<ComponentEmitter*>::iterator emitter = App->particle->emitters.begin(); emitter != App->particle->emitters.end(); ++emitter)
 		{
-			math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();
 			if ((*emitter)->drawShape)
 			{
+				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();;
 				switch ((*emitter)->normalShapeType)
 				{
 				case ShapeType_BOX:
@@ -387,7 +387,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 			}
 			if((*emitter)->drawAABB)
-				App->debugDrawer->DebugDraw((*emitter)->GetParent()->boundingBox, White, globalMat);
+				App->debugDrawer->DebugDraw((*emitter)->GetParent()->boundingBox, White);
 		}
 		App->debugDrawer->EndDebugDraw();
 	}

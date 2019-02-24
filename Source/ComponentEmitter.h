@@ -121,7 +121,7 @@ public:
 	void SoftClearEmitter();
 	void CreateParticles(int particlesToCreate, ShapeType shapeType, const math::float3& pos = math::float3::zero);
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
-	void SetAABB(math::AABB & boundingBox, const math::float3 size);
+	void SetAABB(const math::float3 size, const math::float3 extraPosition = math::float3::zero);
 
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);

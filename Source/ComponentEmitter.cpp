@@ -17,7 +17,7 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
-	SetAABB(GetParent()->boundingBox, math::float3::one);
+	SetAABB(math::float3::one);
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
@@ -499,9 +499,9 @@ void ComponentEmitter::ParticleAABB()
 		{
 			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(GetParent()->boundingBox, size);
+				SetAABB(size,GetParent()->transform->position);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(GetParent()->boundingBox, size);
+				SetAABB(size, GetParent()->transform->position);
 		}
 	}
 #endif
@@ -654,9 +654,9 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 	return ret;
 }
 
-void ComponentEmitter::SetAABB(math::AABB& boundingBox, const math::float3 size)
+void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
 {
-	boundingBox.SetFromCenterAndSize(posDifAABB, size);
+	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
 }
 
 #ifndef GAMEMODE
@@ -927,7 +927,7 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 //COLOR TIME Save&Load
 uint ColorTime::GetColorListSerializationBytes()
 {
-	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.size() + sizeof(uint);//Size of name
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.length() + sizeof(uint);//Size of name
 }
 
 void ColorTime::OnInternalSave(char* &cursor)

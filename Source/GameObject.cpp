@@ -237,6 +237,7 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
+	//TODO: Fix BoundingBoxes calcs. We cant calculate every frame all tris of GO
 	if (cmp_emitter == nullptr)
 		boundingBox.SetNegativeInfinity();
 
@@ -253,7 +254,7 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 	else if (cmp_emitter != nullptr)
 	{
 		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
-		comp->SetAABB(boundingBox, boundingBox.Size());
+		comp->SetAABB(boundingBox.Size());
 	}
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;

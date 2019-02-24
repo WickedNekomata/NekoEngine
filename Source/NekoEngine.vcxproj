@@ -212,6 +212,7 @@
     <ClInclude Include="ComponentJoint.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentPrismaticJoint.h" />
+    <ClInclude Include="ComponentProjector.h" />
     <ClInclude Include="ComponentRevoluteJoint.h" />
     <ClInclude Include="ComponentSphericalJoint.h" />
     <ClInclude Include="ModuleAnimation.h" />
@@ -615,6 +616,7 @@
     <ClCompile Include="ComponentJoint.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentPrismaticJoint.cpp" />
+    <ClCompile Include="ComponentProjector.cpp" />
     <ClCompile Include="ComponentRevoluteJoint.cpp" />
     <ClCompile Include="ComponentSphericalJoint.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />

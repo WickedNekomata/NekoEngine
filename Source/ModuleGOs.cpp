@@ -89,6 +89,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::LightComponent:
 			go->cmp_light = 0;
 			break;
+		case ComponentTypes::ProjectorComponent:
+			go->cmp_projector = 0;
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			go->cmp_rigidActor = 0;

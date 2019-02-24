@@ -241,12 +241,15 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, boundingBoxesColor);
 		}
 
-		if (drawCamerasFrustum) // boundingBoxesColor = Grey
+		if (drawFrustums) // boundingBoxesColor = Grey
 		{
-			Color camerasFrustumColor = Grey;
+			Color frustumsColor = Grey;
 
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, frustumsColor);
+
+			for (uint i = 0; i < projectorComponents.size(); ++i)
+				App->debugDrawer->DebugDraw(projectorComponents[i]->GetFrustum(), frustumsColor);
 		}
 
 		if (drawColliders) // boundingBoxesColor = Green
@@ -442,7 +445,7 @@ void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 
 	json_object_set_boolean(jObject, "debugDraw", debugDraw);
 	json_object_set_boolean(jObject, "drawBoundingBoxes", drawBoundingBoxes);
-	json_object_set_boolean(jObject, "drawCamerasFrustum", drawCamerasFrustum);
+	json_object_set_boolean(jObject, "drawCamerasFrustum", drawFrustums);
 	json_object_set_boolean(jObject, "drawQuadtree", drawQuadtree);
 }
 void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
@@ -451,7 +454,7 @@ void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 
 	debugDraw = json_object_get_boolean(jObject, "debugDraw");
 	drawBoundingBoxes = json_object_get_boolean(jObject, "drawBoundingBoxes");
-	drawCamerasFrustum = json_object_get_boolean(jObject, "drawCamerasFrustum");
+	drawFrustums = json_object_get_boolean(jObject, "drawCamerasFrustum");
 	drawQuadtree = json_object_get_boolean(jObject, "drawQuadtree");
 }
 
@@ -574,14 +577,14 @@ bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 	return drawBoundingBoxes;
 }
 
-void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
+void ModuleRenderer3D::SetDrawFrustums(bool drawFrustums)
 {
-	this->drawCamerasFrustum = drawCamerasFrustum;
+	this->drawFrustums = drawFrustums;
 }
 
-bool ModuleRenderer3D::GetDrawCamerasFrustum() const
+bool ModuleRenderer3D::GetDrawFrustums() const
 {
-	return drawCamerasFrustum;
+	return drawFrustums;
 }
 
 void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
@@ -636,6 +639,32 @@ bool ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
 
 	if (ret)
 		meshComponents.erase(it);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::AddProjectorComponent(ComponentProjector* toAdd)
+{
+	bool ret = true;
+
+	std::vector<ComponentProjector*>::const_iterator it = std::find(projectorComponents.begin(), projectorComponents.end(), toAdd);
+	ret = it == projectorComponents.end();
+
+	if (ret)
+		projectorComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::EraseProjectorComponent(ComponentProjector* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentProjector*>::const_iterator it = std::find(projectorComponents.begin(), projectorComponents.end(), toErase);
+	ret = it != projectorComponents.end();
+
+	if (ret)
+		projectorComponents.erase(it);
 
 	return ret;
 }

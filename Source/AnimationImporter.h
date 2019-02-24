@@ -22,7 +22,7 @@ public:
 
 	bool SaveAnimation(ResourceAnimation* anim, std::string& output);
 
-	void ImportBoneTransform(const aiNodeAnim * anim_node, ResourceAnimation::BoneTransformation& bones_transform) const;
+	void ImportBoneTransform(const aiNodeAnim * anim_node, BoneTransformation& bones_transform) const;
 
 	bool EqualsWithEpsilon(float number_a, float number_b, float epsilon = 1e-3f) const;
 

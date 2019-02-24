@@ -199,6 +199,11 @@ void PanelInspector::ShowGameObjectInspector() const
 					gameObject->AddComponent(ComponentTypes::ImageComponent);
 					ImGui::CloseCurrentPopup();
 				}
+			if (gameObject->cmp_button == nullptr)
+				if (ImGui::Selectable("Button UI")) {
+					gameObject->AddComponent(ComponentTypes::ButtonComponent);
+					ImGui::CloseCurrentPopup();
+				}
 		}
 
 		if (ImGui::Selectable("Script"))

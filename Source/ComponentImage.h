@@ -11,13 +11,11 @@
 
 #include "Component.h"
 
-#include "Globals.h"
-
 class ComponentImage : public Component
 {
 public:
 	ComponentImage(GameObject* parent, ComponentTypes componentType = ComponentTypes::ImageComponent);
-	ComponentImage(const ComponentImage& componentRectTransform);
+	ComponentImage(const ComponentImage& componentImage);
 	~ComponentImage();
 
 	void Update();
@@ -34,6 +32,7 @@ private:
 	void OnInternalLoad(char*& cursor);
 	void OnUniqueEditor();
 
+private:
 	uint res_image = 0;
 
 	bool use_color_vec = true;

@@ -19,6 +19,10 @@
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
 #include "ComponentScript.h"
+#include "ComponentCanvasRenderer.h"
+#include "ComponentImage.h"
+#include "ComponentRectTransform.h"
+#include "ComponentButton.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"

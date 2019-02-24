@@ -113,6 +113,15 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 			break;
 		case ComponentTypes::RectTransformComponent:
 			go->cmp_rectTransform = nullptr; // Uh
+			break;		
+		case ComponentTypes::ImageComponent:
+			go->cmp_image = nullptr;
+			break;
+		case ComponentTypes::ButtonComponent:
+			go->cmp_button = nullptr;
+			break;		
+		case ComponentTypes::CanvasRendererComponent:
+			go->cmp_canvasRenderer = nullptr;
 			break;
 		}
 		break;

@@ -743,6 +743,15 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 		}
 	}
 	break;
+	case ResourceTypes::AnimationResource:
+	{
+		if (ResourceAnimation::ExportFile(data, *(ResourceAnimationData*)specificData, outputFile, overwrite))
+		{
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
+	}
+	break;
 
 	}
 

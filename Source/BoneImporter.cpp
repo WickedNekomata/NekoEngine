@@ -149,7 +149,7 @@ bool BoneImporter::SaveBone(mutable const ResourceBone* bone, mutable std::strin
 	tmp_str.append(".trBone"); // Adding our own format extension*/
 
 	// TODO: set exported path
-	if (App->fs->SaveInGame((char*)data, size, FileType::BoneFile, output) > 0)
+	if (App->fs->SaveInGame((char*)data, size, FileTypes::BoneFile, output) > 0)
 		ret = true;
 	//ret = App->file_system->WriteInFile(tmp_str.c_str(), data, size);
 	//output = tmp_str;

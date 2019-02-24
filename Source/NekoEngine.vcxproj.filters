@@ -181,6 +181,15 @@
     <Filter Include="Sources\Helpers\Physics">
       <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Colliders">
+      <UniqueIdentifier>{77134b2d-7985-4821-ad92-2f38de84691c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Joints">
+      <UniqueIdentifier>{25b40184-0a3c-4c15-8202-dd260fc32440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors">
+      <UniqueIdentifier>{db6dadfd-5eff-45e8-8ea7-ccb88e0dbde7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1390,30 +1399,6 @@
     <ClInclude Include="physx\include\foundation\windows\PxWindowsIntrinsics.h">
       <Filter>Sources\3rd Party\physx\foundation\windows</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRigidDynamic.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentRigidStatic.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentRigidActor.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentCollider.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentSphereCollider.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentBoxCollider.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentCapsuleCollider.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentPlaneCollider.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="PanelPhysics.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
@@ -1450,9 +1435,6 @@
     <ClInclude Include="PanelLayers.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="Layers.h">
-      <Filter>Sources\Helpers\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="SimulationEvents.h">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClInclude>
@@ -1473,6 +1455,66 @@
     </ClInclude>
     <ClInclude Include="ComponentLight.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAnimation.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleAnimation.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMaterial.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBoxCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCapsuleCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPlaneCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidActor.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidDynamic.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidStatic.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSphereCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentD6Joint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentDistanceJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFixedJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPrismaticJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRevoluteJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSphericalJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleLayers.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1854,30 +1896,6 @@
     <ClCompile Include="ModulePhysics.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentRigidDynamic.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentRigidStatic.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentRigidActor.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentCollider.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentSphereCollider.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentBoxCollider.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentCapsuleCollider.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentPlaneCollider.cpp">
-      <Filter>Sources\Modules\GO&amp;Components\Components\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="PanelPhysics.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
@@ -1911,9 +1929,6 @@
     <ClCompile Include="PanelLayers.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="Layers.cpp">
-      <Filter>Sources\Helpers\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="SimulationEvents.cpp">
       <Filter>Sources\Helpers\Physics</Filter>
     </ClCompile>
@@ -1931,6 +1946,66 @@
     </ClCompile>
     <ClCompile Include="ComponentLight.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAnimation.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleAnimation.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBoxCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCapsuleCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPlaneCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidActor.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidDynamic.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidStatic.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSphereCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentD6Joint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentDistanceJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFixedJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPrismaticJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRevoluteJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSphericalJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleLayers.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 #include "ModuleInput.h"
 #include "ModuleResourceManager.h"
 #include "ScriptingModule.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentScript.h"
 #include "ResourceScript.h"
@@ -256,663 +256,665 @@ void ComponentScript::OnDisable()
 void ComponentScript::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-
-	//TODO: RECEIVE THOSE EVENTS THOUGH THE PARENT ONEDITOR()
-
-	/*if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
+	if (ImGui::CollapsingHeader("Script", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (isActive)
+		//TODO: RECEIVE THOSE EVENTS THOUGH THE PARENT ONEDITOR()
+
+		/*if (ImGui::Checkbox(("###ACTIVE_SCRIPT" + std::to_string(UUID)).data(), &isActive))
 		{
-			if (App->GetEngineState() == engine_states::ENGINE_PLAY)
-				this->OnEnableMethod();
+			if (isActive)
+			{
+				if (App->GetEngineState() == engine_states::ENGINE_PLAY)
+					this->OnEnableMethod();
+			}
+			else
+			{
+				if (App->GetEngineState() == engine_states::ENGINE_PLAY)
+					this->OnDisableMethod();
+			}
 		}
-		else
+		ImGui::SameLine();*/
+
+		float PosX = ImGui::GetCursorPosX();
+		bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();
+
+		if (ImGui::IsItemClicked(1))
 		{
-			if (App->GetEngineState() == engine_states::ENGINE_PLAY)
-				this->OnDisableMethod();
-		}
-	}
-	ImGui::SameLine();*/
-
-	float PosX = ImGui::GetCursorPosX();
-	bool opened = ImGui::CollapsingHeader(std::string("##Script" + std::to_string(UUID)).data()); ImGui::SameLine();
-
-	if (ImGui::IsItemClicked(1))
-	{
-		ImGui::OpenPopup(std::string("##Script" + std::to_string(UUID)).data());
-	}
-
-	ImGui::SetNextWindowSize({ 150, 45 });
-
-	ImGuiWindowFlags wflags = 0;
-	wflags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
-
-	bool deleted = false;
-
-	if (ImGui::BeginPopup(std::string("##Script" + std::to_string(UUID)).data(), wflags))
-	{
-		if (ImGui::MenuItem("Delete Component"))
-		{
-			System_Event event;
-			event.compEvent.type = System_Event_Type::ComponentDestroyed;
-			event.compEvent.component = this;
-			App->PushSystemEvent(event);
-			
-			parent->EraseComponent(this);		
-			deleted = true;
-			App->scripting->DestroyScript(this);
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
-	}
-
-	if (deleted)
-		return;
-
-	ImGuiDragDropFlags flags = 0;
-	flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
-	if (ImGui::BeginDragDropSource(flags))
-	{
-		ImGui::BeginTooltip();
-		ImGui::Text(std::string(scriptName + " (Script)").data());
-		ImGui::EndTooltip();
-		ComponentScript* thisOne = (ComponentScript*)this;
-		ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentScript));
-		ImGui::EndDragDropSource();
-	}
-
-	ImGui::SetCursorPosX(PosX + 20);
-	ImGui::Text(std::string(scriptName + " (Script)").data());
-	if (opened)
-	{
-		ImGui::NewLine();
-		ImGui::Text(".cs File:  "); ImGui::SameLine();
-
-		ImVec2 drawingPos = ImGui::GetCursorScreenPos();
-		drawingPos = { drawingPos.x - 10, drawingPos.y };
-		ImGui::SetCursorScreenPos(drawingPos);
-
-		uint buttonWidth = 2 * ImGui::GetWindowWidth() / 3;
-		ImGui::ButtonEx("##csFile", { (float)buttonWidth, 15 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
-
-		if (ImGui::IsItemHovered())
-		{
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+			ImGui::OpenPopup(std::string("##Script" + std::to_string(UUID)).data());
 		}
 
-		if (ImGui::IsItemClicked(0))
+		ImGui::SetNextWindowSize({ 150, 45 });
+
+		ImGuiWindowFlags wflags = 0;
+		wflags |= ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+
+		bool deleted = false;
+
+		if (ImGui::BeginPopup(std::string("##Script" + std::to_string(UUID)).data(), wflags))
 		{
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));			
+			if (ImGui::MenuItem("Delete Component"))
+			{
+				System_Event event;
+				event.compEvent.type = System_Event_Type::ComponentDestroyed;
+				event.compEvent.component = this;
+				App->PushSystemEvent(event);
+
+				parent->EraseComponent(this);
+				deleted = true;
+				App->scripting->DestroyScript(this);
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
-		ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
-		if (ImGui::IsItemHovered())
+		if (deleted)
+			return;
+
+		ImGuiDragDropFlags flags = 0;
+		flags |= ImGuiDragDropFlags_::ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+		if (ImGui::BeginDragDropSource(flags))
 		{
 			ImGui::BeginTooltip();
-			ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes ? scriptRes->GetFile() : "null");
+			ImGui::Text(std::string(scriptName + " (Script)").data());
 			ImGui::EndTooltip();
-		}		
-
-		ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
-
-		//Calculate the text fitting the button rect
-		std::string originalText = scriptRes ? scriptRes->GetFile() : "";
-		std::string clampedText;
-
-		ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
-
-		if (textSize.x > buttonWidth - 5)
-		{
-			uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
-			clampedText = originalText.substr(0, maxTextLenght - 5);
-			clampedText.append("(...)");
-		}
-		else
-			clampedText = originalText;
-
-		ImGui::Text(clampedText.data());
-
-		ImGui::NewLine();
-
-
-		if (!classInstance)
-		{
-			ImGui::TextColored({ .5,0,0,1 }, "SCRIPT WITH ERRORS, CHECK IT");
-			return;
+			ComponentScript* thisOne = (ComponentScript*)this;
+			ImGui::SetDragDropPayload("DraggingComponents", &thisOne, sizeof(ComponentScript));
+			ImGui::EndDragDropSource();
 		}
 
-		//Script fields
-		void* iterator = 0;
-		MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
-
-		while (field != nullptr)
+		ImGui::SetCursorPosX(PosX + 20);
+		ImGui::Text(std::string(scriptName + " (Script)").data());
+		if (opened)
 		{
-			uint32_t flags = mono_field_get_flags(field);
-			if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
+			ImGui::NewLine();
+			ImGui::Text(".cs File:  "); ImGui::SameLine();
+
+			ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+			drawingPos = { drawingPos.x - 10, drawingPos.y };
+			ImGui::SetCursorScreenPos(drawingPos);
+
+			uint buttonWidth = 2 * ImGui::GetWindowWidth() / 3;
+			ImGui::ButtonEx("##csFile", { (float)buttonWidth, 15 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+			if (ImGui::IsItemHovered())
 			{
-				//This field is public and not static.
-				//Show the field, check the type and adapt the gui to it.
-				MonoType* type = mono_field_get_type(field);
-				
-				std::string typeName = mono_type_full_name(type);
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+			}
 
-				std::string fieldName = mono_field_get_name(field);
+			if (ImGui::IsItemClicked(0))
+			{
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				drawList->AddRectFilled(drawingPos, { drawingPos.x + buttonWidth, drawingPos.y + 15 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+			}
 
-				if (typeName == "bool")
+			ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("\"%s\"\n\nThe .cs file attached to this script component.\nDo not move the script for now!", scriptRes ? scriptRes->GetFile() : "null");
+				ImGui::EndTooltip();
+			}
+
+			ImGui::SetCursorScreenPos({ drawingPos.x + 7, drawingPos.y });
+
+			//Calculate the text fitting the button rect
+			std::string originalText = scriptRes ? scriptRes->GetFile() : "";
+			std::string clampedText;
+
+			ImVec2 textSize = ImGui::CalcTextSize(originalText.data());
+
+			if (textSize.x > buttonWidth - 5)
+			{
+				uint maxTextLenght = originalText.length() * (buttonWidth - 5) / textSize.x;
+				clampedText = originalText.substr(0, maxTextLenght - 5);
+				clampedText.append("(...)");
+			}
+			else
+				clampedText = originalText;
+
+			ImGui::Text(clampedText.data());
+
+			ImGui::NewLine();
+
+
+			if (!classInstance)
+			{
+				ImGui::TextColored({ .5,0,0,1 }, "SCRIPT WITH ERRORS, CHECK IT");
+				return;
+			}
+
+			//Script fields
+			void* iterator = 0;
+			MonoClassField* field = mono_class_get_fields(mono_object_get_class(classInstance), &iterator);
+
+			while (field != nullptr)
+			{
+				uint32_t flags = mono_field_get_flags(field);
+				if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 				{
-					bool varState; mono_field_get_value(classInstance, field, &varState);
-					
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({cursorPos.x, cursorPos.y + 5});
+					//This field is public and not static.
+					//Show the field, check the type and adapt the gui to it.
+					MonoType* type = mono_field_get_type(field);
 
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
+					std::string typeName = mono_type_full_name(type);
 
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y -5 });
+					std::string fieldName = mono_field_get_name(field);
 
-					if(ImGui::Checkbox(("##" + fieldName).data(), &varState))
+					if (typeName == "bool")
 					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "single") //this is a float, idk
-				{					
-					float varState; mono_field_get_value(classInstance, field, &varState);
+						bool varState; mono_field_get_value(classInstance, field, &varState);
 
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
 
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
 
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
 
-					if (ImGui::InputFloat(("##" + fieldName).data(), &varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "double")
-				{
-					double varState;
-					mono_field_get_value(classInstance, field, &varState);
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					if (ImGui::InputDouble(("##" + fieldName).data(),&varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "System.Decimal")
-				{
-					//We cant convert System.Decimal, since we do not have this decimal precision in any C++ type.
-				}
-				else if (typeName == "sbyte")
-				{
-					int8_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					int varState_int = (int)varState;
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
-					{
-						varState = varState_int;
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "byte")
-				{
-					uint8_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					int varState_int = (int)varState;
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
-					{
-						varState = varState_int;
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}			
-				else if (typeName == "int16")
-				{
-					int16_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					int varState_int = (int)varState;
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState_int))
-					{
-						varState = varState_int;
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "uint16")
-				{
-					uint16_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					int varState_int = (int)varState;
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
-					{
-						varState = varState_int;
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "int")
-				{
-					int32_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "uint")
-				{
-					uint32_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "long")
-				{
-					int64_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S64, &varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}
-				else if (typeName == "ulong")
-				{
-					uint64_t varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U64,&varState))
-					{
-						mono_field_set_value(classInstance, field, &varState);
-					}
-				}			
-				else if (typeName == "char")
-				{
-					int temp;
-					mono_field_get_value(classInstance, field, &temp);
-
-					char varState = (char)temp;
-
-					std::string stringToModify = std::string(1,varState);
-					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
-					{
-						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
-						temp = (int)stringToModify[0];
-						mono_field_set_value(classInstance, field, &temp);
-					}
-				}
-				else if (typeName == "string")
-				{
-					MonoString* varState;
-					mono_field_get_value(classInstance, field, &varState);
-
-					char* convertedString = mono_string_to_utf8(varState);
-
-					std::string stringToModify = convertedString;
-
-					ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
-
-					if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
-					{
-						MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
-						mono_field_set_value(classInstance, field, newString);
-					}
-
-					ImGui::PopStyleColor();
-
-					mono_free(convertedString);
-				}
-				else if (typeName == "JellyBitEngine.GameObject")
-				{
-					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
-
-					float varState; mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					cursorPos = { cursorPos.x, cursorPos.y - 5 };
-
-					ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
-
-					//Case 1: Dragging Real GameObjects
-					if (ImGui::BeginDragDropTarget())
-					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-						if (payload)
+						if (ImGui::Checkbox(("##" + fieldName).data(), &varState))
 						{
-							GameObject* go = *(GameObject**)payload->Data;
-							
-							if (ImGui::IsMouseReleased(0))
-							{
-								MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
-								mono_field_set_value(classInstance, field, monoObject);
-							}
+							mono_field_set_value(classInstance, field, &varState);
 						}
-						ImGui::EndDragDropTarget();
 					}
-
-					//Case 2: Dragging Prefabs
-					if (ImGui::BeginDragDropTarget())
+					else if (typeName == "single") //this is a float, idk
 					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-						if (payload)
+						float varState; mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputFloat(("##" + fieldName).data(), &varState))
 						{
-							Resource* resource = *(Resource**)payload->Data;
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "double")
+					{
+						double varState;
+						mono_field_get_value(classInstance, field, &varState);
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
 
-							//TODO: IMPLEMENT PREFABS
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
 
-							/*if (resource->getType() == Resource::ResourceType::PREFAB)
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputDouble(("##" + fieldName).data(), &varState))
+						{
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "System.Decimal")
+					{
+						//We cant convert System.Decimal, since we do not have this decimal precision in any C++ type.
+					}
+					else if (typeName == "sbyte")
+					{
+						int8_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						int varState_int = (int)varState;
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
+						{
+							varState = varState_int;
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "byte")
+					{
+						uint8_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						int varState_int = (int)varState;
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
+						{
+							varState = varState_int;
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "int16")
+					{
+						int16_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						int varState_int = (int)varState;
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState_int))
+						{
+							varState = varState_int;
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "uint16")
+					{
+						uint16_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						int varState_int = (int)varState;
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState_int))
+						{
+							varState = varState_int;
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "int")
+					{
+						int32_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S32, &varState))
+						{
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "uint")
+					{
+						uint32_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U32, &varState))
+						{
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "long")
+					{
+						int64_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_S64, &varState))
+						{
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "ulong")
+					{
+						uint64_t varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						if (ImGui::InputScalar(("##" + fieldName).data(), ImGuiDataType_U64, &varState))
+						{
+							mono_field_set_value(classInstance, field, &varState);
+						}
+					}
+					else if (typeName == "char")
+					{
+						int temp;
+						mono_field_get_value(classInstance, field, &temp);
+
+						char varState = (char)temp;
+
+						std::string stringToModify = std::string(1, varState);
+						if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
+						{
+							MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
+							temp = (int)stringToModify[0];
+							mono_field_set_value(classInstance, field, &temp);
+						}
+					}
+					else if (typeName == "string")
+					{
+						MonoString* varState;
+						mono_field_get_value(classInstance, field, &varState);
+
+						char* convertedString = mono_string_to_utf8(varState);
+
+						std::string stringToModify = convertedString;
+
+						ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_FrameBg, { 0.26f, 0.59f, 0.98f, 0.5f });
+
+						if (ImGui::InputText(mono_field_get_name(field), &stringToModify))
+						{
+							MonoString* newString = mono_string_new(App->scripting->domain, stringToModify.data());
+							mono_field_set_value(classInstance, field, newString);
+						}
+
+						ImGui::PopStyleColor();
+
+						mono_free(convertedString);
+					}
+					else if (typeName == "JellyBitEngine.GameObject")
+					{
+						uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
+
+						float varState; mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						cursorPos = { cursorPos.x, cursorPos.y - 5 };
+
+						ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+						//Case 1: Dragging Real GameObjects
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+							if (payload)
 							{
+								GameObject* go = *(GameObject**)payload->Data;
+
 								if (ImGui::IsMouseReleased(0))
 								{
-									ResourcePrefab* prefab = (ResourcePrefab*)resource;
-
-									MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
+									MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
 									mono_field_set_value(classInstance, field, monoObject);
 								}
-							}	*/					
+							}
+							ImGui::EndDragDropTarget();
 						}
-						ImGui::EndDragDropTarget();
-					}
 
-					if (ImGui::IsItemClicked(0))
-					{
-						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
-					}
-					else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
-					{
-						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
-
-						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+						//Case 2: Dragging Prefabs
+						if (ImGui::BeginDragDropTarget())
 						{
-							mono_field_set_value(classInstance, field, NULL);
-						}
-					}
-
-					//Button text
-					MonoObject* monoObject;
-					mono_field_get_value(classInstance, field, &monoObject);
-
-					std::string text;
-
-					if (monoObject)
-					{
-						bool destroyed;
-						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
-
-						if (!destroyed)
-						{
-							MonoString* goName;
-							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
-
-							char* nameCpp = mono_string_to_utf8(goName);
-
-							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
-
-							//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
-
-							/*if (gameObject->prefab)
-								text = nameCpp + std::string(" (Prefab)");
-							else*/
-								text = nameCpp + std::string(" (GameObject)");
-
-							mono_free(nameCpp);
-						}
-						else
-						{
-							mono_field_set_value(classInstance, field, NULL);
-						}
-					}
-					else
-					{
-						text = "NULL (GameObject)";
-					}
-
-					ImGui::SetCursorScreenPos({ cursorPos.x+5, cursorPos.y+3});
-
-					ImGui::Text(text.data());	
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
-				}
-				else if (typeName == "JellyBitEngine.Transform")
-				{
-					uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
-
-					float varState; mono_field_get_value(classInstance, field, &varState);
-
-					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
-
-					ImGui::Text(fieldName.data()); ImGui::SameLine();
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
-
-					cursorPos = { cursorPos.x, cursorPos.y - 5 };
-
-					ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-						if (payload)
-						{
-							GameObject* go = *(GameObject**)payload->Data;
-
-							if (ImGui::IsMouseReleased(0))
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+							if (payload)
 							{
-								MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+								Resource* resource = *(Resource**)payload->Data;
 
-								MonoObject* monoTransform; 
-								mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "transform"), &monoTransform);
+								//TODO: IMPLEMENT PREFABS
 
-								mono_field_set_value(classInstance, field, monoTransform);
+								/*if (resource->getType() == Resource::ResourceType::PREFAB)
+								{
+									if (ImGui::IsMouseReleased(0))
+									{
+										ResourcePrefab* prefab = (ResourcePrefab*)resource;
+
+										MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
+										mono_field_set_value(classInstance, field, monoObject);
+									}
+								}	*/
+							}
+							ImGui::EndDragDropTarget();
+						}
+
+						if (ImGui::IsItemClicked(0))
+						{
+							ImDrawList* drawList = ImGui::GetWindowDrawList();
+							drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+						}
+						else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+						{
+							ImDrawList* drawList = ImGui::GetWindowDrawList();
+							drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+
+							if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+							{
+								mono_field_set_value(classInstance, field, NULL);
 							}
 						}
-						ImGui::EndDragDropTarget();
-					}
 
-					if (ImGui::IsItemClicked(0))
-					{
-						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
-					}
-					else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
-					{
-						ImDrawList* drawList = ImGui::GetWindowDrawList();
-						drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+						//Button text
+						MonoObject* monoObject;
+						mono_field_get_value(classInstance, field, &monoObject);
 
-						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+						std::string text;
+
+						if (monoObject)
 						{
-							mono_field_set_value(classInstance, field, NULL);
-						}
-					}
+							bool destroyed;
+							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
 
-					//Button text
-					MonoObject* monoTransform;
-					mono_field_get_value(classInstance, field, &monoTransform);
+							if (!destroyed)
+							{
+								MonoString* goName;
+								mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
 
-					MonoObject* monoObject;
-					if(monoTransform)
-						mono_field_get_value(monoTransform, mono_class_get_field_from_name(mono_object_get_class(monoTransform), "gameObject"), &monoObject);
+								char* nameCpp = mono_string_to_utf8(goName);
 
-					std::string text;
+								GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
 
-					if (monoTransform)
-					{
-						bool destroyed;
-						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
+								//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
 
-						if (!destroyed)
-						{
-							MonoString* goName;
-							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
+								/*if (gameObject->prefab)
+									text = nameCpp + std::string(" (Prefab)");
+								else*/
+								text = nameCpp + std::string(" (GameObject)");
 
-							char* nameCpp = mono_string_to_utf8(goName);
-
-							text = nameCpp + std::string(" (Transform)");
-
-							mono_free(nameCpp);
+								mono_free(nameCpp);
+							}
+							else
+							{
+								mono_field_set_value(classInstance, field, NULL);
+							}
 						}
 						else
 						{
-							mono_field_set_value(classInstance, field, NULL);
-						}
-					}
-					else
-					{
-						text = "NULL (Transform)";
-					}
-
-					ImGui::SetCursorScreenPos({ cursorPos.x + 5, cursorPos.y + 3 });
-
-					ImGui::Text(text.data());
-
-					cursorPos = ImGui::GetCursorScreenPos();
-					ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
-				}
-				else if (typeName == "JellyBitEngine.LayerMask")
-				{											
-					MonoObject* layerMask;
-					mono_field_get_value(classInstance, field, &layerMask);
-
-					if (layerMask)
-					{
-						uint32_t bits;
-						mono_field_get_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
-
-						std::string enabled;
-						uint totalLayers = 0u;
-						uint amountEnabled = 0u;
-
-						for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
-						{
-							const char* layerName = App->layers->NumberToName(i);
-							if (strcmp(layerName, "") == 0)
-								continue;
-
-							totalLayers++;
-							enabled = (bits >> i) & 1U == 1 ? layerName : enabled;
-							amountEnabled += (bits >> i) & 1U == 1 ? 1 : 0;
+							text = "NULL (GameObject)";
 						}
 
-						const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";						
+						ImGui::SetCursorScreenPos({ cursorPos.x + 5, cursorPos.y + 3 });
 
-						ImGui::PushItemWidth(150.0f);
-						if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
+						ImGui::Text(text.data());
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
+					}
+					else if (typeName == "JellyBitEngine.Transform")
+					{
+						uint buttonWidth = 0.65 * ImGui::GetWindowWidth();
+
+						float varState; mono_field_get_value(classInstance, field, &varState);
+
+						ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 5 });
+
+						ImGui::Text(fieldName.data()); ImGui::SameLine();
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y - 5 });
+
+						cursorPos = { cursorPos.x, cursorPos.y - 5 };
+
+						ImGui::ButtonEx(("##" + fieldName).data(), { (float)buttonWidth, 20 }, ImGuiButtonFlags_::ImGuiButtonFlags_Disabled);
+
+						if (ImGui::BeginDragDropTarget())
 						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+							if (payload)
+							{
+								GameObject* go = *(GameObject**)payload->Data;
+
+								if (ImGui::IsMouseReleased(0))
+								{
+									MonoObject* monoObject = App->scripting->MonoObjectFrom(go);
+
+									MonoObject* monoTransform;
+									mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "transform"), &monoTransform);
+
+									mono_field_set_value(classInstance, field, monoTransform);
+								}
+							}
+							ImGui::EndDragDropTarget();
+						}
+
+						if (ImGui::IsItemClicked(0))
+						{
+							ImDrawList* drawList = ImGui::GetWindowDrawList();
+							drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonActive));
+						}
+						else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+						{
+							ImDrawList* drawList = ImGui::GetWindowDrawList();
+							drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonWidth, cursorPos.y + 20 }, ImGui::GetColorU32(ImGuiCol_::ImGuiCol_ButtonHovered));
+
+							if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
+							{
+								mono_field_set_value(classInstance, field, NULL);
+							}
+						}
+
+						//Button text
+						MonoObject* monoTransform;
+						mono_field_get_value(classInstance, field, &monoTransform);
+
+						MonoObject* monoObject;
+						if (monoTransform)
+							mono_field_get_value(monoTransform, mono_class_get_field_from_name(mono_object_get_class(monoTransform), "gameObject"), &monoObject);
+
+						std::string text;
+
+						if (monoTransform)
+						{
+							bool destroyed;
+							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
+
+							if (!destroyed)
+							{
+								MonoString* goName;
+								mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
+
+								char* nameCpp = mono_string_to_utf8(goName);
+
+								text = nameCpp + std::string(" (Transform)");
+
+								mono_free(nameCpp);
+							}
+							else
+							{
+								mono_field_set_value(classInstance, field, NULL);
+							}
+						}
+						else
+						{
+							text = "NULL (Transform)";
+						}
+
+						ImGui::SetCursorScreenPos({ cursorPos.x + 5, cursorPos.y + 3 });
+
+						ImGui::Text(text.data());
+
+						cursorPos = ImGui::GetCursorScreenPos();
+						ImGui::SetCursorScreenPos({ cursorPos.x, cursorPos.y + 4 });
+					}
+					else if (typeName == "JellyBitEngine.LayerMask")
+					{
+						MonoObject* layerMask;
+						mono_field_get_value(classInstance, field, &layerMask);
+
+						if (layerMask)
+						{
+							uint32_t bits;
+							mono_field_get_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
+
+							std::string enabled;
+							uint totalLayers = 0u;
+							uint amountEnabled = 0u;
+
 							for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
 							{
 								const char* layerName = App->layers->NumberToName(i);
 								if (strcmp(layerName, "") == 0)
 									continue;
 
-								if (ImGui::Selectable(layerName, (bits >> i) & 1U == 1 ? true : false, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
-								{
-									bits ^= 1UL << i;
-									mono_field_set_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
-								}
+								totalLayers++;
+								enabled = (bits >> i) & 1U == 1 ? layerName : enabled;
+								amountEnabled += (bits >> i) & 1U == 1 ? 1 : 0;
 							}
-							ImGui::EndCombo();
-						}
-						ImGui::PopItemWidth();
-					}					
-				}
-			}
 
-			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+							const char* title = amountEnabled == 0 ? "None" : amountEnabled == 1 ? enabled.data() : totalLayers == amountEnabled ? "Everything" : "Multiple Selected";
+
+							ImGui::PushItemWidth(150.0f);
+							if (ImGui::BeginCombo((fieldName + std::to_string(UUID)).data(), title))
+							{
+								for (uint i = 0; i < MAX_NUM_LAYERS; ++i)
+								{
+									const char* layerName = App->layers->NumberToName(i);
+									if (strcmp(layerName, "") == 0)
+										continue;
+
+									if (ImGui::Selectable(layerName, (bits >> i) & 1U == 1 ? true : false, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+									{
+										bits ^= 1UL << i;
+										mono_field_set_value(layerMask, mono_class_get_field_from_name(mono_object_get_class(layerMask), "masks"), &bits);
+									}
+								}
+								ImGui::EndCombo();
+							}
+							ImGui::PopItemWidth();
+						}
+					}
+				}
+
+				field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
+			}
+			ImGui::NewLine();
 		}
-		ImGui::NewLine();
 	}
 #endif
 }

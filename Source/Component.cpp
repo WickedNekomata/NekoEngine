@@ -55,8 +55,7 @@ void Component::OnEditor()
 
 	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##treeNode%u", UUID);
 
-	if (ImGui::CollapsingHeader(itemName, ImGuiTreeNodeFlags_DefaultOpen))
-		OnUniqueEditor();
+	OnUniqueEditor();
 #endif
 }
 

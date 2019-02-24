@@ -9,12 +9,18 @@ class ComponentRigidDynamic : public ComponentRigidActor
 public:
 
 	ComponentRigidDynamic(GameObject* parent);
-	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
+	ComponentRigidDynamic(const ComponentRigidDynamic& componentRigidDynamic);
 	~ComponentRigidDynamic();
 
 	void OnUniqueEditor();
-	
+
 	void Update();
+
+	uint GetInternalSerializationBytes();
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
 
 	// Sets
 	void SetDensity(float density);
@@ -37,11 +43,8 @@ public:
 	void AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
 	void ClearTorque() const;
 
-	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
+	// Gets
+	bool IsSleeping() const;
 
 private:
 

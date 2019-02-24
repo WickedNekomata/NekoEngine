@@ -13,15 +13,25 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 {
 	gMaterial = App->physics->GetDefaultMaterial();
 	assert(gMaterial != nullptr);
+
+	App->physics->AddColliderComponent(this);
 }
 
-ComponentCollider::~ComponentCollider() 
+ComponentCollider::ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType) : Component(componentCollider.parent, componentColliderType)
+{
+
+}
+
+ComponentCollider::~ComponentCollider()
 {
 	if (parent->cmp_rigidActor != nullptr)
 		parent->cmp_rigidActor->UpdateShape(nullptr);
 	ClearShape();
 
 	gMaterial = nullptr;
+
+	App->physics->EraseColliderComponent(this);
+	parent->cmp_collider = nullptr;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -30,7 +40,7 @@ void ComponentCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 	if (ImGui::Checkbox("Is Trigger", &isTrigger))
-		SetIsTrigger(isTrigger);	
+		SetIsTrigger(isTrigger);
 	if (ImGui::Checkbox("Contact Tests", &participateInContactTests))
 		SetParticipateInContactTests(participateInContactTests);
 	if (ImGui::Checkbox("Scene Queries", &participateInSceneQueries))
@@ -53,6 +63,9 @@ void ComponentCollider::OnUniqueEditor()
 			SetCenter(center);
 		ImGui::PopItemWidth();
 	}
+
+	if (ImGui::Button("Enclose geometry"))
+		EncloseGeometry();
 #endif
 }
 
@@ -122,26 +135,35 @@ physx::PxShape* ComponentCollider::GetShape() const
 	return gShape;
 }
 
+ColliderTypes ComponentCollider::GetColliderType() const
+{
+	return colliderType;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentCollider::OnCollisionEnter(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionStay(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionExit(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerEnter(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
 
 	triggerEnter = true;
 	triggerExit = false;
@@ -150,12 +172,14 @@ void ComponentCollider::OnTriggerEnter(Collision& collision)
 
 void ComponentCollider::OnTriggerStay(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerExit(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
 
 	triggerExit = true;
 	triggerEnter = false;

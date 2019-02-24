@@ -83,7 +83,7 @@ public:
 	~SimulationEventCallback();
 
 	// Happen before fetchResults() (swaps the buffers)
-	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) {}
+	void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count);
 	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
 	void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count);
 

@@ -72,6 +72,18 @@ SimulationEventCallback::SimulationEventCallback(ModulePhysics* callback)
 
 SimulationEventCallback::~SimulationEventCallback() {}
 
+void SimulationEventCallback::onConstraintBreak(physx::PxConstraintInfo * constraints, physx::PxU32 count)
+{
+	// The joint no longer partakes in simulation, altough it remains attached to its actors until it is deleted
+	// TODO:
+
+	for (physx::PxU32 i = 0; i < count; ++i)
+	{
+		physx::PxJoint* joint = reinterpret_cast<physx::PxJoint*>(constraints[i].externalReference);
+
+	}
+}
+
 void SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 {
 	for (physx::PxU32 i = 0; i < nbPairs; ++i)
@@ -108,14 +120,14 @@ void SimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHe
 			// Collision A
 			ComponentCollider* colliderA = callback->FindColliderComponentByShape(contactPair.shapes[1]);
 			ComponentRigidActor* actorA = callback->FindRigidActorComponentByActor(pairHeader.actors[1]);
-			GameObject* gameObjectA = actorA->GetParent();
+			GameObject* gameObjectA = actorA != nullptr ? actorA->GetParent() : nullptr;
 			Collision collisionA(gameObjectA, colliderA, actorA, totalImpulse, contactPoints);
 			ComponentCollider* thisColliderA = callback->FindColliderComponentByShape(contactPair.shapes[0]);
 
 			// Collision B
 			ComponentCollider* colliderB = callback->FindColliderComponentByShape(contactPair.shapes[0]);
 			ComponentRigidActor* actorB = callback->FindRigidActorComponentByActor(pairHeader.actors[0]);
-			GameObject* gameObjectB = actorB->GetParent();
+			GameObject* gameObjectB = actorB != nullptr ? actorB->GetParent() : nullptr;
 			Collision collisionB(gameObjectB, colliderB, actorB, totalImpulse, contactPoints);
 			ComponentCollider* thisColliderB = callback->FindColliderComponentByShape(contactPair.shapes[1]);
 
@@ -153,14 +165,14 @@ void SimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU3
 			// Collision A
 			ComponentCollider* colliderA = callback->FindColliderComponentByShape(triggerPair.triggerShape);
 			ComponentRigidActor* actorA = callback->FindRigidActorComponentByActor(triggerPair.triggerActor);
-			GameObject* gameObjectA = actorA->GetParent();
+			GameObject* gameObjectA = actorA != nullptr ? actorA->GetParent() : nullptr;
 			Collision collisionA(gameObjectA, colliderA, actorA, math::float3(), std::vector<ContactPoint>());
 			ComponentCollider* thisColliderA = callback->FindColliderComponentByShape(triggerPair.otherShape);
 
 			// Collision B
 			ComponentCollider* colliderB = callback->FindColliderComponentByShape(triggerPair.otherShape);
 			ComponentRigidActor* actorB = callback->FindRigidActorComponentByActor(triggerPair.otherActor);
-			GameObject* gameObjectB = actorB->GetParent();
+			GameObject* gameObjectB = actorB != nullptr ? actorB->GetParent() : nullptr;
 			Collision collisionB(gameObjectB, colliderB, actorB, math::float3(), std::vector<ContactPoint>());
 			ComponentCollider* thisColliderB = callback->FindColliderComponentByShape(triggerPair.triggerShape);
 

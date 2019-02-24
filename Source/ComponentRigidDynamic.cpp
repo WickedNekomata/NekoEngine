@@ -29,6 +29,8 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	gActor = App->physics->CreateRigidDynamic(physx::PxTransform(physx::PxIDENTITY()), *gShape, density, isKinematic);
 	assert(gActor != nullptr);
 
+	rigidActorType = RigidActorTypes::RigidDynamic;
+
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 	if (parent->cmp_collider != nullptr)
 	{
@@ -61,6 +63,11 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	freezeRotation[2] = rigidDynamicLockFlags & physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z;
 	physx::PxRigidBodyFlags rigidBodyFlags = gActor->is<physx::PxRigidBody>()->getRigidBodyFlags();
 	isKinematic = rigidBodyFlags & physx::PxRigidBodyFlag::Enum::eKINEMATIC;
+}
+
+ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& componentRigidDynamic) : ComponentRigidActor(componentRigidDynamic, ComponentTypes::RigidDynamicComponent)
+{
+
 }
 
 ComponentRigidDynamic::~ComponentRigidDynamic() {}
@@ -240,8 +247,8 @@ void ComponentRigidDynamic::OnUniqueEditor()
 
 	// -----
 
-	ImGui::Text("Force"); 
-	
+	ImGui::Text("Force");
+
 	ImGui::PushItemWidth(50.0f);
 	ImGui::DragFloat("##ForceX", &force.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
@@ -264,8 +271,8 @@ void ComponentRigidDynamic::OnUniqueEditor()
 
 	// -----
 
-	ImGui::Text("Torque"); 
-	
+	ImGui::Text("Torque");
+
 	ImGui::PushItemWidth(50.0f);
 	ImGui::DragFloat("##TorqueX", &torque.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
@@ -305,8 +312,21 @@ void ComponentRigidDynamic::OnUniqueEditor()
 
 void ComponentRigidDynamic::Update()
 {
-	if (!gActor->is<physx::PxRigidDynamic>()->isSleeping())
+	if (!IsSleeping())
 		UpdateGameObjectTransform();
+}
+
+uint ComponentRigidDynamic::GetInternalSerializationBytes()
+{
+	return uint();
+}
+
+void ComponentRigidDynamic::OnInternalSave(char*& cursor)
+{
+}
+
+void ComponentRigidDynamic::OnInternalLoad(char*& cursor)
+{
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -460,7 +480,7 @@ void ComponentRigidDynamic::ClearTorque() const
 	gActor->is<physx::PxRigidDynamic>()->clearTorque();
 }
 
-uint ComponentRigidDynamic::GetInternalSerializationBytes()
+bool ComponentRigidDynamic::IsSleeping() const
 {
-	return 0;
+	return gActor->is<physx::PxRigidDynamic>()->isSleeping();
 }

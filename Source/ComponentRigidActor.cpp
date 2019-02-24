@@ -11,12 +11,23 @@
 
 #include "imgui\imgui.h"
 
-ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType) {}
+ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentRigidActorType) : Component(parent, componentRigidActorType)
+{
+	App->physics->AddRigidActorComponent(this);
+}
+
+ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType) : Component(componentRigidActor.parent, componentRigidActorType)
+{
+
+}
 
 ComponentRigidActor::~ComponentRigidActor()
 {
 	App->physics->RemoveActor(*gActor);
 	gActor->release();
+
+	App->physics->EraseRigidActorComponent(this);
+	parent->cmp_rigidActor = nullptr;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -81,7 +92,7 @@ void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 		return;
 	}
 
-	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
+	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
 		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
 }
 
@@ -109,8 +120,12 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 	return gActor;
 }
 
-// ----------------------------------------------------------------------------------------------------
+RigidActorTypes ComponentRigidActor::GetRigidActorType() const
+{
+	return rigidActorType;
+}
 
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::OnWake()
 {
@@ -120,9 +135,4 @@ void ComponentRigidActor::OnWake()
 void ComponentRigidActor::OnSleep()
 {
 	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
-}
-
-uint ComponentRigidActor::GetInternalSerializationBytes()
-{
-	return 0;
 }

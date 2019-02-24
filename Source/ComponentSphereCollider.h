@@ -9,11 +9,18 @@ class ComponentSphereCollider : public ComponentCollider
 public:
 
 	ComponentSphereCollider(GameObject* parent);
-	//ComponentCollider(const ComponentRigidActor& componentRigidActor);
+	ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider);
 	~ComponentSphereCollider();
 
 	void OnUniqueEditor();
 
+	uint GetInternalSerializationBytes();
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	void EncloseGeometry();
 	void RecalculateShape();
 
 	// Sets
@@ -22,9 +29,6 @@ public:
 	// Gets
 	physx::PxSphereGeometry GetSphereGeometry() const;
 
-	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
 	//void OnInternalSave(JSON_Object* file);
 	//void OnLoad(JSON_Object* file);
 

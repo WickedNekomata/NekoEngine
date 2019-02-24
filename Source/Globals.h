@@ -74,3 +74,4 @@ enum update_status
 #define EXTENSION_PREFAB ".pfb"
 #define EXTENSION_META ".meta"
 #define EXTENSION_SCRIPT ".dll"
+#define EXTENSION_MATERIAL ".mat"

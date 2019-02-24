@@ -150,15 +150,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
 		RecursiveProcessBones(scene, scene->mRootNode);
-
-		// TODO_G : export prefab.
-		/*
-		Needs ResourceData, and CustomData
-		- Create resource prefab (Call exportFile in App->res Generate a file, meta)
-		- App->res in switch calls exportFile from this prefab resource
-		- Returns a resource already in memory (not needed here)
-		*/
-
+		// Prefab creation
 		ResourceData data;
 		PrefabData prefab_data;
 
@@ -166,7 +158,10 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		prefab_data.root = rootGameObject;
 		std::string outputFile;
-		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
+		// todo
+		//ResourcePrefab* prefaby = (ResourcePrefab*)App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
+
+		//prefaby->my_data = prefab_data; //omegalul
 
 		aiReleaseImport(scene);
 
@@ -382,7 +377,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 								uuid = App->res->ImportFile(outputFile.data())->GetUuid();
 
 							assert(uuid > 0);
-							gameObject->cmp_material->res[0].res = uuid;
+							//gameObject->cmp_material->res[0].res = uuid; // TODO UNIFORMS
 						}
 					}
 				}
@@ -476,7 +471,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			memcpy(cursor, meshName, bytes);
 
 			std::string outputFile = std::to_string(gameObject->cmp_mesh->res);
-			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFile) > 0)
+			if (App->fs->SaveInGame(data, size, FileTypes::MeshFile, outputFile) > 0)
 			{
 				CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 				outputFiles.push_back(outputFile);
@@ -707,11 +702,13 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 void SceneImporter::DeleteBufferObject(uint& name) const
 {
 	glDeleteBuffers(1, &name);
+	name = 0;
 }
 
 void SceneImporter::DeleteVertexArrayObject(uint& name) const
 {
 	glDeleteVertexArrays(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -26,8 +26,8 @@ public:
 	void SetDensity(float density);
 	void UpdateMassAndInertia();
 	void SetMass(float mass);
-	void SetCMass(math::float3& cMass);
-	void SetInertia(math::float3& inertia);
+	void SetCMass(const math::float3& cMass);
+	void SetInertia(const math::float3& inertia);
 	void SetLinearDamping(float linearDamping);
 	void SetAngularDamping(float angularDamping);
 	void SetMaxLinearVelocity(float maxLinearVelocity);
@@ -38,6 +38,10 @@ public:
 
 	void SetLinearVelocity(math::float3& linearVelocity);
 	void SetAngularVelocity(math::float3& angularVelocity);
+	// Force (default): continuous changes that are effected by mass
+	// Acceleration: continuous changes that aren't effected by mass
+	// Impulse: instant change that is effected by mass
+	// Velocity change: instant change that is not effected by mass
 	void AddForce(math::float3& force, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
 	void ClearForce() const;
 	void AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE);
@@ -59,12 +63,6 @@ private:
 	bool freezePosition[3] = { false, false, false };
 	bool freezeRotation[3] = { false, false, false };
 	bool isKinematic = false;
-
-	math::float3 linearVelocity = math::float3::zero;
-	math::float3 angularVelocity = math::float3::zero;
-	math::float3 force = math::float3::zero;
-	physx::PxForceMode::Enum forceMode = physx::PxForceMode::Enum::eFORCE;
-	math::float3 torque = math::float3::zero;
 };
 
 #endif

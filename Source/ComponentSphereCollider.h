@@ -29,9 +29,6 @@ public:
 	// Gets
 	physx::PxSphereGeometry GetSphereGeometry() const;
 
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
-
 private:
 
 	float radius = 0.5f;

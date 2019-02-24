@@ -19,7 +19,10 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 
 ComponentCollider::ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType) : Component(componentCollider.parent, componentColliderType)
 {
+	gMaterial = App->physics->GetDefaultMaterial();
+	assert(gMaterial != nullptr);
 
+	App->physics->AddColliderComponent(this);
 }
 
 ComponentCollider::~ComponentCollider()
@@ -80,6 +83,61 @@ void ComponentCollider::Update()
 	}
 }
 
+uint ComponentCollider::GetInternalSerializationBytes()
+{
+	return sizeof(bool) +
+		sizeof(bool) +
+		sizeof(bool) +
+		sizeof(math::float3) +
+		sizeof(ColliderTypes);
+}
+
+void ComponentCollider::OnInternalSave(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &isTrigger, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &participateInContactTests, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &participateInSceneQueries, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &center, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ColliderTypes);
+	memcpy(cursor, &colliderType, bytes);
+	cursor += bytes;
+}
+
+void ComponentCollider::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&isTrigger, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&participateInContactTests, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&participateInSceneQueries, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&center, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ColliderTypes);
+	memcpy(&colliderType, cursor, bytes);
+	cursor += bytes;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentCollider::ClearShape()
@@ -104,13 +162,16 @@ void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filt
 void ComponentCollider::SetIsTrigger(bool isTrigger)
 {
 	this->isTrigger = isTrigger;
-	gShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !isTrigger); // shapes cannot simultaneously be trigger shapes and simulation shapes
+	if (isTrigger && participateInContactTests)
+		SetParticipateInContactTests(false); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
 }
 
 void ComponentCollider::SetParticipateInContactTests(bool participateInContactTests)
 {
 	this->participateInContactTests = participateInContactTests;
+	if (participateInContactTests && isTrigger)
+		SetIsTrigger(false); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSIMULATION_SHAPE, participateInContactTests);
 }
 
@@ -120,7 +181,7 @@ void ComponentCollider::SetParticipateInSceneQueries(bool participateInSceneQuer
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE, participateInSceneQueries);
 }
 
-void ComponentCollider::SetCenter(math::float3& center)
+void ComponentCollider::SetCenter(const math::float3& center)
 {
 	assert(center.IsFinite());
 	this->center = center;

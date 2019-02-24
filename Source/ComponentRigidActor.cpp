@@ -18,7 +18,7 @@ ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes comp
 
 ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType) : Component(componentRigidActor.parent, componentRigidActorType)
 {
-
+	App->physics->AddRigidActorComponent(this);
 }
 
 ComponentRigidActor::~ComponentRigidActor()
@@ -37,6 +37,7 @@ void ComponentRigidActor::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::Checkbox("Use Gravity", &useGravity))
 		SetUseGravity(useGravity);
+
 	// TODO: interpolate & collision detection
 #endif
 }
@@ -44,6 +45,34 @@ void ComponentRigidActor::OnUniqueEditor()
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::Update() {}
+
+uint ComponentRigidActor::GetInternalSerializationBytes()
+{
+	return sizeof(bool) +
+		sizeof(RigidActorTypes);
+}
+
+void ComponentRigidActor::OnInternalSave(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &useGravity, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(RigidActorTypes);
+	memcpy(cursor, &rigidActorType, bytes);
+	cursor += bytes;
+}
+
+void ComponentRigidActor::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&useGravity, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(RigidActorTypes);
+	memcpy(&rigidActorType, cursor, bytes);
+	cursor += bytes;
+}
 
 // ----------------------------------------------------------------------------------------------------
 

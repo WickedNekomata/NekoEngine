@@ -157,7 +157,7 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 	GameObject* globalParent = this->GetParent()->GetParent();
 
-	while (globalParent->GetParent() != nullptr)
+	while (globalParent != nullptr && globalParent->GetParent() != nullptr)
 	{
 		aux_list.push_back(globalParent);
 		globalParent = globalParent->GetParent();

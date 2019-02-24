@@ -95,17 +95,27 @@ void ComponentProjector::OnUniqueEditor()
 			title = "Everything";
 		else
 		{
-			uint found = title.find_last_of(","); // TODO
-			title.substr(found, title.size());
+			uint found = title.find_last_of(",");
+			if (found != std::string::npos)
+				title = title.substr(0, found);
 		}
 
 		ImGui::PushItemWidth(150.0f);
 		if (ImGui::BeginCombo("Ignore layers", title.data()))
 		{
+			if (ImGui::Selectable("Nothing", enabledLayers == 0 ? true : false))
+				filterMask = 0;
+
+			if (ImGui::Selectable("Everything", enabledLayers == activeLayers.size() ? true : false))
+			{
+				for (uint i = 0; i < activeLayers.size(); ++i)
+					filterMask |= activeLayers[i]->GetFilterGroup();
+			}
+
 			for (uint i = 0; i < activeLayers.size(); ++i)
 			{
 				Layer* layer = activeLayers[i];
-				if (ImGui::Selectable(layer->name.data(), filterMask & layer->GetFilterGroup() ? true : false, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+				if (ImGui::Selectable(layer->name.data(), filterMask & layer->GetFilterGroup() ? true : false))
 					filterMask ^= layer->GetFilterGroup();
 			}
 			ImGui::EndCombo();

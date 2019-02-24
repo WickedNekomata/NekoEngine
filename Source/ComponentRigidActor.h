@@ -26,9 +26,9 @@ public:
 
 	virtual void Update();
 
-	virtual uint GetInternalSerializationBytes() = 0;
-	virtual void OnInternalSave(char*& cursor) = 0;
-	virtual void OnInternalLoad(char*& cursor) = 0;
+	virtual uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
 
 	// ----------------------------------------------------------------------------------------------------
 

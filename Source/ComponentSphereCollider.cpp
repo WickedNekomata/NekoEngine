@@ -11,7 +11,6 @@
 #include "imgui\imgui.h"
 
 #include "MathGeoLib\include\Math\float4x4.h"
-#include "MathGeoLib/include/Math/float4.h"
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
@@ -29,7 +28,19 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 
 ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider) : ComponentCollider(componentSphereCollider, ComponentTypes::SphereColliderComponent)
 {
+	EncloseGeometry();
 
+	colliderType = componentSphereCollider.colliderType;
+
+	SetIsTrigger(componentSphereCollider.isTrigger);
+	SetParticipateInContactTests(componentSphereCollider.participateInContactTests);
+	SetParticipateInSceneQueries(componentSphereCollider.participateInSceneQueries);
+
+	// -----
+
+	SetRadius(componentSphereCollider.radius);
+
+	SetCenter(componentSphereCollider.center);
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
@@ -39,30 +50,48 @@ ComponentSphereCollider::~ComponentSphereCollider() {}
 void ComponentSphereCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Sphere Collider");
-	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("Sphere Collider", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Sphere Collider");
+		ImGui::Spacing();
 
-	ComponentCollider::OnUniqueEditor();
+		ComponentCollider::OnUniqueEditor();
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##SphereRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetRadius(radius);
-	ImGui::PopItemWidth();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##SphereRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetRadius(radius);
+		ImGui::PopItemWidth();
+	}
 #endif
 }
 
 uint ComponentSphereCollider::GetInternalSerializationBytes()
 {
-	return uint();
+	return ComponentCollider::GetInternalSerializationBytes() + 
+		sizeof(float);
 }
 
 void ComponentSphereCollider::OnInternalSave(char*& cursor)
 {
+	ComponentCollider::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &radius, bytes);
+	cursor += bytes;
 }
 
 void ComponentSphereCollider::OnInternalLoad(char*& cursor)
 {
+	ComponentCollider::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(&radius, cursor, bytes);
+	cursor += bytes;
+
+	// -----
+
+	EncloseGeometry();
 }
 
 // ----------------------------------------------------------------------------------------------------

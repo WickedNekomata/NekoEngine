@@ -48,7 +48,7 @@ void Component::OnEditor()
 		}
 	}
 
-	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##isActive%u", UUID);
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Is active##isActive%u", UUID);
 
 	bool isActive = IsActive();
 	if (ImGui::Checkbox(itemName, &isActive)) { ToggleIsActive(); }

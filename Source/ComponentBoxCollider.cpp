@@ -26,7 +26,19 @@ ComponentBoxCollider::ComponentBoxCollider(GameObject* parent) : ComponentCollid
 
 ComponentBoxCollider::ComponentBoxCollider(const ComponentBoxCollider& componentBoxCollider) : ComponentCollider(componentBoxCollider, ComponentTypes::BoxColliderComponent)
 {
+	EncloseGeometry();
 
+	colliderType = componentBoxCollider.colliderType;
+
+	SetIsTrigger(componentBoxCollider.isTrigger);
+	SetParticipateInContactTests(componentBoxCollider.participateInContactTests);
+	SetParticipateInSceneQueries(componentBoxCollider.participateInSceneQueries);
+
+	// -----
+
+	SetHalfSize(componentBoxCollider.halfSize);
+
+	SetCenter(componentBoxCollider.center);
 }
 
 ComponentBoxCollider::~ComponentBoxCollider() {}
@@ -36,37 +48,52 @@ ComponentBoxCollider::~ComponentBoxCollider() {}
 void ComponentBoxCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Box Collider");
-	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("Box Collider", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ComponentCollider::OnUniqueEditor();
 
-	ComponentCollider::OnUniqueEditor();
-
-	ImGui::Text("Half size"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeX", &halfSize.x, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetHalfSize(halfSize);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeY", &halfSize.y, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetHalfSize(halfSize);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##HalfSizeZ", &halfSize.z, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetHalfSize(halfSize);
-	ImGui::PopItemWidth();
+		ImGui::Text("Half size"); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##HalfSizeX", &halfSize.x, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetHalfSize(halfSize);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##HalfSizeY", &halfSize.y, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetHalfSize(halfSize);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##HalfSizeZ", &halfSize.z, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetHalfSize(halfSize);
+		ImGui::PopItemWidth();
+	}
 #endif
 }
 
 uint ComponentBoxCollider::GetInternalSerializationBytes()
 {
-	return uint();
+	return ComponentCollider::GetInternalSerializationBytes() +
+		sizeof(math::float3);
 }
 
 void ComponentBoxCollider::OnInternalSave(char*& cursor)
 {
+	ComponentCollider::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(math::float3);
+	memcpy(cursor, &halfSize, bytes);
+	cursor += bytes;
 }
 
 void ComponentBoxCollider::OnInternalLoad(char*& cursor)
 {
+	ComponentCollider::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(math::float3);
+	memcpy(&halfSize, cursor, bytes);
+	cursor += bytes;
+
+	// -----
+
+	EncloseGeometry();
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -114,7 +141,7 @@ void ComponentBoxCollider::RecalculateShape()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentBoxCollider::SetHalfSize(math::float3& halfSize)
+void ComponentBoxCollider::SetHalfSize(const math::float3& halfSize)
 {
 	assert(halfSize.IsFinite());
 	this->halfSize = halfSize;

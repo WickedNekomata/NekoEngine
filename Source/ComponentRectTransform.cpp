@@ -103,6 +103,43 @@ void ComponentRectTransform::CheckParentRect()
 	RecaculateAnchors();
 }
 
+void ComponentRectTransform::ChangeChildsRect(bool its_me)
+{
+	if(!its_me)
+		ParentChanged();
+
+	std::vector<GameObject*> childs;
+	parent->GetChildrenVector(childs);
+	for (GameObject* c_go : childs)
+	{
+		if(c_go != parent)
+			((ComponentRectTransform*)c_go->GetComponent(ComponentTypes::RectTransformComponent))->ChangeChildsRect();
+	}
+}
+
+void ComponentRectTransform::ParentChanged()
+{
+	if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
+		rectTransform[X_RECT] = rectParent[X_RECT] + anchor[LEFT_RECT];
+	else
+		rectTransform[X_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[LEFT_RECT];
+
+	if (anchor_flags[TOP_RECT] == TOPLEFT_ANCHOR)
+		rectTransform[Y_RECT] = rectParent[Y_RECT] + anchor[TOP_RECT];
+	else
+		rectTransform[Y_RECT] = rectParent[Y_RECT] + rectParent[YDIST_RECT] - anchor[TOP_RECT];
+
+	if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
+		rectTransform[XDIST_RECT] = rectParent[X_RECT] + anchor[RIGHT_RECT] -rectTransform[X_RECT];
+	else
+		rectTransform[XDIST_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[RIGHT_RECT] - rectTransform[X_RECT];
+
+	if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
+		rectTransform[YDIST_RECT] = rectParent[Y_RECT] + anchor[BOTTOM_RECT] - rectTransform[Y_RECT];
+	else
+		rectTransform[YDIST_RECT] = rectParent[Y_RECT] + rectParent[YDIST_RECT] - anchor[BOTTOM_RECT] - rectTransform[Y_RECT];
+}
+
 void ComponentRectTransform::RecaculateAnchors()
 {
 
@@ -232,6 +269,7 @@ void ComponentRectTransform::OnUniqueEditor()
 		max_ydist = screen_height - rectTransform[Y_RECT];
 	}
 	bool needed_recalculate = false;
+	bool need_change_childs = false;
 
 	ImGui::PushItemWidth(50.0f);
 
@@ -248,6 +286,9 @@ void ComponentRectTransform::OnUniqueEditor()
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	if (ImGui::DragScalar("##SizeY", ImGuiDataType_U32, (void*)&rectTransform[YDIST_RECT], 1, 0, &max_ydist, "%u", 1.0f))
 		needed_recalculate = true;
+
+	if (needed_recalculate)
+		need_change_childs = true;
 
 	ImGui::PushItemWidth(150.0f);
 	ImGui::Text("Anchor");
@@ -283,6 +324,9 @@ void ComponentRectTransform::OnUniqueEditor()
 
 	if (needed_recalculate)
 		RecaculateAnchors();
+
+	if (need_change_childs)
+		ChangeChildsRect(true);
 
 	ImGui::PushItemWidth(150.0f);
 	ImGui::Text("Margin");

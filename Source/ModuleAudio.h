@@ -7,7 +7,7 @@
 class ModuleAudio : public Module
 {
 public:
-	ModuleAudio();
+	ModuleAudio(bool start_enabled = true);
 	~ModuleAudio();
 	bool Start();
 	update_status Update(/*float dt*/);

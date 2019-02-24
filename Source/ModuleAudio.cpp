@@ -3,9 +3,9 @@
 #include "ModuleAudio.h"
 //#include "CompAudioSource.h"
 
-ModuleAudio::ModuleAudio()
+ModuleAudio::ModuleAudio(bool start_enabled) : Module(start_enabled)
 {
-	this->name = "ModuleAudio";
+	this->name = "Audio";
 }
 
 ModuleAudio::~ModuleAudio()

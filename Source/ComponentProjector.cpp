@@ -3,8 +3,11 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleLayers.h"
 
+#include "Resource.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
 
@@ -14,6 +17,8 @@
 
 ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, ComponentTypes::ProjectorComponent)
 {
+	SetMaterialRes(App->resHandler->defaultMaterial);
+
 	// Init frustum
 	frustum.type = math::FrustumType::PerspectiveFrustum;
 
@@ -65,6 +70,34 @@ void ComponentProjector::OnUniqueEditor()
 		float fov = frustum.verticalFov * RADTODEG;
 		if (ImGui::SliderFloat("##fov", &fov, 0.0f, 180.0f))
 			SetFOV(fov);
+
+		// Material
+		const Resource* resource = App->res->GetResource(materialRes);
+		std::string materialName = resource->GetName();
+
+		ImGui::PushID("material");
+		ImGui::Button(materialName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", materialRes);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			{
+				uint payload_n = *(uint*)payload->Data;
+				SetMaterialRes(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::SmallButton("Use default material"))
+			SetMaterialRes(App->resHandler->defaultMaterial);
 
 		// Ignore layers
 		std::string title;
@@ -166,6 +199,27 @@ void ComponentProjector::SetFarPlaneDistance(float farPlane)
 void ComponentProjector::SetAspectRatio(float aspectRatio)
 {
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov * 0.5f) * aspectRatio);
+}
+
+void ComponentProjector::SetMaterialRes(uint materialUuid)
+{
+	if (materialRes > 0)
+		App->res->SetAsUnused(materialRes);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	materialRes = materialUuid;
+}
+
+uint ComponentProjector::GetMaterialRes() const
+{
+	return materialRes;
+}
+
+void ComponentProjector::SetFilterMask(uint filterMask)
+{
+	this->filterMask = filterMask;
 }
 
 math::Frustum ComponentProjector::GetFrustum() const

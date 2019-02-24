@@ -13,13 +13,15 @@ public:
 
 	void Update();
 
-	void SetResource(uint materialUuid);
-
 	void OnUniqueEditor();
 
 	uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	void SetResource(uint materialUuid);
 
 public:
 

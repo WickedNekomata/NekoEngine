@@ -624,6 +624,46 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		break;
 	}
 
+	case ResourceTypes::AnimationResource:
+	{
+		std::string outputFile;
+		std::string name;
+		if (ResourceAnimation::ImportFile(file, name, outputFile))
+		{
+			std::vector<uint> resourcesUuids;
+			if (!GetResourcesUuidsByFile(file, resourcesUuids))
+			{
+				// Create the resources
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The AnimationResource file '%s' has resources that need to be created", file);
+			
+				// UUID
+				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
+				assert(uuid > 0);
+				resourcesUuids.push_back(uuid);
+				resourcesUuids.shrink_to_fit();
+
+
+				ResourceData data;
+				ResourceAnimationData animationData;
+				data.file = file;
+				if (name.empty())
+					App->fs->GetFileName(file, data.name);
+				else
+					data.name = name.data();
+
+
+				uint shaderObject = 0;
+				bool success = ResourceAnimation::LoadFile(file, animationData);
+
+				resource = CreateResource(ResourceTypes::AnimationResource, data, &animationData, uuid);
+			}
+			else
+				resource = GetResource(resourcesUuids.front());
+
+			// TODO: Meta?
+		}
+	}
+
 	}
 
 	return resource;
@@ -738,6 +778,9 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			break;
 		case ResourceTypes::PrefabResource:
 			resource = new ResourcePrefab(ResourceTypes::PrefabResource, uuid, data, *(PrefabData*)specificData);
+			break;
+		case ResourceTypes::AnimationResource:
+			resource = new ResourceAnimation(ResourceTypes::AnimationResource, uuid, data, *(ResourceAnimationData*)specificData);
 			break;
 	}
 

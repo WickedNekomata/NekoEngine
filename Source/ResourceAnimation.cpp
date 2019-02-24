@@ -44,27 +44,27 @@ void ResourceAnimation::OnPanelAssets()
 	}
 }
 
-bool ResourceAnimation::ImportFile(const char * file, std::string & name, std::string & outputFile)
+bool ResourceAnimation::ImportFile(const char* file, std::string& name, std::string& outputFile)
 {
 	return false;
 }
 
-bool ResourceAnimation::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
+bool ResourceAnimation::ExportFile(ResourceData& data, ResourceAnimationData& prefabData, std::string& outputFile, bool overwrite)
 {
 	return false;
 }
 
-uint ResourceAnimation::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
+uint ResourceAnimation::CreateMeta(const char* file, uint prefab_uuid, std::string& name, std::string& outputMetaFile)
 {
 	return uint();
 }
 
-bool ResourceAnimation::ReadMeta(const char * metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
+bool ResourceAnimation::ReadMeta(const char* metaFile, int64_t& lastModTime, uint& prefab_uuid, std::string& name)
 {
 	return false;
 }
 
-bool ResourceAnimation::LoadFile(const char * file, PrefabData & prefab_data_output)
+bool ResourceAnimation::LoadFile(const char* file, ResourceAnimationData& prefab_data_output)
 {
 	return false;
 }

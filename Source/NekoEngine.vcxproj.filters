@@ -1486,6 +1486,9 @@
     <ClInclude Include="ComponentImage.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentButton.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1951,6 +1954,9 @@
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentImage.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentButton.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
   </ItemGroup>

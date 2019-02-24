@@ -16,6 +16,7 @@ enum ComponentTypes
 	RectTransformComponent,
 	CanvasRendererComponent,
 	ImageComponent,
+	ButtonComponent,
 
 	// Physics
 	RigidStaticComponent,

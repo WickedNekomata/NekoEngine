@@ -57,7 +57,7 @@ uint AnimationImporter::Import(const aiAnimation* new_anim, std::string& output)
 	return anim->GetUID();*/
 }
 
-bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string & output)
+bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string& output)
 {
 	bool ret = false;
 

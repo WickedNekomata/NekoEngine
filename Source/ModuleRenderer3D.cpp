@@ -976,18 +976,20 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 	glUseProgram(shaderProgram);
 
 	// Specific uniforms
-	math::float4x4 scale_translate = math::float4x4(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f
+	math::float4x4 bias_matrix = math::float4x4(
+		0.5f, 0.0f, 0.0f, 0.5f,
+		0.0f, 0.5f, 0.0f, 0.5f,
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.0f, 0.0f, 1.0f
 	); // converts the view frustum to a range between 0 and 1 in x and y
+	//bias_matrix.Transpose();
+	
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	model_matrix = model_matrix.Transposed();
 	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix(); // view
 	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix(); // projection
-	math::float4x4 projector_matrix = model_matrix * projector_view_matrix * projector_proj_matrix; // into texture space
-	projector_matrix = scale_translate * projector_matrix;
+	math::float4x4 projector_matrix = model_matrix * projector_view_matrix * projector_proj_matrix * bias_matrix; // into texture space																					   
+
 	//http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
 	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, projector_matrix.ptr());
@@ -1076,6 +1078,17 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 			}
 			break;
 		}
+	}
+
+	for (uint i = 0; i < meshComponents.size(); ++i)
+	{
+		// Mesh
+		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponents[i]->res);
+
+		glBindVertexArray(mesh->GetVAO());
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+		glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 	}
 
 	for (uint i = 0; i < maxTextureUnits; ++i)

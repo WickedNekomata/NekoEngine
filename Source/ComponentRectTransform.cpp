@@ -3,12 +3,26 @@
 #include "Application.h"
 #include "ModuleUI.h"
 
+#include "GameObject.h"
+
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
 
 ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::RectTransformComponent)
 {
 	ui_rect = App->ui->GetRectUI();
+
+	Component* rect = nullptr;
+	if (parent->GetParent() != nullptr && (rect = parent->GetParent()->GetComponent(ComponentTypes::RectTransformComponent)) != nullptr)
+	{
+		rectParent = ((ComponentRectTransform*)rect)->GetRect();
+
+		rectTransform[X_RECT] = rectParent[X_RECT];
+		rectTransform[Y_RECT] = rectParent[Y_RECT];
+		rectTransform[XDIST_RECT] = 100;
+		rectTransform[YDIST_RECT] = 100;
+	}
+
 	RecaculateAnchors();
 }
 
@@ -30,6 +44,17 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 	anchor_flags[TOP_RECT] = componentRectTransform.anchor_flags[TOP_RECT];
 	anchor_flags[RIGHT_RECT] = componentRectTransform.anchor_flags[RIGHT_RECT];
 	anchor_flags[BOTTOM_RECT] = componentRectTransform.anchor_flags[BOTTOM_RECT];
+
+	Component* rect = nullptr;
+	if (parent->GetParent() != nullptr && (rect = parent->GetParent()->GetComponent(ComponentTypes::RectTransformComponent)) != nullptr)
+	{
+		rectParent = ((ComponentRectTransform*)rect)->GetRect();
+
+		rectTransform[X_RECT] = rectParent[X_RECT];
+		rectTransform[Y_RECT] = rectParent[Y_RECT];
+		rectTransform[XDIST_RECT] = 100;
+		rectTransform[YDIST_RECT] = 100;
+	}
 
 	RecaculateAnchors();
 }
@@ -53,6 +78,8 @@ void ComponentRectTransform::SetRect(uint x, uint y, uint x_dist, uint y_dist)
 	rectTransform[Y_RECT] = y;
 	rectTransform[XDIST_RECT] = x_dist;
 	rectTransform[YDIST_RECT] = y_dist;
+
+	RecaculateAnchors();
 }
 
 const uint * ComponentRectTransform::GetRect() const
@@ -60,27 +87,69 @@ const uint * ComponentRectTransform::GetRect() const
 	return rectTransform;
 }
 
+void ComponentRectTransform::CheckParentRect()
+{
+	Component* rect = nullptr;
+	if (parent->GetParent() != nullptr && (rect = parent->GetParent()->GetComponent(ComponentTypes::RectTransformComponent)) != nullptr)
+	{
+		rectParent = ((ComponentRectTransform*)rect)->GetRect();
+
+		rectTransform[X_RECT] = rectParent[X_RECT];
+		rectTransform[Y_RECT] = rectParent[Y_RECT];
+		rectTransform[XDIST_RECT] = 100;
+		rectTransform[YDIST_RECT] = 100;
+	}
+
+	RecaculateAnchors();
+}
+
 void ComponentRectTransform::RecaculateAnchors()
 {
-	if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
-		anchor[LEFT_RECT] = rectTransform[X_RECT] - ui_rect[UI_XRECT];
-	else
-		anchor[LEFT_RECT] = ui_rect[UI_WIDTHRECT] - rectTransform[X_RECT];
 
-	if (anchor_flags[TOP_RECT] == TOPLEFT_ANCHOR)
-		anchor[TOP_RECT] = rectTransform[Y_RECT] - ui_rect[UI_YRECT];
-	else
-		anchor[TOP_RECT] = ui_rect[UI_HEIGHTRECT] - rectTransform[Y_RECT];
+	if (rectParent != nullptr)
+	{
+		if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
+			anchor[LEFT_RECT] = rectTransform[X_RECT] - rectParent[UI_XRECT];
+		else
+			anchor[LEFT_RECT] = rectParent[UI_WIDTHRECT] - rectTransform[X_RECT];
 
-	if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
-		anchor[RIGHT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) - ui_rect[UI_XRECT];
-	else
-		anchor[RIGHT_RECT] = ui_rect[UI_WIDTHRECT]  - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
+		if (anchor_flags[TOP_RECT] == TOPLEFT_ANCHOR)
+			anchor[TOP_RECT] = rectTransform[Y_RECT] - rectParent[UI_YRECT];
+		else
+			anchor[TOP_RECT] = rectParent[UI_HEIGHTRECT] - rectTransform[Y_RECT];
 
-	if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
-		anchor[BOTTOM_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) - ui_rect[UI_XRECT];
+		if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
+			anchor[RIGHT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) - rectParent[UI_XRECT];
+		else
+			anchor[RIGHT_RECT] = rectParent[UI_WIDTHRECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
+
+		if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
+			anchor[BOTTOM_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) - rectParent[UI_XRECT];
+		else
+			anchor[BOTTOM_RECT] = rectParent[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
+	}
 	else
-		anchor[BOTTOM_RECT] = ui_rect[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
+	{
+		if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
+			anchor[LEFT_RECT] = rectTransform[X_RECT] - ui_rect[UI_XRECT];
+		else
+			anchor[LEFT_RECT] = ui_rect[UI_WIDTHRECT] - rectTransform[X_RECT];
+
+		if (anchor_flags[TOP_RECT] == TOPLEFT_ANCHOR)
+			anchor[TOP_RECT] = rectTransform[Y_RECT] - ui_rect[UI_YRECT];
+		else
+			anchor[TOP_RECT] = ui_rect[UI_HEIGHTRECT] - rectTransform[Y_RECT];
+
+		if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
+			anchor[RIGHT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) - ui_rect[UI_XRECT];
+		else
+			anchor[RIGHT_RECT] = ui_rect[UI_WIDTHRECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
+
+		if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
+			anchor[BOTTOM_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) - ui_rect[UI_XRECT];
+		else
+			anchor[BOTTOM_RECT] = ui_rect[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
+	}
 }
 
 uint ComponentRectTransform::GetInternalSerializationBytes()
@@ -125,24 +194,52 @@ void ComponentRectTransform::OnUniqueEditor()
 	ImGui::Text("Rect Transform");
 	ImGui::Spacing();
 
-	uint screen_height = ui_rect[UI_HEIGHTRECT];
-	uint screen_width = ui_rect[UI_WIDTHRECT];
+	uint screen_height = 0;
+	uint screen_width = 0;
 
-	uint max_xpos = screen_width - rectTransform[XDIST_RECT];
-	uint max_ypos = screen_height - rectTransform[YDIST_RECT];
+	uint min_xpos = 0;
+	uint min_ypos = 0;
 
-	uint max_xdist = screen_width - rectTransform[X_RECT];
-	uint max_ydist = screen_height - rectTransform[Y_RECT];
+	uint max_xpos = 0;
+	uint max_ypos = 0;
 
+	uint max_xdist = 0;
+	uint max_ydist = 0;
+
+	if (rectParent != nullptr)
+	{
+		min_xpos = rectParent[X_RECT];
+		min_ypos = rectParent[Y_RECT];
+
+		screen_width = rectParent[X_RECT] + rectParent[XDIST_RECT];
+		screen_height = rectParent[Y_RECT] + rectParent[YDIST_RECT];
+
+		max_xpos = screen_width - rectTransform[XDIST_RECT];
+		max_ypos = screen_height - rectTransform[YDIST_RECT];
+
+		max_xdist = screen_width - rectTransform[X_RECT];
+		max_ydist = screen_height - rectTransform[Y_RECT];
+	}
+	else
+	{
+		screen_height = ui_rect[UI_HEIGHTRECT];
+		screen_width = ui_rect[UI_WIDTHRECT];
+
+		max_xpos = screen_width - rectTransform[XDIST_RECT];
+		max_ypos = screen_height - rectTransform[YDIST_RECT];
+
+		max_xdist = screen_width - rectTransform[X_RECT];
+		max_ydist = screen_height - rectTransform[Y_RECT];
+	}
 	bool needed_recalculate = false;
 
 	ImGui::PushItemWidth(50.0f);
 
 	ImGui::Text("Positions X & Y");
-	if (ImGui::DragScalar("##PosX", ImGuiDataType_U32, (void*)&rectTransform[X_RECT], 1, 0, &max_xpos, "%u", 1.0f))
+	if (ImGui::DragScalar("##PosX", ImGuiDataType_U32, (void*)&rectTransform[X_RECT], 1, &min_xpos, &max_xpos, "%u", 1.0f))
 		needed_recalculate = true;
 	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragScalar("##PosY", ImGuiDataType_U32, (void*)&rectTransform[Y_RECT], 1, 0, &max_ypos, "%u", 1.0f))
+	if (ImGui::DragScalar("##PosY", ImGuiDataType_U32, (void*)&rectTransform[Y_RECT], 1, &min_ypos, &max_ypos, "%u", 1.0f))
 		needed_recalculate = true;
 
 	ImGui::Text("Size X & Y");

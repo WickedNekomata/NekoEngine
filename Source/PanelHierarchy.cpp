@@ -51,14 +51,14 @@ bool PanelHierarchy::Draw()
 				App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
 			}
-      if(!App->GOs->ExistCanvas())
-      {
+			if(!App->GOs->ExistCanvas())
+			{
 				if (ImGui::Selectable("Create Screen Canvas"))
 				{
 					App->GOs->CreateCanvas("Canvas", root);
 					ImGui::CloseCurrentPopup();
 				}
-      }
+			}
 			if (ImGui::Selectable("Create Cube"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("Cube", root);
@@ -169,26 +169,46 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::Selectable("Create Empty")) 
+		if (child->GetLayer() == UILAYER)
 		{
-			App->GOs->CreateGameObject("GameObject", child);
-			ImGui::CloseCurrentPopup();
+			if (ImGui::Selectable("Create Empty"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("GameObjectCanvas", child, true);
+				go->AddComponent(ComponentTypes::RectTransformComponent);
+				go->SetLayer(UILAYER);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Selectable("Delete"))
+			{
+				if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
+					App->scene->selectedObject = CurrentSelection::SelectedType::null;
+				if (child->GetParent()->GetParent() == nullptr)
+					App->GOs->DeleteCanvasPointer();
+				App->GOs->DeleteGameObject(child);
+				ImGui::CloseCurrentPopup();
+			}
 		}
-		if (ImGui::Selectable("Create Cube"))
+		else
 		{
-			GameObject* go = App->GOs->CreateGameObject("Cube", child);
-			go->AddComponent(ComponentTypes::MeshComponent);
-			go->cmp_mesh->SetResource(App->resHandler->defaultCube);
-			ImGui::CloseCurrentPopup();
-		}
-		if (ImGui::Selectable("Delete")) 
-		{
-			if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
-				App->scene->selectedObject = CurrentSelection::SelectedType::null;
-			App->GOs->DeleteGameObject(child);
-			if (child->GetLayer() == UILAYER && child->GetParent()->GetParent() == nullptr)
-				App->GOs->DeleteCanvasPointer();
-			ImGui::CloseCurrentPopup();
+			if (ImGui::Selectable("Create Empty"))
+			{
+				App->GOs->CreateGameObject("GameObject", child);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Selectable("Create Cube"))
+			{
+				GameObject* go = App->GOs->CreateGameObject("Cube", child);
+				go->AddComponent(ComponentTypes::MeshComponent);
+				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Selectable("Delete"))
+			{
+				if (child->EqualsToChildrenOrThis(App->scene->selectedObject.Get()))
+					App->scene->selectedObject = CurrentSelection::SelectedType::null;
+				App->GOs->DeleteGameObject(child);
+				ImGui::CloseCurrentPopup();
+			}
 		}
 		ImGui::EndPopup();
 	}

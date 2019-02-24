@@ -36,25 +36,31 @@ void ModuleUI::DrawCanvas()
 	{
 		GameObject* canvas = App->GOs->GetCanvas();
 
-		ComponentCanvasRenderer* ui_rend = (ComponentCanvasRenderer*)canvas->GetComponent(ComponentTypes::CanvasRendererComponent);
-		if (ui_rend)
-		{
-			ui_rend->Update();
-			ComponentCanvasRenderer::ToUIRend* rend = ui_rend->GetFistQueue();
-			while (rend != nullptr)
-			{
-				switch (rend->GetType())
-				{
-				case ComponentCanvasRenderer::RenderTypes::COLOR_VECTOR:
-					DrawUIColor((ComponentRectTransform*)canvas->GetComponent(ComponentTypes::RectTransformComponent), rend->GetColor());
-					break;
-				case ComponentCanvasRenderer::RenderTypes::TEXTURE:
-					DrawUITexture((ComponentRectTransform*)canvas->GetComponent(ComponentTypes::RectTransformComponent), rend->GetTexture());
-					break;
-				}
+		std::vector<GameObject*> gos;
+		canvas->GetChildrenAndThisVectorFromLeaf(gos);
 
-				ui_rend->Drawed();
-				rend = ui_rend->GetFistQueue();
+		for (GameObject* go_rend : gos)
+		{
+			ComponentCanvasRenderer* ui_rend = (ComponentCanvasRenderer*)go_rend->GetComponent(ComponentTypes::CanvasRendererComponent);
+			if (ui_rend)
+			{
+				ui_rend->Update();
+				ComponentCanvasRenderer::ToUIRend* rend = ui_rend->GetFistQueue();
+				while (rend != nullptr)
+				{
+					switch (rend->GetType())
+					{
+					case ComponentCanvasRenderer::RenderTypes::COLOR_VECTOR:
+						DrawUIColor((ComponentRectTransform*)go_rend->GetComponent(ComponentTypes::RectTransformComponent), rend->GetColor());
+						break;
+					case ComponentCanvasRenderer::RenderTypes::TEXTURE:
+						DrawUITexture((ComponentRectTransform*)go_rend->GetComponent(ComponentTypes::RectTransformComponent), rend->GetTexture());
+						break;
+					}
+
+					ui_rend->Drawed();
+					rend = ui_rend->GetFistQueue();
+				}
 			}
 		}
 	}
@@ -233,6 +239,20 @@ void ModuleUI::OnWindowResize(uint width, uint height)
 const uint * ModuleUI::GetRectUI() const
 {
 	return ui_size_draw;
+}
+
+void ModuleUI::LinkAllRectsTransform()
+{
+	GameObject* canvas = App->GOs->GetCanvas();
+
+	std::vector<GameObject*> gos;
+	canvas->GetChildrenAndThisVectorFromLeaf(gos);
+
+	for (GameObject* go_rend : gos)
+	{
+		ComponentRectTransform* cmp_rect = (ComponentRectTransform*)go_rend->GetComponent(ComponentTypes::RectTransformComponent);
+		cmp_rect->CheckParentRect();
+	}
 }
 
 // Shader methods

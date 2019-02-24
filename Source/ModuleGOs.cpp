@@ -10,6 +10,7 @@
 #include "ResourceShaderProgram.h"
 
 #include "ModuleRenderer3D.h"
+#include "ModuleUI.h"
 
 #include <assert.h>
 
@@ -285,6 +286,7 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 		if (std::strcmp(child->GetName(), "Canvas") == 0)
 		{
 			canvas = child;
+			App->ui->LinkAllRectsTransform();
 		}
 	}
 

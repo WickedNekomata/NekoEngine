@@ -42,6 +42,8 @@ public:
 
 	const uint* GetRect() const;
 
+	void CheckParentRect();
+
 private:
 	//x, y, x_dist, y_dist
 	uint rectTransform[4] = { 0, 0, 100, 100 };
@@ -53,6 +55,7 @@ private:
 	void RecaculateAnchors();
 
 	const uint* ui_rect = nullptr;
+	const uint* rectParent = nullptr;
 
 	virtual uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);

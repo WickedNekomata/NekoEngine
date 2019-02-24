@@ -34,6 +34,8 @@ public:
 
 	const uint* GetRectUI()const;
 
+	void LinkAllRectsTransform();
+
 private:
 
 	bool Init(JSON_Object* jObject);

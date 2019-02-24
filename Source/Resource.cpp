@@ -59,10 +59,10 @@ uint Resource::IncreaseReferences()
 	if (ret)
 	{
 		++count;
-		CONSOLE_LOG(LogTypes::Normal, "The references of the resource '%s' have been incremented", data.file.data());
+		CONSOLE_LOG(LogTypes::Normal, "Resource: The references of the resource '%s' have been incremented", data.name.data());
 	}
 	else
-		CONSOLE_LOG(LogTypes::Error, "The references of the resource '%s' have not been incremented", data.file.data());
+		CONSOLE_LOG(LogTypes::Error, "Resource: The references of the resource '%s' have not been incremented", data.name.data());
 
 	return count;
 }

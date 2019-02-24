@@ -34,12 +34,15 @@ void DebugDrawer::EndDebugDraw()
 
 void DebugDrawer::DebugDraw(const math::AABB& aabb, const Color& color, const math::float4x4& globalTransform) const
 {
-	assert(aabb.IsFinite() && globalTransform.IsFinite());
+	if (aabb.IsFinite())
+	{
+		assert(globalTransform.IsFinite());
 
-	math::float3 corners[8];
-	aabb.GetCornerPoints(corners);
+		math::float3 corners[8];
+		aabb.GetCornerPoints(corners);
 
-	DebugDrawBox(corners, color, globalTransform);
+		DebugDrawBox(corners, color, globalTransform);
+	}
 }
 
 void DebugDrawer::DebugDraw(const math::Frustum& frustum, const Color& color, const math::float4x4& globalTransform) const

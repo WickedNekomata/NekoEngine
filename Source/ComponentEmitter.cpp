@@ -801,6 +801,10 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, burstTypeName.c_str(), bytes);
 	cursor += bytes;
 
+	uint size = startValues.color.size();
+	memcpy(cursor, &size, bytes);
+	cursor += bytes;
+
 	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
 	{
 		(*it).OnInternalSave(cursor);
@@ -917,9 +921,16 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	burstTypeName.resize(nameLenght);
 	cursor += bytes;
 
-	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	uint size;
+	memcpy(&size, cursor, bytes);
+	cursor += bytes;
+
+	//startValues.color.pop_back();
+	for (int i = 0; i < size; ++i)
 	{
-		(*it).OnInternalLoad(cursor);
+		ColorTime color;
+		color.OnInternalLoad(cursor);
+		startValues.color.push_back(color);
 	}
 }
 

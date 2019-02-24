@@ -660,9 +660,15 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			else
 				resource = GetResource(resourcesUuids.front());
 
-			// TODO: Meta?
+			// 2. Meta
+			// TODO: only create meta if any of its fields has been modificated
+			std::string outputMetaFile;
+			std::string name = resource->GetName();
+			int64_t lastModTime = ResourceAnimation::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
+			assert(lastModTime > 0);
 		}
 	}
+	break;
 
 	}
 

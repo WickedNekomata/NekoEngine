@@ -4,61 +4,64 @@
 #include "Resource.h"
 
 #include <vector>
+struct BoneTransformation
+{
+	std::string bone_name;
+
+	struct Key
+	{
+		enum KeyType {
+			POSITION = 0,
+			SCALE,
+			ROTATION,
+
+			UNKNOWN
+		};
+
+		void Init(KeyType type, uint count) {
+			this->count = count;
+			time = new double[count];
+
+			switch (type)
+			{
+			case BoneTransformation::Key::POSITION:
+			case BoneTransformation::Key::SCALE:
+				value = new float[3 * count];
+				break;
+			case BoneTransformation::Key::ROTATION:
+				value = new float[4 * count];
+				break;
+			}
+		}
+
+		~Key()
+		{
+			RELEASE_ARRAY(time);
+			RELEASE_ARRAY(value);
+		}
+
+		uint count = 0;
+		double* time = nullptr;
+		float* value = nullptr;
+	};
+
+	Key positions;
+	Key scalings;
+	Key rotations;
+};
 
 struct ResourceAnimationData
 {
-	// TODO
+	std::string name;
+	double duration;
+	double ticksPerSecond;
+
+	uint numKeys = 0;
+	BoneTransformation* boneKeys;
 };
 
 class ResourceAnimation : public Resource
 {
-
-public:
-	struct BoneTransformation
-	{
-		std::string bone_name;
-
-		struct Key
-		{
-			enum KeyType {
-				POSITION = 0,
-				SCALE,
-				ROTATION,
-
-				UNKNOWN
-			};
-
-			void Init(KeyType type, uint count) {
-				this->count = count;
-				time = new double[count];
-
-				switch (type)
-				{
-				case ResourceAnimation::BoneTransformation::Key::POSITION:
-				case ResourceAnimation::BoneTransformation::Key::SCALE:
-					value = new float[3 * count];
-					break;
-				case ResourceAnimation::BoneTransformation::Key::ROTATION:
-					value = new float[4 * count];
-					break;
-				}
-			}
-
-			~Key()
-			{
-				RELEASE_ARRAY(time);
-				RELEASE_ARRAY(value);
-			}
-
-			uint count = 0;
-			double* time = nullptr;
-			float* value = nullptr;
-		};
-
-		Key positions;
-		Key scalings;
-		Key rotations;
-	};
 
 public:
 
@@ -81,7 +84,7 @@ public:
 	double duration;
 	double ticks_per_second;
 
-	uint num_keys = 0;
+	uint numKeys = 0;
 	BoneTransformation* bone_keys;
 
 	ResourceAnimationData animationData;

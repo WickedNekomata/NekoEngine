@@ -121,6 +121,7 @@ public:
 	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 
 	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool OverlapSphere(float radius, math::float3 center, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 
 	// ----------------------------------------------------------------------------------------------------
 

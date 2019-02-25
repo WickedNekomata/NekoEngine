@@ -245,44 +245,44 @@ void Particle::Draw()
 		{
 			Uniform uniform = uniforms[i];
 
-			if (strcmp(uniform.common.name, "cosadeparticules") == 0)
-				continue;
-
-			switch (uniform.common.type)
+			if (strcmp(uniform.common.name, "averageColor") == 0 || strcmp(uniform.common.name, "material.albedo") == 0 || strcmp(uniform.common.name, "material.specular") == 0)
 			{
-			case Uniforms_Values::FloatU_value:
-				glUniform1f(uniform.common.location, uniform.floatU.value);
-				break;
-			case Uniforms_Values::IntU_value:
-				glUniform1i(uniform.common.location, uniform.intU.value);
-				break;
-			case Uniforms_Values::Vec2FU_value:
-				glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
-				break;
-			case Uniforms_Values::Vec3FU_value:
-				glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
-				break;
-			case Uniforms_Values::Vec4FU_value:
-				glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
-				break;
-			case Uniforms_Values::Vec2IU_value:
-				glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
-				break;
-			case Uniforms_Values::Vec3IU_value:
-				glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
-				break;
-			case Uniforms_Values::Vec4IU_value:
-				glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
-				break;
-			case Uniforms_Values::Sampler2U_value:
-				if (textureUnit < App->renderer3D->GetMaxTextureUnits())
+				switch (uniform.common.type)
 				{
-					glActiveTexture(GL_TEXTURE0 + textureUnit);
-					glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
-					glUniform1i(uniform.common.location, textureUnit);
-					++textureUnit;
+				case Uniforms_Values::FloatU_value:
+					glUniform1f(uniform.common.location, uniform.floatU.value);
+					break;
+				case Uniforms_Values::IntU_value:
+					glUniform1i(uniform.common.location, uniform.intU.value);
+					break;
+				case Uniforms_Values::Vec2FU_value:
+					glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+					break;
+				case Uniforms_Values::Vec3FU_value:
+					glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+					break;
+				case Uniforms_Values::Vec4FU_value:
+					glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+					break;
+				case Uniforms_Values::Vec2IU_value:
+					glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+					break;
+				case Uniforms_Values::Vec3IU_value:
+					glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+					break;
+				case Uniforms_Values::Vec4IU_value:
+					glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+					break;
+				case Uniforms_Values::Sampler2U_value:
+					if (textureUnit < App->renderer3D->GetMaxTextureUnits())
+					{
+						glActiveTexture(GL_TEXTURE0 + textureUnit);
+						glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+						glUniform1i(uniform.common.location, textureUnit);
+						++textureUnit;
+					}
+					break;
 				}
-				break;
 			}
 		}
 

@@ -19,13 +19,24 @@ public class RayCaster : JellyScript
             RaycastHit hitInfo;
             if (Physics.Raycast(ray, out hitInfo, float.MaxValue, (uint)mask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
-                Debug.LogWarning("I hitted " + hitInfo.gameObject.name + " at the point " + hitInfo.point.ToString());
-                NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
-                if(agent != null)
-                {
-                    Debug.LogWarning("I founded a NavMeshAgent component");
-                    agent.SetDestination(hitInfo.point);
-                }            
+                Debug.Log("I raycasted at" + hitInfo.point.ToString());
+           
+                //Debug.LogWarning("I hitted " + hitInfo.gameObject.name + " at the point " + hitInfo.point.ToString());
+                //NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
+                //if(agent != null)
+                //{
+                //    Debug.LogWarning("I founded a NavMeshAgent component");
+                //    agent.SetDestination(hitInfo.point);
+                //}            
+            }
+            NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
+            if(agent != null)
+            {
+                Debug.LogWarning("I founded a NavMeshAgent component");
+            }
+            else
+            {
+                Debug.Log("Hey dude where is my agent");
             }
         }  
     }

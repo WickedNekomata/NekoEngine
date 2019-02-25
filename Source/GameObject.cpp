@@ -48,7 +48,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 	uuid = App->GenerateRandomNumber();
 }
 
-GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
+GameObject::GameObject(GameObject& gameObject)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
@@ -133,6 +133,13 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
+		case ComponentTypes::ScriptComponent:
+		{
+			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i]);
+			script->SetParent(this);
+			components.push_back(script);
+			break;
+		}
 		}
 	}
 
@@ -143,17 +150,15 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 	seenLastFrame = gameObject.seenLastFrame;
 
 	uuid = App->GenerateRandomNumber();
-	if (newRoot)
+	
+	children.reserve(gameObject.children.size());
+	for (int i = 0; i < gameObject.children.size(); ++i)
 	{
-		parent_uuid = newRoot->parent_uuid;
-		parent = newRoot->parent;
-		newRoot->AddChild(this);
-	}
-	else
-	{
-		parent_uuid = gameObject.parent_uuid;
-		parent = gameObject.parent;
-		gameObject.AddChild(this);
+		GameObject* childClone = new GameObject(*gameObject.children[i]);		
+		childClone->parent = this;
+		childClone->parent_uuid = this->uuid;
+				
+		children.push_back(childClone);
 	}
 }
 
@@ -162,6 +167,23 @@ GameObject::~GameObject()
 	// Components could not be destroyed by event at fbx exportation, for example.
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
+}
+
+void GameObject::DestroyTemplate()
+{
+	for (int i = 0; i < components.size(); ++i)
+		delete components[i];
+
+	components.clear();
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->DestroyTemplate();
+
+	children.clear();
+
+	App->scripting->GameObjectKilled(this);
+
+	delete this;
 }
 
 void GameObject::SetName(const char* name)

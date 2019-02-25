@@ -67,6 +67,8 @@ public:
 	void ScriptModified(const char* scriptPath);
 	void RecompileScripts();
 
+	void GameObjectKilled(GameObject* killed);
+
 private:
 	void UpdateMethods();
 

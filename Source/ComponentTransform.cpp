@@ -4,8 +4,11 @@
 #include "ModuleTimeManager.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleScene.h"
+#include "ModuleInput.h"
+
 #include "GameObject.h"
 #include "ComponentCamera.h"
+#include "ComponentProjector.h"
 #include "ComponentRigidActor.h"
 
 #include "imgui\imgui.h"
@@ -38,89 +41,108 @@ void ComponentTransform::OnEditor()
 void ComponentTransform::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-	bool seenLastFrame = parent->seenLastFrame;
-	ImGui::Checkbox("Seen last frame", &seenLastFrame);
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
-
-	math::float3 lastPosition = position;
-	math::Quat lastRotation = rotation;
-	math::float3 lastScale = scale;
-
-	if (ImGui::Button("Reset"))
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		position = math::float3::zero;
-		rotation = math::Quat::identity;
-		scale = math::float3::one;
-	}
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		bool seenLastFrame = parent->seenLastFrame;
+		ImGui::Checkbox("Seen last frame", &seenLastFrame);
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
 
-	const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
+		math::float3 lastPosition = position;
+		math::Quat lastRotation = rotation;
+		math::float3 lastScale = scale;
 
-	ImGui::Text("Position");
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosY", ImGuiDataType_Float, (void*)&position.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-
-	ImGui::Text("Rotation");
-	math::float3 axis;
-	float angle;
-	rotation.ToAxisAngle(axis, angle);
-	axis *= angle;
-	axis *= RADTODEG;
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleX", ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleY", ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##AxisAngleZ", ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-	axis *= DEGTORAD;
-	rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
-
-	ImGui::Text("Scale");
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-	ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-	ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
-
-	if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
-	{
-		// Transform updated: if the game object has a rigid body, update its transform
-		if (parent->cmp_rigidActor != nullptr)
+		if (ImGui::Button("Reset"))
 		{
-			math::float4x4 globalMatrix = GetGlobalMatrix();
-			parent->cmp_rigidActor->UpdateTransform(globalMatrix);
+			position = math::float3::zero;
+			rotation = math::Quat::identity;
+			scale = math::float3::one;
 		}
 
-		// Transform updated: if the game object has a camera, update its frustum
-		if (parent->cmp_camera != nullptr)
-			parent->cmp_camera->UpdateTransform();
+		const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
+
+		ImGui::Text("Position");
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##PosY", ImGuiDataType_Float, (void*)&position.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+
+		ImGui::Text("Rotation");
+		math::float3 axis;
+		float angle;
+		rotation.ToAxisAngle(axis, angle);
+		axis *= angle;
+		axis *= RADTODEG;
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##AxisAngleX", ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##AxisAngleY", ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##AxisAngleZ", ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+		axis *= DEGTORAD;
+		rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
+
+		ImGui::Text("Scale");
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
+		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
+		ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+
+		if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
+		{
+			// Transform updated: if the game object has a rigid body, update its transform
+			if (parent->cmp_rigidActor != nullptr)
+			{
+				math::float4x4 globalMatrix = GetGlobalMatrix();
+				parent->cmp_rigidActor->UpdateTransform(globalMatrix);
+			}
+
+			// Transform updated: if the game object has a camera, update its frustum
+			if (parent->cmp_camera != nullptr)
+				parent->cmp_camera->UpdateTransform();
+
+			// Transform updated: if the game object has a projector, update its frustum
+			if (parent->cmp_projector != nullptr)
+				parent->cmp_projector->UpdateTransform();
 
 #ifndef GAMEMODE
-		// Transform updated: if the game object is selected, update the camera reference
-		if (parent == App->scene->selectedObject.Get())
-			App->camera->SetReference(position);
+			// Transform updated: if the game object is selected, update the camera reference
+			if (parent == App->scene->selectedObject.Get())
+				App->camera->SetReference(position);
 #endif
 
-		// Transform updated: recalculate bounding boxes
-		System_Event newEvent;
-		newEvent.goEvent.gameObject = parent;
-		newEvent.type = System_Event_Type::RecalculateBBoxes;
-		App->PushSystemEvent(newEvent);
-
-		if (parent->IsStatic())
-		{
-			// Bounding box changed: recreate quadtree
+			// Transform updated: recalculate bounding boxes
 			System_Event newEvent;
-			newEvent.type = System_Event_Type::RecreateQuadtree;
+			newEvent.goEvent.gameObject = parent;
+			newEvent.type = System_Event_Type::RecalculateBBoxes;
 			App->PushSystemEvent(newEvent);
+
+			if (parent->IsStatic())
+			{
+				// Bounding box changed: recreate quadtree
+				System_Event newEvent;
+				newEvent.type = System_Event_Type::RecreateQuadtree;
+				App->PushSystemEvent(newEvent);
+			}
 		}
 	}
+	if ((App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP || App->input->GetKey(SDL_SCANCODE_KP_ENTER) == KEY_DOWN
+		|| App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) && !dragTransform)
+		dragTransform = true;
 #endif // !GAMEMODE
+}
+
+void ComponentTransform::SavePrevTransform(const math::float4x4 & prevTransformMat)
+{
+	if (dragTransform)
+	{
+		App->scene->SaveLastTransform(prevTransformMat);
+		dragTransform = false;
+	}
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const
@@ -135,7 +157,7 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 	GameObject* globalParent = this->GetParent()->GetParent();
 
-	while (globalParent->GetParent() != nullptr)
+	while (globalParent != nullptr && globalParent->GetParent() != nullptr)
 	{
 		aux_list.push_back(globalParent);
 		globalParent = globalParent->GetParent();
@@ -178,6 +200,10 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	if (parent->cmp_camera != nullptr)
 		parent->cmp_camera->UpdateTransform();
 
+	// Transform updated: if the game object has a projector, update its frustum
+	if (parent->cmp_projector != nullptr)
+		parent->cmp_projector->UpdateTransform();
+
 #ifndef GAMEMODE
 	// Transform updated: if the game object is selected, update the camera reference
 	if (parent == App->scene->selectedObject.Get())
@@ -201,6 +227,7 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 
 uint ComponentTransform::GetInternalSerializationBytes()
 {
+	// position + scale + rotation
 	return sizeof(math::float3) * 2 + sizeof(math::Quat);
 }
 

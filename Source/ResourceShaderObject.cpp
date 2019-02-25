@@ -85,6 +85,11 @@ bool ResourceShaderObject::ExportFile(ResourceData& data, ResourceShaderObjectDa
 	return App->shaderImporter->SaveShaderObject(data, shaderObjectData, outputFile, overwrite);
 }
 
+bool ResourceShaderObject::LoadFile(const char* file, ResourceShaderObjectData& outputShaderObjectData, uint& shaderObject)
+{
+	return App->shaderImporter->LoadShaderObject(file, outputShaderObjectData, shaderObject);
+}
+
 // Returns the last modification time of the file
 uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile)
 {
@@ -102,6 +107,7 @@ uint ResourceShaderObject::CreateMeta(const char* file, uint shaderObjectUuid, s
 		sizeof(uint) +
 		sizeof(uint) * uuidsSize +
 
+		sizeof(uint) +
 		sizeof(char) * nameSize;
 
 	char* data = new char[size];
@@ -181,7 +187,7 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 		cursor += bytes;
 
 		// 3. Load shader object uuid
-		bytes = sizeof(uint);
+		bytes = sizeof(uint) * uuidsSize;
 		memcpy(&shaderObjectUuid, cursor, bytes);
 
 		cursor += bytes;
@@ -211,6 +217,7 @@ bool ResourceShaderObject::ReadMeta(const char* metaFile, int64_t& lastModTime, 
 	return true;
 }
 
+// Returns the last modification time of the file
 uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string& name)
 {
 	assert(metaFile != nullptr);
@@ -232,6 +239,7 @@ uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string
 		sizeof(uint) +
 		sizeof(uint) * uuidsSize +
 
+		sizeof(uint) +
 		sizeof(char) * nameSize;
 
 	char* data = new char[size];
@@ -289,12 +297,12 @@ bool ResourceShaderObject::Compile()
 	bool ret = true;
 
 	uint shader = 0;
-	switch (shaderObjectData.shaderType)
+	switch (shaderObjectData.shaderObjectType)
 	{
-	case ShaderTypes::VertexShaderType:
+	case ShaderObjectTypes::VertexType:
 		shader = GL_VERTEX_SHADER;
 		break;
-	case ShaderTypes::FragmentShaderType:
+	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
 	}
@@ -317,15 +325,15 @@ bool ResourceShaderObject::Compile()
 	return ret;
 }
 
-uint ResourceShaderObject::Compile(const char* source, ShaderTypes shaderType)
+uint ResourceShaderObject::Compile(const char* source, ShaderObjectTypes shaderType)
 {
 	GLenum shader = 0;
 	switch (shaderType)
 	{
-	case ShaderTypes::VertexShaderType:
+	case ShaderObjectTypes::VertexType:
 		shader = GL_VERTEX_SHADER;
 		break;
-	case ShaderTypes::FragmentShaderType:
+	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
 	}
@@ -401,7 +409,7 @@ uint ResourceShaderObject::Compile(const char* source, ShaderTypes shaderType)
 	return shaderObject;
 }
 
-bool ResourceShaderObject::DeleteShaderObject(uint shaderObject)
+bool ResourceShaderObject::DeleteShaderObject(uint& shaderObject)
 {
 	bool ret = false;
 
@@ -417,9 +425,9 @@ bool ResourceShaderObject::DeleteShaderObject(uint shaderObject)
 
 // ----------------------------------------------------------------------------------------------------
 
-ShaderTypes ResourceShaderObject::GetShaderType() const
+ShaderObjectTypes ResourceShaderObject::GetShaderObjectType() const
 {
-	return shaderObjectData.shaderType;
+	return shaderObjectData.shaderObjectType;
 }
 
 void ResourceShaderObject::SetSource(const char* source, uint size)
@@ -430,6 +438,20 @@ void ResourceShaderObject::SetSource(const char* source, uint size)
 const char* ResourceShaderObject::GetSource() const
 {
 	return shaderObjectData.GetSource();
+}
+
+ShaderObjectTypes ResourceShaderObject::GetShaderObjectTypeByExtension(const char* extension)
+{
+	assert(extension != nullptr);
+
+	ShaderObjectTypes shaderObjectType = ShaderObjectTypes::NoShaderObjectType;
+
+	if (IS_VERTEX_SHADER(extension))
+		shaderObjectType = ShaderObjectTypes::VertexType;
+	else if (IS_FRAGMENT_SHADER(extension))
+		shaderObjectType = ShaderObjectTypes::FragmentType;
+
+	return shaderObjectType;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -494,10 +516,24 @@ bool ResourceShaderObject::IsObjectCompiled() const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		CONSOLE_LOG(LogTypes::Normal, "Shader Object could not be compiled. ERROR: %s", infoLog);
+		CONSOLE_LOG(LogTypes::Error, "Shader Object could not be compiled. ERROR: %s", infoLog);
 	}
 	else
-		CONSOLE_LOG(LogTypes::Error, "Successfully compiled Shader Object");
+		CONSOLE_LOG(LogTypes::Normal, "Successfully compiled Shader Object");
 
 	return success;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ResourceShaderObjectData::SetSource(const char* source, uint size)
+{
+	RELEASE_ARRAY(this->source);
+	this->source = new char[size + 1];
+	strcpy_s(this->source, size + 1, source);
+}
+
+const char* ResourceShaderObjectData::GetSource() const
+{
+	return source;
 }

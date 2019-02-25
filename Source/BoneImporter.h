@@ -7,6 +7,8 @@
 
 struct aiBone;
 class ResourceBone;
+class ResourceBoneData;
+class GameObject;
 
 class BoneImporter
 {
@@ -17,9 +19,9 @@ public:
 
 	uint GenerateResourceFromFile(mutable const char* file_path,mutable uint uid_to_force = 0u);
 
-	uint Import(mutable aiBone* new_bone,mutable uint mesh,mutable std::string& output) const;
+	uint Import(mutable aiBone* new_bone,mutable uint mesh,mutable std::string& output, mutable GameObject* go) const;
 
-	bool SaveBone(mutable const ResourceBone* bone,  mutable std::string& output) const;
+	bool SaveBone(mutable const ResourceBoneData* bone,  mutable std::string& output) const;
 
 };
 

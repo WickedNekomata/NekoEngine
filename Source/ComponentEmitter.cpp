@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 #include "ResourceTexture.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
 
@@ -17,11 +18,11 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
+	SetAABB(math::float3::one);
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
-	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
-
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
@@ -59,12 +60,14 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	checkSizeOverTime = componentEmitter.checkSizeOverTime;
 	checkAngularVelocity = componentEmitter.checkAngularVelocity;
 
-	isParticleAnimated = componentEmitter.isParticleAnimated;
-	if (isParticleAnimated)
+	particleAnim.isParticleAnimated = componentEmitter.particleAnim.isParticleAnimated;
+	if (particleAnim.isParticleAnimated)
 	{
-		animationSpeed = componentEmitter.animationSpeed;
-		textureRows = componentEmitter.textureRows;
-		textureColumns = componentEmitter.textureColumns;
+		particleAnim.animationSpeed = componentEmitter.particleAnim.animationSpeed;
+		particleAnim.textureRows = componentEmitter.particleAnim.textureRows;
+		particleAnim.textureColumns = componentEmitter.particleAnim.textureColumns;
+		particleAnim.textureRowsNorm = componentEmitter.particleAnim.textureRowsNorm;
+		particleAnim.textureColumnsNorm = componentEmitter.particleAnim.textureColumnsNorm;
 	}
 
 	dieOnAnimation = componentEmitter.dieOnAnimation;
@@ -82,12 +85,13 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 
 	App->particle->emitters.push_back(this);
 
-	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 
 ComponentEmitter::~ComponentEmitter()
 {
+	SetMaterialRes(0);
 
 	App->timeManager->RemoveGameTimer(&timer);
 	App->timeManager->RemoveGameTimer(&burstTime);
@@ -204,7 +208,7 @@ void ComponentEmitter::CreateParticles(int particlesToCreate, ShapeType shapeTyp
 			math::float3 spawnPos = pos;
 			spawnPos += RandPos(shapeType);
 
-			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, textureColumns, textureRows);
+			App->particle->allParticles[particleId].SetActive(spawnPos, startValues, particleAnim);
 
 			App->particle->allParticles[particleId].owner = this;
 			particles.push_back(&App->particle->allParticles[particleId]);
@@ -222,7 +226,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 	{
 	case ShapeType_BOX:
 		spawn = boxCreation.RandomPointInside(App->randomMathLCG);
-		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
+		startValues.particleDirection = (math::float3::unitY * parent->transform->rotation.ToFloat3x3().Transposed()).Normalized();
 		break;
 
 	case ShapeType_SPHERE:
@@ -247,8 +251,7 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 		angle = (2 * PI) * (float)App->GenerateRandomNumber() / MAXUINT;
 		centerDist = (float)App->GenerateRandomNumber() / MAXUINT;
 
-		circleCreation.pos = (math::float3::unitY * parent->transform->rotation.ToFloat3x3()).Normalized();
-		circleCreation.normal = -circleCreation.pos;
+		circleCreation.pos = (math::float3(0, coneHeight, 0) * parent->transform->rotation.ToFloat3x3().Transposed());
 		startValues.particleDirection = (circleCreation.GetPoint(angle, centerDist)).Normalized();
 		break;
 	}
@@ -296,10 +299,6 @@ void ComponentEmitter::ParticleValues()
 			EqualsMinMaxValues(startValues.speed);
 		ShowFloatValue(startValues.speed, checkSpeed, "Speed", 0.25f, 0.25f, 20.0f);
 
-		if (ImGui::Checkbox("##Acceleration", &checkAcceleration))
-			EqualsMinMaxValues(startValues.acceleration);
-		ShowFloatValue(startValues.acceleration, checkAcceleration, "Acceleration", 0.25f, -5.0f, 5.0f);
-
 		if (ImGui::Checkbox("##Rotation", &checkRotation))
 			EqualsMinMaxValues(startValues.rotation);
 		ShowFloatValue(startValues.rotation, checkRotation, "Initial Rotation", 0.25f, -360.0f, 360.0f);
@@ -323,6 +322,10 @@ void ComponentEmitter::ParticleValues()
 		if (ImGui::Checkbox("##SizeOverTime", &checkSizeOverTime))
 			EqualsMinMaxValues(startValues.sizeOverTime);
 		ShowFloatValue(startValues.sizeOverTime, checkSizeOverTime, "SizeOverTime", 0.25f, -1.0f, 1.0f);
+
+		ImGui::PushItemWidth(127.0f);
+		ImGui::DragFloat3("Acceleration", &startValues.acceleration3.x, 0.1f, -5.0f, 5.0f, "%.2f");
+		ImGui::PopItemWidth();
 
 		ImGui::PushItemWidth(100.0f);
 		ImGui::DragInt("Emition", &rateOverTime, 1.0f, 0.0f, 300.0f, "%.2f");
@@ -351,7 +354,6 @@ void ComponentEmitter::ParticleShape()
 				normalShapeType = ShapeType_CONE;
 			ImGui::End();
 		}
-
 
 		math::float3 pos;
 		switch (normalShapeType)
@@ -386,11 +388,14 @@ void ComponentEmitter::ParticleShape()
 		case ShapeType_CONE:
 			ImGui::Text("Cone");
 			ImGui::DragFloat("Sphere Size", &circleCreation.r, 0.25f, 0.25f, 20.0f, "%.2f");
+			ImGui::DragFloat("Height Cone", &coneHeight, 0.0f, 0.25f, 20.0f, "%.2f");
 
 			break;
 		default:
 			break;
 		}
+
+		ImGui::Checkbox("Debug Draw", &drawShape);
 	}
 #endif
 }
@@ -497,10 +502,9 @@ void ComponentEmitter::ParticleAABB()
 		{
 			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
-
+				SetAABB(size,GetParent()->transform->position);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
+				SetAABB(size, GetParent()->transform->position);
 		}
 	}
 #endif
@@ -510,32 +514,56 @@ void ComponentEmitter::ParticleTexture()
 {
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
+		const Resource* resource = App->res->GetResource(materialRes);
+		std::string materialName = resource->GetName();
+		ImGui::PushID("material");
+		ImGui::Button(materialName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
 
-		if (ImGui::Checkbox("Animated sprite", &isParticleAnimated))
+		if (ImGui::IsItemHovered())
 		{
-			if (!isParticleAnimated)
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", materialRes);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
 			{
-				textureRows = 1;
-				textureColumns = 1;
+				uint payload_n = *(uint*)payload->Data;
+				SetMaterialRes(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::SmallButton("Use default material"))
+			SetMaterialRes(App->resHandler->defaultMaterial);
+		ImGui::Separator();
+
+		if (ImGui::Checkbox("Animated sprite", &particleAnim.isParticleAnimated))
+		{
+			if (!particleAnim.isParticleAnimated)
+			{
+				particleAnim.textureRows = 1;
+				particleAnim.textureColumns = 1;
 				dieOnAnimation = false;
 				SetNewAnimation();
 			}
 			else
 				SetNewAnimation();
-
-			startValues.isAnimated = isParticleAnimated;
 		}
-		if (isParticleAnimated)
+		if (particleAnim.isParticleAnimated)
 		{
-			ImGui::DragFloat("Animation Speed", &animationSpeed, 0.001f, 0.0f, 5.0f, "%.3f");
-			ImGui::DragInt("Rows", &textureRows, 1, 1, 10);
-			ImGui::DragInt("Columns", &textureColumns, 1, 1, 10);
+			ImGui::DragFloat("Animation Speed", &particleAnim.animationSpeed, 0.001f, 0.0f, 5.0f, "%.3f");
+			ImGui::DragInt("Rows", &particleAnim.textureRows, 1, 1, 10);
+			ImGui::DragInt("Columns", &particleAnim.textureColumns, 1, 1, 10);
 
 			ImGui::Checkbox("Kill particle with animation", &dieOnAnimation);
 			if (dieOnAnimation)
 			{
 				checkLife = false;
-				startValues.life.x = animationSpeed * textureColumns * textureRows;
+				startValues.life.x = particleAnim.animationSpeed * particleAnim.textureColumns * particleAnim.textureRows;
 			}
 			if (ImGui::Button("Instant Animation", ImVec2(150.0f, 25.0f)))
 			{
@@ -548,9 +576,11 @@ void ComponentEmitter::ParticleTexture()
 
 void ComponentEmitter::SetNewAnimation()
 {
+	particleAnim.textureColumnsNorm = 1.0f / particleAnim.textureColumns;
+	particleAnim.textureRowsNorm = 1.0f / particleAnim.textureRows;
 	for (std::list<Particle*>::iterator iterator = particles.begin(); iterator != particles.end(); ++iterator)
 	{
-		(*iterator)->ChangeAnim(textureRows, textureColumns, isParticleAnimated);
+		(*iterator)->ChangeAnim(particleAnim);
 	}
 }
 
@@ -653,6 +683,22 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 	return ret;
 }
 
+void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
+{
+	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+}
+
+void ComponentEmitter::SetMaterialRes(uint materialUuid)
+{
+	if (materialRes > 0)
+		App->res->SetAsUnused(materialRes);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	materialRes = materialUuid;
+}
+
 #ifndef GAMEMODE
 ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 {
@@ -665,157 +711,323 @@ ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 }
 #endif
 
-void ComponentEmitter::OnInternalSave(JSON_Object* parent)
-{
-	json_object_set_number(parent, "Type", this->componentType);
-
-	json_object_set_number(parent, "UUID", this->parent->GetUUID());
-
-	//json_object_set_number(parent, "Time Created", GetTime());
-
-	json_object_set_boolean(parent, "checkLife", checkLife);
-	json_object_set_boolean(parent, "checkSpeed", checkSpeed);
-	json_object_set_boolean(parent, "checkAcceleration", checkAcceleration);
-	json_object_set_boolean(parent, "checkSize", checkSize);
-	json_object_set_boolean(parent, "checkSizeOverTime", checkSizeOverTime);
-	json_object_set_boolean(parent, "checkRotation", checkRotation);
-	json_object_set_boolean(parent, "checkAngularAcceleration", checkAngularAcceleration);
-	json_object_set_boolean(parent, "checkAngularVelocity", checkAngularVelocity);
-
-	json_object_set_number(parent, "lifeMin", startValues.life.x);
-	json_object_set_number(parent, "lifeMax", startValues.life.y);
-
-	json_object_set_number(parent, "speedMin", startValues.speed.x);
-	json_object_set_number(parent, "speedMax", startValues.speed.y);
-
-	json_object_set_number(parent, "accelerationMin", startValues.acceleration.x);
-	json_object_set_number(parent, "accelerationMax", startValues.acceleration.y);
-
-	json_object_set_number(parent, "sizeMin", startValues.size.x);
-	json_object_set_number(parent, "sizeMax", startValues.size.y);
-
-	json_object_set_number(parent, "sizeOverTimeMin", startValues.sizeOverTime.x);
-	json_object_set_number(parent, "sizeOverTimeMax", startValues.sizeOverTime.y);
-
-	json_object_set_number(parent, "rotationMin", startValues.rotation.x);
-	json_object_set_number(parent, "rotationMax", startValues.rotation.y);
-
-	json_object_set_number(parent, "angularAccelerationMin", startValues.angularAcceleration.x);
-	json_object_set_number(parent, "angularAccelerationMax", startValues.angularAcceleration.y);
-
-	json_object_set_number(parent, "angularVelocityMin", startValues.angularVelocity.x);
-	json_object_set_number(parent, "angularVelocityMax", startValues.angularVelocity.y);
-
-
-	json_object_set_boolean(parent, "subEmitterActive", startValues.subEmitterActive);
-
-
-	json_object_set_number(parent, "rateOverTime", rateOverTime);
-
-	JSON_Value* colorValue = json_value_init_array();
-	JSON_Array* color = json_value_get_array(colorValue);
-
-	for (std::list<ColorTime>::const_iterator iterator = startValues.color.begin(); iterator != startValues.color.end(); ++iterator)
-	{
-		JSON_Value* newColor = json_value_init_object();
-		JSON_Object* objCol = json_value_get_object(newColor);
-
-		json_object_set_number(objCol, "colorX", (*iterator).color.x);
-		json_object_set_number(objCol, "colorY", (*iterator).color.y);
-		json_object_set_number(objCol, "colorZ", (*iterator).color.z);
-		json_object_set_number(objCol, "colorW", (*iterator).color.w);
-
-		json_object_set_number(objCol, "position", (*iterator).position);
-		json_object_set_string(objCol, "name", (*iterator).name.data());
-
-
-		json_array_append_value(color, newColor);
-	}
-		json_object_set_value(parent, "Colors", colorValue);
-
-	// TODO: save colors
-	json_object_set_number(parent, "timeColor", startValues.timeColor);
-
-	json_object_set_number(parent, "particleDirectionX", startValues.particleDirection.x);
-	json_object_set_number(parent, "particleDirectionY", startValues.particleDirection.y);
-	json_object_set_number(parent, "particleDirectionZ", startValues.particleDirection.z);
-
-	json_object_set_number(parent, "duration", duration);
-
-	json_object_set_number(parent, "loop", loop);
-
-	json_object_set_number(parent, "burst", burst);
-	json_object_set_number(parent, "minPart", minPart);
-	json_object_set_number(parent, "maxPart", maxPart);
-	json_object_set_number(parent, "repeatTime", repeatTime);
-
-	json_object_set_number(parent, "posDifAABBX",posDifAABB.x);
-	json_object_set_number(parent, "posDifAABBY",posDifAABB.y);
-	json_object_set_number(parent, "posDifAABBZ",posDifAABB.z);
-
-	json_object_set_number(parent, "gravity", gravity);
-
-	json_object_set_number(parent, "boxCreationMinX", boxCreation.minPoint.x);
-	json_object_set_number(parent, "boxCreationMinY", boxCreation.minPoint.y);
-	json_object_set_number(parent, "boxCreationMinZ", boxCreation.minPoint.z);
-
-	json_object_set_number(parent, "boxCreationMaxX", boxCreation.maxPoint.x);
-	json_object_set_number(parent, "boxCreationMaxY", boxCreation.maxPoint.y);
-	json_object_set_number(parent, "boxCreationMaxZ", boxCreation.maxPoint.z);
-	
-	SaveNumberArray(parent, "boxCreationMin", boxCreation.minPoint.ptr(), 3);
-	SaveNumberArray(parent, "boxCreationMax", boxCreation.maxPoint.ptr(), 3);
-
-	json_object_set_number(parent, "SphereCreationRad", sphereCreation.r);
-
-	json_object_set_number(parent, "circleCreationRad", circleCreation.r);
-
-	json_object_set_number(parent, "shapeType", normalShapeType);
-
-	/*if (texture)
-	json_object_set_string(parent, "texture", texture->file.data());
-	else*/
-	json_object_set_string(parent, "texture", "noTexture");
-
-	json_object_set_number(parent, "textureRows", textureRows);
-	json_object_set_number(parent, "textureColumns", textureColumns);
-	json_object_set_number(parent, "animationSpeed", animationSpeed);
-
-	json_object_set_boolean(parent, "isParticleAnimated", isParticleAnimated);
-	json_object_set_boolean(parent, "dieOnAnimation", dieOnAnimation);
-
-	json_object_set_boolean(parent, "drawAABB", drawAABB);
-	
-	json_object_set_boolean(parent, "isSubEmitter", isSubEmitter);
-	if(subEmitter)
-	json_object_set_number(parent, "SubEmitter", subEmitter->GetUUID());
-
-
-	if (this->parent && this->parent->transform)
-	{
-		math::float3 bb = this->parent->boundingBox.Size();
-
-		json_object_set_number(parent, "originalBoundingBoxSizeX", bb.x);
-		json_object_set_number(parent, "originalBoundingBoxSizeY", bb.y);
-		json_object_set_number(parent, "originalBoundingBoxSizeZ", bb.z);
-	}
-}
-
-uint ComponentEmitter::GetInternalSerializationBytes()
-{
-	return 0;
-}
-
-void ComponentEmitter::OnInternalSave(char *& cursor)
-{
-}
-
-void ComponentEmitter::OnInternalLoad(char *& cursor)
-{
-}
-
 int ComponentEmitter::GetEmition() const
 {
 	return rateOverTime;
 }
-// todo event system to delete texture
+
+uint ComponentEmitter::GetInternalSerializationBytes()
+{
+	uint sizeOfList = 0u;
+	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	{
+		sizeOfList += (*it).GetColorListSerializationBytes();
+	}
+
+	//		Value Checkers +	StartValues
+	return sizeof(bool) * 8 + sizeof(StartValues) + sizeof(rateOverTime) + sizeof(duration)
+		+ sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(repeatTime) + sizeof(uint)//UUID Subemiter
+		+ sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
+		+ sizeof(boxCreation) + sizeof(burstType) + sizeof(float) * 2 //Circle and Sphere rad
+		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst) + sizeOfList//Size of list of ColorTime Struct
+		+ sizeof(minPart) + sizeof(maxPart) + sizeof(char) * burstTypeName.size() + sizeof(uint); //Size of name;
+}
+
+void ComponentEmitter::OnInternalSave(char *& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &checkLife, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkSpeed, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkAcceleration, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkSizeOverTime, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkSize, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkRotation, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkAngularAcceleration, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &checkAngularVelocity, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &drawAABB, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &isSubEmitter, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &dieOnAnimation, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &loop, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &burst, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(int);
+	memcpy(cursor, &rateOverTime, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &minPart, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &maxPart, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &duration, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &repeatTime, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &circleCreation.r, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &sphereCreation.r, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &gravity, bytes);
+	cursor += bytes;
+
+	uint uuid = 0u;
+	if (subEmitter)
+		uuid = subEmitter->GetUUID();
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &uuid, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(StartValues);
+	memcpy(cursor, &startValues, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ParticleAnimation);
+	memcpy(cursor, &particleAnim, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ShapeType);
+	memcpy(cursor, &normalShapeType, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &burstType, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::AABB);
+	memcpy(cursor, &boxCreation, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &posDifAABB, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint nameLenght = burstTypeName.length();
+	memcpy(cursor, &nameLenght, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, burstTypeName.c_str(), bytes);
+	cursor += bytes;
+
+	uint size = startValues.color.size();
+	memcpy(cursor, &size, bytes);
+	cursor += bytes;
+
+	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	{
+		(*it).OnInternalSave(cursor);
+	}
+}
+
+void ComponentEmitter::OnInternalLoad(char *& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&checkLife, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkSpeed, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkAcceleration, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkSizeOverTime, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkSize, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkRotation, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkAngularAcceleration, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&checkAngularVelocity, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&drawAABB, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&isSubEmitter, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&dieOnAnimation, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&loop, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&burst, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(int);
+	memcpy(&rateOverTime, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&minPart, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&maxPart, cursor, bytes);
+	cursor += bytes;
+	
+	bytes = sizeof(float);
+	memcpy(&duration, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&repeatTime, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&circleCreation.r, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&sphereCreation.r, cursor, bytes);
+	cursor += bytes;
+	
+	memcpy(&gravity, cursor, bytes);
+	cursor += bytes;
+
+	uint uuid = 0u;
+	if (subEmitter)
+		uuid = subEmitter->GetUUID();
+
+	bytes = sizeof(uint);
+	memcpy(&uuid, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(StartValues);
+	memcpy(&startValues, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ParticleAnimation);
+	memcpy(&particleAnim, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ShapeType);
+	memcpy(&normalShapeType, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&burstType, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::AABB);
+	memcpy(&boxCreation, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&posDifAABB, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	burstTypeName.resize(nameLenght);
+	memcpy((void*)burstTypeName.c_str(), cursor, bytes);
+	burstTypeName.resize(nameLenght);
+	cursor += bytes;
+
+	uint size;
+	memcpy(&size, cursor, bytes);
+	cursor += bytes;
+
+	//startValues.color.pop_back();
+	for (int i = 0; i < size; ++i)
+	{
+		ColorTime color;
+		color.OnInternalLoad(cursor);
+		startValues.color.push_back(color);
+	}
+}
+
+
+//COLOR TIME Save&Load
+uint ColorTime::GetColorListSerializationBytes()
+{
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.length() + sizeof(uint);//Size of name
+}
+
+void ColorTime::OnInternalSave(char* &cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &changingColor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &position, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float4);
+	memcpy(cursor, &color, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint nameLenght = name.length();
+	memcpy(cursor, &nameLenght, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, name.c_str(), bytes);
+	cursor += bytes;
+}
+
+void ColorTime::OnInternalLoad(char *& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&changingColor, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&position, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float4);
+	memcpy(&color, cursor, bytes);
+	cursor += bytes;
+
+	//Load lenght + string
+	bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	name.resize(nameLenght);
+	memcpy((void*)name.c_str(), cursor, bytes);
+	name.resize(nameLenght);
+	cursor += bytes;
+}

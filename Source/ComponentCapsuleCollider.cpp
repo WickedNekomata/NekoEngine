@@ -4,7 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
@@ -12,12 +12,35 @@
 
 ComponentCapsuleCollider::ComponentCapsuleCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::CapsuleColliderComponent)
 {
-	RecalculateShape();
+	EncloseGeometry();
+
+	colliderType = ColliderTypes::CapsuleCollider;
+
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentCapsuleCollider::ComponentCapsuleCollider(const ComponentCapsuleCollider& componentCapsuleCollider) : ComponentCollider(componentCapsuleCollider, ComponentTypes::CapsuleColliderComponent)
+{
+	EncloseGeometry();
+
+	colliderType = componentCapsuleCollider.colliderType;
+
+	SetIsTrigger(componentCapsuleCollider.isTrigger);
+	SetParticipateInContactTests(componentCapsuleCollider.participateInContactTests);
+	SetParticipateInSceneQueries(componentCapsuleCollider.participateInSceneQueries);
+
+	// -----
+
+	SetRadius(componentCapsuleCollider.radius);
+	SetHalfHeight(componentCapsuleCollider.halfHeight);
+	SetDirection(componentCapsuleCollider.direction);
+
+	SetCenter(componentCapsuleCollider.center);
 }
 
 ComponentCapsuleCollider::~ComponentCapsuleCollider() {}
@@ -27,36 +50,128 @@ ComponentCapsuleCollider::~ComponentCapsuleCollider() {}
 void ComponentCapsuleCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Capsule Collider");
-	ImGui::Spacing();
-
-	ComponentCollider::OnUniqueEditor();
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);	
-	if (ImGui::DragFloat("##CapsuleRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetRadius(radius);
-	ImGui::PopItemWidth();
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CapsuleHalfHeight", &halfHeight, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetHalfHeight(halfHeight);
-	ImGui::PopItemWidth();
-
-	const char* capsuleDirection[] = { "X-Axis", "Y-Axis", "Z-Axis" };
-	int currentCapsuleDirection = direction;
-	ImGui::PushItemWidth(100.0f);
-	if (ImGui::Combo("Direction", &currentCapsuleDirection, capsuleDirection, IM_ARRAYSIZE(capsuleDirection)))
+	if (ImGui::CollapsingHeader("Capsule Collider", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		direction = (CapsuleDirection)currentCapsuleDirection;
-		SetDirection(direction);
+		ComponentCollider::OnUniqueEditor();
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CapsuleRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetRadius(radius);
+		ImGui::PopItemWidth();
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Half height"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CapsuleHalfHeight", &halfHeight, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetHalfHeight(halfHeight);
+		ImGui::PopItemWidth();
+
+		const char* capsuleDirection[] = { "X-Axis", "Y-Axis", "Z-Axis" };
+		int currentCapsuleDirection = direction;
+		ImGui::PushItemWidth(100.0f);
+		if (ImGui::Combo("Direction", &currentCapsuleDirection, capsuleDirection, IM_ARRAYSIZE(capsuleDirection)))
+		{
+			direction = (CapsuleDirection)currentCapsuleDirection;
+			SetDirection(direction);
+		}
+		ImGui::PopItemWidth();
 	}
-	ImGui::PopItemWidth();
 #endif
 }
 
+uint ComponentCapsuleCollider::GetInternalSerializationBytes()
+{
+	return ComponentCollider::GetInternalSerializationBytes() + 
+		sizeof(float) +
+		sizeof(float) +
+		sizeof(CapsuleDirection);
+}
+
+void ComponentCapsuleCollider::OnInternalSave(char*& cursor)
+{
+	ComponentCollider::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &radius, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &halfHeight, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(CapsuleDirection);
+	memcpy(cursor, &direction, bytes);
+	cursor += bytes;
+}
+
+void ComponentCapsuleCollider::OnInternalLoad(char*& cursor)
+{
+	ComponentCollider::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(&radius, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&halfHeight, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(CapsuleDirection);
+	memcpy(&direction, cursor, bytes);
+	cursor += bytes;
+
+	// -----
+
+	EncloseGeometry();
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentCapsuleCollider::EncloseGeometry()
+{
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	math::AABB boundingBox = parent->boundingBox;
+
+	if (globalMatrix.IsFinite() && parent->boundingBox.IsFinite())
+	{
+		math::float3 pos = math::float3::zero;
+		math::Quat rot = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+		globalMatrix.Decompose(pos, rot, scale);
+
+		assert(parent->boundingBox.IsFinite());
+		center = parent->boundingBox.CenterPoint() - pos;
+		center = globalMatrix.Float3x3Part().Inverted() * center;
+
+		math::float3 halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
+
+		switch (direction)
+		{
+		case CapsuleDirection::CapsuleDirectionXAxis:
+
+			radius = 0.5f * halfSize.x;
+			halfHeight = 0.5f * halfSize.x;
+
+			break;
+
+		case CapsuleDirection::CapsuleDirectionYAxis:
+
+			radius = 0.5f * halfSize.y;
+			halfHeight = 0.5f * halfSize.y;
+
+			break;
+
+		case CapsuleDirection::CapsuleDirectionZAxis:
+
+			radius = 0.5f * halfSize.z;
+			halfHeight = 0.5f * halfSize.z;
+
+			break;
+		}
+	}
+
+	RecalculateShape();
+}
 
 void ComponentCapsuleCollider::RecalculateShape()
 {
@@ -101,7 +216,7 @@ void ComponentCapsuleCollider::RecalculateShape()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentCapsuleCollider::SetCenter(math::float3& center)
+void ComponentCapsuleCollider::SetCenter(const math::float3& center)
 {
 	assert(center.IsFinite());
 	this->center = center;
@@ -177,9 +292,4 @@ physx::PxCapsuleGeometry ComponentCapsuleCollider::GetCapsuleGeometry() const
 	physx::PxCapsuleGeometry capsuleGeometry;
 	gShape->getCapsuleGeometry(capsuleGeometry);
 	return capsuleGeometry;
-}
-
-uint ComponentCapsuleCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

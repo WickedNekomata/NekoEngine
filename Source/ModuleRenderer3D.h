@@ -5,7 +5,6 @@
 
 #include "Module.h"
 #include "Globals.h"
-#include "Light.h"
 
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
@@ -21,6 +20,7 @@
 #include <vector>
 
 class GameObject;
+class ComponentProjector;
 class QuadtreeNode;
 
 struct DirectionalLight
@@ -69,8 +69,8 @@ public:
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
 
-	void SetDrawCamerasFrustum(bool drawCamerasFrustum);
-	bool GetDrawCamerasFrustum() const;
+	void SetDrawFrustums(bool drawFrustums);
+	bool GetDrawFrustums() const;
 
 	void SetDrawColliders(bool drawColliders);
 	bool GetDrawColliders() const;
@@ -83,6 +83,9 @@ public:
 
 	bool AddMeshComponent(ComponentMesh* toAdd);
 	bool EraseMeshComponent(ComponentMesh* toErase);
+
+	bool AddProjectorComponent(ComponentProjector* toAdd);
+	bool EraseProjectorComponent(ComponentProjector* toErase);
 
 	bool AddCameraComponent(ComponentCamera* toAdd);
 	bool EraseCameraComponent(ComponentCamera* toErase);
@@ -98,6 +101,7 @@ public:
 
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
+	void DrawProjectedTexture(ComponentProjector* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 	void ClearSkybox();
@@ -105,6 +109,8 @@ public:
 private:
 
 	std::vector<ComponentMesh*> meshComponents;
+
+	std::vector<ComponentProjector*> projectorComponents;
 
 	std::vector<ComponentCamera*> cameraComponents;
 	ComponentCamera* mainCamera = nullptr;
@@ -129,7 +135,7 @@ public:
 
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
-	bool drawCamerasFrustum = true;
+	bool drawFrustums = true;
 	bool drawColliders = true;
 	bool drawRigidActors = true;
 	bool drawQuadtree = false;

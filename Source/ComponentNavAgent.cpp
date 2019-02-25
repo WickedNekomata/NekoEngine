@@ -38,41 +38,44 @@ void ComponentNavAgent::Update()
 void ComponentNavAgent::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Agent Radius");
-	ImGui::SameLine();
-	ImGui::DragFloat("##ARadius", &radius, 0.1f);
+	if (ImGui::CollapsingHeader("NavAgent", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Agent Radius");
+		ImGui::SameLine();
+		ImGui::DragFloat("##ARadius", &radius, 0.1f);
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Agent Height");
-	ImGui::SameLine();
-	ImGui::DragFloat("##AHeight", &height, 0.1f);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Agent Height");
+		ImGui::SameLine();
+		ImGui::DragFloat("##AHeight", &height, 0.1f);
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Max Acceleration");
-	ImGui::SameLine();
-	ImGui::DragFloat("##MAcc", &maxAcceleration, 0.1f);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Max Acceleration");
+		ImGui::SameLine();
+		ImGui::DragFloat("##MAcc", &maxAcceleration, 0.1f);
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Max Speed");
-	ImGui::SameLine();
-	ImGui::DragFloat("##MSpeed", &maxSpeed, 0.1f);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Max Speed");
+		ImGui::SameLine();
+		ImGui::DragFloat("##MSpeed", &maxSpeed, 0.1f);
 
-	ImGui::CheckboxFlags("Anticipate Turns", &params, 1);
-	ImGui::CheckboxFlags("Optimize Visibility", &params, 8);
-	ImGui::CheckboxFlags("Optimize Topology", &params, 16);
-	ImGui::CheckboxFlags("Obstacle Avoidance", &params, 2);
+		ImGui::CheckboxFlags("Anticipate Turns", &params, 1);
+		ImGui::CheckboxFlags("Optimize Visibility", &params, 8);
+		ImGui::CheckboxFlags("Optimize Topology", &params, 16);
+		ImGui::CheckboxFlags("Obstacle Avoidance", &params, 2);
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Avoidance Quality");
-	ImGui::SameLine();
-	ImGui::SliderInt("##AQuality", &avoidanceQuality, 0.0f, 3.0f);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Avoidance Quality");
+		ImGui::SameLine();
+		ImGui::SliderInt("##AQuality", &avoidanceQuality, 0.0f, 3.0f);
 
-	ImGui::CheckboxFlags("Separation", &params, 4);
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Separation Weight");
-	ImGui::SameLine();
-	ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f);
+		ImGui::CheckboxFlags("Separation", &params, 4);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Separation Weight");
+		ImGui::SameLine();
+		ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f);
+	}
 #endif
 }
 
@@ -101,6 +104,11 @@ bool ComponentNavAgent::UpdateParams() const
 void ComponentNavAgent::SetDestination(const float* pos) const
 {
 	App->navigation->SetDestination(pos, index);
+}
+
+bool ComponentNavAgent::IsWalking()
+{
+	return App->navigation->IsWalking(index);
 }
 
 uint ComponentNavAgent::GetInternalSerializationBytes()

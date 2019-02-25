@@ -1,6 +1,7 @@
 #include "ResourceBone.h"
 #include "imgui/imgui.h"
 #include "ModuleScene.h"
+#include "BoneImporter.h"
 
 ResourceBone::ResourceBone(ResourceTypes type, uint uuid, ResourceData data, ResourceBoneData boneData) : Resource(type, uuid, data), boneData(boneData) {}
 
@@ -43,3 +44,36 @@ void ResourceBone::OnPanelAssets()
 		ImGui::EndDragDropSource();
 	}
 }
+
+
+bool ResourceBone::ImportFile(const char * file, std::string & name, std::string & outputFile)
+{
+
+	assert(file != nullptr);
+
+
+	return true;
+}
+
+bool ResourceBone::ExportFile(ResourceData & data, ResourceBoneData & bone_data, std::string & outputFile, bool overwrite)
+{
+	return true;
+	// TODO_G CONTINUE HERE++
+	//return App->boneImporter->SaveBone(bone_data, outputFile);
+}
+
+uint ResourceBone::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
+{
+	return uint();
+}
+
+bool ResourceBone::ReadMeta(const char * metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
+{
+	return false;
+}
+
+bool ResourceBone::LoadFile(const char * file, ResourceBoneData & prefab_data_output)
+{
+	return false;
+}
+

@@ -5,6 +5,7 @@
 #include "ModuleResourceManager.h"
 #include "ModulePhysics.h"
 #include "ResourceMesh.h"
+#include "ScriptingModule.h"
 
 #include "ComponentTypes.h"
 #include "Component.h"
@@ -28,8 +29,10 @@
 #include "ComponentCanvasRenderer.h"
 #include "ComponentImage.h"
 #include "ComponentButton.h"
+#include "ComponentLight.h"
+#include "ComponentProjector.h"
 
-#include "MathGeoLib/include/Geometry/OBB.h"
+#include "MathGeoLib\include\Geometry\OBB.h"
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
@@ -49,7 +52,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 	uuid = App->GenerateRandomNumber();
 }
 
-GameObject::GameObject(const GameObject& gameObject)
+GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
@@ -94,17 +97,45 @@ GameObject::GameObject(const GameObject& gameObject)
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
+		case ComponentTypes::LightComponent:
+			cmp_light = new ComponentLight(*gameObject.cmp_light);
+			cmp_light->SetParent(this);
+			components.push_back(cmp_light);
+			break;
+		case ComponentTypes::ProjectorComponent:
+			cmp_projector = new ComponentProjector(*gameObject.cmp_projector);
+			cmp_projector->SetParent(this);
+			components.push_back(cmp_projector);
+			break;
 		case ComponentTypes::RigidStaticComponent:
+			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor->SetParent(this);
+			components.push_back(cmp_rigidActor);
+			break;
 		case ComponentTypes::RigidDynamicComponent:
-			// TODO
-			cmp_rigidActor = App->physics->CreateRigidActorComponent(this, type);
+			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor->SetParent(this);
+			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::BoxColliderComponent:
+			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::SphereColliderComponent:
+			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::CapsuleColliderComponent:
+			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::PlaneColliderComponent:
-			// TODO
-			cmp_collider = App->physics->CreateColliderComponent(this, type);
+			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::RectTransformComponent:
 			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
@@ -128,8 +159,18 @@ GameObject::GameObject(const GameObject& gameObject)
 	seenLastFrame = gameObject.seenLastFrame;
 
 	uuid = App->GenerateRandomNumber();
-	parent_uuid = gameObject.parent_uuid;
-	parent = gameObject.parent;
+	if (newRoot)
+	{
+		parent_uuid = newRoot->parent_uuid;
+		parent = newRoot->parent;
+		newRoot->AddChild(this);
+	}
+	else
+	{
+		parent_uuid = gameObject.parent_uuid;
+		parent = gameObject.parent;
+		gameObject.AddChild(this);
+	}
 }
 
 GameObject::~GameObject()
@@ -218,7 +259,9 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
-	boundingBox.SetNegativeInfinity();
+	//TODO: Fix BoundingBoxes calcs. We cant calculate every frame all tris of GO
+	if (cmp_emitter == nullptr)
+		boundingBox.SetNegativeInfinity();
 
 	// Grow bounding box
 	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
@@ -230,7 +273,11 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		boundingBox.Enclose((const math::float3*)vertices, nVerts);
 		delete[] vertices;
 	}
-
+	else if (cmp_emitter != nullptr)
+	{
+		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
+		comp->SetAABB(boundingBox.Size());
+	}
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);
@@ -252,9 +299,17 @@ void GameObject::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;
-	case System_Event_Type::ShaderProgramChanged:
-		cmp_material->UpdateUniforms();
+	case System_Event_Type::ScriptingDomainReloaded:
+	case System_Event_Type::Stop:
+	{
+		monoObjectHandle = 0;
+
+		for (auto component = components.begin(); component != components.end(); ++component)
+		{
+			(*component)->OnSystemEvent(event);
+		}
 		break;
+	}
 	}
 }
 
@@ -361,8 +416,6 @@ bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 
 Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
 {
-	assert(componentType != ComponentTypes::MaterialComponent);
-
 	Component* newComponent;
 	Component* newMaterial = 0;
 
@@ -380,6 +433,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 			assert(cmp_material == NULL);
 			newMaterial = cmp_material = new ComponentMaterial(this);
 		}
+		break;
+	case ComponentTypes::MaterialComponent:
+		assert(cmp_material == NULL);
+		newComponent = cmp_material = new ComponentMaterial(this);
 		break;
 	case ComponentTypes::CameraComponent:
 		assert(cmp_camera == NULL);
@@ -410,25 +467,50 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 			AddComponent(ComponentTypes::CanvasRendererComponent);
 		newComponent = cmp_button = new ComponentButton(this);
 		break;
-
-	case ComponentTypes::RigidStaticComponent:
-	case ComponentTypes::RigidDynamicComponent:
-		// TODO
-		assert(cmp_rigidActor == nullptr);
-		newComponent = cmp_rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
-		break;
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
 		break;
-	case ComponentTypes::BoxColliderComponent:
-	case ComponentTypes::SphereColliderComponent:
-	case ComponentTypes::CapsuleColliderComponent:
-	case ComponentTypes::PlaneColliderComponent:
-		// TODO
-		assert(cmp_collider == nullptr);
-		newComponent = cmp_collider = App->physics->CreateColliderComponent(this, componentType);
+	case ComponentTypes::LightComponent:
+		assert(cmp_light == NULL);
+		newComponent = cmp_light = new ComponentLight(this);
 		break;
+	case ComponentTypes::ProjectorComponent:
+		assert(cmp_projector == NULL);
+		newComponent = cmp_projector = new ComponentProjector(this);
+		break;
+	case ComponentTypes::RigidStaticComponent:
+		assert(cmp_rigidActor == nullptr);
+		newComponent = cmp_rigidActor = new ComponentRigidStatic(this);
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+		assert(cmp_rigidActor == nullptr);
+		newComponent = cmp_rigidActor = new ComponentRigidDynamic(this);
+		break;
+	case ComponentTypes::BoxColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentBoxCollider(this);
+		break;
+	case ComponentTypes::SphereColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentSphereCollider(this);
+		break;
+	case ComponentTypes::CapsuleColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentCapsuleCollider(this);
+		break;
+	case ComponentTypes::PlaneColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentPlaneCollider(this);
+		break;
+	case ComponentTypes::ScriptComponent:
+	{
+		newComponent = new ComponentScript("", this);
+
+		//TODO: CORRECT THIS
+		App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+		break;
+	}
 	}
 
 	components.push_back(newComponent);
@@ -516,6 +598,7 @@ void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
 
 uint GameObject::GetSerializationBytes() const
 {
+	// uuid + parent + layer + active + static + name + number of components
 	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
 
 	for (int i = 0; i < components.size(); ++i)
@@ -600,12 +683,7 @@ void GameObject::OnLoad(char*& cursor)
 void GameObject::RecursiveForceAllResources(uint forceRes) const
 {
 	if (cmp_material != nullptr)
-	{
-		for (int i = 0; i < cmp_material->res.size(); ++i)
-			cmp_material->res[i].res = forceRes;
-
-		cmp_material->shaderProgramUUID = forceRes;
-	}
+		cmp_material->res = forceRes;
 
 	if (cmp_mesh != nullptr)
 		cmp_mesh->res = forceRes;

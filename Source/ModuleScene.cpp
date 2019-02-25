@@ -64,6 +64,8 @@ update_status ModuleScene::Update()
 	{
 		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)
 		{
+			if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN)
+				SetImGuizmoOperation(ImGuizmo::OPERATION::BOUNDS);//None
 			if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 				SetImGuizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
 			if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
@@ -86,6 +88,13 @@ update_status ModuleScene::Update()
 		GameObject* currentGameObject = (GameObject*)selectedObject.Get();
 		OnGizmos(currentGameObject);
 	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
+			GetPreviousTransform();
+	}
+
 #endif
 
 	return UPDATE_CONTINUE;
@@ -121,6 +130,23 @@ void ModuleScene::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecreateQuadtree:
 		RecreateQuadtree();
 		break;
+	case System_Event_Type::GameObjectDestroyed:
+
+		//Remove GO in list if its deleted
+
+		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
+
+		while (!prevTransforms.empty() && iterator != prevTransforms.end())
+		{
+			if ((*iterator).object == event.goEvent.gameObject)
+			{
+				prevTransforms.erase(iterator);
+				iterator = prevTransforms.begin();
+			}
+			else
+				++iterator;
+		}
+		break;
 	}
 }
 
@@ -131,7 +157,7 @@ void ModuleScene::Draw() const
 }
 
 #ifndef GAMEMODE
-void ModuleScene::OnGizmos(GameObject* gameObject) const
+void ModuleScene::OnGizmos(GameObject* gameObject)
 {
 	if (gameObject->GetLayer() != UILAYER)
 	{
@@ -152,12 +178,57 @@ void ModuleScene::OnGizmos(GameObject* gameObject) const
 			currentImGuizmoOperation, mode, transformMatrix.ptr()
 		);
 
-		if (ImGuizmo::IsUsing())
+	if (ImGuizmo::IsUsing())
+	{
+		if (!saveTransform)
 		{
-			transformMatrix = transformMatrix.Transposed();
-			gameObject->transform->SetMatrixFromGlobal(transformMatrix);
+			saveTransform = true;
+			lastMat = transformMatrix;
+		}
+		transformMatrix = transformMatrix.Transposed();
+		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
+	}
+	else if (saveTransform)
+	{
+		SaveLastTransform(lastMat.Transposed());
+		saveTransform = false;
+	}
+}
+
+
+void ModuleScene::SaveLastTransform(math::float4x4 matrix)
+{
+	LastTransform prevTrans;
+	GameObject* curr = selectedObject.GetCurrGameObject();
+	if (curr)
+	{
+		if (prevTransforms.size() >= MAX_UNDO)
+			prevTransforms.pop_back();
+		if (prevTransforms.empty() || curr->transform->GetGlobalMatrix().ptr() != (*prevTransforms.begin()).matrix.ptr())
+		{
+			prevTrans.matrix = matrix;
+			prevTrans.object = curr;
+			prevTransforms.push_front(prevTrans);
 		}
 	}
+}
+
+void ModuleScene::GetPreviousTransform()
+{
+	if (!prevTransforms.empty())
+	{
+		LastTransform prevTrans = (*prevTransforms.begin());
+		if (prevTrans.object)
+		{
+			selectedObject = prevTrans.object;
+			selectedObject.GetCurrGameObject()->transform->SetMatrixFromGlobal(prevTrans.matrix);
+		}
+		prevTransforms.pop_front();
+	}
+	// Bounding box changed: recreate quadtree
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::RecreateQuadtree;
+	App->PushSystemEvent(newEvent);
 }
 
 void ModuleScene::SetImGuizmoOperation(ImGuizmo::OPERATION operation)

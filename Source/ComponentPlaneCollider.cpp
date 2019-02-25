@@ -4,7 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
@@ -14,12 +14,34 @@
 
 ComponentPlaneCollider::ComponentPlaneCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::PlaneColliderComponent)
 {
-	RecalculateShape();
+	EncloseGeometry();
+
+	colliderType = ColliderTypes::PlaneCollider;
+
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentPlaneCollider::ComponentPlaneCollider(const ComponentPlaneCollider& componentPlaneCollider) : ComponentCollider(componentPlaneCollider, ComponentTypes::PlaneColliderComponent)
+{
+	EncloseGeometry();
+
+	colliderType = componentPlaneCollider.colliderType;
+
+	SetIsTrigger(componentPlaneCollider.isTrigger);
+	SetParticipateInContactTests(componentPlaneCollider.participateInContactTests);
+	SetParticipateInSceneQueries(componentPlaneCollider.participateInSceneQueries);
+
+	// -----
+
+	SetNormal(componentPlaneCollider.normal);
+	SetDistance(componentPlaneCollider.distance);
+
+	SetCenter(componentPlaneCollider.center);
 }
 
 ComponentPlaneCollider::~ComponentPlaneCollider() {}
@@ -29,33 +51,75 @@ ComponentPlaneCollider::~ComponentPlaneCollider() {}
 void ComponentPlaneCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Plane Collider");
-	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("Plane Collider", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ComponentCollider::OnUniqueEditor();
 
-	ComponentCollider::OnUniqueEditor();
+		ImGui::Text("Normal"); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##NormalX", &normal.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetNormal(normal);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##NormalY", &normal.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetNormal(normal);
+		ImGui::PopItemWidth();
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##NormalZ", &normal.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetNormal(normal);
+		ImGui::PopItemWidth();
 
-	ImGui::Text("Normal"); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##NormalX", &normal.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetNormal(normal);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##NormalY", &normal.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetNormal(normal);
-	ImGui::PopItemWidth();
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##NormalZ", &normal.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetNormal(normal);
-	ImGui::PopItemWidth();
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Distance"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##PlaneDistance", &distance, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetDistance(distance);
-	ImGui::PopItemWidth();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Distance"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##PlaneDistance", &distance, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetDistance(distance);
+		ImGui::PopItemWidth();
+	}
 #endif
 }
 
+uint ComponentPlaneCollider::GetInternalSerializationBytes()
+{
+	return ComponentCollider::GetInternalSerializationBytes() + 
+		sizeof(math::float3) +
+		sizeof(float);
+}
+
+void ComponentPlaneCollider::OnInternalSave(char*& cursor)
+{
+	ComponentCollider::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(math::float3);
+	memcpy(cursor, &normal, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &distance, bytes);
+	cursor += bytes;
+}
+
+void ComponentPlaneCollider::OnInternalLoad(char*& cursor)
+{
+	ComponentCollider::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(math::float3);
+	memcpy(&normal, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&distance, cursor, bytes);
+	cursor += bytes;
+
+	// -----
+
+	EncloseGeometry();
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentPlaneCollider::EncloseGeometry()
+{
+	RecalculateShape();
+}
 
 void ComponentPlaneCollider::RecalculateShape()
 {
@@ -79,7 +143,7 @@ void ComponentPlaneCollider::RecalculateShape()
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentPlaneCollider::SetNormal(math::float3& normal)
+void ComponentPlaneCollider::SetNormal(const math::float3& normal)
 {
 	assert(normal.IsFinite());
 	this->normal = normal;
@@ -115,9 +179,4 @@ physx::PxPlaneGeometry ComponentPlaneCollider::GetPlaneGeometry() const
 	physx::PxPlaneGeometry planeGeometry;
 	gShape->getPlaneGeometry(planeGeometry);
 	return planeGeometry;
-}
-
-uint ComponentPlaneCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

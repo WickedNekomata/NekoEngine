@@ -61,36 +61,36 @@ void ComponentMesh::SetResource(uint res_uuid)
 void ComponentMesh::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Mesh Renderer");
-	ImGui::Spacing();
-
-	ImGui::Text("Mesh");
-	ImGui::SameLine();
-
-	std::string fileName = "Empty Mesh";
-	const Resource* resource = App->res->GetResource(res);
-	if (resource != nullptr)
-		fileName = resource->GetName();
-
-	ImGui::PushID("mesh");
-	ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
-	ImGui::PopID();
-
-	if (ImGui::IsItemHovered())
-	{ 
-		ImGui::BeginTooltip();
-		ImGui::Text("%u", res);
-		ImGui::EndTooltip();
-	}
-
-	if (ImGui::BeginDragDropTarget())
+	if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+		ImGui::Text("Mesh");
+		ImGui::SameLine();
+
+		std::string fileName = "Empty Mesh";
+		const Resource* resource = App->res->GetResource(res);
+		if (resource != nullptr)
+			fileName = resource->GetName();
+
+		ImGui::PushID("mesh");
+		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
 		{
-			uint payload_n = *(uint*)payload->Data;
-			SetResource(payload_n);
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", res);
+			ImGui::EndTooltip();
 		}
-		ImGui::EndDragDropTarget();
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_INSPECTOR_SELECTOR"))
+			{
+				uint payload_n = *(uint*)payload->Data;
+				SetResource(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 #endif
 }
@@ -107,17 +107,19 @@ void ComponentMesh::OnInternalSave(char*& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(bool);
-	memcpy(cursor, &res, nv_walkable);
+	memcpy(cursor, &nv_walkable, bytes);
 	cursor += bytes;
 }
 
 void ComponentMesh::OnInternalLoad(char*& cursor)
 {
+	uint loadedRes;
 	size_t bytes = sizeof(uint);
-	memcpy(&res, cursor, bytes);
+	memcpy(&loadedRes, cursor, bytes);
 	cursor += bytes;
+	SetResource(loadedRes);
 
 	bytes = sizeof(bool);
-	memcpy(&res, cursor, nv_walkable);
+	memcpy(&nv_walkable, cursor, bytes);
 	cursor += bytes;
 }

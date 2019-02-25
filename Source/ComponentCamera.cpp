@@ -20,7 +20,7 @@ ComponentCamera::ComponentCamera(GameObject* parent, bool dummy) : Component(par
 	frustum.front = math::float3::unitZ;
 	frustum.up = math::float3::unitY;
 
-	frustum.nearPlaneDistance = 0.1f;
+	frustum.nearPlaneDistance = 1.0f;
 	frustum.farPlaneDistance = 500.0f;
 	frustum.verticalFov = 60.0f * DEGTORAD;
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
@@ -55,31 +55,31 @@ void ComponentCamera::UpdateTransform()
 void ComponentCamera::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Camera");
-	ImGui::Spacing();
-
-	ImGui::Checkbox("Main Camera", &mainCamera);
-
-	ImGui::Text("Field of View");
-	ImGui::SameLine();
-
-	float fov = frustum.verticalFov * RADTODEG;
-	if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
-		SetFOV(fov);
-
-	if (ImGui::Checkbox("Frustum Culling", &frustumCulling));
-
-	if (frustumCulling)
+	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Clipping Planes");
+		ImGui::Checkbox("Main Camera", &mainCamera);
 
-		ImGui::Text("Near");
+		ImGui::Text("Field of View");
 		ImGui::SameLine();
-		ImGui::InputFloat("##nearPlane", &frustum.nearPlaneDistance);
 
-		ImGui::Text("Far ");
-		ImGui::SameLine();
-		ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
+		float fov = frustum.verticalFov * RADTODEG;
+		if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
+			SetFOV(fov);
+
+		if (ImGui::Checkbox("Frustum Culling", &frustumCulling));
+
+		if (frustumCulling)
+		{
+			ImGui::Text("Clipping Planes");
+
+			ImGui::Text("Near");
+			ImGui::SameLine();
+			ImGui::InputFloat("##nearPlane", &frustum.nearPlaneDistance);
+
+			ImGui::Text("Far ");
+			ImGui::SameLine();
+			ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
+		}
 	}
 #endif
 }

@@ -3,7 +3,7 @@
 
 #include "Module.h"
 
-#include "Layers.h"
+#include "ModuleLayers.h"
 #include "SceneQueries.h"
 
 #include "physx\include\PxPhysicsAPI.h"
@@ -13,10 +13,15 @@
 #include "MathGeoLib\include\Math\float3.h"
 #include "MathGeoLib\include\Math\MathConstants.h"
 
+// *****Debug*****
+#include "MathGeoLib\include\Geometry\Ray.h"
+//_*****Debug*****
+
 #include <vector>
 
 class ComponentRigidActor;
 class ComponentCollider;
+class ComponentJoint;
 class GameObject;
 class Collision;
 class RaycastHit;
@@ -26,6 +31,7 @@ class SimulationEventCallback;
 enum ComponentTypes;
 enum SimulationEventTypes;
 enum CollisionTypes;
+enum JointTypes;
 
 class DefaultErrorCallback : public physx::PxErrorCallback
 {
@@ -62,36 +68,48 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	// Physic elements
-	/// Rigid actors
+	/// Rigid Actors
 	physx::PxRigidStatic* CreateRigidStatic(const physx::PxTransform& transform, physx::PxShape& shape) const;
-	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;	
+	physx::PxRigidDynamic* CreateRigidDynamic(const physx::PxTransform& transform, physx::PxShape& shape, float density, bool isKinematic = false) const;
 	void AddActor(physx::PxActor& actor) const;
 	void RemoveActor(physx::PxActor& actor) const;
 
-	/// Shapes
+	/// Colliders
 	physx::PxShape* CreateShape(const physx::PxGeometry& geometry, const physx::PxMaterial& material, bool isExclusive = true) const;
+
+	/// Joints
+	physx::PxJoint* CreateJoint(JointTypes jointType, physx::PxRigidActor* actor0, const physx::PxTransform& localFrame0, physx::PxRigidActor* actor1, physx::PxTransform& localFrame1) const;
 
 	// ----------------------------------------------------------------------------------------------------
 
 	// Components
+	/// Rigid Actors
 	ComponentRigidActor* CreateRigidActorComponent(GameObject* parent, ComponentTypes componentRigidActorType);
 	bool AddRigidActorComponent(ComponentRigidActor* toAdd);
 	bool EraseRigidActorComponent(ComponentRigidActor* toErase);
 	std::vector<ComponentRigidActor*> GetRigidActorComponents() const;
 	ComponentRigidActor* FindRigidActorComponentByActor(physx::PxActor* actor) const;
 
+	/// Colliders
 	ComponentCollider* CreateColliderComponent(GameObject* parent, ComponentTypes componentColliderType);
 	bool AddColliderComponent(ComponentCollider* toAdd);
 	bool EraseColliderComponent(ComponentCollider* toErase);
 	std::vector<ComponentCollider*> GetColliderComponents() const;
 	ComponentCollider* FindColliderComponentByShape(physx::PxShape* shape) const;
 
+	/// Joints
+	ComponentJoint* CreateJointComponent(GameObject* parent, ComponentTypes componentJointType);
+	bool AddJointComponent(ComponentJoint* toAdd);
+	bool EraseJointComponent(ComponentJoint* toErase);
+	std::vector<ComponentJoint*> GetJointComponents() const;
+	ComponentJoint* FindJointComponentByJoint(physx::PxJoint* joint) const;
+
 	// ----------------------------------------------------------------------------------------------------
 
 	// Simulation events
 	void OnSimulationEvent(ComponentRigidActor* actor, SimulationEventTypes simulationEventType) const;
 	void OnCollision(ComponentCollider* collider, Collision& collision, CollisionTypes collisionType) const;
-	
+
 	// ----------------------------------------------------------------------------------------------------
 
 	// Scene queries
@@ -99,10 +117,11 @@ public:
 	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 	bool Raycast(math::float3& origin, math::float3& direction, RaycastHit& hitInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 	bool Raycast(math::float3& origin, math::float3& direction, std::vector<RaycastHit>& touchesInfo, float maxDistance = FLT_MAX, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
-	
+
 	bool Sweep(physx::PxGeometry& geometry, physx::PxTransform& transform, math::float3& direction, SweepHit& hitInfo, float maxDistance = FLT_MAX, float inflation = 0.0f, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
-	
+
 	bool Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
+	bool OverlapSphere(float radius, math::float3 center, std::vector<OverlapHit>& touchesInfo, uint filterMask = DEFAULT_FILTER_MASK, SceneQueryFlags sceneQueryFlags = (SceneQueryFlags)(SceneQueryFlags::Static | SceneQueryFlags::Dynamic)) const;
 
 	// ----------------------------------------------------------------------------------------------------
 
@@ -112,6 +131,8 @@ public:
 
 	void SetDefaultMaterial(physx::PxMaterial* material);
 	physx::PxMaterial* GetDefaultMaterial() const;
+
+	physx::PxTolerancesScale GetTolerancesScale() const;
 
 private:
 
@@ -129,10 +150,15 @@ private:
 	// Components
 	std::vector<ComponentRigidActor*> rigidActorComponents;
 	std::vector<ComponentCollider*> colliderComponents;
+	std::vector<ComponentJoint*> jointComponents;
 
 	// General configuration values
 	math::float3 gravity = math::float3::zero;
 	physx::PxMaterial* defaultMaterial = nullptr;
+
+	// *****Debug*****
+	math::Ray debugRay;
+	//_*****Debug*****
 };
 
 #endif

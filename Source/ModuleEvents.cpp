@@ -18,6 +18,7 @@
 #include "ComponentNavAgent.h"
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
+#include "ComponentLight.h"
 #include "ComponentScript.h"
 #include "ComponentCanvasRenderer.h"
 #include "ComponentImage.h"
@@ -29,6 +30,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
+#include "ScriptingModule.h"
 
 void ModuleEvents::OnSystemEvent(System_Event event)
 {
@@ -58,7 +60,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		{
 			char* file; size_t size;
 			App->GOs->SerializeFromNode(App->scene->root, file, size);
-			App->fs->SaveInGame(file, size, FileType::SceneFile, std::string(event.sceneEvent.nameScene));
+			App->fs->SaveInGame(file, size, FileTypes::SceneFile, std::string(event.sceneEvent.nameScene));
 			delete[] file;
 			break;
 		}
@@ -81,8 +83,9 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			size_t size = App->fs->Load(file, &buf);
 			if (size != 0)
 			{
+				App->scene->selectedObject = 0;
 				App->GOs->ClearScene();
-				App->GOs->LoadScene(buf, size);
+				App->GOs->LoadScene(buf, size, true);
 				delete[] buf;
 
 				System_Event newEvent;
@@ -90,8 +93,15 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 				App->PushSystemEvent(newEvent);
 			}
 			else
-				DEPRECATED_LOG("CANT FIND SCENE IN ASSETS");
+				CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
 			break;
+		}
+
+		case System_Event_Type::ScriptingDomainReloaded:
+		{
+			App->scripting->CreateDomain();
+			App->scripting->RecompileScripts();
+			App->scripting->ReInstance();
 		}
 	}
 }

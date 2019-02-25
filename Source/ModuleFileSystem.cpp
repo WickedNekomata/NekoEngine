@@ -46,6 +46,8 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
 	CreateDir(DIR_ASSETS_SCRIPTS);
+	CreateDir(DIR_ASSETS_PREFAB);
+	CreateDir(DIR_ASSETS_MATERIALS);
 #endif
 	if (CreateDir(DIR_LIBRARY))
 	{
@@ -422,7 +424,7 @@ uint ModuleFileSystem::Copy(const char* file, const char* dir, std::string& outp
 	return size;
 }
 
-uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile, bool overwrite) const
+uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, std::string& outputFile, bool overwrite) const
 {
 	uint ret = 0;
 
@@ -430,45 +432,55 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileType fileType, st
 	{
 		switch (fileType)
 		{
-		case FileType::MeshFile:
+		case FileTypes::MeshFile:
 			outputFile.insert(0, DIR_LIBRARY_MESHES);
 			outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
 			outputFile.append(EXTENSION_MESH);
 			break;
-		case FileType::TextureFile:
+		case FileTypes::TextureFile:
 			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
 			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
 			outputFile.append(EXTENSION_TEXTURE);
 			break;
-		case FileType::BoneFile:
+		case FileTypes::BoneFile:
 			outputFile.insert(0, DIR_LIBRARY_BONES);
 			outputFile.insert(strlen(DIR_LIBRARY_BONES), "/");
 			outputFile.append(EXTENSION_BONE);
 			break;
-		case FileType::AnimationFile:
+		case FileTypes::AnimationFile:
 			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
 			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
 			outputFile.append(EXTENSION_ANIMATION);
 			break;
-		case FileType::SceneFile:
+		case FileTypes::SceneFile:
 			outputFile.insert(0, DIR_ASSETS_SCENES);
 			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
 			outputFile.append(EXTENSION_SCENE);
 			break;
-		case FileType::VertexShaderObjectFile:
+		case FileTypes::VertexShaderObjectFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
 			outputFile.append(EXTENSION_VERTEX_SHADER_OBJECT);
 			break;
-		case FileType::FragmentShaderObjectFile:
+		case FileTypes::FragmentShaderObjectFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
 			outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
 			break;
-		case FileType::ShaderProgramFile:
+		case FileTypes::MaterialFile:
+			outputFile.insert(0, DIR_ASSETS_MATERIALS);
+			outputFile.insert(strlen(DIR_ASSETS_MATERIALS), "/");
+			outputFile.append(EXTENSION_MATERIAL);
+			break;
+		case FileTypes::ShaderProgramFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
 			outputFile.append(EXTENSION_SHADER_PROGRAM);
+			break;
+		case FileTypes::PrefabFile:
+			outputFile.insert(0, DIR_ASSETS_PREFAB);
+			outputFile.insert(strlen(DIR_ASSETS_PREFAB), "/");
+			outputFile.append(EXTENSION_PREFAB);
 			break;
 		}
 	}
@@ -1034,7 +1046,7 @@ void ModuleFileSystem::ForceReImport(const Directory& assetsDir)
 		char filePath[DEFAULT_BUF_SIZE];
 
 		strcpy(filePath, assetsDir.fullPath.data());
-		strcat(filePath, "//");
+		strcat(filePath, "/");
 		strcat(filePath, assetsDir.files[i].name.data());
 
 		//The ResourceManager already manages the .meta, already imported files etc. on his own.
@@ -1046,7 +1058,7 @@ void ModuleFileSystem::ForceReImport(const Directory& assetsDir)
 
 	for (int i = 0; i < assetsDir.directories.size(); ++i)
 	{
-		ImportFilesEvents(assetsDir.directories[i]);
+		ForceReImport(assetsDir.directories[i]);
 	}
 }
 

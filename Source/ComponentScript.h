@@ -28,9 +28,6 @@ public:
 	uint GetInternalSerializationBytes();
 	uint GetPublicVarsSerializationBytes() const;
 
-	void Serialize(char*& cursor) const;
-	void deSerialize(char*& cursor, uint32_t& goUUID);
-
 	void SavePublicVars(char*& cursor) const;
 	void LoadPublicVars(char*& cursor);
 
@@ -44,7 +41,7 @@ public:
 	bool awaked = false;
 	std::string scriptName;
 
-	ResourceScript* scriptRes = nullptr;
+	uint scriptResUUID = 0;
 
 	uint32_t handleID = 0;
 	MonoObject* classInstance = nullptr;

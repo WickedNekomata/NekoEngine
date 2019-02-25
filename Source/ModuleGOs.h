@@ -17,7 +17,7 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject* Instanciate(GameObject* target);
+	GameObject* Instanciate(GameObject* target, GameObject* newRoot = 0);
 	void DeleteGameObject(GameObject* toDelete);
 	void Kill(GameObject* go);
 
@@ -28,17 +28,17 @@ public:
 	void ClearScene();
 
 	void RecalculateVector(GameObject* go); //if static or dynamic
-  
-	bool SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer);
-	bool LoadScene(char*& buffer, size_t sizeBuffer);
-  
-	//UI
-	GameObject* CreateCanvas(const char* name, GameObject* parent);
- 	void DeleteCanvasPointer();
-	bool ExistCanvas() const;
-	GameObject* GetCanvas()const;
+
+	bool static SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh = false);
+	bool LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh = false);
 
 	bool InvalidateResource(Resource* resource);
+
+	//UI
+	GameObject* CreateCanvas(const char* name, GameObject* parent);
+	void DeleteCanvasPointer();
+	bool ExistCanvas() const;
+	GameObject* GetCanvas()const;
 
 private:
 

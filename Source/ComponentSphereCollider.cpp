@@ -4,7 +4,7 @@
 #include "ModulePhysics.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "ComponentRigidActor.h"
 
@@ -14,24 +14,33 @@
 
 ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : ComponentCollider(parent, ComponentTypes::SphereColliderComponent)
 {
-	if (parent->boundingBox.IsFinite()) // TODO: finish this together with the rest of the shapes
-	{
-		math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
-		math::float3 position = math::float3::zero;
-		math::Quat rotation = math::Quat::identity;
-		math::float3 scale = math::float3::one;
-		globalMatrix.Decompose(position, rotation, scale);
+	EncloseGeometry();
 
-		center = parent->boundingBox.CenterPoint() - position;
-		radius = parent->boundingBox.HalfDiagonal().Length();
-	}
+	colliderType = ColliderTypes::SphereCollider;
 
-	RecalculateShape();
+	// -----
 
 	physx::PxShapeFlags shapeFlags = gShape->getFlags();
 	isTrigger = shapeFlags & physx::PxShapeFlag::Enum::eTRIGGER_SHAPE && !(shapeFlags & physx::PxShapeFlag::eSIMULATION_SHAPE);
 	participateInContactTests = shapeFlags & physx::PxShapeFlag::Enum::eSIMULATION_SHAPE;
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
+}
+
+ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider) : ComponentCollider(componentSphereCollider, ComponentTypes::SphereColliderComponent)
+{
+	EncloseGeometry();
+
+	colliderType = componentSphereCollider.colliderType;
+
+	SetIsTrigger(componentSphereCollider.isTrigger);
+	SetParticipateInContactTests(componentSphereCollider.participateInContactTests);
+	SetParticipateInSceneQueries(componentSphereCollider.participateInSceneQueries);
+
+	// -----
+
+	SetRadius(componentSphereCollider.radius);
+
+	SetCenter(componentSphereCollider.center);
 }
 
 ComponentSphereCollider::~ComponentSphereCollider() {}
@@ -41,20 +50,72 @@ ComponentSphereCollider::~ComponentSphereCollider() {}
 void ComponentSphereCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Sphere Collider");
-	ImGui::Spacing();
+	if (ImGui::CollapsingHeader("Sphere Collider", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Sphere Collider");
+		ImGui::Spacing();
 
-	ComponentCollider::OnUniqueEditor();
+		ComponentCollider::OnUniqueEditor();
 
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##SphereRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
-		SetRadius(radius);
-	ImGui::PopItemWidth();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Radius"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##SphereRadius", &radius, 0.01f, 0.01f, FLT_MAX, "%.2f", 1.0f))
+			SetRadius(radius);
+		ImGui::PopItemWidth();
+	}
 #endif
 }
 
+uint ComponentSphereCollider::GetInternalSerializationBytes()
+{
+	return ComponentCollider::GetInternalSerializationBytes() + 
+		sizeof(float);
+}
+
+void ComponentSphereCollider::OnInternalSave(char*& cursor)
+{
+	ComponentCollider::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &radius, bytes);
+	cursor += bytes;
+}
+
+void ComponentSphereCollider::OnInternalLoad(char*& cursor)
+{
+	ComponentCollider::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(&radius, cursor, bytes);
+	cursor += bytes;
+
+	// -----
+
+	EncloseGeometry();
+}
+
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentSphereCollider::EncloseGeometry()
+{
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	math::AABB boundingBox = parent->boundingBox;
+
+	if (globalMatrix.IsFinite() && parent->boundingBox.IsFinite())
+	{
+		math::float3 pos = math::float3::zero;
+		math::Quat rot = math::Quat::identity;
+		math::float3 scale = math::float3::one;
+		globalMatrix.Decompose(pos, rot, scale);
+
+		center = parent->boundingBox.CenterPoint() - pos;
+		center = globalMatrix.Float3x3Part().Inverted() * center;
+
+		radius = parent->boundingBox.HalfSize().Length();
+	}
+
+	RecalculateShape();
+}
 
 void ComponentSphereCollider::RecalculateShape()
 {
@@ -91,9 +152,4 @@ physx::PxSphereGeometry ComponentSphereCollider::GetSphereGeometry() const
 	physx::PxSphereGeometry sphereGeometry;
 	gShape->getSphereGeometry(sphereGeometry);
 	return sphereGeometry;
-}
-
-uint ComponentSphereCollider::GetInternalSerializationBytes()
-{
-	return 0;
 }

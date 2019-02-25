@@ -2,6 +2,7 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
+#include "ComponentNavAgent.h"
 #include "GameObject.h"
 #include "ModuleInput.h"
 #include "ModuleScene.h"
@@ -21,7 +22,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 #include "ModulePhysics.h"
 #include "SceneQueries.h"
 
@@ -179,12 +180,19 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 			break;
 		}
 
+		case System_Event_Type::LoadScene:
+		{
+			ClearMap();
+			break;
+		}
+
 		case System_Event_Type::ResourceDestroyed:
 		{		
 			for (int i = 0; i < scripts.size(); ++i)
 			{
 				bool somethingDestroyed = false;
-				if (scripts[i]->scriptRes == event.resEvent.resource)
+
+				if (scripts[i]->scriptResUUID == event.resEvent.resource->GetUuid())
 				{
 					somethingDestroyed = true;
 					scripts[i]->GetParent()->EraseComponent(scripts[i]);
@@ -284,7 +292,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		cursor += sizeof(int64_t) + sizeof(uint);
 
 		uint32_t UID;
-		memcpy(&UID, metaBuffer, sizeof(uint32_t));
+		memcpy(&UID, cursor, sizeof(uint32_t));
 
 		scriptRes = (ResourceScript*)App->res->GetResource(UID);
 
@@ -317,7 +325,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 	}
 
 	App->res->SetAsUsed(scriptRes->GetUuid());
-	script->scriptRes = scriptRes;
+	script->scriptResUUID = scriptRes->GetUuid();
 
 	scripts.push_back(script);
 
@@ -337,6 +345,18 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	}
 
 	return false;
+}
+
+void ScriptingModule::ClearScriptComponent(ComponentScript * script)
+{
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		if (scripts[i] == script)
+		{
+			scripts.erase(scripts.begin() + i);
+			break;
+		}
+	}
 }
 
 MonoObject* ScriptingModule::MonoObjectFrom(GameObject* gameObject)
@@ -574,7 +594,7 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-bool ScriptingModule::ImportScriptResource(const char* fileAssets)
+Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 {
 	std::string file = fileAssets;
 	std::string metaFile = file + ".meta";
@@ -587,10 +607,14 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 	data.file = "Assets/Scripts/" + scriptName + ".cs";
 	data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
 
-	ResourceScript* scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
+	ResourceScript* scriptRes = nullptr;
+
+	bool scriptModified = false;
 
 	if (!App->fs->Exists(data.file + ".meta"))
 	{
+		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
+
 		//Create the .meta
 		uint bytes = scriptRes->bytesToSerializeMeta();
 		char* buffer = new char[bytes];
@@ -608,19 +632,80 @@ bool ScriptingModule::ImportScriptResource(const char* fileAssets)
 		if (size > 0)
 		{
 			char* cursor = metaBuffer;
+			int64_t lastSavedModTime;
+			memcpy(&lastSavedModTime, cursor, sizeof(int64_t));
+			cursor += sizeof(int64_t);
+			cursor += sizeof(uint);
+			uint uid;
+			memcpy(&uid, cursor, sizeof(uint));
+
+			int64_t lastModTime = App->fs->GetLastModificationTime(fileAssets);
+			
+			scriptModified = lastSavedModTime != lastModTime;
+
+			if (scriptModified)
+			{
+				cursor = metaBuffer;
+				memcpy(cursor, &lastModTime, sizeof(int64_t));
+				App->fs->Save(metaFile, metaBuffer, size);
+			}
+
+			scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData(), uid);
+
+			cursor = metaBuffer;
 			scriptRes->DeSerializeFromMeta(cursor);
 			delete[] metaBuffer;
 		}
 	}
 
-	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll"))
-		scriptRes->Compile();
+	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll") || scriptModified)
+	{
+		if (!scriptRes->preCompileErrors())
+		{
+			scriptRes->Compile();
+		}
+	}
 	else
 	{
 		scriptRes->referenceMethods();
 	}
 		
-	return true;
+	return scriptRes;
+}
+
+void ScriptingModule::ScriptModified(const char* scriptPath)
+{
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy(metaFile, scriptPath);
+	strcat(metaFile, ".meta");
+
+	char* metaBuffer;
+	uint size = App->fs->Load(metaFile, &metaBuffer);
+	if (size < 0)
+		return;
+
+	char* cursor = metaBuffer;
+	cursor += sizeof(int64_t) + sizeof(uint);
+	uint UID;
+	memcpy(&UID, cursor, sizeof(uint32_t));
+
+	ResourceScript* scriptModified = (ResourceScript*)App->res->GetResource(UID);
+	if (scriptModified->preCompileErrors())
+		return;
+
+	System_Event event;
+	event.type = System_Event_Type::ScriptingDomainReloaded;
+	App->PushSystemEvent(event);
+}
+
+void ScriptingModule::RecompileScripts()
+{
+	std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+	for (int i = 0; i < scriptResources.size(); ++i)
+	{
+		ResourceScript* res = (ResourceScript*)scriptResources[i];
+		res->Compile();
+	}
 }
 
 void ScriptingModule::UpdateMethods()
@@ -1293,6 +1378,14 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject* hitInfo, float
 	return ret;
 }
 
+void SetDestination(MonoObject* navMeshAgent, MonoArray* newDestination)
+{
+	math::float3 newDestinationcpp(mono_array_get(newDestination, float, 0), mono_array_get(newDestination, float, 1), mono_array_get(newDestination, float, 2));
+	int compAddress;
+	mono_field_get_value(navMeshAgent, mono_class_get_field_from_name(mono_object_get_class(navMeshAgent), "componentAddress"), &compAddress);
+	ComponentNavAgent* agent = (ComponentNavAgent*)compAddress;
+	agent->SetDestination(newDestinationcpp.ptr());
+}
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1361,6 +1454,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
 	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 
 	ClearMap();
 

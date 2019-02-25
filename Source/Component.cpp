@@ -48,22 +48,34 @@ void Component::OnEditor()
 		}
 	}
 
-	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##isActive%u", UUID);
+	sprintf_s(itemName, DEFAULT_BUF_SIZE, "Is active##isActive%u", UUID);
 
 	bool isActive = IsActive();
 	if (ImGui::Checkbox(itemName, &isActive)) { ToggleIsActive(); }
 
 	sprintf_s(itemName, DEFAULT_BUF_SIZE, "##treeNode%u", UUID);
 
-	if (ImGui::CollapsingHeader(itemName, ImGuiTreeNodeFlags_DefaultOpen))
-		OnUniqueEditor();
+	OnUniqueEditor();
 #endif
+}
+
+void Component::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+		case System_Event_Type::Stop:
+		case System_Event_Type::ScriptingDomainReloaded:
+		{
+			this->monoCompHandle = 0;
+			break;
+		}
+	}
 }
 
 uint Component::GetSerializationBytes()
 {
-	//uuid + type + active + internal
-	return sizeof(uint) + sizeof(int) + sizeof(bool) + GetInternalSerializationBytes();
+	// uuid + type + active + internal
+	return sizeof(int) + sizeof(uint) + sizeof(bool) + GetInternalSerializationBytes();
 }
 
 void Component::OnUniqueEditor() {}

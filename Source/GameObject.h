@@ -7,6 +7,7 @@
 #include "EventSystem.h"
 
 #include "MathGeoLib\include\Geometry\AABB.h"
+
 #include <mono/metadata/object.h>
 
 #include <vector>
@@ -18,7 +19,7 @@ class GameObject
 public:
 
 	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject(const GameObject& gameObject);
+	GameObject(GameObject& gameObject, GameObject* newRoot = 0);
 	~GameObject();
 
 	void SetName(const char* name);
@@ -72,7 +73,7 @@ public:
 	uint GetLayer() const;
 
 public:
-  
+
 	class ComponentTransform*  transform = 0;
 	class ComponentMesh*       cmp_mesh = 0;
 	class ComponentMaterial*   cmp_material = 0;
@@ -86,6 +87,8 @@ public:
 	class ComponentCanvasRenderer* cmp_canvasRenderer = nullptr;
 	class ComponentImage* cmp_image = nullptr;
 	class ComponentButton* cmp_button = nullptr;
+	class ComponentLight*	   cmp_light = 0;
+	class ComponentProjector*  cmp_projector = 0;
 
 	std::vector<Component*> components;
 
@@ -105,12 +108,11 @@ private:
 	bool isActive = true;
 	bool isStatic = false; // coordinate with statics and dynamics vector at go module
 
-	// scripting
+	// Scripting
 	uint32_t monoObjectHandle = 0;
 
 	// Physics
-	uint layer;
-
+	uint layer = 0; // in the range [0...31]
 };
 
 #endif

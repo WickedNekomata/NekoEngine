@@ -22,8 +22,9 @@
 #include "ScriptingModule.h"
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
-#include "Layers.h"
 #include "ModuleUI.h"
+#include "ModuleLayers.h"
+
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -49,7 +50,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	scripting = new ScriptingModule();
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
-	layers = new Layers();
+	layers = new ModuleLayers();
 	ui = new ModuleUI();
 
 #ifndef GAMEMODE
@@ -61,6 +62,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
+
+	AddModule(layers);
 	AddModule(res);
 	AddModule(resHandler);
 	AddModule(timeManager);
@@ -105,7 +108,6 @@ Application::~Application()
 	RELEASE(boneImporter);
 	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
-	RELEASE(layers);
 }
 
 bool Application::Init()
@@ -435,15 +437,17 @@ void Application::Play()
 		// Enter editor mode
 		engineState = engine_states::ENGINE_PLAY;
 		break;
-	
+
 	case engine_states::ENGINE_EDITOR:
 	{
 		// Enter play mode
-		engineState = engine_states::ENGINE_PLAY;
-
-		System_Event event;
-		event.type = System_Event_Type::Play;
-		PushSystemEvent(event);
+		if (renderer3D->SetCurrentCamera())
+		{
+			engineState = engine_states::ENGINE_PLAY;
+			System_Event event;
+			event.type = System_Event_Type::Play;
+			PushSystemEvent(event);
+		}
 		break;
 	}
 	case engine_states::ENGINE_STEP:

@@ -52,8 +52,8 @@ struct ModuleNavigation;
 struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
-struct Layers;
 struct ModuleUI;
+struct ModuleLayers;
 
 class Application
 {
@@ -126,10 +126,10 @@ public:
 #ifndef GAMEMODE
 	ModuleCameraEditor*		  camera;
 	ModuleGui*				  gui;
-							  
+
 	Raycaster*				  raycaster;
 #endif // GAME
-  
+
 	ModuleWindow*			  window;
 	ModuleInput*			  input;
 	ModuleScene*			  scene;
@@ -143,8 +143,8 @@ public:
   ModuleUI*				ui;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
-	Layers*					  layers;
-							  
+	ModuleLayers*			  layers;
+
 	pcg32_random_t			  rng;
 
 	bool firstFrame = true;

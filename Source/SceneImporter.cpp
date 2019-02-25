@@ -9,6 +9,8 @@
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 
+#include "ResourcePrefab.h"
+
 #include "ModuleGOs.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -147,7 +149,20 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		RecursiveProcessBones(scene, scene->mRootNode);
+		// TODO_G CONTINUE HERE ++
+		//RecursiveProcessBones(scene, scene->mRootNode);
+		// Prefab creation
+		ResourceData data;
+		PrefabData prefab_data;
+
+		data.name = "Prefab_test";
+
+		prefab_data.root = rootGameObject;
+		std::string outputFile;
+		// todo
+		//ResourcePrefab* prefaby = (ResourcePrefab*)App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
+
+		//prefaby->my_data = prefab_data; //omegalul
 
 		aiReleaseImport(scene);
 
@@ -186,7 +201,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	// If the previous game object wasn't a transformation, create a new game object
 	else
 		gameObject = new GameObject(name.data(), (GameObject*)parent);
-	
+
 	// If the current game object is not a transformation, update its name (just in case the previous one was)
 	if (!isTransformation)
 		gameObject->SetName(name.data());
@@ -292,19 +307,19 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				normals = new float[normalsSize * 3];
 				memcpy(normals, nodeMesh->mNormals, sizeof(float) * normalsSize * 3);
 			}
-			
+
 			// Tangents and Bitangents
 			if (nodeMesh->HasTangentsAndBitangents())
 			{
 				tangentsSize = verticesSize;
 				tangents = new float[tangentsSize * 3];
 				memcpy(tangents, nodeMesh->mTangents, sizeof(float) * tangentsSize * 3);
-				
+
 				bitangentsSize = verticesSize;
 				bitangents = new float[bitangentsSize * 3];
 				memcpy(bitangents, nodeMesh->mBitangents, sizeof(float) * bitangentsSize * 3);
 			}
-			
+
 			// Color
 			/*if (nodeMesh->HasVertexColors(0))
 			{
@@ -363,7 +378,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 								uuid = App->res->ImportFile(outputFile.data())->GetUuid();
 
 							assert(uuid > 0);
-							gameObject->cmp_material->res[0].res = uuid;
+							//gameObject->cmp_material->res[0].res = uuid; // TODO UNIFORMS
 						}
 					}
 				}
@@ -409,7 +424,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 4. Store tangents
 			if (tangentsSize > 0)
 			{
@@ -427,7 +442,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 
 				cursor += bytes;
 			}
-			
+
 			// 6. Store colors
 			if (colorsSize > 0)
 			{
@@ -457,7 +472,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 			memcpy(cursor, meshName, bytes);
 
 			std::string outputFile = std::to_string(gameObject->cmp_mesh->res);
-			if (App->fs->SaveInGame(data, size, FileType::MeshFile, outputFile) > 0)
+			if (App->fs->SaveInGame(data, size, FileTypes::MeshFile, outputFile) > 0)
 			{
 				CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully saved Mesh '%s' to own format", gameObject->GetName());
 				outputFiles.push_back(outputFile);
@@ -653,7 +668,7 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 	// Bind the VAO
 	glBindVertexArray(VAO);
 
-	// Bind the VBO 
+	// Bind the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	// Set the vertex attributes pointers
@@ -688,11 +703,13 @@ void SceneImporter::GenerateVAO(uint& VAO, uint& VBO) const
 void SceneImporter::DeleteBufferObject(uint& name) const
 {
 	glDeleteBuffers(1, &name);
+	name = 0;
 }
 
 void SceneImporter::DeleteVertexArrayObject(uint& name) const
 {
 	glDeleteVertexArrays(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -717,7 +734,7 @@ uint SceneImporter::GetAssimpRevisionVersion() const
 void SceneImporter::LoadCubemap(uint& VBO, uint& VAO) const
 {
 	float skyboxVertices[] = {
-        
+
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -860,20 +877,22 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		aiBone* bone = it->second;
 
 		GameObject* go = relations[node];
-		
+
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;
-		// TODO_G : DONT CREATE THE RESOURCE IN THE IMPORT METHOD
-		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output);
-		if (go->GetParent() == nullptr ||
+		// TODO_G CONTINUE HERE +
+		//uint bone_uid = App->boneImporter->Import(go, bone, mesh_bone[bone], output);
+		
+		
+		/*if (go->GetParent() == nullptr ||
 			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
 		imported_bones[node->mName.C_Str()] = bone_uid;
-		DEPRECATED_LOG("->-> Added Bone component");
+		DEPRECATED_LOG("->-> Added Bone component");*/
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

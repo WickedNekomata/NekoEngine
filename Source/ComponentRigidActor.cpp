@@ -11,12 +11,23 @@
 
 #include "imgui\imgui.h"
 
-ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentType) : Component(parent, componentType) {}
+ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes componentRigidActorType) : Component(parent, componentRigidActorType)
+{
+	App->physics->AddRigidActorComponent(this);
+}
+
+ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType) : Component(componentRigidActor.parent, componentRigidActorType)
+{
+	App->physics->AddRigidActorComponent(this);
+}
 
 ComponentRigidActor::~ComponentRigidActor()
 {
 	App->physics->RemoveActor(*gActor);
 	gActor->release();
+
+	App->physics->EraseRigidActorComponent(this);
+	parent->cmp_rigidActor = nullptr;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -26,6 +37,7 @@ void ComponentRigidActor::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::Checkbox("Use Gravity", &useGravity))
 		SetUseGravity(useGravity);
+
 	// TODO: interpolate & collision detection
 #endif
 }
@@ -33,6 +45,34 @@ void ComponentRigidActor::OnUniqueEditor()
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::Update() {}
+
+uint ComponentRigidActor::GetInternalSerializationBytes()
+{
+	return sizeof(bool) +
+		sizeof(RigidActorTypes);
+}
+
+void ComponentRigidActor::OnInternalSave(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &useGravity, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(RigidActorTypes);
+	memcpy(cursor, &rigidActorType, bytes);
+	cursor += bytes;
+}
+
+void ComponentRigidActor::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&useGravity, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(RigidActorTypes);
+	memcpy(&rigidActorType, cursor, bytes);
+	cursor += bytes;
+}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -81,7 +121,7 @@ void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 		return;
 	}
 
-	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), 
+	gActor->setGlobalPose(physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
 		physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
 }
 
@@ -109,8 +149,12 @@ physx::PxRigidActor* ComponentRigidActor::GetActor() const
 	return gActor;
 }
 
-// ----------------------------------------------------------------------------------------------------
+RigidActorTypes ComponentRigidActor::GetRigidActorType() const
+{
+	return rigidActorType;
+}
 
+// ----------------------------------------------------------------------------------------------------
 
 void ComponentRigidActor::OnWake()
 {
@@ -120,9 +164,4 @@ void ComponentRigidActor::OnWake()
 void ComponentRigidActor::OnSleep()
 {
 	CONSOLE_LOG(LogTypes::Normal, "OnSleep", LogTypes::Normal);
-}
-
-uint ComponentRigidActor::GetInternalSerializationBytes()
-{
-	return 0;
 }

@@ -46,8 +46,8 @@ bool PanelDebugDraw::Draw()
 
 			ImGui::SameLine();
 
-			bool drawCamerasFrustum = App->renderer3D->GetDrawCamerasFrustum();
-			if (ImGui::Checkbox("Cameras Frustum", &drawCamerasFrustum)) { App->renderer3D->SetDrawCamerasFrustum(drawCamerasFrustum); }
+			bool drawFrustums = App->renderer3D->GetDrawFrustums();
+			if (ImGui::Checkbox("Frustums", &drawFrustums)) { App->renderer3D->SetDrawFrustums(drawFrustums); }
 
 			ImGui::SameLine();
 

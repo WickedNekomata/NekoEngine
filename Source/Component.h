@@ -5,6 +5,7 @@
 #include "parson\parson.h"
 #include "Globals.h"
 #include <mono/metadata/object.h>
+#include "EventSystem.h"
 
 class GameObject;
 
@@ -19,6 +20,10 @@ public:
 	virtual void Update();
 
 	virtual void OnEditor();
+
+	//NOTE: If you override this method, make sure to call the base class method. 
+	//(Component::OnSystemEvent(event); at start)
+	virtual void OnSystemEvent(System_Event event);
 
 	void ToggleIsActive();
 	bool IsActive() const;

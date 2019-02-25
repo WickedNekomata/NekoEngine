@@ -3,14 +3,20 @@
 #include "Primitive.h"
 #include "ComponentEmitter.h"
 #include "ModuleParticles.h"
+#include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
 #include "ShaderImporter.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ComponentMaterial.h"
+#include "ResourceShaderProgram.h"
+#include "ResourceMaterial.h"
+#include "Uniforms.h"
 
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float3.h"
+
+#include <vector>
 
 //#include "pcg-c-basic-0.9/pcg_basic.h"
 
@@ -26,7 +32,7 @@ Particle::~Particle()
 {
 }
 
-void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int animRow)
+void Particle::SetActive(math::float3 pos, StartValues data, ParticleAnimation partAnim)
 {
 	color.clear();
 
@@ -35,7 +41,7 @@ void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int
 	life = 0.0f;
 
 	speed = CreateRandomNum(data.speed);
-	acceleration = CreateRandomNum(data.acceleration);
+	acceleration3 = data.acceleration3;
 	direction = data.particleDirection;
 
 	angle = CreateRandomNum(data.rotation) * DEGTORAD;
@@ -56,11 +62,12 @@ void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int
 	animationTime = 0.0f;
 	currentFrame = 0u;
 
-	rowAnimNorm = 1.0f / animRow;
-	columnAnimNorm = 1.0f / animColumn;
-	rowAnim = animRow;
-	columnAnim = animColumn;
-	isAnimated = data.isAnimated;
+	isParticleAnimated = partAnim.isParticleAnimated;
+	textureRows = partAnim.textureRows;
+	textureColumns = partAnim.textureColumns;
+	textureRowsNorm = partAnim.textureRowsNorm;
+	textureColumnsNorm = partAnim.textureColumnsNorm;
+	animationSpeed = partAnim.animationSpeed;
 
 	active = true;
 	subEmitterActive = data.subEmitterActive;
@@ -78,8 +85,14 @@ bool Particle::Update(float dt)
 	life += dt;
 	if (life < lifeTime || owner->dieOnAnimation)
 	{
-		speed += acceleration * dt;
-		transform.position += direction * (speed * dt);
+		acceleration3 += acceleration3 * dt;
+		math::float3 movement = direction * (speed * dt);
+
+		if(acceleration3.Equals(math::float3::zero))
+			transform.position +=  movement;
+		else
+			transform.position += (movement + acceleration3 * dt)/2;
+
 		LookAtCamera();
 
 		if (color.size() == 1 || !multicolor)
@@ -111,17 +124,17 @@ bool Particle::Update(float dt)
 		angle += angularVelocity * dt;
 		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
-		if (isAnimated)
+		if (isParticleAnimated)
 		{
 			animationTime += dt;
-			if (animationTime > owner->animationSpeed)
+			if (animationTime > animationSpeed)
 			{
-				if ((columnAnim * rowAnim) >= currentFrame + 1)
+				if ((textureColumns* textureRows) >= currentFrame + 1)
 				{
 					currentFrame++;
 
-					currMinUVCoord.x = (currentFrame % columnAnim) * columnAnimNorm;
-					currMinUVCoord.y = (currentFrame / rowAnim) * rowAnimNorm;
+					currMinUVCoord.x = (currentFrame % textureColumns) * textureColumnsNorm;
+					currMinUVCoord.y = (currentFrame / textureColumns) * textureRowsNorm;
 				}
 				else if (owner->dieOnAnimation)
 				{
@@ -182,18 +195,12 @@ void Particle::Draw()
 {
 	if (active)
 	{
-		// Shader
-		GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+		ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(owner->materialRes);
+		uint shaderUuid = resourceMaterial->GetShaderUuid();
+		ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+		GLuint shaderProgram = resourceShaderProgram->shaderProgram;
 
 		glUseProgram(shaderProgram);
-
-		glActiveTexture(GL_TEXTURE0);
-
-		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture
-
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
 		
 		math::float4x4 model_matrix = transform.GetMatrix();// particle matrix
 		model_matrix = model_matrix.Transposed();
@@ -214,13 +221,13 @@ void Particle::Draw()
 		glUniform4f(location,currentColor.x, currentColor.y, currentColor.z, currentColor.w);
 
 		location = glGetUniformLocation(shaderProgram, "rowUVNorm");
-		glUniform1f(location, rowAnimNorm);
+		glUniform1f(location, textureRowsNorm);
 		location = glGetUniformLocation(shaderProgram, "columUVNorm");
-		glUniform1f(location, columnAnimNorm);
+		glUniform1f(location, textureColumnsNorm);
 		location = glGetUniformLocation(shaderProgram, "currMinCoord");
 		glUniform2f(location, currMinUVCoord.x, currMinUVCoord.y);
 		location = glGetUniformLocation(shaderProgram, "isAnimated");
-		glUniform1i(location, isAnimated);
+		glUniform1i(location, isParticleAnimated);
 
 		location = glGetUniformLocation(shaderProgram, "light.direction");
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.direction.ptr());
@@ -230,6 +237,54 @@ void Particle::Draw()
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.diffuse.ptr());
 		location = glGetUniformLocation(shaderProgram, "light.specular");
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.specular.ptr());
+
+		// Unknown uniforms
+		uint textureUnit = 0;
+		std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+		for (uint i = 0; i < uniforms.size(); ++i)
+		{
+			Uniform uniform = uniforms[i];
+
+			if (strcmp(uniform.common.name, "averageColor") == 0 || strcmp(uniform.common.name, "material.albedo") == 0 || strcmp(uniform.common.name, "material.specular") == 0)
+			{
+				switch (uniform.common.type)
+				{
+				case Uniforms_Values::FloatU_value:
+					glUniform1f(uniform.common.location, uniform.floatU.value);
+					break;
+				case Uniforms_Values::IntU_value:
+					glUniform1i(uniform.common.location, uniform.intU.value);
+					break;
+				case Uniforms_Values::Vec2FU_value:
+					glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+					break;
+				case Uniforms_Values::Vec3FU_value:
+					glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+					break;
+				case Uniforms_Values::Vec4FU_value:
+					glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+					break;
+				case Uniforms_Values::Vec2IU_value:
+					glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+					break;
+				case Uniforms_Values::Vec3IU_value:
+					glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+					break;
+				case Uniforms_Values::Vec4IU_value:
+					glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+					break;
+				case Uniforms_Values::Sampler2U_value:
+					if (textureUnit < App->renderer3D->GetMaxTextureUnits())
+					{
+						glActiveTexture(GL_TEXTURE0 + textureUnit);
+						glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+						glUniform1i(uniform.common.location, textureUnit);
+						++textureUnit;
+					}
+					break;
+				}
+			}
+		}
 
 		uint defaultPlaneVAO = 0;
 		uint defaultPlaneIBO = 0;
@@ -261,15 +316,15 @@ float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoi
 	return num;
 }
 
-void Particle::ChangeAnim(uint textureRows, uint textureColumns, bool isAnimated)
+void Particle::ChangeAnim(ParticleAnimation partAnim)
 {
-	rowAnim = textureRows;
-	columnAnim = textureColumns;
-	rowAnimNorm = 1.0f/textureRows;
-	columnAnimNorm = 1.0f/textureColumns;
-	currMinUVCoord = math::float2::zero;
-	currentFrame = 0;
-	this->isAnimated = isAnimated;
+	currentFrame = 0u;
+	isParticleAnimated = partAnim.isParticleAnimated;
+	textureRows = partAnim.textureRows;
+	textureColumns = partAnim.textureColumns;
+	textureRowsNorm = partAnim.textureRowsNorm;
+	textureColumnsNorm = partAnim.textureColumnsNorm;
+	animationSpeed = partAnim.animationSpeed;
 }
 
 //Particle transform

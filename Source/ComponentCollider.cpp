@@ -13,15 +13,28 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 {
 	gMaterial = App->physics->GetDefaultMaterial();
 	assert(gMaterial != nullptr);
+
+	App->physics->AddColliderComponent(this);
 }
 
-ComponentCollider::~ComponentCollider() 
+ComponentCollider::ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType) : Component(componentCollider.parent, componentColliderType)
+{
+	gMaterial = App->physics->GetDefaultMaterial();
+	assert(gMaterial != nullptr);
+
+	App->physics->AddColliderComponent(this);
+}
+
+ComponentCollider::~ComponentCollider()
 {
 	if (parent->cmp_rigidActor != nullptr)
 		parent->cmp_rigidActor->UpdateShape(nullptr);
 	ClearShape();
 
 	gMaterial = nullptr;
+
+	App->physics->EraseColliderComponent(this);
+	parent->cmp_collider = nullptr;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -30,7 +43,7 @@ void ComponentCollider::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 	if (ImGui::Checkbox("Is Trigger", &isTrigger))
-		SetIsTrigger(isTrigger);	
+		SetIsTrigger(isTrigger);
 	if (ImGui::Checkbox("Contact Tests", &participateInContactTests))
 		SetParticipateInContactTests(participateInContactTests);
 	if (ImGui::Checkbox("Scene Queries", &participateInSceneQueries))
@@ -53,6 +66,9 @@ void ComponentCollider::OnUniqueEditor()
 			SetCenter(center);
 		ImGui::PopItemWidth();
 	}
+
+	if (ImGui::Button("Enclose geometry"))
+		EncloseGeometry();
 #endif
 }
 
@@ -65,6 +81,61 @@ void ComponentCollider::Update()
 		if (triggerEnter && !triggerExit)
 			OnTriggerStay(collision);
 	}
+}
+
+uint ComponentCollider::GetInternalSerializationBytes()
+{
+	return sizeof(bool) +
+		sizeof(bool) +
+		sizeof(bool) +
+		sizeof(math::float3) +
+		sizeof(ColliderTypes);
+}
+
+void ComponentCollider::OnInternalSave(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(cursor, &isTrigger, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &participateInContactTests, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &participateInSceneQueries, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &center, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ColliderTypes);
+	memcpy(cursor, &colliderType, bytes);
+	cursor += bytes;
+}
+
+void ComponentCollider::OnInternalLoad(char*& cursor)
+{
+	size_t bytes = sizeof(bool);
+	memcpy(&isTrigger, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&participateInContactTests, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&participateInSceneQueries, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&center, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(ColliderTypes);
+	memcpy(&colliderType, cursor, bytes);
+	cursor += bytes;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -91,13 +162,16 @@ void ComponentCollider::SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filt
 void ComponentCollider::SetIsTrigger(bool isTrigger)
 {
 	this->isTrigger = isTrigger;
-	gShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !isTrigger); // shapes cannot simultaneously be trigger shapes and simulation shapes
+	if (isTrigger && participateInContactTests)
+		SetParticipateInContactTests(false); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eTRIGGER_SHAPE, isTrigger);
 }
 
 void ComponentCollider::SetParticipateInContactTests(bool participateInContactTests)
 {
 	this->participateInContactTests = participateInContactTests;
+	if (participateInContactTests && isTrigger)
+		SetIsTrigger(false); // shapes cannot simultaneously be trigger shapes and simulation shapes
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSIMULATION_SHAPE, participateInContactTests);
 }
 
@@ -107,7 +181,7 @@ void ComponentCollider::SetParticipateInSceneQueries(bool participateInSceneQuer
 	gShape->setFlag(physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE, participateInSceneQueries);
 }
 
-void ComponentCollider::SetCenter(math::float3& center)
+void ComponentCollider::SetCenter(const math::float3& center)
 {
 	assert(center.IsFinite());
 	this->center = center;
@@ -122,26 +196,35 @@ physx::PxShape* ComponentCollider::GetShape() const
 	return gShape;
 }
 
+ColliderTypes ComponentCollider::GetColliderType() const
+{
+	return colliderType;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ComponentCollider::OnCollisionEnter(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionEnter with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionStay(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnCollisionExit(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnCollisionExit with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerEnter(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerEnter with '%s'", collision.GetGameObject()->GetName());
 
 	triggerEnter = true;
 	triggerExit = false;
@@ -150,12 +233,14 @@ void ComponentCollider::OnTriggerEnter(Collision& collision)
 
 void ComponentCollider::OnTriggerStay(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerStay with '%s'", collision.GetGameObject()->GetName());
 }
 
 void ComponentCollider::OnTriggerExit(Collision& collision)
 {
-	CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
+	if (collision.GetGameObject() != nullptr)
+		CONSOLE_LOG(LogTypes::Normal, "OnTriggerExit with '%s'", collision.GetGameObject()->GetName());
 
 	triggerExit = true;
 	triggerEnter = false;

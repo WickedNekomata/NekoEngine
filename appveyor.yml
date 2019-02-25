@@ -27,13 +27,13 @@ for:
   configuration: Release
 
   after_build:
-    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
-    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
-    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine /EXCLUDE:gameExcluded.md
-    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Release\JellyBitEngine.exe" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
-    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
-    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
-    - 7z a JellyBitEngine.zip %APPVEYOR_BUILD_FOLDER%\Release\JellyBitEngine
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\ToPublish
+    - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine
+    - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\Game\*.*" %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine /EXCLUDE:gameExcluded.md
+    - cmd: copy "%APPVEYOR_BUILD_FOLDER%\Release\NekoEngine.exe" %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine
+    - 7z a JellyBitEngine.zip %APPVEYOR_BUILD_FOLDER%\ToPublish\JellyBitEngine
     
   artifacts:  
   - path: "JellyBitEngine.zip"

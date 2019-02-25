@@ -9,7 +9,7 @@ class ComponentRigidStatic : public ComponentRigidActor
 public:
 
 	ComponentRigidStatic(GameObject* parent);
-	//ComponentRigidBody(const ComponentRigidBody& componentRigidBody);
+	ComponentRigidStatic(const ComponentRigidStatic& componentRigidStatic);
 	~ComponentRigidStatic();
 
 	void OnUniqueEditor();
@@ -17,10 +17,8 @@ public:
 	void Update();
 
 	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
 };
 
 #endif

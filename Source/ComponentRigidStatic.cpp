@@ -27,6 +27,8 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *gShape);
 	assert(gActor != nullptr);
 
+	rigidActorType = RigidActorTypes::RigidStatic;
+
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 	if (parent->cmp_collider != nullptr)
 		UpdateShape(parent->cmp_collider->GetShape());
@@ -39,23 +41,46 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 	useGravity = !(actorFlags & physx::PxActorFlag::eDISABLE_GRAVITY);
 }
 
+ComponentRigidStatic::ComponentRigidStatic(const ComponentRigidStatic& componentRigidStatic) : ComponentRigidActor(componentRigidStatic, ComponentTypes::RigidStaticComponent)
+{
+	physx::PxShape* gShape = nullptr;
+	if (parent->boundingBox.IsFinite())
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+	else
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
+	assert(gShape != nullptr);
+
+	gActor = App->physics->CreateRigidStatic(physx::PxTransform(physx::PxIDENTITY()), *gShape);
+	assert(gActor != nullptr);
+
+	rigidActorType = componentRigidStatic.rigidActorType;
+
+	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+	if (parent->cmp_collider != nullptr)
+		UpdateShape(parent->cmp_collider->GetShape());
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	UpdateTransform(globalMatrix);
+
+	SetUseGravity(componentRigidStatic.useGravity);
+}
+
 ComponentRigidStatic::~ComponentRigidStatic() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidStatic::OnUniqueEditor()
+void ComponentRigidStatic::OnUniqueEditor() 
 {
 #ifndef GAMEMODE
-	ImGui::Text("Rigid Static");
-	ImGui::Spacing();
-
-	ComponentRigidActor::OnUniqueEditor();
+	if (ImGui::CollapsingHeader("Rigid Static", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		//ComponentRigidActor::OnUniqueEditor();
+	}
 #endif
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void ComponentRigidStatic::Update() 
+void ComponentRigidStatic::Update()
 {
 	if (useGravity)
 		UpdateGameObjectTransform();
@@ -63,5 +88,17 @@ void ComponentRigidStatic::Update()
 
 uint ComponentRigidStatic::GetInternalSerializationBytes()
 {
-	return 0;
+	return ComponentRigidActor::GetInternalSerializationBytes();
 }
+
+void ComponentRigidStatic::OnInternalSave(char*& cursor)
+{
+	ComponentRigidActor::OnInternalSave(cursor);
+}
+
+void ComponentRigidStatic::OnInternalLoad(char*& cursor)
+{
+	ComponentRigidActor::OnInternalLoad(cursor);
+}
+
+// ----------------------------------------------------------------------------------------------------

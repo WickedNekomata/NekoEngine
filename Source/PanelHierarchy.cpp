@@ -63,19 +63,19 @@ bool PanelHierarchy::Draw()
 			{
 				GameObject* go = App->GOs->CreateGameObject("Cube", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
-				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+				go->cmp_mesh->SetResource(App->resHandler->cube);
 			}
 			if (ImGui::Selectable("Create Plane"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("Plane", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
-				go->cmp_mesh->SetResource(App->resHandler->defaultPlane);
+				go->cmp_mesh->SetResource(App->resHandler->plane);
 			}
 
 			ImGui::EndPopup();
 		}
 
-		IterateAllChildren(root);		
+		IterateAllChildren(root);
 	}
 	ImGui::End();
 	ImRect rect(ImGui::GetWindowPos(), ImGui::GetWindowSize());
@@ -121,7 +121,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
-				if (App->scene->selectedObject == child 
+				if (App->scene->selectedObject == child
 					&& !App->gui->WantTextInput() && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 				{
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
@@ -131,7 +131,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 
-				if (treeNodeOpened) 
+				if (treeNodeOpened)
 				{
 					IterateAllChildren(child);
 					ImGui::TreePop();
@@ -148,7 +148,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				ImGui::TreeNodeEx(name, treeNodeFlags);
 				ImGui::TreePop();
 
-				SetGameObjectDragAndDrop(child);			
+				SetGameObjectDragAndDrop(child);
 				AtGameObjectPopUp(child);
 
 				if (App->scene->selectedObject == child
@@ -157,7 +157,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
 					App->GOs->DeleteGameObject(child);
 				}
-			
+
 				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 			}
@@ -199,7 +199,7 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 			{
 				GameObject* go = App->GOs->CreateGameObject("Cube", child);
 				go->AddComponent(ComponentTypes::MeshComponent);
-				go->cmp_mesh->SetResource(App->resHandler->defaultCube);
+				go->cmp_mesh->SetResource(App->resHandler->cube);
 				ImGui::CloseCurrentPopup();
 			}
 			if (ImGui::Selectable("Delete"))

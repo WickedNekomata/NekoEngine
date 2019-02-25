@@ -7,6 +7,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
 #include "ModulePhysics.h"
+#include "ModuleParticles.h"
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "ModuleParticles.h"
@@ -22,11 +23,14 @@
 #include "ComponentMaterial.h"
 #include "ComponentCamera.h"
 #include "ComponentRigidActor.h"
+#include "ComponentRigidDynamic.h"
 #include "ComponentCollider.h"
 #include "ComponentEmitter.h"
+#include "ComponentProjector.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
+#include "ResourceMaterial.h"
 #include "ResourceShaderProgram.h"
 
 #include "ModuleNavigation.h"
@@ -216,6 +220,12 @@ update_status ModuleRenderer3D::PostUpdate()
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
 				DrawMesh(meshComponents[i]);
 		}
+
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+		{
+			if (projectorComponents[i]->IsActive() /*&& projectorComponents[i]->GetParent()->seenLastFrame*/)
+				DrawProjectedTexture(projectorComponents[i]);
+		}
 	}
 	//Draw All particles
 	//glDepthMask(GL_FALSE);
@@ -240,12 +250,15 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(meshComponents[i]->GetParent()->boundingBox, boundingBoxesColor);
 		}
 
-		if (drawCamerasFrustum) // boundingBoxesColor = Grey
+		if (drawFrustums) // boundingBoxesColor = Grey
 		{
-			Color camerasFrustumColor = Grey;
+			Color frustumsColor = Grey;
 
 			for (uint i = 0; i < cameraComponents.size(); ++i)
-				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, camerasFrustumColor);
+				App->debugDrawer->DebugDraw(cameraComponents[i]->frustum, frustumsColor);
+
+			for (uint i = 0; i < projectorComponents.size(); ++i)
+				App->debugDrawer->DebugDraw(projectorComponents[i]->GetFrustum(), frustumsColor);
 		}
 
 		if (drawColliders) // boundingBoxesColor = Green
@@ -255,21 +268,19 @@ update_status ModuleRenderer3D::PostUpdate()
 			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
 			for (uint i = 0; i < colliderComponents.size(); ++i)
 			{
+				if (colliderComponents[i]->GetParent()->cmp_rigidActor == nullptr)
+					continue;
+
 				physx::PxShape* gShape = colliderComponents[i]->GetShape();
 				if (gShape == nullptr)
 					continue;
 
-				math::float4x4 gameObjectGlobalMatrix = colliderComponents[i]->GetParent()->transform->GetGlobalMatrix();
-				math::float3 position = math::float3::zero;
-				math::Quat rotation = math::Quat::identity;
-				math::float3 scale = math::float3::one;
-				gameObjectGlobalMatrix.Decompose(position, rotation, scale);
-				physx::PxTransform gameObjectTransform = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-					physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+				physx::PxTransform actorGlobalPose = gShape->getActor()->getGlobalPose();
+				physx::PxTransform shapeLocalPose = gShape->getLocalPose();
+				physx::PxTransform globalPose = actorGlobalPose * shapeLocalPose;
 
-				physx::PxTransform transform = gameObjectTransform * gShape->getLocalPose();
-				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
-					math::float3(transform.p.x, transform.p.y, transform.p.z));
+				math::float4x4 globalMatrix(math::Quat(globalPose.q.x, globalPose.q.y, globalPose.q.z, globalPose.q.w),
+					math::float3(globalPose.p.x, globalPose.p.y, globalPose.p.z));
 
 				switch (gShape->getGeometryType())
 				{
@@ -298,7 +309,7 @@ update_status ModuleRenderer3D::PostUpdate()
 				}
 				break;
 				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), collidersColor, globalMatrix);
+					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 10.0f, 10.0f), collidersColor, globalMatrix);
 					break;
 				}
 			}
@@ -319,7 +330,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 				if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidStaticComponent)
 					rigidActorsColor = Orange;
-				else if (gActor->is<physx::PxRigidDynamic>()->isSleeping())
+				else if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidDynamicComponent
+					&& !((ComponentRigidDynamic*)rigidActorComponents[i])->IsSleeping())
 					rigidActorsColor = DarkRed;
 				else
 					rigidActorsColor = Red;
@@ -364,6 +376,31 @@ update_status ModuleRenderer3D::PostUpdate()
 		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
+		for (std::list<ComponentEmitter*>::iterator emitter = App->particle->emitters.begin(); emitter != App->particle->emitters.end(); ++emitter)
+		{
+			if ((*emitter)->drawShape)
+			{
+				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();;
+				switch ((*emitter)->normalShapeType)
+				{
+				case ShapeType_BOX:
+					App->debugDrawer->DebugDraw((*emitter)->boxCreation, White, globalMat);
+					break;
+				case ShapeType_SPHERE:
+				case ShapeType_SPHERE_BORDER:
+				case ShapeType_SPHERE_CENTER:
+					App->debugDrawer->DebugDrawSphere((*emitter)->sphereCreation.r, White, globalMat);
+					break;
+				case ShapeType_CONE:
+					App->debugDrawer->DebugDrawCone((*emitter)->circleCreation.r, (*emitter)->coneHeight, White, globalMat);
+					break;
+				default:
+					break;
+				}
+			}
+			if((*emitter)->drawAABB)
+				App->debugDrawer->DebugDraw((*emitter)->GetParent()->boundingBox, White);
+		}
 		App->debugDrawer->EndDebugDraw();
 	}
 
@@ -408,7 +445,6 @@ void ModuleRenderer3D::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 	case System_Event_Type::Play:
-		SetCurrentCamera();
 		break;
 	case System_Event_Type::Stop:
 #ifndef GAMEMODE
@@ -424,7 +460,7 @@ void ModuleRenderer3D::SaveStatus(JSON_Object* jObject) const
 
 	json_object_set_boolean(jObject, "debugDraw", debugDraw);
 	json_object_set_boolean(jObject, "drawBoundingBoxes", drawBoundingBoxes);
-	json_object_set_boolean(jObject, "drawCamerasFrustum", drawCamerasFrustum);
+	json_object_set_boolean(jObject, "drawCamerasFrustum", drawFrustums);
 	json_object_set_boolean(jObject, "drawQuadtree", drawQuadtree);
 }
 void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
@@ -433,7 +469,7 @@ void ModuleRenderer3D::LoadStatus(const JSON_Object* jObject)
 
 	debugDraw = json_object_get_boolean(jObject, "debugDraw");
 	drawBoundingBoxes = json_object_get_boolean(jObject, "drawBoundingBoxes");
-	drawCamerasFrustum = json_object_get_boolean(jObject, "drawCamerasFrustum");
+	drawFrustums = json_object_get_boolean(jObject, "drawCamerasFrustum");
 	drawQuadtree = json_object_get_boolean(jObject, "drawQuadtree");
 }
 
@@ -556,14 +592,14 @@ bool ModuleRenderer3D::GetDrawBoundingBoxes() const
 	return drawBoundingBoxes;
 }
 
-void ModuleRenderer3D::SetDrawCamerasFrustum(bool drawCamerasFrustum)
+void ModuleRenderer3D::SetDrawFrustums(bool drawFrustums)
 {
-	this->drawCamerasFrustum = drawCamerasFrustum;
+	this->drawFrustums = drawFrustums;
 }
 
-bool ModuleRenderer3D::GetDrawCamerasFrustum() const
+bool ModuleRenderer3D::GetDrawFrustums() const
 {
-	return drawCamerasFrustum;
+	return drawFrustums;
 }
 
 void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
@@ -618,6 +654,32 @@ bool ModuleRenderer3D::EraseMeshComponent(ComponentMesh* toErase)
 
 	if (ret)
 		meshComponents.erase(it);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::AddProjectorComponent(ComponentProjector* toAdd)
+{
+	bool ret = true;
+
+	std::vector<ComponentProjector*>::const_iterator it = std::find(projectorComponents.begin(), projectorComponents.end(), toAdd);
+	ret = it == projectorComponents.end();
+
+	if (ret)
+		projectorComponents.push_back(toAdd);
+
+	return ret;
+}
+
+bool ModuleRenderer3D::EraseProjectorComponent(ComponentProjector* toErase)
+{
+	bool ret = false;
+
+	std::vector<ComponentProjector*>::const_iterator it = std::find(projectorComponents.begin(), projectorComponents.end(), toErase);
+	ret = it != projectorComponents.end();
+
+	if (ret)
+		projectorComponents.erase(it);
 
 	return ret;
 }
@@ -790,44 +852,17 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (toDraw->res == 0)
 		return;
 
+	// Material
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
+	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
+	uint shaderUuid = resourceMaterial->GetShaderUuid();
+	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
 
-	// Shader
-	const ResourceShaderProgram* shader = (const ResourceShaderProgram*)App->res->GetResource(materialRenderer->shaderProgramUUID);
-	GLuint shaderProgram = shader != nullptr ? shader->shaderProgram : App->shaderImporter->GetDefaultShaderProgram();
-	shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
-
+	// Shader program
 	glUseProgram(shaderProgram);
 
-	for (uint i = 0; i < materialRenderer->res.size(); ++i)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-
-		// Texture(s)
-		GLuint tex = 0;
-		const ResourceTexture* texRes = (const ResourceTexture*)App->res->GetResource(materialRenderer->res[i].res);
-		if (texRes != nullptr)
-			tex = texRes->GetId();
-		else if (materialRenderer->res[i].checkers)
-			tex = App->materialImporter->GetCheckers();
-		else if (i == 0)
-			tex = App->materialImporter->GetDefaultTexture();
-		glBindTexture(GL_TEXTURE_2D, tex);
-
-		switch (i)
-		{
-		case 0:
-			glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), i);
-			break;
-		case 1:
-			glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), i);
-			break;
-		case 2:
-			glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), i);
-			break;
-		}
-	}
-
+	// Known uniforms
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	model_matrix = model_matrix.Transposed();
 	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
@@ -853,9 +888,9 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	location = glGetUniformLocation(shaderProgram, "light.specular");
 	glUniform3fv(location, 1, directionalLight.specular.ptr());
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-	glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 0);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+	//glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 0);
 	location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
 	location = glGetUniformLocation(shaderProgram, "Time");
@@ -874,33 +909,46 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		break;
 	}
 
-	for (auto it = materialRenderer->uniforms.begin(); it != materialRenderer->uniforms.end(); ++it)
+	// Unknown uniforms
+	uint textureUnit = 0;
+	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+	for (uint i = 0; i < uniforms.size(); ++i)
 	{
-		switch ((*it).common.type)
+		Uniform uniform = uniforms[i];
+		switch (uniform.common.type)
 		{
 		case Uniforms_Values::FloatU_value:
-			glUniform1f((*it).common.location, (*it).floatU.value);
+			glUniform1f(uniform.common.location, uniform.floatU.value);
 			break;
 		case Uniforms_Values::IntU_value:
-			glUniform1i((*it).common.location, (*it).intU.value);
+			glUniform1i(uniform.common.location, uniform.intU.value);
 			break;
 		case Uniforms_Values::Vec2FU_value:
-			glUniform2f((*it).common.location, (*it).vec2FU.value.x, (*it).vec2FU.value.y);
+			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
 			break;
 		case Uniforms_Values::Vec3FU_value:
-			glUniform3f((*it).common.location, (*it).vec3FU.value.x, (*it).vec3FU.value.y, (*it).vec3FU.value.z);
+			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
 			break;
 		case Uniforms_Values::Vec4FU_value:
-			glUniform4f((*it).common.location, (*it).vec4FU.value.x, (*it).vec4FU.value.y, (*it).vec4FU.value.z, (*it).vec4FU.value.w);
+			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
 			break;
 		case Uniforms_Values::Vec2IU_value:
-			glUniform2i((*it).common.location, (*it).vec2IU.value.x, (*it).vec2IU.value.y);
+			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
 			break;
 		case Uniforms_Values::Vec3IU_value:
-			glUniform3i((*it).common.location, (*it).vec3IU.value.x, (*it).vec3IU.value.y, (*it).vec3IU.value.z);
+			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
 			break;
 		case Uniforms_Values::Vec4IU_value:
-			glUniform4i((*it).common.location, (*it).vec4IU.value.x, (*it).vec4IU.value.y, (*it).vec4IU.value.z, (*it).vec4IU.value.w);
+			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+			break;
+		case Uniforms_Values::Sampler2U_value:
+			if (textureUnit < maxTextureUnits)
+			{
+				glActiveTexture(GL_TEXTURE0 + textureUnit);
+				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+				glUniform1i(uniform.common.location, textureUnit);
+				++textureUnit;
+			}
 			break;
 		}
 	}
@@ -913,7 +961,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
 	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 
-	for (uint i = 0; i < materialRenderer->res.size(); ++i)
+	for (uint i = 0; i < maxTextureUnits; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -922,6 +970,143 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
+{
+	// Material
+	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(toDraw->GetMaterialRes());
+	uint shaderUuid = resourceMaterial->GetShaderUuid();
+	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
+
+	// Shader program
+	glUseProgram(shaderProgram);
+
+	// Specific uniforms
+	math::float4x4 bias_matrix = math::float4x4(
+		0.5f, 0.0f, 0.0f, 0.5f,
+		0.0f, 0.5f, 0.0f, 0.5f,
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	); // converts the view frustum to a range between 0 and 1 in x and y
+	//bias_matrix.Transpose();
+	
+	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
+	model_matrix = model_matrix.Transposed();
+	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix(); // view
+	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix(); // projection
+	math::float4x4 projector_matrix = model_matrix * projector_view_matrix * projector_proj_matrix * bias_matrix; // into texture space																					   
+
+	//http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
+	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, projector_matrix.ptr());
+	
+	// Known uniforms
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+	math::float4x4 normal_matrix = model_matrix;
+	normal_matrix.Inverse();
+	normal_matrix.Transpose();
+
+	location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+	location = glGetUniformLocation(shaderProgram, "light.direction");
+	glUniform3fv(location, 1, directionalLight.direction.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.ambient");
+	glUniform3fv(location, 1, directionalLight.ambient.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.diffuse");
+	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.specular");
+	glUniform3fv(location, 1, directionalLight.specular.ptr());
+
+	location = glGetUniformLocation(shaderProgram, "viewPos");
+	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
+	location = glGetUniformLocation(shaderProgram, "Time");
+	switch (App->GetEngineState())
+	{
+		// Game
+	case ENGINE_PLAY:
+	case ENGINE_PAUSE:
+	case ENGINE_STEP:
+		glUniform1f(location, App->timeManager->GetTime());
+		break;
+
+		// Editor
+	case ENGINE_EDITOR:
+		glUniform1f(location, App->timeManager->GetRealTime());
+		break;
+	}
+
+	// Unknown uniforms
+	uint textureUnit = 0;
+	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+	for (uint i = 0; i < uniforms.size(); ++i)
+	{
+		Uniform uniform = uniforms[i];
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::FloatU_value:
+			glUniform1f(uniform.common.location, uniform.floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			glUniform1i(uniform.common.location, uniform.intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+			break;
+		case Uniforms_Values::Vec3FU_value:
+			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+			break;
+		case Uniforms_Values::Vec4FU_value:
+			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+			break;
+		case Uniforms_Values::Vec2IU_value:
+			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+			break;
+		case Uniforms_Values::Vec3IU_value:
+			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+			break;
+		case Uniforms_Values::Vec4IU_value:
+			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+			break;
+		case Uniforms_Values::Sampler2U_value:
+			if (textureUnit < maxTextureUnits)
+			{
+				glActiveTexture(GL_TEXTURE0 + textureUnit);
+				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+				glUniform1i(uniform.common.location, textureUnit);
+				++textureUnit;
+			}
+			break;
+		}
+	}
+
+	for (uint i = 0; i < meshComponents.size(); ++i)
+	{
+		// Mesh
+		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponents[i]->res);
+
+		glBindVertexArray(mesh->GetVAO());
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+		glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	}
+
+	for (uint i = 0; i < maxTextureUnits; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glUseProgram(0);
+
 }
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const

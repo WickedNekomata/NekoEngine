@@ -30,6 +30,8 @@ public:
 	
 	bool Load(const char* exportedFile, ResourceData& outputData, ResourceMeshData& outputMeshData) const;
 
+	// ----------------------------------------------------------------------------------------------------
+
 	void GenerateVBO(uint& VBO, Vertex* vertices, uint verticesSize) const;
 	void GenerateIBO(uint& IBO, uint* indices, uint indicesSize) const;
 	void GenerateVAO(uint& VAO, uint& VBO) const;

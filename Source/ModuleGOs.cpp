@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ModuleScene.h"
+#include "ModuleNavigation.h"
 #include "GameObject.h"
 #include "ComponentMaterial.h"
 #include "ComponentMesh.h"
@@ -42,23 +43,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 
 		break;
 
-	case System_Event_Type::ShaderProgramChanged:
-
-		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if ((*it)->cmp_material != nullptr)
-			{
-				ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource((*it)->cmp_material->shaderProgramUUID);
-
-				if (shaderProgram != nullptr && shaderProgram->shaderProgram == event.shaderEvent.shader)
-					(*it)->OnSystemEvent(event);
-			}
-		}
-
-		break;
-
 	case System_Event_Type::LayerNameReset:
 
+		// Reset layer to default (all game objects)
 		for (std::vector<GameObject*>::const_iterator it = gameobjects.begin(); it != gameobjects.end(); ++it)
 		{
 			if ((*it)->GetLayer() == event.layerEvent.layer)
@@ -101,6 +88,12 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::BoneComponent:
 			go->cmp_bone = 0;
 			break;
+		case ComponentTypes::LightComponent:
+			go->cmp_light = 0;
+			break;
+		case ComponentTypes::ProjectorComponent:
+			go->cmp_projector = 0;
+			break;
 		case ComponentTypes::RigidStaticComponent:
 		case ComponentTypes::RigidDynamicComponent:
 			go->cmp_rigidActor = 0;
@@ -113,23 +106,41 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 			break;
 		case ComponentTypes::RectTransformComponent:
 			go->cmp_rectTransform = nullptr; // Uh
-			break;		
+			break;
 		case ComponentTypes::ImageComponent:
 			go->cmp_image = nullptr;
 			break;
 		case ComponentTypes::ButtonComponent:
 			go->cmp_button = nullptr;
-			break;		
+			break;
 		case ComponentTypes::CanvasRendererComponent:
 			go->cmp_canvasRenderer = nullptr;
 			break;
 		}
 		break;
 	}
-
 	case System_Event_Type::ResourceDestroyed:
 		InvalidateResource(event.resEvent.resource);
 		break;
+	case System_Event_Type::ScriptingDomainReloaded:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
+
+	case System_Event_Type::Stop:
+	{
+		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
+		{
+			if (event.goEvent.gameObject == *it)
+				(*it)->OnSystemEvent(event);
+		}
+		break;
+	}
 	}
 }
 
@@ -157,7 +168,7 @@ GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, 
 	return newGameObject;
 }
 
-GameObject* ModuleGOs::Instanciate(GameObject* copy)
+GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
 	gameobjects.push_back(newGameObject);
@@ -165,7 +176,12 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy)
 	if (!copy->IsStatic())
 		dynamicGos.push_back(newGameObject);
 	else
+	{
 		staticGos.push_back(newGameObject);
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 
 	return newGameObject;
 }
@@ -219,7 +235,7 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), go), dynamicGos.end());
 	staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), go), staticGos.end());
 
-	if (go->IsStatic())	
+	if (go->IsStatic())
 		staticGos.push_back(go);
 	else
 		dynamicGos.push_back(go);
@@ -229,13 +245,17 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	App->PushSystemEvent(newEvent);
 }
 
-bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer)
+bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)
 {
 	std::vector<GameObject*> go;
 	node->GetChildrenVector(go);
 	sizeBuffer = sizeof(uint);
 	for (int i = 0; i < go.size(); ++i)
 		sizeBuffer += go[i]->GetSerializationBytes();
+
+	// Get size navmesh tiles data
+	if (navmesh)
+	sizeBuffer += App->navigation->GetNavMeshSerialitzationBytes();
 
 	outStateBuffer = new char[sizeBuffer];
 	char* cursor = outStateBuffer;
@@ -247,10 +267,14 @@ bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_
 	for (int i = 0; i < go.size(); ++i)
 		go[i]->OnSave(cursor);
 
+	// Discuss if this should be a resource
+	if (navmesh)
+		App->navigation->SaveNavmesh(cursor);
+
 	return true;
 }
 
-bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
+bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 {
 	char* cursor = buffer;
 	size_t bytes = sizeof(uint);
@@ -299,6 +323,10 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer)
 		}
 	}
 
+	// Discuss if this should be a resource
+	if (navmesh)
+		App->navigation->LoadNavmesh(cursor);
+
 	return true;
 }
 
@@ -315,14 +343,8 @@ bool ModuleGOs::InvalidateResource(Resource* resource)
 				gameobjects[i]->cmp_mesh->SetResource(0);
 			break;
 		case ResourceTypes::TextureResource:
-			if (gameobjects[i]->cmp_material != nullptr)
-			{
-				for (uint j = 0; j < gameobjects[i]->cmp_material->res.size(); ++j)
-				{
-					if (gameobjects[i]->cmp_material->res[j].res == resource->GetUuid())
-						gameobjects[i]->cmp_material->SetResource(0, j);
-				}
-			}
+			if (gameobjects[i]->cmp_material != nullptr && gameobjects[i]->cmp_material->res == resource->GetUuid())
+				gameobjects[i]->cmp_material->SetResource(0);
 			break;
 		}
 	}

@@ -306,18 +306,6 @@ void ModulePhysics::Debug()
 			// Hit
 			if (hitInfo.GetGameObject() != nullptr)
 			{
-				std::vector<GameObject*> goos;
-				App->GOs->GetGameobjects(goos);
-
-				for each(GameObject* go in goos)
-				{
-					if (go->cmp_navAgent != 0)
-					{
-						go->cmp_navAgent->SetDestination(hitInfo.GetPoint().ptr());
-					}
-				}
-
-
 				CONSOLE_LOG(LogTypes::Normal, "The ray hit the game object '%s'", hitInfo.GetGameObject()->GetName());
 
 				// Distance (and closest point) and AABB

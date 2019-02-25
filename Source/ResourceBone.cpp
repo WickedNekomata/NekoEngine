@@ -57,9 +57,7 @@ bool ResourceBone::ImportFile(const char * file, std::string & name, std::string
 
 bool ResourceBone::ExportFile(ResourceData & data, ResourceBoneData & bone_data, std::string & outputFile, bool overwrite)
 {
-	return true;
-	// TODO_G CONTINUE HERE++
-	//return App->boneImporter->SaveBone(bone_data, outputFile);
+	return App->boneImporter->SaveBone(data, bone_data, outputFile, overwrite);
 }
 
 uint ResourceBone::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)

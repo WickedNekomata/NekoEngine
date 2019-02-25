@@ -42,7 +42,7 @@ bool PanelNavigation::Draw()
 			ImGui::SameLine();
 			if (ImGui::Checkbox("##Static", &isStatic))
 			{
-				// swap to dynamic
+				curr->ToggleIsStatic();
 			}
 
 			ImGui::AlignTextToFramePadding();
@@ -67,15 +67,15 @@ bool PanelNavigation::Draw()
 	if (ImGui::CollapsingHeader("Agent"))
 	{
 		ImGui::SliderFloat("##A_Height", &cs.p_agentHeight, 0.0f, 5.0f, "Height %.1f");
-		ImGui::SliderFloat("A_Radius", &cs.p_agentRadius, 0.0f, 5.0f, "Radius %.1f");
-		ImGui::SliderFloat("A_MClimb", &cs.p_agentMaxClimb, 0.0f, 5.0f, "Max Climb %.1f");
-		ImGui::SliderFloat("A_MSlope", &cs.p_agentMaxSlope, 0.0f, 90.0f, "Max Slope %1.f");
+		ImGui::SliderFloat("##A_Radius", &cs.p_agentRadius, 0.0f, 5.0f, "Radius %.1f");
+		ImGui::SliderFloat("##A_MClimb", &cs.p_agentMaxClimb, 0.0f, 5.0f, "Max Climb %.1f");
+		ImGui::SliderFloat("##A_MSlope", &cs.p_agentMaxSlope, 0.0f, 90.0f, "Max Slope %1.f");
 	}
 
 	if (ImGui::CollapsingHeader("Region"))
 	{
 		ImGui::SliderFloat("##MinRegion", &cs.p_regionMinSize, 0, 150, "Min Region Size %1.0f");
-		ImGui::SliderFloat("#MaxRegiom", &cs.p_regionMergeSize, 0, 150, "Merged Region Size %1.0f");
+		ImGui::SliderFloat("##MaxRegiom", &cs.p_regionMergeSize, 0, 150, "Merged Region Size %1.0f");
 	}
 
 	if (ImGui::CollapsingHeader("Partitioning"))
@@ -110,6 +110,8 @@ bool PanelNavigation::Draw()
 
 	if (ImGui::Button("Delete Navmesh"))
 		App->navigation->CleanUp();
+
+	ImGui::Checkbox("Draw Navmesh", &App->navigation->drawNavmesh);
 
 	ImGui::End();
 

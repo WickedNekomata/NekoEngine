@@ -187,7 +187,7 @@ update_status ModuleGui::Update()
 			if (ImGui::MenuItem("Assets", "ALT+A")) { panelAssets->OnOff(); }
 			if (ImGui::MenuItem("Debug Draw", "ALT+D")) { panelDebugDraw->OnOff(); }
 
-			if (ImGui::MenuItem("NavMesh")) { panelNavigation->OnOff(); }
+			if (ImGui::MenuItem("Navigation")) { panelNavigation->OnOff(); }
 
 #ifdef _DEBUG
 			if (ImGui::MenuItem("ImGui Demo")) { imguiDemo = !imguiDemo; }

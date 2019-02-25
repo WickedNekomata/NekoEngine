@@ -20,6 +20,8 @@
 #include "DebugDrawer.h"
 
 #include "Globals.h"
+
+#include "MathGeoLib/include/Math/MathAll.h"
 #include <math.h>
 
 // Useful sites to understand the process
@@ -51,12 +53,35 @@ update_status ModuleNavigation::Update()
 
 		for each(ComponentNavAgent* agent in c_agents)
 		{
+			
 			int index = agent->GetIndex();
 			const dtCrowdAgent* ag = m_crowd->getAgent(index);
-			// if (ag->targetState == 0 ??)
-			ComponentTransform* trm = agent->GetParent()->transform;
-			memcpy(&trm->position, ag->npos, sizeof(float) * 3);
-			// TODO rotate character using desire velocity here
+			if (ag->targetState == DT_CROWDAGENT_STATE_WALKING || ag->targetState == DT_CROWDAGENT_STATE_OFFMESH)
+			{
+				// Here we are forcing new position and rotation and manually sending an event to recaculcate bb.
+				// We are ignoring to update physics position and/or camera->frustum position.
+
+				// Set new gameobject's position
+				ComponentTransform* trm = agent->GetParent()->transform;
+				memcpy(&trm->position, ag->npos, sizeof(float) * 3);
+
+				// Face gameobject to velocity dir
+				// vel equals to current velocity, nvel equals to desired velocity
+				// using nvel instead of vel would end up with a non smoothy rotation.
+				math::float3 direction;
+				memcpy(&direction, ag->vel, sizeof(float) * 3);
+				direction.Normalize();
+				float angle = math::Atan2(direction.x, direction.z);
+				math::Quat new_rotation;
+				new_rotation.SetFromAxisAngle(math::float3(0, 1, 0), angle);
+				trm->rotation = new_rotation;
+
+				// Recalculate bounding box
+				System_Event newEvent;
+				newEvent.goEvent.gameObject = trm->GetParent();
+				newEvent.type = System_Event_Type::RecalculateBBoxes;
+				App->PushSystemEvent(newEvent);		
+			}
 		}
 	}
 
@@ -120,8 +145,6 @@ void ModuleNavigation::InitCrowd()
 	//args 1- Max agents, 2- radius agent, 3- navmesh
 	m_crowd->init(max_Agents, m_cfg.walkableRadius * m_cfg.cs, m_navMesh);
 
-	//m_crowd->getEditableFilter(0)->setExcludeFlags(SAMPLE_POLYFLAGS_DISABLED);
-
 	// Setup local avoidance params to different qualities.
 	dtObstacleAvoidanceParams params;
 	// Use mostly default settings, copy from dtCrowd.
@@ -161,7 +184,7 @@ void ModuleNavigation::InitCrowd()
 
 void ModuleNavigation::Draw() const
 {
-	if (m_navMesh)
+	if (m_navMesh && drawNavmesh)
 	{
 		NMDebugDraw dd;
 		duDebugDrawNavMesh(&dd, *m_navMesh, 0);
@@ -265,15 +288,21 @@ void ModuleNavigation::RemoveAgent(int indx) const
 
 void ModuleNavigation::SetDestination(const float* p, int indx) const
 {
-	if (!m_navMesh || !!m_crowd) return;
+	if (!m_navMesh || !m_crowd) return;
 
 	float vel[3];
 	const dtCrowdAgent* ag = m_crowd->getAgent(indx);
+	dtPolyRef polyRefTarget;
+	float targetPos[3];
+	m_navQuery->findNearestPoly(p, m_crowd->getQueryExtents(), m_crowd->getFilter(ag->params.queryFilterType), &polyRefTarget, targetPos);
 	if (ag && ag->active)
-	{
-		calcVel(vel, ag->npos, p, ag->params.maxSpeed);
-		m_crowd->requestMoveVelocity(indx, vel);
-	}
+		m_crowd->requestMoveTarget(indx, polyRefTarget, targetPos);
+}
+
+bool ModuleNavigation::IsWalking(int index) const
+{
+	const dtCrowdAgent* ag = m_crowd->getAgent(index);
+	return ag->state == DT_CROWDAGENT_STATE_WALKING;
 }
 
 void ModuleNavigation::calcVel(float* vel, const float* pos, const float* tgt, const float speed)
@@ -481,6 +510,12 @@ bool ModuleNavigation::HandleBuild()
 	rcFreeContourSet(m_cset);
 	m_cset = 0;
 
+	for (int i = 0; i < m_pmesh->npolys; ++i)
+	{
+		if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
+			m_pmesh->flags[i] = 0x01;
+		
+	}
 	// The GUI may allow more max points per polygon than Detour can handle.
 	// Only build the detour navmesh if we do not exceed the limit.
 	if (m_cfg.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)
@@ -547,4 +582,79 @@ bool ModuleNavigation::HandleBuild()
 	m_ctx = NULL;
 
 	return true;
+}
+
+int ModuleNavigation::GetNavMeshSerialitzationBytes() const
+{
+	if (!m_navMesh)
+		return sizeof(size_t);
+
+	size_t size = sizeof(size_t);
+	const dtMeshTile* tile;
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		size += tile->dataSize;
+	}
+	return size;
+}
+
+void ModuleNavigation::SaveNavmesh(char*& cursor)
+{
+	if (!m_navMesh)
+	{
+		size_t noData = 0;
+		memcpy(cursor, &noData, sizeof(size_t));
+		return;
+	}
+	size_t size = 0;
+	const dtMeshTile* tile;
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		size += tile->dataSize;
+	}
+	memcpy(cursor, &size, sizeof(size_t));
+	cursor += sizeof(size_t);
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
+		memcpy(cursor, tile->data, sizeof(uchar) * tile->dataSize);
+		cursor += sizeof(uchar) * tile->dataSize;
+	}
+}
+
+void ModuleNavigation::LoadNavmesh(char*& cursor)
+{
+	if (m_navMesh)
+		cleanup();
+
+	size_t size;
+	memcpy(&size, cursor, sizeof(size_t));
+	cursor += sizeof(size_t);
+
+	if (size <= 0)
+		return;
+
+	uchar* data = (uchar*)dtAlloc(size, dtAllocHint::DT_ALLOC_PERM);
+	memcpy(data, cursor, size);
+	cursor += size;
+
+	m_navMesh = dtAllocNavMesh();
+	if (!m_navMesh)
+	{
+		dtFree(data);
+		CONSOLE_LOG(LogTypes::Error, "Could not create Detour navmesh");
+		return;
+	}
+
+	dtStatus status;
+
+	status = m_navMesh->init(data, size, DT_TILE_FREE_DATA);
+	if (dtStatusFailed(status))
+	{
+		dtFree(data);
+		CONSOLE_LOG(LogTypes::Error, "Could not init Detour navmesh");
+		return;
+	}
 }

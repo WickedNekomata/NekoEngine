@@ -301,6 +301,11 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 	}
 }
 
+// TODO DELETE THIS. THIS IS TEMPORAL TO TEST NAV AGENTS
+#include "ModuleGOs.h"
+#include "GameObject.h"
+#include "ComponentNavAgent.h"
+
 // *****Debug*****
 void ModulePhysics::Debug()
 {

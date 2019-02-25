@@ -28,6 +28,7 @@ public:
 public:
 
 	uint res = 0;
+	ResourceMesh* deformableMesh;
 
 	// navmesh utility
 	bool nv_walkable = true;

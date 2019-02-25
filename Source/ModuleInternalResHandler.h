@@ -141,7 +141,7 @@ enum ShaderProgramTypes;
 "{\n" \
 "	fPosition = vec3(model_matrix * vec4(position, 1.0));\n" \
 "	fNormal = normalize(normal_matrix * normal);\n" \
-"	fColor = color;\n" \
+"	fColor = currColor;\n" \
 "	if(isAnimated == 0)\n" \
 "		fTexCoord = texCoord;\n" \
 "	else\n" \

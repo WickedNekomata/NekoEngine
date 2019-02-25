@@ -14,7 +14,8 @@ bool ModuleInternalResHandler::Start()
 {
 	CreatePlane();
 	CreateCube();
-	CreateDefaultShaderProgram();
+	CreateDefaultShaderProgram(vShaderTemplate, fShaderTemplate, ShaderProgramTypes::Standard);
+	CreateDefaultShaderProgram(Particle_vShaderTemplate, Particle_fShaderTemplate, ShaderProgramTypes::Particles);
 	CreateDefaultMaterial();
 
 	return true;
@@ -137,13 +138,13 @@ void ModuleInternalResHandler::CreateCube()
 	cube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, CUBE_UUID)->GetUuid();
 }
 
-void ModuleInternalResHandler::CreateDefaultShaderProgram()
+void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, const char* fShader, ShaderProgramTypes type)
 {
 	ResourceData vertexData;
 	ResourceShaderObjectData vertexShaderData;
 	vertexData.name = "Default vertex object";
 	vertexShaderData.shaderObjectType = ShaderObjectTypes::VertexType;
-	vertexShaderData.SetSource(vShaderTemplate, strlen(vShaderTemplate));
+	vertexShaderData.SetSource(vShader, strlen(vShader));
 	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
 	if (!vObj->Compile())
 		vObj->isValid = false;
@@ -152,7 +153,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 	ResourceShaderObjectData fragmentShaderData;
 	fragmentData.name = "Default fragment object";
 	fragmentShaderData.shaderObjectType = ShaderObjectTypes::FragmentType;
-	fragmentShaderData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
+	fragmentShaderData.SetSource(fShader, strlen(fShader));
 	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
 	if (!fObj->Compile())
 		fObj->isValid = false;
@@ -162,11 +163,20 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 	shaderData.name = "Default shader program";
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
-	programShaderData.shaderProgramType = ShaderProgramTypes::Standard;
-	ResourceShaderProgram* prog = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UUID);
+	programShaderData.shaderProgramType = type;
+	ResourceShaderProgram* prog = nullptr;
+	if(type == ShaderProgramTypes::Standard)
+		prog = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UUID);
+	else if (type == ShaderProgramTypes::Particles)
+		prog = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_PARTICLE_UUID);
+
 	if (!prog->Link())
 		prog->isValid = false;
-	defaultShaderProgram = prog->GetUuid();
+	if (type == ShaderProgramTypes::Standard)
+		defaultShaderProgram = prog->GetUuid();
+	else if (type == ShaderProgramTypes::Particles)
+		defaultParticleShaderProgram = prog->GetUuid();
+
 }
 
 void ModuleInternalResHandler::CreateCubemapShaderProgram()

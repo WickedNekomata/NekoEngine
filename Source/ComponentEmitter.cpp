@@ -66,6 +66,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 		particleAnim.animationSpeed = componentEmitter.particleAnim.animationSpeed;
 		particleAnim.textureRows = componentEmitter.particleAnim.textureRows;
 		particleAnim.textureColumns = componentEmitter.particleAnim.textureColumns;
+		particleAnim.textureRowsNorm = componentEmitter.particleAnim.textureRowsNorm;
+		particleAnim.textureColumnsNorm = componentEmitter.particleAnim.textureColumnsNorm;
 	}
 
 	dieOnAnimation = componentEmitter.dieOnAnimation;

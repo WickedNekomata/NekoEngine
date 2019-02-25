@@ -29,7 +29,7 @@ public:
 	struct Animation {
 		std::string name;
 		std::vector<GameObject*> animable_gos;
-		std::map<GameObject*, ResourceAnimation::BoneTransformation*> animable_data_map;
+		std::map<GameObject*, BoneTransformation*> animable_data_map;
 
 		bool loop = false;
 		bool interpolate = false;
@@ -76,7 +76,7 @@ public:
 
 private:
 
-	void RecursiveGetAnimableGO(GameObject* go, ResourceAnimation::BoneTransformation* bone_transformation, Animation* animation);
+	void RecursiveGetAnimableGO(GameObject* go, BoneTransformation* bone_transformation, Animation* animation);
 	void MoveAnimationForward(float t, Animation* current_animation, float blend = 1.0f);
 
 private:

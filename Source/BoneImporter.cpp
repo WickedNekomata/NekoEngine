@@ -29,6 +29,9 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 	std::string outputFile = std::to_string(go->cmp_bone->res);
 
 	ResourceData data;
+	data.name = outputFile;
+	data.file = outputFile;
+
 	ResourceBoneData res_data;
 	res_data.mesh_uid = mesh;
 	res_data.bone_weights_size = new_bone->mNumWeights;

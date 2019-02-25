@@ -26,17 +26,6 @@ ComponentMaterial::~ComponentMaterial()
 
 void ComponentMaterial::Update() {}
 
-void ComponentMaterial::SetResource(uint materialUuid)
-{
-	if (res > 0)
-		App->res->SetAsUnused(res);
-
-	if (materialUuid > 0)
-		App->res->SetAsUsed(materialUuid);
-
-	res = materialUuid;
-}
-
 void ComponentMaterial::OnUniqueEditor()
 {
 #ifndef GAME
@@ -94,3 +83,14 @@ void ComponentMaterial::OnInternalLoad(char*& cursor)
 }
 
 // ----------------------------------------------------------------------------------------------------
+
+void ComponentMaterial::SetResource(uint materialUuid)
+{
+	if (res > 0)
+		App->res->SetAsUnused(res);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	res = materialUuid;
+}

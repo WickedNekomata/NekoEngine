@@ -7,6 +7,14 @@
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 
+/*
+Texture:
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+*/
+
 class ComponentProjector : public Component
 {
 public:
@@ -25,12 +33,18 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 
+	// Sets
 	void SetFOV(float fov);
 	float GetFOV() const;
 	void SetNearPlaneDistance(float nearPlane);
 	void SetFarPlaneDistance(float farPlane);
 	void SetAspectRatio(float aspectRatio);
 
+	void SetMaterialRes(uint materialUuid);
+	uint GetMaterialRes() const;
+	void SetFilterMask(uint filterMask);
+
+	// Gets
 	math::Frustum GetFrustum() const;
 	math::float4x4 GetOpenGLViewMatrix() const;
 	math::float4x4 GetOpenGLProjectionMatrix() const;
@@ -38,6 +52,7 @@ public:
 private:
 
 	math::Frustum frustum;
+	uint materialRes = 0;
 	uint filterMask = 0;
 };
 

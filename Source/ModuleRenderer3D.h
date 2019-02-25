@@ -8,7 +8,6 @@
 
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-#include "ComponentProjector.h"
 #include "ComponentTransform.h"
 #include "GameObject.h"
 
@@ -21,6 +20,7 @@
 #include <vector>
 
 class GameObject;
+class ComponentProjector;
 class QuadtreeNode;
 
 struct DirectionalLight
@@ -101,6 +101,7 @@ public:
 
 	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
+	void DrawProjectedTexture(ComponentProjector* toDraw) const;
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 	void ClearSkybox();

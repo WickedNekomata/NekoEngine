@@ -1031,6 +1031,14 @@ bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& tra
 	return status;
 }
 
+bool ModulePhysics::OverlapSphere(float radius, math::float3 center, std::vector<OverlapHit>& touchesInfo, uint filterMask, SceneQueryFlags sceneQueryFlags) const
+{
+	physx::PxSphereGeometry gSphereGeometry(radius);
+	physx::PxTransform gTransform(physx::PxVec3(center.x, center.y, center.z));
+	
+	return Overlap(gSphereGeometry, gTransform, touchesInfo, filterMask, sceneQueryFlags);;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ModulePhysics::SetGravity(math::float3& gravity)

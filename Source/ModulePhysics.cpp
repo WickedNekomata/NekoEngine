@@ -301,6 +301,11 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 	}
 }
 
+// TODO DELETE THIS. THIS IS TEMPORAL TO TEST NAV AGENTS
+#include "ModuleGOs.h"
+#include "GameObject.h"
+#include "ComponentNavAgent.h"
+
 // *****Debug*****
 void ModulePhysics::Debug()
 {
@@ -1029,6 +1034,14 @@ bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& tra
 	}
 
 	return status;
+}
+
+bool ModulePhysics::OverlapSphere(float radius, math::float3 center, std::vector<OverlapHit>& touchesInfo, uint filterMask, SceneQueryFlags sceneQueryFlags) const
+{
+	physx::PxSphereGeometry gSphereGeometry(radius);
+	physx::PxTransform gTransform(physx::PxVec3(center.x, center.y, center.z));
+	
+	return Overlap(gSphereGeometry, gTransform, touchesInfo, filterMask, sceneQueryFlags);;
 }
 
 // ----------------------------------------------------------------------------------------------------

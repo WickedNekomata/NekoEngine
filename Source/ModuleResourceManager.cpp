@@ -588,7 +588,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The prefab object file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The bone object file '%s' has resources that need to be created", file);
 
 				// 1. Shader object
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
@@ -597,7 +597,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				resourcesUuids.shrink_to_fit();
 
 				ResourceData data;
-				PrefabData shaderObjectData;
+				ResourceBoneData boneData;
 				data.file = file;
 				if (name.empty())
 					App->fs->GetFileName(file, data.name);
@@ -606,9 +606,9 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 
 				uint shaderObject = 0;
-				bool success = ResourcePrefab::LoadFile(file, shaderObjectData);
+				bool success = ResourceBone::LoadFile(file, boneData);
 
-				resource = CreateResource(ResourceTypes::PrefabResource, data, &shaderObjectData, uuid);
+				resource = CreateResource(ResourceTypes::PrefabResource, data, &boneData, uuid);
 
 			}
 			else
@@ -623,6 +623,52 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		}
 		break;
 	}
+
+	case ResourceTypes::AnimationResource:
+	{
+		std::string outputFile;
+		std::string name;
+		if (ResourceAnimation::ImportFile(file, name, outputFile))
+		{
+			std::vector<uint> resourcesUuids;
+			if (!GetResourcesUuidsByFile(file, resourcesUuids))
+			{
+				// Create the resources
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The AnimationResource file '%s' has resources that need to be created", file);
+			
+				// UUID
+				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
+				assert(uuid > 0);
+				resourcesUuids.push_back(uuid);
+				resourcesUuids.shrink_to_fit();
+
+
+				ResourceData data;
+				ResourceAnimationData animationData;
+				data.file = file;
+				if (name.empty())
+					App->fs->GetFileName(file, data.name);
+				else
+					data.name = name.data();
+
+
+				uint shaderObject = 0;
+				bool success = ResourceAnimation::LoadFile(file, animationData);
+
+				resource = CreateResource(ResourceTypes::AnimationResource, data, &animationData, uuid);
+			}
+			else
+				resource = GetResource(resourcesUuids.front());
+
+			// 2. Meta
+			// TODO: only create meta if any of its fields has been modificated
+			std::string outputMetaFile;
+			std::string name = resource->GetName();
+			int64_t lastModTime = ResourceAnimation::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
+			assert(lastModTime > 0);
+		}
+	}
+	break;
 
 	}
 
@@ -696,7 +742,16 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	// Add new resource
 	case ResourceTypes::BoneResource:
 	{
-		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
+		if (ResourceBone::ExportFile(data, *(ResourceBoneData*)specificData, outputFile, overwrite))
+		{
+			if (!overwrite)
+				resource = ImportFile(outputFile.data());
+		}
+	}
+	break;
+	case ResourceTypes::AnimationResource:
+	{
+		if (ResourceAnimation::ExportFile(data, *(ResourceAnimationData*)specificData, outputFile, overwrite))
 		{
 			if (!overwrite)
 				resource = ImportFile(outputFile.data());
@@ -738,6 +793,9 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			break;
 		case ResourceTypes::PrefabResource:
 			resource = new ResourcePrefab(ResourceTypes::PrefabResource, uuid, data, *(PrefabData*)specificData);
+			break;
+		case ResourceTypes::AnimationResource:
+			resource = new ResourceAnimation(ResourceTypes::AnimationResource, uuid, data, *(ResourceAnimationData*)specificData);
 			break;
 	}
 

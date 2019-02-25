@@ -1,6 +1,7 @@
 #include "ResourceBone.h"
 #include "imgui/imgui.h"
 #include "ModuleScene.h"
+#include "BoneImporter.h"
 
 ResourceBone::ResourceBone(ResourceTypes type, uint uuid, ResourceData data, ResourceBoneData boneData) : Resource(type, uuid, data), boneData(boneData) {}
 
@@ -54,10 +55,11 @@ bool ResourceBone::ImportFile(const char * file, std::string & name, std::string
 	return true;
 }
 
-bool ResourceBone::ExportFile(ResourceData & data, ResourceBoneData & prefabData, std::string & outputFile, bool overwrite)
+bool ResourceBone::ExportFile(ResourceData & data, ResourceBoneData & bone_data, std::string & outputFile, bool overwrite)
 {
-
-	return false;
+	return true;
+	// TODO_G CONTINUE HERE++
+	//return App->boneImporter->SaveBone(bone_data, outputFile);
 }
 
 uint ResourceBone::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)

@@ -120,7 +120,7 @@ void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 {
 	Animation* animation = new Animation();
 	animation->name = res->name;
-	for (uint i = 0; i < res->num_keys; ++i)
+	for (uint i = 0; i < res->numKeys; ++i)
 		RecursiveGetAnimableGO(App->scene->root, &res->bone_keys[i], animation);
 
 	animation->duration = res->duration;
@@ -131,7 +131,7 @@ void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 	current_anim->loop = true;
 }
 
-void ModuleAnimation::RecursiveGetAnimableGO(GameObject * go, ResourceAnimation::BoneTransformation* bone_transformation, Animation* anim)
+void ModuleAnimation::RecursiveGetAnimableGO(GameObject * go, BoneTransformation* bone_transformation, Animation* anim)
 {
 	std::vector<GameObject*> all_gos;
 	App->GOs->GetGameobjects(all_gos);
@@ -143,7 +143,7 @@ void ModuleAnimation::RecursiveGetAnimableGO(GameObject * go, ResourceAnimation:
 		if (bone_transformation->bone_name.compare(current_go->GetName()) == 0)
 		{
 			if (/*!go->to_destroy*/1 /* TODO_G */) {
-				anim->animable_data_map.insert(std::pair<GameObject*, ResourceAnimation::BoneTransformation*>(current_go, bone_transformation));
+				anim->animable_data_map.insert(std::pair<GameObject*, BoneTransformation*>(current_go, bone_transformation));
 				anim->animable_gos.push_back(current_go);
 				return;
 			}
@@ -158,7 +158,7 @@ void ModuleAnimation::MoveAnimationForward(float time, Animation* current_animat
 
 	for (uint i = 0; i < current_animation->animable_gos.size(); ++i)
 	{
-		ResourceAnimation::BoneTransformation* transform = current_animation->animable_data_map.find(current_animation->animable_gos[i])->second;
+		BoneTransformation* transform = current_animation->animable_data_map.find(current_animation->animable_gos[i])->second;
 
 		if (transform)
 		{

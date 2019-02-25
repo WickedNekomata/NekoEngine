@@ -43,7 +43,7 @@ void ResourcePrefab::OnPanelAssets()
 	}
 }
 
-bool ResourcePrefab::ImportFile(const char * file, std::string & name, std::string & outputFile)
+bool ResourcePrefab::ImportFile(const char* file, std::string & name, std::string & outputFile)
 {
 
 	assert(file != nullptr);
@@ -78,7 +78,7 @@ bool ResourcePrefab::ImportFile(const char * file, std::string & name, std::stri
 	return true;//sorry
 }
 
-bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
+bool ResourcePrefab::ExportFile(ResourceData& data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
 {
 	bool ret = false;
 	uint size = 0u;
@@ -102,7 +102,7 @@ bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, st
 	return true;
 }
 
-uint ResourcePrefab::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
+uint ResourcePrefab::CreateMeta(const char* file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
 {
 	assert(file != nullptr);
 
@@ -166,7 +166,7 @@ uint ResourcePrefab::CreateMeta(const char * file, uint prefab_uuid, std::string
 	return lastModTime;
 }
 
-bool ResourcePrefab::ReadMeta(const char * metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
+bool ResourcePrefab::ReadMeta(const char* metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
 {
 	assert(metaFile != nullptr);
 
@@ -213,7 +213,7 @@ bool ResourcePrefab::ReadMeta(const char * metaFile, int64_t & lastModTime, uint
 	return true;
 }
 
-bool ResourcePrefab::LoadFile(const char * file, PrefabData & prefab_data_output)
+bool ResourcePrefab::LoadFile(const char* file, PrefabData & prefab_data_output)
 {
 	assert(file != nullptr);
 

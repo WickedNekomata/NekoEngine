@@ -37,6 +37,7 @@ void ComponentMesh::SetResource(uint res_uuid)
 	{
 		App->res->SetAsUnused(res);
 		App->res->DeleteResource(deformableMesh->GetUuid());
+		deformableMesh = 0;
 	}
 
 	if (res_uuid != 0) 
@@ -59,7 +60,6 @@ void ComponentMesh::SetResource(uint res_uuid)
 
 		data.name = "Deformable Mesh :)";
 		deformableMesh = (ResourceMesh*)App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData);
-
 	}
 
 	res = res_uuid;

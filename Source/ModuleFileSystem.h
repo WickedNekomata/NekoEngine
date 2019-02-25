@@ -25,13 +25,14 @@
 #define DIR_ASSETS_ANIMATIONS "Assets/Animations"
 #define DIR_ASSETS_MESHES "Assets/Meshes"
 #define DIR_ASSETS_TEXTURES "Assets/Textures"
+#define DIR_ASSETS_MATERIALS "Assets/Materials"
 
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
 
 class Resource;
 
-enum FileType
+enum FileTypes
 {
 	NoFileType,
 
@@ -48,6 +49,8 @@ enum FileType
 	VertexShaderObjectFile,
 	FragmentShaderObjectFile,
 	ShaderProgramFile,
+
+	MaterialFile,
 
 	MetaFile
 };
@@ -292,7 +295,7 @@ public:
 
 	uint Copy(const char* file, const char* dir, std::string& outputFile) const;
 
-	uint SaveInGame(char* buffer, uint size, FileType fileType, std::string& outputFile, bool overwrite = false) const;
+	uint SaveInGame(char* buffer, uint size, FileTypes fileType, std::string& outputFile, bool overwrite = false) const;
 	uint Save(std::string file, char* buffer, uint size, bool append = false) const;
 
 	uint Load(std::string file, char** buffer) const;

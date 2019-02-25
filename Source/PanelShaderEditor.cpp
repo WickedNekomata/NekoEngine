@@ -30,7 +30,6 @@ bool PanelShaderEditor::Draw()
 		ImGui::Text("Shader Program:"); ImGui::SameLine();
 		ImGui::PushItemWidth(150.0f); 
 		ImGui::InputText("##name", shaderProgramName, INPUT_BUF_SIZE);
-
 		ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderProgramUuid);
 		if (shaderProgram != nullptr)
 			ImGui::TextColored(BLUE, "%s", shaderProgram->GetFile());
@@ -55,7 +54,7 @@ bool PanelShaderEditor::Draw()
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
 				{
 					ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
-					if (payload_n->GetShaderType() == ShaderTypes::VertexShaderType)
+					if (payload_n->GetShaderObjectType() == ShaderObjectTypes::VertexType)
 						*it = payload_n->GetUuid();
 				}
 				ImGui::EndDragDropTarget();
@@ -101,7 +100,7 @@ bool PanelShaderEditor::Draw()
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
 				{
 					ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
-					if (payload_n->GetShaderType() == ShaderTypes::FragmentShaderType)
+					if (payload_n->GetShaderObjectType() == ShaderObjectTypes::FragmentType)
 						*it = payload_n->GetUuid();
 				}
 				ImGui::EndDragDropTarget();
@@ -144,19 +143,23 @@ bool PanelShaderEditor::Draw()
 					{
 						// Update the existing shader program
 						shaderProgram->SetName(shaderProgramName);
+						shaderProgram->SetShaderProgramType(ShaderProgramTypes::Custom);
 						shaderProgram->SetShaderObjects(shaderObjects);
 						shaderProgram->Link();
 						
-						App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), outputFile, true);
+						// Export the existing file
+						App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), outputFile, true, false);
 					}
 					else
 					{
-						// Create a new file and resource for the shader program
+						// Basic shader program
 						ResourceData data;
 						ResourceShaderProgramData shaderProgramData;
 						data.name = shaderProgramName;
+						shaderProgramData.shaderProgramType = ShaderProgramTypes::Custom;
 						shaderProgramData.shaderObjects = shaderObjects;
 
+						// Export the new file
 						shaderProgram = (ResourceShaderProgram*)App->res->ExportFile(ResourceTypes::ShaderProgramResource, data, &shaderProgramData, outputFile);
 						shaderProgramUuid = shaderProgram->GetUuid();
 					}
@@ -206,12 +209,12 @@ void PanelShaderEditor::OpenShaderInShaderEditor(uint shaderProgramUuid)
 	strcpy_s(shaderProgramName, strlen(shaderProgram->GetName()) + 1, shaderProgram->GetName());
 
 	vertexShadersUuids.clear();
-	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects(ShaderTypes::VertexShaderType);
+	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects(ShaderObjectTypes::VertexType);
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 		vertexShadersUuids.push_back((*it)->GetUuid());
 
 	fragmentShadersUuids.clear();
-	shaderObjects = shaderProgram->GetShaderObjects(ShaderTypes::FragmentShaderType);
+	shaderObjects = shaderProgram->GetShaderObjects(ShaderObjectTypes::FragmentType);
 	for (std::list<ResourceShaderObject*>::const_iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
 		fragmentShadersUuids.push_back((*it)->GetUuid());
 }
@@ -259,9 +262,10 @@ bool PanelShaderEditor::TryLink() const
 		uint tryLink = ResourceShaderProgram::Link(shaderObjects);
 
 		if (tryLink > 0)
+		{
 			ret = true;
-
-		ResourceShaderProgram::DeleteShaderProgram(tryLink);
+			ResourceShaderProgram::DeleteShaderProgram(tryLink);
+		}
 	}
 	else
 		CONSOLE_LOG(LogTypes::Error, "Shader Program could not be linked since one or more shader objects are null or don't exist");

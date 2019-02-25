@@ -133,7 +133,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			{
 				uint uuid = forcedUuid == 0 ? App->GenerateRandomNumber() : forcedUuid;
 				outputFile = std::to_string(uuid);
-				if (App->fs->SaveInGame((char*)data, size, FileType::TextureFile, outputFile) > 0)
+				if (App->fs->SaveInGame((char*)data, size, FileTypes::TextureFile, outputFile) > 0)
 				{
 					CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: Successfully saved Texture '%s' to own format", outputFile.data());
 					ret = true;
@@ -329,10 +329,13 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTextureData& 
 	return ret;
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void MaterialImporter::DeleteTexture(uint& name) const
 {
 	if (glIsTexture(name))
 		glDeleteTextures(1, &name);
+	name = 0;
 }
 
 // ----------------------------------------------------------------------------------------------------

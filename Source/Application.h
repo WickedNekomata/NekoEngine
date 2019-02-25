@@ -52,7 +52,7 @@ struct ModuleNavigation;
 struct ScriptingModule;
 struct ModuleEvents;
 struct ModulePhysics;
-struct Layers;
+struct ModuleLayers;
 
 class Application
 {
@@ -141,7 +141,7 @@ public:
 	ModulePhysics*			  physics;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
-	Layers*					  layers;
+	ModuleLayers*			  layers;
 							  
 	pcg32_random_t			  rng;
 

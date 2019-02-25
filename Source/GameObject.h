@@ -83,6 +83,7 @@ public:
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
 	class ComponentLight*	   cmp_light = 0;
+	class ComponentProjector*  cmp_projector = 0;
 
 	std::vector<Component*> components;
 
@@ -102,11 +103,11 @@ private:
 	bool isActive = true;
 	bool isStatic = false; // coordinate with statics and dynamics vector at go module
 
-	// scripting
+	// Scripting
 	uint32_t monoObjectHandle = 0;
 
 	// Physics
-	uint layer = 0;
+	uint layer = 0; // in the range [0...31]
 };
 
 #endif

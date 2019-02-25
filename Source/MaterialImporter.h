@@ -15,6 +15,7 @@
 
 class ResourceTexture;
 struct ResourceTextureData;
+struct ResourceMaterialData;
 struct ResourceTextureImportSettings;
 
 class MaterialImporter
@@ -27,6 +28,8 @@ public:
 	bool Import(const char* file, std::string& outputFile, const ResourceTextureImportSettings& importSettings, uint forcedUuid = 0) const;
 
 	bool Load(const char* exportedFile, ResourceTextureData& textureData, uint& textureId) const;
+
+	// ----------------------------------------------------------------------------------------------------
 
 	void DeleteTexture(uint& name) const;
 

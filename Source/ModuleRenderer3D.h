@@ -8,6 +8,7 @@
 
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
+#include "ComponentProjector.h"
 #include "ComponentTransform.h"
 #include "GameObject.h"
 
@@ -68,8 +69,8 @@ public:
 	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
 	bool GetDrawBoundingBoxes() const;
 
-	void SetDrawCamerasFrustum(bool drawCamerasFrustum);
-	bool GetDrawCamerasFrustum() const;
+	void SetDrawFrustums(bool drawFrustums);
+	bool GetDrawFrustums() const;
 
 	void SetDrawColliders(bool drawColliders);
 	bool GetDrawColliders() const;
@@ -82,6 +83,9 @@ public:
 
 	bool AddMeshComponent(ComponentMesh* toAdd);
 	bool EraseMeshComponent(ComponentMesh* toErase);
+
+	bool AddProjectorComponent(ComponentProjector* toAdd);
+	bool EraseProjectorComponent(ComponentProjector* toErase);
 
 	bool AddCameraComponent(ComponentCamera* toAdd);
 	bool EraseCameraComponent(ComponentCamera* toErase);
@@ -104,6 +108,8 @@ public:
 private:
 
 	std::vector<ComponentMesh*> meshComponents;
+
+	std::vector<ComponentProjector*> projectorComponents;
 
 	std::vector<ComponentCamera*> cameraComponents;
 	ComponentCamera* mainCamera = nullptr;
@@ -128,7 +134,7 @@ public:
 
 	bool debugDraw = false;
 	bool drawBoundingBoxes = true;
-	bool drawCamerasFrustum = true;
+	bool drawFrustums = true;
 	bool drawColliders = true;
 	bool drawRigidActors = true;
 	bool drawQuadtree = false;

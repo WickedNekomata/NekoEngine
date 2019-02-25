@@ -8,31 +8,49 @@
 #include "physx\include\PxPhysicsAPI.h"
 
 #include "MathGeoLib\include\Math\float3.h"
+#include "MathGeoLib\include\Math\Quat.h"
+
+enum ColliderTypes
+{
+	NoCollider,
+	BoxCollider,
+	CapsuleCollider,
+	PlaneCollider,
+	SphereCollider
+};
 
 class ComponentCollider : public Component
 {
 public:
 
 	ComponentCollider(GameObject* parent, ComponentTypes componentColliderType);
-	//ComponentCollider(const ComponentRigidActor& componentRigidActor);
+	ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType);
 	virtual ~ComponentCollider();
 
 	virtual void OnUniqueEditor();
 
 	virtual void Update();
 
-	virtual void ClearShape();
+	virtual uint GetInternalSerializationBytes();
+	virtual void OnInternalSave(char*& cursor);
+	virtual void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	virtual void EncloseGeometry() = 0;
 	virtual void RecalculateShape() = 0;
+	void ClearShape();
 	void SetFiltering(physx::PxU32 filterGroup, physx::PxU32 filterMask);
 
 	// Sets
 	void SetIsTrigger(bool isTrigger);
 	void SetParticipateInContactTests(bool participateInContactTests);
 	void SetParticipateInSceneQueries(bool participateInSceneQueries);
-	virtual void SetCenter(math::float3& center);
+	virtual void SetCenter(const math::float3& center);
 
 	// Gets
 	physx::PxShape* GetShape() const;
+	ColliderTypes GetColliderType() const;
 
 	// Callbacks
 	void OnCollisionEnter(Collision& collision);
@@ -47,12 +65,6 @@ public:
 	static float GetPointToGeometryObjectDistance(const math::float3& point, const physx::PxGeometry& geometry, const physx::PxTransform& pose, math::float3& closestPoint);
 	static physx::PxBounds3 GetGeometryObjectAABB(const physx::PxGeometry& geometry, const physx::PxTransform& pose, float inflation = 1.01f);
 
-	virtual uint GetInternalSerializationBytes() = 0;
-	virtual void OnInternalLoad(char*& cursor) = 0;
-	virtual void OnInternalSave(char*& cursor) = 0;
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
-
 protected:
 
 	bool isTrigger = false;
@@ -64,6 +76,7 @@ protected:
 	// -----
 
 	physx::PxShape* gShape = nullptr;
+	ColliderTypes colliderType = ColliderTypes::NoCollider;
 
 private:
 

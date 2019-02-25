@@ -36,7 +36,7 @@ bool ShaderImporter::SaveShaderObject(ResourceData& data, ResourceShaderObjectDa
 	if (size > 0)
 	{
 		CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully read Shader Object '%s'", outputFile.data());
-		ret = SaveShaderObject(outputShaderObjectData.GetSource(), size, outputShaderObjectData.shaderType, outputFile, overwrite);
+		ret = SaveShaderObject(outputShaderObjectData.GetSource(), size, outputShaderObjectData.shaderObjectType, outputFile, overwrite);
 	}
 	else
 		CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not read Shader Object '%s'", outputFile.data());
@@ -44,18 +44,18 @@ bool ShaderImporter::SaveShaderObject(ResourceData& data, ResourceShaderObjectDa
 	return ret;
 }
 
-bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderTypes shaderType, std::string& outputFile, bool overwrite) const
+bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderObjectTypes shaderType, std::string& outputFile, bool overwrite) const
 {
 	bool ret = false;
 
-	FileType fileType = FileType::NoFileType;
+	FileTypes fileType = FileTypes::NoFileType;
 	switch (shaderType)
 	{
-	case ShaderTypes::VertexShaderType:
-		fileType = FileType::VertexShaderObjectFile;
+	case ShaderObjectTypes::VertexType:
+		fileType = FileTypes::VertexShaderObjectFile;
 		break;
-	case ShaderTypes::FragmentShaderType:
-		fileType = FileType::FragmentShaderObjectFile;
+	case ShaderObjectTypes::FragmentType:
+		fileType = FileTypes::FragmentShaderObjectFile;
 		break;
 	}
 
@@ -74,25 +74,29 @@ bool ShaderImporter::SaveShaderProgram(ResourceData& data, ResourceShaderProgram
 {
 	bool ret = false;
 
-	// Verify that the driver supports at least one shader binary format
-	if (GetBinaryFormats() == 0)
-		return ret;
-
 	if (overwrite)
 		outputFile = data.file;
 	else
 		outputFile = data.name;
 
 	uchar* buffer;
-	uint size = ResourceShaderProgram::GetBinary(ResourceShaderProgram::Link((outputShaderProgramData.shaderObjects)), &buffer);
-	if (size > 0)
+	uint link = ResourceShaderProgram::Link(outputShaderProgramData.shaderObjects);
+	if (link > 0)
 	{
-		CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
-		ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
-		RELEASE_ARRAY(buffer);
+		uint size = ResourceShaderProgram::GetBinary(link, &buffer, outputShaderProgramData.format);
+		if (size > 0)
+		{
+			CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully got Binary Program '%s'", outputFile.data());
+			ret = SaveShaderProgram(buffer, size, outputFile, overwrite);
+			RELEASE_ARRAY(buffer);
+		}
+		else
+			CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+
+		ResourceShaderProgram::DeleteShaderProgram(link);
 	}
 	else
-		CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not get Binary Program '%s'", outputFile.data());
+		CONSOLE_LOG(LogTypes::Error, "SHADER IMPORTER: Could not link Shader Program '%s'", outputFile.data());
 
 	return ret;
 }
@@ -105,7 +109,7 @@ bool ShaderImporter::SaveShaderProgram(const void* buffer, uint size, std::strin
 	if (GetBinaryFormats() == 0)
 		return ret;
 
-	if (App->fs->SaveInGame((char*)buffer, size, FileType::ShaderProgramFile, outputFile, overwrite) > 0)
+	if (App->fs->SaveInGame((char*)buffer, size, FileTypes::ShaderProgramFile, outputFile, overwrite) > 0)
 	{
 		CONSOLE_LOG(LogTypes::Normal, "SHADER IMPORTER: Successfully saved Binary Program '%s'", outputFile.data());
 		ret = true;
@@ -148,7 +152,7 @@ bool ShaderImporter::LoadShaderObject(const void* buffer, uint size, ResourceSha
 	RELEASE_ARRAY(buf);
 
 	// Try to compile the shader object
-	shaderObject = ResourceShaderObject::Compile(outputShaderObjectData.GetSource(), outputShaderObjectData.shaderType);
+	shaderObject = ResourceShaderObject::Compile(outputShaderObjectData.GetSource(), outputShaderObjectData.shaderObjectType);
 
 	if (shaderObject > 0)
 	{
@@ -186,7 +190,7 @@ bool ShaderImporter::LoadShaderProgram(const void* buffer, uint size, ResourceSh
 	assert(buffer != nullptr && size > 0);
 
 	// Try to link the shader program
-	shaderProgram = ResourceShaderProgram::LoadBinary(buffer, size);
+	shaderProgram = ResourceShaderProgram::LoadBinary(buffer, size, outputShaderProgramData.format);
 
 	if (shaderProgram > 0)
 	{
@@ -215,30 +219,30 @@ int ShaderImporter::GetBinaryFormats() const
 
 void ShaderImporter::LoadDefaultShader()
 {
-	defaultVertexShaderObject = LoadDefaultShaderObject(ShaderTypes::VertexShaderType);
-	defaultFragmentShaderObject = LoadDefaultShaderObject(ShaderTypes::FragmentShaderType);
+	defaultVertexShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::VertexType);
+	defaultFragmentShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::FragmentType);
 	defaultShaderProgram = LoadShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
 }
 
 void ShaderImporter::LoadCubemapShader()
 {
-	uint cubemapVertexShaderObject = ResourceShaderObject::Compile(cubemapvShader, ShaderTypes::VertexShaderType);
-	uint cubemapFragmentShaderObject = ResourceShaderObject::Compile(cubemapfShader, ShaderTypes::FragmentShaderType);
+	uint cubemapVertexShaderObject = ResourceShaderObject::Compile(cubemapvShader, ShaderObjectTypes::VertexType);
+	uint cubemapFragmentShaderObject = ResourceShaderObject::Compile(cubemapfShader, ShaderObjectTypes::FragmentType);
 	cubemapShaderProgram = LoadShaderProgram(cubemapVertexShaderObject, cubemapFragmentShaderObject);
 	ResourceShaderObject::DeleteShaderObject(cubemapVertexShaderObject);
 	ResourceShaderObject::DeleteShaderObject(cubemapFragmentShaderObject);
 }
 
-uint ShaderImporter::LoadDefaultShaderObject(ShaderTypes shaderType) const
+uint ShaderImporter::LoadDefaultShaderObject(ShaderObjectTypes shaderType) const
 {
 	const char* source = nullptr;
 
 	switch (shaderType)
 	{
-	case ShaderTypes::VertexShaderType:
+	case ShaderObjectTypes::VertexType:
 		source = vShaderTemplate;
 		break;
-	case ShaderTypes::FragmentShaderType:
+	case ShaderObjectTypes::FragmentType:
 		source = fShaderTemplate;
 		break;
 	}

@@ -3,11 +3,12 @@
 #ifndef GAMEMODE
 
 #include "Globals.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleGui.h"
 #include "PanelShaderEditor.h"
 #include "PanelCodeEditor.h"
@@ -29,11 +30,11 @@
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 #include "ResourceScript.h"
+#include "ResourceMaterial.h"
 
-#include "ImGui\imgui.h"
+#include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
-
-#include "imgui/imgui_stl.h"
+#include "imgui\imgui_stl.h"
 
 PanelInspector::PanelInspector(const char* name) : Panel(name) {}
 
@@ -68,12 +69,14 @@ bool PanelInspector::Draw()
 			case ResourceTypes::ShaderProgramResource:
 				ShowShaderProgramInspector();
 				break;
+			case ResourceTypes::MaterialResource:
+				ShowMaterialInspector();
+				break;
 			}
 			break;
 		}
 		case CurrentSelection::SelectedType::meshImportSettings:
 			ShowMeshImportSettingsInspector();
-			break;
 			break;
 		}
 	}
@@ -189,6 +192,11 @@ void PanelInspector::ShowGameObjectInspector() const
 		if (gameObject->cmp_light == nullptr)
 			if (ImGui::Selectable("Light")) {
 				gameObject->AddComponent(ComponentTypes::LightComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		if (gameObject->cmp_projector == nullptr)
+			if (ImGui::Selectable("Projector")) {
+				gameObject->AddComponent(ComponentTypes::ProjectorComponent);
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -548,7 +556,6 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Spacing();
 	if (ImGui::Button("REIMPORT"))
 	{
-		// cambiar meta
 		ResourceTexture* res = (ResourceTexture*)App->scene->selectedObject.Get();
 		
 		// Search for the meta associated to the file
@@ -570,18 +577,19 @@ void PanelInspector::ShowShaderObjectInspector() const
 {
 	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->scene->selectedObject.Get();
 
-	switch (shaderObject->GetShaderType())
+	switch (shaderObject->GetShaderObjectType())
 	{
-	case ShaderTypes::VertexShaderType:
+	case ShaderObjectTypes::VertexType:
 		ImGui::Text("Vertex Shader Object");
 		break;
-	case ShaderTypes::FragmentShaderType:
+	case ShaderObjectTypes::FragmentType:
 		ImGui::Text("Fragment Shader Object");
 		break;
 	}
 	ImGui::Separator();
 	ImGui::Spacing();
 
+	// Name
 	ImGui::Text("Name:"); ImGui::SameLine();
 	static char name[INPUT_BUF_SIZE];
 	strcpy_s(name, INPUT_BUF_SIZE, shaderObject->GetName());
@@ -598,16 +606,22 @@ void PanelInspector::ShowShaderObjectInspector() const
 		std::string shaderName = name;
 		ResourceShaderObject::SetNameToMeta(metaFile, shaderName);
 	}
+
 	ImGui::Spacing();
 
+	// Data
 	ImGui::Text("File:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%s", shaderObject->GetFile());
-	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderObject->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderObject->GetUuid());
 
-	// Shader Object info
+	ImGui::Spacing();
+
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	bool isValid = shaderObject->isValid;
+	ImGui::Checkbox("Is valid", &isValid);
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
 	ImGui::Spacing();
 
 	if (ImGui::Button("EDIT SHADER OBJECT"))
@@ -622,6 +636,7 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	ResourceShaderProgram* shaderProgram = (ResourceShaderProgram*)App->scene->selectedObject.Get();
 
+	// Name
 	ImGui::Text("Name:"); ImGui::SameLine();
 	static char name[INPUT_BUF_SIZE];
 	strcpy_s(name, INPUT_BUF_SIZE, shaderProgram->GetName());
@@ -638,23 +653,25 @@ void PanelInspector::ShowShaderProgramInspector() const
 		std::string shaderName = name;
 		ResourceShaderProgram::SetNameToMeta(metaFile, shaderName);
 	}
+
 	ImGui::Spacing();
 
+	// Data
 	ImGui::Text("File:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%s", shaderProgram->GetFile());
-	ImGui::Text("Exported file:"); ImGui::SameLine();
-	ImGui::TextColored(BLUE, "%s", shaderProgram->GetExportedFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderProgram->GetUuid());
+
 	ImGui::Spacing();
 
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	bool isValid = shaderProgram->isValid;
 	ImGui::Checkbox("Is valid", &isValid);
 	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+
 	ImGui::Spacing();
 
-	// Shader Program info
+	// Info
 	ImGui::Text("Shader Objects:");
 
 	char shaderObject[DEFAULT_BUF_SIZE];
@@ -672,6 +689,209 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
 		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUuid());
+}
+
+void PanelInspector::ShowMaterialInspector() const
+{
+	ImGui::Text("Material");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ResourceMaterial* material = (ResourceMaterial*)App->scene->selectedObject.Get();
+
+	// Name
+	ImGui::Text("Name:"); ImGui::SameLine();
+	static char name[INPUT_BUF_SIZE];
+	strcpy_s(name, INPUT_BUF_SIZE, material->GetName());
+	ImGui::PushItemWidth(150.0f);
+	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::InputText("##name", name, INPUT_BUF_SIZE, inputFlag))
+	{
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(material->GetFile()) + 1, material->GetFile()); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		material->SetName(name);
+		std::string materialName = name;
+		ResourceMaterial::SetNameToMeta(metaFile, materialName);
+	}
+
+	ImGui::Spacing();
+
+	// Data
+	ImGui::Text("File:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%s", material->GetFile());
+	ImGui::Text("UUID:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", material->GetUuid());
+
+	ImGui::Spacing();
+
+	char id[DEFAULT_BUF_SIZE];
+
+	// Shader
+	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
+	assert(shader != nullptr);
+
+	const char* shaderTypes[] = { "Standard", "Particles", "Custom" };
+
+	if (ImGui::Button("Shader"))
+		ImGui::OpenPopup("shader_popup");
+	if (ImGui::BeginPopup("shader_popup"))
+	{
+		std::vector<Resource*> shaderResources = App->res->GetResourcesByType(ResourceTypes::ShaderProgramResource);
+		std::vector<Resource*> shaderResourcesByType;
+
+		for (uint i = 0; i < IM_ARRAYSIZE(shaderTypes); ++i)
+		{
+			for (uint j = 0; j < shaderResources.size(); ++j)
+			{
+				ResourceShaderProgram* shaderResource = (ResourceShaderProgram*)shaderResources[j];
+				if (shaderResource->GetShaderProgramType() == i)
+					shaderResourcesByType.push_back(shaderResource);
+			}
+
+			if (shaderResourcesByType.empty())
+				continue;
+
+			if (ImGui::BeginMenu(shaderTypes[i]))
+			{
+				for (uint j = 0; j < shaderResourcesByType.size(); ++j)
+				{
+					sprintf(id, "%s##%u", shaderResourcesByType[j]->GetName(), shaderResourcesByType[j]->GetUuid());
+					bool selected = shader == shaderResourcesByType[j];
+					if (ImGui::MenuItem(id, "", selected))
+					{
+						// Update the existing material
+						material->SetResourceShader(shaderResourcesByType[j]->GetUuid());
+						
+						// Export the existing file
+						std::string outputFile;
+						App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
+					}
+				}
+				ImGui::EndMenu();
+			}
+
+			shaderResourcesByType.clear();
+		}
+		ImGui::EndPopup();
+	}
+
+	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
+
+	ImGui::Spacing();
+
+	// Uniforms
+	std::vector<Uniform>& uniforms = material->GetUniforms();
+	for (uint i = 0; i < uniforms.size(); ++i)
+	{
+		if (i == 0)
+			ImGui::Text("Uniforms");
+
+		Uniform& uniform = uniforms[i];
+		ImGui::Text(uniform.common.name);
+		ImGui::SameLine();
+
+		sprintf(id, "##uniform%u", i);
+		ImGui::PushItemWidth(100.0f);
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::FloatU_value:
+			ImGui::InputFloat(id, &uniform.floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			ImGui::InputInt(id, (int*)&uniform.intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+		{
+			float v[] = { uniform.vec2FU.value.x, uniform.vec2FU.value.y };
+			ImGui::InputFloat2(id, v);
+			uniform.vec2FU.value.x = v[0];
+			uniform.vec2FU.value.y = v[1];
+			break;
+		}
+		case Uniforms_Values::Vec3FU_value:
+		{
+			float v[] = { uniform.vec3FU.value.x, uniform.vec3FU.value.y , uniform.vec3FU.value.z };
+			ImGui::InputFloat3(id, v);
+			uniform.vec3FU.value.x = v[0];
+			uniform.vec3FU.value.y = v[1];
+			uniform.vec3FU.value.z = v[2];
+			break;
+		}
+		case Uniforms_Values::Vec4FU_value:
+		{
+			float v[] = { uniform.vec4FU.value.x, uniform.vec4FU.value.y , uniform.vec4FU.value.z, uniform.vec4FU.value.w };
+			ImGui::InputFloat4(id, v);
+			uniform.vec4FU.value.x = v[0];
+			uniform.vec4FU.value.y = v[1];
+			uniform.vec4FU.value.z = v[2];
+			uniform.vec4FU.value.w = v[3];
+			break;
+		}
+		case Uniforms_Values::Vec2IU_value:
+		{
+			int v[] = { uniform.vec2IU.value.x, uniform.vec2IU.value.y };
+			ImGui::InputInt2(id, v);
+			uniform.vec2IU.value.x = v[0];
+			uniform.vec2IU.value.y = v[1];
+			break;
+		}
+		case Uniforms_Values::Vec3IU_value:
+		{
+			int v[] = { uniform.vec3IU.value.x, uniform.vec3IU.value.y , uniform.vec3IU.value.z };
+			ImGui::InputInt3(id, v);
+			uniform.vec3IU.value.x = v[0];
+			uniform.vec3IU.value.y = v[1];
+			uniform.vec3IU.value.z = v[2];
+			break;
+		}
+		case Uniforms_Values::Vec4IU_value:
+		{
+			int v[] = { uniform.vec4IU.value.x, uniform.vec4IU.value.y , uniform.vec4IU.value.z, uniform.vec4IU.value.w };
+			ImGui::InputInt4(id, v);
+			uniform.vec4IU.value.x = v[0];
+			uniform.vec4IU.value.y = v[1];
+			uniform.vec4IU.value.z = v[2];
+			uniform.vec4IU.value.w = v[3];
+			break;
+		}
+		case Uniforms_Values::Sampler2U_value:
+		{
+			ImGui::PushID("texture");
+			ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(uniform.sampler2DU.value.uuid);
+			ImGui::Button(texture == nullptr ? "Empty texture" : texture->GetName(), ImVec2(150.0f, 0.0f));
+			ImGui::PopID();
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("%u", uniform.sampler2DU.value.id);
+				ImGui::EndTooltip();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_INSPECTOR_SELECTOR"))
+				{
+					uint payload_n = *(uint*)payload->Data;
+
+					// Update the existing material
+					material->SetResourceTexture(payload_n, uniform.sampler2DU.value.uuid, uniform.sampler2DU.value.id);
+
+					// Export the existing file
+					std::string outputFile;
+					App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
+				}
+				ImGui::EndDragDropTarget();
+			}
+			
+			break;
+		}
+		}
+		ImGui::PopItemWidth();
+	}
 }
 
 #endif // GAME

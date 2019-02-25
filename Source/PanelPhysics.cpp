@@ -4,7 +4,7 @@
 
 #include "Application.h"
 #include "ModulePhysics.h"
-#include "Layers.h"
+#include "ModuleLayers.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -30,8 +30,8 @@ bool PanelPhysics::Draw()
 		if (ImGui::DragFloat("##GravityY", &gravity.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
 			App->physics->SetGravity(gravity);
 		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-			if (ImGui::DragFloat("##GravityZ", &gravity.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-				App->physics->SetGravity(gravity);
+		if (ImGui::DragFloat("##GravityZ", &gravity.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			App->physics->SetGravity(gravity);
 		ImGui::PopItemWidth();
 
 		// -----

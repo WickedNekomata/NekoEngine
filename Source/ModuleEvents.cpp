@@ -55,8 +55,8 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		case System_Event_Type::SaveScene:
 		{
 			char* file; size_t size;
-			App->GOs->SerializeFromNode(App->scene->root, file, size, true);
-			App->fs->SaveInGame(file, size, FileType::SceneFile, std::string(event.sceneEvent.nameScene));
+			App->GOs->SerializeFromNode(App->scene->root, file, size);
+			App->fs->SaveInGame(file, size, FileTypes::SceneFile, std::string(event.sceneEvent.nameScene));
 			delete[] file;
 			break;
 		}
@@ -79,6 +79,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			size_t size = App->fs->Load(file, &buf);
 			if (size != 0)
 			{
+				App->scene->selectedObject = 0;
 				App->GOs->ClearScene();
 				App->GOs->LoadScene(buf, size, true);
 				delete[] buf;
@@ -88,7 +89,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 				App->PushSystemEvent(newEvent);
 			}
 			else
-				DEPRECATED_LOG("CANT FIND SCENE IN ASSETS");
+				CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
 			break;
 		}
 

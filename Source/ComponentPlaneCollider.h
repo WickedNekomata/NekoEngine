@@ -9,29 +9,30 @@ class ComponentPlaneCollider : public ComponentCollider
 public:
 
 	ComponentPlaneCollider(GameObject* parent);
-	//ComponentCollider(const ComponentRigidActor& componentRigidActor);
+	ComponentPlaneCollider(const ComponentPlaneCollider& componentPlaneCollider);
 	~ComponentPlaneCollider();
 
 	void OnUniqueEditor();
 
+	uint GetInternalSerializationBytes();
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
+
+	// ----------------------------------------------------------------------------------------------------
+
+	void EncloseGeometry();
 	void RecalculateShape();
 
 	// Sets
-	void SetNormal(math::float3& normal);
+	void SetNormal(const math::float3& normal);
 	void SetDistance(float distance);
 
 	// Gets
 	physx::PxPlaneGeometry GetPlaneGeometry() const;
 
-	uint GetInternalSerializationBytes();
-	void OnInternalLoad(char*& cursor) {}
-	void OnInternalSave(char*& cursor) {}
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
-
 private:
 
-	math::float3 normal = math::float3(1.0f, 0.0f, 0.0f);
+	math::float3 normal = math::float3(0.0f, 1.0f, 0.0f);
 	float distance = 0.0f;
 };
 

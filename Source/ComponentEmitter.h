@@ -7,9 +7,8 @@
 #include "Timer.h"
 #include "GameTimer.h"
 
-#include "Particle.h"
-
 #include "MathGeoLib/include/Math/float2.h"
+#include"MathGeoLib/include/Math/float4.h"
 #include "MathGeoLib/include/Geometry/Sphere.h"
 #include "MathGeoLib/include/Geometry/Circle.h"
 
@@ -19,6 +18,7 @@
 #include <queue>
 
 class ComponentMaterial;
+class Particle;
 
 enum ShapeType {
 	ShapeType_BOX,
@@ -35,6 +35,7 @@ enum SimulatedGame
 	SimulatedGame_PAUSE,
 	SimulatedGame_STOP,
 };
+
 struct ColorTime
 {
 	math::float4 color = math::float4::one;
@@ -47,6 +48,21 @@ struct ColorTime
 	{
 		return position < color.position;
 	}
+
+	uint GetColorListSerializationBytes();
+	void OnInternalSave(char *& cursor);
+	void OnInternalLoad(char *& cursor);
+
+};
+
+struct ParticleAnimation
+{
+	bool isParticleAnimated = false;
+	int  textureRows = 1;
+	int  textureColumns = 1;
+	float textureRowsNorm = 1.0f;
+	float textureColumnsNorm = 1.0f;
+	float animationSpeed = 0.1f;
 };
 
 struct StartValues
@@ -54,7 +70,7 @@ struct StartValues
 	// Start values
 	math::float2 life = math::float2(5.0f, 5.0f);
 	math::float2 speed = math::float2(3.0f, 3.0f);
-	math::float2 acceleration = math::float2(0.0f, 0.0f);
+	math::float3 acceleration3 = math::float3(0.0f, 0.0f, 0.0f);
 	math::float2 sizeOverTime = math::float2(0.0f, 0.0f);
 	math::float2 size = math::float2(1.0f, 1.0f);
 	math::float2 rotation = math::float2(0.0f, 0.0f);
@@ -74,8 +90,6 @@ struct StartValues
 		colorTime.name = "Start Color";
 		color.push_back(colorTime);
 	}
-
-	bool isAnimated = false;
 };
 
 class ComponentEmitter : public Component
@@ -110,11 +124,13 @@ public:
 
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
+	ShapeType GetDebugShapeDraw() const;
+	math::float3 GetAABBDimShape() const;
+	float GetRadSphereShape() const;
+	float GetRadCircleShape() const;
 #endif
 
 	uint GetInternalSerializationBytes();
-
-	void OnInternalSave(JSON_Object * parent);
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
 
@@ -124,6 +140,13 @@ public:
 	GameTimer burstTime;
 
 	bool drawAABB = false;
+	bool drawShape = false;
+
+	//Posibility space where particle is created
+	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
+	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
+	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
+	float coneHeight = 1.0f;
 
 	// Emitter particles
 	std::list<Particle*> particles;
@@ -145,8 +168,6 @@ public:
 	bool isSubEmitter = false;
 
 	ComponentMaterial* material = nullptr;
-
-	float animationSpeed = 0.1f;
 
 private:
 	// General info
@@ -170,6 +191,8 @@ private:
 	// Warm up the particle emitter (if true the particle emitter will be already started at play-time)
 	bool preWarm = true;
 
+	ParticleAnimation particleAnim;
+
 	//Burst options
 	bool burst = false;
 	int minPart = 0;
@@ -179,19 +202,12 @@ private:
 	math::float3 posDifAABB = math::float3::zero;
 	float gravity = 0.0f;
 
-	//Posibility space where particle is created
-	math::AABB boxCreation = math::AABB(math::float3(-0.5f, -0.5f, -0.5f), math::float3(0.5f, 0.5f, 0.5f));
-	math::Sphere sphereCreation = math::Sphere(math::float3::zero, 1.0f);
-	math::Circle circleCreation = math::Circle(math::float3::unitY, math::float3::unitY, 1.0f);
-
 	ShapeType burstType = ShapeType_BOX;
 	std::string burstTypeName = "Box Burst";
 
 	int nextPos = 100;
 	math::float4 nextColor = math::float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	int textureRows = 1;
-	int textureColumns = 1;
 	//---------------------------------------
 
 	// Emission info
@@ -200,6 +216,5 @@ private:
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
 	//---------------------------------------
-	bool isParticleAnimated = false;
 };
 #endif // !__Emitter_H__

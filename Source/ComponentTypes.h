@@ -14,14 +14,26 @@ enum ComponentTypes
 	BoneComponent,
 	AnimationComponent,
 	LightComponent,
+	ProjectorComponent,
 
 	// Physics
+	/// Rigid Actors
 	RigidStaticComponent,
 	RigidDynamicComponent,
+
+	/// Colliders
 	BoxColliderComponent,
 	SphereColliderComponent,
 	CapsuleColliderComponent,
-	PlaneColliderComponent
+	PlaneColliderComponent,
+
+	/// Joints
+	FixedJointComponent,
+	DistanceJointComponent,
+	SphericalJointComponent,
+	RevoluteJointComponent,
+	PrismaticJointComponent,
+	D6JointComponent
 };
 
 #endif

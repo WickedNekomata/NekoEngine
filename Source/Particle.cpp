@@ -26,7 +26,7 @@ Particle::~Particle()
 {
 }
 
-void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int animRow)
+void Particle::SetActive(math::float3 pos, StartValues data, ParticleAnimation partAnim)
 {
 	color.clear();
 
@@ -35,7 +35,7 @@ void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int
 	life = 0.0f;
 
 	speed = CreateRandomNum(data.speed);
-	acceleration = CreateRandomNum(data.acceleration);
+	acceleration3 = data.acceleration3;
 	direction = data.particleDirection;
 
 	angle = CreateRandomNum(data.rotation) * DEGTORAD;
@@ -56,11 +56,12 @@ void Particle::SetActive(math::float3 pos, StartValues data, int animColumn, int
 	animationTime = 0.0f;
 	currentFrame = 0u;
 
-	rowAnimNorm = 1.0f / animRow;
-	columnAnimNorm = 1.0f / animColumn;
-	rowAnim = animRow;
-	columnAnim = animColumn;
-	isAnimated = data.isAnimated;
+	isParticleAnimated = partAnim.isParticleAnimated;
+	textureRows = partAnim.textureRows;
+	textureColumns = partAnim.textureColumns;
+	textureRowsNorm = partAnim.textureRowsNorm;
+	textureColumnsNorm = partAnim.textureColumnsNorm;
+	animationSpeed = partAnim.animationSpeed;
 
 	active = true;
 	subEmitterActive = data.subEmitterActive;
@@ -78,8 +79,14 @@ bool Particle::Update(float dt)
 	life += dt;
 	if (life < lifeTime || owner->dieOnAnimation)
 	{
-		speed += acceleration * dt;
-		transform.position += direction * (speed * dt);
+		acceleration3 += acceleration3 * dt;
+		math::float3 movement = direction * (speed * dt);
+
+		if(acceleration3.Equals(math::float3::zero))
+			transform.position +=  movement;
+		else
+			transform.position += (movement + acceleration3 * dt)/2;
+
 		LookAtCamera();
 
 		if (color.size() == 1 || !multicolor)
@@ -111,17 +118,17 @@ bool Particle::Update(float dt)
 		angle += angularVelocity * dt;
 		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
-		if (isAnimated)
+		if (isParticleAnimated)
 		{
 			animationTime += dt;
-			if (animationTime > owner->animationSpeed)
+			if (animationTime > animationSpeed)
 			{
-				if ((columnAnim * rowAnim) >= currentFrame + 1)
+				if ((textureColumns* textureRows) >= currentFrame + 1)
 				{
 					currentFrame++;
 
-					currMinUVCoord.x = (currentFrame % columnAnim) * columnAnimNorm;
-					currMinUVCoord.y = (currentFrame / rowAnim) * rowAnimNorm;
+					currMinUVCoord.x = (currentFrame % textureColumns) * textureColumnsNorm;
+					currMinUVCoord.y = (currentFrame / textureColumns) * textureRowsNorm;
 				}
 				else if (owner->dieOnAnimation)
 				{
@@ -189,7 +196,7 @@ void Particle::Draw()
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture
+		//glBindTexture(GL_TEXTURE_2D, owner->material->res[0].id); // particle texture // TODO UNIFORMS
 
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
 		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
@@ -214,13 +221,13 @@ void Particle::Draw()
 		glUniform4f(location,currentColor.x, currentColor.y, currentColor.z, currentColor.w);
 
 		location = glGetUniformLocation(shaderProgram, "rowUVNorm");
-		glUniform1f(location, rowAnimNorm);
+		glUniform1f(location, textureRowsNorm);
 		location = glGetUniformLocation(shaderProgram, "columUVNorm");
-		glUniform1f(location, columnAnimNorm);
+		glUniform1f(location, textureColumnsNorm);
 		location = glGetUniformLocation(shaderProgram, "currMinCoord");
 		glUniform2f(location, currMinUVCoord.x, currMinUVCoord.y);
 		location = glGetUniformLocation(shaderProgram, "isAnimated");
-		glUniform1i(location, isAnimated);
+		glUniform1i(location, isParticleAnimated);
 
 		location = glGetUniformLocation(shaderProgram, "light.direction");
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.direction.ptr());
@@ -261,15 +268,15 @@ float Particle::CreateRandomNum(math::float2 edges)//.x = minPoint & .y = maxPoi
 	return num;
 }
 
-void Particle::ChangeAnim(uint textureRows, uint textureColumns, bool isAnimated)
+void Particle::ChangeAnim(ParticleAnimation partAnim)
 {
-	rowAnim = textureRows;
-	columnAnim = textureColumns;
-	rowAnimNorm = 1.0f/textureRows;
-	columnAnimNorm = 1.0f/textureColumns;
-	currMinUVCoord = math::float2::zero;
-	currentFrame = 0;
-	this->isAnimated = isAnimated;
+	currentFrame = 0u;
+	isParticleAnimated = partAnim.isParticleAnimated;
+	textureRows = partAnim.textureRows;
+	textureColumns = partAnim.textureColumns;
+	textureRowsNorm = partAnim.textureRowsNorm;
+	textureColumnsNorm = partAnim.textureColumnsNorm;
+	animationSpeed = partAnim.animationSpeed;
 }
 
 //Particle transform

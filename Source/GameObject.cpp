@@ -26,8 +26,9 @@
 #include "ComponentBone.h"
 #include "ComponentScript.h"
 #include "ComponentLight.h"
+#include "ComponentProjector.h"
 
-#include "MathGeoLib/include/Geometry/OBB.h"
+#include "MathGeoLib\include\Geometry\OBB.h"
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
@@ -97,17 +98,40 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 			cmp_light->SetParent(this);
 			components.push_back(cmp_light);
 			break;
+		case ComponentTypes::ProjectorComponent:
+			cmp_projector = new ComponentProjector(*gameObject.cmp_projector);
+			cmp_projector->SetParent(this);
+			components.push_back(cmp_projector);
+			break;
 		case ComponentTypes::RigidStaticComponent:
+			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor->SetParent(this);
+			components.push_back(cmp_rigidActor);
+			break;
 		case ComponentTypes::RigidDynamicComponent:
-			// TODO
-			cmp_rigidActor = App->physics->CreateRigidActorComponent(this, type);
+			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor->SetParent(this);
+			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::BoxColliderComponent:
+			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::SphereColliderComponent:
+			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::CapsuleColliderComponent:
+			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
+			break;
 		case ComponentTypes::PlaneColliderComponent:
-			// TODO
-			cmp_collider = App->physics->CreateColliderComponent(this, type);
+			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider);
+			cmp_collider->SetParent(this);
+			components.push_back(cmp_collider);
 			break;
 		}
 	}
@@ -252,9 +276,6 @@ void GameObject::OnSystemEvent(System_Event event)
 	{
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
-		break;
-	case System_Event_Type::ShaderProgramChanged:
-		cmp_material->UpdateUniforms();
 		break;
 	case System_Event_Type::ScriptingDomainReloaded:
 	case System_Event_Type::Stop:
@@ -407,12 +428,6 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_emitter == NULL);
 		newComponent = cmp_emitter = new ComponentEmitter(this);
 		break;
-	case ComponentTypes::RigidStaticComponent:
-	case ComponentTypes::RigidDynamicComponent:
-		// TODO
-		assert(cmp_rigidActor == nullptr);
-		newComponent = cmp_rigidActor = App->physics->CreateRigidActorComponent(this, componentType);
-		break;
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
@@ -421,23 +436,42 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_light == NULL);
 		newComponent = cmp_light = new ComponentLight(this);
 		break;
-	case ComponentTypes::BoxColliderComponent:
-	case ComponentTypes::SphereColliderComponent:
-	case ComponentTypes::CapsuleColliderComponent:
-	case ComponentTypes::PlaneColliderComponent:
-		// TODO
-		assert(cmp_collider == nullptr);
-		newComponent = cmp_collider = App->physics->CreateColliderComponent(this, componentType);
+	case ComponentTypes::ProjectorComponent:
+		assert(cmp_projector == NULL);
+		newComponent = cmp_projector = new ComponentProjector(this);
 		break;
-		
-		case ComponentTypes::ScriptComponent:
-		{
-			newComponent = new ComponentScript("", this);
+	case ComponentTypes::RigidStaticComponent:
+		assert(cmp_rigidActor == nullptr);
+		newComponent = cmp_rigidActor = new ComponentRigidStatic(this);
+		break;
+	case ComponentTypes::RigidDynamicComponent:
+		assert(cmp_rigidActor == nullptr);
+		newComponent = cmp_rigidActor = new ComponentRigidDynamic(this);
+		break;
+	case ComponentTypes::BoxColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentBoxCollider(this);
+		break;
+	case ComponentTypes::SphereColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentSphereCollider(this);
+		break;
+	case ComponentTypes::CapsuleColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentCapsuleCollider(this);
+		break;
+	case ComponentTypes::PlaneColliderComponent:
+		assert(cmp_collider == nullptr);
+		newComponent = cmp_collider = new ComponentPlaneCollider(this);
+		break;		
+	case ComponentTypes::ScriptComponent:
+	{
+		newComponent = new ComponentScript("", this);
 
-			//TODO: CORRECT THIS
-			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
-			break;
-		}
+		//TODO: CORRECT THIS
+		App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+		break;
+	}
 	}
 	
 	components.push_back(newComponent);
@@ -524,7 +558,8 @@ void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
 }
 
 uint GameObject::GetSerializationBytes() const
-{				   // uuid + parent + layer + active + static + name + number of components
+{	
+	// uuid + parent + layer + active + static + name + number of components
 	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
 
 	for (int i = 0; i < components.size(); ++i)
@@ -609,12 +644,7 @@ void GameObject::OnLoad(char*& cursor)
 void GameObject::RecursiveForceAllResources(uint forceRes) const
 {
 	if (cmp_material != nullptr)
-	{
-		for (int i = 0; i < cmp_material->res.size(); ++i)
-			cmp_material->res[i].res = forceRes;
-
-		cmp_material->shaderProgramUUID = forceRes;
-	}
+		cmp_material->res = forceRes;
 
 	if (cmp_mesh != nullptr)
 		cmp_mesh->res = forceRes;

@@ -117,6 +117,20 @@ struct Vec4IU
 	VecI4		value;
 };
 
+struct Sampler2DU
+{
+	struct Sampler2D
+	{
+		uint32_t uuid; // uuid of the resource
+		uint32_t id;
+	};
+
+	uint32_t	type;
+	char		name[DEFAULT_BUF_SIZE];
+	uint32_t	location;
+	Sampler2D	value;
+};
+
 /////////////////////////////////////////////////////////
 
 struct CommonData
@@ -138,6 +152,7 @@ union Uniform
 	Vec2IU		vec2IU;
 	Vec3IU		vec3IU;
 	Vec4IU		vec4IU;
+	Sampler2DU	sampler2DU;
 };
 
 #endif

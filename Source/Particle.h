@@ -7,6 +7,7 @@
 
 class ComponentEmitter;
 
+struct ParticleAnimation;
 struct StartValues;
 struct ColorTime;
 
@@ -31,7 +32,7 @@ public:
 		return camDistance < particle2.camDistance;
 	}
 
-	void SetActive(math::float3 pos, StartValues data, int animColumn, int animRow);
+	void SetActive(math::float3 pos, StartValues data, ParticleAnimation animPart);
 
 	bool Update(float dt);
 
@@ -45,7 +46,7 @@ public:
 
 	float CreateRandomNum(math::float2 edges);
 
-	void ChangeAnim(uint textureRows, uint textureColumns, bool isAnimated);
+	void ChangeAnim(ParticleAnimation partAnim);
 
 public:
 	float camDistance = 0.0f;
@@ -58,7 +59,7 @@ private:
 	float life = 0.0f;
 
 	float speed = 0.0f;
-	float acceleration = 0.0f;
+	math::float3 acceleration3 = math::float3::zero;
 	math::float3 direction = math::float3::zero;
 
 	float rotationSpeed = 0.0f;
@@ -79,14 +80,18 @@ private:
 	float rotation = 0.0f;
 	float angle = 0.0f;
 
-	uint rowAnim = 1u;
-	uint columnAnim = 1u;
-	float rowAnimNorm = 1.0f;
-	float columnAnimNorm = 1.0f;
-	math::float2 currMinUVCoord = math::float2::zero;
-	uint currentFrame = 0;
-	bool isAnimated = false;
+	//ParticleAnimation particleAnim;
+
+	bool isParticleAnimated = false;
+	int  textureRows = 1;
+	int  textureColumns = 1;
+	float textureRowsNorm = 1.0f;
+	float textureColumnsNorm = 1.0f;
+	float animationSpeed = 0.1f;
+
 	float animationTime = 0.0f;
+	uint currentFrame = 0;
+	math::float2 currMinUVCoord = math::float2::zero;
 };
 
 struct particleCompare

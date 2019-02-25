@@ -44,16 +44,17 @@ private:
 	uint filterMask = 0;
 };
 
-class Layers : public Module
+class ModuleLayers : public Module
 {
 public:
 
-	Layers();
-	~Layers();
+	ModuleLayers(bool start_enabled = true);
+	~ModuleLayers();
 
 	bool Init(JSON_Object* jObject);
-	bool Start();
-	bool CleanUp();
+
+	void SaveStatus(JSON_Object* jObject) const;
+	void LoadStatus(const JSON_Object* jObject);
 
 	// ----------------------------------------------------------------------------------------------------
 

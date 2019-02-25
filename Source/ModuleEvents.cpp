@@ -81,7 +81,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			{
 				App->scene->selectedObject = 0;
 				App->GOs->ClearScene();
-				App->GOs->LoadScene(buf, size);
+				App->GOs->LoadScene(buf, size, true);
 				delete[] buf;
 
 				System_Event newEvent;

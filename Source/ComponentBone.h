@@ -23,11 +23,10 @@ public:
 	void OnInternalLoad(char*& cursor) {}
 
 public:
-
 	ComponentMesh* attached_mesh = nullptr;
 
+	uint attachedMesh = 0u;
 	uint res = 0;
-
 };
 
 #endif // __COMPONENT_BONE_H__

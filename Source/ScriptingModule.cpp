@@ -2,6 +2,7 @@
 #include "ComponentScript.h"
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
+#include "ComponentNavAgent.h"
 #include "GameObject.h"
 #include "ModuleInput.h"
 #include "ModuleScene.h"
@@ -1377,6 +1378,14 @@ bool Raycast(MonoArray* origin, MonoArray* direction, MonoObject* hitInfo, float
 	return ret;
 }
 
+void SetDestination(MonoObject* navMeshAgent, MonoArray* newDestination)
+{
+	math::float3 newDestinationcpp(mono_array_get(newDestination, float, 0), mono_array_get(newDestination, float, 1), mono_array_get(newDestination, float, 2));
+	int compAddress;
+	mono_field_get_value(navMeshAgent, mono_class_get_field_from_name(mono_object_get_class(navMeshAgent), "componentAddress"), &compAddress);
+	ComponentNavAgent* agent = (ComponentNavAgent*)compAddress;
+	agent->SetDestination(newDestinationcpp.ptr());
+}
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1445,6 +1454,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);
 	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 
 	ClearMap();
 

@@ -19,6 +19,7 @@ public:
 	int  GetIndex() const { return index; }
 	bool UpdateParams() const;
 	void SetDestination(const float* pos) const;
+	bool IsWalking();
 
 	uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);

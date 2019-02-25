@@ -25,6 +25,7 @@
 #include "ComponentRigidDynamic.h"
 #include "ComponentCollider.h"
 #include "ComponentEmitter.h"
+#include "ComponentProjector.h"
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"
@@ -217,6 +218,12 @@ update_status ModuleRenderer3D::PostUpdate()
 		{
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
 				DrawMesh(meshComponents[i]);
+		}
+
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+		{
+			if (projectorComponents[i]->IsActive() /*&& projectorComponents[i]->GetParent()->seenLastFrame*/)
+				DrawProjectedTexture(projectorComponents[i]);
 		}
 	}
 	//Draw All particles
@@ -837,6 +844,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (toDraw->res == 0)
 		return;
 
+	// Material
 	ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
@@ -954,6 +962,143 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
+{
+	// Material
+	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(toDraw->GetMaterialRes());
+	uint shaderUuid = resourceMaterial->GetShaderUuid();
+	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
+
+	// Shader program
+	glUseProgram(shaderProgram);
+
+	// Specific uniforms
+	math::float4x4 bias_matrix = math::float4x4(
+		0.5f, 0.0f, 0.0f, 0.5f,
+		0.0f, 0.5f, 0.0f, 0.5f,
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	); // converts the view frustum to a range between 0 and 1 in x and y
+	//bias_matrix.Transpose();
+	
+	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
+	model_matrix = model_matrix.Transposed();
+	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix(); // view
+	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix(); // projection
+	math::float4x4 projector_matrix = model_matrix * projector_view_matrix * projector_proj_matrix * bias_matrix; // into texture space																					   
+
+	//http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
+	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, projector_matrix.ptr());
+	
+	// Known uniforms
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+	math::float4x4 normal_matrix = model_matrix;
+	normal_matrix.Inverse();
+	normal_matrix.Transpose();
+
+	location = glGetUniformLocation(shaderProgram, "model_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+	location = glGetUniformLocation(shaderProgram, "light.direction");
+	glUniform3fv(location, 1, directionalLight.direction.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.ambient");
+	glUniform3fv(location, 1, directionalLight.ambient.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.diffuse");
+	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.specular");
+	glUniform3fv(location, 1, directionalLight.specular.ptr());
+
+	location = glGetUniformLocation(shaderProgram, "viewPos");
+	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
+	location = glGetUniformLocation(shaderProgram, "Time");
+	switch (App->GetEngineState())
+	{
+		// Game
+	case ENGINE_PLAY:
+	case ENGINE_PAUSE:
+	case ENGINE_STEP:
+		glUniform1f(location, App->timeManager->GetTime());
+		break;
+
+		// Editor
+	case ENGINE_EDITOR:
+		glUniform1f(location, App->timeManager->GetRealTime());
+		break;
+	}
+
+	// Unknown uniforms
+	uint textureUnit = 0;
+	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+	for (uint i = 0; i < uniforms.size(); ++i)
+	{
+		Uniform uniform = uniforms[i];
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::FloatU_value:
+			glUniform1f(uniform.common.location, uniform.floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			glUniform1i(uniform.common.location, uniform.intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+			break;
+		case Uniforms_Values::Vec3FU_value:
+			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+			break;
+		case Uniforms_Values::Vec4FU_value:
+			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+			break;
+		case Uniforms_Values::Vec2IU_value:
+			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+			break;
+		case Uniforms_Values::Vec3IU_value:
+			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+			break;
+		case Uniforms_Values::Vec4IU_value:
+			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+			break;
+		case Uniforms_Values::Sampler2U_value:
+			if (textureUnit < maxTextureUnits)
+			{
+				glActiveTexture(GL_TEXTURE0 + textureUnit);
+				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+				glUniform1i(uniform.common.location, textureUnit);
+				++textureUnit;
+			}
+			break;
+		}
+	}
+
+	for (uint i = 0; i < meshComponents.size(); ++i)
+	{
+		// Mesh
+		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponents[i]->res);
+
+		glBindVertexArray(mesh->GetVAO());
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+		glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	}
+
+	for (uint i = 0; i < maxTextureUnits; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glUseProgram(0);
+
 }
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const

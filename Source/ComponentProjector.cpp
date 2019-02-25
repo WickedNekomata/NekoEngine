@@ -29,7 +29,7 @@ ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, C
 	frustum.nearPlaneDistance = 1.0f;
 	frustum.farPlaneDistance = 500.0f;
 	frustum.verticalFov = 60.0f * DEGTORAD;
-	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
+	frustum.horizontalFov = 60.0f * DEGTORAD;
 
 	// -----
 
@@ -178,7 +178,7 @@ void ComponentProjector::OnInternalLoad(char*& cursor)
 void ComponentProjector::SetFOV(float fov)
 {
 	frustum.verticalFov = fov * DEGTORAD;
-	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * App->window->GetWindowWidth() / App->window->GetWindowHeight());
+	frustum.horizontalFov = fov * DEGTORAD;
 }
 
 float ComponentProjector::GetFOV() const

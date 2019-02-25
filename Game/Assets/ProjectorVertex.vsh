@@ -26,7 +26,8 @@ void main()
 	fNormal = normalize(normal_matrix * normal);
 	fColor = color;
 	fTexCoord = texCoord;
-	fProjectorTexCoord = projector_matrix * pos4;
+	
+	fProjectorTexCoord = projector_matrix * (model_matrix * pos4);
 
 	gl_Position = mvp_matrix * pos4;
 }

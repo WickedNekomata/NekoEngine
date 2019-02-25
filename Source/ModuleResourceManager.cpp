@@ -71,13 +71,19 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 		case MeshResource:
 		case TextureResource:
-		{
-			// 1. Delete resource(s)
+		{		
 			std::vector<uint> resourcesUuids;
 			if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
-				DeleteResources(resourcesUuids);
+			{
+				// 1. Delete entries
+				for (uint i = 0; i < resourcesUuids.size(); ++i)
+					App->fs->deleteFile(GetResource(resourcesUuids[i])->GetExportedFile());
 
-			// 2. Import file
+				// 2. Delete resource(s)
+				DeleteResources(resourcesUuids);
+			}
+				
+			// 3. Import file
 			System_Event newEvent;
 			newEvent.type = System_Event_Type::ImportFile;
 			strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
@@ -125,18 +131,16 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		App->fs->deleteFile(metaFile);
 
-		// 2. Delete entries
 		std::vector<uint> resourcesUuids;
-		bool resources = GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids);
-		if (resources)
+		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
 		{
+			// 2. Delete entries
 			for (uint i = 0; i < resourcesUuids.size(); ++i)
 				App->fs->deleteFile(GetResource(resourcesUuids[i])->GetExportedFile());
-		}
-
-		// 3. Delete resource(s)
-		if (resources)
+			
+			// 3. Delete resource(s)
 			DeleteResources(resourcesUuids);
+		}
 	}
 	break;
 
@@ -151,21 +155,17 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 		App->fs->deleteFile(metaFile);
 
-		// 2. Delete entries
+
 		std::vector<uint> resourcesUuids;
-		bool resources = GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids);
-		if (resources)
+		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
 		{
+			// 2. Delete entries
 			for (uint i = 0; i < resourcesUuids.size(); ++i)
 				App->fs->deleteFile(GetResource(resourcesUuids[i])->GetExportedFile());
-		}
 
-		// 3. Delete resource(s)
-
-		//TODO: SEND EVENTS ABOUT THE DELETED RESOURCES, COMPONENTSCRIPTS NEED THAT IN ORDER TO DELETE THEIRSELVES
-
-		if (resources)
+			// 3. Delete resource(s)
 			DeleteResources(resourcesUuids);
+		}
 
 		// 4. Import file	
 		System_Event newEvent;
@@ -912,8 +912,6 @@ void ModuleResourceManager::RecursiveDeleteUnusedEntries(const char* dir, std::s
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
 			ResourceTypes type = GetResourceTypeByExtension(extension.data());
-
-			bool resources = false;
 
 			uint resourceUuid = 0;
 			if (!GetResourceUuidByExportedFile(path.data(), resourceUuid))

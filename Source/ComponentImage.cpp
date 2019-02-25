@@ -16,16 +16,10 @@ ComponentImage::ComponentImage(const ComponentImage & componentRectTransform) : 
 {
 	use_color_vec = componentRectTransform.use_color_vec;
 	if (use_color_vec)
-	{
-		color[COLOR_R] = componentRectTransform.color[COLOR_R];
-		color[COLOR_G] = componentRectTransform.color[COLOR_G];
-		color[COLOR_B] = componentRectTransform.color[COLOR_B];
-		color[COLOR_A] = componentRectTransform.color[COLOR_A];
-	}
+		memcpy(color, componentRectTransform.color, sizeof(float) * 4);
 	else
 		res_image = componentRectTransform.res_image;
 	App->ui->componentsUI.push_back(this);
-
 }
 
 ComponentImage::~ComponentImage()

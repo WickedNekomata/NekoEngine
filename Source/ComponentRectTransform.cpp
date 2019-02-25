@@ -32,20 +32,9 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 
 	ui_rect = App->ui->GetRectUI();
 
-	rectTransform[X_RECT] = componentRectTransform.rectTransform[X_RECT];
-	rectTransform[Y_RECT] = componentRectTransform.rectTransform[Y_RECT];
-	rectTransform[XDIST_RECT] = componentRectTransform.rectTransform[XDIST_RECT];
-	rectTransform[YDIST_RECT] = componentRectTransform.rectTransform[YDIST_RECT];
-
-	anchor[LEFT_RECT] = componentRectTransform.anchor[LEFT_RECT];
-	anchor[TOP_RECT] = componentRectTransform.anchor[TOP_RECT];
-	anchor[RIGHT_RECT] = componentRectTransform.anchor[RIGHT_RECT];
-	anchor[BOTTOM_RECT] = componentRectTransform.anchor[BOTTOM_RECT];
-
-	anchor_flags[LEFT_RECT] = componentRectTransform.anchor_flags[LEFT_RECT];
-	anchor_flags[TOP_RECT] = componentRectTransform.anchor_flags[TOP_RECT];
-	anchor_flags[RIGHT_RECT] = componentRectTransform.anchor_flags[RIGHT_RECT];
-	anchor_flags[BOTTOM_RECT] = componentRectTransform.anchor_flags[BOTTOM_RECT];
+	memcpy(rectTransform, componentRectTransform.rectTransform, sizeof(uint) * 4);
+	memcpy(anchor, componentRectTransform.anchor, sizeof(uint) * 4);
+	memcpy(anchor_flags, componentRectTransform.anchor_flags, sizeof(bool) * 4);
 
 	Component* rect = nullptr;
 	if (parent->GetParent() != nullptr && (rect = parent->GetParent()->GetComponent(ComponentTypes::RectTransformComponent)) != nullptr)

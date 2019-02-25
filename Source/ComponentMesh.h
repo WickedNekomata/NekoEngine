@@ -6,6 +6,7 @@
 #include "Globals.h"
 
 struct Mesh;
+class ResourceMesh;
 
 class ComponentMesh : public Component
 {

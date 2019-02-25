@@ -48,9 +48,11 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 	
 
 	if(SaveBone(data,res_data, outputFile, true /* TODO_G: WHAT? */))
-		DEPRECATED_LOG("Saved bone correctly in path: [%s]", output.c_str())
+		DEPRECATED_LOG("Saved bone correctly in path: [%s]", outputFile.c_str())
 	else
-		DEPRECATED_LOG("Error saving bone in path: [%s]", output.c_str());
+		DEPRECATED_LOG("Error saving bone in path: [%s]", outputFile.c_str());
+
+	output = outputFile;
 
 	return go->cmp_bone->res;
 }

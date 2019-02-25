@@ -1,7 +1,0 @@
-; Sink.def : Declares the module parameters for the DLL.
-
-LIBRARY      "Sink"
-
-EXPORTS
-	AkCreatePlugin
-	AkGetSinkPluginDevices

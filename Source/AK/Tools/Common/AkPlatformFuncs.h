@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2017.2.6  Build: 6636
+  Version: v2017.2.3  Build: 6575
   Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -33,13 +33,13 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_TOOLS_COMMON_AKPLATFORMFUNCS_H
 #define _AK_TOOLS_COMMON_AKPLATFORMFUNCS_H
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "../../SoundEngine/Common/AkTypes.h"
 
 // Uncomment the following to enable built-in platform profiler markers in the sound engine
 //#define AK_ENABLE_INSTRUMENT
 
 #if defined(AK_WIN) || defined(AK_XBOXONE)
-#include <AK/Tools/Win32/AkPlatformFuncs.h>
+#include "AkPlatformFuncs.h"
 
 #elif defined (AK_APPLE)
 #include <AK/Tools/Mac/AkPlatformFuncs.h>

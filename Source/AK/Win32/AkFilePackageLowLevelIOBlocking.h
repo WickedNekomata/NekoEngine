@@ -29,7 +29,7 @@ written agreement between you and Audiokinetic Inc.
 #ifndef _AK_FILE_PACKAGE_LOW_LEVEL_IO_BLOCKING_H_
 #define _AK_FILE_PACKAGE_LOW_LEVEL_IO_BLOCKING_H_
 
-#include "../Common/AkFilePackageLowLevelIO.h"
+#include "AkFilePackageLowLevelIO.h"
 #include "AkDefaultIOHookBlocking.h"
 
 class CAkFilePackageLowLevelIOBlocking 

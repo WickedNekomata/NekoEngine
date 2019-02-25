@@ -1,14 +1,14 @@
 #include "WwiseT.h"
 
-#include <AK/SoundEngine/Common/AkMemoryMgr.h>                  // Memory Manager
-#include <AK/SoundEngine/Common/AkModule.h>						// Default memory and stream managers
-#include "AK/Win32/AkFilePackageLowLevelIOBlocking.h"			
-#include <AK/MusicEngine/Common/AkMusicEngine.h>                // Music Engine
-#include "MathGeoLib/MathGeoLib.h"
+#include "AK/SoundEngine/Common/AkMemoryMgr.h"                  // Memory Manager
+#include "AK/SoundEngine/Common/AkModule.h"						// Default memory and stream managers
+#include "AK/Win32/AkFilePackageLowLevelIOBlocking.h"
+#include "AK/MusicEngine/Common/AkMusicEngine.h"                // Music Engine
+#include "MathGeoLib/include/MathGeoLib.h"
 #include <assert.h>
 #include <vector>
 
-#include <AK/Plugin/AkRoomVerbFXFactory.h>
+#include "AK/Plugin/AkRoomVerbFXFactory.h"
 
 CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 

@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2017.2.6  Build: 6636
+  Version: v2017.2.3  Build: 6575
   Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -143,7 +143,7 @@ namespace AK
 			/// to check the status of the undo system.
 			virtual AK::Wwise::IUndoManager * GetUndoManager() = 0;
 
-			/// Obtain licensing status for the plug-in. Refer to \ref wwiseplugin_dll_license for more information.
+			/// Obtain licensing status for the plug-in.
 			virtual void GetLicenseStatus(
 				const GUID & in_guidPlatform,			///< GUID of the platform
 				AK::Wwise::LicenseType & out_eType,		///< License Type
@@ -151,7 +151,7 @@ namespace AK
 				UINT32 & out_uDaysToExpiry				///< Days until license expiry
 				) = 0;
 
-			/// Obtain licensing status for a plug-in-specific asset ID. Refer to \ref wwiseplugin_dll_license for more information.
+			/// Obtain licensing status for a plug-in-specific asset ID.
 			virtual void GetAssetLicenseStatus( 
 				const GUID & in_guidPlatform,			///< GUID of the platform
 				AkUInt32 in_uAssetID,					///< ID of the asset
@@ -598,7 +598,6 @@ namespace AK
 			/// \sa
 			/// - \ref IPluginPropertySet::GetLicenseStatus
 			/// - \ref IPluginPropertySet::GetAssetLicenseStatus
-			/// - \ref wwiseplugin_dll_license
 			virtual AK::Wwise::LicenseStatus GetLicenseStatus(
 				const GUID & in_guidPlatform,		///< GUID of the platform
 				AK::Wwise::Severity& out_eSeverity,	///< (Optional) If set, the string placed in out_pszMessage will be shown in the log with the corresponding severity. 

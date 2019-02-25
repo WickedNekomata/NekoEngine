@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2017.2.6  Build: 6636
+  Version: v2017.2.3  Build: 6575
   Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
  
@@ -89,8 +89,6 @@ public:
 			uTailFramesRemaining = AKFXTAILHANDLER_NOTINTAIL;
 		}
 	}
-
-	inline bool HasTailRemaining() { return uTailFramesRemaining > 0; } // Also true when AKFXTAILHANDLER_NOTINTAIL
 
 protected:
 

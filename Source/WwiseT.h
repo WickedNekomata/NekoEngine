@@ -2,7 +2,7 @@
 #define WWISET_H_
 
 #include "Globals.h"
-#include "AK\Common\AkTypes.h"
+#include "AK/SoundEngine/Common/AkTypes.h"
 //#include <AK\SoundEngine\Platforms\Windows\AkTypes.h>
 
 // Wwise libs
@@ -15,7 +15,7 @@
 #pragma comment( lib, "AK/Debug(StaticCRT)/lib/AkRoomVerbFX.lib")
 
 #else
-#include <AK/Comm/AkCommunication.h>
+#include "AK/Comm/AkCommunication.h"
 #pragma comment( lib, "AK/Debug(StaticCRT)/lib/CommunicationCentral.lib" )
 #pragma comment( lib, "AK/ws2_32.lib") 
 #pragma comment( lib, "AK/Debug(StaticCRT)/lib/AkSoundEngine.lib" )

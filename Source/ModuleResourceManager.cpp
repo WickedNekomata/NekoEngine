@@ -536,46 +536,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 	case ResourceTypes::PrefabResource:
 	{
-		std::string outputFile;
-		std::string name;
-		if (ResourcePrefab::ImportFile(file, name, outputFile)) {
-			std::vector<uint> resourcesUuids;
-			if (!GetResourcesUuidsByFile(file, resourcesUuids))
-			{
-				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The prefab object file '%s' has resources that need to be created", file);
-
-				// 1. Shader object
-				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
-				assert(uuid > 0);
-				resourcesUuids.push_back(uuid);
-				resourcesUuids.shrink_to_fit();
-
-				ResourceData data;
-				PrefabData shaderObjectData;
-				data.file = file;
-				if (name.empty())
-					App->fs->GetFileName(file, data.name);
-				else
-					data.name = name.data();
-
-
-				uint shaderObject = 0;
-				bool success = ResourcePrefab::LoadFile(file, shaderObjectData);
-
-				resource = CreateResource(ResourceTypes::PrefabResource, data, &shaderObjectData, uuid);
-				
-			}
-			else
-				resource = GetResource(resourcesUuids.front());
-
-			// 2. Meta
-			// TODO: only create meta if any of its fields has been modificated
-			std::string outputMetaFile;
-			std::string name = resource->GetName();
-			int64_t lastModTime = ResourceShaderObject::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
-			assert(lastModTime > 0);
-		}
+		//TODO: FILL THAT
 		break;
 	}
 
@@ -685,11 +646,8 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 
 	case ResourceTypes::PrefabResource:
 	{
-		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
-		{
-			if (!overwrite)
-				resource = ImportFile(outputFile.data());
-		}
+		resource = (Resource*)ResourcePrefab::ExportFile(data.name.data(), (*(PrefabData*)specificData).root);
+		this->resources[resource->GetUuid()] = resource;
 	}
 	break;
 
@@ -737,7 +695,7 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			resource = new ResourceScript(uuid, data, *(ResourceScriptData*)specificData);
 			break;
 		case ResourceTypes::PrefabResource:
-			resource = new ResourcePrefab(ResourceTypes::PrefabResource, uuid, data, *(PrefabData*)specificData);
+			resource = new ResourcePrefab(uuid, data, *(PrefabData*)specificData);
 			break;
 	}
 

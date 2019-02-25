@@ -15,8 +15,7 @@ ResourcePrefab::~ResourcePrefab()
 {
 	if (prefabData.root != nullptr)
 	{
-		delete prefabData.root;
-		prefabData.root = nullptr;
+		prefabData.root->DestroyTemplate();
 	}
 }
 
@@ -82,7 +81,6 @@ ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* t
 	data.name = prefabName;
 
 	ResourcePrefab* retPrefab = new ResourcePrefab(App->GenerateRandomNumber(), data, PrefabData());
-	retPrefab->prefabData.root = templateRoot;
 
 	char* buffer;
 	uint size;
@@ -94,7 +92,7 @@ ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* t
 	int64_t lastModTime = App->fs->GetLastModificationTime(data.file.data());
 	CreateMeta(retPrefab, lastModTime);
 
-	return nullptr;
+	return retPrefab;
 }
 
 bool ResourcePrefab::CreateMeta(ResourcePrefab* prefab, int64_t lastModTime)
@@ -118,6 +116,8 @@ bool ResourcePrefab::CreateMeta(ResourcePrefab* prefab, int64_t lastModTime)
 	cursor += bytes;
 
 	App->fs->Save(prefab->data.file + EXTENSION_META, metaBuffer, size);
+
+	return true;
 }
 
 bool ResourcePrefab::UpdateFromMeta()

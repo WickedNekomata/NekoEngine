@@ -162,6 +162,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram()
 	shaderData.name = "Default shader program";
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderProgramType = ShaderProgramTypes::Standard;
 	ResourceShaderProgram* prog = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UUID);
 	if (!prog->Link())
 		prog->isValid = false;

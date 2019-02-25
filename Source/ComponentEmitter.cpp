@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 #include "ResourceTexture.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
 
@@ -21,8 +22,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
-	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
-
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
@@ -83,12 +83,13 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 
 	App->particle->emitters.push_back(this);
 
-	material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 
 ComponentEmitter::~ComponentEmitter()
 {
+	SetMaterialRes(0);
 
 	App->timeManager->RemoveGameTimer(&timer);
 	App->timeManager->RemoveGameTimer(&burstTime);
@@ -511,6 +512,32 @@ void ComponentEmitter::ParticleTexture()
 {
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
+		const Resource* resource = App->res->GetResource(materialRes);
+		std::string materialName = resource->GetName();
+		ImGui::PushID("material");
+		ImGui::Button(materialName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", materialRes);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			{
+				uint payload_n = *(uint*)payload->Data;
+				SetMaterialRes(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::SmallButton("Use default material"))
+			SetMaterialRes(App->resHandler->defaultMaterial);
+		ImGui::Separator();
 
 		if (ImGui::Checkbox("Animated sprite", &particleAnim.isParticleAnimated))
 		{
@@ -657,6 +684,17 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
 {
 	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+}
+
+void ComponentEmitter::SetMaterialRes(uint materialUuid)
+{
+	if (materialRes > 0)
+		App->res->SetAsUnused(materialRes);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	materialRes = materialUuid;
 }
 
 #ifndef GAMEMODE

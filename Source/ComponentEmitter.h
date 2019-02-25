@@ -123,6 +123,8 @@ public:
 	bool EditColor(ColorTime & colorTime, uint pos = 0u);
 	void SetAABB(const math::float3 size, const math::float3 extraPosition = math::float3::zero);
 
+	void SetMaterialRes(uint materialUuid);
+
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);
 #endif
@@ -163,7 +165,8 @@ public:
 	//Create other particle when he death
 	bool isSubEmitter = false;
 
-	ComponentMaterial* material = nullptr;
+	// Material
+	uint materialRes = 0;
 
 private:
 	// General info

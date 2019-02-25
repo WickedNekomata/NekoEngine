@@ -3,14 +3,20 @@
 #include "Primitive.h"
 #include "ComponentEmitter.h"
 #include "ModuleParticles.h"
+#include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
 #include "ShaderImporter.h"
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ComponentMaterial.h"
+#include "ResourceShaderProgram.h"
+#include "ResourceMaterial.h"
+#include "Uniforms.h"
 
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float3.h"
+
+#include <vector>
 
 //#include "pcg-c-basic-0.9/pcg_basic.h"
 
@@ -189,18 +195,12 @@ void Particle::Draw()
 {
 	if (active)
 	{
-		// Shader
-		GLuint shaderProgram = App->shaderImporter->GetDefaultShaderProgram();
+		ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(owner->materialRes);
+		uint shaderUuid = resourceMaterial->GetShaderUuid();
+		ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+		GLuint shaderProgram = resourceShaderProgram->shaderProgram;
 
 		glUseProgram(shaderProgram);
-
-		glActiveTexture(GL_TEXTURE0);
-
-		glBindTexture(GL_TEXTURE_2D, owner->material->UUID); // particle texture // TODO UNIFORMS
-
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.albedo"), 0);
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.specular"), 0);
-		glUniform1i(glGetUniformLocation(shaderProgram, "material.normalMap"), 0);
 		
 		math::float4x4 model_matrix = transform.GetMatrix();// particle matrix
 		model_matrix = model_matrix.Transposed();
@@ -237,6 +237,54 @@ void Particle::Draw()
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.diffuse.ptr());
 		location = glGetUniformLocation(shaderProgram, "light.specular");
 		glUniform3fv(location, 1, App->renderer3D->directionalLight.specular.ptr());
+
+		// Unknown uniforms
+		uint textureUnit = 0;
+		std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+		for (uint i = 0; i < uniforms.size(); ++i)
+		{
+			Uniform uniform = uniforms[i];
+
+			if (strcmp(uniform.common.name, "cosadeparticules") == 0)
+				continue;
+
+			switch (uniform.common.type)
+			{
+			case Uniforms_Values::FloatU_value:
+				glUniform1f(uniform.common.location, uniform.floatU.value);
+				break;
+			case Uniforms_Values::IntU_value:
+				glUniform1i(uniform.common.location, uniform.intU.value);
+				break;
+			case Uniforms_Values::Vec2FU_value:
+				glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+				break;
+			case Uniforms_Values::Vec3FU_value:
+				glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+				break;
+			case Uniforms_Values::Vec4FU_value:
+				glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+				break;
+			case Uniforms_Values::Vec2IU_value:
+				glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+				break;
+			case Uniforms_Values::Vec3IU_value:
+				glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+				break;
+			case Uniforms_Values::Vec4IU_value:
+				glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+				break;
+			case Uniforms_Values::Sampler2U_value:
+				if (textureUnit < App->renderer3D->GetMaxTextureUnits())
+				{
+					glActiveTexture(GL_TEXTURE0 + textureUnit);
+					glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+					glUniform1i(uniform.common.location, textureUnit);
+					++textureUnit;
+				}
+				break;
+			}
+		}
 
 		uint defaultPlaneVAO = 0;
 		uint defaultPlaneIBO = 0;

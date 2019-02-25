@@ -122,19 +122,26 @@ bool ResourcePrefab::CreateMeta(ResourcePrefab* prefab, int64_t lastModTime)
 
 bool ResourcePrefab::UpdateFromMeta()
 {
-	char* buffer;
-	uint size = App->fs->Load(data.file + EXTENSION_META, &buffer);
-	if (size <= 0)
-		return false;
+	if (App->fs->Exists(data.file + EXTENSION_META))
+	{
+		char* buffer;
+		uint size = App->fs->Load(data.file + EXTENSION_META, &buffer);
+		if (size <= 0)
+			return false;
 
-	char* cursor = buffer;
-	uint bytes = sizeof(uint);
-	cursor += sizeof(int64_t) + bytes;
+		char* cursor = buffer;
+		uint bytes = sizeof(uint);
+		cursor += sizeof(int64_t) + bytes;
 
-	memcpy(&uuid, cursor, bytes);
-	cursor += bytes;
+		memcpy(&uuid, cursor, bytes);
+		cursor += bytes;
 
-	delete[] buffer;
+		delete[] buffer;
+	}
+	else
+	{
+		CreateMeta(this, App->fs->GetLastModificationTime(data.file.data()));
+	}
 
 	return true;
 }

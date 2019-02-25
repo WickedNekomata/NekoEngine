@@ -536,7 +536,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 	case ResourceTypes::PrefabResource:
 	{
-		//TODO: FILL THAT
+		resource = ResourcePrefab::ImportFile(file);
+		this->resources[resource->GetUuid()] = resource;
 		break;
 	}
 
@@ -936,8 +937,8 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	case ASCIImat: case ASCIIMAT:
 		return ResourceTypes::MaterialResource;
 		break;
-	/*case ASCIIpfb: case ASCIIPFB:
-		return ResourceTypes::PrefabResource;*/
+	case ASCIIpfb: case ASCIIPFB:
+		return ResourceTypes::PrefabResource;
 	}
 
 	return ResourceTypes::NoResourceType;

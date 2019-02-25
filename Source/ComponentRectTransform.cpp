@@ -103,6 +103,7 @@ void ComponentRectTransform::ChangeChildsRect(bool its_me)
 
 	std::vector<GameObject*> childs;
 	parent->GetChildrenVector(childs);
+
 	for (GameObject* c_go : childs)
 	{
 		if(c_go != parent)
@@ -123,7 +124,7 @@ void ComponentRectTransform::ParentChanged()
 		rectTransform[Y_RECT] = rectParent[Y_RECT] + rectParent[YDIST_RECT] - anchor[TOP_RECT];
 
 	if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
-		rectTransform[XDIST_RECT] = rectParent[X_RECT] + anchor[RIGHT_RECT] -rectTransform[X_RECT];
+		rectTransform[XDIST_RECT] = rectParent[X_RECT] + anchor[RIGHT_RECT] - rectTransform[X_RECT];
 	else
 		rectTransform[XDIST_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[RIGHT_RECT] - rectTransform[X_RECT];
 
@@ -139,7 +140,7 @@ void ComponentRectTransform::RecaculateAnchors()
 	if (rectParent != nullptr)
 	{
 		if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
-			anchor[LEFT_RECT] = rectTransform[X_RECT] - rectParent[UI_XRECT];
+			anchor[LEFT_RECT] = rectTransform[X_RECT] - rectParent[X_RECT];
 		else
 			anchor[LEFT_RECT] = rectParent[UI_WIDTHRECT] - rectTransform[X_RECT];
 
@@ -149,12 +150,12 @@ void ComponentRectTransform::RecaculateAnchors()
 			anchor[TOP_RECT] = rectParent[UI_HEIGHTRECT] - rectTransform[Y_RECT];
 
 		if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
-			anchor[RIGHT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) - rectParent[UI_XRECT];
+			anchor[RIGHT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) - rectParent[X_RECT];
 		else
 			anchor[RIGHT_RECT] = rectParent[UI_WIDTHRECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
 
 		if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
-			anchor[BOTTOM_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) - rectParent[UI_XRECT];
+			anchor[BOTTOM_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) - rectParent[Y_RECT];
 		else
 			anchor[BOTTOM_RECT] = rectParent[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
 	}
@@ -320,6 +321,8 @@ void ComponentRectTransform::OnUniqueEditor()
 
 	if (need_change_childs)
 		ChangeChildsRect(true);
+
+	needed_recalculate = need_change_childs = false;
 
 	ImGui::PushItemWidth(150.0f);
 	ImGui::Text("Margin");

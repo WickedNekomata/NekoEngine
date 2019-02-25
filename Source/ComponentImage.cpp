@@ -37,11 +37,6 @@ void ComponentImage::Update()
 {
 }
 
-void ComponentImage::OnEditor()
-{
-	OnUniqueEditor();
-}
-
 const float * ComponentImage::GetColor() const
 {
 	return color;

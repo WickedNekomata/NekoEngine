@@ -19,7 +19,6 @@ public:
 	~ComponentImage();
 
 	void Update();
-	void OnEditor();
 
 	const float* GetColor()const;
 	uint GetResImage()const;

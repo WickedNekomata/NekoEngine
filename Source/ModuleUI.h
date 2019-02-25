@@ -41,7 +41,7 @@ public:
 
 	void OnWindowResize(uint width, uint height);
 
-	const uint* GetRectUI()const;
+	uint* GetRectUI();
 
 	void LinkAllRectsTransform();
 

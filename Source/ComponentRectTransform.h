@@ -40,7 +40,7 @@ public:
 
 	void SetRect(uint x, uint y, uint x_dist, uint y_dist);
 
-	const uint* GetRect() const;
+	uint* GetRect();
 
 	void CheckParentRect();
 
@@ -56,8 +56,8 @@ private:
 
 	void RecaculateAnchors();
 
-	const uint* ui_rect = nullptr;
-	const uint* rectParent = nullptr;
+	uint* ui_rect = nullptr;
+	uint* rectParent = nullptr;
 
 	void ParentChanged();
 

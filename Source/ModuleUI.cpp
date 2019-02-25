@@ -44,8 +44,7 @@ void ModuleUI::DrawCanvas()
 			ComponentCanvasRenderer* ui_rend = (ComponentCanvasRenderer*)go_rend->GetComponent(ComponentTypes::CanvasRendererComponent);
 			if (ui_rend)
 			{
-				ui_rend->Update();
-				ComponentCanvasRenderer::ToUIRend* rend = ui_rend->GetFistQueue();
+				ComponentCanvasRenderer::ToUIRend* rend = ui_rend->GetDrawAvaiable();
 				while (rend != nullptr)
 				{
 					switch (rend->GetType())
@@ -58,8 +57,7 @@ void ModuleUI::DrawCanvas()
 						break;
 					}
 
-					ui_rend->Drawed();
-					rend = ui_rend->GetFistQueue();
+					rend = ui_rend->GetDrawAvaiable();
 				}
 			}
 		}
@@ -240,7 +238,7 @@ void ModuleUI::OnWindowResize(uint width, uint height)
 	ui_size_draw[UI_HEIGHTRECT] = height;
 }
 
-const uint * ModuleUI::GetRectUI() const
+ uint * ModuleUI::GetRectUI()
 {
 	return ui_size_draw;
 }

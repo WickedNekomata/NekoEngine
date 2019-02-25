@@ -5,7 +5,7 @@
 
 #include "Globals.h"
 
-#include <queue>
+#include <vector>
 
 #include "MathGeoLib/include/Math/float4.h"
 
@@ -24,7 +24,14 @@ public:
 	struct ToUIRend
 	{
 	public:
-		ToUIRend(RenderTypes t, Component* c) : type(t), cmp(c) {}
+		ToUIRend() {}
+		
+		void Set(RenderTypes t, Component* c)
+		{
+			type = t;
+			cmp = c;
+			isRendered_flag = false;
+		}
 
 		RenderTypes GetType()const
 		{
@@ -33,9 +40,14 @@ public:
 		math::float4 GetColor();
 		uint GetTexture();
 
+		bool isRendered() {
+			return isRendered_flag;
+		}
+
 	private:
 		RenderTypes type = RenderTypes::RENDER_NULL;
 		Component* cmp = nullptr;
+		bool isRendered_flag = true;
 	};
 
 	ComponentCanvasRenderer(GameObject* parent, ComponentTypes componentType = ComponentTypes::CanvasRendererComponent);
@@ -45,8 +57,7 @@ public:
 	void Update();
 	void OnEditor();
 
-	ToUIRend* GetFistQueue() const;
-	void Drawed();
+	ToUIRend* GetDrawAvaiable() const;
 
 private:
 	uint GetInternalSerializationBytes();
@@ -54,7 +65,7 @@ private:
 	void OnInternalLoad(char*& cursor);
 	void OnUniqueEditor();
 
-	std::queue<ToUIRend* > rend_queue;
+	std::vector<ToUIRend* > rend_queue;
 };
 
 #endif

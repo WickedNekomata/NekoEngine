@@ -9,6 +9,7 @@ class ComponentScript : public Component
 {
 public:
 	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr);
+	ComponentScript(ComponentScript& copy);
 	virtual ~ComponentScript();
 
 	void Awake();
@@ -36,6 +37,7 @@ public:
 
 public:
 	void InstanceClass();
+	void InstanceClass(MonoObject* classInstance);
 
 public:
 	bool awaked = false;

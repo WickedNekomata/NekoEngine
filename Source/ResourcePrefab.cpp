@@ -43,8 +43,6 @@ void ResourcePrefab::OnPanelAssets()
 		Resource* res = this;
 		ImGui::SetDragDropPayload("PREFAB_RESOURCE", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
-
-		//TODO: RECEIVE THIS DRAG AND DROP IN THE HIERARCHY AND INSTANTIATE A COPY OF THE LOADED ROOT WITH THE COPY CONSTRUCTOR
 	}
 }
 
@@ -78,7 +76,7 @@ ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* t
 	ResourceData data;
 	data.file = DIR_ASSETS_PREFAB + std::string("/") + prefabName + EXTENSION_PREFAB;
 	data.exportedFile = "";
-	data.name = prefabName;
+	data.name = prefabName + std::string(EXTENSION_PREFAB);
 
 	ResourcePrefab* retPrefab = new ResourcePrefab(App->GenerateRandomNumber(), data, PrefabData());
 
@@ -141,6 +139,17 @@ bool ResourcePrefab::UpdateFromMeta()
 	else
 	{
 		CreateMeta(this, App->fs->GetLastModificationTime(data.file.data()));
+	}
+
+	return true;
+}
+
+bool ResourcePrefab::UpdateRoot()
+{
+	if (prefabData.root)
+	{
+		UnloadFromMemory();
+		LoadInMemory();
 	}
 
 	return true;

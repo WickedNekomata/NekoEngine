@@ -22,11 +22,14 @@ public:
 	static ResourcePrefab* ExportFile(const char* prefabName, GameObject* templateRoot);
 	static bool CreateMeta(ResourcePrefab* prefab, int64_t lastModTime);
 	bool UpdateFromMeta();
+	bool UpdateRoot();
 
 	static uint GetMetaSize() { return sizeof(int64_t) + sizeof(uint) * 2; }
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();
+
+	inline GameObject* GetRoot() { return prefabData.root; }
 
 private:
 	PrefabData prefabData;

@@ -18,7 +18,7 @@ class GameObject
 public:
 
 	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject(GameObject& gameObject, GameObject* newRoot = 0);
+	GameObject(GameObject& gameObject);
 	~GameObject();
 
 	void DestroyTemplate();

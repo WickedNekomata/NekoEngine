@@ -18,9 +18,19 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/attrdefs.h>
 
-ComponentScript::ComponentScript(std::string scriptName, GameObject * gameObject) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent)
+ComponentScript::ComponentScript(std::string scriptName, GameObject* gameObject) : scriptName(scriptName), Component(gameObject, ComponentTypes::ScriptComponent)
 {
 	UUID = App->GenerateRandomNumber();
+}
+
+ComponentScript::ComponentScript(ComponentScript& copy) : scriptName(copy.scriptName), Component(copy.parent, ComponentTypes::ScriptComponent)
+{
+	UUID = App->GenerateRandomNumber();
+	this->scriptResUUID = copy.scriptResUUID;
+	App->res->SetAsUsed(scriptResUUID);
+	classInstance = mono_object_clone(copy.classInstance);
+	InstanceClass(classInstance);
+	App->scripting->AddScriptComponent(this);
 }
 
 ComponentScript::~ComponentScript()
@@ -30,6 +40,8 @@ ComponentScript::~ComponentScript()
 		ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 		if (scriptRes)
 			App->res->SetAsUnused(scriptRes->GetUuid());
+
+		scriptResUUID = 0;
 	}
 
 	if (handleID != 0)
@@ -2168,11 +2180,43 @@ void ComponentScript::InstanceClass()
 		return;
 	}
 
-
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
 	classInstance = mono_object_new(App->scripting->domain, klass);
 
 	mono_runtime_object_init(classInstance);
+
+	//Reference the gameObject var with the MonoObject relative to this GameObject
+	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);
+
+	//SetUp this monoGO inside the class Instance
+	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");
+	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
+
+	//Create the handle storage to make sure the garbage collector doesn't delete the classInstance
+	handleID = mono_gchandle_new(classInstance, true);
+}
+
+void ComponentScript::InstanceClass(MonoObject* classInstance)
+{
+	if (scriptResUUID == 0)
+		return;
+
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+
+	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
+	{
+		if (!scriptRes)
+		{
+			System_Event event;
+			event.compEvent.type = System_Event_Type::ComponentDestroyed;
+			event.compEvent.component = this;
+			App->PushSystemEvent(event);
+		}
+		return;
+	}
+
+	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
+	this->classInstance = classInstance;
 
 	//Reference the gameObject var with the MonoObject relative to this GameObject
 	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);

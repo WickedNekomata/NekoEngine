@@ -144,15 +144,26 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	GameObject* newGameObject = new GameObject(*copy);
 	gameobjects.push_back(newGameObject);
 
-	if (!copy->IsStatic())
-		dynamicGos.push_back(newGameObject);
+	if(!newRoot)
+	{
+		newGameObject->SetParent(copy->GetParent());
+		copy->GetParent()->AddChild(newGameObject);
+	}
 	else
 	{
-		staticGos.push_back(newGameObject);
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
+		newGameObject->SetParent(newRoot);
+		newRoot->AddChild(newGameObject);
 	}
+
+	std::vector<GameObject*> childs; newGameObject->GetChildrenAndThisVectorFromLeaf(childs);
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		App->GOs->RecalculateVector(childs[i], false);
+	}
+
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::RecreateQuadtree;
+	App->PushSystemEvent(newEvent);
 
 	return newGameObject;
 }
@@ -201,7 +212,7 @@ void ModuleGOs::ClearScene()
 	App->scene->FreeRoot();
 }
 
-void ModuleGOs::RecalculateVector(GameObject* go)
+void ModuleGOs::RecalculateVector(GameObject* go, bool sendEvent)
 {
 	dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), go), dynamicGos.end());
 	staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), go), staticGos.end());
@@ -211,9 +222,12 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	else
 		dynamicGos.push_back(go);
 
-	System_Event newEvent;
-	newEvent.type = System_Event_Type::RecreateQuadtree;
-	App->PushSystemEvent(newEvent);
+	if (sendEvent)
+	{
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}	
 }
 
 bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)

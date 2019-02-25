@@ -5,6 +5,8 @@
 
 #include "ModuleResourceManager.h"
 #include "ResourceBone.h"
+#include "ComponentBone.h"
+#include "GameObject.h"
 
 BoneImporter::BoneImporter()
 {
@@ -14,21 +16,34 @@ BoneImporter::~BoneImporter()
 {
 }
 
-uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable std::string& output) const
+uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable std::string& output, mutable GameObject* go) const
 {
 	bool ret = false;
 
 	if (new_bone == nullptr)
 		return ret;
 
-
-	return 0u;
 	// TODO_G : Now we dont create resources here uwu
 
 	// Temporary object to make the load/Save process
-	/*ResourceBone* bone = (ResourceBone*)App->res->CreateNewResource(ResourceTypes::BoneResource);
+	go->cmp_bone->res = App->GenerateRandomNumber();
+	std::string outputFile = std::to_string(go->cmp_bone->res);
+	ResourceBoneData res_data;
+	res_data.mesh_uid = mesh;
+	res_data.bone_weights_size = new_bone->mNumWeights;
+	memcpy(res_data.offset_matrix.v, &new_bone->mOffsetMatrix.a1, sizeof(float) * 16);
 
-	bone->mesh_uid = mesh;
+	res_data.bone_weights_indices = new uint[res_data.bone_weights_size];
+	res_data.bone_weights = new float[res_data.bone_weights_size];
+
+	for (uint k = 0; k < res_data.bone_weights_size; ++k)
+	{
+		res_data.bone_weights_indices[k] = new_bone->mWeights[k].mVertexId;
+		res_data.bone_weights[k] = new_bone->mWeights[k].mWeight;
+	}
+	//CONTINUE HERE TODO_G
+	return 0u;
+	/*bone->mesh_uid = mesh;
 	bone->bone_weights_size = new_bone->mNumWeights;
 	memcpy(bone->offset_matrix.v, &new_bone->mOffsetMatrix.a1, sizeof(float) * 16);
 
@@ -103,7 +118,7 @@ uint BoneImporter::GenerateResourceFromFile(mutable const char * file_path, muta
 	return resource->GetUUID();*/
 }
 
-bool BoneImporter::SaveBone(mutable const ResourceBone* bone, mutable std::string& output) const
+bool BoneImporter::SaveBone(mutable const ResourceBoneData* bone, mutable std::string& output) const
 {
 	bool ret = false;
 
@@ -142,17 +157,8 @@ bool BoneImporter::SaveBone(mutable const ResourceBone* bone, mutable std::strin
 	bytes = sizeof(float) * bone->bone_weights_size;
 	memcpy(cursor, bone->bone_weights, bytes);
 
-	// Saving file
-	/*std::string tmp_str(L_BONES_DIR);
-	tmp_str.append("/");
-	tmp_str.append(std::to_string(bone->GetUID()));
-	tmp_str.append(".trBone"); // Adding our own format extension*/
-
-	// TODO: set exported path
 	if (App->fs->SaveInGame((char*)data, size, FileTypes::BoneFile, output) > 0)
 		ret = true;
-	//ret = App->file_system->WriteInFile(tmp_str.c_str(), data, size);
-	//output = tmp_str;
 
 	// Deleting useless data
 	RELEASE_ARRAY(data);

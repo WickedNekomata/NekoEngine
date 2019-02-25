@@ -880,16 +880,18 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;
-		// TODO_G : DONT CREATE THE RESOURCE IN THE IMPORT METHOD
-		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output);
-		if (go->GetParent() == nullptr ||
+		// TODO_G CONTINUE HERE +
+		//uint bone_uid = App->boneImporter->Import(go, bone, mesh_bone[bone], output);
+		
+		
+		/*if (go->GetParent() == nullptr ||
 			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
 		imported_bones[node->mName.C_Str()] = bone_uid;
-		DEPRECATED_LOG("->-> Added Bone component");
+		DEPRECATED_LOG("->-> Added Bone component");*/
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

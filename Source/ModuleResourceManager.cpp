@@ -588,7 +588,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
-				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The prefab object file '%s' has resources that need to be created", file);
+				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The bone object file '%s' has resources that need to be created", file);
 
 				// 1. Shader object
 				uint uuid = outputFile.empty() ? App->GenerateRandomNumber() : strtoul(outputFile.data(), NULL, 0);
@@ -597,7 +597,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				resourcesUuids.shrink_to_fit();
 
 				ResourceData data;
-				PrefabData shaderObjectData;
+				ResourceBoneData boneData;
 				data.file = file;
 				if (name.empty())
 					App->fs->GetFileName(file, data.name);
@@ -606,9 +606,9 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 
 
 				uint shaderObject = 0;
-				bool success = ResourcePrefab::LoadFile(file, shaderObjectData);
+				bool success = ResourceBone::LoadFile(file, boneData);
 
-				resource = CreateResource(ResourceTypes::PrefabResource, data, &shaderObjectData, uuid);
+				resource = CreateResource(ResourceTypes::PrefabResource, data, &boneData, uuid);
 
 			}
 			else
@@ -696,7 +696,7 @@ Resource* ModuleResourceManager::ExportFile(ResourceTypes type, ResourceData& da
 	// Add new resource
 	case ResourceTypes::BoneResource:
 	{
-		if (ResourcePrefab::ExportFile(data, *(PrefabData*)specificData, outputFile, overwrite))
+		if (ResourceBone::ExportFile(data, *(ResourceBoneData*)specificData, outputFile, overwrite))
 		{
 			if (!overwrite)
 				resource = ImportFile(outputFile.data());

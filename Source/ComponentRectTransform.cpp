@@ -18,10 +18,7 @@ ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTyp
 	{
 		rectParent = ((ComponentRectTransform*)rect)->GetRect();
 
-		rectTransform[X_RECT] = rectParent[X_RECT];
-		rectTransform[Y_RECT] = rectParent[Y_RECT];
-		rectTransform[XDIST_RECT] = 100;
-		rectTransform[YDIST_RECT] = 100;
+		ParentChanged();
 	}
 
 	RecaculateAnchors();
@@ -41,10 +38,7 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 	{
 		rectParent = ((ComponentRectTransform*)rect)->GetRect();
 
-		rectTransform[X_RECT] = rectParent[X_RECT];
-		rectTransform[Y_RECT] = rectParent[Y_RECT];
-		rectTransform[XDIST_RECT] = 100;
-		rectTransform[YDIST_RECT] = 100;
+		ParentChanged();
 	}
 
 	RecaculateAnchors();
@@ -87,10 +81,7 @@ void ComponentRectTransform::CheckParentRect()
 	{
 		rectParent = ((ComponentRectTransform*)rect)->GetRect();
 
-		rectTransform[X_RECT] = rectParent[X_RECT];
-		rectTransform[Y_RECT] = rectParent[Y_RECT];
-		rectTransform[XDIST_RECT] = 100;
-		rectTransform[YDIST_RECT] = 100;
+		ParentChanged();
 	}
 
 	RecaculateAnchors();

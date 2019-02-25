@@ -250,9 +250,9 @@ void ModuleUI::LinkAllRectsTransform()
 	std::vector<GameObject*> gos;
 	canvas->GetChildrenAndThisVectorFromLeaf(gos);
 
-	for (GameObject* go_rend : gos)
+	for (GameObject* go_rect : gos)
 	{
-		ComponentRectTransform* cmp_rect = (ComponentRectTransform*)go_rend->GetComponent(ComponentTypes::RectTransformComponent);
+		ComponentRectTransform* cmp_rect = (ComponentRectTransform*)go_rect->GetComponent(ComponentTypes::RectTransformComponent);
 		cmp_rect->CheckParentRect();
 	}
 }

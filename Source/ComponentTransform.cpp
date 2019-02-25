@@ -4,10 +4,12 @@
 #include "ModuleTimeManager.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleScene.h"
+#include "ModuleInput.h"
+
 #include "GameObject.h"
 #include "ComponentCamera.h"
+#include "ComponentProjector.h"
 #include "ComponentRigidActor.h"
-#include "ModuleInput.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -103,6 +105,10 @@ void ComponentTransform::OnUniqueEditor()
 			if (parent->cmp_camera != nullptr)
 				parent->cmp_camera->UpdateTransform();
 
+			// Transform updated: if the game object has a projector, update its frustum
+			if (parent->cmp_projector != nullptr)
+				parent->cmp_projector->UpdateTransform();
+
 #ifndef GAMEMODE
 			// Transform updated: if the game object is selected, update the camera reference
 			if (parent == App->scene->selectedObject.Get())
@@ -151,7 +157,7 @@ math::float4x4& ComponentTransform::GetGlobalMatrix() const
 
 	GameObject* globalParent = this->GetParent()->GetParent();
 
-	while (globalParent->GetParent() != nullptr)
+	while (globalParent != nullptr && globalParent->GetParent() != nullptr)
 	{
 		aux_list.push_back(globalParent);
 		globalParent = globalParent->GetParent();
@@ -193,6 +199,10 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->cmp_camera != nullptr)
 		parent->cmp_camera->UpdateTransform();
+
+	// Transform updated: if the game object has a projector, update its frustum
+	if (parent->cmp_projector != nullptr)
+		parent->cmp_projector->UpdateTransform();
 
 #ifndef GAMEMODE
 	// Transform updated: if the game object is selected, update the camera reference

@@ -14,7 +14,10 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 	SetResource(App->resHandler->defaultMaterial);
 }
 
-ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentTypes::MaterialComponent) {}
+ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentTypes::MaterialComponent) 
+{
+	SetResource(componentMaterial.res);
+}
 
 ComponentMaterial::~ComponentMaterial() 
 {
@@ -22,17 +25,6 @@ ComponentMaterial::~ComponentMaterial()
 }
 
 void ComponentMaterial::Update() {}
-
-void ComponentMaterial::SetResource(uint materialUuid)
-{
-	if (res > 0)
-		App->res->SetAsUnused(res);
-
-	if (materialUuid > 0)
-		App->res->SetAsUsed(materialUuid);
-
-	res = materialUuid;
-}
 
 void ComponentMaterial::OnUniqueEditor()
 {
@@ -71,13 +63,34 @@ void ComponentMaterial::OnUniqueEditor()
 
 uint ComponentMaterial::GetInternalSerializationBytes()
 {
-	return 0;
+	return sizeof(uint);
 }
 
 void ComponentMaterial::OnInternalSave(char*& cursor)
 {
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &res, bytes);
+	cursor += bytes;
 }
 
 void ComponentMaterial::OnInternalLoad(char*& cursor)
 {
+	size_t bytes = sizeof(uint);
+	uint resource = 0;
+	memcpy(&resource, cursor, bytes);
+	SetResource(resource);
+	cursor += bytes;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ComponentMaterial::SetResource(uint materialUuid)
+{
+	if (res > 0)
+		App->res->SetAsUnused(res);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	res = materialUuid;
 }

@@ -14,6 +14,7 @@ enum ComponentTypes
 	BoneComponent,
 	AnimationComponent,
 	LightComponent,
+	ProjectorComponent,
 
 	// Physics
 	/// Rigid Actors

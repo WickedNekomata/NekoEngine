@@ -196,30 +196,30 @@ update_status ModulePhysics::Update()
 {
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
-		//|| App->GetEngineState() == engine_states::ENGINE_STEP)
-	//{
-		// Step physics
-		//gAccumulator += App->timeManager->GetDt();
-	gAccumulator += App->timeManager->GetRealDt();
-	if (gAccumulator >= PhysicsConstants::FIXED_DT)
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		|| App->GetEngineState() == engine_states::ENGINE_STEP)
 	{
-		gAccumulator = 0.0f;
+		// Step physics
+		gAccumulator += App->timeManager->GetDt();
+		//gAccumulator += App->timeManager->GetRealDt();
+		if (gAccumulator >= PhysicsConstants::FIXED_DT)
+		{
+			gAccumulator = 0.0f;
 
-		updateStatus = FixedUpdate();
+			updateStatus = FixedUpdate();
 
-		gScene->simulate(PhysicsConstants::FIXED_DT); // moves all objects in the scene forward by FIXED_DT
-		gScene->fetchResults(true); // allows the simulation to finish and return the results
+			gScene->simulate(PhysicsConstants::FIXED_DT); // moves all objects in the scene forward by FIXED_DT
+			gScene->fetchResults(true); // allows the simulation to finish and return the results
 
-		// Update colliders
-		for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
-			(*it)->Update();
+			// Update colliders
+			for (std::vector<ComponentCollider*>::const_iterator it = colliderComponents.begin(); it != colliderComponents.end(); ++it)
+				(*it)->Update();
 
-		// Update rigid actors
-		for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
-			(*it)->Update();
+			// Update rigid actors
+			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
+				(*it)->Update();
+		}
 	}
-	//}
 
 	// *****Debug*****
 	if (debugRay.IsFinite())

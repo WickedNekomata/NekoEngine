@@ -24,14 +24,11 @@ public:
 	void RecalculateShape();
 
 	// Sets
-	void SetNormal(math::float3& normal);
+	void SetNormal(const math::float3& normal);
 	void SetDistance(float distance);
 
 	// Gets
 	physx::PxPlaneGeometry GetPlaneGeometry() const;
-
-	//void OnInternalSave(JSON_Object* file);
-	//void OnLoad(JSON_Object* file);
 
 private:
 

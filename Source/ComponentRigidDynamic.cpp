@@ -67,7 +67,43 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 
 ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& componentRigidDynamic) : ComponentRigidActor(componentRigidDynamic, ComponentTypes::RigidDynamicComponent)
 {
+	density = componentRigidDynamic.density;
 
+	physx::PxShape* gShape = nullptr;
+	if (parent->boundingBox.IsFinite())
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+	else
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
+	assert(gShape != nullptr);
+
+	gActor = App->physics->CreateRigidDynamic(physx::PxTransform(physx::PxIDENTITY()), *gShape, density, isKinematic);
+	assert(gActor != nullptr);
+
+	rigidActorType = componentRigidDynamic.rigidActorType;
+
+	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+	if (parent->cmp_collider != nullptr)
+	{
+		UpdateShape(parent->cmp_collider->GetShape());
+		UpdateMassAndInertia();
+	}
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	UpdateTransform(globalMatrix);
+
+	SetUseGravity(componentRigidDynamic.useGravity);
+
+	// -----
+
+	//SetMass(componentRigidDynamic.mass);
+	//SetCMass(componentRigidDynamic.cMass);
+	//SetInertia(componentRigidDynamic.inertia);
+	SetLinearDamping(componentRigidDynamic.linearDamping);
+	SetAngularDamping(componentRigidDynamic.angularDamping);
+	SetMaxLinearVelocity(componentRigidDynamic.maxLinearVelocity);
+	SetMaxAngularVelocity(componentRigidDynamic.maxAngularVelocity);
+	FreezePosition(componentRigidDynamic.freezePosition[0], componentRigidDynamic.freezePosition[1], componentRigidDynamic.freezePosition[2]);
+	FreezeRotation(componentRigidDynamic.freezeRotation[0], componentRigidDynamic.freezeRotation[1], componentRigidDynamic.freezeRotation[2]);
+	SetIsKinematic(componentRigidDynamic.isKinematic);
 }
 
 ComponentRigidDynamic::~ComponentRigidDynamic() {}
@@ -77,234 +113,123 @@ ComponentRigidDynamic::~ComponentRigidDynamic() {}
 void ComponentRigidDynamic::OnUniqueEditor()
 {
 #ifndef GAMEMODE
-	ImGui::Text("Rigid Dynamic");
-	ImGui::Spacing();
-
-	ComponentRigidActor::OnUniqueEditor();
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Density"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##Density", &density, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetDensity(density);
-	ImGui::PopItemWidth();
-
-	ImGui::PushID("DensityButton");
-	if (ImGui::SmallButton("Update mass and inertia"))
-		UpdateMassAndInertia();
-	ImGui::PopID();
-
-	// -----
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Mass"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##Mass", &mass, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetMass(mass);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::Text("Center of mass");
-
-	ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CMassX", &cMass.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCMass(cMass);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CMassY", &cMass.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCMass(cMass);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##CMassZ", &cMass.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
-		SetCMass(cMass);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::Text("Moment of inertia");
-
-	ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##InertiaX", &inertia.x, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetInertia(inertia);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##InertiaY", &inertia.y, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetInertia(inertia);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##InertiaZ", &inertia.z, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetInertia(inertia);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Linear damping"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##LinearDamping", &linearDamping, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetLinearDamping(linearDamping);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Angular damping"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##AngularDamping", &angularDamping, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetAngularDamping(angularDamping);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Max linear velocity"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##MaxLinearVelocity", &maxLinearVelocity, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetMaxLinearVelocity(maxLinearVelocity);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	ImGui::AlignTextToFramePadding();
-	ImGui::Text("Max angular velocity"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	if (ImGui::DragFloat("##MaxAngularVelocity", &maxAngularVelocity, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
-		SetMaxAngularVelocity(maxAngularVelocity);
-	ImGui::PopItemWidth();
-
-	// -----
-
-	if (ImGui::TreeNodeEx("Constraints", ImGuiTreeNodeFlags_OpenOnArrow))
+	if (ImGui::CollapsingHeader("Rigid Dynamic", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Freeze Position");
-		if (ImGui::Checkbox("X##FreezePositionX", &freezePosition[0]))
-			FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Y##FreezePositionY", &freezePosition[1]))
-			FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Z##FreezePositionZ", &freezePosition[2]))
-			FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
+		ComponentRigidActor::OnUniqueEditor();
 
-		ImGui::Text("Freeze Rotation");
-		if (ImGui::Checkbox("X##FreezeRotationX", &freezeRotation[0]))
-			FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Y##FreezeRotationY", &freezeRotation[1]))
-			FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Z##FreezeRotationZ", &freezeRotation[2]))
-			FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Density"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##Density", &density, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetDensity(density);
+		ImGui::PopItemWidth();
 
-		ImGui::TreePop();
+		ImGui::PushID("DensityButton");
+		if (ImGui::SmallButton("Update mass and inertia"))
+			UpdateMassAndInertia();
+		ImGui::PopID();
+
+		// -----
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Mass"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##Mass", &mass, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetMass(mass);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::Text("Center of mass");
+
+		ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CMassX", &cMass.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCMass(cMass);
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CMassY", &cMass.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCMass(cMass);
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##CMassZ", &cMass.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f))
+			SetCMass(cMass);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::Text("Moment of inertia");
+
+		ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##InertiaX", &inertia.x, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetInertia(inertia);
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##InertiaY", &inertia.y, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetInertia(inertia);
+		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##InertiaZ", &inertia.z, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetInertia(inertia);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Linear damping"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##LinearDamping", &linearDamping, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetLinearDamping(linearDamping);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Angular damping"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##AngularDamping", &angularDamping, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetAngularDamping(angularDamping);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Max linear velocity"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##MaxLinearVelocity", &maxLinearVelocity, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetMaxLinearVelocity(maxLinearVelocity);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Max angular velocity"); ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
+		if (ImGui::DragFloat("##MaxAngularVelocity", &maxAngularVelocity, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f))
+			SetMaxAngularVelocity(maxAngularVelocity);
+		ImGui::PopItemWidth();
+
+		// -----
+
+		if (ImGui::TreeNodeEx("Constraints", ImGuiTreeNodeFlags_OpenOnArrow))
+		{
+			ImGui::Text("Freeze Position");
+			if (ImGui::Checkbox("X##FreezePositionX", &freezePosition[0]))
+				FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Y##FreezePositionY", &freezePosition[1]))
+				FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Z##FreezePositionZ", &freezePosition[2]))
+				FreezePosition(freezePosition[0], freezePosition[1], freezePosition[2]);
+
+			ImGui::Text("Freeze Rotation");
+			if (ImGui::Checkbox("X##FreezeRotationX", &freezeRotation[0]))
+				FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Y##FreezeRotationY", &freezeRotation[1]))
+				FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Z##FreezeRotationZ", &freezeRotation[2]))
+				FreezeRotation(freezeRotation[0], freezeRotation[1], freezeRotation[2]);
+
+			ImGui::TreePop();
+		}
+
+		// -----
+
+		if (ImGui::Checkbox("Is Kinematic", &isKinematic))
+			SetIsKinematic(isKinematic);
 	}
-
-	// -----
-
-	if (ImGui::Checkbox("Is Kinematic", &isKinematic))
-		SetIsKinematic(isKinematic);
-
-	// --------------------------------------------------
-
-	ImGui::Spacing();
-
-	const ImVec4 disabledTextColor = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
-
-	ImGui::Text("Linear velocity");
-
-	physx::PxVec3 gCurrentLinearVelocity = gActor->is<physx::PxRigidDynamic>()->getLinearVelocity();
-	math::float3 currentLinearVelocity = math::float3(gCurrentLinearVelocity.x, gCurrentLinearVelocity.y, gCurrentLinearVelocity.z);
-	ImGui::TextColored(disabledTextColor, "%.2f", currentLinearVelocity.x); ImGui::SameLine();
-	ImGui::TextColored(disabledTextColor, "%.2f", currentLinearVelocity.y); ImGui::SameLine();
-	ImGui::TextColored(disabledTextColor, "%.2f", currentLinearVelocity.z);
-
-	ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##LinearVelocityX", &linearVelocity.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##LinearVelocityY", &linearVelocity.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##LinearVelocityZ", &linearVelocity.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::PopItemWidth();
-
-	ImGui::PushID("LinearVelocityButton");
-	if (ImGui::SmallButton("Apply"))
-		SetLinearVelocity(linearVelocity);
-	ImGui::PopID();
-
-	// -----
-
-	ImGui::Text("Angular velocity");
-
-	physx::PxVec3 gCurrentAngularVelocity = gActor->is<physx::PxRigidDynamic>()->getAngularVelocity();
-	math::float3 currentAngularVelocity = math::float3(gCurrentAngularVelocity.x, gCurrentAngularVelocity.y, gCurrentAngularVelocity.z);
-	ImGui::TextColored(disabledTextColor, "%.2f", gCurrentAngularVelocity.x); ImGui::SameLine();
-	ImGui::TextColored(disabledTextColor, "%.2f", gCurrentAngularVelocity.y); ImGui::SameLine();
-	ImGui::TextColored(disabledTextColor, "%.2f", gCurrentAngularVelocity.z);
-
-	ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##AngularVelocityX", &angularVelocity.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##AngularVelocityY", &angularVelocity.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##AngularVelocityZ", &angularVelocity.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::PopItemWidth();
-
-	ImGui::PushID("AngularVelocityButton");
-	if (ImGui::SmallButton("Apply"))
-		SetAngularVelocity(angularVelocity);
-	ImGui::PopID();
-
-	// -----
-
-	ImGui::Text("Force");
-
-	ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##ForceX", &force.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##ForceY", &force.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##ForceZ", &force.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::PopItemWidth();
-
-	ImGui::PushID("AddForceButton");
-	if (ImGui::SmallButton("Apply"))
-		AddForce(force);
-	ImGui::PopID();
-
-	ImGui::SameLine();
-
-	ImGui::PushID("ClearForceButton");
-	if (ImGui::SmallButton("Clear"))
-		ClearForce();
-	ImGui::PopID();
-
-	// -----
-
-	ImGui::Text("Torque");
-
-	ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##TorqueX", &torque.x, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##TorqueY", &torque.y, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##TorqueZ", &torque.z, 0.01f, -FLT_MAX, FLT_MAX, "%.2f", 1.0f);
-	ImGui::PopItemWidth();
-
-	ImGui::PushID("AddTorqueButton");
-	if (ImGui::SmallButton("Apply"))
-		AddTorque(torque);
-	ImGui::PopID();
-
-	ImGui::SameLine();
-
-	ImGui::PushID("ClearTorqueButton");
-	if (ImGui::SmallButton("Clear"))
-		ClearTorque();
-	ImGui::PopID();
-
-	// -----
-
-	const char* forceModes[] = { "Force", "Impulse", "Velocity change", "Acceleration" };
-	// Force (default): continuous changes that are effected by mass
-	// Acceleration: continuous changes that aren't effected by mass
-	// Impulse: instant change that is effected by mass
-	// Velocity change: instant change that is not effected by mass
-	static int currentForceMode = forceMode;
-	ImGui::PushItemWidth(100.0f);
-	if (ImGui::Combo("Force mode", &currentForceMode, forceModes, IM_ARRAYSIZE(forceModes)))
-		forceMode = (physx::PxForceMode::Enum)currentForceMode;
-	ImGui::PopItemWidth();
 #endif
 }
 
@@ -318,15 +243,116 @@ void ComponentRigidDynamic::Update()
 
 uint ComponentRigidDynamic::GetInternalSerializationBytes()
 {
-	return uint();
+	return ComponentRigidActor::GetInternalSerializationBytes() + 
+		sizeof(float) +
+		sizeof(float) +
+		sizeof(math::float3) +
+		sizeof(math::float3) +
+		sizeof(float) +
+		sizeof(float) +
+		sizeof(float) +
+		sizeof(float) +
+		sizeof(bool) * 3 +
+		sizeof(bool) * 3 +
+		sizeof(bool);
 }
 
 void ComponentRigidDynamic::OnInternalSave(char*& cursor)
 {
+	ComponentRigidActor::OnInternalSave(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(cursor, &density, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &mass, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &cMass, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &inertia, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &linearDamping, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &angularDamping, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &maxLinearVelocity, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(cursor, &maxAngularVelocity, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 3;
+	memcpy(cursor, &freezePosition[0], bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 3;
+	memcpy(cursor, &freezeRotation[0], bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &isKinematic, bytes);
+	cursor += bytes;
 }
 
 void ComponentRigidDynamic::OnInternalLoad(char*& cursor)
 {
+	ComponentRigidActor::OnInternalLoad(cursor);
+
+	size_t bytes = sizeof(float);
+	memcpy(&density, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&mass, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&cMass, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&inertia, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&linearDamping, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&angularDamping, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&maxLinearVelocity, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(float);
+	memcpy(&maxAngularVelocity, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 3;
+	memcpy(&freezePosition[0], cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool) * 3;
+	memcpy(&freezeRotation[0], cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&isKinematic, cursor, bytes);
+	cursor += bytes;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -356,14 +382,14 @@ void ComponentRigidDynamic::SetMass(float mass)
 	gActor->is<physx::PxRigidDynamic>()->setMass(mass);
 }
 
-void ComponentRigidDynamic::SetCMass(math::float3& cMass)
+void ComponentRigidDynamic::SetCMass(const math::float3& cMass)
 {
 	assert(cMass.IsFinite());
 	this->cMass = cMass;
 	gActor->is<physx::PxRigidDynamic>()->setCMassLocalPose(physx::PxTransform(physx::PxVec3(cMass.x, cMass.y, cMass.z)));
 }
 
-void ComponentRigidDynamic::SetInertia(math::float3& inertia)
+void ComponentRigidDynamic::SetInertia(const math::float3& inertia)
 {
 	assert(inertia.IsFinite());
 	// inertia = math::float3(0.0f, 0.0f, 0.0f) equals infinite inertia
@@ -440,14 +466,12 @@ void ComponentRigidDynamic::SetIsKinematic(bool isKinematic)
 void ComponentRigidDynamic::SetLinearVelocity(math::float3& linearVelocity)
 {
 	assert(linearVelocity.IsFinite());
-	this->linearVelocity = linearVelocity;
 	gActor->is<physx::PxRigidDynamic>()->setLinearVelocity(physx::PxVec3(linearVelocity.x, linearVelocity.y, linearVelocity.z));
 }
 
 void ComponentRigidDynamic::SetAngularVelocity(math::float3& angularVelocity)
 {
 	assert(angularVelocity.IsFinite());
-	this->angularVelocity = angularVelocity;
 	gActor->is<physx::PxRigidDynamic>()->setAngularVelocity(physx::PxVec3(angularVelocity.x, angularVelocity.y, angularVelocity.z));
 }
 
@@ -455,8 +479,6 @@ void ComponentRigidDynamic::AddForce(math::float3& force, physx::PxForceMode::En
 {
 	assert(force.IsFinite());
 	// f = m*a (force = mass * acceleration)
-	this->force = force;
-	this->forceMode = forceMode;
 
 	gActor->is<physx::PxRigidDynamic>()->addForce(physx::PxVec3(force.x, force.y, force.z), forceMode);
 }
@@ -469,8 +491,6 @@ void ComponentRigidDynamic::ClearForce() const
 void ComponentRigidDynamic::AddTorque(math::float3& torque, physx::PxForceMode::Enum forceMode)
 {
 	assert(torque.IsFinite());
-	this->torque = torque;
-	this->forceMode = forceMode;
 
 	gActor->is<physx::PxRigidDynamic>()->addTorque(physx::PxVec3(torque.x, torque.y, torque.z), forceMode);
 }

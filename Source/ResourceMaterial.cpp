@@ -402,6 +402,7 @@ void ResourceMaterial::SetResourceShader(uint shaderUuid)
 	SetUniformsAsUnused();
 
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	materialData.uniforms.clear();
 	shader->GetUniforms(materialData.uniforms);
 
 	// Set as used (uniforms)

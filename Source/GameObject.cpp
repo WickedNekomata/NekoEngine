@@ -26,8 +26,9 @@
 #include "ComponentBone.h"
 #include "ComponentScript.h"
 #include "ComponentLight.h"
+#include "ComponentProjector.h"
 
-#include "MathGeoLib/include/Geometry/OBB.h"
+#include "MathGeoLib\include\Geometry\OBB.h"
 
 GameObject::GameObject(const char* name, GameObject* parent, bool disableTransform) : parent(parent)
 {
@@ -96,6 +97,11 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 			cmp_light = new ComponentLight(*gameObject.cmp_light);
 			cmp_light->SetParent(this);
 			components.push_back(cmp_light);
+			break;
+		case ComponentTypes::ProjectorComponent:
+			cmp_projector = new ComponentProjector(*gameObject.cmp_projector);
+			cmp_projector->SetParent(this);
+			components.push_back(cmp_projector);
 			break;
 		case ComponentTypes::RigidStaticComponent:
 			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
@@ -435,6 +441,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::LightComponent:
 		assert(cmp_light == NULL);
 		newComponent = cmp_light = new ComponentLight(this);
+		break;
+	case ComponentTypes::ProjectorComponent:
+		assert(cmp_projector == NULL);
+		newComponent = cmp_projector = new ComponentProjector(this);
 		break;
 	case ComponentTypes::RigidStaticComponent:
 		assert(cmp_rigidActor == nullptr);

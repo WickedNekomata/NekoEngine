@@ -516,10 +516,10 @@ bool ResourceShaderObject::IsObjectCompiled() const
 		GLchar* infoLog = new GLchar[logSize];
 		glGetShaderInfoLog(shaderObject, logSize, NULL, infoLog);
 
-		CONSOLE_LOG(LogTypes::Normal, "Shader Object could not be compiled. ERROR: %s", infoLog);
+		CONSOLE_LOG(LogTypes::Error, "Shader Object could not be compiled. ERROR: %s", infoLog);
 	}
 	else
-		CONSOLE_LOG(LogTypes::Error, "Successfully compiled Shader Object");
+		CONSOLE_LOG(LogTypes::Normal, "Successfully compiled Shader Object");
 
 	return success;
 }

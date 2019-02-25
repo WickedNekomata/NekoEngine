@@ -84,6 +84,7 @@ public:
 	class ComponentCollider*   cmp_collider = 0;
 	class ComponentBone*	   cmp_bone = 0;
 	class ComponentLight*	   cmp_light = 0;
+	class ComponentProjector*  cmp_projector = 0;
 
 	std::vector<Component*> components;
 

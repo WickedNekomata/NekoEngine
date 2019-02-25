@@ -178,20 +178,21 @@ void ModuleScene::OnGizmos(GameObject* gameObject)
 			currentImGuizmoOperation, mode, transformMatrix.ptr()
 		);
 
-	if (ImGuizmo::IsUsing())
-	{
-		if (!saveTransform)
+		if (ImGuizmo::IsUsing())
 		{
-			saveTransform = true;
-			lastMat = transformMatrix;
+			if (!saveTransform)
+			{
+				saveTransform = true;
+				lastMat = transformMatrix;
+			}
+			transformMatrix = transformMatrix.Transposed();
+			gameObject->transform->SetMatrixFromGlobal(transformMatrix);
 		}
-		transformMatrix = transformMatrix.Transposed();
-		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
-	}
-	else if (saveTransform)
-	{
-		SaveLastTransform(lastMat.Transposed());
-		saveTransform = false;
+		else if (saveTransform)
+		{
+			SaveLastTransform(lastMat.Transposed());
+			saveTransform = false;
+		}
 	}
 }
 

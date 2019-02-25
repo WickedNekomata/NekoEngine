@@ -66,8 +66,9 @@ ResourcePrefab* ResourcePrefab::ImportFile(const char* file)
 
 	ResourcePrefab* retPrefab = new ResourcePrefab(0, data, PrefabData());
 
-	
+	retPrefab->UpdateFromMeta();
 
+	return retPrefab;
 }
 
 ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* templateRoot)
@@ -91,7 +92,6 @@ ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* t
 
 	//Create the .meta
 	int64_t lastModTime = App->fs->GetLastModificationTime(data.file.data());
-
 	CreateMeta(retPrefab, lastModTime);
 
 	return nullptr;
@@ -118,6 +118,25 @@ bool ResourcePrefab::CreateMeta(ResourcePrefab* prefab, int64_t lastModTime)
 	cursor += bytes;
 
 	App->fs->Save(prefab->data.file + EXTENSION_META, metaBuffer, size);
+}
+
+bool ResourcePrefab::UpdateFromMeta()
+{
+	char* buffer;
+	uint size = App->fs->Load(data.file + EXTENSION_META, &buffer);
+	if (size <= 0)
+		return false;
+
+	char* cursor = buffer;
+	uint bytes = sizeof(uint);
+	cursor += sizeof(int64_t) + bytes;
+
+	memcpy(&uuid, cursor, bytes);
+	cursor += bytes;
+
+	delete[] buffer;
+
+	return true;
 }
 
 bool ResourcePrefab::LoadInMemory()

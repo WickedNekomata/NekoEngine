@@ -21,6 +21,7 @@ public:
 	static ResourcePrefab* ImportFile(const char* file);
 	static ResourcePrefab* ExportFile(const char* prefabName, GameObject* templateRoot);
 	static bool CreateMeta(ResourcePrefab* prefab, int64_t lastModTime);
+	bool UpdateFromMeta();
 
 	static uint GetMetaSize() { return sizeof(int64_t) + sizeof(uint) * 2; }
 

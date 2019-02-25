@@ -245,6 +245,52 @@ bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_
 	return true;
 }
 
+GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool navmesh)
+{
+	char* cursor = buffer;
+	size_t bytes = sizeof(uint);
+	uint totalGO;
+	memcpy(&totalGO, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<GameObject*> gos;
+	gos.reserve(totalGO);
+
+	for (int i = 0; i < totalGO; ++i)
+	{
+		GameObject* go = new GameObject("", nullptr, true);
+		go->OnLoad(cursor);
+
+		for (int i = gos.size() - 1; i >= 0; --i)
+		{
+			if (gos[i]->GetUUID() == go->GetParentUUID())
+			{
+				go->SetParent(gos[i]);
+				gos[i]->AddChild(go);
+			}
+		}
+
+		/*if (go->GetParent() == 0)
+		{
+			assert(App->scene->root == 0);
+			App->scene->root = go;
+		}
+		else
+		{
+			gameobjects.push_back(go);
+			go->IsStatic() ? staticGos.push_back(go) : dynamicGos.push_back(go);
+		}*/
+
+		gos.push_back(go);
+	}
+
+	// Discuss if this should be a resource
+	if (navmesh)
+		App->navigation->LoadNavmesh(cursor);
+
+	return gos[0]; //the root node
+}
+
 bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 {
 	char* cursor = buffer;

@@ -21,6 +21,8 @@ public:
 	GameObject(GameObject& gameObject, GameObject* newRoot = 0);
 	~GameObject();
 
+	void DestroyTemplate();
+
 	void SetName(const char* name);
 	const char* GetName() const;
 	uint GetUUID() const;

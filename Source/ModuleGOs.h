@@ -30,6 +30,8 @@ public:
 	void RecalculateVector(GameObject* go); //if static or dynamic
 
 	bool static SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh = false);
+	static GameObject* DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool navmesh = false);
+
 	bool LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh = false);
 
 	bool InvalidateResource(Resource* resource);

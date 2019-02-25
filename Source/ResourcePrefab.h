@@ -8,28 +8,27 @@ class GameObject;
 struct PrefabData
 {
 	GameObject* root = nullptr;
-	char* buffer;
-	uint size;
 };
 
 class ResourcePrefab : public Resource
 {
 public:
-	ResourcePrefab(ResourceTypes type, uint uuid, ResourceData data, PrefabData customData);
+	ResourcePrefab(uint uuid, ResourceData data, PrefabData customData);
 	~ResourcePrefab();
 
 	void OnPanelAssets();
 
-	static bool ImportFile(const char* file, std::string& name, std::string& outputFile);
-	static bool ExportFile(ResourceData& data, PrefabData& prefabData, std::string& outputFile, bool overwrite = false);
-	static uint CreateMeta(const char* file, uint prefab_uuid, std::string& name, std::string& outputMetaFile);
-	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& prefab_uuid, std::string& name);
-	static bool LoadFile(const char* file, PrefabData& prefab_data_output);
+	static ResourcePrefab* ImportFile(const char* file);
+	static ResourcePrefab* ExportFile(const char* prefabName, GameObject* templateRoot);
+	static bool CreateMeta(ResourcePrefab* prefab, int64_t lastModTime);
+
+	static uint GetMetaSize() { return sizeof(int64_t) + sizeof(uint) * 2; }
 
 	bool LoadInMemory();
 	bool UnloadFromMemory();
 
-	//tmp
+private:
+	PrefabData prefabData;
 };
 
 #endif

@@ -978,8 +978,8 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	case ASCIImat: case ASCIIMAT:
 		return ResourceTypes::MaterialResource;
 		break;
-	case ASCIIpfb: case ASCIIPFB:
-		return ResourceTypes::PrefabResource;
+	/*case ASCIIpfb: case ASCIIPFB:
+		return ResourceTypes::PrefabResource;*/
 	}
 
 	return ResourceTypes::NoResourceType;

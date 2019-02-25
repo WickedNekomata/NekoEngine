@@ -149,7 +149,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		RecursiveProcessBones(scene, scene->mRootNode);
+		// TODO_G CONTINUE HERE ++
+		//RecursiveProcessBones(scene, scene->mRootNode);
 		// Prefab creation
 		ResourceData data;
 		PrefabData prefab_data;

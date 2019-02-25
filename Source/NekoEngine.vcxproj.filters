@@ -1,643 +1,2103 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="AnimationImporter.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="BoneImporter.cpp" />
-    <ClCompile Include="ComponentButton.cpp" />
-    <ClCompile Include="ComponentCanvasRenderer.cpp" />
-    <ClCompile Include="ComponentImage.cpp" />
-    <ClCompile Include="ComponentRectTransform.cpp" />
-    <ClCompile Include="ModuleUI.cpp" />
-    <ClCompile Include="ComponentAnimation.cpp" />
-    <ClCompile Include="ComponentD6Joint.cpp" />
-    <ClCompile Include="ComponentDistanceJoint.cpp" />
-    <ClCompile Include="ComponentFixedJoint.cpp" />
-    <ClCompile Include="ComponentJoint.cpp" />
-    <ClCompile Include="ComponentLight.cpp" />
-    <ClCompile Include="ComponentPrismaticJoint.cpp" />
-    <ClCompile Include="ComponentProjector.cpp" />
-    <ClCompile Include="ComponentRevoluteJoint.cpp" />
-    <ClCompile Include="ComponentSphericalJoint.cpp" />
-    <ClCompile Include="ModuleAnimation.cpp" />
-    <ClCompile Include="ModuleInternalResHandler.cpp" />
-    <ClCompile Include="ModuleLayers.cpp" />
-    <ClCompile Include="ResourcePrefab.cpp" />
-    <ClCompile Include="ResourceMaterial.cpp" />
-    <ClCompile Include="SceneQueries.cpp" />
-    <ClCompile Include="SimulationEvents.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentBone.cpp" />
-    <ClCompile Include="ComponentBoxCollider.cpp" />
-    <ClCompile Include="ComponentCamera.cpp" />
-    <ClCompile Include="ComponentEmitter.cpp" />
-    <ClCompile Include="ComponentCapsuleCollider.cpp" />
-    <ClCompile Include="ComponentCollider.cpp" />
-    <ClCompile Include="ComponentMaterial.cpp" />
-    <ClCompile Include="ComponentMesh.cpp" />
-    <ClCompile Include="ComponentNavAgent.cpp" />
-    <ClCompile Include="ComponentPlaneCollider.cpp" />
-    <ClCompile Include="ComponentRigidActor.cpp" />
-    <ClCompile Include="ComponentRigidStatic.cpp" />
-    <ClCompile Include="ComponentScript.cpp" />
-    <ClCompile Include="ComponentSphereCollider.cpp" />
-    <ClCompile Include="ComponentTransform.cpp" />
-    <ClCompile Include="DebugDrawer.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameTimer.cpp" />
-    <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp" />
-    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\imgui_impl_sdl.cpp" />
-    <ClCompile Include="imgui\imgui_stl.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Globals.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MathGeoLib\include\Algorithm\Random\LCG.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\AABB.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Capsule.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Circle.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Frustum.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Line.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\LineSegment.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\OBB.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Plane.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Polygon.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Polyhedron.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Ray.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Sphere.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\Triangle.cpp" />
-    <ClCompile Include="MathGeoLib\include\Geometry\TriangleMesh.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\BitOps.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float2.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float3.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float3x3.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float3x4.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float4.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\float4x4.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\MathFunc.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\MathLog.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\MathOps.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\Polynomial.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\Quat.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\SSEMath.cpp" />
-    <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
-    <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
-    <ClCompile Include="mmgr\mmgr.cpp" />
-    <ClCompile Include="ModuleEvents.cpp" />
-    <ClCompile Include="ModuleGOs.cpp" />
-    <ClCompile Include="NMDebugDraw.cpp" />
-    <ClCompile Include="PanelNavigation.cpp" />
-    <ClCompile Include="NMBuildContext.cpp" />
-    <ClCompile Include="ModuleNavigation.cpp" />
-    <ClCompile Include="ModuleParticles.cpp" />
-    <ClCompile Include="ModulePhysics.cpp" />
-    <ClCompile Include="PanelCodeEditor.cpp" />
-    <ClCompile Include="PanelDebugDraw.cpp" />
-    <ClCompile Include="PanelEdit.cpp" />
-    <ClCompile Include="PanelLayers.cpp" />
-    <ClCompile Include="PanelSimulatedTime.cpp" />
-    <ClCompile Include="PanelPhysics.cpp" />
-    <ClCompile Include="PanelShaderEditor.cpp" />
-    <ClCompile Include="PanelSkybox.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="pugui\pugixml.cpp" />
-    <ClCompile Include="Raycaster.cpp" />
-    <ClCompile Include="PanelAssets.cpp" />
-    <ClCompile Include="Quadtree.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DetourDebugDraw.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDebugDraw.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDump.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourCrowd.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourLocalBoundary.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourObstacleAvoidance.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathCorridor.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathQueue.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourProximityGrid.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCache.cpp" />
-    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCacheBuilder.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourAlloc.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourCommon.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMesh.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshBuilder.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshQuery.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNode.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\Recast.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastAlloc.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastArea.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastContour.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastFilter.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastLayers.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMesh.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMeshDetail.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRasterization.cpp" />
-    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp" />
-    <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ModuleResourceManager.cpp" />
-    <ClCompile Include="ResourceAnimation.cpp" />
-    <ClCompile Include="ResourceBone.cpp" />
-    <ClCompile Include="ResourceScript.cpp" />
-    <ClCompile Include="ResourceShaderObject.cpp" />
-    <ClCompile Include="ResourceShaderProgram.cpp" />
-    <ClCompile Include="ResourceTexture.cpp" />
-    <ClCompile Include="ResourceMesh.cpp" />
-    <ClCompile Include="SceneImporter.cpp" />
-    <ClCompile Include="ModuleCameraEditor.cpp" />
-    <ClCompile Include="ModuleFileSystem.cpp" />
-    <ClCompile Include="ModuleGui.cpp" />
-    <ClCompile Include="ModuleInput.cpp" />
-    <ClCompile Include="ModuleRenderer3D.cpp" />
-    <ClCompile Include="ModuleScene.cpp" />
-    <ClCompile Include="MaterialImporter.cpp" />
-    <ClCompile Include="ModuleWindow.cpp" />
-    <ClCompile Include="Panel.cpp" />
-    <ClCompile Include="PanelAbout.cpp" />
-    <ClCompile Include="PanelConsole.cpp" />
-    <ClCompile Include="PanelHierarchy.cpp" />
-    <ClCompile Include="PanelInspector.cpp" />
-    <ClCompile Include="PanelSettings.cpp" />
-    <ClCompile Include="parson\parson.c" />
-    <ClCompile Include="Pcg\entropy.c" />
-    <ClCompile Include="PerfTimer.cpp" />
-    <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="ModuleTimeManager.cpp" />
-    <ClCompile Include="ScriptingModule.cpp" />
-    <ClCompile Include="ShaderImporter.cpp" />
-    <ClCompile Include="ComponentRigidDynamic.cpp" />
-    <ClCompile Include="Timer.cpp" />
+    <Filter Include="Sources">
+      <UniqueIdentifier>{8b7ed093-66ce-4096-96d2-fbb9faa4bf52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules">
+      <UniqueIdentifier>{7b418be2-1631-4a31-9ef2-8a8b234a7339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Containers">
+      <UniqueIdentifier>{afc36133-f401-499a-aa33-0da1e500fb52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools">
+      <UniqueIdentifier>{7e4dfaf7-022c-4f7d-92aa-f3b3fa9d6248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers">
+      <UniqueIdentifier>{121f8e6b-df36-4ab0-be0d-601ddfc9e503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Game">
+      <UniqueIdentifier>{83f46af7-e02f-40c0-9e56-41d76082527b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party">
+      <UniqueIdentifier>{9f1cf4cb-5ffb-4539-8f5f-809711a46391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\ImGui">
+      <UniqueIdentifier>{3cb7ed3d-272d-4319-abd6-46dc0b234396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\PCG">
+      <UniqueIdentifier>{c912296d-f393-434f-a963-a5dae72da0ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib">
+      <UniqueIdentifier>{df3e0488-d45d-432b-a011-00251957c79f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib\Algorithm">
+      <UniqueIdentifier>{3eb3a8d5-bbba-4a48-ac92-dd042105eead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib\Geometry">
+      <UniqueIdentifier>{f7283cdb-0ac1-4b56-bfcb-7c331a972738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib\Math">
+      <UniqueIdentifier>{5bdc37aa-7d98-4a42-bc5d-5605a68b9120}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib\Time">
+      <UniqueIdentifier>{cd67bc4c-4cae-4996-ab94-de2e4457e6b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\MathGeoLib\Algorithm\Random">
+      <UniqueIdentifier>{4b9d4f74-395b-4028-90d9-6e1b29e458db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Panels">
+      <UniqueIdentifier>{ede7b590-05ab-4f4e-a384-8b27aa3a26d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Parson">
+      <UniqueIdentifier>{37458c2d-2446-4a39-8810-472d4db3e650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\mmgr">
+      <UniqueIdentifier>{96460a6b-227d-4af5-a9d0-7ac3d10fa049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\glew">
+      <UniqueIdentifier>{232e3b40-7839-487f-9b39-b23a8f248872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Physfs">
+      <UniqueIdentifier>{26cd2d5d-b52b-4e15-ae3f-3f2a58b19a1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Assimp">
+      <UniqueIdentifier>{73155050-e5cc-4561-904e-7e2b720be0f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Assimp\Compiler">
+      <UniqueIdentifier>{b2b5dc28-8227-4d93-8448-79e87e5cf0a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Assimp\Port">
+      <UniqueIdentifier>{b47b20af-1058-4f3f-836e-7af3f788184c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\DevIL">
+      <UniqueIdentifier>{50eebea3-c08e-4dcf-993f-4fef30e2e0aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components">
+      <UniqueIdentifier>{66587a08-64a5-45a1-bc3c-c345fd61173d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components">
+      <UniqueIdentifier>{c42249c4-6e3d-4654-81b0-f0920e0e4e88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Importers">
+      <UniqueIdentifier>{39b667be-548e-4ab2-90a2-0a559f808c36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\ImGuizmo">
+      <UniqueIdentifier>{1d32019c-6428-43b9-a182-1ace2999ee87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Resources">
+      <UniqueIdentifier>{79fba5a2-289a-45ee-ac31-a6a3701b89b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Resources\Types">
+      <UniqueIdentifier>{290ddc53-0293-4a74-b171-f411f4c6aaf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\ImGuiColorTextEdit">
+      <UniqueIdentifier>{7c4982d7-8a63-4b18-80d1-5584c71c69c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour">
+      <UniqueIdentifier>{e5e30fb3-930e-44d9-b4c4-7eb164c2e03b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DebugUtils">
+      <UniqueIdentifier>{4b41b123-8f0e-4ed3-abf5-d337353a6877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\Detour">
+      <UniqueIdentifier>{840ea111-143b-469b-8a76-2450fe98be35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DetourCrowd">
+      <UniqueIdentifier>{6efde3f1-ee05-4b76-8d25-e5c3c02417c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\DetourTileCache">
+      <UniqueIdentifier>{347337ed-f53e-4a8e-a8b1-2db3eb024491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Recast&amp;Detour\Recast">
+      <UniqueIdentifier>{df7e1bd5-a3d4-4af5-93ba-5fbbb345dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\NavMesh">
+      <UniqueIdentifier>{b4d148e9-5dfc-46a2-beaf-c2cc2732d010}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\Particles">
+      <UniqueIdentifier>{9a4bede6-50fc-4d49-93bc-caa1f6ff8fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx">
+      <UniqueIdentifier>{a31a6fd0-911a-4af7-ae28-3115867dafd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\characterkinematic">
+      <UniqueIdentifier>{25d8873c-96dd-4775-9017-1923e7a1e0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\collision">
+      <UniqueIdentifier>{c90d6049-d47d-4d31-bdbf-a746bdf0c7bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\common">
+      <UniqueIdentifier>{3b5cf12e-4535-4f94-841b-957337d8a708}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\cooking">
+      <UniqueIdentifier>{759c607e-b97a-49fd-a119-e3852f9c0184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\cudamanager">
+      <UniqueIdentifier>{97f0fb4c-95ed-4ba7-b471-a65db2dbee51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\extensions">
+      <UniqueIdentifier>{c743f89c-c67c-4dd8-a4c3-f70bbd44a8b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\filebuf">
+      <UniqueIdentifier>{e09f71bf-4adb-4a61-bdda-4cc275163e32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\geometry">
+      <UniqueIdentifier>{256b79b2-6d1b-4139-814e-74011f1d28ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\geomutils">
+      <UniqueIdentifier>{0c55a5c8-b7a3-46ea-b5f1-e383e711c267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\gpu">
+      <UniqueIdentifier>{3070bfb4-4581-4f5c-a335-2fc67c5fe1fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\pvd">
+      <UniqueIdentifier>{6c5b634d-2b93-43ef-82e9-a8398809cdc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\solver">
+      <UniqueIdentifier>{48715d80-c6e5-47e0-8b26-1a830fe15a19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\task">
+      <UniqueIdentifier>{2c63056e-472f-4d48-9911-da9cae9eb4fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\vehicle">
+      <UniqueIdentifier>{8d79d034-b66b-45fa-9e3d-6ffce619b190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\common\windows">
+      <UniqueIdentifier>{904ecca9-c472-4057-8718-b369dec88bf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\foundation">
+      <UniqueIdentifier>{0b16ed4b-d29a-4fda-97cb-6d2b8a081a89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\physx\foundation\windows">
+      <UniqueIdentifier>{1bd8edf6-b76c-4400-adb1-384ba6b5e779}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics">
+      <UniqueIdentifier>{e8d12beb-7c4b-407e-a1c5-60c3d1ce4b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\pugi">
+      <UniqueIdentifier>{ff358738-4a78-4841-a66b-bfc97da50d40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\Physics">
+      <UniqueIdentifier>{3c08b85d-e98c-4159-a231-b992b9ab0d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Colliders">
+      <UniqueIdentifier>{77134b2d-7985-4821-ad92-2f38de84691c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Joints">
+      <UniqueIdentifier>{25b40184-0a3c-4c15-8202-dd260fc32440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors">
+      <UniqueIdentifier>{db6dadfd-5eff-45e8-8ea7-ccb88e0dbde7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\UI">
+      <UniqueIdentifier>{b02a43b6-e668-4a80-94e4-1700fa9bbc6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationImporter.h" />
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Assimp\include\ai_assert.h" />
-    <ClInclude Include="Assimp\include\anim.h" />
-    <ClInclude Include="Assimp\include\camera.h" />
-    <ClInclude Include="Assimp\include\cexport.h" />
-    <ClInclude Include="Assimp\include\cfileio.h" />
-    <ClInclude Include="Assimp\include\cimport.h" />
-    <ClInclude Include="Assimp\include\color4.h" />
-    <ClInclude Include="Assimp\include\Compiler\poppack1.h" />
-    <ClInclude Include="Assimp\include\Compiler\pstdint.h" />
-    <ClInclude Include="Assimp\include\Compiler\pushpack1.h" />
-    <ClInclude Include="Assimp\include\config.h" />
-    <ClInclude Include="Assimp\include\DefaultIOStream.h" />
-    <ClInclude Include="Assimp\include\DefaultIOSystem.h" />
-    <ClInclude Include="Assimp\include\DefaultLogger.hpp" />
-    <ClInclude Include="Assimp\include\Defines.h" />
-    <ClInclude Include="Assimp\include\defs.h" />
-    <ClInclude Include="Assimp\include\Exporter.hpp" />
-    <ClInclude Include="Assimp\include\Importer.hpp" />
-    <ClInclude Include="Assimp\include\importerdesc.h" />
-    <ClInclude Include="Assimp\include\IOStream.hpp" />
-    <ClInclude Include="Assimp\include\IOSystem.hpp" />
-    <ClInclude Include="Assimp\include\light.h" />
-    <ClInclude Include="Assimp\include\Logger.hpp" />
-    <ClInclude Include="Assimp\include\LogStream.hpp" />
-    <ClInclude Include="Assimp\include\material.h" />
-    <ClInclude Include="Assimp\include\matrix3x3.h" />
-    <ClInclude Include="Assimp\include\matrix4x4.h" />
-    <ClInclude Include="Assimp\include\mesh.h" />
-    <ClInclude Include="Assimp\include\metadata.h" />
-    <ClInclude Include="Assimp\include\NullLogger.hpp" />
-    <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h" />
-    <ClInclude Include="Assimp\include\postprocess.h" />
-    <ClInclude Include="Assimp\include\ProgressHandler.hpp" />
-    <ClInclude Include="Assimp\include\quaternion.h" />
-    <ClInclude Include="Assimp\include\scene.h" />
-    <ClInclude Include="Assimp\include\SceneCombiner.h" />
-    <ClInclude Include="Assimp\include\texture.h" />
-    <ClInclude Include="Assimp\include\types.h" />
-    <ClInclude Include="Assimp\include\vector2.h" />
-    <ClInclude Include="Assimp\include\vector3.h" />
-    <ClInclude Include="Assimp\include\version.h" />
-    <ClInclude Include="BoneImporter.h" />
-    <ClInclude Include="ComponentButton.h" />
-    <ClInclude Include="ComponentCanvasRenderer.h" />
-    <ClInclude Include="ComponentImage.h" />
-    <ClInclude Include="ComponentRectTransform.h" />
-    <ClInclude Include="ModuleUI.h" />
-    <ClInclude Include="ComponentAnimation.h" />
-    <ClInclude Include="ComponentD6Joint.h" />
-    <ClInclude Include="ComponentDistanceJoint.h" />
-    <ClInclude Include="ComponentFixedJoint.h" />
-    <ClInclude Include="ComponentJoint.h" />
-    <ClInclude Include="ComponentLight.h" />
-    <ClInclude Include="ComponentPrismaticJoint.h" />
-    <ClInclude Include="ComponentProjector.h" />
-    <ClInclude Include="ComponentRevoluteJoint.h" />
-    <ClInclude Include="ComponentSphericalJoint.h" />
-    <ClInclude Include="ModuleAnimation.h" />
-    <ClInclude Include="ModuleInternalResHandler.h" />
-    <ClInclude Include="ModuleLayers.h" />
-    <ClInclude Include="PhysicsConstants.h" />
-    <ClInclude Include="ResourcePrefab.h" />
-    <ClInclude Include="ResourceMaterial.h" />
-    <ClInclude Include="SceneQueries.h" />
-    <ClInclude Include="SimulationEvents.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentBone.h" />
-    <ClInclude Include="ComponentBoxCollider.h" />
-    <ClInclude Include="ComponentCamera.h" />
-    <ClInclude Include="ComponentEmitter.h" />
-    <ClInclude Include="ComponentCapsuleCollider.h" />
-    <ClInclude Include="ComponentCollider.h" />
-    <ClInclude Include="ComponentMesh.h" />
-    <ClInclude Include="ComponentNavAgent.h" />
-    <ClInclude Include="ComponentPlaneCollider.h" />
-    <ClInclude Include="ComponentRigidActor.h" />
-    <ClInclude Include="ComponentRigidStatic.h" />
-    <ClInclude Include="ComponentScript.h" />
-    <ClInclude Include="ComponentSphereCollider.h" />
-    <ClInclude Include="ComponentTransform.h" />
-    <ClInclude Include="ComponentTypes.h" />
-    <ClInclude Include="CurrentSelection.h" />
-    <ClInclude Include="DebugDrawer.h" />
-    <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp" />
-    <ClInclude Include="DevIL\include\devil_internal_exports.h" />
-    <ClInclude Include="DevIL\include\il.h" />
-    <ClInclude Include="DevIL\include\ilu.h" />
-    <ClInclude Include="DevIL\include\ilut.h" />
-    <ClInclude Include="DevIL\include\ilut_config.h" />
-    <ClInclude Include="DevIL\include\ilu_region.h" />
-    <ClInclude Include="DevIL\include\il_wrap.h" />
-    <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="Module.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleInput.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleRenderer3D.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleWindow.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleGui.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_sdl.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Pcg\pcg_spinlock.h">
+      <Filter>Sources\3rd Party\PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="Pcg\pcg_variants.h">
+      <Filter>Sources\3rd Party\PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="Pcg\entropy.h">
+      <Filter>Sources\3rd Party\PCG</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\MathBuildConfig.h">
+      <Filter>Sources\3rd Party\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\MathGeoLib.h">
+      <Filter>Sources\3rd Party\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\MathGeoLibFwd.h">
+      <Filter>Sources\3rd Party\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Algorithm\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\AABB.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\AABB2D.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Capsule.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Circle.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Frustum.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\GeometryAll.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\GeomType.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\HitInfo.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\KDTree.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Line.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\LineSegment.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\OBB.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\PBVolume.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Plane.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Polygon.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Polyhedron.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\QuadTree.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Ray.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Sphere.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\Triangle.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Geometry\TriangleMesh.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\assume.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\BitOps.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\Complex.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\CoordinateAxisConvention.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\FixedPoint.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float2.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float3.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float3x3.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float3x4.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4_neon.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4_sse.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4x4.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4x4_neon.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\float4x4_sse.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\FloatCmp.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathAll.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathConstants.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathFunc.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathLog.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathNamespace.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MathTypes.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\MatrixProxy.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\myassert.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\Polynomial.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\Quat.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\quat_simd.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\Rect.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\Reinterpret.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\sse_mathfun.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\SSEMath.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Math\TransformOps.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\include\Time\Clock.h">
+      <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Panel.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelInspector.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelAbout.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelConsole.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScene.h">
+      <Filter>Sources\Modules\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="PerfTimer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="parson\parson.h">
+      <Filter>Sources\3rd Party\Parson</Filter>
+    </ClInclude>
+    <ClInclude Include="mmgr\mmgr.h">
+      <Filter>Sources\3rd Party\mmgr</Filter>
+    </ClInclude>
+    <ClInclude Include="mmgr\nommgr.h">
+      <Filter>Sources\3rd Party\mmgr</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\eglew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\glew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\glxew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\wglew.h">
+      <Filter>Sources\3rd Party\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFileSystem.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="physfs\include\physfs.h">
+      <Filter>Sources\3rd Party\Physfs</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelSettings.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\ai_assert.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\anim.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\camera.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\cexport.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\cfileio.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\cimport.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\color4.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\config.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\DefaultIOStream.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\DefaultIOSystem.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\DefaultLogger.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Defines.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\defs.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Exporter.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Importer.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\importerdesc.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\IOStream.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\IOSystem.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\light.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Logger.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\LogStream.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\material.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\matrix3x3.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\matrix4x4.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\mesh.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\metadata.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\NullLogger.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\postprocess.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\ProgressHandler.hpp">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\quaternion.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\scene.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\SceneCombiner.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\texture.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\types.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\vector2.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\vector3.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\version.h">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Compiler\poppack1.h">
+      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Compiler\pstdint.h">
+      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\Compiler\pushpack1.h">
+      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
+      <Filter>Sources\3rd Party\Assimp\Port</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\devil_cpp_wrapper.hpp">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\devil_internal_exports.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\il_wrap.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilu_region.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="DevIL\include\ilut_config.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleGOs.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelHierarchy.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMesh.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMaterial.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTypes.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTransform.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Quadtree.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleCameraEditor.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDrawer.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelAssets.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Raycaster.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleTimeManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\3rd Party\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelDebugDraw.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelEdit.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
     <ClInclude Include="GameMode.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameTimer.h" />
-    <ClInclude Include="glew\include\GL\eglew.h" />
-    <ClInclude Include="glew\include\GL\glew.h" />
-    <ClInclude Include="glew\include\GL\glxew.h" />
-    <ClInclude Include="glew\include\GL\wglew.h" />
-    <ClInclude Include="Globals.h" />
-    <ClInclude Include="ImGuiColorTextEdit\TextEditor.h" />
-    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui\imgui_impl_sdl.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imgui_stl.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="NMInputGeom.h" />
-    <ClInclude Include="ComponentMaterial.h" />
-    <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\AABB.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\AABB2D.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Capsule.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Circle.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Frustum.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\GeometryAll.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\GeomType.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\HitInfo.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\KDTree.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Line.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\LineSegment.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\OBB.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\PBVolume.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Plane.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Polygon.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Polyhedron.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\QuadTree.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Ray.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Sphere.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\Triangle.h" />
-    <ClInclude Include="MathGeoLib\include\Geometry\TriangleMesh.h" />
-    <ClInclude Include="MathGeoLib\include\MathBuildConfig.h" />
-    <ClInclude Include="MathGeoLib\include\MathGeoLib.h" />
-    <ClInclude Include="MathGeoLib\include\MathGeoLibFwd.h" />
-    <ClInclude Include="MathGeoLib\include\Math\assume.h" />
-    <ClInclude Include="MathGeoLib\include\Math\BitOps.h" />
-    <ClInclude Include="MathGeoLib\include\Math\Complex.h" />
-    <ClInclude Include="MathGeoLib\include\Math\CoordinateAxisConvention.h" />
-    <ClInclude Include="MathGeoLib\include\Math\FixedPoint.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float2.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float3.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float3x3.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float3x4.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4x4.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4x4_neon.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4x4_sse.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4_neon.h" />
-    <ClInclude Include="MathGeoLib\include\Math\float4_sse.h" />
-    <ClInclude Include="MathGeoLib\include\Math\FloatCmp.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathAll.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathConstants.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathFunc.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathLog.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathNamespace.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MathTypes.h" />
-    <ClInclude Include="MathGeoLib\include\Math\MatrixProxy.h" />
-    <ClInclude Include="MathGeoLib\include\Math\myassert.h" />
-    <ClInclude Include="MathGeoLib\include\Math\Polynomial.h" />
-    <ClInclude Include="MathGeoLib\include\Math\Quat.h" />
-    <ClInclude Include="MathGeoLib\include\Math\quat_simd.h" />
-    <ClInclude Include="MathGeoLib\include\Math\Rect.h" />
-    <ClInclude Include="MathGeoLib\include\Math\Reinterpret.h" />
-    <ClInclude Include="MathGeoLib\include\Math\SSEMath.h" />
-    <ClInclude Include="MathGeoLib\include\Math\sse_mathfun.h" />
-    <ClInclude Include="MathGeoLib\include\Math\TransformOps.h" />
-    <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
-    <ClInclude Include="mmgr\mmgr.h" />
-    <ClInclude Include="mmgr\nommgr.h" />
-    <ClInclude Include="ModuleEvents.h" />
-    <ClInclude Include="ModuleGOs.h" />
-    <ClInclude Include="NMDebugDraw.h" />
-    <ClInclude Include="PanelNavigation.h" />
-    <ClInclude Include="ModuleNavigation.h" />
-    <ClInclude Include="ModuleParticles.h" />
-    <ClInclude Include="ModulePhysics.h" />
-    <ClInclude Include="PanelCodeEditor.h" />
-    <ClInclude Include="PanelDebugDraw.h" />
-    <ClInclude Include="PanelEdit.h" />
-    <ClInclude Include="PanelLayers.h" />
-    <ClInclude Include="PanelSimulatedTime.h" />
-    <ClInclude Include="PanelPhysics.h" />
-    <ClInclude Include="PanelShaderEditor.h" />
-    <ClInclude Include="PanelSkybox.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxBoxController.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxCapsuleController.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxCharacter.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxController.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxControllerBehavior.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxControllerManager.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxControllerObstacles.h" />
-    <ClInclude Include="physx\include\characterkinematic\PxExtended.h" />
-    <ClInclude Include="physx\include\collision\PxCollisionDefs.h" />
-    <ClInclude Include="physx\include\common\PxBase.h" />
-    <ClInclude Include="physx\include\common\PxCollection.h" />
-    <ClInclude Include="physx\include\common\PxCoreUtilityTypes.h" />
-    <ClInclude Include="physx\include\common\PxMetaData.h" />
-    <ClInclude Include="physx\include\common\PxMetaDataFlags.h" />
-    <ClInclude Include="physx\include\common\PxPhysicsInsertionCallback.h" />
-    <ClInclude Include="physx\include\common\PxPhysXCommonConfig.h" />
-    <ClInclude Include="physx\include\common\PxProfileZone.h" />
-    <ClInclude Include="physx\include\common\PxRenderBuffer.h" />
-    <ClInclude Include="physx\include\common\PxSerialFramework.h" />
-    <ClInclude Include="physx\include\common\PxSerializer.h" />
-    <ClInclude Include="physx\include\common\PxStringTable.h" />
-    <ClInclude Include="physx\include\common\PxTolerancesScale.h" />
-    <ClInclude Include="physx\include\common\PxTypeInfo.h" />
-    <ClInclude Include="physx\include\common\windows\PxWindowsDelayLoadHook.h" />
-    <ClInclude Include="physx\include\cooking\PxBVH33MidphaseDesc.h" />
-    <ClInclude Include="physx\include\cooking\PxBVH34MidphaseDesc.h" />
-    <ClInclude Include="physx\include\cooking\PxBVHStructureDesc.h" />
-    <ClInclude Include="physx\include\cooking\Pxc.h" />
-    <ClInclude Include="physx\include\cooking\PxConvexMeshDesc.h" />
-    <ClInclude Include="physx\include\cooking\PxCooking.h" />
-    <ClInclude Include="physx\include\cooking\PxMidphaseDesc.h" />
-    <ClInclude Include="physx\include\cooking\PxTriangleMeshDesc.h" />
-    <ClInclude Include="physx\include\cudamanager\PxCudaContextManager.h" />
-    <ClInclude Include="physx\include\cudamanager\PxCudaMemoryManager.h" />
-    <ClInclude Include="physx\include\cudamanager\PxGpuCopyDesc.h" />
-    <ClInclude Include="physx\include\cudamanager\PxGpuCopyDescQueue.h" />
-    <ClInclude Include="physx\include\extensions\PxBinaryConverter.h" />
-    <ClInclude Include="physx\include\extensions\PxBroadPhaseExt.h" />
-    <ClInclude Include="physx\include\extensions\PxCollectionExt.h" />
-    <ClInclude Include="physx\include\extensions\PxConstraintExt.h" />
-    <ClInclude Include="physx\include\extensions\PxContactJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxConvexMeshExt.h" />
-    <ClInclude Include="physx\include\extensions\PxD6Joint.h" />
-    <ClInclude Include="physx\include\extensions\PxD6JointCreate.h" />
-    <ClInclude Include="physx\include\extensions\PxDefaultAllocator.h" />
-    <ClInclude Include="physx\include\extensions\PxDefaultCpuDispatcher.h" />
-    <ClInclude Include="physx\include\extensions\PxDefaultErrorCallback.h" />
-    <ClInclude Include="physx\include\extensions\PxDefaultSimulationFilterShader.h" />
-    <ClInclude Include="physx\include\extensions\PxDefaultStreams.h" />
-    <ClInclude Include="physx\include\extensions\PxDistanceJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxExtensionsAPI.h" />
-    <ClInclude Include="physx\include\extensions\PxFixedJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxJointLimit.h" />
-    <ClInclude Include="physx\include\extensions\PxMassProperties.h" />
-    <ClInclude Include="physx\include\extensions\PxPrismaticJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxRaycastCCD.h" />
-    <ClInclude Include="physx\include\extensions\PxRepXSerializer.h" />
-    <ClInclude Include="physx\include\extensions\PxRepXSimpleType.h" />
-    <ClInclude Include="physx\include\extensions\PxRevoluteJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxRigidActorExt.h" />
-    <ClInclude Include="physx\include\extensions\PxRigidBodyExt.h" />
-    <ClInclude Include="physx\include\extensions\PxSceneQueryExt.h" />
-    <ClInclude Include="physx\include\extensions\PxSerialization.h" />
-    <ClInclude Include="physx\include\extensions\PxShapeExt.h" />
-    <ClInclude Include="physx\include\extensions\PxSimpleFactory.h" />
-    <ClInclude Include="physx\include\extensions\PxSmoothNormals.h" />
-    <ClInclude Include="physx\include\extensions\PxSphericalJoint.h" />
-    <ClInclude Include="physx\include\extensions\PxStringTableExt.h" />
-    <ClInclude Include="physx\include\extensions\PxTriangleMeshExt.h" />
-    <ClInclude Include="physx\include\filebuf\PxFileBuf.h" />
-    <ClInclude Include="physx\include\foundation\Px.h" />
-    <ClInclude Include="physx\include\foundation\PxAllocatorCallback.h" />
-    <ClInclude Include="physx\include\foundation\PxAssert.h" />
-    <ClInclude Include="physx\include\foundation\PxBitAndData.h" />
-    <ClInclude Include="physx\include\foundation\PxBounds3.h" />
-    <ClInclude Include="physx\include\foundation\PxErrorCallback.h" />
-    <ClInclude Include="physx\include\foundation\PxErrors.h" />
-    <ClInclude Include="physx\include\foundation\PxFlags.h" />
-    <ClInclude Include="physx\include\foundation\PxIntrinsics.h" />
-    <ClInclude Include="physx\include\foundation\PxIO.h" />
-    <ClInclude Include="physx\include\foundation\PxMat33.h" />
-    <ClInclude Include="physx\include\foundation\PxMat44.h" />
-    <ClInclude Include="physx\include\foundation\PxMath.h" />
-    <ClInclude Include="physx\include\foundation\PxMathUtils.h" />
-    <ClInclude Include="physx\include\foundation\PxMemory.h" />
-    <ClInclude Include="physx\include\foundation\PxPlane.h" />
-    <ClInclude Include="physx\include\foundation\PxPreprocessor.h" />
-    <ClInclude Include="physx\include\foundation\PxProfiler.h" />
-    <ClInclude Include="physx\include\foundation\PxQuat.h" />
-    <ClInclude Include="physx\include\foundation\PxSimpleTypes.h" />
-    <ClInclude Include="physx\include\foundation\PxStrideIterator.h" />
-    <ClInclude Include="physx\include\foundation\PxTransform.h" />
-    <ClInclude Include="physx\include\foundation\PxUnionCast.h" />
-    <ClInclude Include="physx\include\foundation\PxVec2.h" />
-    <ClInclude Include="physx\include\foundation\PxVec3.h" />
-    <ClInclude Include="physx\include\foundation\PxVec4.h" />
-    <ClInclude Include="physx\include\foundation\windows\PxWindowsIntrinsics.h" />
-    <ClInclude Include="physx\include\geometry\PxBoxGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxBVHStructure.h" />
-    <ClInclude Include="physx\include\geometry\PxCapsuleGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxConvexMesh.h" />
-    <ClInclude Include="physx\include\geometry\PxConvexMeshGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxGeometryHelpers.h" />
-    <ClInclude Include="physx\include\geometry\PxGeometryQuery.h" />
-    <ClInclude Include="physx\include\geometry\PxHeightField.h" />
-    <ClInclude Include="physx\include\geometry\PxHeightFieldDesc.h" />
-    <ClInclude Include="physx\include\geometry\PxHeightFieldFlag.h" />
-    <ClInclude Include="physx\include\geometry\PxHeightFieldGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxHeightFieldSample.h" />
-    <ClInclude Include="physx\include\geometry\PxMeshQuery.h" />
-    <ClInclude Include="physx\include\geometry\PxMeshScale.h" />
-    <ClInclude Include="physx\include\geometry\PxPlaneGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxSimpleTriangleMesh.h" />
-    <ClInclude Include="physx\include\geometry\PxSphereGeometry.h" />
-    <ClInclude Include="physx\include\geometry\PxTriangle.h" />
-    <ClInclude Include="physx\include\geometry\PxTriangleMesh.h" />
-    <ClInclude Include="physx\include\geometry\PxTriangleMeshGeometry.h" />
-    <ClInclude Include="physx\include\geomutils\GuContactBuffer.h" />
-    <ClInclude Include="physx\include\geomutils\GuContactPoint.h" />
-    <ClInclude Include="physx\include\gpu\PxGpu.h" />
-    <ClInclude Include="physx\include\pvd\PxPvd.h" />
-    <ClInclude Include="physx\include\pvd\PxPvdSceneClient.h" />
-    <ClInclude Include="physx\include\pvd\PxPvdTransport.h" />
-    <ClInclude Include="physx\include\PxActor.h" />
-    <ClInclude Include="physx\include\PxAggregate.h" />
-    <ClInclude Include="physx\include\PxArticulation.h" />
-    <ClInclude Include="physx\include\PxArticulationBase.h" />
-    <ClInclude Include="physx\include\PxArticulationJoint.h" />
-    <ClInclude Include="physx\include\PxArticulationJointReducedCoordinate.h" />
-    <ClInclude Include="physx\include\PxArticulationLink.h" />
-    <ClInclude Include="physx\include\PxArticulationReducedCoordinate.h" />
-    <ClInclude Include="physx\include\PxBatchQuery.h" />
-    <ClInclude Include="physx\include\PxBatchQueryDesc.h" />
-    <ClInclude Include="physx\include\PxBroadPhase.h" />
-    <ClInclude Include="physx\include\PxClient.h" />
-    <ClInclude Include="physx\include\PxConstraint.h" />
-    <ClInclude Include="physx\include\PxConstraintDesc.h" />
-    <ClInclude Include="physx\include\PxContact.h" />
-    <ClInclude Include="physx\include\PxContactModifyCallback.h" />
-    <ClInclude Include="physx\include\PxDeletionListener.h" />
-    <ClInclude Include="physx\include\PxFiltering.h" />
-    <ClInclude Include="physx\include\PxForceMode.h" />
-    <ClInclude Include="physx\include\PxFoundation.h" />
-    <ClInclude Include="physx\include\PxImmediateMode.h" />
-    <ClInclude Include="physx\include\PxLockedData.h" />
-    <ClInclude Include="physx\include\PxMaterial.h" />
-    <ClInclude Include="physx\include\PxPhysics.h" />
-    <ClInclude Include="physx\include\PxPhysicsAPI.h" />
-    <ClInclude Include="physx\include\PxPhysicsSerialization.h" />
-    <ClInclude Include="physx\include\PxPhysicsVersion.h" />
-    <ClInclude Include="physx\include\PxPhysXConfig.h" />
-    <ClInclude Include="physx\include\PxPruningStructure.h" />
-    <ClInclude Include="physx\include\PxQueryFiltering.h" />
-    <ClInclude Include="physx\include\PxQueryReport.h" />
-    <ClInclude Include="physx\include\PxRigidActor.h" />
-    <ClInclude Include="physx\include\PxRigidBody.h" />
-    <ClInclude Include="physx\include\PxRigidDynamic.h" />
-    <ClInclude Include="physx\include\PxRigidStatic.h" />
-    <ClInclude Include="physx\include\PxScene.h" />
-    <ClInclude Include="physx\include\PxSceneDesc.h" />
-    <ClInclude Include="physx\include\PxSceneLock.h" />
-    <ClInclude Include="physx\include\PxShape.h" />
-    <ClInclude Include="physx\include\PxSimulationEventCallback.h" />
-    <ClInclude Include="physx\include\PxSimulationStatistics.h" />
-    <ClInclude Include="physx\include\PxVisualizationParameter.h" />
-    <ClInclude Include="physx\include\solver\PxSolverDefs.h" />
-    <ClInclude Include="physx\include\task\PxCpuDispatcher.h" />
-    <ClInclude Include="physx\include\task\PxGpuDispatcher.h" />
-    <ClInclude Include="physx\include\task\PxGpuTask.h" />
-    <ClInclude Include="physx\include\task\PxTask.h" />
-    <ClInclude Include="physx\include\task\PxTaskDefine.h" />
-    <ClInclude Include="physx\include\task\PxTaskManager.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleComponents.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleDrive.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleDrive4W.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleDriveNW.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleDriveTank.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleNoDrive.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleSDK.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleShaders.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleTireFriction.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleUpdate.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleUtil.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleUtilControl.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleUtilSetup.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleUtilTelemetry.h" />
-    <ClInclude Include="physx\include\vehicle\PxVehicleWheels.h" />
-    <ClInclude Include="pugui\pugiconfig.hpp" />
-    <ClInclude Include="pugui\pugixml.hpp" />
-    <ClInclude Include="Raycaster.h" />
-    <ClInclude Include="PanelAssets.h" />
-    <ClInclude Include="Quadtree.h" />
-    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h" />
-    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DetourDebugDraw.h" />
-    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDebugDraw.h" />
-    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDump.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourCrowd.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourLocalBoundary.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourObstacleAvoidance.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathCorridor.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathQueue.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourProximityGrid.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCache.h" />
-    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCacheBuilder.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAlloc.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAssert.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourCommon.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourMath.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMesh.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshBuilder.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshQuery.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNode.h" />
-    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourStatus.h" />
-    <ClInclude Include="Recast&amp;Detour\Recast\Include\Recast.h" />
-    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAlloc.h" />
-    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="ModuleResourceManager.h" />
-    <ClInclude Include="ResourceAnimation.h" />
-    <ClInclude Include="ResourceBone.h" />
-    <ClInclude Include="ResourceScript.h" />
-    <ClInclude Include="ResourceShaderObject.h" />
-    <ClInclude Include="ResourceShaderProgram.h" />
-    <ClInclude Include="ResourceTexture.h" />
-    <ClInclude Include="ResourceMesh.h" />
-    <ClInclude Include="ResourceTypes.h" />
-    <ClInclude Include="SceneImporter.h" />
-    <ClInclude Include="ModuleCameraEditor.h" />
-    <ClInclude Include="ModuleFileSystem.h" />
-    <ClInclude Include="ModuleGui.h" />
-    <ClInclude Include="ModuleRenderer3D.h" />
-    <ClInclude Include="Module.h" />
-    <ClInclude Include="ModuleInput.h" />
-    <ClInclude Include="ModuleScene.h" />
-    <ClInclude Include="MaterialImporter.h" />
-    <ClInclude Include="ModuleWindow.h" />
-    <ClInclude Include="Panel.h" />
-    <ClInclude Include="PanelAbout.h" />
-    <ClInclude Include="PanelConsole.h" />
-    <ClInclude Include="PanelHierarchy.h" />
-    <ClInclude Include="PanelInspector.h" />
-    <ClInclude Include="PanelSettings.h" />
-    <ClInclude Include="parson\parson.h" />
-    <ClInclude Include="Pcg\entropy.h" />
-    <ClInclude Include="Pcg\pcg_spinlock.h" />
-    <ClInclude Include="Pcg\pcg_variants.h" />
-    <ClInclude Include="PerfTimer.h" />
-    <ClInclude Include="physfs\include\physfs.h" />
-    <ClInclude Include="Primitive.h" />
-    <ClInclude Include="ModuleTimeManager.h" />
-    <ClInclude Include="ScriptingModule.h" />
-    <ClInclude Include="ShaderImporter.h" />
-    <ClInclude Include="ComponentRigidDynamic.h" />
-    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Resource.h">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTypes.h">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMesh.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentSelection.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleResourceManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTexture.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSystem.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelCodeEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiColorTextEdit\TextEditor.h">
+      <Filter>Sources\3rd Party\ImGuiColorTextEdit</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceShaderProgram.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceShaderObject.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelShaderEditor.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelSkybox.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DetourDebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDebugDraw.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\RecastDump.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAlloc.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourAssert.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourCommon.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourMath.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMesh.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshBuilder.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNavMeshQuery.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourNode.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Detour\Include\DetourStatus.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourCrowd.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourLocalBoundary.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourObstacleAvoidance.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathCorridor.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourPathQueue.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourCrowd\Include\DetourProximityGrid.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCache.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\DetourTileCache\Include\DetourTileCacheBuilder.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\Recast.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAlloc.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Recast&amp;Detour\Recast\Include\RecastAssert.h">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="NMDebugDraw.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NMInputGeom.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentNavAgent.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelNavigation.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleNavigation.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleParticles.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentEmitter.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelSimulatedTime.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ModulePhysics.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxActor.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxAggregate.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulation.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulationBase.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulationJoint.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulationJointReducedCoordinate.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulationLink.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxArticulationReducedCoordinate.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxBatchQuery.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxBatchQueryDesc.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxBroadPhase.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxClient.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxConstraint.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxConstraintDesc.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxContact.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxContactModifyCallback.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxDeletionListener.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxFiltering.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxForceMode.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxFoundation.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxImmediateMode.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxLockedData.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxMaterial.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPhysics.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPhysicsAPI.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPhysicsSerialization.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPhysicsVersion.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPhysXConfig.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxPruningStructure.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxQueryFiltering.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxQueryReport.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxRigidActor.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxRigidBody.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxRigidDynamic.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxRigidStatic.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxScene.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxSceneDesc.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxSceneLock.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxShape.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxSimulationEventCallback.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxSimulationStatistics.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\PxVisualizationParameter.h">
+      <Filter>Sources\3rd Party\physx</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxBoxController.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxCapsuleController.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxCharacter.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxController.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxControllerBehavior.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxControllerManager.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxControllerObstacles.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\characterkinematic\PxExtended.h">
+      <Filter>Sources\3rd Party\physx\characterkinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\collision\PxCollisionDefs.h">
+      <Filter>Sources\3rd Party\physx\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxBase.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxCollection.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxCoreUtilityTypes.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxMetaData.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxMetaDataFlags.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxPhysicsInsertionCallback.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxPhysXCommonConfig.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxProfileZone.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxRenderBuffer.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxSerialFramework.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxSerializer.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxStringTable.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxTolerancesScale.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\PxTypeInfo.h">
+      <Filter>Sources\3rd Party\physx\common</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\common\windows\PxWindowsDelayLoadHook.h">
+      <Filter>Sources\3rd Party\physx\common\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxBVH33MidphaseDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxBVH34MidphaseDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxBVHStructureDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\Pxc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxConvexMeshDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxCooking.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxMidphaseDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cooking\PxTriangleMeshDesc.h">
+      <Filter>Sources\3rd Party\physx\cooking</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cudamanager\PxCudaContextManager.h">
+      <Filter>Sources\3rd Party\physx\cudamanager</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cudamanager\PxCudaMemoryManager.h">
+      <Filter>Sources\3rd Party\physx\cudamanager</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cudamanager\PxGpuCopyDesc.h">
+      <Filter>Sources\3rd Party\physx\cudamanager</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\cudamanager\PxGpuCopyDescQueue.h">
+      <Filter>Sources\3rd Party\physx\cudamanager</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxBinaryConverter.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxBroadPhaseExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxCollectionExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxConstraintExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxContactJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxConvexMeshExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxD6Joint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxD6JointCreate.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDefaultAllocator.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDefaultCpuDispatcher.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDefaultErrorCallback.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDefaultSimulationFilterShader.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDefaultStreams.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxDistanceJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxExtensionsAPI.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxFixedJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxJointLimit.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxMassProperties.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxPrismaticJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRaycastCCD.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRepXSerializer.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRepXSimpleType.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRevoluteJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRigidActorExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxRigidBodyExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxSceneQueryExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxSerialization.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxShapeExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxSimpleFactory.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxSmoothNormals.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxSphericalJoint.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxStringTableExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\extensions\PxTriangleMeshExt.h">
+      <Filter>Sources\3rd Party\physx\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\filebuf\PxFileBuf.h">
+      <Filter>Sources\3rd Party\physx\filebuf</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxBoxGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxBVHStructure.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxCapsuleGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxConvexMesh.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxConvexMeshGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxGeometryHelpers.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxGeometryQuery.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxHeightField.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxHeightFieldDesc.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxHeightFieldFlag.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxHeightFieldGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxHeightFieldSample.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxMeshQuery.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxMeshScale.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxPlaneGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxSimpleTriangleMesh.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxSphereGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxTriangle.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxTriangleMesh.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geometry\PxTriangleMeshGeometry.h">
+      <Filter>Sources\3rd Party\physx\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geomutils\GuContactBuffer.h">
+      <Filter>Sources\3rd Party\physx\geomutils</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\geomutils\GuContactPoint.h">
+      <Filter>Sources\3rd Party\physx\geomutils</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\gpu\PxGpu.h">
+      <Filter>Sources\3rd Party\physx\gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleComponents.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleDrive.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleDrive4W.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleDriveNW.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleDriveTank.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleNoDrive.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleSDK.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleShaders.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleTireFriction.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleUpdate.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleUtil.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleUtilControl.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleUtilSetup.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleUtilTelemetry.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\vehicle\PxVehicleWheels.h">
+      <Filter>Sources\3rd Party\physx\vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxCpuDispatcher.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxGpuDispatcher.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxGpuTask.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxTask.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxTaskDefine.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\task\PxTaskManager.h">
+      <Filter>Sources\3rd Party\physx\task</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\solver\PxSolverDefs.h">
+      <Filter>Sources\3rd Party\physx\solver</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\pvd\PxPvd.h">
+      <Filter>Sources\3rd Party\physx\pvd</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\pvd\PxPvdSceneClient.h">
+      <Filter>Sources\3rd Party\physx\pvd</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\pvd\PxPvdTransport.h">
+      <Filter>Sources\3rd Party\physx\pvd</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\Px.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxAllocatorCallback.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxAssert.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxBitAndData.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxBounds3.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxErrorCallback.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxErrors.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxFlags.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxIntrinsics.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxIO.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxMat33.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxMat44.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxMath.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxMathUtils.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxMemory.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxPlane.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxPreprocessor.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxProfiler.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxQuat.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxSimpleTypes.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxStrideIterator.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxTransform.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxUnionCast.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxVec2.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxVec3.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\PxVec4.h">
+      <Filter>Sources\3rd Party\physx\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="physx\include\foundation\windows\PxWindowsIntrinsics.h">
+      <Filter>Sources\3rd Party\physx\foundation\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelPhysics.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugiconfig.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="pugui\pugixml.hpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingModule.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceScript.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEvents.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stl.h">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAnimation.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBone.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBone.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelLayers.h">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationEvents.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsConstants.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneQueries.h">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleInternalResHandler.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePrefab.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentLight.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAnimation.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationImporter.h">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleAnimation.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceMaterial.h">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBoxCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCapsuleCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPlaneCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidActor.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidDynamic.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRigidStatic.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSphereCollider.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentD6Joint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentDistanceJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFixedJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPrismaticJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRevoluteJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSphericalJoint.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleLayers.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentProjector.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentButton.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCanvasRenderer.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentImage.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRectTransform.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleUI.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assimp\include\.editorconfig" />
-    <None Include="Assimp\include\color4.inl" />
-    <None Include="Assimp\include\config.h.in" />
-    <None Include="Assimp\include\material.inl" />
-    <None Include="Assimp\include\matrix3x3.inl" />
-    <None Include="Assimp\include\matrix4x4.inl" />
-    <None Include="Assimp\include\quaternion.inl" />
-    <None Include="Assimp\include\vector2.inl" />
-    <None Include="Assimp\include\vector3.inl" />
-    <None Include="MathGeoLib\include\Geometry\KDTree.inl" />
-    <None Include="MathGeoLib\include\Geometry\QuadTree.inl" />
-    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_AVX.inl" />
-    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
-    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
-    <None Include="MathGeoLib\include\Math\Matrix.inl" />
-    <None Include="NMBuildContext.h" />
-    <None Include="Uniforms.h" />
+    <ClCompile Include="ModuleInput.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleRenderer3D.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleWindow.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleGui.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_sdl.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Pcg\entropy.c">
+      <Filter>Sources\3rd Party\PCG</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Algorithm\Random\LCG.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Algorithm\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\AABB.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Capsule.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Circle.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Frustum.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Line.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\LineSegment.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\OBB.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Plane.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Polygon.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Polyhedron.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Ray.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Sphere.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\Triangle.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Geometry\TriangleMesh.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\BitOps.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float2.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float3.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float3x3.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float3x4.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float4.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\float4x4.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\MathFunc.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\MathLog.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\MathOps.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\Polynomial.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\Quat.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\SSEMath.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MathGeoLib\include\Time\Clock.cpp">
+      <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Panel.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelInspector.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelAbout.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelConsole.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleScene.cpp">
+      <Filter>Sources\Modules\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="PerfTimer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="parson\parson.c">
+      <Filter>Sources\3rd Party\Parson</Filter>
+    </ClCompile>
+    <ClCompile Include="mmgr\mmgr.cpp">
+      <Filter>Sources\3rd Party\mmgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFileSystem.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSettings.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleGOs.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources\Modules\GO&amp;Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelHierarchy.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMesh.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMaterial.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTransform.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Quadtree.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleCameraEditor.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDrawer.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelAssets.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Raycaster.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleTimeManager.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\3rd Party\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelDebugDraw.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelEdit.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Sources\Modules\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMesh.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleResourceManager.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelCodeEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiColorTextEdit\TextEditor.cpp">
+      <Filter>Sources\3rd Party\ImGuiColorTextEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceShaderProgram.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceShaderObject.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelShaderEditor.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSkybox.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DetourDebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDebugDraw.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\RecastDump.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourAlloc.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourCommon.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMesh.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshBuilder.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNavMeshQuery.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Detour\Source\DetourNode.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourCrowd.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourLocalBoundary.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourObstacleAvoidance.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathCorridor.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourPathQueue.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourCrowd\Source\DetourProximityGrid.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourCrowd</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCache.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\DetourTileCache\Source\DetourTileCacheBuilder.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\DetourTileCache</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\Recast.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastAlloc.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastArea.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastContour.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastFilter.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastLayers.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMesh.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastMeshDetail.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRasterization.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Recast&amp;Detour\Recast\Source\RecastRegion.cpp">
+      <Filter>Sources\3rd Party\Recast&amp;Detour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="NMDebugDraw.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NMBuildContext.cpp">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentNavAgent.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelNavigation.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleNavigation.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Sources\Modules\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleParticles.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentEmitter.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelSimulatedTime.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ModulePhysics.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelPhysics.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingModule.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="pugui\pugixml.cpp">
+      <Filter>Sources\3rd Party\pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEvents.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stl.cpp">
+      <Filter>Sources\3rd Party\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBone.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBone.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelLayers.cpp">
+      <Filter>Sources\Modules\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationEvents.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneQueries.cpp">
+      <Filter>Sources\Helpers\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleInternalResHandler.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcePrefab.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentLight.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAnimation.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationImporter.cpp">
+      <Filter>Sources\Modules\Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleAnimation.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceMaterial.cpp">
+      <Filter>Sources\Modules\Resources\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBoxCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCapsuleCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPlaneCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidActor.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidDynamic.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRigidStatic.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSphereCollider.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentD6Joint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentDistanceJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFixedJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPrismaticJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRevoluteJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSphericalJoint.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Physics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleLayers.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentProjector.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentButton.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCanvasRenderer.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentImage.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRectTransform.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleUI.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MathGeoLib\include\Geometry\KDTree.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="MathGeoLib\include\Geometry\QuadTree.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_AVX.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="MathGeoLib\include\Math\Matrix.inl">
+      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    </None>
+    <None Include="Assimp\include\.editorconfig">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\color4.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\config.h.in">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\material.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\matrix3x3.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\matrix4x4.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\quaternion.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\vector2.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Assimp\include\vector3.inl">
+      <Filter>Sources\3rd Party\Assimp</Filter>
+    </None>
+    <None Include="Uniforms.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </None>
+    <None Include="NMBuildContext.h">
+      <Filter>Sources\Helpers\NavMesh</Filter>
+    </None>
   </ItemGroup>
 </Project>

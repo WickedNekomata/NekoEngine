@@ -34,8 +34,8 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_COMMON_DEFS_H_
 #define _AK_COMMON_DEFS_H_
 
-#include <AK/SoundEngine/Common/AkSpeakerConfig.h>
-#include <AK/SoundEngine/Common/AkSpeakerVolumes.h>
+#include "AkSpeakerConfig.h"
+#include "AkSpeakerVolumes.h"
 
 //-----------------------------------------------------------------------------
 // AUDIO DATA FORMAT

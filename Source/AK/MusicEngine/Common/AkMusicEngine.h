@@ -34,9 +34,9 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_MUSICENGINE_H_
 #define _AK_MUSICENGINE_H_
 
-#include <AK/SoundEngine/Common/AkSoundEngineExport.h>
-#include <AK/SoundEngine/Common/AkTypes.h>
-#include <AK/SoundEngine/Common/AkCallback.h>
+#include "../../SoundEngine/Common/AkSoundEngineExport.h"
+#include "../../SoundEngine/Common/AkTypes.h"
+#include "../../SoundEngine/Common/AkCallback.h"
 
 /// Platform-independent initialization settings of the music engine
 /// \sa 

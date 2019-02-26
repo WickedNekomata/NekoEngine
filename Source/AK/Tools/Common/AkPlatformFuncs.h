@@ -39,7 +39,7 @@ the specific language governing permissions and limitations under the License.
 //#define AK_ENABLE_INSTRUMENT
 
 #if defined(AK_WIN) || defined(AK_XBOXONE)
-#include "AkPlatformFuncs.h"
+#include "../Win32/AkPlatformFuncs.h"
 
 #elif defined (AK_APPLE)
 #include <AK/Tools/Mac/AkPlatformFuncs.h>

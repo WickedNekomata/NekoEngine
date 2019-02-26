@@ -33,7 +33,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _IAK_RTPC_SUBSCRIBER_H_
 #define _IAK_RTPC_SUBSCRIBER_H_
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "AkTypes.h"
 
 namespace AK
 {   

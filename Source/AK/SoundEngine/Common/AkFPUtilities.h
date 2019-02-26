@@ -31,7 +31,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_FP_UTILS_H_
 #define _AK_FP_UTILS_H_
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "AkTypes.h"
 
 #define AK_FSEL( __a__, __b__, __c__) (((__a__) >= 0) ? (__b__) : (__c__))
 

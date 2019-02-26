@@ -1,4 +1,5 @@
 #include "WwiseT.h"
+#include "Application.h"
 
 #include "AK/SoundEngine/Common/AkMemoryMgr.h"                  // Memory Manager
 #include "AK/SoundEngine/Common/AkModule.h"						// Default memory and stream managers
@@ -54,7 +55,7 @@ bool WwiseT::InitSoundEngine()
 	if (AK::MemoryMgr::Init(&memSettings) != AK_Success)
 	{
 		assert(!"Could not create the memory manager.");
-		LOG("Could not create the memory manager.");
+		Log("WwiseT.cpp",1,LogTypes::Error,"Could not create the memory manager.");
 		return false;
 	}
 
@@ -67,7 +68,7 @@ bool WwiseT::InitSoundEngine()
 	if (!AK::StreamMgr::Create(stmSettings))
 	{
 		assert(!"Could not create the Streaming Manager");
-		LOG("Could not create the Streaming Manager");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not create the Streaming Manager");
 		return false;
 	}
 	AkDeviceSettings deviceSettings;
@@ -76,7 +77,7 @@ bool WwiseT::InitSoundEngine()
 	if (g_lowLevelIO.Init(deviceSettings) != AK_Success)
 	{
 		assert(!"Could not create the streaming device and Low-Level I/O system");
-		LOG("Could not create the streaming device and Low-Level I/O system");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not create the streaming device and Low-Level I/O system");
 		return false;
 	}
 
@@ -89,7 +90,7 @@ bool WwiseT::InitSoundEngine()
 	if (AK::SoundEngine::Init(&initSettings, &platformInitSettings) != AK_Success)
 	{
 		assert(!"Could not initialize the Sound Engine.");
-		LOG("Could not initialize the Sound Engine.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not initialize the Sound Engine.");
 		return false;
 	}
 
@@ -100,7 +101,7 @@ bool WwiseT::InitSoundEngine()
 	if (AK::MusicEngine::Init(&musicInit) != AK_Success)
 	{
 		assert(!"Could not initialize the Music Engine.");
-		LOG("Could not initialize the Music Engine.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not initialize the Music Engine.");
 		return false;
 	}
 
@@ -111,7 +112,7 @@ bool WwiseT::InitSoundEngine()
 	if (AK::Comm::Init(commSettings) != AK_Success)
 	{
 		assert(!"Could not initialize communication.");
-		LOG("Could not initialize communication.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not initialize communication.");
 		return false;
 	}
 #endif // AK_OPTIMIZED
@@ -120,7 +121,7 @@ bool WwiseT::InitSoundEngine()
 	if (base_path_res != AK_Success)
 	{
 		assert(!"Invalid base path!");
-		LOG("Invalid base path!");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Invalid base path!");
 		return false;
 	}
 
@@ -177,7 +178,7 @@ void WwiseT::LoadBank(const char * path)
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not initialize soundbank.");
-		LOG("Could not initialize soundbank.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not initialize soundbank.");
 	}
 }
 
@@ -188,7 +189,7 @@ void WwiseT::SetDefaultListener(uint id)
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not set GameObject as default listerner.");
-		LOG("Could not set GameObject as default listerner.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not set GameObject as default listerner.");
 	}
 }
 
@@ -227,14 +228,14 @@ void WwiseT::ResumeAll()
 
 WwiseT::AudioSource::AudioSource(const char* event_name)
 {
-	id = GenRandomNumber();
+	id = App->GenerateRandomNumber();
 	name = new char[128];
 	name = event_name;
 	AKRESULT eResult = AK::SoundEngine::RegisterGameObj(id, name);
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not register GameObject. See eResult variable to more info");
-		LOG("Could not register GameObject. See eResult variable to more info");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not register GameObject. See eResult variable to more info");
 	}
 }
 
@@ -247,7 +248,7 @@ WwiseT::AudioSource::AudioSource(uint pre_id, const char * event_name)
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not register GameObject. See eResult variable to more info");
-		LOG("Could not register GameObject. See eResult variable to more info");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not register GameObject. See eResult variable to more info");
 	}
 }
 
@@ -258,7 +259,7 @@ WwiseT::AudioSource::~AudioSource()
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not unregister GameObject. See eResult variable to more info");
-		LOG("Could not unregister GameObject. See eResult variable to more info");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not unregister GameObject. See eResult variable to more info");
 	}
 }
 
@@ -325,7 +326,7 @@ void WwiseT::AudioSource::SetListener(uint listener_id)
 	if (eResult != AK_Success)
 	{
 		assert(!"Could not set GameObject as listerner.");
-		LOG("Could not set GameObject as listerner.");
+		Log("WwiseT.cpp", 1, LogTypes::Error, "Could not set GameObject as listerner.");
 	}
 }
 
@@ -361,7 +362,7 @@ void WwiseT::AudioSource::SetPos(float pos_x, float pos_y, float pos_z, float fr
 	rot_top.Normalize();
 	if (rot_front.x*rot_top.x + rot_front.y*rot_top.y + rot_front.z*rot_top.z >= 0.0001)
 	{
-		LOG("SET POSITION to Emmiter failed. Vectors are not orthogonal.");
+		Log("SET POSITION to Emmiter failed. Vectors are not orthogonal.", 1, LogTypes::Error, "");
 		return;
 	}
 

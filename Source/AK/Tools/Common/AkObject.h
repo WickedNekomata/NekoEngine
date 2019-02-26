@@ -28,7 +28,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_OBJECT_H_
 #define _AK_OBJECT_H_
 
-#include <AK/SoundEngine/Common/AkMemoryMgr.h>
+#include "../../SoundEngine/Common/AkMemoryMgr.h"
 
 extern AKSOUNDENGINE_API AkMemPoolId g_DefaultPoolId;
 extern AKSOUNDENGINE_API AkMemPoolId g_LEngineDefaultPoolId;

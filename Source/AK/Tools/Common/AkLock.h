@@ -33,10 +33,10 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_TOOLS_COMMON_AKLOCK_H
 #define _AK_TOOLS_COMMON_AKLOCK_H
 
-#include <AK/AkPlatforms.h>
+#include "../../AkPlatforms.h"
 
 #if defined(AK_WIN) || defined(AK_XBOXONE)
-#include <AK/Tools/Win32/AkLock.h>
+#include "AkLock.h"
 
 #elif defined (AK_APPLE) 
 #include <AK/Tools/POSIX/AkLock.h>

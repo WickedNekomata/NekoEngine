@@ -34,7 +34,7 @@ the specific language governing permissions and limitations under the License.
 #define _AK_MIDI_TYPES_H_
 
 // Include standard types
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "AkTypes.h"
 
 //-----------------------------------------------------------------------------
 // Types.

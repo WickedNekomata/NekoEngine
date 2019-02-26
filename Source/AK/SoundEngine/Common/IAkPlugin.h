@@ -31,18 +31,18 @@ the specific language governing permissions and limitations under the License.
 #ifndef _IAK_PLUGIN_H_
 #define _IAK_PLUGIN_H_
 
-#include <AK/SoundEngine/Common/AkCommonDefs.h>
-#include <AK/SoundEngine/Common/IAkRTPCSubscriber.h>
-#include <AK/SoundEngine/Common/IAkPluginMemAlloc.h>
-#include <AK/SoundEngine/Common/AkFPUtilities.h>
-#include <AK/Tools/Common/AkLock.h>
-#include <AK/Tools/Common/AkPlatformFuncs.h>
-#include <AK/Tools/Common/AkMonitorError.h>
-#include <AK/SoundEngine/Common/AkSoundEngineExport.h>
-#include <AK/SoundEngine/Common/IAkProcessorFeatures.h>
-#include <AK/SoundEngine/Common/AkMidiTypes.h>
-#include <AK/SoundEngine/Common/AkCallback.h>
-#include <AK/AkWwiseSDKVersion.h>
+#include "AkCommonDefs.h"
+#include "IAkRTPCSubscriber.h"
+#include "IAkPluginMemAlloc.h"
+#include "AkFPUtilities.h"
+#include "../../Tools/Common/AkLock.h"
+#include "../../Tools/Common/AkPlatformFuncs.h"
+#include "../../Tools/Common/AkMonitorError.h"
+#include "AkSoundEngineExport.h"
+#include "IAkProcessorFeatures.h"
+#include "AkMidiTypes.h"
+#include "AkCallback.h"
+#include "../../AkWwiseSDKVersion.h"
 
 #include <math.h>
 

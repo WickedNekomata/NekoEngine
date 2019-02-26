@@ -91,6 +91,7 @@ struct StartValues
 		color.push_back(colorTime);
 	}
 
+	void operator=(StartValues startValue);
 	void OnInternalSave(char *& cursor);
 	void OnInternalLoad(char *& cursor);
 };
@@ -217,6 +218,7 @@ private:
 	// Number of particles created per second
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
+	uint nameLenght;
 	//---------------------------------------
 };
 #endif // !__Emitter_H__

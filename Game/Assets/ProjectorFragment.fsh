@@ -76,5 +76,5 @@ void main()
         projectorColor = textureProj(projectorTex, fProjectorTexCoord);
     }	     
 	 
-	FragColor = color;
+	FragColor = projectorColor * 0.5;
 }

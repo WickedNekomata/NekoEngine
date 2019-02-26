@@ -91,9 +91,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 			break;
 		}
-		case MeshResource:
-		case TextureResource:
-		{		
+		case ResourceTypes::MeshResource:
+		case ResourceTypes::TextureResource:
+		{
 			std::vector<uint> resourcesUuids;
 			if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
 			{
@@ -104,7 +104,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 				// 2. Delete resource(s)
 				DeleteResources(resourcesUuids);
 			}
-				
+
 			// 3. Import file
 			System_Event newEvent;
 			newEvent.type = System_Event_Type::ImportFile;
@@ -113,6 +113,18 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 			break;
 		}
+		case ResourceTypes::ShaderProgramResource:
+
+			std::vector<Resource*> materials = GetResourcesByType(ResourceTypes::MaterialResource);
+			for (uint i = 0; i < materials.size(); ++i)
+			{
+				ResourceMaterial* material = (ResourceMaterial*)materials[i];
+				ResourceShaderProgram* shader = (ResourceShaderProgram*)GetResource(material->GetShaderUuid());
+				if (shader->GetFile() == event.fileEvent.file)
+					material->SetResourceShader(0);
+			}
+
+			break;
 		}
 	}
 	break;
@@ -208,10 +220,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		RecursiveDeleteUnusedEntries(DIR_LIBRARY, path);
 	}
 	break;
-
-	case System_Event_Type::ShaderProgramChanged:
-		//cmp_material->UpdateUniforms(); // TODO UNIFORMS
-		break;
 
 	case System_Event_Type::ResourceDestroyed:
 	{

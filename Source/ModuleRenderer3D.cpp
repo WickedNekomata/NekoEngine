@@ -882,15 +882,6 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint s
 	// 3. Unknown mesh uniforms
 	//std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
 	//LoadSpecificUniforms(textureUnit, uniforms);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetCheckers());
-	location = glGetUniformLocation(shader, "projectorTex");
-	glUniform1i(location, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 1);	
-	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetDefaultTexture());
-	location = glGetUniformLocation(shader, "material.albedo");
-	glUniform1i(location, 1);
 
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);

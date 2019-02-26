@@ -145,7 +145,6 @@ bool PanelShaderEditor::Draw()
 						shaderProgram->SetName(shaderProgramName);
 						shaderProgram->SetShaderProgramType(ShaderProgramTypes::Custom);
 						shaderProgram->SetShaderObjects(shaderObjects);
-						shaderProgram->Link();
 						
 						// Export the existing file
 						App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), outputFile, true, false);

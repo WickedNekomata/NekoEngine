@@ -22,6 +22,7 @@
 class GameObject;
 class ComponentProjector;
 class QuadtreeNode;
+union Uniform;
 
 struct DirectionalLight
 {
@@ -100,11 +101,15 @@ public:
 	void FrustumCulling() const;
 
 	void DrawSkybox();
-	void DrawMesh(ComponentMesh* toDraw) const;
-	void DrawProjectedTexture(ComponentProjector* toDraw) const;
+	void DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint shaderProgram = 0) const;
+	void DrawProjectors(ComponentProjector* toDraw, uint& textureUnit) const;
+
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 
 	void ClearSkybox();
+
+	void LoadSpecificUniforms(uint& textureUnit, const std::vector<Uniform>& uniforms, const std::vector<const char*>& ignore = std::vector<const char*>()) const;
+	void LoadGenericUniforms(uint shaderProgram) const;
 
 private:
 

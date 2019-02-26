@@ -74,5 +74,5 @@ void main()
     if (fProjectorTexCoord.z > 0.0)
         projectorColor = textureProj(projectorTex, fProjectorTexCoord);	     
 	 
-	FragColor = vec4(0.0,1.0,0.0,1.0);
+	FragColor = vec4(1.0,1.0,0.0,1.0);
 }

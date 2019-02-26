@@ -120,8 +120,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			{
 				ResourceMaterial* material = (ResourceMaterial*)materials[i];
 				ResourceShaderProgram* shader = (ResourceShaderProgram*)GetResource(material->GetShaderUuid());
-				if (shader == nullptr)
-					continue;
 				if (strcmp(shader->GetFile(), event.fileEvent.file) == 0)
 				{
 					// Update the existing material

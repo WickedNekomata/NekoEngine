@@ -90,6 +90,9 @@ struct StartValues
 		colorTime.name = "Start Color";
 		color.push_back(colorTime);
 	}
+
+	void OnInternalSave(char *& cursor);
+	void OnInternalLoad(char *& cursor);
 };
 
 class ComponentEmitter : public Component

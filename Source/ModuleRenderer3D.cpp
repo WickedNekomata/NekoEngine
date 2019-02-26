@@ -880,8 +880,8 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint s
 	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
 
 	// 3. Unknown mesh uniforms
-	//std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-	//LoadSpecificUniforms(textureUnit, uniforms);
+	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+	LoadSpecificUniforms(textureUnit, uniforms);
 
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);

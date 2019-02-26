@@ -120,8 +120,17 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			{
 				ResourceMaterial* material = (ResourceMaterial*)materials[i];
 				ResourceShaderProgram* shader = (ResourceShaderProgram*)GetResource(material->GetShaderUuid());
-				if (shader->GetFile() == event.fileEvent.file)
-					material->SetResourceShader(0);
+				if (shader == nullptr)
+					continue;
+				if (strcmp(shader->GetFile(), event.fileEvent.file) == 0)
+				{
+					// Update the existing material
+					material->SetResourceShader(shader->GetUuid());
+
+					// Export the existing file
+					std::string outputFile;
+					App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
+				}
 			}
 
 			break;

@@ -782,6 +782,9 @@ void PanelInspector::ShowMaterialInspector() const
 
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
 
+	if (ImGui::Button("EDIT"))
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shader->GetUuid());
+
 	ImGui::Spacing();
 
 	// Uniforms

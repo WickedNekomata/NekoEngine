@@ -26,9 +26,10 @@ ComponentCamera::ComponentCamera(GameObject* parent, bool dummy) : Component(par
 	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
 }
 
-ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera) : Component(componentCamera.parent, ComponentTypes::CameraComponent)
+ComponentCamera::ComponentCamera(const ComponentCamera& componentCamera, bool include) : Component(componentCamera.parent, ComponentTypes::CameraComponent)
 {
-	App->renderer3D->AddCameraComponent(this);
+	if(include)
+		App->renderer3D->AddCameraComponent(this);
 
 	frustum = componentCamera.frustum;
 

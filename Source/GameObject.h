@@ -20,7 +20,7 @@ class GameObject
 public:
 
 	GameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject(GameObject& gameObject);
+	GameObject(GameObject& gameObject, bool includeComponents = true);
 	~GameObject();
 
 	void DestroyTemplate();

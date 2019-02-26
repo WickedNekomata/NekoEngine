@@ -48,7 +48,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 	uuid = App->GenerateRandomNumber();
 }
 
-GameObject::GameObject(GameObject& gameObject)
+GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
@@ -64,7 +64,7 @@ GameObject::GameObject(GameObject& gameObject)
 			components.push_back(transform);
 			break;
 		case ComponentTypes::MeshComponent:
-			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh);
+			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh, includeComponents);
 			cmp_mesh->SetParent(this);
 			components.push_back(cmp_mesh);
 			break;
@@ -74,17 +74,17 @@ GameObject::GameObject(GameObject& gameObject)
 			components.push_back(cmp_material);
 			break;
 		case ComponentTypes::CameraComponent:
-			cmp_camera = new ComponentCamera(*gameObject.cmp_camera);
+			cmp_camera = new ComponentCamera(*gameObject.cmp_camera, includeComponents);
 			cmp_camera->SetParent(this);
 			components.push_back(cmp_camera);
 			break;
 		case ComponentTypes::NavAgentComponent:
-			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent);
+			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent, includeComponents);
 			cmp_navAgent->SetParent(this);
 			components.push_back(cmp_navAgent);
 			break;
 		case ComponentTypes::EmitterComponent:
-			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter);
+			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter, includeComponents);
 			cmp_emitter->SetParent(this);
 			components.push_back(cmp_emitter);
 			break;
@@ -154,7 +154,7 @@ GameObject::GameObject(GameObject& gameObject)
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
 	{
-		GameObject* childClone = new GameObject(*gameObject.children[i]);		
+		GameObject* childClone = new GameObject(*gameObject.children[i], includeComponents);		
 		childClone->parent = this;
 		childClone->parent_uuid = this->uuid;
 				

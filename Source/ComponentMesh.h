@@ -13,7 +13,7 @@ class ComponentMesh : public Component
 public:
 
 	ComponentMesh(GameObject* parent);
-	ComponentMesh(const ComponentMesh& componentMesh);
+	ComponentMesh(const ComponentMesh& componentMesh, bool include = true);
 	~ComponentMesh();
 
 	void Update();

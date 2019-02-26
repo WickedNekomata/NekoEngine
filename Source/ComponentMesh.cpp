@@ -16,9 +16,10 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 	App->renderer3D->AddMeshComponent(this);
 }
 
-ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
+ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh, bool include) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
 {
-	App->renderer3D->AddMeshComponent(this);
+	if(include)
+		App->renderer3D->AddMeshComponent(this);
 	SetResource(componentMesh.res);
 }
 

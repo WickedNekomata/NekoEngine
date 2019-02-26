@@ -27,7 +27,7 @@ public class Testing : JellyScript
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            //GameObject tempGO = GameObject.Instantiate(randomObject);
+            GameObject tempGO = GameObject.Instantiate(randomObject);
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);
         }

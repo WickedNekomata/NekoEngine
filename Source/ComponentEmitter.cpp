@@ -25,7 +25,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
-ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
+ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, bool include) : Component(componentEmitter.parent, EmitterComponent)
 {
 	duration = componentEmitter.duration;
 
@@ -83,7 +83,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	if (parent)
 		App->scene->quadtree.Insert(parent);
 
-	App->particle->emitters.push_back(this);
+	if(include)
+		App->particle->emitters.push_back(this);
 
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }

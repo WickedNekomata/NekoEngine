@@ -99,7 +99,7 @@ class ComponentEmitter : public Component
 {
 public:
 	ComponentEmitter(GameObject* gameObject);
-	ComponentEmitter(const ComponentEmitter & componentEmitter);
+	ComponentEmitter(const ComponentEmitter & componentEmitter, bool include = true);
 	~ComponentEmitter();
 
 	void StartEmitter();

@@ -165,7 +165,7 @@ bool ResourcePrefab::LoadInMemory()
 		return nullptr;
 
 	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
-	prefabData.root = new GameObject(*temp);
+	prefabData.root = new GameObject(*temp, false);
 	prefabData.root->ForceUUID(uuid);
 	prefabData.root->prefab = this;
 

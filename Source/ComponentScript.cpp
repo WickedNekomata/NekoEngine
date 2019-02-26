@@ -1672,7 +1672,7 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 		case VarType::FLOAT:
 		{
 			bytes = sizeof(float);
-			bool var;
+			float var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;

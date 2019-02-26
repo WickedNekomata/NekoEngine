@@ -1,5 +1,6 @@
 #include "WwiseT.h"
 #include "Application.h"
+#include "MathGeoLib/include/Math/float3.h"
 
 #include "AK/SoundEngine/Common/AkMemoryMgr.h"                  // Memory Manager
 #include "AK/SoundEngine/Common/AkModule.h"						// Default memory and stream managers
@@ -343,9 +344,9 @@ const char * WwiseT::AudioSource::GetName() const
 void WwiseT::AudioSource::SetPos(float pos_x, float pos_y, float pos_z, float front_rot_x, float front_rot_y, float front_rot_z, float top_rot_x, float top_rot_y, float top_rot_z)
 {
 	// Setting position vectors
-	float3 pos = { 0, 0, 0 };
-	float3 rot_front = { 0, 0, 0 };
-	float3 rot_top = { 0, 0, 0 };
+	math::float3 pos = { 0, 0, 0 };
+	math::float3 rot_front = { 0, 0, 0 };
+	math::float3 rot_top = { 0, 0, 0 };
 
 	pos.x = pos_x;
 	pos.y = pos_y;

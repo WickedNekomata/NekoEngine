@@ -107,6 +107,22 @@ void ComponentButton::OnUniqueEditor()
 	static char inputBlind[2] = { input.at(0) };
 	if (ImGui::InputText("Blind key", inputBlind, IM_ARRAYSIZE(inputBlind), ImGuiInputTextFlags_EnterReturnsTrue))
 		SetNewKey(inputBlind);
+
+	switch (state)
+	{
+	case IDLE:
+		ImGui::Text("This button is IDLE.");
+		break;
+	case HOVERED:
+		ImGui::Text("This button is Hovered.");
+		break;
+	case R_CLICK:
+		ImGui::Text("This button is Hovered.");
+		break;
+	case L_CLICK:
+		ImGui::Text("This button is Hovered.");
+		break;
+	}
 }
 
 bool ComponentButton::MouseInScreen(const uint* rect) const

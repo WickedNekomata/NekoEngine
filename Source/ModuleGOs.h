@@ -24,6 +24,7 @@ public:
 	void GetGameobjects(std::vector<GameObject*>& gos) const;
 	void GetStaticGameobjects(std::vector<GameObject*>& gos) const;
 	void GetDynamicGameobjects(std::vector<GameObject*>& gos) const;
+	GameObject* GetGameObjectByUID(uint UID) const;
 
 	void ClearScene();
 

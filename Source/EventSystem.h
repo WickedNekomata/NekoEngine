@@ -26,7 +26,8 @@ enum System_Event_Type
 	LayerFilterMaskChanged,
 
 	//Scripting events
-	ScriptingDomainReloaded
+	ScriptingDomainReloaded,
+	LoadFinished
 };
 
 class GameObject;

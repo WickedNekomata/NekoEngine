@@ -12,6 +12,10 @@ public:
 	ComponentScript(ComponentScript& copy);
 	virtual ~ComponentScript();
 
+	//NOTE: If you override this method, make sure to call the base class method. 
+	//(Component::OnSystemEvent(event); at start)
+	void OnSystemEvent(System_Event event);
+
 	void Awake();
 	void Start();
 	void PreUpdate();
@@ -28,6 +32,7 @@ public:
 	
 	uint GetInternalSerializationBytes();
 	uint GetPublicVarsSerializationBytes() const;
+	uint GetPublicVarsSerializationBytesFromBuffer(char* buffer) const;
 
 	void SavePublicVars(char*& cursor) const;
 	void LoadPublicVars(char*& cursor);
@@ -44,6 +49,9 @@ public:
 	std::string scriptName;
 
 	uint scriptResUUID = 0;
+
+	uint tempBufferBytes = 0u;
+	char* tempBuffer = nullptr;
 
 	uint32_t handleID = 0;
 	MonoObject* classInstance = nullptr;

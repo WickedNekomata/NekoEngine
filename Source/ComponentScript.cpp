@@ -3,6 +3,7 @@
 #include "ModuleResourceManager.h"
 #include "ScriptingModule.h"
 #include "ModuleLayers.h"
+#include "ModuleGOs.h"
 
 #include "ComponentScript.h"
 #include "ResourceScript.h"
@@ -51,6 +52,25 @@ ComponentScript::~ComponentScript()
 	}
 
 	App->scripting->ClearScriptComponent(this);
+}
+
+void ComponentScript::OnSystemEvent(System_Event event)
+{
+	Component::OnSystemEvent(event);
+
+	switch (event.type)
+	{
+		case System_Event_Type::LoadFinished:
+		{
+			LoadPublicVars(tempBuffer);
+
+			delete[] tempBuffer;
+			tempBuffer = nullptr;
+			tempBufferBytes = 0u;
+
+			break;
+		}
+	}
 }
 
 void ComponentScript::Awake()
@@ -813,7 +833,7 @@ void ComponentScript::OnUniqueEditor()
 
 					if (ImGui::BeginDragDropTarget())
 					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 						if (payload)
 						{
 							GameObject* go = *(GameObject**)payload->Data;
@@ -864,14 +884,8 @@ void ComponentScript::OnUniqueEditor()
 
 						if (!destroyed)
 						{
-							MonoString* goName;
-							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
-
-							char* nameCpp = mono_string_to_utf8(goName);
-
-							text = nameCpp + std::string(" (Transform)");
-
-							mono_free(nameCpp);
+							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+							text = gameObject->GetName() + std::string(" (Transform)");
 						}
 						else
 						{
@@ -974,8 +988,6 @@ void ComponentScript::OnInternalLoad(char*& cursor)
 	if (scriptRes)
 	{
 		scriptName = scriptRes->scriptName;
-		LoadPublicVars(cursor);
-
 		App->res->SetAsUsed(scriptRes->GetUuid());
 	}
 	else
@@ -983,7 +995,11 @@ void ComponentScript::OnInternalLoad(char*& cursor)
 
 	InstanceClass();
 
-	LoadPublicVars(cursor);
+	tempBufferBytes = ComponentScript::GetPublicVarsSerializationBytesFromBuffer(cursor);
+	tempBuffer = new char[tempBufferBytes];
+	memcpy(tempBuffer, cursor, tempBufferBytes);
+
+	cursor += tempBufferBytes;
 }
 
 uint ComponentScript::GetPublicVarsSerializationBytes() const
@@ -1133,6 +1149,221 @@ uint ComponentScript::GetPublicVarsSerializationBytes() const
 		field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
 	}
 	return bytes;
+}
+
+uint ComponentScript::GetPublicVarsSerializationBytesFromBuffer(char* buffer) const
+{
+	char* cursor = buffer;
+	uint totalSize = 0;
+
+	uint numVars = 0;
+	uint bytes = sizeof(uint);
+	memcpy(&numVars, cursor, bytes);
+	totalSize += bytes;
+	cursor += bytes;
+
+	for (int i = 0; i < numVars; i++)
+	{
+		//Load type
+		VarType varType;
+		uint bytes = sizeof(VarType);
+		memcpy(&varType, cursor, bytes);
+		totalSize += bytes;
+		cursor += bytes;
+
+		//Load lenght + string
+		bytes = sizeof(uint);
+		uint nameLenght;
+		memcpy(&nameLenght, cursor, bytes);
+		totalSize += bytes;
+		cursor += bytes;
+
+		bytes = nameLenght;
+		std::string varName;
+		varName.resize(nameLenght);
+		memcpy((void*)varName.c_str(), cursor, bytes);
+		totalSize += bytes;
+		varName.resize(nameLenght);
+		cursor += bytes;
+
+		//Load data
+		switch (varType)
+		{
+		case VarType::BOOL:
+		{
+			bytes = sizeof(bool);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+
+			break;
+		}
+		case VarType::FLOAT:
+		{
+			bytes = sizeof(float);
+			float var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			void* iterator = 0;
+	
+			break;
+		}
+		case VarType::DOUBLE:
+		{
+			bytes = sizeof(double);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::INT8:
+		{
+			bytes = sizeof(signed char);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::UINT8:
+		{
+			bytes = sizeof(unsigned char);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+		
+			break;
+		}
+		case VarType::INT16:
+		{
+			bytes = sizeof(short);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::UINT16:
+		{
+			bytes = sizeof(unsigned short);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::INT:
+		{
+			bytes = sizeof(int);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::UINT:
+		{
+			bytes = sizeof(uint);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::INT64:
+		{
+			bytes = sizeof(long long);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::UINT64:
+		{
+			bytes = sizeof(unsigned long long);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::CHAR:
+		{
+			bytes = sizeof(char);
+			bool var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+			
+			break;
+		}
+		case VarType::STRING:
+		{
+			bytes = sizeof(uint);
+			uint stringLength;
+			memcpy(&stringLength, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+
+			std::string string;
+			string.resize(stringLength);
+			memcpy((void*)string.c_str(), cursor, bytes);
+			totalSize += bytes;
+			string.resize(stringLength);
+			cursor += bytes;
+
+			break;
+		}
+		case VarType::GAMEOBJECT:
+		{
+			bytes = sizeof(uint32_t);
+			uint32_t uid;
+			memcpy(&uid, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+		
+			break;
+		}
+		case VarType::TRANSFORM:
+		{
+			bytes = sizeof(uint32_t);
+			uint32_t uid;
+			memcpy(&uid, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+
+			break;
+		}
+		case VarType::LAYERMASK:
+		{
+			//DeSerialize the var value
+			bytes = sizeof(uint32_t);
+			uint32_t var;
+			memcpy(&var, cursor, bytes);
+			totalSize += bytes;
+			cursor += bytes;
+
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	
+	return totalSize;
 }
 
 void ComponentScript::SavePublicVars(char*& cursor) const
@@ -1624,8 +1855,10 @@ void ComponentScript::SavePublicVars(char*& cursor) const
 	}
 }
 
-void ComponentScript::LoadPublicVars(char*& cursor)
+void ComponentScript::LoadPublicVars(char*& buffer)
 {
+	char* cursor = buffer;
+
 	if (!classInstance)
 		return;
 
@@ -2043,17 +2276,20 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 
 			if (uid != 0)
 			{
-				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
-
-				/*go = App->resources->FindPrefabGObyID(uid);
-				if (!go)
+				ResourcePrefab* prefab = (ResourcePrefab*)App->res->GetResource(uid);
+				if (!prefab)
 				{
-				go = App->scene->FindGameObjectByID(uid);
-				if (!go)
-				{
-				Debug.LogError("A Script lost a Gameobject reference");
+					go = App->GOs->GetGameObjectByUID(uid);
+					if (!go)
+					{
+						CONSOLE_LOG(LogTypes::Error, "A Script lost a Gameobject reference");
+					}
 				}
-				}*/
+				else
+				{
+					go = prefab->GetRoot();
+				}
+
 			}
 
 			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;
@@ -2072,7 +2308,6 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 
 					if (typeName == "JellyBitEngine.GameObject" && fieldName == varName)
 					{
-
 						mono_field_set_value(classInstance, field, monoObject);
 						break;
 					}
@@ -2093,17 +2328,20 @@ void ComponentScript::LoadPublicVars(char*& cursor)
 
 			if (uid != 0)
 			{
-				//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
-
-				/*go = App->resources->FindPrefabGObyID(uid);
-				if (!go)
+				ResourcePrefab* prefab = (ResourcePrefab*)App->res->GetResource(uid);
+				if (!prefab)
 				{
-				go = App->scene->FindGameObjectByID(uid);
-				if (!go)
-				{
-				Debug.LogError("A Script lost a Transform reference");
+					go = App->GOs->GetGameObjectByUID(uid);
+					if (!go)
+					{
+						CONSOLE_LOG(LogTypes::Error, "A Script lost a Transform reference");
+					}
 				}
-				}*/
+				else
+				{
+					App->res->SetAsUsed(uid);
+					go = prefab->GetRoot();
+				}
 			}
 
 			MonoObject* monoObject = go ? App->scripting->MonoObjectFrom(go) : nullptr;

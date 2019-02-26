@@ -699,8 +699,21 @@ void ComponentScript::OnUniqueEditor()
 							ResourcePrefab* resource = *(ResourcePrefab**)payload->Data;
 
 							if (ImGui::IsMouseReleased(0))
-							{
-								//TODO: DEREFERENCE PREFAB IF THERE WAS ONE ALREADY DRAGGED
+							{						
+								MonoObject* oldObject;
+								mono_field_get_value(classInstance, field, &oldObject);
+
+								if (oldObject != nullptr)
+								{
+									GameObject* oldGameObject = App->scripting->GameObjectFrom(oldObject);
+									if (oldGameObject)
+									{
+										if (oldGameObject->prefab)
+										{
+											App->res->SetAsUnused(oldGameObject->prefab->GetUuid());
+										}
+									}
+								}
 
 								ResourcePrefab* prefab = (ResourcePrefab*)resource;
 								App->res->SetAsUsed(prefab->GetUuid());
@@ -724,7 +737,21 @@ void ComponentScript::OnUniqueEditor()
 
 						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
 						{
-							//TODO: DEREFERENCE PREFAB IF THERE WAS ONE ALREADY DRAGGED
+							MonoObject* oldObject;
+							mono_field_get_value(classInstance, field, &oldObject);
+
+							if (oldObject != nullptr)
+							{
+								GameObject* oldGameObject = App->scripting->GameObjectFrom(oldObject);
+								if (oldGameObject)
+								{
+									if (oldGameObject->prefab)
+									{
+										App->res->SetAsUnused(oldGameObject->prefab->GetUuid());
+									}
+								}
+							}
+
 							mono_field_set_value(classInstance, field, NULL);
 						}
 					}

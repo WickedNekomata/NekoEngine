@@ -71,7 +71,7 @@ void main()
 	vec4 color = vec4(phong, albedo.a);
 	
 	vec4 projectedTexColor = vec4(0.0);
-	if (fProjectorTexCoord.z > 0.0)
+	//if (fProjectorTexCoord.z > 0.0)
 	     projectedTexColor = textureProj(projectorTex, fProjectorTexCoord);
 	 
 	FragColor = projectedTexColor;

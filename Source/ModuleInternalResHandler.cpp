@@ -15,6 +15,7 @@ bool ModuleInternalResHandler::Start()
 	CreatePlane();
 	CreateCube();
 	CreateDefaultShaderProgram();
+
 	CreateDefaultMaterial();
 
 	return true;

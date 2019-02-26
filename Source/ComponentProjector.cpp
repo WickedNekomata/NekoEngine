@@ -45,6 +45,7 @@ ComponentProjector::~ComponentProjector()
 {
 	App->renderer3D->EraseProjectorComponent(this);
 	parent->cmp_projector = nullptr;
+	SetMaterialRes(0);
 }
 
 void ComponentProjector::UpdateTransform()

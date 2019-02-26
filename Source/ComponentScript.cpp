@@ -716,7 +716,7 @@ void ComponentScript::OnUniqueEditor()
 						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PREFAB_RESOURCE", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 						if (payload)
 						{
-							ResourcePrefab* resource = *(ResourcePrefab**)payload->Data;
+							ResourcePrefab* prefab = *(ResourcePrefab**)payload->Data;
 
 							if (ImGui::IsMouseReleased(0))
 							{						
@@ -735,12 +735,11 @@ void ComponentScript::OnUniqueEditor()
 									}
 								}
 
-								ResourcePrefab* prefab = (ResourcePrefab*)resource;
 								App->res->SetAsUsed(prefab->GetUuid());
 
 								MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
 								mono_field_set_value(classInstance, field, monoObject);
-							}						
+							}
 						}
 						ImGui::EndDragDropTarget();
 					}

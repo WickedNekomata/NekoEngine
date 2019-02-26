@@ -41,7 +41,7 @@ uint AnimationImporter::Import(const aiAnimation* new_anim, std::string& output)
 	anim->num_keys = new_anim->mNumChannels;
 
 	// Once we have the animation data we populate the animation keys with the bones' data
-	anim->bone_keys = new ResourceAnimation::BoneTransformation[anim->num_keys];
+	anim->bone_keys = new BoneTransformation[anim->num_keys];
 
 	for (uint i = 0; i < new_anim->mNumChannels; ++i)
 		ImportBoneTransform(new_anim->mChannels[i], anim->bone_keys[i]);
@@ -57,7 +57,7 @@ uint AnimationImporter::Import(const aiAnimation* new_anim, std::string& output)
 	return anim->GetUID();*/
 }
 
-bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string & output)
+bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string& output)
 {
 	bool ret = false;
 
@@ -66,11 +66,11 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string 
 	uint anim_name_size = sizeof(char)*MAX_BUF_SIZE;
 	uint duration_size = sizeof(anim_data->duration);
 	uint ticks_size = sizeof(anim_data->ticks_per_second);
-	uint num_keys_size = sizeof(anim_data->num_keys);
+	uint num_keys_size = sizeof(anim_data->numKeys);
 
 	uint final_size = anim_name_size + duration_size + ticks_size + num_keys_size;
 
-	for (uint i = 0; i < anim_data->num_keys; i++)
+	for (uint i = 0; i < anim_data->numKeys; i++)
 	{
 		uint id_size = sizeof(uint);
 		uint bone_name_size = sizeof(char)*anim_data->bone_keys[i].bone_name.size() + 1; // TODO: check this to do it with a define
@@ -127,12 +127,12 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string 
 
 	// Saving num keys
 	cursor += bytes;
-	bytes = sizeof(anim_data->num_keys);
-	memcpy(cursor, &anim_data->num_keys, bytes);
+	bytes = sizeof(anim_data->numKeys);
+	memcpy(cursor, &anim_data->numKeys, bytes);
 
 	// -------------- Saving animation bones data for each bone --------------
 
-	for (uint i = 0; i < anim_data->num_keys; i++)
+	for (uint i = 0; i < anim_data->numKeys; i++)
 	{
 		// name size
 		cursor += bytes;
@@ -205,13 +205,13 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string 
 	return ret;
 }
 
-void AnimationImporter::ImportBoneTransform(const aiNodeAnim* anim_node, ResourceAnimation::BoneTransformation& bones_transform) const
+void AnimationImporter::ImportBoneTransform(const aiNodeAnim* anim_node, BoneTransformation& bones_transform) const
 {
 	// Setting up bone name
 	bones_transform.bone_name = anim_node->mNodeName.C_Str();
 
 	// Allocating memory to store bones postions
-	bones_transform.positions.Init(ResourceAnimation::BoneTransformation::Key::KeyType::POSITION, anim_node->mNumPositionKeys);
+	bones_transform.positions.Init(BoneTransformation::Key::KeyType::POSITION, anim_node->mNumPositionKeys);
 
 	// Setting up bone positions over time
 	for (uint i = 0; i < anim_node->mNumPositionKeys; i++)
@@ -224,7 +224,7 @@ void AnimationImporter::ImportBoneTransform(const aiNodeAnim* anim_node, Resourc
 	}
 
 	// Allocating memory to store bones rotations
-	bones_transform.rotations.Init(ResourceAnimation::BoneTransformation::Key::KeyType::ROTATION, anim_node->mNumRotationKeys);
+	bones_transform.rotations.Init(BoneTransformation::Key::KeyType::ROTATION, anim_node->mNumRotationKeys);
 
 	// Setting up bone rotations over time
 	for (uint i = 0; i < anim_node->mNumRotationKeys; i++)
@@ -238,7 +238,7 @@ void AnimationImporter::ImportBoneTransform(const aiNodeAnim* anim_node, Resourc
 	}
 
 	// Allocating memory to store bones scalings
-	bones_transform.scalings.Init(ResourceAnimation::BoneTransformation::Key::KeyType::SCALE, anim_node->mNumScalingKeys);
+	bones_transform.scalings.Init(BoneTransformation::Key::KeyType::SCALE, anim_node->mNumScalingKeys);
 
 	// Setting up bone positions over time
 	for (uint i = 0; i < anim_node->mNumScalingKeys; i++)
@@ -309,12 +309,12 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 	bytes = sizeof(resource->num_keys);
 	memcpy(&resource->num_keys, cursor, bytes);
 
-	resource->bone_keys = new ResourceAnimation::BoneTransformation[resource->num_keys];
+	resource->bone_keys = new BoneTransformation[resource->num_keys];
 
 	char buff[4096];
 	for (uint i = 0; i < resource->num_keys; ++i)
 	{
-		ResourceAnimation::BoneTransformation* bone = &resource->bone_keys[i];
+		BoneTransformation* bone = &resource->bone_keys[i];
 		uint count = 0;
 
 		// load bone name size
@@ -332,7 +332,7 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 		cursor += bytes;
 		bytes = sizeof(count);
 		memcpy(&count, cursor, bytes);
-		bone->positions.Init(ResourceAnimation::BoneTransformation::Key::KeyType::POSITION, count);
+		bone->positions.Init(BoneTransformation::Key::KeyType::POSITION, count);
 
 		// load position times
 		cursor += bytes;
@@ -349,7 +349,7 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 		cursor += bytes;
 		bytes = sizeof(count);
 		memcpy(&count, cursor, bytes);
-		bone->rotations.Init(ResourceAnimation::BoneTransformation::Key::KeyType::ROTATION, count);
+		bone->rotations.Init(BoneTransformation::Key::KeyType::ROTATION, count);
 
 		// load rotation times
 		cursor += bytes;
@@ -366,7 +366,7 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 		cursor += bytes;
 		bytes = sizeof(count);
 		memcpy(&count, cursor, bytes);
-		bone->scalings.Init(ResourceAnimation::BoneTransformation::Key::KeyType::SCALE, count);
+		bone->scalings.Init(BoneTransformation::Key::KeyType::SCALE, count);
 
 		// load position times
 		cursor += bytes;

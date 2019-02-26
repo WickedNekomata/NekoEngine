@@ -55,7 +55,7 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		case System_Event_Type::SaveScene:
 		{
 			char* file; size_t size;
-			App->GOs->SerializeFromNode(App->scene->root, file, size);
+			App->GOs->SerializeFromNode(App->scene->root, file, size, true);
 			App->fs->SaveInGame(file, size, FileTypes::SceneFile, std::string(event.sceneEvent.nameScene));
 			delete[] file;
 			break;

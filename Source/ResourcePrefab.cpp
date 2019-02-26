@@ -4,14 +4,19 @@
 #include "ModuleScene.h"
 #include "ModuleGOs.h"
 #include "ModuleFileSystem.h"
+#include "ModuleResourceManager.h"
 
-ResourcePrefab::ResourcePrefab(ResourceTypes type, uint uuid, ResourceData data, PrefabData customData) : Resource(type, uuid, data)
+ResourcePrefab::ResourcePrefab(uint uuid, ResourceData data, PrefabData customData) : Resource(ResourceTypes::PrefabResource, uuid, data)
 {
+	prefabData = customData;
 }
 
 ResourcePrefab::~ResourcePrefab()
 {
-	//TODO: DESTROY THE ROOT IF LOADED
+	if (prefabData.root != nullptr)
+	{
+		prefabData.root->DestroyTemplate();
+	}
 }
 
 void ResourcePrefab::OnPanelAssets()
@@ -38,198 +43,113 @@ void ResourcePrefab::OnPanelAssets()
 		Resource* res = this;
 		ImGui::SetDragDropPayload("PREFAB_RESOURCE", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
-
-		//TODO: RECEIVE THIS DRAG AND DROP IN THE HIERARCHY AND INSTANTIATE A COPY OF THE LOADED ROOT WITH THE COPY CONSTRUCTOR
 	}
 }
 
-bool ResourcePrefab::ImportFile(const char * file, std::string & name, std::string & outputFile)
+ResourcePrefab* ResourcePrefab::ImportFile(const char* file)
 {
+	std::string ext;
+	App->fs->GetExtension(file, ext);
 
-	assert(file != nullptr);
+	assert(App->res->GetResourceTypeByExtension(ext.data()) == ResourceTypes::PrefabResource);
 
-	bool imported = false;
+	std::string fileName;
+	App->fs->GetFileName(file, fileName, true);
 
-	// TODO_G
+	ResourceData data;
+	data.file = file;
+	data.exportedFile = "";
+	data.name = fileName;
 
-	// meta?
-	// look for uuid and force force it (outputFile)
+	ResourcePrefab* retPrefab = new ResourcePrefab(0, data, PrefabData());
 
-	// Search for the meta associated to the file
-	char metaFile[DEFAULT_BUF_SIZE];
-	strcpy_s(metaFile, strlen(file) + 1, file); // file
-	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+	retPrefab->UpdateFromMeta();
 
-	if (App->fs->Exists(metaFile))
-	{
-		uint uuid = 0;
-		int64_t lastModTime = 0;
-		std::string prefab_name;
-		ResourcePrefab::ReadMeta(metaFile, lastModTime, uuid, prefab_name);
-		assert(uuid > 0);
-
-		name = prefab_name.data();
-
-		char entry[DEFAULT_BUF_SIZE];
-		sprintf_s(entry, "%u", uuid);
-		outputFile = entry;
-	}
-
-	return true;//sorry
+	return retPrefab;
 }
 
-bool ResourcePrefab::ExportFile(ResourceData & data, PrefabData & prefabData, std::string & outputFile, bool overwrite)
+ResourcePrefab* ResourcePrefab::ExportFile(const char* prefabName, GameObject* templateRoot)
 {
-	bool ret = false;
-	uint size = 0u;
-	char* buffer = nullptr;
-	prefabData.size = 0u;
-	
-	App->GOs->SerializeFromNode(prefabData.root, prefabData.buffer, prefabData.size);
+	char filePath[DEFAULT_BUF_SIZE];
+	sprintf(filePath, "%s/%s%s", DIR_ASSETS_PREFAB, prefabName, EXTENSION_PREFAB);
 
-	if (overwrite)
-		outputFile = data.file;
-	else
-		outputFile = data.name;
+	ResourceData data;
+	data.file = DIR_ASSETS_PREFAB + std::string("/") + prefabName + EXTENSION_PREFAB;
+	data.exportedFile = "";
+	data.name = prefabName + std::string(EXTENSION_PREFAB);
 
-	ret = App->fs->SaveInGame(buffer, size, FileTypes::PrefabFile, outputFile, overwrite) > 0;
+	ResourcePrefab* retPrefab = new ResourcePrefab(App->GenerateRandomNumber(), data, PrefabData());
 
-	if (ret) {
-		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Successfully saved prefab '%s'", outputFile.data());
-	}else
-		CONSOLE_LOG(LogTypes::Normal, "PREFAB EXPORT: Error saving prefab '%s'", outputFile.data());
+	char* buffer;
+	uint size;
+	App->GOs->SerializeFromNode(templateRoot, buffer, size);
 
-	return true;
+	App->fs->Save(data.file, buffer, size);
+
+	//Create the .meta
+	int64_t lastModTime = App->fs->GetLastModificationTime(data.file.data());
+	CreateMeta(retPrefab, lastModTime);
+
+	return retPrefab;
 }
 
-uint ResourcePrefab::CreateMeta(const char * file, uint prefab_uuid, std::string & name, std::string & outputMetaFile)
+bool ResourcePrefab::CreateMeta(ResourcePrefab* prefab, int64_t lastModTime)
 {
-	assert(file != nullptr);
+	uint size = ResourcePrefab::GetMetaSize();
+	char* metaBuffer = new char[size];
+	char* cursor = metaBuffer;
 
-	uint uuidsSize = 1;
-	uint nameSize = DEFAULT_BUF_SIZE;
-
-	// Name
-	char shaderName[DEFAULT_BUF_SIZE];
-	strcpy_s(shaderName, DEFAULT_BUF_SIZE, name.data());
-
-	uint size =
-		sizeof(int64_t) +
-		sizeof(uint) +
-		sizeof(uint) * uuidsSize +
-
-		sizeof(char) * nameSize;
-
-	char* data = new char[size];
-	char* cursor = data;
-
-	// 1. Store last modification time
-	int64_t lastModTime = App->fs->GetLastModificationTime(file);
-	assert(lastModTime > 0);
 	uint bytes = sizeof(int64_t);
 	memcpy(cursor, &lastModTime, bytes);
-
 	cursor += bytes;
 
-	// 3. Store shader object uuid
 	bytes = sizeof(uint);
-	memcpy(cursor, &prefab_uuid, bytes);
 
+	uint temp = 0;
+	memcpy(cursor, &temp, bytes);
 	cursor += bytes;
 
-	// 4. Store shader object name size
-	bytes = sizeof(uint);
-	memcpy(cursor, &nameSize, bytes);
-
+	temp = prefab->GetUuid();
+	memcpy(cursor, &temp, bytes);
 	cursor += bytes;
 
-	// 5. Store prefab object name
-	bytes = sizeof(char) * nameSize;
-	memcpy(cursor, shaderName, bytes);
+	App->fs->Save(prefab->data.file + EXTENSION_META, metaBuffer, size);
 
-	// --------------------------------------------------
-
-	// Build the path of the meta file and save it
-	outputMetaFile = file;
-	outputMetaFile.append(EXTENSION_META);
-	uint resultSize = App->fs->Save(outputMetaFile.data(), data, size);
-	if (resultSize > 0)
-	{
-		CONSOLE_LOG(LogTypes::Normal, "Resource Prefab Object: Successfully saved meta '%s'", outputMetaFile.data());
-	}
-	else
-	{
-		CONSOLE_LOG(LogTypes::Error, "Resource Prefab Object: Could not save meta '%s'", outputMetaFile.data());
-		return 0;
-	}
-
-	return lastModTime;
+	return true;
 }
 
-bool ResourcePrefab::ReadMeta(const char * metaFile, int64_t & lastModTime, uint & prefab_uuid, std::string & name)
+bool ResourcePrefab::UpdateFromMeta()
 {
-	assert(metaFile != nullptr);
-
-	char* buffer;
-	uint size = App->fs->Load(metaFile, &buffer);
-	if (size > 0)
+	if (App->fs->Exists(data.file + EXTENSION_META))
 	{
-		char* cursor = (char*)buffer;
+		char* buffer;
+		uint size = App->fs->Load(data.file + EXTENSION_META, &buffer);
+		if (size <= 0)
+			return false;
 
-		// 1. Load last modification time
-		uint bytes = sizeof(int64_t);
-		memcpy(&lastModTime, cursor, bytes);
+		char* cursor = buffer;
+		uint bytes = sizeof(uint);
+		cursor += sizeof(int64_t) + bytes;
 
+		memcpy(&uuid, cursor, bytes);
 		cursor += bytes;
 
-		// 3. Load prefab object uuid
-		bytes = sizeof(uint);
-		memcpy(&prefab_uuid, cursor, bytes);
-
-		cursor += bytes;
-
-		// 4. Load prefab object name size
-		uint nameSize = 0;
-		bytes = sizeof(uint);
-		memcpy(&nameSize, cursor, bytes);
-		assert(nameSize > 0);
-
-		cursor += bytes;
-
-		// 5. Load prefab object name
-		name.resize(nameSize);
-		bytes = sizeof(char) * nameSize;
-		memcpy(&name[0], cursor, bytes);
-
-		CONSOLE_LOG(LogTypes::Normal, "Resource Prefab Object: Successfully loaded meta '%s'", metaFile);
-		RELEASE_ARRAY(buffer);
+		delete[] buffer;
 	}
 	else
 	{
-		CONSOLE_LOG(LogTypes::Error, "Resource Prefab Object: Could not load meta '%s'", metaFile);
-		return false;
+		CreateMeta(this, App->fs->GetLastModificationTime(data.file.data()));
 	}
 
 	return true;
 }
 
-bool ResourcePrefab::LoadFile(const char * file, PrefabData & prefab_data_output)
+bool ResourcePrefab::UpdateRoot()
 {
-	assert(file != nullptr);
-
-	bool ret = false;
-
-	char* buffer;
-	uint size = App->fs->Load(file, &buffer);
-
-	if (size > 0) {
-		memcpy(&prefab_data_output, buffer, size);
-
-		CONSOLE_LOG(LogTypes::Normal, "Resource Prefab: Successfully loaded prefab '%s'", file);
-		RELEASE_ARRAY(buffer);
-	}
-	else {
-		CONSOLE_LOG(LogTypes::Error, "Resource Prefab: error loadeding prefab '%s'", file);
+	if (prefabData.root)
+	{
+		UnloadFromMemory();
+		LoadInMemory();
 	}
 
 	return true;
@@ -237,15 +157,30 @@ bool ResourcePrefab::LoadFile(const char * file, PrefabData & prefab_data_output
 
 bool ResourcePrefab::LoadInMemory()
 {
-	//TODO: LOAD THE ROOT
+	assert(!prefabData.root);
 
-	//App->GOs->LoadScene(my_data.buffer, my_data.size); todo
+	char* buffer;
+	uint size = App->fs->Load(data.file, &buffer);
+	if (size <= 0)
+		return nullptr;
+
+	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
+	prefabData.root = new GameObject(*temp);
+	prefabData.root->ForceUUID(uuid);
+
+	delete[] buffer;
+	temp->DestroyTemplate();
 
 	return true;
 }
 
 bool ResourcePrefab::UnloadFromMemory()
 {
-	//TODO: DELETE THE ROOT FROM MEMORY
+	if (prefabData.root)
+	{
+		prefabData.root->DestroyTemplate();
+		prefabData.root = nullptr;
+	}
+
 	return true;
 }

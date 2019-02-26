@@ -378,7 +378,7 @@ update_status ModuleRenderer3D::PostUpdate()
 		{
 			if ((*emitter)->drawShape)
 			{
-				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();
+				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();;
 				switch ((*emitter)->normalShapeType)
 				{
 				case ShapeType_BOX:
@@ -396,6 +396,8 @@ update_status ModuleRenderer3D::PostUpdate()
 					break;
 				}
 			}
+			if((*emitter)->drawAABB)
+				App->debugDrawer->DebugDraw((*emitter)->GetParent()->boundingBox, White);
 		}
 		App->debugDrawer->EndDebugDraw();
 	}

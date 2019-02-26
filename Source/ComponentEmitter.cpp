@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 #include "ResourceTexture.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
 
@@ -17,11 +18,11 @@
 
 ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObject, EmitterComponent)
 {
+	SetAABB(math::float3::one);
 	App->scene->quadtree.Insert(gameObject);
 	App->particle->emitters.push_back(this);
 
-	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
-
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
@@ -65,6 +66,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 		particleAnim.animationSpeed = componentEmitter.particleAnim.animationSpeed;
 		particleAnim.textureRows = componentEmitter.particleAnim.textureRows;
 		particleAnim.textureColumns = componentEmitter.particleAnim.textureColumns;
+		particleAnim.textureRowsNorm = componentEmitter.particleAnim.textureRowsNorm;
+		particleAnim.textureColumnsNorm = componentEmitter.particleAnim.textureColumnsNorm;
 	}
 
 	dieOnAnimation = componentEmitter.dieOnAnimation;
@@ -82,12 +85,13 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 
 	App->particle->emitters.push_back(this);
 
-	//material = (ComponentMaterial*)parent->AddComponent(ComponentTypes::MaterialComponent);
+	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 
 ComponentEmitter::~ComponentEmitter()
 {
+	SetMaterialRes(0);
 
 	App->timeManager->RemoveGameTimer(&timer);
 	App->timeManager->RemoveGameTimer(&burstTime);
@@ -498,10 +502,9 @@ void ComponentEmitter::ParticleAABB()
 		{
 			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
-
+				SetAABB(size,GetParent()->transform->position);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				parent->boundingBox.SetFromCenterAndSize(posDifAABB, size);
+				SetAABB(size, GetParent()->transform->position);
 		}
 	}
 #endif
@@ -511,6 +514,32 @@ void ComponentEmitter::ParticleTexture()
 {
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
+		const Resource* resource = App->res->GetResource(materialRes);
+		std::string materialName = resource->GetName();
+		ImGui::PushID("material");
+		ImGui::Button(materialName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", materialRes);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSPECTOR_SELECTOR"))
+			{
+				uint payload_n = *(uint*)payload->Data;
+				SetMaterialRes(payload_n);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::SmallButton("Use default material"))
+			SetMaterialRes(App->resHandler->defaultMaterial);
+		ImGui::Separator();
 
 		if (ImGui::Checkbox("Animated sprite", &particleAnim.isParticleAnimated))
 		{
@@ -652,6 +681,22 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 
 #endif
 	return ret;
+}
+
+void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
+{
+	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+}
+
+void ComponentEmitter::SetMaterialRes(uint materialUuid)
+{
+	if (materialRes > 0)
+		App->res->SetAsUnused(materialRes);
+
+	if (materialUuid > 0)
+		App->res->SetAsUsed(materialUuid);
+
+	materialRes = materialUuid;
 }
 
 #ifndef GAMEMODE
@@ -796,6 +841,10 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, burstTypeName.c_str(), bytes);
 	cursor += bytes;
 
+	uint size = startValues.color.size();
+	memcpy(cursor, &size, bytes);
+	cursor += bytes;
+
 	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
 	{
 		(*it).OnInternalSave(cursor);
@@ -912,9 +961,16 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	burstTypeName.resize(nameLenght);
 	cursor += bytes;
 
-	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
+	uint size;
+	memcpy(&size, cursor, bytes);
+	cursor += bytes;
+
+	//startValues.color.pop_back();
+	for (int i = 0; i < size; ++i)
 	{
-		(*it).OnInternalLoad(cursor);
+		ColorTime color;
+		color.OnInternalLoad(cursor);
+		startValues.color.push_back(color);
 	}
 }
 
@@ -922,7 +978,7 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 //COLOR TIME Save&Load
 uint ColorTime::GetColorListSerializationBytes()
 {
-	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.size() + sizeof(uint);//Size of name
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.length() + sizeof(uint);//Size of name
 }
 
 void ColorTime::OnInternalSave(char* &cursor)

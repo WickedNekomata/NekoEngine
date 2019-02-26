@@ -227,7 +227,7 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 						destroyed = true;
 						break;
 					}
-					gameObject = gameObject->GetParent();
+					gameObject = gameObject->GetParent() ? gameObject->GetParent() : nullptr;
 				}
 
 				if (destroyed)				
@@ -347,7 +347,7 @@ bool ScriptingModule::DestroyScript(ComponentScript* script)
 	return false;
 }
 
-void ScriptingModule::ClearScriptComponent(ComponentScript * script)
+void ScriptingModule::ClearScriptComponent(ComponentScript* script)
 {
 	for (int i = 0; i < scripts.size(); ++i)
 	{
@@ -705,6 +705,18 @@ void ScriptingModule::RecompileScripts()
 	{
 		ResourceScript* res = (ResourceScript*)scriptResources[i];
 		res->Compile();
+	}
+}
+
+void ScriptingModule::GameObjectKilled(GameObject* killed)
+{
+	for (int i = 0; i < monoObjectHandles.size(); ++i)
+	{
+		if (mono_gchandle_get_target(monoObjectHandles[i]) == killed->GetMonoObject())
+		{
+			monoObjectHandles.erase(monoObjectHandles.begin() + i);
+			break;
+		}
 	}
 }
 

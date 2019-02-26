@@ -7,9 +7,12 @@
 #define PLANE_UUID 1428675893
 #define CUBE_UUID 1451315056
 #define DEFAULT_SHADER_PROGRAM_UUID 1608702687
+#define DEFAULT_SHADER_PROGRAM_PARTICLE_UUID 2628722347
 #define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
 #define DEFAULT_MATERIAL_UUID 2168314292
 #define REPLACE_ME_TEXTURE_UUID 3462814329
+
+enum ShaderProgramTypes;
 
 #pragma region ShadersTemplate
 
@@ -110,6 +113,121 @@
 "	FragColor = vec4(phong, albedo.a);\n" \
 "}"
 
+//PARTICLE SHADER
+
+#define Particle_vShaderTemplate \
+"#version 330 core\n" \
+"\n" \
+"layout(location = 0) in vec3 position;\n" \
+"layout(location = 1) in vec3 normal;\n" \
+"layout(location = 2) in vec4 color;\n" \
+"layout(location = 3) in vec2 texCoord;\n" \
+"\n" \
+"uniform mat4 model_matrix;\n" \
+"uniform mat4 mvp_matrix;\n" \
+"uniform mat3 normal_matrix;\n" \
+"uniform vec4 currColor;\n" \
+"uniform float rowUVNorm;\n" \
+"uniform float columUVNorm;\n" \
+"uniform vec2 currMinCoord;\n" \
+"uniform int isAnimated;\n" \
+"\n" \
+"out vec3 fPosition;\n" \
+"out vec3 fNormal;\n" \
+"out vec4 fColor;\n" \
+"out vec2 fTexCoord;\n" \
+"\n" \
+"void main()\n" \
+"{\n" \
+"	fPosition = vec3(model_matrix * vec4(position, 1.0));\n" \
+"	fNormal = normalize(normal_matrix * normal);\n" \
+"	fColor = currColor;\n" \
+"	if(isAnimated == 0)\n" \
+"		fTexCoord = texCoord;\n" \
+"	else\n" \
+"	{\n" \
+"		fTexCoord = currMinCoord;\n" \
+"		if(texCoord.x == 1)\n" \
+"			fTexCoord.x += columUVNorm;\n" \
+"		if(texCoord.y == 1)\n" \
+"			fTexCoord.y += rowUVNorm;\n" \
+"	}\n" \
+"\n" \
+"	gl_Position = mvp_matrix * vec4(position, 1.0);\n" \
+"}"
+
+#define Particle_fShaderTemplate \
+"#version 330 core\n" \
+"\n" \
+"in vec3 fPosition;\n" \
+"in vec3 fNormal;\n" \
+"in vec4 fColor;\n" \
+"in vec2 fTexCoord;\n" \
+"\n" \
+"out vec4 FragColor;\n" \
+"\n" \
+"struct Material\n" \
+"{\n" \
+"	sampler2D albedo;\n" \
+"	sampler2D specular;\n" \
+"	float shininess;\n" \
+"};\n" \
+"\n" \
+"struct Light\n" \
+"{\n" \
+"	vec3 direction;\n" \
+"\n" \
+"	vec3 ambient;\n" \
+"	vec3 diffuse;\n" \
+"	vec3 specular;\n" \
+"};\n" \
+"\n" \
+"uniform vec3 viewPos;\n" \
+"uniform Light light;\n" \
+"uniform Material material;\n" \
+"uniform float averageColor;\n" \
+"\n" \
+"vec3 phong(vec3 ambient, vec3 diffuse, vec3 specular, float shininess, bool blinn)\n" \
+"{\n" \
+"	// Ambient\n" \
+"	vec3 a = light.ambient * ambient;\n" \
+"\n" \
+"	// Diffuse\n" \
+"	vec3 lightDir = normalize(-light.direction);\n" \
+"	float diff = max(dot(fNormal, lightDir), 0.0);\n" \
+"	vec3 d = light.diffuse * (diff * diffuse);\n" \
+"\n" \
+"	// Specular\n" \
+"	vec3 viewDir = normalize(viewPos - fPosition);\n" \
+"	float spec = 0.0;\n" \
+"	if (blinn)\n" \
+"	{\n" \
+"		vec3 halfwayDir = normalize(lightDir + viewDir);\n" \
+"		spec = pow(max(dot(fNormal, halfwayDir), 0.0), shininess);\n" \
+"	}\n" \
+"	else\n" \
+"	{\n" \
+"		vec3 reflectDir = reflect(-lightDir, fNormal);\n" \
+"		spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);\n" \
+"	}\n" \
+"	vec3 s = light.specular * (spec * specular);\n" \
+"\n" \
+"	return a + d + s;\n" \
+"}\n" \
+"\n" \
+"void main()\n" \
+"{\n" \
+"	vec4 albedo = texture(material.albedo, fTexCoord);\n" \
+"	if (albedo.a < 0.1)\n" \
+"		discard;\n" \
+"\n" \
+"	vec3 a = vec3(albedo);\n" \
+"	vec3 s = vec3(texture(material.specular, fTexCoord));\n" \
+"	vec3 phong = phong(a, a, s, 32.0, true);\n" \
+"   vec4 textColor = vec4(phong, albedo.a);\n" \
+"	FragColor = mix(textColor, fColor, averageColor);" \
+"}"
+
 // TODO: move operation to ignore translation at view to renderer and do it on cpu. we wanna do it once
 
 #define cubemapvShader \
@@ -149,8 +267,9 @@ public:
 	void CreatePlane();
 	void CreateCube();
 
+
 	// Shader resources
-	void CreateDefaultShaderProgram();
+	void CreateDefaultShaderProgram(const char * vShader, const char * fShader, ShaderProgramTypes type);
 	void CreateCubemapShaderProgram();
 
 	// Material resources
@@ -169,6 +288,7 @@ public:
 
 	// Shader resources
 	uint defaultShaderProgram;
+	uint defaultParticleShaderProgram;
 	uint cubemapShaderProgram;
 
 	// Material resources

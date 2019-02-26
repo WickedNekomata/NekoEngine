@@ -992,9 +992,8 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 	// Specific mesh uniforms
 	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix().Transposed(); // view
 	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix().Transposed(); // projection
-	math::float4x4 projector_matrix = bias_matrix * projector_proj_matrix *projector_view_matrix; // into texture space																					   
+	math::float4x4 projector_matrix = bias_matrix * projector_proj_matrix * projector_view_matrix; // into texture space																					   
 
-	//http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
 	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
 	glUniformMatrix4fv(location, 1, GL_TRUE, projector_matrix.ptr());
 

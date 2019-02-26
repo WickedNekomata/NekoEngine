@@ -69,7 +69,8 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 	{
 		std::vector<uint> uuids;
 		std::vector<std::string> entryFiles;
-		assert(ResourceMesh::ReadMeshesUuidsFromMeta(metaFile, uuids));
+		int64_t lastModTime = 0;
+		assert(ResourceMesh::ReadMeta(metaFile, lastModTime, meshImportSettings, uuids));
 
 		char entry[DEFAULT_BUF_SIZE];
 		std::string entryFile;
@@ -94,7 +95,6 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			// Import the file (using the import settings from the meta)
 			CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' has Library file(s) that need(s) to be reimported", file);
 
-			ResourceMesh::ReadMeshImportSettingsFromMeta(metaFile, meshImportSettings);
 			imported = App->sceneImporter->Import(file, outputFiles, meshImportSettings, uuids);
 		}
 	}

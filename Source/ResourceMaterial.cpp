@@ -418,6 +418,7 @@ void ResourceMaterial::SetResourceTexture(uint textureUuid, uint& textureUuidUni
 {
 	if (textureUuidUniform > 0)
 		App->res->SetAsUnused(textureUuidUniform);
+
 	if (textureUuid > 0)
 		App->res->SetAsUsed(textureUuid);
 

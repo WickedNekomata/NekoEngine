@@ -598,8 +598,6 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			else
 				resource = GetResource(resourcesUuids.front());
 
-			// 2. Meta
-			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
 			std::string name = resource->GetName();
 			int64_t lastModTime = ResourceShaderObject::CreateMeta(file, resourcesUuids.front(), name, outputMetaFile);
@@ -774,6 +772,9 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 			break;
 		case ResourceTypes::PrefabResource:
 			resource = new ResourcePrefab(uuid, data, *(PrefabData*)specificData);
+			break;
+		case ResourceTypes::BoneResource:
+			resource = new ResourceBone(ResourceTypes::BoneResource, uuid, data, *(ResourceBoneData*)specificData);
 			break;
 		case ResourceTypes::AnimationResource:
 			resource = new ResourceAnimation(ResourceTypes::AnimationResource, uuid, data, *(ResourceAnimationData*)specificData);

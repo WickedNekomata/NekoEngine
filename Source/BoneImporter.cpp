@@ -7,6 +7,7 @@
 #include "ResourceBone.h"
 #include "ComponentBone.h"
 #include "GameObject.h"
+#include <cstdio>
 
 BoneImporter::BoneImporter()
 {
@@ -23,11 +24,14 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 	if (new_bone == nullptr)
 		return ret;
 
-	// TODO_G : Now we dont create resources here uwu
-
-	// Temporary object to make the load/Save process
 	go->cmp_bone->res = App->GenerateRandomNumber();
+
 	std::string outputFile = std::to_string(go->cmp_bone->res);
+
+	ResourceData data;
+	data.name = outputFile;
+	data.file = outputFile;
+
 	ResourceBoneData res_data;
 	res_data.mesh_uid = mesh;
 	res_data.bone_weights_size = new_bone->mNumWeights;
@@ -41,32 +45,19 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 		res_data.bone_weights_indices[k] = new_bone->mWeights[k].mVertexId;
 		res_data.bone_weights[k] = new_bone->mWeights[k].mWeight;
 	}
-	//CONTINUE HERE TODO_G
-	return 0u;
-	/*bone->mesh_uid = mesh;
-	bone->bone_weights_size = new_bone->mNumWeights;
-	memcpy(bone->offset_matrix.v, &new_bone->mOffsetMatrix.a1, sizeof(float) * 16);
+	
 
-	bone->bone_weights_indices = new uint[bone->bone_weights_size];
-	bone->bone_weights = new float[bone->bone_weights_size];
-
-	for (uint k = 0; k < bone->bone_weights_size; ++k)
-	{
-		bone->bone_weights_indices[k] = new_bone->mWeights[k].mVertexId;
-		bone->bone_weights[k] = new_bone->mWeights[k].mWeight;
-	}
-
-	if(SaveBone(bone, output))
-		DEPRECATED_LOG("Saved bone correctly in path: [%s]", output.c_str())
+	if(SaveBone(data,res_data, outputFile, true /* TODO_G: WHAT? */))
+		DEPRECATED_LOG("Saved bone correctly in path: [%s]", outputFile.c_str())
 	else
-		DEPRECATED_LOG("Error saving bone in path: [%s]", output.c_str());
+		DEPRECATED_LOG("Error saving bone in path: [%s]", outputFile.c_str());
 
-	bone->exportedFile = output;
+	output = outputFile;
 
-	return bone->GetUUID();*/
+	return go->cmp_bone->res;
 }
 
-uint BoneImporter::GenerateResourceFromFile(mutable const char * file_path, mutable uint uid_to_force)
+Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path, mutable uint uid_to_force)
 {
 	// Reading file
 	char* buffer = nullptr;
@@ -79,85 +70,92 @@ uint BoneImporter::GenerateResourceFromFile(mutable const char * file_path, muta
 		return false;
 	}
 
-	return 0u;
-	// TODO_G : Now we dont create resources here uwu
+	ResourceData data;
+	ResourceBoneData bone_data;
 
-	/*char* cursor = buffer;
-	ResourceBone* resource = (ResourceBone*)App->res->CreateNewResource(ResourceTypes::BoneResource, uid_to_force);
-
+	char* cursor = buffer;
+	
 	// Load mesh UID
 	uint bytes = sizeof(uint);
-	memcpy(&resource->mesh_uid, cursor, bytes);
+	memcpy(&bone_data.mesh_uid, cursor, bytes);
 
 	// Load offset matrix
 	cursor += bytes;
-	bytes = sizeof(resource->offset_matrix);
-	memcpy(resource->offset_matrix.v, cursor, bytes);
+	bytes = sizeof(bone_data.offset_matrix);
+	memcpy(bone_data.offset_matrix.v, cursor, bytes);
 
 	// Load num_weigths
 	cursor += bytes;
-	bytes = sizeof(resource->bone_weights_size);
-	memcpy(&resource->bone_weights_size, cursor, bytes);
+	bytes = sizeof(bone_data.bone_weights_size);
+	memcpy(&bone_data.bone_weights_size, cursor, bytes);
 
 	// Allocate mem for indices and weights
-	resource->bone_weights_indices = new uint[resource->bone_weights_size];
-	resource->bone_weights = new float[resource->bone_weights_size];
+	bone_data.bone_weights_indices = new uint[bone_data.bone_weights_size];
+	bone_data.bone_weights = new float[bone_data.bone_weights_size];
 
 	// Read indices
 	cursor += bytes;
-	bytes = sizeof(uint) * resource->bone_weights_size;
-	memcpy(resource->bone_weights_indices, cursor, bytes);
+	bytes = sizeof(uint) * bone_data.bone_weights_size;
+	memcpy(bone_data.bone_weights_indices, cursor, bytes);
 
 	// Read weigths
 	cursor += bytes;
-	bytes = sizeof(float) * resource->bone_weights_size;
-	memcpy(resource->bone_weights, cursor, bytes);
+	bytes = sizeof(float) * bone_data.bone_weights_size;
+	memcpy(bone_data.bone_weights, cursor, bytes);
 
 	RELEASE_ARRAY(buffer);
 
-	return resource->GetUUID();*/
+	ResourceBone* resource = (ResourceBone*)App->res->CreateResource(ResourceTypes::BoneResource, data, &bone_data, uid_to_force);
+
+	return resource;
 }
 
-bool BoneImporter::SaveBone(mutable const ResourceBoneData* bone, mutable std::string& output) const
+bool BoneImporter::SaveBone(mutable ResourceData& res_data, mutable ResourceBoneData& bone_data,mutable std::string& outputFile,mutable bool overwrite) const
 {
 	bool ret = false;
 
+	// TODO: uhm ...
+	if (overwrite)
+		outputFile = res_data.file;
+	else
+		outputFile = res_data.name;
+
 	// Format: mesh UID + 16 float matrix + num_weigths uint + indices uint * num_weight + weight float * num_weights
-	uint size = sizeof(bone->mesh_uid);
-	size += sizeof(bone->offset_matrix);
-	size += sizeof(bone->bone_weights_size);
-	size += sizeof(uint) * bone->bone_weights_size;
-	size += sizeof(float) * bone->bone_weights_size;
+	uint size = sizeof(bone_data.mesh_uid);
+	size += sizeof(bone_data.offset_matrix);
+	size += sizeof(bone_data.bone_weights_size);
+	size += sizeof(uint) * bone_data.bone_weights_size;
+	size += sizeof(float) * bone_data.bone_weights_size;
 
 	// allocate mem
 	char* data = new char[size];
 	char* cursor = data;
 
 	// store mesh UID
-	uint bytes = sizeof(bone->mesh_uid);
-	memcpy(cursor, &bone->mesh_uid, bytes);
+	uint bytes = sizeof(bone_data.mesh_uid);
+	memcpy(cursor, &bone_data.mesh_uid, bytes);
 
 	// store offset matrix
 	cursor += bytes;
-	bytes = sizeof(bone->offset_matrix);
-	memcpy(cursor, &bone->offset_matrix.v, bytes);
+	bytes = sizeof(bone_data.offset_matrix);
+	memcpy(cursor, &bone_data.offset_matrix.v, bytes);
 
 	// store num_weights
 	cursor += bytes;
-	bytes = sizeof(bone->bone_weights_size);
-	memcpy(cursor, &bone->bone_weights_size, bytes);
+	bytes = sizeof(bone_data.bone_weights_size);
+	memcpy(cursor, &bone_data.bone_weights_size, bytes);
 
 	// store indices
 	cursor += bytes;
-	bytes = sizeof(uint) * bone->bone_weights_size;
-	memcpy(cursor, bone->bone_weights_indices, bytes);
+	bytes = sizeof(uint) * bone_data.bone_weights_size;
+	memcpy(cursor, bone_data.bone_weights_indices, bytes);
 
 	// store weights
 	cursor += bytes;
-	bytes = sizeof(float) * bone->bone_weights_size;
-	memcpy(cursor, bone->bone_weights, bytes);
+	bytes = sizeof(float) * bone_data.bone_weights_size;
+	memcpy(cursor, bone_data.bone_weights, bytes);
 
-	if (App->fs->SaveInGame((char*)data, size, FileTypes::BoneFile, output) > 0)
+	if (App->fs->SaveInGame((char*)data, size, FileTypes::BoneFile, outputFile) > 0)
 		ret = true;
 
 	// Deleting useless data

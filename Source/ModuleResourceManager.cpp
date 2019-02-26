@@ -259,6 +259,20 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 	}
 	break;
+
+	//Prefabs events
+	case System_Event_Type::ScriptingDomainReloaded:
+	case System_Event_Type::Stop:
+	{
+		for (auto res = resources.begin(); res != resources.end(); ++res)
+		{
+			if (res->second->GetType() == ResourceTypes::PrefabResource)
+			{
+				ResourcePrefab* prefab = (ResourcePrefab*)res->second;
+				prefab->UpdateRoot();
+			}
+		}
+	}
 	}
 }
 

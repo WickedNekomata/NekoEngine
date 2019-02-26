@@ -875,29 +875,12 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 			return nullptr;
 		}
 
-		//TODO: IMPLEMENT THE NEW PREFAB / INSTANTIATION SYSTEM
+		GameObject* newGameObject = App->GOs->Instanciate(templateGO, App->scene->root);
+		MonoObject* moInstance = App->scripting->MonoObjectFrom(newGameObject);
 
-		/*GameObject* goInstance = new GameObject("default", App->GOs->getRoot());
+		//TODO: CALL AWAKE START ETC
 
-		App->GOs->AddGameObject(goInstance);*/
-
-		//*goInstance = *templateGO;
-		//goInstance->ReGenerate();
-		//goInstance->initAABB();
-		//goInstance->transformAABB();
-
-		//goInstance->parent = App->scene->getRootNode();
-
-		////App->scene->UpdateQuadtree();
-
-		//MonoObject* moInstance = App->scripting->MonoObjectFrom(goInstance);
-
-		//goInstance->InstantiateEvents();
-
-		//return moInstance;
-		
-		//Temp
-		return nullptr;
+		return moInstance;
 	}
 }
 

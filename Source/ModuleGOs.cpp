@@ -110,21 +110,12 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		InvalidateResource(event.resEvent.resource);
 		break;
 	case System_Event_Type::ScriptingDomainReloaded:
-	{
-		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if (event.goEvent.gameObject == *it)
-				(*it)->OnSystemEvent(event);
-		}
-		break;
-	}
-
 	case System_Event_Type::Stop:
+	case System_Event_Type::LoadFinished:
 	{
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if (event.goEvent.gameObject == *it)
-				(*it)->OnSystemEvent(event);
+		{			
+			(*it)->OnSystemEvent(event);
 		}
 		break;
 	}
@@ -198,6 +189,18 @@ void ModuleGOs::GetStaticGameobjects(std::vector<GameObject*>& gos) const
 void ModuleGOs::GetDynamicGameobjects(std::vector<GameObject*>& gos) const
 {
 	gos = dynamicGos;
+}
+
+GameObject* ModuleGOs::GetGameObjectByUID(uint UID) const
+{
+	for (int i = 0; i < gameobjects.size(); ++i)
+	{
+		if (gameobjects[i]->GetUUID() == UID)
+		{
+			return gameobjects[i];
+		}
+	}
+	return nullptr;
 }
 
 void ModuleGOs::ClearScene()
@@ -346,6 +349,10 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 	// Discuss if this should be a resource
 	if (navmesh)
 		App->navigation->LoadNavmesh(cursor);
+
+	System_Event event;
+	event.type = System_Event_Type::LoadFinished;
+	App->PushSystemEvent(event);
 
 	return true;
 }

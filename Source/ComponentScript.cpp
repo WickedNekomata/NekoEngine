@@ -6,7 +6,7 @@
 
 #include "ComponentScript.h"
 #include "ResourceScript.h"
-//#include "ResourcePrefab.h"
+#include "ResourcePrefab.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
@@ -676,7 +676,7 @@ void ComponentScript::OnUniqueEditor()
 					//Case 1: Dragging Real GameObjects
 					if (ImGui::BeginDragDropTarget())
 					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingGOs", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 						if (payload)
 						{
 							GameObject* go = *(GameObject**)payload->Data;
@@ -693,22 +693,17 @@ void ComponentScript::OnUniqueEditor()
 					//Case 2: Dragging Prefabs
 					if (ImGui::BeginDragDropTarget())
 					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DraggingResources", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PREFAB_RESOURCE", ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 						if (payload)
 						{
-							Resource* resource = *(Resource**)payload->Data;
+							ResourcePrefab* resource = *(ResourcePrefab**)payload->Data;
 
-							//TODO: IMPLEMENT PREFABS
-
-							/*if (resource->getType() == Resource::ResourceType::PREFAB)
-							{
 							if (ImGui::IsMouseReleased(0))
 							{
-							ResourcePrefab* prefab = (ResourcePrefab*)resource;
-							MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
-							mono_field_set_value(classInstance, field, monoObject);
-							}
-							}	*/
+								ResourcePrefab* prefab = (ResourcePrefab*)resource;
+								MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
+								mono_field_set_value(classInstance, field, monoObject);
+							}						
 						}
 						ImGui::EndDragDropTarget();
 					}
@@ -741,12 +736,7 @@ void ComponentScript::OnUniqueEditor()
 						mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "destroyed"), &destroyed);
 
 						if (!destroyed)
-						{
-							MonoString* goName;
-							mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "name"), &goName);
-
-							char* nameCpp = mono_string_to_utf8(goName);
-
+						{						
 							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
 
 							//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
@@ -754,9 +744,7 @@ void ComponentScript::OnUniqueEditor()
 							/*if (gameObject->prefab)
 							text = nameCpp + std::string(" (Prefab)");
 							else*/
-							text = nameCpp + std::string(" (GameObject)");
-
-							mono_free(nameCpp);
+							text = gameObject->GetName() +std::string(" (GameObject)");
 						}
 						else
 						{

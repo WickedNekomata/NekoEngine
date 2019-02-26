@@ -4,6 +4,8 @@ using JellyBitEngine;
 public class Testing : JellyScript
 {
     public float spot = 8f;
+    public GameObject randomObject;
+
     //Use this method for initialization
     public override void Awake()
     {
@@ -13,6 +15,7 @@ public class Testing : JellyScript
     //Called every frame
     public override void Update()
     {
+        Debug.LogError("randomObjects name is " + randomObject.name);
         gameObject.transform.position += Vector3.forward * Time.deltaTime * spot;
     }
 }

@@ -125,7 +125,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 					App->GOs->DeleteGameObject(child);
 				}
 
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 
 				if (treeNodeOpened) 
@@ -155,7 +155,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 					App->GOs->DeleteGameObject(child);
 				}
 			
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 			}
 		}

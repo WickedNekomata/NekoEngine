@@ -61,18 +61,20 @@ vec3 phong(vec3 ambient, vec3 diffuse, vec3 specular, float shininess, bool blin
 
 void main()
 {
-	vec4 albedo = texture(material.albedo, fTexCoord);
+    vec4 albedo = texture(material.albedo, fTexCoord);
 	if (albedo.a < 0.1)
 		discard;
-
-	vec3 a = vec3(albedo);
+    
+    vec3 a = vec3(albedo);
 	vec3 s = vec3(texture(material.specular, fTexCoord));
 	vec3 phong = phong(a, a, s, 32.0, true);
 	vec4 color = vec4(phong, albedo.a);
 	
-	vec4 projectedTexColor = vec4(0.0);
-	if (fProjectorTexCoord.z > 0.0)
-	     projectedTexColor = textureProj(projectorTex, fProjectorTexCoord);
+	vec4 projectorColor = vec4(0.0);    
+    if (fProjectorTexCoord.z > 0.0)
+    {
+        projectorColor = textureProj(projectorTex, fProjectorTexCoord);
+    }	     
 	 
-	FragColor = projectedTexColor;
+	FragColor = color;
 }

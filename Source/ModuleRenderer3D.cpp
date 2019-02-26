@@ -216,7 +216,7 @@ update_status ModuleRenderer3D::PostUpdate()
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			//if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-				//DrawMesh(meshComponents[i]);
+				//DrawMesh(meshComponents[i], textureUnit);
 		}
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)
@@ -846,6 +846,8 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint s
 	if (toDraw->res == 0)
 		return;
 
+	uint initialTextureUnit = textureUnit;
+
 	const ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
@@ -901,6 +903,16 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint s
 		textureUnit = 0;
 		glUseProgram(0);
 	}
+	else
+	{
+		for (uint i = initialTextureUnit; i < textureUnit; ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
+
+	textureUnit = initialTextureUnit;
 }
 
 
@@ -1022,7 +1034,7 @@ void ModuleRenderer3D::LoadSpecificUniforms(uint& textureUnit, const std::vector
 			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
 			break;
 		case Uniforms_Values::Sampler2U_value:
-			if (textureUnit < maxTextureUnits)
+			if (textureUnit < maxTextureUnits && uniform.sampler2DU.value.id > 0)
 			{
 				glActiveTexture(GL_TEXTURE0 + textureUnit);
 				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);

@@ -219,8 +219,8 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			//if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-				//DrawMesh(meshComponents[i]);
+			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
+				DrawMesh(meshComponents[i]);
 		}
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)

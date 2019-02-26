@@ -218,6 +218,7 @@ private:
 	// Number of particles created per second
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
+	uint nameLenght;
 	//---------------------------------------
 };
 #endif // !__Emitter_H__

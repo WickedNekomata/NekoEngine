@@ -724,7 +724,8 @@ uint ComponentEmitter::GetInternalSerializationBytes()
 		sizeOfList += (*it).GetColorListSerializationBytes();
 	}
 
-	//		Value Checkers +	StartValues
+	//bool * 13 + int*3 + float * 5 + uint * 3 + ShapeType * 2 + ParticleAnimation + AABB + float3 + string
+	//		Value Checkers 
 	return sizeof(bool) * 8 + sizeof(rateOverTime) + sizeof(duration) + sizeof(uint) //UUID Material
 		+ sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(repeatTime) + sizeof(uint)//UUID Subemiter
 		+ sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
@@ -736,6 +737,8 @@ uint ComponentEmitter::GetInternalSerializationBytes()
 
 void ComponentEmitter::OnInternalSave(char *& cursor)
 {
+	startValues.OnInternalSave(cursor);
+
 	size_t bytes = sizeof(bool);
 	memcpy(cursor, &checkLife, bytes);
 	cursor += bytes;
@@ -834,19 +837,19 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(uint);
-	uint nameLenght = burstTypeName.length();
-	memcpy(cursor, &nameLenght, bytes);
+	uint nameLenghtt = burstTypeName.size();
+	memcpy(cursor, &nameLenghtt, bytes);
 	cursor += bytes;
 
-	bytes = nameLenght;
+	bytes = nameLenghtt;
 	memcpy(cursor, burstTypeName.c_str(), bytes);
 	cursor += bytes;
-
-	startValues.OnInternalSave(cursor);
 }
 
 void ComponentEmitter::OnInternalLoad(char *& cursor)
 {
+	startValues.OnInternalLoad(cursor);
+
 	size_t bytes = sizeof(bool);
 	memcpy(&checkLife, cursor, bytes);
 	cursor += bytes;
@@ -944,17 +947,15 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(uint);
-	uint nameLenght;
-	memcpy(&nameLenght, cursor, bytes);
+	uint nameLenghtt;
+	memcpy(&nameLenghtt, cursor, bytes);
 	cursor += bytes;
 
-	bytes = nameLenght;
-	burstTypeName.resize(nameLenght);
+	bytes = nameLenghtt;
+	burstTypeName.resize(nameLenghtt);
 	memcpy((void*)burstTypeName.c_str(), cursor, bytes);
-	burstTypeName.resize(nameLenght);
+	burstTypeName.resize(nameLenghtt);
 	cursor += bytes;
-
-	startValues.OnInternalLoad(cursor);
 }
 
 //Start Values Save&Load
@@ -996,6 +997,7 @@ void StartValues::OnInternalSave(char *& cursor)
 	memcpy(cursor, &subEmitterActive, bytes);
 	cursor += bytes;
 
+	bytes = sizeof(uint);
 	uint listSize = color.size();
 	memcpy(cursor, &listSize, bytes);
 	cursor += bytes;
@@ -1045,11 +1047,12 @@ void StartValues::OnInternalLoad(char *& cursor)
 	cursor += bytes;
 
 	uint listSize;
+	bytes = sizeof(uint);
 	memcpy(&listSize, cursor, bytes);
 	cursor += bytes;
 
-	//startValues.color.pop_back();
-	for (int i = 0; i < 1; ++i)
+	color.pop_back();//Pop started value
+	for (int i = 0; i < listSize; ++i)
 	{
 		ColorTime colorTime;
 		colorTime.OnInternalLoad(cursor);
@@ -1060,12 +1063,21 @@ void StartValues::OnInternalLoad(char *& cursor)
 //COLOR TIME Save&Load
 uint ColorTime::GetColorListSerializationBytes()
 {
-	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.length() + sizeof(uint);//Size of name
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.size() + sizeof(uint);//Size of name
 }
 
 void ColorTime::OnInternalSave(char* &cursor)
 {
-	size_t bytes = sizeof(bool);
+	size_t bytes = sizeof(uint);
+	uint nameLenght = name.size();
+	memcpy(cursor, &nameLenght, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, name.c_str(), bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
 	memcpy(cursor, &changingColor, bytes);
 	cursor += bytes;
 
@@ -1077,19 +1089,23 @@ void ColorTime::OnInternalSave(char* &cursor)
 	memcpy(cursor, &color, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	uint nameLenght = name.length();
-	memcpy(cursor, &nameLenght, bytes);
-	cursor += bytes;
-
-	bytes = nameLenght;
-	memcpy(cursor, name.c_str(), bytes);
-	cursor += bytes;
 }
 
 void ColorTime::OnInternalLoad(char *& cursor)
 {
-	size_t bytes = sizeof(bool);
+	//Load lenght + string
+	size_t bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	name.resize(nameLenght);
+	memcpy((void*)name.c_str(), cursor, bytes);
+	name.resize(nameLenght);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
 	memcpy(&changingColor, cursor, bytes);
 	cursor += bytes;
 
@@ -1101,17 +1117,6 @@ void ColorTime::OnInternalLoad(char *& cursor)
 	memcpy(&color, cursor, bytes);
 	cursor += bytes;
 
-	//Load lenght + string
-	bytes = sizeof(uint);
-	uint nameLenght;
-	memcpy(&nameLenght, cursor, bytes);
-	cursor += bytes;
-
-	bytes = nameLenght;
-	name.resize(nameLenght);
-	memcpy((void*)name.c_str(), cursor, bytes);
-	name.resize(nameLenght);
-	cursor += bytes;
 }
 
 void StartValues::operator=(StartValues startValue)

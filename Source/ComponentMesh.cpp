@@ -7,7 +7,6 @@
 #include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleFileSystem.h"
-#include "ResourceMesh.h"
 
 #include "imgui\imgui.h"
 
@@ -34,34 +33,12 @@ void ComponentMesh::Update() {}
 void ComponentMesh::SetResource(uint res_uuid)
 {
 	if (res != 0)
-	{
 		App->res->SetAsUnused(res);
-		App->res->SetAsUnused(deformableMesh->GetUuid());
-		App->res->DeleteResource(deformableMesh->GetUuid());
-		deformableMesh = 0;
-	}
 
 	if (res_uuid != 0) 
 	{
 		if (App->res->SetAsUsed(res_uuid) == -1)
 			return;
-
-		ResourceMesh* currentRes = (ResourceMesh*)App->res->GetResource(res_uuid);
-		ResourceData data;
-		ResourceMeshData specificData;
-		specificData.indicesSize = currentRes->GetIndicesCount();
-		specificData.indices = new uint[specificData.indicesSize];
-		currentRes->GetIndices(specificData.indices);
-		specificData.verticesSize = currentRes->GetVerticesCount();
-		specificData.vertices = new Vertex[specificData.verticesSize];
-
-		Vertex* vertices;
-		currentRes->GetVerticesReference(vertices);
-		memcpy(specificData.vertices, vertices, sizeof(Vertex) * specificData.verticesSize);
-
-		data.name = "Deformable Mesh :)";
-		deformableMesh = (ResourceMesh*)App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData);
-		App->res->SetAsUsed(deformableMesh->GetUuid());
 	}
 
 	res = res_uuid;
@@ -145,21 +122,4 @@ void ComponentMesh::OnInternalLoad(char*& cursor)
 	bytes = sizeof(bool);
 	memcpy(&nv_walkable, cursor, bytes);
 	cursor += bytes;
-
-	ResourceMesh* currentRes = (ResourceMesh*)App->res->GetResource(loadedRes);
-	ResourceData data;
-	ResourceMeshData specificData;
-	specificData.indicesSize = currentRes->GetIndicesCount();
-	specificData.indices = new uint[specificData.indicesSize];
-	currentRes->GetIndices(specificData.indices);
-	specificData.verticesSize = currentRes->GetVerticesCount();
-	specificData.vertices = new Vertex[specificData.verticesSize];
-
-	Vertex* vertices;
-	currentRes->GetVerticesReference(vertices);
-	memcpy(specificData.vertices, vertices, sizeof(Vertex) * specificData.verticesSize);
-
-	data.name = "Deformable Mesh :)";
-	deformableMesh = (ResourceMesh*)App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData);
-	App->res->SetAsUsed(deformableMesh->GetUuid());
 }

@@ -6,7 +6,6 @@
 #include "Globals.h"
 
 struct Mesh;
-class ResourceMesh;
 
 class ComponentMesh : public Component
 {
@@ -29,7 +28,6 @@ public:
 public:
 
 	uint res = 0;
-	ResourceMesh* deformableMesh = 0;
 
 	// navmesh utility
 	bool nv_walkable = true;

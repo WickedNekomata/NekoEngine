@@ -951,9 +951,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	}
 
 	// Mesh
-	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(
-		(toDraw->deformableMesh == 0) ? toDraw->res : toDraw->deformableMesh->GetUuid()
-	);
+	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
 	glBindVertexArray(mesh->GetVAO());
 

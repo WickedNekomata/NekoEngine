@@ -149,8 +149,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		std::vector<uint> dummyForcedUuids = forcedUuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, outputFiles, dummyForcedUuids);
 
-		RecursiveProcessBones(scene, scene->mRootNode);
-
+		// TODO_G CONTINUE HERE ++
+		//RecursiveProcessBones(scene, scene->mRootNode);
 		// Prefab creation
 		ResourceData data;
 		PrefabData prefab_data;
@@ -881,18 +881,18 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
 		std::string output;
-
-		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output, go);
+		// TODO_G CONTINUE HERE +
+		//uint bone_uid = App->boneImporter->Import(go, bone, mesh_bone[bone], output);
 		
 		
-		if (go->GetParent() == nullptr ||
+		/*if (go->GetParent() == nullptr ||
 			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
 		imported_bones[node->mName.C_Str()] = bone_uid;
-		DEPRECATED_LOG("->-> Added Bone component");
+		DEPRECATED_LOG("->-> Added Bone component");*/
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)

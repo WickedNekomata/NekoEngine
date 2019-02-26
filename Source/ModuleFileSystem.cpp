@@ -55,7 +55,6 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
-		CreateDir(DIR_LIBRARY_BONES);
 		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }

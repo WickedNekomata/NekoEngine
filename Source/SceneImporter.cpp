@@ -152,18 +152,17 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursiveProcessBones(scene, scene->mRootNode);
 
 		// Prefab creation
+		GameObject* prefab_go = rootGameObject;
 		ResourceData data;
 		PrefabData prefab_data;
 
-		data.name = "Prefab_test";
+		data.file = DIR_ASSETS_PREFAB + std::string("/") + prefab_go->GetName() + EXTENSION_PREFAB;
+		data.exportedFile = "";
+		data.name = prefab_go->GetName();
+		prefab_data.root = prefab_go;
 
-		prefab_data.root = rootGameObject;
-		std::string outputFile;
-		// todo
-		//ResourcePrefab* prefaby = (ResourcePrefab*)App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, outputFile, false);
-
-		//prefaby->my_data = prefab_data; //omegalul
-
+		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, std::string());
+		
 		aiReleaseImport(scene);
 
 		// 2. Serialize the imported scene
@@ -197,7 +196,8 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		gameObject = (GameObject*)parent;
 	// If the previous game object was a transformation, keep the transformation
 	else if (transformation != nullptr)
-		gameObject = new GameObject(name.data(), (GameObject*)parent);
+		gameObject = (GameObject*)transformation;
+		//gameObject = new GameObject(name.data(), (GameObject*)parent);
 	// If the previous game object wasn't a transformation, create a new game object
 	else
 		gameObject = new GameObject(name.data(), (GameObject*)parent);
@@ -320,12 +320,13 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 				memcpy(bitangents, nodeMesh->mBitangents, sizeof(float) * bitangentsSize * 3);
 			}
 
+			colorsSize = 0;
 			// Color
 			/*if (nodeMesh->HasVertexColors(0))
 			{
 				colorsSize = verticesSize;
-				colors = new uchar[colorsSize * 4];
-				memcpy(colors, nodeMesh->mColors, sizeof(uchar) * colorsSize * 4);
+				colors = new GLubyte[colorsSize * 4];
+				memcpy(colors, nodeMesh->mColors, sizeof(GLubyte) * colorsSize * 4);
 			}*/
 
 			// Bone

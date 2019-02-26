@@ -1,8 +1,12 @@
 #include "ComponentImage.h"
 
-#include "GameObject.h"
-#include "ModuleUI.h"
 #include "Application.h"
+#include "ModuleUI.h"
+#include "ModuleResourceManager.h"
+
+#include "ResourceTexture.h"
+
+#include "GameObject.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -18,7 +22,10 @@ ComponentImage::ComponentImage(const ComponentImage & componentRectTransform) : 
 	if (use_color_vec)
 		memcpy(color, componentRectTransform.color, sizeof(float) * 4);
 	else
+	{
 		res_image = componentRectTransform.res_image;
+		App->res->SetAsUsed(res_image);
+	}
 	App->ui->componentsUI.push_back(this);
 }
 
@@ -38,7 +45,11 @@ const float * ComponentImage::GetColor() const
 
 uint ComponentImage::GetResImage()const
 {
-	return res_image;
+	ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(res_image);
+	if (texture)
+		return texture->GetId();
+	else
+		return 0;
 }
 
 bool ComponentImage::UseColor() const
@@ -90,6 +101,8 @@ void ComponentImage::OnInternalLoad(char *& cursor)
 		bytes = sizeof(uint);
 		memcpy(&res_image, cursor, bytes);
 		cursor += bytes;
+
+		App->res->SetAsUsed(res_image);
 	}
 }
 
@@ -118,7 +131,28 @@ void ComponentImage::OnUniqueEditor()
 	}
 	else
 	{
+		ResourceTexture* texture = nullptr;
+		if (res_image != 0)
+			texture = (ResourceTexture*)App->res->GetResource(res_image);
+		ImGui::Button(texture == nullptr ? "Empty texture" : texture->GetName(), ImVec2(150.0f, 0.0f));
 
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", res_image);
+			ImGui::EndTooltip();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE_INSPECTOR_SELECTOR"))
+			{
+				App->res->SetAsUnused(res_image);
+				res_image = *(uint*)payload->Data;
+				App->res->SetAsUsed(res_image);
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 #endif
 }

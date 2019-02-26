@@ -43,6 +43,14 @@ void ComponentCanvasRenderer::Update()
 					rend->Set(RenderTypes::COLOR_VECTOR, cmp_image);
 			}
 		}
+		else
+		{
+			for (ToUIRend* rend : rend_queue)
+			{
+				if (rend->isRendered())
+					rend->Set(RenderTypes::TEXTURE, cmp_image);
+			}
+		}
 }
 
 void ComponentCanvasRenderer::OnEditor()

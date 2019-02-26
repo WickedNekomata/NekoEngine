@@ -16,6 +16,7 @@ bool ModuleInternalResHandler::Start()
 	CreateCube();
 	CreateDefaultShaderProgram(vShaderTemplate, fShaderTemplate, ShaderProgramTypes::Standard);
 	CreateDefaultShaderProgram(Particle_vShaderTemplate, Particle_fShaderTemplate, ShaderProgramTypes::Particles);
+	CreateUIShaderProgram();
 	CreateDefaultMaterial();
 
 	return true;
@@ -211,7 +212,8 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	shaderData.name = "UI shader program";
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
-	ResourceShaderProgram* pShader = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData);
+	programShaderData.shaderProgramType = ShaderProgramTypes::UI;
+	ResourceShaderProgram* pShader = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UI_UUID);
 	if (pShader->Link())
 		pShader->isValid = false;
 	UIShaderProgram = pShader->shaderProgram;

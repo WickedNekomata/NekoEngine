@@ -1,23 +1,21 @@
 #include "ModuleUI.h"
 
 #include "Application.h"
-#include "ModuleCameraEditor.h"
-#include "ComponentCamera.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleResourceManager.h"
-#include "ResourceShaderProgram.h"
-#include "ResourceShaderObject.h"
-#include "ShaderImporter.h"
-#include "MaterialImporter.h"
-#include "ModuleFileSystem.h"
-#include "ComponentTransform.h"
+#include "ModuleInternalResHandler.h"
+#include "ModuleGOs.h"
+#include "ModuleWindow.h"
+#include "ModuleCameraEditor.h"
+
+#include "GameObject.h"
+#include "GameObject.h"
+
+#include "ComponentCamera.h"
 #include "ComponentRectTransform.h"
 #include "ComponentCanvasRenderer.h"
-#include "ResourceTexture.h"
-#include "ModuleWindow.h"
-#include "ModuleGOs.h"
-#include "ModuleInternalResHandler.h"
-#include "GameObject.h"
+
+#include "ResourceMaterial.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -146,7 +144,7 @@ void ModuleUI::initRenderData()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -160,6 +158,7 @@ void ModuleUI::DrawUIColor(ComponentRectTransform* rect, math::float4& color, fl
 
 	use(ui_shader);
 	SetRectToShader(rect);
+	setBool(ui_shader, "use_color", true);
 	setFloat(ui_shader, "spriteColor", color.x, color.y, color.z, color.w);
 
 	glBindVertexArray(reference_vertex);
@@ -175,7 +174,7 @@ void ModuleUI::DrawUIColor(ComponentRectTransform* rect, math::float4& color, fl
 	use(0);
 }
 
-void ModuleUI::DrawUITexture(ComponentRectTransform * rect, uint texture, float rotation)
+void ModuleUI::DrawUITexture(ComponentRectTransform * rect, uint id_texture, float rotation)
 {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -184,10 +183,11 @@ void ModuleUI::DrawUITexture(ComponentRectTransform * rect, uint texture, float 
 
 	use(ui_shader);
 	SetRectToShader(rect);
-	setFloat(ui_shader, "image", 0);
+	setBool(ui_shader, "use_color", false);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, App->materialImporter->GetCheckers());
+	glBindTexture(GL_TEXTURE_2D, id_texture);
+	setUnsignedInt(ui_shader, "image", 0);
 
 	glBindVertexArray(reference_vertex);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

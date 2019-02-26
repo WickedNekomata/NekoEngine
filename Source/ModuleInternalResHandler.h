@@ -8,6 +8,7 @@
 #define CUBE_UUID 1451315056
 #define DEFAULT_SHADER_PROGRAM_UUID 1608702687
 #define DEFAULT_SHADER_PROGRAM_PARTICLE_UUID 2628722347
+#define DEFAULT_SHADER_PROGRAM_UI_UUID 1246832795 
 #define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
 #define DEFAULT_MATERIAL_UUID 2168314292
 #define REPLACE_ME_TEXTURE_UUID 3462814329
@@ -284,12 +285,16 @@ enum ShaderProgramTypes;
 #define uifShader \
 "#version 330 core\n" \
 "in vec2 TexCoords;\n" \
-"out vec4 color;\n" \
+"out vec4 FragColor;\n" \
+"uniform int use_color;\n"\
 "uniform sampler2D image;\n" \
 "uniform vec4 spriteColor;\n" \
 "void main()\n" \
 "{\n" \
-"	color = spriteColor;\n" \
+"	if(use_color == 1)\n"\
+"		FragColor = spriteColor;\n" \
+"	else\n"\
+"		FragColor = texture(image, TexCoords);\n" \
 "}"
 
 #pragma endregion

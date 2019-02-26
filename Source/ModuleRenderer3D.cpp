@@ -212,12 +212,15 @@ update_status ModuleRenderer3D::PostUpdate()
 		for (uint i = 0; i < cameraComponents.size(); ++i)
 			cameraComponents[i]->UpdateTransform();
 
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+			projectorComponents[i]->UpdateTransform();
+
 		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-				DrawMesh(meshComponents[i]);
+			//if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
+				//DrawMesh(meshComponents[i]);
 		}
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)
@@ -966,6 +969,7 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	glUseProgram(0);
 }
 
+
 void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 {
 	// Material
@@ -977,66 +981,22 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 	// Shader program
 	glUseProgram(shaderProgram);
 
-	// Specific uniforms
+	// Specific projector uniforms
 	math::float4x4 bias_matrix = math::float4x4(
 		0.5f, 0.0f, 0.0f, 0.5f,
 		0.0f, 0.5f, 0.0f, 0.5f,
 		0.0f, 0.0f, 0.5f, 0.5f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	); // converts the view frustum to a range between 0 and 1 in x and y
-	//bias_matrix.Transpose();
-	
-	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
-	model_matrix = model_matrix.Transposed();
-	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix(); // view
-	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix(); // projection
-	math::float4x4 projector_matrix = model_matrix * projector_view_matrix * projector_proj_matrix * bias_matrix; // into texture space																					   
+
+	// Specific mesh uniforms
+	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix().Transposed(); // view
+	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix().Transposed(); // projection
+	math::float4x4 projector_matrix = bias_matrix * projector_proj_matrix *projector_view_matrix; // into texture space																					   
 
 	//http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
 	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, projector_matrix.ptr());
-	
-	// Known uniforms
-	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
-	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
-	math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
-	math::float4x4 normal_matrix = model_matrix;
-	normal_matrix.Inverse();
-	normal_matrix.Transpose();
-
-	location = glGetUniformLocation(shaderProgram, "model_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "normal_matrix");
-	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
-
-	location = glGetUniformLocation(shaderProgram, "light.direction");
-	glUniform3fv(location, 1, directionalLight.direction.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.ambient");
-	glUniform3fv(location, 1, directionalLight.ambient.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.diffuse");
-	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.specular");
-	glUniform3fv(location, 1, directionalLight.specular.ptr());
-
-	location = glGetUniformLocation(shaderProgram, "viewPos");
-	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
-	location = glGetUniformLocation(shaderProgram, "Time");
-	switch (App->GetEngineState())
-	{
-		// Game
-	case ENGINE_PLAY:
-	case ENGINE_PAUSE:
-	case ENGINE_STEP:
-		glUniform1f(location, App->timeManager->GetTime());
-		break;
-
-		// Editor
-	case ENGINE_EDITOR:
-		glUniform1f(location, App->timeManager->GetRealTime());
-		break;
-	}
+	glUniformMatrix4fv(location, 1, GL_TRUE, projector_matrix.ptr());
 
 	// Unknown uniforms
 	uint textureUnit = 0;
@@ -1082,11 +1042,63 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 		}
 	}
 
+	// Known uniforms
+	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+
+	location = glGetUniformLocation(shaderProgram, "light.direction");
+	glUniform3fv(location, 1, directionalLight.direction.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.ambient");
+	glUniform3fv(location, 1, directionalLight.ambient.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.diffuse");
+	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.specular");
+	glUniform3fv(location, 1, directionalLight.specular.ptr());
+
+	location = glGetUniformLocation(shaderProgram, "viewPos");
+	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
+	location = glGetUniformLocation(shaderProgram, "Time");
+	switch (App->GetEngineState())
+	{
+		// Game
+	case ENGINE_PLAY:
+	case ENGINE_PAUSE:
+	case ENGINE_STEP:
+		glUniform1f(location, App->timeManager->GetTime());
+		break;
+
+		// Editor
+	case ENGINE_EDITOR:
+		glUniform1f(location, App->timeManager->GetRealTime());
+		break;
+	}
+
 	for (uint i = 0; i < meshComponents.size(); ++i)
 	{
 		// Mesh
-		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponents[i]->res);
+		const ComponentMesh* meshComponent = meshComponents[i];
+		if (meshComponent == nullptr)
+			continue;
+		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponent->res);
+		if (mesh == nullptr)
+			continue;
 
+		// Specific mesh uniforms
+		math::float4x4 model_matrix = meshComponent->GetParent()->transform->GetGlobalMatrix();
+		model_matrix.Transpose();
+		math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+		math::float4x4 normal_matrix = model_matrix;
+		normal_matrix.Inverse();
+		normal_matrix.Transpose();
+
+		location = glGetUniformLocation(shaderProgram, "model_matrix");
+		glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+		location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+		glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+		location = glGetUniformLocation(shaderProgram, "normal_matrix");
+		glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+		// Draw
 		glBindVertexArray(mesh->GetVAO());
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
@@ -1100,7 +1112,6 @@ void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
 	}
 
 	glUseProgram(0);
-
 }
 
 void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const

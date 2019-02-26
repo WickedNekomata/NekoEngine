@@ -543,8 +543,8 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Text("Filter Mode");
 	const char* filter[] = { "Nearest", "Linear",
 		"Nearest Mipmap Nearest", "Linear Mipmap Nearest", "Nearest Mipmap Linear", "Linear Mipmap Linear" };
-	if (ImGui::Combo("Min Filter", (int*)&t_is.minFilter, filter, IM_ARRAYSIZE(filter)))
-	if (ImGui::Combo("Mag Filter", (int*)&t_is.magFilter, filter, IM_ARRAYSIZE(filter)))
+	ImGui::Combo("Min Filter", (int*)&t_is.minFilter, filter, IM_ARRAYSIZE(filter));
+	ImGui::Combo("Mag Filter", (int*)&t_is.magFilter, filter, IM_ARRAYSIZE(filter));
 	ImGui::PopItemWidth();
 
 	if (t_is.UseMipmap())

@@ -91,6 +91,7 @@ struct StartValues
 		color.push_back(colorTime);
 	}
 
+	void operator=(StartValues startValue);
 	void OnInternalSave(char *& cursor);
 	void OnInternalLoad(char *& cursor);
 };

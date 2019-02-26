@@ -128,11 +128,13 @@ void ComponentTransform::OnUniqueEditor()
 
 void ComponentTransform::SavePrevTransform(const math::float4x4 & prevTransformMat)
 {
+#ifndef GAMEMODE
 	if (dragTransform)
 	{
 		App->scene->SaveLastTransform(prevTransformMat);
 		dragTransform = false;
 	}
+#endif // !GAMEMODE
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const

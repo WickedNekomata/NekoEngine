@@ -1049,12 +1049,12 @@ void StartValues::OnInternalLoad(char *& cursor)
 	cursor += bytes;
 
 	//startValues.color.pop_back();
-	/*for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		ColorTime colorTime;
 		colorTime.OnInternalLoad(cursor);
 		color.push_back(colorTime);
-	}*/
+	}
 }
 
 //COLOR TIME Save&Load
@@ -1112,4 +1112,27 @@ void ColorTime::OnInternalLoad(char *& cursor)
 	memcpy((void*)name.c_str(), cursor, bytes);
 	name.resize(nameLenght);
 	cursor += bytes;
+}
+
+void StartValues::operator=(StartValues startValue)
+{
+	life = startValue.life;
+	speed = startValue.speed;
+	acceleration3 = startValue.acceleration3;
+	sizeOverTime = startValue.sizeOverTime;
+	size = startValue.size;
+	rotation = startValue.rotation;
+	angularAcceleration = startValue.angularAcceleration;
+	angularVelocity = startValue.angularVelocity;
+
+	timeColor = startValue.timeColor;
+	subEmitterActive = startValue.subEmitterActive;
+
+	particleDirection = startValue.particleDirection;
+
+
+	for (std::list<ColorTime>::iterator it = startValue.color.begin(); it != startValue.color.end(); ++it)
+	{
+		color.push_back(*it);
+	}
 }

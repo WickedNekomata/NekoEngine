@@ -167,6 +167,7 @@ bool ResourcePrefab::LoadInMemory()
 	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
 	prefabData.root = new GameObject(*temp);
 	prefabData.root->ForceUUID(uuid);
+	prefabData.root->prefab = this;
 
 	delete[] buffer;
 	temp->DestroyTemplate();

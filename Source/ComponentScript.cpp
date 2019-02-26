@@ -700,7 +700,11 @@ void ComponentScript::OnUniqueEditor()
 
 							if (ImGui::IsMouseReleased(0))
 							{
+								//TODO: DEREFERENCE PREFAB IF THERE WAS ONE ALREADY DRAGGED
+
 								ResourcePrefab* prefab = (ResourcePrefab*)resource;
+								App->res->SetAsUsed(prefab->GetUuid());
+
 								MonoObject* monoObject = App->scripting->MonoObjectFrom(prefab->GetRoot());
 								mono_field_set_value(classInstance, field, monoObject);
 							}						
@@ -720,6 +724,7 @@ void ComponentScript::OnUniqueEditor()
 
 						if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
 						{
+							//TODO: DEREFERENCE PREFAB IF THERE WAS ONE ALREADY DRAGGED
 							mono_field_set_value(classInstance, field, NULL);
 						}
 					}
@@ -738,13 +743,11 @@ void ComponentScript::OnUniqueEditor()
 						if (!destroyed)
 						{						
 							GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
-
-							//TODO: UNCOMMENT THIS WHEN WE HAVE PREFABS IMPLEMENTED
-
-							/*if (gameObject->prefab)
-							text = nameCpp + std::string(" (Prefab)");
-							else*/
-							text = gameObject->GetName() +std::string(" (GameObject)");
+							
+							if (gameObject->prefab)
+								text = gameObject->GetName() + std::string(" (Prefab)");
+							else
+								text = gameObject->GetName() + std::string(" (GameObject)");
 						}
 						else
 						{

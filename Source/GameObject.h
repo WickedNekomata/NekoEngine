@@ -13,6 +13,7 @@
 #include <vector>
 
 class Component;
+class ResourcePrefab;
 
 class GameObject
 {
@@ -87,6 +88,8 @@ public:
 	class ComponentBone*	   cmp_bone = 0;
 	class ComponentLight*	   cmp_light = 0;
 	class ComponentProjector*  cmp_projector = 0;
+
+	ResourcePrefab* prefab = nullptr;
 
 	std::vector<Component*> components;
 

@@ -39,7 +39,7 @@ the specific language governing permissions and limitations under the License.
 
 #include "AkTypes.h"
 #include "../../Tools/Common/AkPlatformFuncs.h"
-#include "AkSpeakerVolumes.h"
+#include "../Platforms/Generic/AkSpeakerVolumes.h"
 
 namespace AK
 {

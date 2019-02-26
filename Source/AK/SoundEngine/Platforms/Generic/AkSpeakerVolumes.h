@@ -33,7 +33,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AKSPEAKERVOLUMES_GENERIC_H_
 #define _AKSPEAKERVOLUMES_GENERIC_H_
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "../../Common/AkTypes.h"
 
 #if defined( AK_CPU_ARM_NEON ) || ( ( defined( AK_CPU_X86 ) || defined( AK_CPU_X86_64 ) ) && !defined(AK_IOS) )
 

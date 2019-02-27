@@ -957,7 +957,10 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 		if (componentMesh == nullptr)
 			continue;
 
-		if (componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
+		Layer* layer = App->layers->GetLayer(componentMesh->GetParent()->GetLayer());
+
+		if (!(toDraw->GetFilterMask() & layer->GetFilterGroup())
+			&& componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
 		{
 			uint meshTextureUnit = textureUnit;
 

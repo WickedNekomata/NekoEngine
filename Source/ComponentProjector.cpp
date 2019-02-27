@@ -262,6 +262,11 @@ void ComponentProjector::SetFilterMask(uint filterMask)
 	this->filterMask = filterMask;
 }
 
+uint ComponentProjector::GetFilterMask() const
+{
+	return filterMask;
+}
+
 math::Frustum ComponentProjector::GetFrustum() const
 {
 	return frustum;

@@ -24,7 +24,7 @@ ComponentScript::ComponentScript(std::string scriptName, GameObject* gameObject)
 	UUID = App->GenerateRandomNumber();
 }
 
-ComponentScript::ComponentScript(ComponentScript& copy, bool includeComponents) : scriptName(copy.scriptName), Component(copy.parent, ComponentTypes::ScriptComponent)
+ComponentScript::ComponentScript(ComponentScript& copy, GameObject* parent, bool includeComponents) : scriptName(copy.scriptName), Component(parent, ComponentTypes::ScriptComponent)
 {
 	UUID = App->GenerateRandomNumber();
 	this->scriptResUUID = copy.scriptResUUID;
@@ -2453,7 +2453,7 @@ void ComponentScript::InstanceClass()
 	handleID = mono_gchandle_new(classInstance, true);
 }
 
-void ComponentScript::InstanceClass(MonoObject* classInstance)
+void ComponentScript::InstanceClass(MonoObject* _classInstance)
 {
 	if (scriptResUUID == 0)
 		return;
@@ -2473,7 +2473,7 @@ void ComponentScript::InstanceClass(MonoObject* classInstance)
 	}
 
 	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
-	this->classInstance = classInstance;
+	classInstance = _classInstance;
 
 	//Reference the gameObject var with the MonoObject relative to this GameObject
 	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);

@@ -135,7 +135,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			break;
 		case ComponentTypes::ScriptComponent:
 		{
-			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i], includeComponents);
+			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i], this, includeComponents);
 			script->SetParent(this);
 			components.push_back(script);
 			break;

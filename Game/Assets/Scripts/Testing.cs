@@ -23,7 +23,7 @@ public class Testing : JellyScript
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
             OverlapHit[] hitInfo;
-            if (Physics.OverlapSphere(float.MaxValue, transform.position, out hitInfo, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.OverlapSphere(100f, transform.position, out hitInfo, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 Debug.ClearConsole();
                 Debug.Log("I hitted " + hitInfo.Length.ToString() + " objects");

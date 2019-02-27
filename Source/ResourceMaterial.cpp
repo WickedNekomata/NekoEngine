@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleScene.h"
 
 #include "ResourceShaderProgram.h"
@@ -443,7 +444,10 @@ void ResourceMaterial::InitResources()
 {
 	// Set as used (shader)
 	if (materialData.shaderUuid > 0)
-		App->res->SetAsUsed(materialData.shaderUuid);
+	{
+		if (App->res->SetAsUsed(materialData.shaderUuid) == 0)
+			App->res->SetAsUsed(materialData.shaderUuid);
+	}
 
 	// Set as used (uniforms)
 	SetUniformsAsUsed();

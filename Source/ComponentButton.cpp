@@ -103,6 +103,8 @@ void ComponentButton::OnInternalLoad(char *& cursor)
 
 void ComponentButton::OnUniqueEditor()
 {
+#ifndef GAMEMODE
+
 	static char inputBlind[2] = { input.at(0) };
 	if (ImGui::InputText("Blind key", inputBlind, IM_ARRAYSIZE(inputBlind), ImGuiInputTextFlags_EnterReturnsTrue))
 		SetNewKey(inputBlind);
@@ -122,6 +124,7 @@ void ComponentButton::OnUniqueEditor()
 		ImGui::Text("This button is Left Clicked.");
 		break;
 	}
+#endif
 }
 
 bool ComponentButton::MouseInScreen(const uint* rect) const

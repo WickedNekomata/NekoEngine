@@ -21,8 +21,7 @@ private:
 	void OnUniqueEditor();
 
 private:
-
-	std::string text;
+	std::string finalText;
 };
 
 #endif

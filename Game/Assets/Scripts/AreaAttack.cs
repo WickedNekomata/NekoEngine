@@ -1,20 +1,21 @@
 ﻿using System.Collections;
 using JellyBitEngine;
 
-public class Alita : JellyScript
+public class AreaAttack : JellyScript
 {
-    //Masks
-    public LayerMask mask = new LayerMask();
-    private int terrainMask = LayerMask.GetMask("Terrain");
-    private int enemyMask = LayerMask.GetMask("Enemy");
-
-    //Unit script
-    private Unit unit;
+    //Alita propeties
+    int life = 50;
+    int damage = 20;
 
     // Raycast
     private RaycastHit hit;
-    private bool ray_has_hit = false;
+    private int terrainMask = LayerMask.GetMask("Default");
+    private int enemyMask = LayerMask.GetMask("Default");
 
+    //Agent
+    private NavMeshAgent agent = null;
+
+    //Alita states
     private enum Alita_State
     {
         IDLE,
@@ -23,6 +24,7 @@ public class Alita : JellyScript
         ATTK,
         AREA_ATTK
     }
+    Alita_State state = Alita_State.IDLE;
 
     //Enemy
     GameObject enemy;
@@ -33,21 +35,28 @@ public class Alita : JellyScript
     public float attk_period = 1.0f;
     private float attk_cool_down = 0.0f;
 
-    Alita_State state = Alita_State.IDLE;
+    //Area attack variables
+    bool isAreaActive = false;
+    GameObject circleArea = null;
 
-    //Use this method for initialization
-    public override void Awake()
+    public override void Start()
     {
-
+        agent = gameObject.GetComponent<NavMeshAgent>();
     }
 
     //Called every frame
     public override void Update()
     {
+        if (agent == null)
+            agent = gameObject.GetComponent<NavMeshAgent>();
+
         CheckState();
         CheckForMouseClick();
-    }
 
+        if(state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
+            CheckForSPAttack(); //Only special attacks when no normal attacking
+
+    }
 
     private void CheckState()
     {
@@ -67,7 +76,7 @@ public class Alita : JellyScript
                 float diff = (float)(enemy.transform.position - transform.position).magnitude;
                 if (diff <= attack_dist + 1.0f)
                 {
-                    Debug.Log("Arrive to enemy");
+                    Debug.Log("ARRIVE TO ENEMY");
                     state = Alita_State.ATTK;
                 }
                 break;
@@ -80,15 +89,17 @@ public class Alita : JellyScript
                 break;
 
             case Alita_State.AREA_ATTK:
-
+                agent.SetDestination(transform.position);
+                AreaAttk();
+                state = Alita_State.IDLE;
                 break;
         }
-
     }
 
 
     private void CheckForMouseClick()
     {
+        //Attack
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
@@ -101,24 +112,57 @@ public class Alita : JellyScript
                 //Determine a place a little further than enemy position
                 Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
                 Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
-                unit.MoveTo(enemy_pos);
+                agent.SetDestination(hit.point);
 
-                enemy_unit = enemy.GetComponent<Unit>();
+                enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
 
                 Debug.Log("GOING TO ENEMY");
+
             }
 
         }
 
+        //Move
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
-                unit.MoveTo(hit.point);
-                state = Alita_State.RUNNING;
-                Debug.Log("GOING TO SPOT");
+                if (agent != null)
+                {
+                    Debug.Log("GOING TO SPOT");
+                    agent.SetDestination(hit.point);
+                }
+                else
+                    Debug.Log("AGENT IS NULL");
             }
+        }
+    }
+
+    private void CheckForSPAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.KEY_Q))
+        {
+            if (!isAreaActive)
+            {
+                //Instance circle
+                isAreaActive = true;
+            }
+
+            else if (isAreaActive)
+            {
+                //Destroy circle
+                isAreaActive = false;
+            }
+
+        }
+
+
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT) && isAreaActive)
+        {
+            state = Alita_State.AREA_ATTK;
+            isAreaActive = false;
+            //Destroy circle
         }
 
     }
@@ -130,20 +174,26 @@ public class Alita : JellyScript
         //Attack every second
         if (attk_cool_down >= attk_period)
         {
-            enemy_unit.Hit(unit.damage);
-            Debug.Log("ENEMY HIT");
+            enemy_unit.Hit(damage);
+            Debug.Log("ENEMY HIT"); //CHANGE THIS I THINK
 
             attk_cool_down = 0.0f;
         }
     }
 
-    private RaycastHit GetMouseRayCastHit()
+    public void AreaAttk()
     {
-        Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-        ray_has_hit = Physics.Raycast(ray, out hit, float.MaxValue, (uint)mask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static);
+        float circleRadius = 100.0f;
 
-        return hit;
+        OverlapHit[] hitInfo;
+        if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, (uint)enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        {
+            foreach (OverlapHit hit in hitInfo)
+            {
+                hit.gameObject.GetComponent<Unit>().Hit(damage); //CHANGE THIS I THINK
+                Debug.Log("HIT ENEMY: " + hit.gameObject.name);
+            }
+        }
     }
+ }
 
-
-}

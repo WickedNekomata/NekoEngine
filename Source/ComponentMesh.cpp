@@ -67,8 +67,8 @@ void ComponentMesh::SetResource(uint res_uuid)
 		int nVerts = currentRes->GetVerticesCount();
 		float* tris = new float[nVerts * 3];
 		currentRes->GetTris(tris);
-		GetParent()->originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
-		delete[] vertices;
+		GetParent()->originalBoundingBox.Enclose((const math::float3*)tris, nVerts);
+		delete[] tris;
 	}
 
 	res = res_uuid;

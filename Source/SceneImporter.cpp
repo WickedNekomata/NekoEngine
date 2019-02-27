@@ -8,6 +8,7 @@
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
+#include "ResourceBone.h"
 
 #include "ResourcePrefab.h"
 
@@ -158,7 +159,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		data.file = DIR_ASSETS_PREFAB + std::string("/") + prefab_go->GetName() + EXTENSION_PREFAB;
 		data.exportedFile = "";
-		data.name = prefab_go->GetName();
+		data.name = prefabName;
 		prefab_data.root = prefab_go;
 
 		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, std::string());
@@ -248,6 +249,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		if (!broken)
 		{
 			gameObject->AddComponent(ComponentTypes::MeshComponent);
+			gameObject->ToggleIsStatic(false);
 			if (forcedUuids.size() > 0)
 			{
 				gameObject->cmp_mesh->res = forcedUuids.front();
@@ -883,16 +885,40 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 
 		std::string output;
 
-		uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output, go);
+		go->cmp_bone->res = App->GenerateRandomNumber();
+
+		std::string outputFile = std::to_string(go->cmp_bone->res);
+
+		ResourceData data;
+		data.name = outputFile;
+		data.file = outputFile;
+
+		ResourceBoneData res_data;
+		res_data.mesh_uid = mesh_bone[bone];
+		res_data.bone_weights_size = bone->mNumWeights;
+		memcpy(res_data.offset_matrix.v, &bone->mOffsetMatrix.a1, sizeof(float) * 16);
+
+		res_data.bone_weights_indices = new uint[res_data.bone_weights_size];
+		res_data.bone_weights = new float[res_data.bone_weights_size];
+
+		for (uint k = 0; k < res_data.bone_weights_size; ++k)
+		{
+			res_data.bone_weights_indices[k] = bone->mWeights[k].mVertexId;
+			res_data.bone_weights[k] = bone->mWeights[k].mWeight;
+		}
+
+		App->res->ExportFile(ResourceTypes::BoneResource, data, &res_data, outputFile);
+
+		//uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output, go);
 		
 		
-		if (go->GetParent() == nullptr ||
+		/*if (go->GetParent() == nullptr ||
 			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
 			bone_root_uid = go->GetUUID();
 
 
 		comp_bone->SetResource(bone_uid);
-		imported_bones[node->mName.C_Str()] = bone_uid;
+		imported_bones[node->mName.C_Str()] = bone_uid;*/
 		DEPRECATED_LOG("->-> Added Bone component");
 	}
 

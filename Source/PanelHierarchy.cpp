@@ -80,7 +80,7 @@ bool PanelHierarchy::Draw()
 			ResourcePrefab* prefab = *(ResourcePrefab**)payload->Data;
 			App->res->SetAsUsed(prefab->GetUuid());
 			
-			App->GOs->Instanciate(prefab->GetRoot(), App->scene->root);
+			GameObject* tmp_go = App->GOs->Instanciate(prefab->GetRoot(), App->scene->root);
 
 			App->res->SetAsUnused(prefab->GetUuid());
 		}

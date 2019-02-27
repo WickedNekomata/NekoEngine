@@ -15,6 +15,7 @@
 
 // *****Debug*****
 #include "MathGeoLib\include\Geometry\Ray.h"
+#include "MathGeoLib\include\Math\float4x4.h"
 //_*****Debug*****
 
 #include <vector>
@@ -158,6 +159,8 @@ private:
 
 	// *****Debug*****
 	math::Ray debugRay;
+	float debugRadius = 1.0f;
+	math::float4x4 debugTransform = math::float4x4::identity;
 	//_*****Debug*****
 };
 

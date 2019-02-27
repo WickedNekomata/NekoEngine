@@ -119,7 +119,7 @@ bool BoneImporter::SaveBone(mutable ResourceData& res_data, mutable ResourceBone
 		outputFile = res_data.name;
 
 	// Format: mesh UID + 16 float matrix + num_weigths uint + indices uint * num_weight + weight float * num_weights
-	uint size = sizeof(bone_data.mesh_uid);
+	uint size = sizeof(bone_data.mesh_uid); // mesh_uid
 	size += sizeof(bone_data.offset_matrix);
 	size += sizeof(bone_data.bone_weights_size);
 	size += sizeof(uint) * bone_data.bone_weights_size;

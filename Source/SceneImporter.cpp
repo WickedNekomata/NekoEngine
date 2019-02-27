@@ -341,7 +341,8 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 						root_bone = gameObject;
 
 					bones[nodeMesh->mBones[i]->mName.C_Str()] = nodeMesh->mBones[i];
-					mesh_bone[nodeMesh->mBones[i]] = gameObject->GetComponent(ComponentTypes::MeshComponent)->UUID;
+					ComponentMesh* mesh_co = (ComponentMesh*)gameObject->GetComponent(ComponentTypes::MeshComponent);
+					mesh_bone[nodeMesh->mBones[i]] = mesh_co->res;
 				}
 			}
 

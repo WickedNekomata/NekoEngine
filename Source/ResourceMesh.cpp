@@ -114,12 +114,12 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 	uint bones_uuids_size = bonesUuids.size();
 
 	uint size = 
-		sizeof(int64_t) +
-		sizeof(uint) +
-		sizeof(uint) * mesh_uuids_size +
+		sizeof(int64_t) +					//data mod
+		sizeof(uint) +						//mesh size num
+		sizeof(uint) * mesh_uuids_size +	//mesh uuids
 
-		sizeof(uint) +
-		sizeof(uint) * bones_uuids_size +
+		sizeof(uint) +						//size bone num
+		sizeof(uint) * bones_uuids_size +	//bone uuids
 
 		sizeof(int) +
 		sizeof(uint) +
@@ -289,19 +289,24 @@ bool ResourceMesh::ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uin
 	bytes = sizeof(uint) * uuidsSize;
 	memcpy(&meshesUuids[0], cursor, bytes);
 
-	// 2. Load uuids size BONE
+	cursor += bytes;
+
+	// 4. Load uuids size BONE
 	uuidsSize = 0;
 	bytes = sizeof(uint);
 	memcpy(&uuidsSize, cursor, bytes);
-	assert(uuidsSize > 0);
+	//assert(uuidsSize > 0);
 
 	cursor += bytes;
 
-	// 3. Load BONES uuids
+	// 5. Load BONES uuids
 	bonesUuids.resize(uuidsSize);
-	bytes = sizeof(uint) * uuidsSize;
-	if(bonesUuids.size() > 0)
+	if (bonesUuids.size() > 0) {
+		bytes = sizeof(uint) * uuidsSize;
 		memcpy(&bonesUuids[0], cursor, bytes);
+	}
+
+	cursor += bytes;
 
 	if (meshesUuids.size() > 0)
 		return true;

@@ -94,6 +94,7 @@ public:
 	std::vector<Component*> components;
 	std::vector<GameObject*> children;
 
+	math::AABB originalBoundingBox;
 	math::AABB boundingBox;
 
 	bool seenLastFrame = false;

@@ -74,7 +74,9 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 		assert(ResourceMesh::ReadMeta(metaFile, lastModTime, meshImportSettings, mesh_uuids, bones_uuids));
 
 		char entry[DEFAULT_BUF_SIZE]; 
-		std::vector<std::string> entryFiles;
+
+		std::vector<std::string> mesh_entry_files;
+		std::vector<std::string> bone_entry_files;
 
 		std::string entryFile;
 		for (uint i = 0; i < mesh_uuids.size(); ++i)
@@ -82,14 +84,24 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			sprintf_s(entry, "%u%s", mesh_uuids[i], EXTENSION_MESH);
 			entryFile = DIR_LIBRARY;
 			if (App->fs->RecursiveExists(entry, DIR_LIBRARY, entryFile))
-				entryFiles.push_back(entryFile);
+				mesh_entry_files.push_back(entryFile);
+			entryFile.clear();
+		}
+
+		for (uint i = 0; i < bones_uuids.size(); ++i)
+		{
+			sprintf_s(entry, "%u%s", bones_uuids[i], EXTENSION_BONE);
+			entryFile = DIR_LIBRARY;
+			if (App->fs->RecursiveExists(entry, DIR_LIBRARY, entryFile))
+				bone_entry_files.push_back(entryFile);
 			entryFile.clear();
 		}
 
 		// CASE 2 (file + meta + Library file(s)). The resource(s) do(es)n't exist
-		if (entryFiles.size() == mesh_uuids.size())
+		if (mesh_entry_files.size() == mesh_uuids.size() && bone_entry_files.size() == bones_uuids.size())
 		{
-			mesh_files = entryFiles;
+			mesh_files = mesh_entry_files;
+			bone_files = bone_entry_files;
 			imported = true;
 		}			
 		// CASE 3 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist

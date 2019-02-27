@@ -371,6 +371,15 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			
 			// TODO_G : separate mesh / bones resources uuids from resourcesUuids
 
+			for (uint i = 0u; i < resourcesUuids.size(); i++)
+			{
+				Resource* tmp_res = App->res->GetResource(resourcesUuids[i]);
+				if (tmp_res->GetType() == ResourceTypes::MeshResource)
+					meshes_uuids.push_back(resourcesUuids[i]);
+				else if (tmp_res->GetType() == ResourceTypes::BoneResource)
+					bones_uuids.push_back(resourcesUuids[i]);
+			}
+
 			// bone mesh etc todo
 
 			// 2. Meta

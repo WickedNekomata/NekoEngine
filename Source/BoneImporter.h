@@ -19,7 +19,7 @@ public:
 	BoneImporter();
 	~BoneImporter();
 
-	Resource* GenerateResourceFromFile(mutable const char* file_path,mutable uint uid_to_force = 0u);
+	void Load(mutable const char* file_path, mutable ResourceData& data,mutable ResourceBoneData& bone_data, mutable uint uid_to_force = 0u);
 
 	uint Import(mutable aiBone* new_bone,mutable uint mesh,mutable std::string& output, mutable GameObject* go) const;
 

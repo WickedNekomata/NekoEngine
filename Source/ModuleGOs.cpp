@@ -289,16 +289,6 @@ GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool 
 
 		if (go->GetParent() == 0)
 			go->SetParent(0);
-		/*if (go->GetParent() == 0)
-		{
-			assert(App->scene->root == 0);
-			App->scene->root = go;
-		}
-		else
-		{
-			gameobjects.push_back(go);
-			go->IsStatic() ? staticGos.push_back(go) : dynamicGos.push_back(go);
-		}*/
 
 		gos.push_back(go);
 	}

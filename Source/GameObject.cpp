@@ -70,7 +70,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			break;
 		case ComponentTypes::MaterialComponent:
 			cmp_material = new ComponentMaterial(*gameObject.cmp_material);
-			cmp_mesh->SetParent(this);
+			cmp_material->SetParent(this);
 			components.push_back(cmp_material);
 			break;
 		case ComponentTypes::CameraComponent:

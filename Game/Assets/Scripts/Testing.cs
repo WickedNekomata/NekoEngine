@@ -17,17 +17,12 @@ public class Testing : JellyScript
     {
         Debug.ClearConsole();
 
-        if (randomObject != null)
-            Debug.Log("randomObject is not null");
-        else
-            Debug.Log("randomObject is null");
-
         //Debug.LogError("randomObjects name is " + randomObject != null ? randomObject.name : "null");
         //Debug.LogError("randomTransform's name is " + randomTransform.gameObject.name + "and his position is " + randomTransform.position.ToString());
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            GameObject tempGO = GameObject.Instantiate(randomObject);
+            GameObject tempGO = GameObject.Instantiate(randomObject, new Vector3(1,0,0));
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);
         }

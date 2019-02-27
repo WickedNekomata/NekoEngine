@@ -821,7 +821,7 @@ int GetWheelMovementCS()
 	return App->input->GetMouseZ();
 }
 
-MonoObject* InstantiateGameObject(MonoObject* templateMO)
+MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, MonoArray* rotation)
 {
 	if (!templateMO)
 	{
@@ -832,6 +832,18 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 		MonoClass* gameObjectClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "GameObject");
 		MonoObject* monoInstance = mono_object_new(App->scripting->domain, gameObjectClass);
 		mono_runtime_object_init(monoInstance);
+
+		if (position)
+		{
+			math::float3 newPos{mono_array_get(position, float, 0), mono_array_get(position, float, 1), mono_array_get(position, float, 2)};
+			instance->transform->position = newPos;
+		}
+
+		if (rotation)
+		{
+			math::Quat newRotation{ mono_array_get(position, float, 0), mono_array_get(position, float, 1), mono_array_get(position, float, 2), mono_array_get(position, float, 3)};
+			instance->transform->rotation = newRotation;
+		}
 
 		uint32_t handleID = mono_gchandle_new(monoInstance, true);
 
@@ -877,6 +889,18 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO)
 
 		GameObject* newGameObject = App->GOs->Instanciate(templateGO, App->scene->root);
 		MonoObject* moInstance = App->scripting->MonoObjectFrom(newGameObject);
+
+		if (position)
+		{
+			math::float3 newPos{ mono_array_get(position, float, 0), mono_array_get(position, float, 1), mono_array_get(position, float, 2) };
+			newGameObject->transform->position = newPos;
+		}
+
+		if (rotation)
+		{
+			math::Quat newRotation{ mono_array_get(position, float, 0), mono_array_get(position, float, 1), mono_array_get(position, float, 2), mono_array_get(position, float, 3) };
+			newGameObject->transform->rotation = newRotation;
+		}
 
 		//TODO: CALL AWAKE START ETC
 
@@ -1419,7 +1443,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Debug::LogWarning", (const void*)&DebugLogWarningTranslator);
 	mono_add_internal_call("JellyBitEngine.Debug::LogError", (const void*)&DebugLogErrorTranslator);
 	mono_add_internal_call("JellyBitEngine.Debug::ClearConsole", (const void*)&ClearConsole);
-	mono_add_internal_call("JellyBitEngine.GameObject::Instantiate", (const void*)&InstantiateGameObject);
+	mono_add_internal_call("JellyBitEngine.GameObject::_Instantiate", (const void*)&InstantiateGameObject);
 	mono_add_internal_call("JellyBitEngine.Input::GetKeyState", (const void*)&GetKeyStateCS);
 	mono_add_internal_call("JellyBitEngine.Input::GetMouseButtonState", (const void*)&GetMouseStateCS);
 	mono_add_internal_call("JellyBitEngine.Input::GetMousePos", (const void*)&GetMousePosCS);

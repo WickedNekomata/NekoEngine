@@ -27,13 +27,13 @@ written agreement between you and Audiokinetic Inc.
 #include "../Win32/stdafx.h"
 #include "AkFileLocationBase.h"
 
-#include <AK/SoundEngine/Common/AkStreamMgrModule.h>
-#include <AK/Tools/Common/AkPlatformFuncs.h>
+#include "../SoundEngine/Common/AkStreamMgrModule.h"
+#include "../Tools/Common/AkPlatformFuncs.h"
 #ifdef AK_SUPPORT_WCHAR
 #include <wchar.h>
 #endif //AK_SUPPORT_WCHAR
 #include <stdio.h>
-#include <AK/Tools/Common/AkAssert.h>
+#include "../Tools/Common/AkAssert.h"
 
 #include "../Win32/AkFileHelpers.h"
 

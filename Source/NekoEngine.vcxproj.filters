@@ -184,6 +184,57 @@
     <Filter Include="Sources\3rd Party\Wwise">
       <UniqueIdentifier>{aac085d1-59af-4c5d-988e-c5f94c4e6248}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK">
+      <UniqueIdentifier>{b9f2f25c-c204-480e-9e2e-12cff64fe4d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Comm">
+      <UniqueIdentifier>{89c67973-cc49-4c13-bef4-5b0f481ad3d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\DSP">
+      <UniqueIdentifier>{bc6d26ee-44bd-4c51-8855-20d43666e054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\DSP\Generic">
+      <UniqueIdentifier>{b2fbd283-d765-4114-8ed3-bfd6ce728287}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\MotionEngine">
+      <UniqueIdentifier>{10effd48-db15-40d1-8bca-dc54c84013c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\MotionEngine\Common">
+      <UniqueIdentifier>{939accbb-22a6-4dab-9cc1-76218dff5f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\MusicEngine">
+      <UniqueIdentifier>{49aa4964-9adb-4a2b-8342-87fe7535f5cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\MusicEngine\Common">
+      <UniqueIdentifier>{61d9ad73-6071-41bb-907f-d2d9d8939f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\SoundEngine">
+      <UniqueIdentifier>{7bc17fc5-c10c-4b7a-8b24-173cb89f2d1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\SoundEngine\Common">
+      <UniqueIdentifier>{fe29dac6-8f17-40c4-8207-ec5a5a583b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\SoundEngine\Platforms">
+      <UniqueIdentifier>{b3b53910-4b93-4d36-bd09-5b881dbf8411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\SoundEngine\Platforms\Windows">
+      <UniqueIdentifier>{2f699c60-b524-4ebd-b5b8-d4951d8dcf40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Tools">
+      <UniqueIdentifier>{55086038-6b51-4da0-8c5d-60abbcada0b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Tools\Commons">
+      <UniqueIdentifier>{492a990e-fbfc-4cd1-8f58-dd776b34baa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Tools\POSIX">
+      <UniqueIdentifier>{9c57211f-1f18-489b-a7e4-ae30809d6d86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Tools\Win32">
+      <UniqueIdentifier>{9ddc8146-ce28-432b-b9e2-381f7c9e9097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Wwise\AK\Win32">
+      <UniqueIdentifier>{46aa5dbc-74db-4976-a487-059a666548d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1492,6 +1543,231 @@
     <ClInclude Include="ModuleAudio.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="AK\Comm\AkCommunication.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\AkApplyGain.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\AkDelayLineMemory.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\AkDelayLineMemoryStream.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\AkModulatorProcess.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\AkVolAutomation.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\Generic\AkDelayLineMemory.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\DSP\Generic\AkDelayLineMemoryStream.h">
+      <Filter>Sources\3rd Party\Wwise\AK\DSP\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\MotionEngine\Common\AkMotionEngine.h">
+      <Filter>Sources\3rd Party\Wwise\AK\MotionEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\MotionEngine\Common\IAkMotionMixBus.h">
+      <Filter>Sources\3rd Party\Wwise\AK\MotionEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\MusicEngine\Common\AkMusicEngine.h">
+      <Filter>Sources\3rd Party\Wwise\AK\MusicEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkBytesMem.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkCallback.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkCommonDefs.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkDynamicDialogue.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkDynamicSequence.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkFPUtilities.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkMemoryMgr.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkMidiTypes.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkModule.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkQueryParameters.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkSimd.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkSoundEngine.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkSoundEngineExport.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkSpeakerConfig.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkSpeakerVolumes.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkStreamMgrModule.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkTypes.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\AkVirtualAcoustics.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkMixerPlugin.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkPlugin.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkPluginMemAlloc.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkProcessorFeatures.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkRTPCSubscriber.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Common\IAkStreamMgr.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkSimd.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Platforms\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkTypes.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Platforms\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkWinSoundEngine.h">
+      <Filter>Sources\3rd Party\Wwise\AK\SoundEngine\Platforms\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkAllocator.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkArray.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkAssert.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkAutoLock.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkBankReadHelpers.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkDynaBlkPool.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkFNVHash.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkHashList.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkKeyArray.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkKeyDef.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkListBare.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkListBareLight.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkLock.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkMonitorError.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkObject.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkPlatformFuncs.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkSet.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkSmartPtr.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkString.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkSyncCaller.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Common\AkVectors.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Commons</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\POSIX\AkLock.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\POSIX</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\POSIX\AkPlatformFuncs.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\POSIX</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Win32\AkLock.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Tools\Win32\AkPlatformFuncs.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Tools\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkDefaultIOHookBlocking.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkDefaultIOHookDeferred.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFileHelpers.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFileLocationBase.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFilePackage.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIO.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIOBlocking.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIODeferred.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\AkFilePackageLUT.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\Win32\stdafx.h">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\AkPlatforms.h">
+      <Filter>Sources\3rd Party\Wwise\AK</Filter>
+    </ClInclude>
+    <ClInclude Include="AK\AkWwiseSDKVersion.h">
+      <Filter>Sources\3rd Party\Wwise\AK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -1965,6 +2241,24 @@
     <ClCompile Include="ModuleAudio.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="AK\Win32\AkDefaultIOHookBlocking.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="AK\Win32\AkDefaultIOHookDeferred.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="AK\Win32\AkFileLocationBase.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="AK\Win32\AkFilePackage.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="AK\Win32\AkFilePackageLUT.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="AK\Win32\stdafx.cpp">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">
@@ -2017,6 +2311,9 @@
     </None>
     <None Include="NMBuildContext.h">
       <Filter>Sources\Helpers\NavMesh</Filter>
+    </None>
+    <None Include="AK\Win32\AkFilePackageLowLevelIO.inl">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
     </None>
   </ItemGroup>
 </Project>

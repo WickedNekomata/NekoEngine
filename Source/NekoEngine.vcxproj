@@ -161,6 +161,81 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AK\AkPlatforms.h" />
+    <ClInclude Include="AK\AkWwiseSDKVersion.h" />
+    <ClInclude Include="AK\Comm\AkCommunication.h" />
+    <ClInclude Include="AK\DSP\AkApplyGain.h" />
+    <ClInclude Include="AK\DSP\AkDelayLineMemory.h" />
+    <ClInclude Include="AK\DSP\AkDelayLineMemoryStream.h" />
+    <ClInclude Include="AK\DSP\AkModulatorProcess.h" />
+    <ClInclude Include="AK\DSP\AkVolAutomation.h" />
+    <ClInclude Include="AK\DSP\Generic\AkDelayLineMemory.h" />
+    <ClInclude Include="AK\DSP\Generic\AkDelayLineMemoryStream.h" />
+    <ClInclude Include="AK\MotionEngine\Common\AkMotionEngine.h" />
+    <ClInclude Include="AK\MotionEngine\Common\IAkMotionMixBus.h" />
+    <ClInclude Include="AK\MusicEngine\Common\AkMusicEngine.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkBytesMem.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkCallback.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkCommonDefs.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkDynamicDialogue.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkDynamicSequence.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkFPUtilities.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkMemoryMgr.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkMidiTypes.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkModule.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkQueryParameters.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkSimd.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkSoundEngine.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkSoundEngineExport.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkSpeakerConfig.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkSpeakerVolumes.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkStreamMgrModule.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkTypes.h" />
+    <ClInclude Include="AK\SoundEngine\Common\AkVirtualAcoustics.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkMixerPlugin.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkPlugin.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkPluginMemAlloc.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkProcessorFeatures.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkRTPCSubscriber.h" />
+    <ClInclude Include="AK\SoundEngine\Common\IAkStreamMgr.h" />
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkSimd.h" />
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkTypes.h" />
+    <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkWinSoundEngine.h" />
+    <ClInclude Include="AK\Tools\Common\AkAllocator.h" />
+    <ClInclude Include="AK\Tools\Common\AkArray.h" />
+    <ClInclude Include="AK\Tools\Common\AkAssert.h" />
+    <ClInclude Include="AK\Tools\Common\AkAutoLock.h" />
+    <ClInclude Include="AK\Tools\Common\AkBankReadHelpers.h" />
+    <ClInclude Include="AK\Tools\Common\AkDynaBlkPool.h" />
+    <ClInclude Include="AK\Tools\Common\AkFNVHash.h" />
+    <ClInclude Include="AK\Tools\Common\AkHashList.h" />
+    <ClInclude Include="AK\Tools\Common\AkKeyArray.h" />
+    <ClInclude Include="AK\Tools\Common\AkKeyDef.h" />
+    <ClInclude Include="AK\Tools\Common\AkListBare.h" />
+    <ClInclude Include="AK\Tools\Common\AkListBareLight.h" />
+    <ClInclude Include="AK\Tools\Common\AkLock.h" />
+    <ClInclude Include="AK\Tools\Common\AkMonitorError.h" />
+    <ClInclude Include="AK\Tools\Common\AkObject.h" />
+    <ClInclude Include="AK\Tools\Common\AkPlatformFuncs.h" />
+    <ClInclude Include="AK\Tools\Common\AkSet.h" />
+    <ClInclude Include="AK\Tools\Common\AkSmartPtr.h" />
+    <ClInclude Include="AK\Tools\Common\AkString.h" />
+    <ClInclude Include="AK\Tools\Common\AkSyncCaller.h" />
+    <ClInclude Include="AK\Tools\Common\AkVectors.h" />
+    <ClInclude Include="AK\Tools\POSIX\AkLock.h" />
+    <ClInclude Include="AK\Tools\POSIX\AkPlatformFuncs.h" />
+    <ClInclude Include="AK\Tools\Win32\AkLock.h" />
+    <ClInclude Include="AK\Tools\Win32\AkPlatformFuncs.h" />
+    <ClInclude Include="AK\Win32\AkDefaultIOHookBlocking.h" />
+    <ClInclude Include="AK\Win32\AkDefaultIOHookDeferred.h" />
+    <ClInclude Include="AK\Win32\AkFileHelpers.h" />
+    <ClInclude Include="AK\Win32\AkFileLocationBase.h" />
+    <ClInclude Include="AK\Win32\AkFilePackage.h" />
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIO.h" />
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIOBlocking.h" />
+    <ClInclude Include="AK\Win32\AkFilePackageLowLevelIODeferred.h" />
+    <ClInclude Include="AK\Win32\AkFilePackageLUT.h" />
+    <ClInclude Include="AK\Win32\stdafx.h" />
     <ClInclude Include="AnimationImporter.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Assimp\include\ai_assert.h" />
@@ -599,6 +674,12 @@
     <ClInclude Include="WwiseT.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AK\Win32\AkDefaultIOHookBlocking.cpp" />
+    <ClCompile Include="AK\Win32\AkDefaultIOHookDeferred.cpp" />
+    <ClCompile Include="AK\Win32\AkFileLocationBase.cpp" />
+    <ClCompile Include="AK\Win32\AkFilePackage.cpp" />
+    <ClCompile Include="AK\Win32\AkFilePackageLUT.cpp" />
+    <ClCompile Include="AK\Win32\stdafx.cpp" />
     <ClCompile Include="AnimationImporter.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
@@ -758,6 +839,7 @@
     <ClCompile Include="WwiseT.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AK\Win32\AkFilePackageLowLevelIO.inl" />
     <None Include="Assimp\include\.editorconfig" />
     <None Include="Assimp\include\color4.inl" />
     <None Include="Assimp\include\config.h.in" />

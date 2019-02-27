@@ -265,30 +265,10 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
-	//TODO: Fix BoundingBoxes calcs. We cant calculate every frame all tris of GO
-	if (cmp_emitter == nullptr)
-		boundingBox.SetNegativeInfinity();
+	math::OBB obb = originalBoundingBox.ToOBB();
+	obb.Transform(this->transform->GetGlobalMatrix);
 
-	// Grow bounding box
-	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
-	{
-		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
-		int nVerts = meshRes->GetVerticesCount();
-		float* vertices = new float[nVerts * 3];
-		meshRes->GetTris(vertices);
-		boundingBox.Enclose((const math::float3*)vertices, nVerts);
-		delete[] vertices;
-	}
-	else if (cmp_emitter != nullptr)
-	{
-		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
-		comp->SetAABB(boundingBox.Size());
-	}
-	// Transform bounding box (calculate OBB)
-	math::OBB obb;
-	obb.SetFrom(boundingBox);
-	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
-	obb.Transform(transformMatrix);
+	boundingBox = obb.MinimalEnclosingAABB();
 
 	// Calculate AABB
 	if (obb.IsFinite())

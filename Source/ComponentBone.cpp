@@ -27,6 +27,10 @@ ComponentBone::~ComponentBone()
 
 }
 
+void ComponentBone::OnEditor()
+{
+}
+
 uint ComponentBone::GetInternalSerializationBytes()
 {
 	return sizeof(uint) + sizeof(uint);

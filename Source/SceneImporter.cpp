@@ -158,7 +158,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		data.file = DIR_ASSETS_PREFAB + std::string("/") + prefab_go->GetName() + EXTENSION_PREFAB;
 		data.exportedFile = "";
-		data.name = prefab_go->GetName();
+		data.name = prefabName;
 		prefab_data.root = prefab_go;
 
 		App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefab_data, std::string());

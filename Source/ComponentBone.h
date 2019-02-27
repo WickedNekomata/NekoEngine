@@ -13,6 +13,8 @@ public:
 	ComponentBone(GameObject* embedded_game_object, uint resource);
 	~ComponentBone();
 
+	void OnEditor();
+
 	uint GetInternalSerializationBytes();
 
 	bool SetResource(uint resource);

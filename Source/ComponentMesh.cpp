@@ -63,6 +63,12 @@ void ComponentMesh::SetResource(uint res_uuid)
 		data.name = "Deformable Mesh :)";
 		deformableMesh = (ResourceMesh*)App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData);
 		App->res->SetAsUsed(deformableMesh->GetUuid());
+
+		int nVerts = currentRes->GetVerticesCount();
+		float* tris = new float[nVerts * 3];
+		currentRes->GetTris(tris);
+		GetParent()->originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
+		delete[] vertices;
 	}
 
 	res = res_uuid;
@@ -73,6 +79,7 @@ void ComponentMesh::SetResource(uint res_uuid)
 	newEvent.type = System_Event_Type::RecalculateBBoxes;
 	App->PushSystemEvent(newEvent);
 
+	
 	if (parent->IsStatic())
 	{
 		// Bounding box changed: recreate quadtree

@@ -18,7 +18,7 @@
 
 ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentTypes::TransformComponent) {}
 
-ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentTypes::TransformComponent)
+ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform, GameObject* parent) : Component(parent, ComponentTypes::TransformComponent)
 {
 	position = componentTransform.position;
 	rotation = componentTransform.rotation;

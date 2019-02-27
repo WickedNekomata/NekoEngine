@@ -20,7 +20,7 @@ class ComponentProjector : public Component
 public:
 
 	ComponentProjector(GameObject* parent);
-	ComponentProjector(const ComponentProjector& componentProjector);
+	ComponentProjector(const ComponentProjector& componentProjector, GameObject* parent);
 	~ComponentProjector();
 
 	void UpdateTransform();

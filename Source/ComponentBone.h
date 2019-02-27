@@ -11,7 +11,7 @@ public:
 
 	ComponentBone(GameObject* embedded_game_object);
 	ComponentBone(GameObject* embedded_game_object, uint resource);
-	ComponentBone(const ComponentBone& component_bone, bool include = true);
+	ComponentBone(const ComponentBone& component_bone, GameObject* parent, bool include = true);
 	~ComponentBone();
 
 	void OnEditor();

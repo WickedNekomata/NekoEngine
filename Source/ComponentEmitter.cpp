@@ -25,7 +25,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
-ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, bool include) : Component(componentEmitter.parent, EmitterComponent)
+ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, GameObject* parent, bool include) : Component(parent, EmitterComponent)
 {
 	duration = componentEmitter.duration;
 

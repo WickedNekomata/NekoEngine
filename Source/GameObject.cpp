@@ -541,6 +541,7 @@ bool GameObject::DestroyComponent(Component* destroyed)
 		newEvent.compEvent.component = cmp_material;
 		App->PushSystemEvent(newEvent);
 	}
+
 	return true;
 }
 
@@ -584,9 +585,10 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
-void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
+void GameObject::GetChildrenVector(std::vector<GameObject*>& go, bool thisGo)
 {
-	go.push_back(this);
+	if (thisGo)
+		go.push_back(this);
 
 	for (int i = 0; i < children.size(); i++)
 		children[i]->GetChildrenVector(go);

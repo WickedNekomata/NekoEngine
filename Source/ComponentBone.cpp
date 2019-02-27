@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "ResourceMesh.h"
 #include "ResourceBone.h"
+
+#include "imgui\imgui.h"
 //#include "BoneImporter.h"
 
 ComponentBone::ComponentBone(GameObject * embedded_game_object) :
@@ -22,9 +24,51 @@ ComponentBone::ComponentBone(GameObject * embedded_game_object, uint resource) :
 	res = resource;
 }
 
+ComponentBone::ComponentBone(const ComponentBone& component_bone, bool include) : Component(component_bone.parent, ComponentTypes::BoneComponent)
+{
+	res = component_bone.res;
+	attachedMesh = component_bone.attachedMesh;
+}
+
 ComponentBone::~ComponentBone()
 {
 
+}
+
+void ComponentBone::OnEditor()
+{
+	OnUniqueEditor();
+}
+
+void ComponentBone::OnUniqueEditor()
+{
+#ifndef GAMEMODE
+	if (ImGui::CollapsingHeader("Bone", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Bone");
+		ImGui::SameLine();
+
+		std::string fileName = "Empty Bone";
+		const ResourceBone* resource = (ResourceBone*)App->res->GetResource(res);
+		if (resource != nullptr)
+			fileName = resource->GetName();
+
+		ImGui::Text("Bone name: %s", resource->boneData.name);
+		ImGui::Text("Mesh UUID reference: %i",resource->boneData.mesh_uid);
+		ImGui::Text("Bone weights size: %i", resource->boneData.bone_weights_size);
+
+		ImGui::PushID("bone");
+		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", res);
+			ImGui::EndTooltip();
+		}
+	}
+#endif
 }
 
 uint ComponentBone::GetInternalSerializationBytes()

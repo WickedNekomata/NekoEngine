@@ -11,7 +11,11 @@ public:
 
 	ComponentBone(GameObject* embedded_game_object);
 	ComponentBone(GameObject* embedded_game_object, uint resource);
+	ComponentBone(const ComponentBone& component_bone, bool include = true);
 	~ComponentBone();
+
+	void OnEditor();
+	void OnUniqueEditor();
 
 	uint GetInternalSerializationBytes();
 

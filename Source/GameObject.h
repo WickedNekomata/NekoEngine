@@ -61,7 +61,7 @@ public:
 	int GetComponentsLength();
 	void ReorderComponents(Component* source, Component* target);
 
-	void GetChildrenVector(std::vector<GameObject*>& go);
+	void GetChildrenVector(std::vector<GameObject*>& go, bool thisGo = true);
 	uint GetSerializationBytes() const;
 	void OnSave(char*& cursor) const;
 	void OnLoad(char*& cursor, bool includeInModules = true);

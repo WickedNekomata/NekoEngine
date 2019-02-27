@@ -46,7 +46,7 @@ void ResourceMesh::OnPanelAssets()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& outputFiles) // NewFile
+bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files) // NewFile
 {
 	assert(file != nullptr);
 
@@ -63,7 +63,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 		// Import the file (using the default import settings)
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' needs to be imported", file);
 
-		imported = App->sceneImporter->Import(file, outputFiles, meshImportSettings);
+		imported = App->sceneImporter->Import(file, mesh_files, bone_files, meshImportSettings);
 	}
 	else
 	{
@@ -86,7 +86,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 		// CASE 2 (file + meta + Library file(s)). The resource(s) do(es)n't exist
 		if (entryFiles.size() == uuids.size())
 		{
-			outputFiles = entryFiles;
+			mesh_files = entryFiles;
 			imported = true;
 		}			
 		// CASE 3 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
@@ -95,7 +95,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			// Import the file (using the import settings from the meta)
 			CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' has Library file(s) that need(s) to be reimported", file);
 
-			imported = App->sceneImporter->Import(file, outputFiles, meshImportSettings, uuids);
+			imported = App->sceneImporter->Import(file, mesh_files,bone_files, meshImportSettings, uuids);
 		}
 	}
 

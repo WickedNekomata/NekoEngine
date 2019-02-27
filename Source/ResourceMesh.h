@@ -75,7 +75,7 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 
-	static bool ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& outputFiles);
+	static bool ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files);
 	static uint CreateMeta(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids);
 	static bool ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uint>& meshesUuids);

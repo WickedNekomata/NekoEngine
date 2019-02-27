@@ -26,7 +26,7 @@ public:
 	SceneImporter();
 	~SceneImporter();
 
-	bool Import(const char* file, std::vector<std::string>& outputFiles, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
+	bool Import(const char* file, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
 	
 	bool Load(const char* exportedFile, ResourceData& outputData, ResourceMeshData& outputMeshData) const;
 
@@ -55,10 +55,10 @@ public:
 
 private:
 
-	bool Import(const void* buffer, uint size, const char* prefabName, std::vector<std::string>& outputFiles, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
-	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::vector<std::string>& outputFiles, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
+	bool Import(const void* buffer, uint size, const char* prefabName, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
+	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
 	
-	void RecursiveProcessBones(mutable const aiScene* scene,mutable const aiNode* node)const;
+	void RecursiveProcessBones(mutable const aiScene* scene,mutable const aiNode* node, std::vector<std::string>& bone_files)const;
 	void ImportAnimations(const aiScene* scene, const char* filename_path);
 
 	bool Load(const void* buffer, uint size, ResourceData& outputData, ResourceMeshData& outputMeshData) const;

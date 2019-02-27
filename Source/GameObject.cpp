@@ -209,7 +209,10 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::SetParent(GameObject* parent)
 {
 	this->parent = parent;
-	parent_uuid = parent->GetUUID();
+	if (parent == 0)
+		parent_uuid = 0;
+	else
+		parent_uuid = parent->GetUUID();
 }
 
 GameObject* GameObject::GetParent() const
@@ -284,6 +287,7 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
 		comp->SetAABB(boundingBox.Size());
 	}
+
 	// Transform bounding box (calculate OBB)
 	math::OBB obb;
 	obb.SetFrom(boundingBox);

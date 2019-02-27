@@ -16,14 +16,11 @@ bool ModuleAudio::Start()
 	// Init wwise and audio banks
 	WwiseT::InitSoundEngine();
 	WwiseT::LoadBank("Assignment3.bnk");
-	listener = CreateSoundEmitter("");
-	App->audio->SetListener(listener);
 	return true;
 }
 
 update_status ModuleAudio::Update(/*float dt*/)
 {
-	listener->PlayEventByName("background_tracks");
 	return UPDATE_CONTINUE;
 }
 

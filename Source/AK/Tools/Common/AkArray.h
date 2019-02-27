@@ -28,9 +28,9 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AKARRAY_H
 #define _AKARRAY_H
 
-#include <AK/Tools/Common/AkObject.h>
-#include <AK/Tools/Common/AkAssert.h>
-#include <AK/Tools/Common/AkPlatformFuncs.h>
+#include "AkObject.h"
+#include "AkAssert.h"
+#include "AkPlatformFuncs.h"
 
 #define AK_DEFINE_ARRAY_POOL( _name_, _poolID_ )	\
 struct _name_										\

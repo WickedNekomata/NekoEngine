@@ -231,10 +231,11 @@ void GameObject::ToggleIsActive()
 	isActive ? OnEnable() : OnDisable();
 }
 
-void GameObject::ToggleIsStatic()
+void GameObject::ToggleIsStatic(bool quadtreeEvent)
 {
 	isStatic = !isStatic;
-	App->GOs->RecalculateVector(this);
+	if (quadtreeEvent)
+		App->GOs->RecalculateVector(this);
 }
 
 bool GameObject::IsActive() const

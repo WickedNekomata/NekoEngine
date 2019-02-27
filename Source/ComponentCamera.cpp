@@ -58,28 +58,23 @@ void ComponentCamera::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Main Camera", &mainCamera);
-
-		ImGui::Text("Field of View");
-		ImGui::SameLine();
-
+		ImGui::Text("Field of view"); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
 		float fov = frustum.verticalFov * RADTODEG;
-		if (ImGui::SliderFloat("##fov", &fov, 1.0f, 179.99f))
+		if (ImGui::SliderFloat("##fov", &fov, 0.0f, 180.0f))
 			SetFOV(fov);
 
-		if (ImGui::Checkbox("Frustum Culling", &frustumCulling));
+		ImGui::Checkbox("Main camera", &mainCamera);
+		ImGui::Checkbox("Frustum culling", &frustumCulling);
 
 		if (frustumCulling)
 		{
-			ImGui::Text("Clipping Planes");
+			ImGui::Text("Near clip plane"); ImGui::PushItemWidth(50.0f);
+			ImGui::DragFloat("##nearClipPlane", &frustum.nearPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+			ImGui::PopItemWidth();
 
-			ImGui::Text("Near");
-			ImGui::SameLine();
-			ImGui::InputFloat("##nearPlane", &frustum.nearPlaneDistance);
-
-			ImGui::Text("Far ");
-			ImGui::SameLine();
-			ImGui::InputFloat("##farPlane", &frustum.farPlaneDistance);
+			ImGui::Text("Far clip plane"); ImGui::PushItemWidth(50.0f);
+			ImGui::DragFloat("##farClipPlane", &frustum.farPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+			ImGui::PopItemWidth();
 		}
 	}
 #endif
@@ -145,52 +140,38 @@ bool ComponentCamera::IsMainCamera() const
 
 uint ComponentCamera::GetInternalSerializationBytes()
 {
-	return sizeof(bool) * 2 + sizeof(float) * 4;
+	return sizeof(math::Frustum) +
+		sizeof(bool) +
+		sizeof(bool);
 }
 
 void ComponentCamera::OnInternalSave(char*& cursor)
 {
-	size_t bytes = sizeof(float);
-	memcpy(cursor, &frustum.nearPlaneDistance, bytes);
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(cursor, &frustum, bytes);
 	cursor += bytes;
 
-	memcpy(cursor, &frustum.farPlaneDistance, bytes);
-	cursor += bytes;
-
-	memcpy(cursor, &frustum.verticalFov, bytes);
-	cursor += bytes;
-
-	memcpy(cursor, &frustum.horizontalFov, bytes);
+	bytes = sizeof(bool);
+	memcpy(cursor, &frustumCulling, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(bool);
 	memcpy(cursor, &mainCamera, bytes);
 	cursor += bytes;
-
-	memcpy(cursor, &frustumCulling, bytes);
-	cursor += bytes;
 }
 
 void ComponentCamera::OnInternalLoad(char*& cursor)
 {
-	size_t bytes = sizeof(float);
-	memcpy(&frustum.nearPlaneDistance, cursor, bytes);
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(&frustum, cursor, bytes);
 	cursor += bytes;
 
-	memcpy(&frustum.farPlaneDistance, cursor, bytes);
-	cursor += bytes;
-
-	memcpy(&frustum.verticalFov, cursor, bytes);
-	cursor += bytes;
-
-	memcpy(&frustum.horizontalFov, cursor, bytes);
+	bytes = sizeof(bool);
+	memcpy(&frustumCulling, cursor, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(bool);
 	memcpy(&mainCamera, cursor, bytes);
-	cursor += bytes;
-
-	memcpy(&frustumCulling, cursor, bytes);
 	cursor += bytes;
 }
 

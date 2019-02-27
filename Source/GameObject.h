@@ -33,7 +33,7 @@ public:
 	GameObject* GetParent() const;
 	uint GetParentUUID() const;
 	void ToggleIsActive();
-	void ToggleIsStatic();
+	void ToggleIsStatic(bool quadtreeEvent = true);
 	bool IsActive() const;
 	bool IsStatic() const;
 	void OnEnable();

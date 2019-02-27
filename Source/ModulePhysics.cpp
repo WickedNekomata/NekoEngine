@@ -782,8 +782,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
-	hitFlags |= physx::PxHitFlag::ePOSITION;
-	hitFlags |= physx::PxHitFlag::eNORMAL;
+	hitFlags |= physx::PxHitFlag::eDEFAULT;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;
@@ -869,8 +868,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
-	hitFlags |= physx::PxHitFlag::ePOSITION;
-	hitFlags |= physx::PxHitFlag::eNORMAL;
+	hitFlags |= physx::PxHitFlag::eDEFAULT;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;
@@ -918,8 +916,7 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
-	hitFlags |= physx::PxHitFlag::ePOSITION;
-	hitFlags |= physx::PxHitFlag::eNORMAL;
+	hitFlags |= physx::PxHitFlag::eDEFAULT;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;

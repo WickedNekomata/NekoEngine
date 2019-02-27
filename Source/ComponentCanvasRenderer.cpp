@@ -20,6 +20,8 @@ ComponentCanvasRenderer::ComponentCanvasRenderer(GameObject * parent, ComponentT
 ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer & componentRectTransform) : Component(parent, ComponentTypes::CanvasRendererComponent)
 {
 	App->ui->componentsUI.push_back(this);
+	rend_queue.push_back(new ToUIRend());
+	rend_queue.push_back(new ToUIRend());
 }
 
 ComponentCanvasRenderer::~ComponentCanvasRenderer()

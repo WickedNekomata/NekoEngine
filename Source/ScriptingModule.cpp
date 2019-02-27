@@ -1426,6 +1426,41 @@ void SetDestination(MonoObject* navMeshAgent, MonoArray* newDestination)
 	ComponentNavAgent* agent = (ComponentNavAgent*)compAddress;
 	agent->SetDestination(newDestinationcpp.ptr());
 }
+
+bool OverlapSphere(float radius, MonoArray* center, MonoArray** overlapHit, uint filterMask, SceneQueryFlags sceneQueryFlags)
+{
+	math::float3 centercpp(mono_array_get(center, float, 0), mono_array_get(center, float, 1), mono_array_get(center, float, 2));
+
+	std::vector<OverlapHit> hits;
+	if (App->physics->OverlapSphere(radius, centercpp, hits, filterMask, sceneQueryFlags))
+	{
+		uint hitsCount = hits.size();
+
+		MonoClass* overlapClass = mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "OverlapHit");
+
+		*overlapHit = mono_array_new(App->scripting->domain, overlapClass, hitsCount);
+
+		for (int i = 0; i < hitsCount; ++i)
+		{
+			MonoObject* hitCSharp = mono_object_new(App->scripting->domain, overlapClass);
+			mono_runtime_object_init(hitCSharp);
+
+			OverlapHit hitCpp = hits[i];
+			mono_field_set_value(hitCSharp, mono_class_get_field_from_name(overlapClass, "gameObject"), App->scripting->MonoObjectFrom(hitCpp.GetGameObject()));
+			mono_field_set_value(hitCSharp, mono_class_get_field_from_name(overlapClass, "collider"), App->scripting->MonoComponentFrom((Component*)hitCpp.GetCollider()));
+
+			uint faceIndex = hitCpp.GetFaceIndex();
+			mono_field_set_value(hitCSharp, mono_class_get_field_from_name(overlapClass, "faceIndex"), &faceIndex);
+
+			mono_array_setref(*overlapHit, i, hitCSharp);
+		}
+
+		return true;
+	}
+	else
+		return false;
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1495,6 +1530,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.LayerMask::GetMaskBit", (const void*)&LayerToBit);
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
 	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
+	mono_add_internal_call("JellyBitEngine.Physics::_OverlapSphere", (const void*)&OverlapSphere);
 
 	ClearMap();
 

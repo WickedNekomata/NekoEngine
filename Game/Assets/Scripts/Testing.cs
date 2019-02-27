@@ -3,6 +3,7 @@ using JellyBitEngine;
 
 public class Testing : JellyScript
 {
+    public LayerMask layerMask = new LayerMask();
     public float spot = 8f;
     public GameObject prefab;
 
@@ -21,7 +22,12 @@ public class Testing : JellyScript
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            GameObject tempGO = GameObject.Instantiate(prefab, new Vector3(1,0,0));
+            OverlapHit[] hitInfo;
+            if (Physics.OverlapSphere(float.MaxValue, transform.position, out hitInfo, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            {
+                Debug.ClearConsole();
+                Debug.Log("I hitted " + hitInfo.Length.ToString() + " objects");
+            }
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);
         }

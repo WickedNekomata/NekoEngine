@@ -60,7 +60,7 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 	return go->cmp_bone->res;
 }
 
-Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path, mutable uint uid_to_force)
+void BoneImporter::Load(mutable const char * file_path, mutable ResourceData& data, mutable ResourceBoneData& bone_data, mutable uint uid_to_force)
 {
 	// Reading file
 	char* buffer = nullptr;
@@ -70,11 +70,8 @@ Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path,
 	if (buffer == nullptr)
 	{
 		DEPRECATED_LOG("BoneImporter: Unable to open file...");
-		return false;
+		//return false;
 	}
-
-	ResourceData data;
-	ResourceBoneData bone_data;
 
 	char* cursor = buffer;
 	
@@ -108,9 +105,8 @@ Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path,
 
 	RELEASE_ARRAY(buffer);
 
-	ResourceBone* resource = (ResourceBone*)App->res->CreateResource(ResourceTypes::BoneResource, data, &bone_data, uid_to_force);
+	//ResourceBone* resource = (ResourceBone*)App->res->CreateResource(ResourceTypes::BoneResource, data, &bone_data, uid_to_force);
 
-	return resource;
 }
 
 bool BoneImporter::SaveBone(mutable ResourceData& res_data, mutable ResourceBoneData& bone_data,mutable std::string& outputFile,mutable bool overwrite) const

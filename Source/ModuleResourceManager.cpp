@@ -8,6 +8,7 @@
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
+#include "BoneImporter.h"
 
 #include "ResourceTypes.h"
 #include "Resource.h"
@@ -342,6 +343,28 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 						resourcesUuids.push_back(uuid);
 				}
 				resourcesUuids.shrink_to_fit();
+
+				// 2. Bones c:
+				resourcesUuids.reserve(bone_files.size());
+				for (uint i = 0; i < bone_files.size(); ++i)
+				{
+					std::string fileName;
+					App->fs->GetFileName(bone_files[i].data(), fileName);
+					uint uuid = strtoul(fileName.data(), NULL, 0);
+					assert(uuid > 0);
+
+					ResourceData data;
+					ResourceBoneData bone_data;
+					data.file = file;
+					data.exportedFile = bone_files[i].data();
+					App->fs->GetFileName(file, data.name);
+					App->boneImporter->Load(bone_files[i].data(), data, bone_data);
+
+					resource = CreateResource(ResourceTypes::BoneResource, data, &bone_data, uuid);
+					if (resource != nullptr)
+						resourcesUuids.push_back(uuid);
+				}
+				resourcesUuids.shrink_to_fit();
 			}
 
 			// 2. Meta
@@ -622,7 +645,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				uint shaderObject = 0;
 				bool success = ResourceBone::LoadFile(file, boneData);
 
-				resource = CreateResource(ResourceTypes::PrefabResource, data, &boneData, uuid);
+				resource = CreateResource(ResourceTypes::BoneResource, data, &boneData, uuid);
 
 			}
 			else

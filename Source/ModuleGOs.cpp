@@ -287,6 +287,8 @@ GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool 
 			}
 		}
 
+		if (go->GetParent() == 0)
+			go->SetParent(0);
 		/*if (go->GetParent() == 0)
 		{
 			assert(App->scene->root == 0);
@@ -300,10 +302,6 @@ GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool 
 
 		gos.push_back(go);
 	}
-
-	// Discuss if this should be a resource
-	if (navmesh)
-		App->navigation->LoadNavmesh(cursor);
 
 	return gos[0]; //the root node
 }

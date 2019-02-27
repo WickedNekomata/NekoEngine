@@ -77,16 +77,18 @@ void ComponentProjector::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Projector", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Near clip plane"); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
-		ImGui::InputFloat("##nearClipPlane", &frustum.nearPlaneDistance);
-
-		ImGui::Text("Far clip plane "); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
-		ImGui::InputFloat("##farClipPlane", &frustum.farPlaneDistance);
-
 		ImGui::Text("Field of view"); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
 		float fov = frustum.verticalFov * RADTODEG;
 		if (ImGui::SliderFloat("##fov", &fov, 0.0f, 180.0f))
 			SetFOV(fov);
+
+		ImGui::Text("Near clip plane"); ImGui::PushItemWidth(50.0f);
+		ImGui::DragFloat("##nearClipPlane", &frustum.nearPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+		ImGui::PopItemWidth();
+
+		ImGui::Text("Far clip plane"); ImGui::PushItemWidth(50.0f);
+		ImGui::DragFloat("##farClipPlane", &frustum.farPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+		ImGui::PopItemWidth();
 
 		// Material
 		const Resource* resource = App->res->GetResource(materialRes);

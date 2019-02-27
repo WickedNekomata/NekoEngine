@@ -36,6 +36,7 @@ void ModuleUI::DrawCanvas()
 
 		std::vector<GameObject*> gos;
 		canvas->GetChildrenAndThisVectorFromLeaf(gos);
+		std::reverse(gos.begin(), gos.end());
 
 		for (GameObject* go_rend : gos)
 		{

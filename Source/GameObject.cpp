@@ -265,12 +265,14 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
+	// Get the OBB from the mesh original AABB (no translation, rotation or scale)
 	math::OBB obb = originalBoundingBox.ToOBB();
-	obb.Transform(this->transform->GetGlobalMatrix);
 
-	boundingBox = obb.MinimalEnclosingAABB();
+	// Transform the obb using the GameObject transform
+	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
+	obb.Transform(transformMatrix);
 
-	// Calculate AABB
+	// Calculate the minimal enclosing AABB from the transformed OBB
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
 

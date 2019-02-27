@@ -18,7 +18,7 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 
 ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh, bool include) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
 {
-	if(include)
+	if (include)
 		App->renderer3D->AddMeshComponent(this);
 	SetResource(componentMesh.res);
 }
@@ -34,16 +34,16 @@ void ComponentMesh::Update() {}
 
 void ComponentMesh::SetResource(uint res_uuid)
 {
-	if (res != 0)
-	{
+	if (res > 0)
 		App->res->SetAsUnused(res);
-	}
 
-	if (res_uuid != 0) 
+	if (res_uuid > 0)
 	{
 		if (App->res->SetAsUsed(res_uuid) == -1)
 			return;
 	}
+	else
+		return;
 
 	res = res_uuid;
 	

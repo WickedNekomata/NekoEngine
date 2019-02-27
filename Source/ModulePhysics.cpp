@@ -426,8 +426,7 @@ void ModulePhysics::Debug()
 	{
 		// Overlap
 		std::vector<OverlapHit> touchesInfo;
-		physx::PxTransform transform(physx::PxVec3(0.0f, 0.0f, 0.0f));
-		if (Overlap(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), transform, touchesInfo))
+		if (OverlapSphere(5.0f, math::float3(0.0f, 0.0f, 0.0f), touchesInfo))
 		{
 			// Touches
 			for (uint i = 0; i < touchesInfo.size(); ++i)
@@ -1042,7 +1041,7 @@ bool ModulePhysics::OverlapSphere(float radius, math::float3 center, std::vector
 	physx::PxSphereGeometry gSphereGeometry(radius);
 	physx::PxTransform gTransform(physx::PxVec3(center.x, center.y, center.z));
 	
-	return Overlap(gSphereGeometry, gTransform, touchesInfo, filterMask, sceneQueryFlags);;
+	return Overlap(gSphereGeometry, gTransform, touchesInfo, filterMask, sceneQueryFlags);
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 			AddComponent(ComponentTypes::TransformComponent);
 	}
 
+	originalBoundingBox.SetNegativeInfinity();
 	boundingBox.SetNegativeInfinity();
 
 	uuid = App->GenerateRandomNumber();
@@ -143,7 +144,8 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 		}
 	}
 
-	boundingBox = gameObject.boundingBox;
+	originalBoundingBox = gameObject.originalBoundingBox;
+	boundingBox = gameObject.originalBoundingBox;
 
 	isActive = gameObject.isActive;
 	isStatic = gameObject.isStatic;

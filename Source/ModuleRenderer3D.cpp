@@ -952,15 +952,32 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 	//ignore.push_back("material.albedo");
 	LoadSpecificUniforms(textureUnit, uniforms);
 
-	// Meshes
-	for (uint i = 0; i < meshComponents.size(); ++i)
-	{
-		if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-		{
-			ComponentMesh* c = meshComponents[i];
+	// Frustum culling
+	/// Static objects
+	std::vector<GameObject*> seenGameObjects;
+	App->scene->quadtree.CollectIntersections(seenGameObjects, toDraw->GetFrustum());
 
+	/// Dynamic objects
+	std::vector<GameObject*> dynamicGameObjects;
+	App->GOs->GetDynamicGameobjects(dynamicGameObjects);
+
+	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
+	{
+		if (dynamicGameObjects[i]->boundingBox.IsFinite() && toDraw->GetFrustum().Intersects(dynamicGameObjects[i]->boundingBox))
+			seenGameObjects.push_back(dynamicGameObjects[i]);
+	}
+
+	// Meshes
+	for (uint i = 0; i < seenGameObjects.size(); ++i)
+	{
+		ComponentMesh* componentMesh = seenGameObjects[i]->cmp_mesh;
+		if (componentMesh == nullptr)
+			continue;
+
+		if (componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
+		{
 			// 2. Known mesh uniforms
-			math::float4x4 model_matrix = c->GetParent()->transform->GetGlobalMatrix();
+			math::float4x4 model_matrix = componentMesh->GetParent()->transform->GetGlobalMatrix();
 			model_matrix = model_matrix.Transposed();
 			math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
 			math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
@@ -981,7 +998,7 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 			//LoadSpecificUniforms(textureUnit, uniforms);
 
 			// Mesh
-			const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(c->res);
+			const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(componentMesh->res);
 
 			glBindVertexArray(mesh->GetVAO());
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());

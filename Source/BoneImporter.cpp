@@ -45,15 +45,18 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 		res_data.bone_weights_indices[k] = new_bone->mWeights[k].mVertexId;
 		res_data.bone_weights[k] = new_bone->mWeights[k].mWeight;
 	}
-	
 
-	if(SaveBone(data,res_data, outputFile, true /* TODO_G: WHAT? */))
+	App->res->ExportFile(ResourceTypes::BoneResource, data, &res_data, outputFile);
+
+	/*
+	if(SaveBone(data,res_data, outputFile, true))
 		DEPRECATED_LOG("Saved bone correctly in path: [%s]", outputFile.c_str())
 	else
 		DEPRECATED_LOG("Error saving bone in path: [%s]", outputFile.c_str());
 
-	output = outputFile;
 
+	output = outputFile;
+	*/
 	return go->cmp_bone->res;
 }
 
@@ -114,7 +117,6 @@ bool BoneImporter::SaveBone(mutable ResourceData& res_data, mutable ResourceBone
 {
 	bool ret = false;
 
-	// TODO: uhm ...
 	if (overwrite)
 		outputFile = res_data.file;
 	else

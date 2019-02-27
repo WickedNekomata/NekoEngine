@@ -152,7 +152,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursiveProcessBones(scene, scene->mRootNode);
 
 		// Prefab creation
-		GameObject* prefab_go = dummy;
+		GameObject* prefab_go = rootGameObject;
 		ResourceData data;
 		PrefabData prefab_data;
 

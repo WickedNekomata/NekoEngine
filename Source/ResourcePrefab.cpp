@@ -124,8 +124,7 @@ bool ResourcePrefab::UpdateFromMeta()
 	{
 		char* buffer;
 		uint size = App->fs->Load(data.file + EXTENSION_META, &buffer);
-		if (size <= 0)
-			return false;
+		assert(size > 0);
 
 		char* cursor = buffer;
 		uint bytes = sizeof(uint);
@@ -161,8 +160,7 @@ bool ResourcePrefab::LoadInMemory()
 
 	char* buffer;
 	uint size = App->fs->Load(data.file, &buffer);
-	if (size <= 0)
-		return nullptr;
+	assert(size > 0);
 
 	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
 	prefabData.root = new GameObject(*temp, false);

@@ -61,7 +61,7 @@ ResourcePrefab* ResourcePrefab::ImportFile(const char* file)
 	data.exportedFile = "";
 	data.name = fileName;
 
-	ResourcePrefab* retPrefab = new ResourcePrefab(0, data, PrefabData());
+	ResourcePrefab* retPrefab = new ResourcePrefab(App->GenerateRandomNumber(), data, PrefabData());
 
 	retPrefab->UpdateFromMeta();
 

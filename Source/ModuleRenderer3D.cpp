@@ -932,6 +932,7 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
 	std::vector<const char*> ignore;
 	ignore.push_back("material.albedo");
+	ignore.push_back("material.specular");
 	LoadSpecificUniforms(textureUnit, uniforms, ignore);
 
 	// Frustum culling
@@ -958,6 +959,8 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 
 		if (componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
 		{
+			uint meshTextureUnit = textureUnit;
+
 			const ComponentMaterial* materialRenderer = componentMesh->GetParent()->cmp_material;
 			resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
 
@@ -980,20 +983,32 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 
 			// 3. Unknown mesh uniforms
 			std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-			uint textureId = 0;
+			uint albedoId = 0;
+			uint specularId = 0;
 			for (uint i = 0; i < uniforms.size(); ++i)
 			{
 				Uniform uniform = uniforms[i];
 				if (strcmp(uniform.common.name, "material.albedo") == 0)
-					textureId = uniform.sampler2DU.value.id;
+					albedoId = uniform.sampler2DU.value.id;
+				else if (strcmp(uniform.common.name, "material.specular") == 0)
+					specularId = uniform.sampler2DU.value.id;
 			}
 
 			location = glGetUniformLocation(shaderProgram, "material.albedo");
-			if (textureUnit < maxTextureUnits && textureId > 0)
+			if (meshTextureUnit < maxTextureUnits && albedoId > 0)
 			{
-				glActiveTexture(GL_TEXTURE0 + textureUnit);
-				glBindTexture(GL_TEXTURE_2D, textureId);
-				glUniform1i(location, textureUnit);
+				glActiveTexture(GL_TEXTURE0 + meshTextureUnit);
+				glBindTexture(GL_TEXTURE_2D, albedoId);
+				glUniform1i(location, meshTextureUnit);
+				++meshTextureUnit;
+			}
+			location = glGetUniformLocation(shaderProgram, "material.specular");
+			if (meshTextureUnit < maxTextureUnits && specularId > 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + meshTextureUnit);
+				glBindTexture(GL_TEXTURE_2D, specularId);
+				glUniform1i(location, meshTextureUnit);
+				++meshTextureUnit;
 			}
 
 			// Mesh
@@ -1004,6 +1019,12 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 			glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindVertexArray(0);
+
+			for (uint i = textureUnit; i < meshTextureUnit; ++i)
+			{
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
 		}
 	}
 

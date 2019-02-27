@@ -22,7 +22,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -213,6 +213,7 @@
     <ClInclude Include="ComponentFixedJoint.h" />
     <ClInclude Include="ComponentImage.h" />
     <ClInclude Include="ComponentJoint.h" />
+    <ClInclude Include="ComponentLabel.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentPrismaticJoint.h" />
     <ClInclude Include="ComponentProjector.h" />
@@ -622,6 +623,7 @@
     <ClCompile Include="ComponentFixedJoint.cpp" />
     <ClCompile Include="ComponentImage.cpp" />
     <ClCompile Include="ComponentJoint.cpp" />
+    <ClCompile Include="ComponentLabel.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentPrismaticJoint.cpp" />
     <ClCompile Include="ComponentProjector.cpp" />

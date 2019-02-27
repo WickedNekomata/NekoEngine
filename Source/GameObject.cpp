@@ -29,6 +29,7 @@
 #include "ComponentCanvasRenderer.h"
 #include "ComponentImage.h"
 #include "ComponentButton.h"
+#include "ComponentLabel.h"
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
 
@@ -148,6 +149,9 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 			break;
 		case ComponentTypes::ButtonComponent:
 			cmp_button = new ComponentButton(*gameObject.cmp_button);
+			break;
+		case ComponentTypes::LabelComponent:
+			cmp_label = new ComponentLabel(*gameObject.cmp_label);
 			break;
 		}
 	}
@@ -466,6 +470,11 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		if (cmp_canvasRenderer == nullptr)
 			AddComponent(ComponentTypes::CanvasRendererComponent);
 		newComponent = cmp_button = new ComponentButton(this);
+		break;	
+	case ComponentTypes::LabelComponent:
+		if (cmp_canvasRenderer == nullptr)
+			AddComponent(ComponentTypes::CanvasRendererComponent);
+		newComponent = cmp_label = new ComponentLabel(this);
 		break;
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);

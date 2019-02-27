@@ -52,7 +52,7 @@ public:
 	GameObject* GetChild(uint index) const;
 	bool EqualsToChildrenOrThis(const void* isEqual) const;
 
-	Component* AddComponent(ComponentTypes componentType, bool createDependencies = true);
+	Component* AddComponent(ComponentTypes componentType, bool createDependencies = true, bool includeInModules = true);
 	void AddComponent(Component* component);
 	bool DestroyComponent(Component* destroyed);
 	void EraseComponent(Component* erased);
@@ -64,7 +64,7 @@ public:
 	void GetChildrenVector(std::vector<GameObject*>& go);
 	uint GetSerializationBytes() const;
 	void OnSave(char*& cursor) const;
-	void OnLoad(char*& cursor);
+	void OnLoad(char*& cursor, bool includeInModules = true);
 
 	void RecursiveForceAllResources(uint forceRes) const;
 

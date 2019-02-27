@@ -9,7 +9,7 @@ class ComponentScript : public Component
 {
 public:
 	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr);
-	ComponentScript(ComponentScript& copy);
+	ComponentScript(ComponentScript& copy, bool includeComponents = true);
 	virtual ~ComponentScript();
 
 	//NOTE: If you override this method, make sure to call the base class method. 

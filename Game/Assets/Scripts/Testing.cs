@@ -4,7 +4,7 @@ using JellyBitEngine;
 public class Testing : JellyScript
 {
     public float spot = 8f;
-    public GameObject randomObject;
+    public GameObject prefab;
 
     //Use this method for initialization
     public override void Awake()
@@ -21,7 +21,7 @@ public class Testing : JellyScript
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            GameObject tempGO = GameObject.Instantiate(randomObject, new Vector3(1,0,0));
+            GameObject tempGO = GameObject.Instantiate(prefab, new Vector3(1,0,0));
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);
         }

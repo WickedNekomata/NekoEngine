@@ -276,7 +276,7 @@ GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool 
 	for (int i = 0; i < totalGO; ++i)
 	{
 		GameObject* go = new GameObject("", nullptr, true);
-		go->OnLoad(cursor);
+		go->OnLoad(cursor, false);
 
 		for (int i = gos.size() - 1; i >= 0; --i)
 		{

@@ -24,14 +24,16 @@ ComponentScript::ComponentScript(std::string scriptName, GameObject* gameObject)
 	UUID = App->GenerateRandomNumber();
 }
 
-ComponentScript::ComponentScript(ComponentScript& copy) : scriptName(copy.scriptName), Component(copy.parent, ComponentTypes::ScriptComponent)
+ComponentScript::ComponentScript(ComponentScript& copy, bool includeComponents) : scriptName(copy.scriptName), Component(copy.parent, ComponentTypes::ScriptComponent)
 {
 	UUID = App->GenerateRandomNumber();
 	this->scriptResUUID = copy.scriptResUUID;
 	App->res->SetAsUsed(scriptResUUID);
 	classInstance = mono_object_clone(copy.classInstance);
 	InstanceClass(classInstance);
-	App->scripting->AddScriptComponent(this);
+
+	if(includeComponents)
+		App->scripting->AddScriptComponent(this);
 }
 
 ComponentScript::~ComponentScript()

@@ -135,7 +135,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			break;
 		case ComponentTypes::ScriptComponent:
 		{
-			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i]);
+			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i], includeComponents);
 			script->SetParent(this);
 			components.push_back(script);
 			break;
@@ -428,7 +428,7 @@ bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
+Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies, bool includeInModules)
 {
 	Component* newComponent;
 	Component* newMaterial = 0;
@@ -503,9 +503,8 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::ScriptComponent:
 	{
 		newComponent = new ComponentScript("", this);
-
-		//TODO: CORRECT THIS
-		App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+		if(includeInModules)
+			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 		break;
 	}
 	}
@@ -636,7 +635,7 @@ void GameObject::OnSave(char*& cursor) const
 		components[i]->OnSave(cursor);
 }
 
-void GameObject::OnLoad(char*& cursor)
+void GameObject::OnLoad(char*& cursor, bool includeInModules)
 {
 	size_t bytes = sizeof(uint);
 	memcpy(&uuid, cursor, bytes);
@@ -671,7 +670,7 @@ void GameObject::OnLoad(char*& cursor)
 		ComponentTypes componentType;
 		memcpy(&componentType, cursor, bytes);
 		cursor += bytes;
-		Component* cmp = AddComponent(componentType, false);
+		Component* cmp = AddComponent(componentType, false, includeInModules);
 		cmp->OnLoad(cursor);
 	}
 }

@@ -8,6 +8,7 @@
 #include "SceneImporter.h"
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
+#include "BoneImporter.h"
 
 #include "ResourceTypes.h"
 #include "Resource.h"
@@ -309,44 +310,82 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	case ResourceTypes::MeshResource:
 	{
 		ResourceMeshImportSettings meshImportSettings;
-		std::vector<std::string> outputFiles;
-		if (ResourceMesh::ImportFile(file, meshImportSettings, outputFiles))
+		std::vector<std::string> mesh_files;
+		std::vector<std::string> bone_files;
+		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files))
 		{
 			std::vector<uint> resourcesUuids;
+			std::vector<uint> meshes_uuids;
+			std::vector<uint> bones_uuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Mesh file '%s' has resources that need to be created", file);
 
 				// 1. Meshes
-				resourcesUuids.reserve(outputFiles.size());
-				for (uint i = 0; i < outputFiles.size(); ++i)
+				meshes_uuids.reserve(mesh_files.size());
+				for (uint i = 0; i < mesh_files.size(); ++i)
 				{
 					std::string fileName;
-					App->fs->GetFileName(outputFiles[i].data(), fileName);
+					App->fs->GetFileName(mesh_files[i].data(), fileName);
 					uint uuid = strtoul(fileName.data(), NULL, 0);
 					assert(uuid > 0);
 
 					ResourceData data;
 					ResourceMeshData meshData;
 					data.file = file;
-					data.exportedFile = outputFiles[i].data();
+					data.exportedFile = mesh_files[i].data();
 					App->fs->GetFileName(file, data.name);
 					meshData.meshImportSettings = meshImportSettings;
 					strcpy((char*)meshData.meshImportSettings.modelPath, file);
-					App->sceneImporter->Load(outputFiles[i].data(), data, meshData);
+					App->sceneImporter->Load(mesh_files[i].data(), data, meshData);
 
 					resource = CreateResource(ResourceTypes::MeshResource, data, &meshData, uuid);
 					if (resource != nullptr)
-						resourcesUuids.push_back(uuid);
+						meshes_uuids.push_back(uuid);
 				}
-				resourcesUuids.shrink_to_fit();
+				meshes_uuids.shrink_to_fit();
+
+				// 2. Bones c:
+				bones_uuids.reserve(bone_files.size());
+				for (uint i = 0; i < bone_files.size(); ++i)
+				{
+					std::string fileName;
+					App->fs->GetFileName(bone_files[i].data(), fileName);
+					uint uuid = strtoul(fileName.data(), NULL, 0);
+					assert(uuid > 0);
+
+					ResourceData data;
+					ResourceBoneData bone_data;
+					data.file = file;
+					data.exportedFile = bone_files[i].data();
+					App->fs->GetFileName(file, data.name);
+					App->boneImporter->Load(bone_files[i].data(), data, bone_data);
+
+					resource = CreateResource(ResourceTypes::BoneResource, data, &bone_data, uuid);
+					if (resource != nullptr)
+						bones_uuids.push_back(uuid);
+				}
+				bones_uuids.shrink_to_fit();
 			}
+			
+			// TODO_G : separate mesh / bones resources uuids from resourcesUuids
+
+			for (uint i = 0u; i < resourcesUuids.size(); i++)
+			{
+				Resource* tmp_res = App->res->GetResource(resourcesUuids[i]);
+				if (tmp_res->GetType() == ResourceTypes::MeshResource)
+					meshes_uuids.push_back(resourcesUuids[i]);
+				else if (tmp_res->GetType() == ResourceTypes::BoneResource)
+					bones_uuids.push_back(resourcesUuids[i]);
+			}
+
+			// bone mesh etc todo
 
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
-			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, resourcesUuids, outputMetaFile);
+			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, meshes_uuids, bones_uuids, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -621,7 +660,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				uint shaderObject = 0;
 				bool success = ResourceBone::LoadFile(file, boneData);
 
-				resource = CreateResource(ResourceTypes::PrefabResource, data, &boneData, uuid);
+				resource = CreateResource(ResourceTypes::BoneResource, data, &boneData, uuid);
 
 			}
 			else

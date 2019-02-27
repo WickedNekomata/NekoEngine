@@ -196,12 +196,12 @@ update_status ModulePhysics::Update()
 {
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	if (App->GetEngineState() == engine_states::ENGINE_PLAY
-		|| App->GetEngineState() == engine_states::ENGINE_STEP)
-	{
+	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		//|| App->GetEngineState() == engine_states::ENGINE_STEP)
+	//{
 		// Step physics
-		gAccumulator += App->timeManager->GetDt();
-		//gAccumulator += App->timeManager->GetRealDt();
+		//gAccumulator += App->timeManager->GetDt();
+		gAccumulator += App->timeManager->GetRealDt();
 		if (gAccumulator >= PhysicsConstants::FIXED_DT)
 		{
 			gAccumulator = 0.0f;
@@ -219,7 +219,7 @@ update_status ModulePhysics::Update()
 			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
 				(*it)->Update();
 		}
-	}
+	//}
 
 	// *****Debug*****
 	if (debugRay.IsFinite())
@@ -300,11 +300,6 @@ void ModulePhysics::OnSystemEvent(System_Event event)
 		break;
 	}
 }
-
-// TODO DELETE THIS. THIS IS TEMPORAL TO TEST NAV AGENTS
-#include "ModuleGOs.h"
-#include "GameObject.h"
-#include "ComponentNavAgent.h"
 
 // *****Debug*****
 void ModulePhysics::Debug()
@@ -787,6 +782,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::ePOSITION;
+	hitFlags |= physx::PxHitFlag::eNORMAL;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;
@@ -872,6 +869,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, Rayca
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::ePOSITION;
+	hitFlags |= physx::PxHitFlag::eNORMAL;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;
@@ -919,6 +918,8 @@ bool ModulePhysics::Raycast(math::float3& origin, math::float3& direction, std::
 	direction.Normalize();
 
 	physx::PxHitFlags hitFlags;
+	hitFlags |= physx::PxHitFlag::ePOSITION;
+	hitFlags |= physx::PxHitFlag::eNORMAL;
 	hitFlags |= physx::PxHitFlag::eUV;
 
 	physx::PxQueryFilterData filterData;

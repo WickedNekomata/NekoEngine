@@ -209,26 +209,21 @@ update_status ModuleRenderer3D::PostUpdate()
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
-		for (uint i = 0; i < cameraComponents.size(); ++i)
-			cameraComponents[i]->UpdateTransform();
+		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)
-			projectorComponents[i]->UpdateTransform();
-
-		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
+		{
+			if (projectorComponents[i]->IsActive())
+				DrawProjectors(projectorComponents[i]);
+		}
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
 				DrawMesh(meshComponents[i]);
 		}
-
-		for (uint i = 0; i < projectorComponents.size(); ++i)
-		{
-			if (projectorComponents[i]->IsActive() /*&& projectorComponents[i]->GetParent()->seenLastFrame*/)
-				DrawProjectedTexture(projectorComponents[i]);
-		}
 	}
+
 	//Draw All particles
 	//glDepthMask(GL_FALSE);
 	App->particle->Draw();
@@ -849,17 +844,20 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	if (toDraw->res == 0)
 		return;
 
-	// Material
-	ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
+	uint textureUnit = 0;
+
+	const ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
-	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
-	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
+	const ResourceShaderProgram* resourceShaderProgram = (const ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	GLuint shader = resourceShaderProgram->shaderProgram;
 
-	// Shader program
-	glUseProgram(shaderProgram);
+	glUseProgram(shader);
 
-	// Known uniforms
+	// 1. Generic uniforms
+	LoadGenericUniforms(shader);
+
+	// 2. Known mesh uniforms
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
 	model_matrix = model_matrix.Transposed();
 	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
@@ -869,86 +867,16 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	normal_matrix.Inverse();
 	normal_matrix.Transpose();
 
-	uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+	uint location = glGetUniformLocation(shader, "model_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+	location = glGetUniformLocation(shader, "mvp_matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
-	location = glGetUniformLocation(shaderProgram, "normal_matrix");
+	location = glGetUniformLocation(shader, "normal_matrix");
 	glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
 
-	location = glGetUniformLocation(shaderProgram, "light.direction");
-	glUniform3fv(location, 1, directionalLight.direction.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.ambient");
-	glUniform3fv(location, 1, directionalLight.ambient.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.diffuse");
-	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.specular");
-	glUniform3fv(location, 1, directionalLight.specular.ptr());
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-	//glUniform1i(glGetUniformLocation(shaderProgram, "skybox"), 0);
-	location = glGetUniformLocation(shaderProgram, "viewPos");
-	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
-	location = glGetUniformLocation(shaderProgram, "Time");
-	switch (App->GetEngineState())
-	{
-		// Game
-	case ENGINE_PLAY:
-	case ENGINE_PAUSE:
-	case ENGINE_STEP:
-		glUniform1f(location, App->timeManager->GetTime());
-		break;
-
-		// Editor
-	case ENGINE_EDITOR:
-		glUniform1f(location, App->timeManager->GetRealTime());
-		break;
-	}
-
-	// Unknown uniforms
-	uint textureUnit = 0;
+	// 3. Unknown mesh uniforms
 	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-	for (uint i = 0; i < uniforms.size(); ++i)
-	{
-		Uniform uniform = uniforms[i];
-		switch (uniform.common.type)
-		{
-		case Uniforms_Values::FloatU_value:
-			glUniform1f(uniform.common.location, uniform.floatU.value);
-			break;
-		case Uniforms_Values::IntU_value:
-			glUniform1i(uniform.common.location, uniform.intU.value);
-			break;
-		case Uniforms_Values::Vec2FU_value:
-			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
-			break;
-		case Uniforms_Values::Vec3FU_value:
-			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
-			break;
-		case Uniforms_Values::Vec4FU_value:
-			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
-			break;
-		case Uniforms_Values::Vec2IU_value:
-			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
-			break;
-		case Uniforms_Values::Vec3IU_value:
-			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
-			break;
-		case Uniforms_Values::Vec4IU_value:
-			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
-			break;
-		case Uniforms_Values::Sampler2U_value:
-			if (textureUnit < maxTextureUnits)
-			{
-				glActiveTexture(GL_TEXTURE0 + textureUnit);
-				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
-				glUniform1i(uniform.common.location, textureUnit);
-				++textureUnit;
-			}
-			break;
-		}
-	}
+	LoadSpecificUniforms(textureUnit, uniforms);
 
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(
@@ -956,9 +884,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	);
 
 	glBindVertexArray(mesh->GetVAO());
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
 	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	for (uint i = 0; i < maxTextureUnits; ++i)
 	{
@@ -966,144 +895,142 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 	glUseProgram(0);
 }
 
-
-void ModuleRenderer3D::DrawProjectedTexture(ComponentProjector* toDraw) const
+void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 {
-	// Material
+	if (toDraw->GetMaterialRes() == 0)
+		return;
+
+	uint textureUnit = 0;
+
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(toDraw->GetMaterialRes());
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
-	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	const ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
 	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
 
-	// Shader program
 	glUseProgram(shaderProgram);
 
-	// Specific projector uniforms
+	// 1. Generic uniforms
+	LoadGenericUniforms(shaderProgram);
+
+	// 2. Known projector uniforms
 	math::float4x4 bias_matrix = math::float4x4(
 		0.5f, 0.0f, 0.0f, 0.5f,
 		0.0f, 0.5f, 0.0f, 0.5f,
 		0.0f, 0.0f, 0.5f, 0.5f,
 		0.0f, 0.0f, 0.0f, 1.0f
-	); // converts the view frustum to a range between 0 and 1 in x and y
+	);
 
-	// Specific mesh uniforms
-	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix().Transposed(); // view
-	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix().Transposed(); // projection
-	math::float4x4 projector_matrix = bias_matrix * projector_proj_matrix * projector_view_matrix; // into texture space																					   
+	math::float4x4 projector_view_matrix = toDraw->GetOpenGLViewMatrix().Transposed();
+	math::float4x4 projector_proj_matrix = toDraw->GetOpenGLProjectionMatrix().Transposed();
+	math::float4x4 projector_matrix = bias_matrix * projector_proj_matrix * projector_view_matrix;																					   
 
 	uint location = glGetUniformLocation(shaderProgram, "projector_matrix");
 	glUniformMatrix4fv(location, 1, GL_TRUE, projector_matrix.ptr());
 
-	// Unknown uniforms
-	uint textureUnit = 0;
+	// 3. Unknown projector uniforms
 	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-	for (uint i = 0; i < uniforms.size(); ++i)
+	std::vector<const char*> ignore;
+	ignore.push_back("material.albedo");
+	ignore.push_back("material.specular");
+	LoadSpecificUniforms(textureUnit, uniforms, ignore);
+
+	// Frustum culling
+	/// Static objects
+	std::vector<GameObject*> seenGameObjects;
+	App->scene->quadtree.CollectIntersections(seenGameObjects, toDraw->GetFrustum());
+
+	/// Dynamic objects
+	std::vector<GameObject*> dynamicGameObjects;
+	App->GOs->GetDynamicGameobjects(dynamicGameObjects);
+
+	for (uint i = 0; i < dynamicGameObjects.size(); ++i)
 	{
-		Uniform uniform = uniforms[i];
-		switch (uniform.common.type)
+		if (dynamicGameObjects[i]->boundingBox.IsFinite() && toDraw->GetFrustum().Intersects(dynamicGameObjects[i]->boundingBox))
+			seenGameObjects.push_back(dynamicGameObjects[i]);
+	}
+
+	// Meshes
+	for (uint i = 0; i < seenGameObjects.size(); ++i)
+	{
+		const ComponentMesh* componentMesh = seenGameObjects[i]->cmp_mesh;
+		if (componentMesh == nullptr)
+			continue;
+
+		Layer* layer = App->layers->GetLayer(componentMesh->GetParent()->GetLayer());
+
+		if (!(toDraw->GetFilterMask() & layer->GetFilterGroup())
+			&& componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
 		{
-		case Uniforms_Values::FloatU_value:
-			glUniform1f(uniform.common.location, uniform.floatU.value);
-			break;
-		case Uniforms_Values::IntU_value:
-			glUniform1i(uniform.common.location, uniform.intU.value);
-			break;
-		case Uniforms_Values::Vec2FU_value:
-			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
-			break;
-		case Uniforms_Values::Vec3FU_value:
-			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
-			break;
-		case Uniforms_Values::Vec4FU_value:
-			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
-			break;
-		case Uniforms_Values::Vec2IU_value:
-			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
-			break;
-		case Uniforms_Values::Vec3IU_value:
-			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
-			break;
-		case Uniforms_Values::Vec4IU_value:
-			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
-			break;
-		case Uniforms_Values::Sampler2U_value:
-			if (textureUnit < maxTextureUnits)
+			uint meshTextureUnit = textureUnit;
+
+			const ComponentMaterial* materialRenderer = componentMesh->GetParent()->cmp_material;
+			resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
+
+			// 2. Known mesh uniforms
+			math::float4x4 model_matrix = componentMesh->GetParent()->transform->GetGlobalMatrix();
+			model_matrix = model_matrix.Transposed();
+			math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+			math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+			math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+			math::float4x4 normal_matrix = model_matrix;
+			normal_matrix.Inverse();
+			normal_matrix.Transpose();
+
+			uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+			glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+			location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+			glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+			location = glGetUniformLocation(shaderProgram, "normal_matrix");
+			glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+			// 3. Unknown mesh uniforms
+			std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+			uint albedoId = 0;
+			uint specularId = 0;
+			for (uint i = 0; i < uniforms.size(); ++i)
 			{
-				glActiveTexture(GL_TEXTURE0 + textureUnit);
-				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
-				glUniform1i(uniform.common.location, textureUnit);
-				++textureUnit;
+				Uniform uniform = uniforms[i];
+				if (strcmp(uniform.common.name, "material.albedo") == 0)
+					albedoId = uniform.sampler2DU.value.id;
+				else if (strcmp(uniform.common.name, "material.specular") == 0)
+					specularId = uniform.sampler2DU.value.id;
 			}
-			break;
+
+			location = glGetUniformLocation(shaderProgram, "material.albedo");
+			if (meshTextureUnit < maxTextureUnits && albedoId > 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + meshTextureUnit);
+				glBindTexture(GL_TEXTURE_2D, albedoId);
+				glUniform1i(location, meshTextureUnit);
+				++meshTextureUnit;
+			}
+			location = glGetUniformLocation(shaderProgram, "material.specular");
+			if (meshTextureUnit < maxTextureUnits && specularId > 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + meshTextureUnit);
+				glBindTexture(GL_TEXTURE_2D, specularId);
+				glUniform1i(location, meshTextureUnit);
+				++meshTextureUnit;
+			}
+
+			// Mesh
+			const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(componentMesh->res);
+
+			glBindVertexArray(mesh->GetVAO());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+			glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+
+			for (uint i = textureUnit; i < meshTextureUnit; ++i)
+			{
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
 		}
-	}
-
-	// Known uniforms
-	math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
-	math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
-
-	location = glGetUniformLocation(shaderProgram, "light.direction");
-	glUniform3fv(location, 1, directionalLight.direction.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.ambient");
-	glUniform3fv(location, 1, directionalLight.ambient.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.diffuse");
-	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.specular");
-	glUniform3fv(location, 1, directionalLight.specular.ptr());
-
-	location = glGetUniformLocation(shaderProgram, "viewPos");
-	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
-	location = glGetUniformLocation(shaderProgram, "Time");
-	switch (App->GetEngineState())
-	{
-		// Game
-	case ENGINE_PLAY:
-	case ENGINE_PAUSE:
-	case ENGINE_STEP:
-		glUniform1f(location, App->timeManager->GetTime());
-		break;
-
-		// Editor
-	case ENGINE_EDITOR:
-		glUniform1f(location, App->timeManager->GetRealTime());
-		break;
-	}
-
-	for (uint i = 0; i < meshComponents.size(); ++i)
-	{
-		// Mesh
-		const ComponentMesh* meshComponent = meshComponents[i];
-		if (meshComponent == nullptr)
-			continue;
-		const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(meshComponent->res);
-		if (mesh == nullptr)
-			continue;
-
-		// Specific mesh uniforms
-		math::float4x4 model_matrix = meshComponent->GetParent()->transform->GetGlobalMatrix();
-		model_matrix.Transpose();
-		math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
-		math::float4x4 normal_matrix = model_matrix;
-		normal_matrix.Inverse();
-		normal_matrix.Transpose();
-
-		location = glGetUniformLocation(shaderProgram, "model_matrix");
-		glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
-		location = glGetUniformLocation(shaderProgram, "mvp_matrix");
-		glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
-		location = glGetUniformLocation(shaderProgram, "normal_matrix");
-		glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
-
-		// Draw
-		glBindVertexArray(mesh->GetVAO());
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
-		glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 	}
 
 	for (uint i = 0; i < maxTextureUnits; ++i)
@@ -1139,4 +1066,87 @@ void ModuleRenderer3D::ClearSkybox()
 	}
 
 	skyboxTextures.clear();
+}
+
+void ModuleRenderer3D::LoadSpecificUniforms(uint& textureUnit, const std::vector<Uniform>& uniforms, const std::vector<const char*>& ignore) const
+{
+	for (uint i = 0; i < uniforms.size(); ++i)
+	{
+		Uniform uniform = uniforms[i];
+
+		for (uint j = 0; j < ignore.size(); ++j)
+		{
+			if (strcmp(uniform.common.name, ignore[j]) == 0)
+				goto hereWeGo;
+		}
+
+		switch (uniform.common.type)
+		{
+		case Uniforms_Values::FloatU_value:
+			glUniform1f(uniform.common.location, uniform.floatU.value);
+			break;
+		case Uniforms_Values::IntU_value:
+			glUniform1i(uniform.common.location, uniform.intU.value);
+			break;
+		case Uniforms_Values::Vec2FU_value:
+			glUniform2f(uniform.common.location, uniform.vec2FU.value.x, uniform.vec2FU.value.y);
+			break;
+		case Uniforms_Values::Vec3FU_value:
+			glUniform3f(uniform.common.location, uniform.vec3FU.value.x, uniform.vec3FU.value.y, uniform.vec3FU.value.z);
+			break;
+		case Uniforms_Values::Vec4FU_value:
+			glUniform4f(uniform.common.location, uniform.vec4FU.value.x, uniform.vec4FU.value.y, uniform.vec4FU.value.z, uniform.vec4FU.value.w);
+			break;
+		case Uniforms_Values::Vec2IU_value:
+			glUniform2i(uniform.common.location, uniform.vec2IU.value.x, uniform.vec2IU.value.y);
+			break;
+		case Uniforms_Values::Vec3IU_value:
+			glUniform3i(uniform.common.location, uniform.vec3IU.value.x, uniform.vec3IU.value.y, uniform.vec3IU.value.z);
+			break;
+		case Uniforms_Values::Vec4IU_value:
+			glUniform4i(uniform.common.location, uniform.vec4IU.value.x, uniform.vec4IU.value.y, uniform.vec4IU.value.z, uniform.vec4IU.value.w);
+			break;
+		case Uniforms_Values::Sampler2U_value:
+			if (textureUnit < maxTextureUnits && uniform.sampler2DU.value.id > 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + textureUnit);
+				glBindTexture(GL_TEXTURE_2D, uniform.sampler2DU.value.id);
+				glUniform1i(uniform.common.location, textureUnit);
+				++textureUnit;
+			}
+			break;
+		}
+
+	hereWeGo:;
+	}
+}
+
+void ModuleRenderer3D::LoadGenericUniforms(uint shaderProgram) const
+{
+	uint location = glGetUniformLocation(shaderProgram, "light.direction");
+	glUniform3fv(location, 1, directionalLight.direction.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.ambient");
+	glUniform3fv(location, 1, directionalLight.ambient.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.diffuse");
+	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
+	location = glGetUniformLocation(shaderProgram, "light.specular");
+	glUniform3fv(location, 1, directionalLight.specular.ptr());
+
+	location = glGetUniformLocation(shaderProgram, "viewPos");
+	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
+	location = glGetUniformLocation(shaderProgram, "Time");
+	switch (App->GetEngineState())
+	{
+		// Game
+	case ENGINE_PLAY:
+	case ENGINE_PAUSE:
+	case ENGINE_STEP:
+		glUniform1f(location, App->timeManager->GetTime());
+		break;
+
+		// Editor
+	case ENGINE_EDITOR:
+		glUniform1f(location, App->timeManager->GetRealTime());
+		break;
+	}
 }

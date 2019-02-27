@@ -614,6 +614,8 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::TextColored(BLUE, "%s", shaderObject->GetFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderObject->GetUuid());
+	ImGui::Text("References:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", shaderObject->GetReferencesCount());
 
 	ImGui::Spacing();
 
@@ -779,6 +781,9 @@ void PanelInspector::ShowMaterialInspector() const
 	}
 
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
+
+	if (ImGui::Button("EDIT"))
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shader->GetUuid());
 
 	ImGui::Spacing();
 

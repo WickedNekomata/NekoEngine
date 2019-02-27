@@ -38,7 +38,23 @@ ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, C
 
 ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector) : Component(componentProjector.parent, ComponentTypes::ProjectorComponent)
 {
-	// TODO
+	SetMaterialRes(componentProjector.materialRes);
+
+	// Init frustum
+	frustum.type = componentProjector.frustum.type;
+
+	frustum.pos = componentProjector.frustum.pos;
+	frustum.front = componentProjector.frustum.front;
+	frustum.up = componentProjector.frustum.up;
+
+	frustum.nearPlaneDistance = componentProjector.frustum.nearPlaneDistance;
+	frustum.farPlaneDistance = componentProjector.frustum.farPlaneDistance;
+	frustum.verticalFov = componentProjector.frustum.verticalFov;
+	frustum.horizontalFov = componentProjector.frustum.horizontalFov;
+
+	// -----
+
+	App->renderer3D->AddProjectorComponent(this);
 }
 
 ComponentProjector::~ComponentProjector()
@@ -160,18 +176,41 @@ void ComponentProjector::OnUniqueEditor()
 
 uint ComponentProjector::GetInternalSerializationBytes()
 {
-	// TODO
-	return uint();
+	return sizeof(math::Frustum) +
+		sizeof(uint) +
+		sizeof(uint);
 }
 
 void ComponentProjector::OnInternalSave(char*& cursor)
 {
-	// TODO
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(cursor, &frustum, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &materialRes, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &filterMask, bytes);
+	cursor += bytes;
 }
 
 void ComponentProjector::OnInternalLoad(char*& cursor)
 {
-	// TODO
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(&frustum, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint resource = 0;
+	memcpy(&resource, cursor, bytes);
+	SetMaterialRes(resource);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&filterMask, cursor, bytes);
+	cursor += bytes;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -221,6 +260,11 @@ uint ComponentProjector::GetMaterialRes() const
 void ComponentProjector::SetFilterMask(uint filterMask)
 {
 	this->filterMask = filterMask;
+}
+
+uint ComponentProjector::GetFilterMask() const
+{
+	return filterMask;
 }
 
 math::Frustum ComponentProjector::GetFrustum() const

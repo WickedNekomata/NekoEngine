@@ -21,13 +21,13 @@ out vec4 fProjectorTexCoord;
 void main()
 {
     vec4 pos4 = vec4(position, 1.0);
+    vec4 modelPosition = model_matrix * pos4;
 
-	fPosition = vec3(model_matrix * pos4);
+	fPosition = modelPosition.xyz;
 	fNormal = normalize(normal_matrix * normal);
 	fColor = color;
-	fTexCoord = texCoord;
-	
-	fProjectorTexCoord = projector_matrix * (model_matrix * pos4);
+	fTexCoord = texCoord;	
+	fProjectorTexCoord = projector_matrix * modelPosition;
 
 	gl_Position = mvp_matrix * pos4;
 }

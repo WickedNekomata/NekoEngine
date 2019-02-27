@@ -133,7 +133,6 @@ GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, 
 GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
-	gameobjects.push_back(newGameObject);
 
 	if(!newRoot)
 	{
@@ -149,6 +148,7 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	std::vector<GameObject*> childs; newGameObject->GetChildrenAndThisVectorFromLeaf(childs);
 	for (int i = 0; i < childs.size(); ++i)
 	{
+		gameobjects.push_back(childs[i]);
 		App->GOs->RecalculateVector(childs[i], false);
 	}
 

@@ -213,16 +213,16 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		uint textureUnit = 0;
 
-		for (uint i = 0; i < meshComponents.size(); ++i)
-		{
-			//if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-				//DrawMesh(meshComponents[i], textureUnit);
-		}
-
 		for (uint i = 0; i < projectorComponents.size(); ++i)
 		{
 			if (projectorComponents[i]->IsActive())
 				DrawProjectors(projectorComponents[i], textureUnit);
+		}
+
+		for (uint i = 0; i < meshComponents.size(); ++i)
+		{
+			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
+				DrawMesh(meshComponents[i], textureUnit);
 		}
 	}
 
@@ -948,15 +948,47 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 
 	// 3. Unknown projector uniforms
 	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-	std::vector<const char*> ignore;
-	ignore.push_back("material.albedo");
-	LoadSpecificUniforms(textureUnit, uniforms, ignore);
+	//std::vector<const char*> ignore;
+	//ignore.push_back("material.albedo");
+	LoadSpecificUniforms(textureUnit, uniforms);
 
 	// Meshes
 	for (uint i = 0; i < meshComponents.size(); ++i)
 	{
 		if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-			DrawMesh(meshComponents[i], textureUnit, shaderProgram);
+		{
+			ComponentMesh* c = meshComponents[i];
+
+			// 2. Known mesh uniforms
+			math::float4x4 model_matrix = c->GetParent()->transform->GetGlobalMatrix();
+			model_matrix = model_matrix.Transposed();
+			math::float4x4 view_matrix = currentCamera->GetOpenGLViewMatrix();
+			math::float4x4 proj_matrix = currentCamera->GetOpenGLProjectionMatrix();
+			math::float4x4 mvp_matrix = model_matrix * view_matrix * proj_matrix;
+			math::float4x4 normal_matrix = model_matrix;
+			normal_matrix.Inverse();
+			normal_matrix.Transpose();
+
+			uint location = glGetUniformLocation(shaderProgram, "model_matrix");
+			glUniformMatrix4fv(location, 1, GL_FALSE, model_matrix.ptr());
+			location = glGetUniformLocation(shaderProgram, "mvp_matrix");
+			glUniformMatrix4fv(location, 1, GL_FALSE, mvp_matrix.ptr());
+			location = glGetUniformLocation(shaderProgram, "normal_matrix");
+			glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
+
+			// 3. Unknown mesh uniforms
+			//std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+			//LoadSpecificUniforms(textureUnit, uniforms);
+
+			// Mesh
+			const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(c->res);
+
+			glBindVertexArray(mesh->GetVAO());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
+			glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+		}
 	}
 
 	for (uint i = 0; i < maxTextureUnits; ++i)

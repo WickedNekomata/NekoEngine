@@ -321,6 +321,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				CONSOLE_LOG(LogTypes::Normal, "RESOURCE MANAGER: The Mesh file '%s' has resources that need to be created", file);
 
 				// 1. Meshes
+
 				resourcesUuids.reserve(mesh_files.size());
 				for (uint i = 0; i < mesh_files.size(); ++i)
 				{
@@ -366,7 +367,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				}
 				resourcesUuids.shrink_to_fit();
 			}
-
+			
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;

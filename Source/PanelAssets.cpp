@@ -186,7 +186,8 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 				{		
 					std::vector<uint> uids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+					std::vector<uint> bone_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
 
 					ResourceMesh* tempRes = (ResourceMesh*)App->res->GetResource(uids[0]);
 					SELECT(tempRes->GetSpecificData().meshImportSettings);
@@ -195,7 +196,8 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				if(fbxOpened)
 				{
 					std::vector<uint> uids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+					std::vector<uint> bone_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
 
 					for (int i = 0; i < uids.size(); ++i)
 					{

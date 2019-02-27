@@ -411,16 +411,6 @@ bool ResourceShaderProgram::Link()
 		DeleteShaderProgram(shaderProgram);
 		ret = false;
 	}
-	else
-	{
-		if (!App->firstFrame)
-		{
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::ShaderProgramChanged;
-			newEvent.shaderEvent.shader = shaderProgram;
-			App->PushSystemEvent(newEvent);
-		}
-	}
 
 	return ret;
 }

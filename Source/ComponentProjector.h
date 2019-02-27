@@ -43,6 +43,7 @@ public:
 	void SetMaterialRes(uint materialUuid);
 	uint GetMaterialRes() const;
 	void SetFilterMask(uint filterMask);
+	uint GetFilterMask() const;
 
 	// Gets
 	math::Frustum GetFrustum() const;

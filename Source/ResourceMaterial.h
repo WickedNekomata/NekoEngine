@@ -48,6 +48,7 @@ public:
 
 	void SetResourceTexture(uint textureUuid, uint& textureUuidUniform, uint& textureIdUniform);
 	std::vector<Uniform>& GetUniforms();
+	void ResetUniforms();
 
 private:
 

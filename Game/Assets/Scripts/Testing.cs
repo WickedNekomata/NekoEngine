@@ -5,7 +5,7 @@ public class Testing : JellyScript
 {
     public LayerMask layerMask = new LayerMask();
     public float spot = 8f;
-    public GameObject prefab;
+    public GameObject anotherGO;
 
     //Use this method for initialization
     public override void Awake()
@@ -22,17 +22,22 @@ public class Testing : JellyScript
         
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            OverlapHit[] hitInfo;
-            if (Physics.OverlapSphere(100f, transform.position, out hitInfo, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-            {
-                Debug.ClearConsole();
-                Debug.Log("I hitted " + hitInfo.Length.ToString() + " objects");
+            Debug.ClearConsole();
+            Testing testing = gameObject.GetComponent<Testing>();
+            Debug.Log("Spot is " + testing.spot.ToString());
 
-                foreach(OverlapHit hit in hitInfo)
-                {
-                    Debug.Log("I hitted " + hit.gameObject.name);
-                }
-            }
+            DataHolder holder = new DataHolder();
+            if(holder != null)
+            {
+                Debug.Log("Holders a is " + holder.a.ToString());
+                Debug.Log("Holders b is " + holder.b);
+            }         
+
+            //OverlapHit[] hitInfo;
+            //if (Physics.OverlapSphere(100f, transform.position, out hitInfo, (uint)layerMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            //{
+               
+            //}
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);
         }

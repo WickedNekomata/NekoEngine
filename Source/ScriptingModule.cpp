@@ -414,6 +414,12 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Collider"));
 			break;
 		}
+
+		case ComponentTypes::NavAgentComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
+			break;
+		}
 	}
 
 	if (!monoComponent)
@@ -1241,54 +1247,31 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 {
 	MonoObject* monoComp = nullptr;
 
-	const char* name2 = mono_class_get_name(mono_object_get_class(type));
+	std::string className = mono_class_get_name(mono_object_get_class(type));
 
-	union
+	if (className == "NavMeshAgent")
 	{
-		char name[DEFAULT_BUF_SIZE];
-		uint32_t translated;
-	} dictionary;
-	
-	strcpy(dictionary.name, name2);
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
 
-	uint32_t translation = dictionary.translated;
+		Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
 
-	switch (translation)
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else
 	{
-		case NAVMESHAGENT_ASCII:
+		//Find a script named as this class
+
+		for (int i = 0; i < App->scripting->scripts.size(); ++i)
 		{
-			int address = 0u;
-			mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
-
-			GameObject* gameObject = (GameObject*)address;
-			if (!gameObject)
-				return nullptr;
-
-			Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
-
-			if (!comp)
-				return nullptr;
-
-			monoComp = comp->GetMonoComponent();
-
-			if (!monoComp)
+			if (App->scripting->scripts[i]->scriptName == className)
 			{
-				monoComp = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
-				mono_runtime_object_init(monoComp);
-
-				int compAddress = (int)comp;
-
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObjectAddress"), &address);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "componentAddress"), &compAddress);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObject"), monoObject);
-
-				uint32_t compHandle = mono_gchandle_new(monoComp, true);
-				comp->SetMonoComponent(compHandle);
+				return App->scripting->scripts[i]->classInstance;
 			}
-			else		
-				return monoComp;
-
-			break;
 		}
 	}
 

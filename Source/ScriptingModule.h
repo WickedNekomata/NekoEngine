@@ -21,6 +21,7 @@ bool exec(const char* cmd, std::string& error = std::string());
 class ScriptingModule : public Module
 {
 	friend MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, MonoArray* rotation);
+	friend MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type);
 
 public:
 	ScriptingModule(bool start_enabled = true) : Module(start_enabled) { name = "ScriptingModule"; }

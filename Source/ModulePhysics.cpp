@@ -16,7 +16,6 @@
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 #include "MathGeoLib\include\Geometry\LineSegment.h"
-#include "MathGeoLib\include\Geometry\Ray.h"
 //_*****Debug*****
 
 #include "ComponentRigidActor.h"
@@ -197,7 +196,7 @@ update_status ModulePhysics::Update()
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
 	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
-		//|| App->GetEngineState() == engine_states::ENGINE_STEP)
+	//	|| App->GetEngineState() == engine_states::ENGINE_STEP)
 	//{
 		// Step physics
 		//gAccumulator += App->timeManager->GetDt();
@@ -224,6 +223,8 @@ update_status ModulePhysics::Update()
 	// *****Debug*****
 	if (debugRay.IsFinite())
 		App->debugDrawer->DebugDraw(debugRay, Red);
+	//if (debugTransform.IsFinite())
+		//App->debugDrawer->DebugDrawSphere(debugRadius, Red, debugTransform);
 	//_*****Debug*****
 
 	return updateStatus;
@@ -425,7 +426,7 @@ void ModulePhysics::Debug()
 	{
 		// Overlap
 		std::vector<OverlapHit> touchesInfo;
-		physx::PxTransform transform(physx::PxVec3(ray.pos.x, ray.pos.y, ray.pos.z));
+		physx::PxTransform transform(physx::PxVec3(0.0f, 0.0f, 0.0f));
 		if (Overlap(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), transform, touchesInfo))
 		{
 			// Touches
@@ -1008,8 +1009,10 @@ bool ModulePhysics::Sweep(physx::PxGeometry& geometry, physx::PxTransform& trans
 bool ModulePhysics::Overlap(physx::PxGeometry& geometry, physx::PxTransform& transform, std::vector<OverlapHit>& touchesInfo, uint filterMask, SceneQueryFlags sceneQueryFlags) const
 {
 	assert(transform.isFinite());
+
 	physx::PxQueryFilterData filterData;
 	filterData.data.word0 = filterMask; // overlap against this filter mask
+	filterData.flags |= physx::PxQueryFlag::eNO_BLOCK;
 	if (!(sceneQueryFlags & physx::PxQueryFlag::eSTATIC))
 		filterData.flags &= ~physx::PxQueryFlag::eSTATIC;
 	if (!(sceneQueryFlags & physx::PxQueryFlag::eDYNAMIC))

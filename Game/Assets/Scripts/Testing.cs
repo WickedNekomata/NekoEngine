@@ -27,6 +27,11 @@ public class Testing : JellyScript
             {
                 Debug.ClearConsole();
                 Debug.Log("I hitted " + hitInfo.Length.ToString() + " objects");
+
+                foreach(OverlapHit hit in hitInfo)
+                {
+                    Debug.Log("I hitted " + hit.gameObject.name);
+                }
             }
             //Debug.LogError("Im destroying the copy " + tempGO.name);
             //Destroy(tempGO);

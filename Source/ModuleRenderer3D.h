@@ -101,8 +101,8 @@ public:
 	void FrustumCulling() const;
 
 	void DrawSkybox();
-	void DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint shaderProgram = 0) const;
-	void DrawProjectors(ComponentProjector* toDraw, uint& textureUnit) const;
+	void DrawMesh(ComponentMesh* toDraw) const;
+	void DrawProjectors(ComponentProjector* toDraw) const;
 
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
 

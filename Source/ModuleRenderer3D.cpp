@@ -211,18 +211,16 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
 
-		uint textureUnit = 0;
-
 		for (uint i = 0; i < projectorComponents.size(); ++i)
 		{
 			if (projectorComponents[i]->IsActive())
-				DrawProjectors(projectorComponents[i], textureUnit);
+				DrawProjectors(projectorComponents[i]);
 		}
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
 			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
-				DrawMesh(meshComponents[i], textureUnit);
+				DrawMesh(meshComponents[i]);
 		}
 	}
 
@@ -841,26 +839,23 @@ void ModuleRenderer3D::DrawSkybox()
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint shaderProgram) const
+void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 {
 	if (toDraw->res == 0)
 		return;
 
-	uint initialTextureUnit = textureUnit;
+	uint textureUnit = 0;
 
 	const ComponentMaterial* materialRenderer = toDraw->GetParent()->cmp_material;
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
 	const ResourceShaderProgram* resourceShaderProgram = (const ResourceShaderProgram*)App->res->GetResource(shaderUuid);
-	GLuint shader = shaderProgram == 0 ? resourceShaderProgram->shaderProgram : shaderProgram;
+	GLuint shader = resourceShaderProgram->shaderProgram;
 
-	if (shaderProgram == 0)
-	{
-		glUseProgram(shader);
+	glUseProgram(shader);
 
-		// 1. Generic uniforms
-		LoadGenericUniforms(shader);
-	}
+	// 1. Generic uniforms
+	LoadGenericUniforms(shader);
 
 	// 2. Known mesh uniforms
 	math::float4x4 model_matrix = toDraw->GetParent()->transform->GetGlobalMatrix();
@@ -892,38 +887,25 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw, uint& textureUnit, uint s
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	if (shaderProgram == 0)
+	for (uint i = 0; i < maxTextureUnits; ++i)
 	{
-		for (uint i = 0; i < maxTextureUnits; ++i)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-
-		textureUnit = 0;
-		glUseProgram(0);
-	}
-	else
-	{
-		for (uint i = initialTextureUnit; i < textureUnit; ++i)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	textureUnit = initialTextureUnit;
+	glUseProgram(0);
 }
 
-
-void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureUnit) const
+void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw) const
 {
 	if (toDraw->GetMaterialRes() == 0)
 		return;
 
+	uint textureUnit = 0;
+
 	ResourceMaterial* resourceMaterial = (ResourceMaterial*)App->res->GetResource(toDraw->GetMaterialRes());
 	uint shaderUuid = resourceMaterial->GetShaderUuid();
-	ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
+	const ResourceShaderProgram* resourceShaderProgram = (ResourceShaderProgram*)App->res->GetResource(shaderUuid);
 	GLuint shaderProgram = resourceShaderProgram->shaderProgram;
 
 	glUseProgram(shaderProgram);
@@ -948,9 +930,9 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 
 	// 3. Unknown projector uniforms
 	std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-	//std::vector<const char*> ignore;
-	//ignore.push_back("material.albedo");
-	LoadSpecificUniforms(textureUnit, uniforms);
+	std::vector<const char*> ignore;
+	ignore.push_back("material.albedo");
+	LoadSpecificUniforms(textureUnit, uniforms, ignore);
 
 	// Frustum culling
 	/// Static objects
@@ -970,12 +952,15 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 	// Meshes
 	for (uint i = 0; i < seenGameObjects.size(); ++i)
 	{
-		ComponentMesh* componentMesh = seenGameObjects[i]->cmp_mesh;
+		const ComponentMesh* componentMesh = seenGameObjects[i]->cmp_mesh;
 		if (componentMesh == nullptr)
 			continue;
 
 		if (componentMesh->IsActive() && componentMesh->GetParent()->seenLastFrame)
 		{
+			const ComponentMaterial* materialRenderer = componentMesh->GetParent()->cmp_material;
+			resourceMaterial = (ResourceMaterial*)App->res->GetResource(materialRenderer->res);
+
 			// 2. Known mesh uniforms
 			math::float4x4 model_matrix = componentMesh->GetParent()->transform->GetGlobalMatrix();
 			model_matrix = model_matrix.Transposed();
@@ -994,8 +979,22 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 			glUniformMatrix3fv(location, 1, GL_FALSE, normal_matrix.Float3x3Part().ptr());
 
 			// 3. Unknown mesh uniforms
-			//std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
-			//LoadSpecificUniforms(textureUnit, uniforms);
+			std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();
+			uint textureId = 0;
+			for (uint i = 0; i < uniforms.size(); ++i)
+			{
+				Uniform uniform = uniforms[i];
+				if (strcmp(uniform.common.name, "material.albedo") == 0)
+					textureId = uniform.sampler2DU.value.id;
+			}
+
+			location = glGetUniformLocation(shaderProgram, "material.albedo");
+			if (textureUnit < maxTextureUnits && textureId > 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + textureUnit);
+				glBindTexture(GL_TEXTURE_2D, textureId);
+				glUniform1i(location, textureUnit);
+			}
 
 			// Mesh
 			const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(componentMesh->res);
@@ -1014,7 +1013,6 @@ void ModuleRenderer3D::DrawProjectors(ComponentProjector* toDraw, uint& textureU
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	textureUnit = 0;
 	glUseProgram(0);
 }
 

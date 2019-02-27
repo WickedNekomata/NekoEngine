@@ -15,7 +15,6 @@ public class Testing : JellyScript
     //Called every frame
     public override void Update()
     {
-        Debug.ClearConsole();
 
         //Debug.LogError("randomObjects name is " + randomObject != null ? randomObject.name : "null");
         //Debug.LogError("randomTransform's name is " + randomTransform.gameObject.name + "and his position is " + randomTransform.position.ToString());

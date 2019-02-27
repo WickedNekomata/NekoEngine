@@ -92,6 +92,7 @@ public:
 	ResourcePrefab* prefab = nullptr;
 
 	std::vector<Component*> components;
+	std::vector<GameObject*> children;
 
 	math::AABB boundingBox;
 
@@ -103,8 +104,6 @@ private:
 	uint uuid;
 	GameObject* parent = 0;
 	uint parent_uuid = 0;
-
-	std::vector<GameObject*> children;
 
 	bool isActive = true;
 	bool isStatic = false; // coordinate with statics and dynamics vector at go module

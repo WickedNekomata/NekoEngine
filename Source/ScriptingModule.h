@@ -20,6 +20,8 @@ bool exec(const char* cmd, std::string& error = std::string());
 
 class ScriptingModule : public Module
 {
+	friend MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, MonoArray* rotation);
+
 public:
 	ScriptingModule(bool start_enabled = true) : Module(start_enabled) { name = "ScriptingModule"; }
 	~ScriptingModule() {}
@@ -71,6 +73,7 @@ public:
 
 private:
 	void UpdateMethods();
+	void ExecuteCallbacks(GameObject* gameObject);
 
 public:
 	_MonoDomain* domain = nullptr;

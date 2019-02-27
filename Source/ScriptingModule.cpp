@@ -738,6 +738,27 @@ void ScriptingModule::UpdateMethods()
 	}
 }
 
+void ScriptingModule::ExecuteCallbacks(GameObject* gameObject)
+{
+	for (int i = 0; i < gameObject->components.size(); ++i)
+	{
+		Component* comp = gameObject->components[i];
+		if (comp->GetType() == ComponentTypes::ScriptComponent)
+		{
+			ComponentScript* script = (ComponentScript*)comp;
+
+			script->OnEnableMethod();
+			script->Awake();
+			script->Start();
+		}
+	}
+
+	for (int i = 0; i < gameObject->children.size(); ++i)
+	{
+		ExecuteCallbacks(gameObject->children[i]);
+	}
+}
+
 //-----------------------------
 
 void DebugLogTranslator(MonoString* msg)
@@ -902,7 +923,7 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, M
 			newGameObject->transform->rotation = newRotation;
 		}
 
-		//TODO: CALL AWAKE START ETC
+		App->scripting->ExecuteCallbacks(newGameObject);
 
 		return moInstance;
 	}

@@ -103,7 +103,7 @@ void ComponentScript::Awake()
 void ComponentScript::Start()
 {
 	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
-	if (scriptRes && scriptRes->startMethod)
+	if (scriptRes && scriptRes->startMethod && awaked)
 	{
 		MonoObject* exc = nullptr;
 		if (IsTreeActive())

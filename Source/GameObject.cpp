@@ -43,6 +43,7 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 			AddComponent(ComponentTypes::TransformComponent);
 	}
 
+	originalBoundingBox.SetNegativeInfinity();
 	boundingBox.SetNegativeInfinity();
 
 	uuid = App->GenerateRandomNumber();
@@ -52,6 +53,14 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
 
+	boundingBox = gameObject.boundingBox;
+
+	isActive = gameObject.isActive;
+	isStatic = gameObject.isStatic;
+	seenLastFrame = gameObject.seenLastFrame;
+
+	uuid = App->GenerateRandomNumber();
+	
 	for (int i = 0; i < gameObject.components.size(); ++i)
 	{
 		ComponentTypes type = gameObject.components[i]->GetType();
@@ -59,47 +68,47 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 		switch (type)
 		{
 		case ComponentTypes::TransformComponent:
-			transform = new ComponentTransform(*gameObject.transform);
+			transform = new ComponentTransform(*gameObject.transform, this);
 			transform->SetParent(this);
 			components.push_back(transform);
 			break;
 		case ComponentTypes::MeshComponent:
-			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh, includeComponents);
+			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh, this, includeComponents);
 			cmp_mesh->SetParent(this);
 			components.push_back(cmp_mesh);
 			break;
 		case ComponentTypes::MaterialComponent:
-			cmp_material = new ComponentMaterial(*gameObject.cmp_material);
-			cmp_mesh->SetParent(this);
+			cmp_material = new ComponentMaterial(*gameObject.cmp_material, this);
+			cmp_material->SetParent(this);
 			components.push_back(cmp_material);
 			break;
 		case ComponentTypes::CameraComponent:
-			cmp_camera = new ComponentCamera(*gameObject.cmp_camera, includeComponents);
+			cmp_camera = new ComponentCamera(*gameObject.cmp_camera, this, includeComponents);
 			cmp_camera->SetParent(this);
 			components.push_back(cmp_camera);
 			break;
 		case ComponentTypes::NavAgentComponent:
-			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent, includeComponents);
+			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent, this, includeComponents);
 			cmp_navAgent->SetParent(this);
 			components.push_back(cmp_navAgent);
 			break;
 		case ComponentTypes::EmitterComponent:
-			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter, includeComponents);
+			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter, this, includeComponents);
 			cmp_emitter->SetParent(this);
 			components.push_back(cmp_emitter);
 			break;
 		case ComponentTypes::BoneComponent:
-			cmp_bone = new ComponentBone(*gameObject.cmp_bone);
+			cmp_bone = new ComponentBone(*gameObject.cmp_bone, this);
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
 		case ComponentTypes::LightComponent:
-			cmp_light = new ComponentLight(*gameObject.cmp_light);
+			cmp_light = new ComponentLight(*gameObject.cmp_light, this);
 			cmp_light->SetParent(this);
 			components.push_back(cmp_light);
 			break;
 		case ComponentTypes::ProjectorComponent:
-			cmp_projector = new ComponentProjector(*gameObject.cmp_projector);
+			cmp_projector = new ComponentProjector(*gameObject.cmp_projector, this);
 			cmp_projector->SetParent(this);
 			components.push_back(cmp_projector);
 			break;
@@ -143,14 +152,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 		}
 	}
 
-	boundingBox = gameObject.boundingBox;
 
-	isActive = gameObject.isActive;
-	isStatic = gameObject.isStatic;
-	seenLastFrame = gameObject.seenLastFrame;
-
-	uuid = App->GenerateRandomNumber();
-	
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
 	{
@@ -209,7 +211,10 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::SetParent(GameObject* parent)
 {
 	this->parent = parent;
-	parent_uuid = parent->GetUUID();
+	if (parent == 0)
+		parent_uuid = 0;
+	else
+		parent_uuid = parent->GetUUID();
 }
 
 GameObject* GameObject::GetParent() const
@@ -229,11 +234,10 @@ void GameObject::ToggleIsActive()
 	isActive ? OnEnable() : OnDisable();
 }
 
-void GameObject::ToggleIsStatic(bool quadtreeEvent)
+void GameObject::ToggleIsStatic()
 {
 	isStatic = !isStatic;
-	if (quadtreeEvent)
-		App->GOs->RecalculateVector(this);
+	App->GOs->RecalculateVector(this);
 }
 
 bool GameObject::IsActive() const
@@ -266,32 +270,14 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
-	//TODO: Fix BoundingBoxes calcs. We cant calculate every frame all tris of GO
-	if (cmp_emitter == nullptr)
-		boundingBox.SetNegativeInfinity();
+	// Get the OBB from the mesh original AABB (no translation, rotation or scale)
+	math::OBB obb = originalBoundingBox.ToOBB();
 
-	// Grow bounding box
-	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
-	{
-		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
-		int nVerts = meshRes->GetVerticesCount();
-		float* vertices = new float[nVerts * 3];
-		meshRes->GetTris(vertices);
-		boundingBox.Enclose((const math::float3*)vertices, nVerts);
-		delete[] vertices;
-	}
-	else if (cmp_emitter != nullptr)
-	{
-		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
-		comp->SetAABB(boundingBox.Size());
-	}
-	// Transform bounding box (calculate OBB)
-	math::OBB obb;
-	obb.SetFrom(boundingBox);
+	// Transform the obb using the GameObject transform
 	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
 	obb.Transform(transformMatrix);
 
-	// Calculate AABB
+	// Calculate the minimal enclosing AABB from the transformed OBB
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
 
@@ -542,6 +528,7 @@ bool GameObject::DestroyComponent(Component* destroyed)
 		newEvent.compEvent.component = cmp_material;
 		App->PushSystemEvent(newEvent);
 	}
+
 	return true;
 }
 
@@ -585,9 +572,10 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
-void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
+void GameObject::GetChildrenVector(std::vector<GameObject*>& go, bool thisGo)
 {
-	go.push_back(this);
+	if (thisGo)
+		go.push_back(this);
 
 	for (int i = 0; i < children.size(); i++)
 		children[i]->GetChildrenVector(go);

@@ -18,7 +18,7 @@ ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 {
 }
 
-ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object, uint resource) :
+ComponentAnimation::ComponentAnimation(GameObject* embedded_game_object, uint resource) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)
 {
 	//this->resource = resource;

@@ -14,7 +14,7 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 	SetResource(App->resHandler->defaultMaterial);
 }
 
-ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial) : Component(componentMaterial.parent, ComponentTypes::MaterialComponent) 
+ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial, GameObject* parent) : Component(parent, ComponentTypes::MaterialComponent)
 {
 	SetResource(componentMaterial.res);
 }

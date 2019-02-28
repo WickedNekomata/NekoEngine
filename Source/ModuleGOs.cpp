@@ -133,7 +133,6 @@ GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, 
 GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
-	gameobjects.push_back(newGameObject);
 
 	if(!newRoot)
 	{
@@ -149,6 +148,7 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	std::vector<GameObject*> childs; newGameObject->GetChildrenAndThisVectorFromLeaf(childs);
 	for (int i = 0; i < childs.size(); ++i)
 	{
+		gameobjects.push_back(childs[i]);
 		App->GOs->RecalculateVector(childs[i], false);
 	}
 
@@ -287,23 +287,11 @@ GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool 
 			}
 		}
 
-		/*if (go->GetParent() == 0)
-		{
-			assert(App->scene->root == 0);
-			App->scene->root = go;
-		}
-		else
-		{
-			gameobjects.push_back(go);
-			go->IsStatic() ? staticGos.push_back(go) : dynamicGos.push_back(go);
-		}*/
+		if (go->GetParent() == 0)
+			go->SetParent(0);
 
 		gos.push_back(go);
 	}
-
-	// Discuss if this should be a resource
-	if (navmesh)
-		App->navigation->LoadNavmesh(cursor);
 
 	return gos[0]; //the root node
 }

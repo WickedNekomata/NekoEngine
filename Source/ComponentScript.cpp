@@ -2425,19 +2425,21 @@ void ComponentScript::InstanceClass()
 
 	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 
-	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
+	if (!scriptRes)
 	{
-		if (!scriptRes)
-		{
-			System_Event event;
-			event.compEvent.type = System_Event_Type::ComponentDestroyed;
-			event.compEvent.component = this;
-			App->PushSystemEvent(event);
-		}
+		System_Event event;
+		event.compEvent.type = System_Event_Type::ComponentDestroyed;
+		event.compEvent.component = this;
+		App->PushSystemEvent(event);
+		
 		return;
 	}
 
-	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
+	MonoClass* klass = mono_class_from_name(App->scripting->scriptsImage, "", scriptName.data());
+
+	if (!klass)
+		return;
+
 	classInstance = mono_object_new(App->scripting->domain, klass);
 
 	mono_runtime_object_init(classInstance);
@@ -2460,19 +2462,17 @@ void ComponentScript::InstanceClass(MonoObject* _classInstance)
 
 	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
 
-	if (!scriptRes || scriptRes->state != ResourceScript::ScriptState::COMPILED_FINE)
+	if (!scriptRes)
 	{
-		if (!scriptRes)
-		{
-			System_Event event;
-			event.compEvent.type = System_Event_Type::ComponentDestroyed;
-			event.compEvent.component = this;
-			App->PushSystemEvent(event);
-		}
+		System_Event event;
+		event.compEvent.type = System_Event_Type::ComponentDestroyed;
+		event.compEvent.component = this;
+		App->PushSystemEvent(event);
+		
 		return;
 	}
 
-	MonoClass* klass = mono_class_from_name(scriptRes->image, "", scriptName.data());
+	MonoClass* klass = mono_class_from_name(App->scripting->scriptsImage, "", scriptName.data());
 	classInstance = _classInstance;
 
 	//Reference the gameObject var with the MonoObject relative to this GameObject

@@ -13,7 +13,7 @@ class ComponentMesh : public Component
 public:
 
 	ComponentMesh(GameObject* parent);
-	ComponentMesh(const ComponentMesh& componentMesh, bool include = true);
+	ComponentMesh(const ComponentMesh& componentMesh, GameObject* parent, bool include = true);
 	~ComponentMesh();
 
 	void Update();
@@ -29,7 +29,6 @@ public:
 public:
 
 	uint res = 0;
-	ResourceMesh* deformableMesh = 0;
 
 	// navmesh utility
 	bool nv_walkable = true;

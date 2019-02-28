@@ -33,7 +33,7 @@ public:
 	GameObject* GetParent() const;
 	uint GetParentUUID() const;
 	void ToggleIsActive();
-	void ToggleIsStatic(bool quadtreeEvent = true);
+	void ToggleIsStatic();
 	bool IsActive() const;
 	bool IsStatic() const;
 	void OnEnable();
@@ -61,7 +61,7 @@ public:
 	int GetComponentsLength();
 	void ReorderComponents(Component* source, Component* target);
 
-	void GetChildrenVector(std::vector<GameObject*>& go);
+	void GetChildrenVector(std::vector<GameObject*>& go, bool thisGo = true);
 	uint GetSerializationBytes() const;
 	void OnSave(char*& cursor) const;
 	void OnLoad(char*& cursor, bool includeInModules = true);
@@ -94,6 +94,7 @@ public:
 	std::vector<Component*> components;
 	std::vector<GameObject*> children;
 
+	math::AABB originalBoundingBox;
 	math::AABB boundingBox;
 
 	bool seenLastFrame = false;

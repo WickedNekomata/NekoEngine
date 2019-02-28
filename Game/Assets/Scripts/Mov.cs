@@ -20,7 +20,7 @@ public class Mov : JellyScript
 
     private void CheckForMouseClick()
     {
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)mask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))

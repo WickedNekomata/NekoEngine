@@ -15,8 +15,8 @@ ComponentNavAgent::ComponentNavAgent(GameObject* parent) : Component(parent, Com
 	App->navigation->AddComponent(this);
 }
 
-ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentNavAgent, bool include) :
-	Component(componentNavAgent.parent, ComponentTypes::NavAgentComponent)
+ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentNavAgent, GameObject* parent, bool include) :
+	Component(parent, ComponentTypes::NavAgentComponent)
 {
 	memcpy(&(ComponentNavAgent&)componentNavAgent, this, sizeof(ComponentNavAgent));
 	AddAgent();

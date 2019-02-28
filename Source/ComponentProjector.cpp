@@ -36,7 +36,7 @@ ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, C
 	App->renderer3D->AddProjectorComponent(this);
 }
 
-ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector) : Component(componentProjector.parent, ComponentTypes::ProjectorComponent)
+ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector, GameObject* parent) : Component(parent, ComponentTypes::ProjectorComponent)
 {
 	SetMaterialRes(componentProjector.materialRes);
 

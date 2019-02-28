@@ -24,7 +24,7 @@ ComponentBone::ComponentBone(GameObject * embedded_game_object, uint resource) :
 	res = resource;
 }
 
-ComponentBone::ComponentBone(const ComponentBone& component_bone, bool include) : Component(component_bone.parent, ComponentTypes::BoneComponent)
+ComponentBone::ComponentBone(const ComponentBone& component_bone, GameObject* parent, bool include) : Component(parent, ComponentTypes::BoneComponent)
 {
 	res = component_bone.res;
 	attachedMesh = component_bone.attachedMesh;

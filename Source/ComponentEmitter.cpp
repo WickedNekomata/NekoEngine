@@ -25,7 +25,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
-ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, bool include) : Component(componentEmitter.parent, EmitterComponent)
+ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, GameObject* parent, bool include) : Component(parent, EmitterComponent)
 {
 	duration = componentEmitter.duration;
 
@@ -501,7 +501,7 @@ void ComponentEmitter::ParticleAABB()
 		ImGui::Checkbox("Bounding Box", &drawAABB);
 		if (drawAABB)
 		{
-			math::float3 size = parent->boundingBox.Size();
+			math::float3 size = parent->originalBoundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
 				SetAABB(size,GetParent()->transform->position);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
@@ -686,7 +686,14 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 
 void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
 {
-	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+	GameObject* gameObject = GetParent();
+
+	gameObject->originalBoundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+
+	System_Event newEvent;
+	newEvent.goEvent.gameObject = gameObject;
+	newEvent.type = System_Event_Type::RecalculateBBoxes;
+	App->PushSystemEvent(newEvent);
 }
 
 void ComponentEmitter::SetMaterialRes(uint materialUuid)

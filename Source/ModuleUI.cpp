@@ -82,6 +82,10 @@ bool ModuleUI::Start()
 	ui_size_draw[UI_WIDTHRECT] = App->window->GetWindowWidth();
 	ui_size_draw[UI_HEIGHTRECT] = App->window->GetWindowHeight();
 
+#ifdef GAMEMODE
+	uiMode = true;
+#endif // GAMEMODE
+
 	return true;
 }
 

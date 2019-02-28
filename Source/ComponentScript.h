@@ -53,6 +53,5 @@ public:
 	uint tempBufferBytes = 0u;
 	char* tempBuffer = nullptr;
 
-	uint32_t handleID = 0;
 	MonoObject* classInstance = nullptr;
 };

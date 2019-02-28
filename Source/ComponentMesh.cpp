@@ -46,7 +46,15 @@ void ComponentMesh::SetResource(uint res_uuid)
 		return;
 
 	res = res_uuid;
-	
+
+	//Calculate the new mesh BoundingBox
+	const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(res_uuid);
+	int nVerts = meshRes->GetVerticesCount();
+	float* vertices = new float[nVerts * 3];
+	meshRes->GetTris(vertices);
+	GetParent()->originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
+	delete[] vertices;
+
 	// Mesh updated: recalculate bounding boxes
 	System_Event newEvent;
 	newEvent.goEvent.gameObject = parent;

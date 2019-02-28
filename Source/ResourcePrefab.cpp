@@ -160,7 +160,8 @@ bool ResourcePrefab::LoadInMemory()
 
 	char* buffer;
 	uint size = App->fs->Load(data.file, &buffer);
-	assert(size > 0);
+	if (size <= 0)
+		return false;
 
 	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
 	prefabData.root = new GameObject(*temp, false);

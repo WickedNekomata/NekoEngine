@@ -961,6 +961,8 @@ void ModuleResourceManager::RecursiveDeleteUnusedEntries(const char* dir, std::s
 		{
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
+			if (strcmp(extension.data(), EXTENSION_SCRIPT) == 0)
+				continue;
 			ResourceTypes type = GetResourceTypeByExtension(extension.data());
 
 			uint resourceUuid = 0;

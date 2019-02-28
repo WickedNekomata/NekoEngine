@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using JellyBitEngine;
 
-public class move : JellyScript
+public class Mov : JellyScript
 {
     private RaycastHit hit;
     private int mask = LayerMask.GetMask("Default");
@@ -15,9 +15,6 @@ public class move : JellyScript
     //Called every frame
     public override void Update()
     {
-        if(agent == null)
-            agent = gameObject.GetComponent<NavMeshAgent>();
-
         CheckForMouseClick();
     }
 
@@ -28,6 +25,9 @@ public class move : JellyScript
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)mask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
+                if (agent == null)
+                    agent = gameObject.GetComponent<NavMeshAgent>();
+
                 if (agent != null)
                 {
                     Debug.Log("GOING TO SPOT");
@@ -40,3 +40,4 @@ public class move : JellyScript
     }
 
 }
+

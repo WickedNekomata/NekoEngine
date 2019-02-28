@@ -119,7 +119,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 			ret = false;
 		}
 
-		directionalLight.direction = math::float3(-0.2f, -1.0f, -0.3f);
+		directionalLight.direction = math::float3(-0.2f, -1.0f, -0.2);
 		directionalLight.ambient = math::float3(0.25f, 0.25f, 0.25f);
 		directionalLight.diffuse = math::float3(0.5f, 0.5f, 0.5f);
 		directionalLight.specular = math::float3(1.0f, 1.0f, 1.0f);

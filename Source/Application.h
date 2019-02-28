@@ -34,6 +34,7 @@ struct ModuleResourceManager;
 struct ModuleInternalResHandler;
 struct MaterialImporter;
 struct SceneImporter;
+struct AnimationImporter;
 struct BoneImporter;
 struct ShaderImporter;
 struct ModuleCameraEditor;
@@ -44,6 +45,7 @@ struct ModuleInput;
 struct ModuleScene;
 struct ModuleRenderer3D;
 struct ModuleFileSystem;
+struct ModuleAnimation;
 struct ModuleGOs;
 struct ModuleTimeManager;
 struct ModuleParticle;
@@ -120,6 +122,7 @@ public:
 	SceneImporter*			  sceneImporter;
 	ShaderImporter*			  shaderImporter;
 	mutable BoneImporter*	  boneImporter;
+	mutable AnimationImporter*animImporter;
 	ModuleParticle*			  particle;
 
 #ifndef GAMEMODE
@@ -139,6 +142,7 @@ public:
 	ScriptingModule*		  scripting;
 	ModuleEvents*			  events;
 	ModulePhysics*			  physics;
+	ModuleAnimation*		  animation;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
 	ModuleLayers*			  layers;

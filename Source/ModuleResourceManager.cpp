@@ -9,6 +9,7 @@
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
 #include "BoneImporter.h"
+#include "AnimationImporter.h"
 
 #include "ResourceTypes.h"
 #include "Resource.h"
@@ -312,11 +313,13 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		ResourceMeshImportSettings meshImportSettings;
 		std::vector<std::string> mesh_files;
 		std::vector<std::string> bone_files;
-		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files))
+		std::vector<std::string> animation_files;
+		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files,animation_files))
 		{
 			std::vector<uint> resourcesUuids;
 			std::vector<uint> meshes_uuids;
 			std::vector<uint> bones_uuids;
+			std::vector<uint> animation_uuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
@@ -367,6 +370,28 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 						bones_uuids.push_back(uuid);
 				}
 				bones_uuids.shrink_to_fit();
+
+				// 3. Anims c:
+				animation_uuids.reserve(animation_files.size());
+				for (uint i = 0; i < animation_files.size(); ++i)
+				{
+					std::string fileName;
+					App->fs->GetFileName(animation_files[i].data(), fileName);
+					uint uuid = strtoul(fileName.data(), NULL, 0);
+					assert(uuid > 0);
+
+					ResourceData data;
+					ResourceAnimationData anim_data;
+					data.file = file;
+					data.exportedFile = animation_files[i].data();
+					App->fs->GetFileName(file, data.name);
+					App->animImporter->Load(animation_files[i].data(), data, anim_data);
+
+					resource = CreateResource(ResourceTypes::AnimationResource, data, &anim_data, uuid);
+					if (resource != nullptr)
+						animation_uuids.push_back(uuid);
+				}
+				animation_uuids.shrink_to_fit();
 			}
 			
 			// TODO_G : separate mesh / bones resources uuids from resourcesUuids
@@ -378,6 +403,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					meshes_uuids.push_back(resourcesUuids[i]);
 				else if (tmp_res->GetType() == ResourceTypes::BoneResource)
 					bones_uuids.push_back(resourcesUuids[i]);
+				else if (tmp_res->GetType() == ResourceTypes::AnimationResource)
+					animation_uuids.push_back(resourcesUuids[i]);
 			}
 
 			// bone mesh etc todo
@@ -385,7 +412,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
-			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, meshes_uuids, bones_uuids, outputMetaFile);
+			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, meshes_uuids, bones_uuids, animation_uuids, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}

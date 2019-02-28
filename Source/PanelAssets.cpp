@@ -187,7 +187,8 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				{		
 					std::vector<uint> uids;
 					std::vector<uint> bone_uuids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					ResourceMesh* tempRes = (ResourceMesh*)App->res->GetResource(uids[0]);
 					SELECT(tempRes->GetSpecificData().meshImportSettings);
@@ -197,7 +198,8 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				{
 					std::vector<uint> uids;
 					std::vector<uint> bone_uuids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					for (int i = 0; i < uids.size(); ++i)
 					{

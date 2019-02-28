@@ -27,6 +27,7 @@
 #include "ComponentScript.h"
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
+#include "ComponentAnimation.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -101,6 +102,11 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			cmp_bone = new ComponentBone(*gameObject.cmp_bone, this);
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
+			break;
+		case ComponentTypes::AnimationComponent:
+			cmp_animation = new ComponentAnimation(*gameObject.cmp_animation, this);
+			cmp_animation->SetParent(this);
+			components.push_back(cmp_animation);
 			break;
 		case ComponentTypes::LightComponent:
 			cmp_light = new ComponentLight(*gameObject.cmp_light, this);
@@ -473,6 +479,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
+		break;
+	case ComponentTypes::AnimationComponent:
+		assert(cmp_animation == NULL);
+		newComponent = cmp_animation = new ComponentAnimation(this);
 		break;
 	case ComponentTypes::LightComponent:
 		assert(cmp_light == NULL);

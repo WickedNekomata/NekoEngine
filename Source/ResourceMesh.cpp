@@ -10,12 +10,24 @@
 
 #include <assert.h>
 
-ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {}
+ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {
+
+	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
+	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
+	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
+	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
+	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
+	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
+	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
+}
 
 ResourceMesh::~ResourceMesh()
 {
 	RELEASE_ARRAY(meshData.vertices);
 	RELEASE_ARRAY(meshData.indices);
+
+	RELEASE_ARRAY(deformableMeshData.vertices);
+	RELEASE_ARRAY(deformableMeshData.indices);
 }
 
 void ResourceMesh::OnPanelAssets()
@@ -46,7 +58,8 @@ void ResourceMesh::OnPanelAssets()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files) // NewFile
+bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, 
+	std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& animation_files) // NewFile
 {
 	assert(file != nullptr);
 
@@ -63,20 +76,22 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 		// Import the file (using the default import settings)
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' needs to be imported", file);
 
-		imported = App->sceneImporter->Import(file, mesh_files, bone_files, meshImportSettings);
+		imported = App->sceneImporter->Import(file, mesh_files, bone_files, animation_files, meshImportSettings);
 	}
 	else
 	{
 		std::vector<uint> mesh_uuids;
 		std::vector<uint> bones_uuids;
+		std::vector<uint> animation_uuids;
 		
 		int64_t lastModTime = 0;
-		assert(ResourceMesh::ReadMeta(metaFile, lastModTime, meshImportSettings, mesh_uuids, bones_uuids));
+		assert(ResourceMesh::ReadMeta(metaFile, lastModTime, meshImportSettings, mesh_uuids, bones_uuids, animation_uuids));
 
 		char entry[DEFAULT_BUF_SIZE]; 
 
 		std::vector<std::string> mesh_entry_files;
 		std::vector<std::string> bone_entry_files;
+		std::vector<std::string> animation_entry_files;
 
 		std::string entryFile;
 		for (uint i = 0; i < mesh_uuids.size(); ++i)
@@ -97,11 +112,23 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			entryFile.clear();
 		}
 
+		for (uint i = 0; i < animation_uuids.size(); ++i)
+		{
+			sprintf_s(entry, "%u%s", animation_uuids[i], EXTENSION_ANIMATION);
+			entryFile = DIR_LIBRARY;
+			if (App->fs->RecursiveExists(entry, DIR_LIBRARY, entryFile))
+				bone_entry_files.push_back(entryFile);
+			entryFile.clear();
+		}
+
 		// CASE 2 (file + meta + Library file(s)). The resource(s) do(es)n't exist
-		if (mesh_entry_files.size() == mesh_uuids.size() && bone_entry_files.size() == bones_uuids.size())
+		if (mesh_entry_files.size() == mesh_uuids.size() && 
+			bone_entry_files.size() == bones_uuids.size() && 
+			animation_entry_files.size() == animation_uuids.size())
 		{
 			mesh_files = mesh_entry_files;
 			bone_files = bone_entry_files;
+			animation_files = animation_entry_files;
 			imported = true;
 		}			
 		// CASE 3 (file + meta). The file(s) in Libray associated to the meta do(es)n't exist
@@ -110,7 +137,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			// Import the file (using the import settings from the meta)
 			CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' has Library file(s) that need(s) to be reimported", file);
 
-			imported = App->sceneImporter->Import(file, mesh_files,bone_files, meshImportSettings, mesh_uuids);
+			imported = App->sceneImporter->Import(file, mesh_files,bone_files, animation_files, meshImportSettings, mesh_uuids);
 		}
 	}
 
@@ -118,12 +145,14 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 }
 
 // Returns the last modification time of the file
-uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids , std::string& outputMetaFile)
+uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& meshImportSettings, 
+	std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids, std::vector<uint>& animationUuids, std::string& outputMetaFile)
 {
 	assert(file != nullptr);
 
 	uint mesh_uuids_size = meshesUuids.size();
 	uint bones_uuids_size = bonesUuids.size();
+	uint animations_uuids_size = animationUuids.size();
 
 	uint size = 
 		sizeof(int64_t) +					//data mod
@@ -132,6 +161,9 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 		sizeof(uint) +						//size bone num
 		sizeof(uint) * bones_uuids_size +	//bone uuids
+
+		sizeof(uint) +						//size anim num
+		sizeof(uint) * animations_uuids_size +	//anim uuids
 
 		sizeof(int) +
 		sizeof(uint) +
@@ -173,7 +205,20 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 	cursor += bytes;
 
-	// 6. Store import settings
+	// 6. Store anim uuids size
+	bytes = sizeof(uint);
+	memcpy(cursor, &animations_uuids_size, bytes);
+
+	cursor += bytes;
+
+	// 7. Store anim uuids
+	bytes = sizeof(uint) * animationUuids.size();
+	if (animationUuids.size() > 0)
+		memcpy(cursor, &animationUuids[0], bytes);
+
+	cursor += bytes;
+
+	// 8. Store import settings
 	bytes = sizeof(int);
 	memcpy(cursor, &meshImportSettings.postProcessConfigurationFlags, bytes);
 
@@ -206,7 +251,8 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 	return lastModTime;
 }
 
-bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceMeshImportSettings& meshImportSettings, std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids)
+bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceMeshImportSettings& meshImportSettings,
+	std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids, std::vector<uint>& animationUuids)
 {
 	assert(metaFile != nullptr);
 
@@ -253,7 +299,23 @@ bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, Resource
 
 		cursor += bytes;
 
-		// 4. Load import settings
+		// 6. Load uuids size ANIM
+		uuidsSize = 0;
+		bytes = sizeof(uint);
+		memcpy(&uuidsSize, cursor, bytes);
+		//assert(uuidsSize > 0);
+
+		cursor += bytes;
+
+		// 7. Load ANIM uuids
+		animationUuids.resize(uuidsSize);
+		bytes = sizeof(uint) * uuidsSize;
+		if (animationUuids.size() > 0)
+			memcpy(&animationUuids[0], cursor, bytes);
+
+		cursor += bytes;
+
+		// 8. Load import settings
 		bytes = sizeof(int);
 		memcpy(&meshImportSettings.postProcessConfigurationFlags, cursor, bytes);
 
@@ -280,7 +342,8 @@ bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, Resource
 }
 
 // Returns true if the meshes uuids vector is not empty. Else, returns false
-bool ResourceMesh::ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids)
+bool ResourceMesh::ReadMeshesUuidsFromBuffer(const char* buffer, 
+	std::vector<uint>& meshesUuids, std::vector<uint>& bonesUuids, std::vector<uint>& animationUuids)
 {
 	char* cursor = (char*)buffer;
 
@@ -320,6 +383,23 @@ bool ResourceMesh::ReadMeshesUuidsFromBuffer(const char* buffer, std::vector<uin
 
 	cursor += bytes;
 
+	// 6. Load uuids size ANIM
+	uuidsSize = 0;
+	bytes = sizeof(uint);
+	memcpy(&uuidsSize, cursor, bytes);
+	//assert(uuidsSize > 0);
+
+	cursor += bytes;
+
+	// 7. Load ANIM uuids
+	animationUuids.resize(uuidsSize);
+	if (animationUuids.size() > 0) {
+		bytes = sizeof(uint) * uuidsSize;
+		memcpy(&animationUuids[0], cursor, bytes);
+	}
+
+	cursor += bytes;
+
 	if (meshesUuids.size() > 0)
 		return true;
 	else
@@ -334,10 +414,12 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 	ResourceMeshImportSettings oldMeshImportSettings;
 	std::vector<uint> meshesUuids;
 	std::vector<uint> bonesUuids;
-	ReadMeta(metaFile, lastModTime, oldMeshImportSettings, meshesUuids, bonesUuids);
+	std::vector<uint> animationUuids;
+	ReadMeta(metaFile, lastModTime, oldMeshImportSettings, meshesUuids, bonesUuids, animationUuids);
 
 	uint uuidsSize = meshesUuids.size();
 	uint bones_uuids_size = bonesUuids.size();
+	uint animation_uuids_size = animationUuids.size();
 
 	uint size =
 		sizeof(int64_t) +
@@ -346,6 +428,9 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 		sizeof(uint) +
 		sizeof(uint) * bones_uuids_size +
+
+		sizeof(uint) +
+		sizeof(uint) * animation_uuids_size +
 
 		sizeof(int) +
 		sizeof(uint) +
@@ -385,7 +470,20 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 	cursor += bytes;
 
-	// 6. Store import settings
+	// 6. Store uuids size ANIM
+	bytes = sizeof(uint);
+	memcpy(cursor, &animation_uuids_size, bytes);
+
+	cursor += bytes;
+
+	// 7. Store ANIM uuids
+	bytes = sizeof(uint) * animationUuids.size();
+	if (animationUuids.size() > 0)
+		memcpy(cursor, &animationUuids[0], bytes);
+
+	cursor += bytes;
+
+	// 8. Store import settings
 	bytes = sizeof(int);
 	memcpy(cursor, &meshImportSettings.postProcessConfigurationFlags, bytes);
 

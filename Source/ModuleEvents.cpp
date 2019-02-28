@@ -92,12 +92,5 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 				CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
 			break;
 		}
-
-		case System_Event_Type::ScriptingDomainReloaded:
-		{
-			App->scripting->CreateDomain();
-			App->scripting->RecompileScripts();
-			App->scripting->ReInstance();
-		}
 	}
 }

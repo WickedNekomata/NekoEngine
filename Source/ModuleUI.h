@@ -80,6 +80,9 @@ private:
 	
 	bool anyItemIsHovered = false;
 
+private:
+	bool MouseInScreen();
+
 	//Shader functions
 		// use/activate the shader
 	static void use(unsigned int ID);

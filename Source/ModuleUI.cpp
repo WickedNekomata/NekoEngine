@@ -7,6 +7,7 @@
 #include "ModuleGOs.h"
 #include "ModuleWindow.h"
 #include "ModuleCameraEditor.h"
+#include "ModuleInput.h"
 
 #include "GameObject.h"
 #include "GameObject.h"
@@ -87,19 +88,14 @@ bool ModuleUI::Start()
 
 update_status ModuleUI::PreUpdate()
 {
-	anyItemIsHovered = false;
+	anyItemIsHovered = MouseInScreen();
 	return update_status::UPDATE_CONTINUE;
 }
 
 update_status ModuleUI::Update()
 {
 	for (std::list<Component*>::iterator iteratorUI = componentsUI.begin(); iteratorUI != componentsUI.end(); ++iteratorUI)
-	{
 		(*iteratorUI)->Update();
-		if(!anyItemIsHovered)
-			if ((*iteratorUI)->GetType() == ComponentTypes::ButtonComponent)
-				anyItemIsHovered = ((ComponentButton*)(*iteratorUI))->GetFlags()[B_STATE_HOVERED];
-	}
 
 	return update_status::UPDATE_CONTINUE;
 }
@@ -247,7 +243,7 @@ void ModuleUI::OnWindowResize(uint width, uint height)
 	ui_size_draw[UI_HEIGHTRECT] = height;
 }
 
- uint * ModuleUI::GetRectUI()
+ uint* ModuleUI::GetRectUI()
 {
 	return ui_size_draw;
 }
@@ -264,6 +260,34 @@ void ModuleUI::LinkAllRectsTransform()
 		ComponentRectTransform* cmp_rect = (ComponentRectTransform*)go_rect->GetComponent(ComponentTypes::RectTransformComponent);
 		cmp_rect->CheckParentRect();
 	}
+}
+
+bool ModuleUI::MouseInScreen()
+{
+	if (App->GOs->ExistCanvas())
+	{
+		GameObject* canvas = App->GOs->GetCanvas();
+
+		std::vector<GameObject*> gos;
+		canvas->GetChildrenAndThisVectorFromLeaf(gos);
+		std::reverse(gos.begin(), gos.end());
+
+		for (GameObject* go_rect : gos)
+		{
+			uint* rect = ((ComponentRectTransform*)go_rect->GetComponent(ComponentTypes::RectTransformComponent))->GetRect();
+
+			if (rect)
+			{
+				uint mouseX = App->input->GetMouseX();
+				uint mouseY = App->input->GetMouseY();
+
+				if (mouseX > rect[X_RECT] && mouseX < rect[X_RECT] + rect[XDIST_RECT]
+					&& mouseY > rect[Y_RECT] && mouseY < rect[Y_RECT] + rect[YDIST_RECT])
+					return true;
+			}
+		}
+	}
+	return false;
 }
 
 // Shader methods

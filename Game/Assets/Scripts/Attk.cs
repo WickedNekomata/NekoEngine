@@ -10,7 +10,7 @@ public class Attk : JellyScript
     // Raycast
     private RaycastHit hit;
     private int terrainMask = LayerMask.GetMask("Default");
-    private int enemyMask = LayerMask.GetMask("Default");
+    private int enemyMask = LayerMask.GetMask("Enemy");
 
     //Agent
     private NavMeshAgent agent = null;

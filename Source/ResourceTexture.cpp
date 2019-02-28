@@ -63,7 +63,8 @@ bool ResourceTexture::ImportFile(const char* file, ResourceTextureImportSettings
 	else
 	{
 		uint uuid = 0;
-		assert(ResourceTexture::ReadTextureUuidFromMeta(metaFile, uuid));
+		int64_t lastModTime = 0;
+		assert(ResourceTexture::ReadMeta(metaFile, lastModTime, textureImportSettings, uuid));
 
 		char entry[DEFAULT_BUF_SIZE];
 		sprintf_s(entry, "%u%s", uuid, EXTENSION_TEXTURE);
@@ -81,7 +82,6 @@ bool ResourceTexture::ImportFile(const char* file, ResourceTextureImportSettings
 			// Import the file (using the import settings from the meta)
 			CONSOLE_LOG(LogTypes::Normal, "Resource Texture: The file '%s' has Library file(s) that need(s) to be reimported", file);
 
-			ResourceTexture::ReadTextureImportSettingsFromMeta(metaFile, textureImportSettings);
 			imported = App->materialImporter->Import(file, outputFile, textureImportSettings, uuid);
 		}
 	}

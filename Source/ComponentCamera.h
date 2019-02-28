@@ -14,7 +14,7 @@ class ComponentCamera : public Component
 public:
 
 	ComponentCamera(GameObject* parent, bool dummy = false);
-	ComponentCamera(const ComponentCamera& componentCamera);
+	ComponentCamera(const ComponentCamera& componentCamera, GameObject* parent, bool include = true);
 	~ComponentCamera();
 
 	void UpdateTransform();

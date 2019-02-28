@@ -55,6 +55,8 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 		CreateDir(DIR_LIBRARY_MESHES);
 		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_BONES);
+		CreateDir(DIR_LIBRARY_ANIMATIONS);
 		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }
@@ -78,7 +80,18 @@ update_status ModuleFileSystem::PreUpdate()
 bool ModuleFileSystem::Start()
 {
 	rootAssets = RecursiveGetFilesFromDir("Assets");
-	ImportFilesEvents(rootAssets);
+
+	std::vector<std::string> lateEvents;
+	ImportFilesEvents(rootAssets, lateEvents);
+
+	for (int i = 0; i < lateEvents.size(); ++i)
+	{
+		//The ResourceManager already manages the .meta, already imported files etc. on his own.
+		System_Event event;
+		event.fileEvent.type = System_Event_Type::ImportFile;
+		strcpy(event.fileEvent.file, lateEvents[i].data());
+		App->PushSystemEvent(event);
+	}
 
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;
@@ -957,7 +970,7 @@ void ModuleFileSystem::SendEvents(const Directory& newAssetsDir)
 	}
 }
 
-void ModuleFileSystem::ImportFilesEvents(const Directory& directory)
+void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector<std::string>& lateEvents)
 {
 	for (int i = 0; i < directory.files.size(); ++i)
 	{
@@ -968,11 +981,28 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory)
 		strcat(filePath, "/");
 		strcat(filePath, directory.files[i].name.data());
 
-		//The ResourceManager already manages the .meta, already imported files etc. on his own.
-		System_Event event;
-		event.fileEvent.type = System_Event_Type::ImportFile;
-		strcpy(event.fileEvent.file, filePath);
-		App->PushSystemEvent(event);
+		//Send the ResourceMaterials at the end
+		std::string extension;
+		GetExtension(filePath, extension);
+
+		switch (App->res->GetResourceTypeByExtension(extension.data()))
+		{
+			case ResourceTypes::MaterialResource:
+			{
+				lateEvents.push_back(filePath);
+				break;
+			}
+			default:
+			{
+				//The ResourceManager already manages the .meta, already imported files etc. on his own.
+				System_Event event;
+				event.fileEvent.type = System_Event_Type::ImportFile;
+				strcpy(event.fileEvent.file, filePath);
+				App->PushSystemEvent(event);
+
+				break;
+			}			
+		}
 
 		/*
 		strcpy(metaFile, filePath);
@@ -1035,7 +1065,7 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory)
 
 	for (int i = 0; i < directory.directories.size(); ++i)
 	{
-		ImportFilesEvents(directory.directories[i]);
+		ImportFilesEvents(directory.directories[i], lateEvents);
 	}
 }
 

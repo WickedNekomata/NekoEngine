@@ -9,6 +9,7 @@
 #include "ModuleInput.h"
 #include "ModuleGui.h"
 #include "ModuleInternalResHandler.h"
+#include "ModuleResourceManager.h"
 
 #include "SDL\include\SDL_scancode.h"
 #include "ModuleGOs.h"
@@ -16,6 +17,8 @@
 #include "imgui\imgui_internal.h"
 
 #include "ComponentTransform.h"
+
+#include "ResourcePrefab.h"
 
 PanelHierarchy::PanelHierarchy(const char* name) : Panel(name) {}
 
@@ -81,11 +84,14 @@ bool PanelHierarchy::Draw()
 	ImRect rect(ImGui::GetWindowPos(), ImGui::GetWindowSize());
 	if (ImGui::BeginDragDropTargetCustom(rect, ImGui::GetID(name)))
 	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DROP_PREFAB_TO_GAME"))
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PREFAB_RESOURCE", 0))
 		{
-			char* payload_n = (char*)payload->Data;
-			// TODO
-			//App->GOs->LoadScene(payload_n);
+			ResourcePrefab* prefab = *(ResourcePrefab**)payload->Data;
+			App->res->SetAsUsed(prefab->GetUuid());
+
+			GameObject* tmp_go = App->GOs->Instanciate(prefab->GetRoot(), App->scene->root);
+
+			App->res->SetAsUnused(prefab->GetUuid());
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -128,7 +134,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 					App->GOs->DeleteGameObject(child);
 				}
 
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 
 				if (treeNodeOpened)
@@ -158,7 +164,7 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 					App->GOs->DeleteGameObject(child);
 				}
 
-				if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 					SELECT(child);
 			}
 		}

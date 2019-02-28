@@ -6,13 +6,14 @@
 #include "Globals.h"
 
 struct Mesh;
+class ResourceMesh;
 
 class ComponentMesh : public Component
 {
 public:
 
 	ComponentMesh(GameObject* parent);
-	ComponentMesh(const ComponentMesh& componentMesh);
+	ComponentMesh(const ComponentMesh& componentMesh, GameObject* parent, bool include = true);
 	~ComponentMesh();
 
 	void Update();
@@ -27,10 +28,12 @@ public:
 
 public:
 
-	uint res = 0;
+	uint res = 0u;
 
 	// navmesh utility
 	bool nv_walkable = true;
+
+	uint root_bones_uid = 0u;
 };
 
 #endif

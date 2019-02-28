@@ -90,13 +90,17 @@ struct StartValues
 		colorTime.name = "Start Color";
 		color.push_back(colorTime);
 	}
+
+	void operator=(StartValues startValue);
+	void OnInternalSave(char *& cursor);
+	void OnInternalLoad(char *& cursor);
 };
 
 class ComponentEmitter : public Component
 {
 public:
 	ComponentEmitter(GameObject* gameObject);
-	ComponentEmitter(const ComponentEmitter & componentEmitter);
+	ComponentEmitter(const ComponentEmitter & componentEmitter, GameObject* parent, bool include = true);
 	~ComponentEmitter();
 
 	void StartEmitter();
@@ -214,6 +218,7 @@ private:
 	// Number of particles created per second
 	int rateOverTime = 10;
 	float timeToParticle = 0.0f;
+	uint nameLenght;
 	//---------------------------------------
 };
 #endif // !__Emitter_H__

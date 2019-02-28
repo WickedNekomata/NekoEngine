@@ -32,6 +32,7 @@
 #include "ComponentLabel.h"
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
+#include "ComponentAnimation.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -48,14 +49,23 @@ GameObject::GameObject(const char* name, GameObject* parent, bool disableTransfo
 			AddComponent(ComponentTypes::TransformComponent);
 	}
 
+	originalBoundingBox.SetNegativeInfinity();
 	boundingBox.SetNegativeInfinity();
 
 	uuid = App->GenerateRandomNumber();
 }
 
-GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
+GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 {
 	strcpy_s(name, DEFAULT_BUF_SIZE, gameObject.name);
+
+	boundingBox = gameObject.boundingBox;
+
+	isActive = gameObject.isActive;
+	isStatic = gameObject.isStatic;
+	seenLastFrame = gameObject.seenLastFrame;
+
+	uuid = App->GenerateRandomNumber();
 
 	for (int i = 0; i < gameObject.components.size(); ++i)
 	{
@@ -64,47 +74,52 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 		switch (type)
 		{
 		case ComponentTypes::TransformComponent:
-			transform = new ComponentTransform(*gameObject.transform);
+			transform = new ComponentTransform(*gameObject.transform, this);
 			transform->SetParent(this);
 			components.push_back(transform);
 			break;
 		case ComponentTypes::MeshComponent:
-			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh);
+			cmp_mesh = new ComponentMesh(*gameObject.cmp_mesh, this, includeComponents);
 			cmp_mesh->SetParent(this);
 			components.push_back(cmp_mesh);
 			break;
 		case ComponentTypes::MaterialComponent:
-			cmp_material = new ComponentMaterial(*gameObject.cmp_material);
-			cmp_mesh->SetParent(this);
+			cmp_material = new ComponentMaterial(*gameObject.cmp_material, this);
+			cmp_material->SetParent(this);
 			components.push_back(cmp_material);
 			break;
 		case ComponentTypes::CameraComponent:
-			cmp_camera = new ComponentCamera(*gameObject.cmp_camera);
+			cmp_camera = new ComponentCamera(*gameObject.cmp_camera, this, includeComponents);
 			cmp_camera->SetParent(this);
 			components.push_back(cmp_camera);
 			break;
 		case ComponentTypes::NavAgentComponent:
-			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent);
+			cmp_navAgent = new ComponentNavAgent(*gameObject.cmp_navAgent, this, includeComponents);
 			cmp_navAgent->SetParent(this);
 			components.push_back(cmp_navAgent);
 			break;
 		case ComponentTypes::EmitterComponent:
-			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter);
+			cmp_emitter = new ComponentEmitter(*gameObject.cmp_emitter, this, includeComponents);
 			cmp_emitter->SetParent(this);
 			components.push_back(cmp_emitter);
 			break;
 		case ComponentTypes::BoneComponent:
-			cmp_bone = new ComponentBone(*gameObject.cmp_bone);
+			cmp_bone = new ComponentBone(*gameObject.cmp_bone, this);
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
+		case ComponentTypes::AnimationComponent:
+			cmp_animation = new ComponentAnimation(*gameObject.cmp_animation, this);
+			cmp_animation->SetParent(this);
+			components.push_back(cmp_animation);
+			break;
 		case ComponentTypes::LightComponent:
-			cmp_light = new ComponentLight(*gameObject.cmp_light);
+			cmp_light = new ComponentLight(*gameObject.cmp_light, this);
 			cmp_light->SetParent(this);
 			components.push_back(cmp_light);
 			break;
 		case ComponentTypes::ProjectorComponent:
-			cmp_projector = new ComponentProjector(*gameObject.cmp_projector);
+			cmp_projector = new ComponentProjector(*gameObject.cmp_projector, this);
 			cmp_projector->SetParent(this);
 			components.push_back(cmp_projector);
 			break;
@@ -153,27 +168,25 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 		case ComponentTypes::LabelComponent:
 			cmp_label = new ComponentLabel(*gameObject.cmp_label);
 			break;
+		case ComponentTypes::ScriptComponent:
+		{
+			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i], this, includeComponents);
+			script->SetParent(this);
+			components.push_back(script);
+			break;
+		}
 		}
 	}
 
-	boundingBox = gameObject.boundingBox;
 
-	isActive = gameObject.isActive;
-	isStatic = gameObject.isStatic;
-	seenLastFrame = gameObject.seenLastFrame;
+	children.reserve(gameObject.children.size());
+	for (int i = 0; i < gameObject.children.size(); ++i)
+	{
+		GameObject* childClone = new GameObject(*gameObject.children[i], includeComponents);
+		childClone->parent = this;
+		childClone->parent_uuid = this->uuid;
 
-	uuid = App->GenerateRandomNumber();
-	if (newRoot)
-	{
-		parent_uuid = newRoot->parent_uuid;
-		parent = newRoot->parent;
-		newRoot->AddChild(this);
-	}
-	else
-	{
-		parent_uuid = gameObject.parent_uuid;
-		parent = gameObject.parent;
-		gameObject.AddChild(this);
+		children.push_back(childClone);
 	}
 }
 
@@ -182,6 +195,23 @@ GameObject::~GameObject()
 	// Components could not be destroyed by event at fbx exportation, for example.
 	for (int i = 0; i < components.size(); ++i)
 		delete components[i];
+}
+
+void GameObject::DestroyTemplate()
+{
+	for (int i = 0; i < components.size(); ++i)
+		delete components[i];
+
+	components.clear();
+
+	for (int i = 0; i < children.size(); ++i)
+		children[i]->DestroyTemplate();
+
+	children.clear();
+
+	App->scripting->GameObjectKilled(this);
+
+	delete this;
 }
 
 void GameObject::SetName(const char* name)
@@ -207,7 +237,10 @@ void GameObject::ForceUUID(uint uuid)
 void GameObject::SetParent(GameObject* parent)
 {
 	this->parent = parent;
-	parent_uuid = parent->GetUUID();
+	if (parent == 0)
+		parent_uuid = 0;
+	else
+		parent_uuid = parent->GetUUID();
 }
 
 GameObject* GameObject::GetParent() const
@@ -263,32 +296,14 @@ void GameObject::OnDisable()
 
 void GameObject::RecursiveRecalculateBoundingBoxes()
 {
-	//TODO: Fix BoundingBoxes calcs. We cant calculate every frame all tris of GO
-	if (cmp_emitter == nullptr)
-		boundingBox.SetNegativeInfinity();
+	// Get the OBB from the mesh original AABB (no translation, rotation or scale)
+	math::OBB obb = originalBoundingBox.ToOBB();
 
-	// Grow bounding box
-	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
-	{
-		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
-		int nVerts = meshRes->GetVerticesCount();
-		float* vertices = new float[nVerts * 3];
-		meshRes->GetTris(vertices);
-		boundingBox.Enclose((const math::float3*)vertices, nVerts);
-		delete[] vertices;
-	}
-	else if (cmp_emitter != nullptr)
-	{
-		ComponentEmitter* comp = (ComponentEmitter*)GetComponent(EmitterComponent);
-		comp->SetAABB(boundingBox.Size());
-	}
-	// Transform bounding box (calculate OBB)
-	math::OBB obb;
-	obb.SetFrom(boundingBox);
+	// Transform the obb using the GameObject transform
 	math::float4x4 transformMatrix = transform->GetGlobalMatrix();
 	obb.Transform(transformMatrix);
 
-	// Calculate AABB
+	// Calculate the minimal enclosing AABB from the transformed OBB
 	if (obb.IsFinite())
 		boundingBox = obb.MinimalEnclosingAABB();
 
@@ -296,10 +311,29 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		children[i]->RecursiveRecalculateBoundingBoxes();
 }
 
+void GameObject::CalculateBoundingBox()
+{
+	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
+	{
+		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
+		int nVerts = meshRes->GetVerticesCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetTris(vertices);
+		originalBoundingBox.SetNegativeInfinity();
+		originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
+		delete[] vertices;
+
+	}
+}
+
+
 void GameObject::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
+		CalculateBoundingBox();
+		break;
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;
@@ -308,6 +342,14 @@ void GameObject::OnSystemEvent(System_Event event)
 	{
 		monoObjectHandle = 0;
 
+		for (auto component = components.begin(); component != components.end(); ++component)
+		{
+			(*component)->OnSystemEvent(event);
+		}
+		break;
+	}
+	case System_Event_Type::LoadFinished:
+	{
 		for (auto component = components.begin(); component != components.end(); ++component)
 		{
 			(*component)->OnSystemEvent(event);
@@ -418,7 +460,7 @@ bool GameObject::EqualsToChildrenOrThis(const void* isEqual) const
 	return ret;
 }
 
-Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies)
+Component* GameObject::AddComponent(ComponentTypes componentType, bool createDependencies, bool includeInModules)
 {
 	Component* newComponent;
 	Component* newMaterial = 0;
@@ -470,7 +512,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		if (cmp_canvasRenderer == nullptr)
 			AddComponent(ComponentTypes::CanvasRendererComponent);
 		newComponent = cmp_button = new ComponentButton(this);
-		break;	
+		break;
 	case ComponentTypes::LabelComponent:
 		if (cmp_canvasRenderer == nullptr)
 			AddComponent(ComponentTypes::CanvasRendererComponent);
@@ -479,6 +521,10 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
+		break;
+	case ComponentTypes::AnimationComponent:
+		assert(cmp_animation == NULL);
+		newComponent = cmp_animation = new ComponentAnimation(this);
 		break;
 	case ComponentTypes::LightComponent:
 		assert(cmp_light == NULL);
@@ -515,9 +561,8 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::ScriptComponent:
 	{
 		newComponent = new ComponentScript("", this);
-
-		//TODO: CORRECT THIS
-		App->scripting->AddScriptComponent((ComponentScript*)newComponent);
+		if(includeInModules)
+			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 		break;
 	}
 	}
@@ -554,6 +599,7 @@ bool GameObject::DestroyComponent(Component* destroyed)
 		newEvent.compEvent.component = cmp_material;
 		App->PushSystemEvent(newEvent);
 	}
+
 	return true;
 }
 
@@ -597,9 +643,10 @@ void GameObject::ReorderComponents(Component* source, Component* target)
 	components.insert(components.begin() + index, source);
 }
 
-void GameObject::GetChildrenVector(std::vector<GameObject*>& go)
+void GameObject::GetChildrenVector(std::vector<GameObject*>& go, bool thisGo)
 {
-	go.push_back(this);
+	if (thisGo)
+		go.push_back(this);
 
 	for (int i = 0; i < children.size(); i++)
 		children[i]->GetChildrenVector(go);
@@ -648,7 +695,7 @@ void GameObject::OnSave(char*& cursor) const
 		components[i]->OnSave(cursor);
 }
 
-void GameObject::OnLoad(char*& cursor)
+void GameObject::OnLoad(char*& cursor, bool includeInModules)
 {
 	size_t bytes = sizeof(uint);
 	memcpy(&uuid, cursor, bytes);
@@ -683,7 +730,7 @@ void GameObject::OnLoad(char*& cursor)
 		ComponentTypes componentType;
 		memcpy(&componentType, cursor, bytes);
 		cursor += bytes;
-		Component* cmp = AddComponent(componentType, false);
+		Component* cmp = AddComponent(componentType, false, includeInModules);
 		cmp->OnLoad(cursor);
 	}
 }

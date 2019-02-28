@@ -9,24 +9,17 @@ uniform mat4 model_matrix;
 uniform mat4 mvp_matrix;
 uniform mat3 normal_matrix;
 
-uniform mat4 projector_matrix;
-
 out vec3 fPosition;
 out vec3 fNormal;
 out vec4 fColor;
 out vec2 fTexCoord;
 
-out vec4 fProjectorTexCoord;
-
 void main()
 {
-    vec4 pos4 = vec4(position, 1.0);
-
-	fPosition = vec3(model_matrix * pos4);
+	fPosition = vec3(model_matrix * vec4(position, 1.0));
 	fNormal = normalize(normal_matrix * normal);
 	fColor = color;
 	fTexCoord = texCoord;
-	fProjectorTexCoord = projector_matrix * pos4;
 
-	gl_Position = mvp_matrix * pos4;
+	gl_Position = mvp_matrix * vec4(position, 1.0);
 }

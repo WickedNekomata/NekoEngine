@@ -8,7 +8,7 @@ class ComponentNavAgent : public Component
 public:
 
 	ComponentNavAgent(GameObject* parent);
-	ComponentNavAgent(const ComponentNavAgent& componentTransform);
+	ComponentNavAgent(const ComponentNavAgent& componentTransform, GameObject* parent, bool include = true);
 	~ComponentNavAgent();
 
 	void Update();

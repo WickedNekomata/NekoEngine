@@ -567,8 +567,8 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 	ImGui::Text("Filter Mode");
 	const char* filter[] = { "Nearest", "Linear",
 		"Nearest Mipmap Nearest", "Linear Mipmap Nearest", "Nearest Mipmap Linear", "Linear Mipmap Linear" };
-	if (ImGui::Combo("Min Filter", (int*)&t_is.minFilter, filter, IM_ARRAYSIZE(filter)))
-	if (ImGui::Combo("Mag Filter", (int*)&t_is.magFilter, filter, IM_ARRAYSIZE(filter)))
+	ImGui::Combo("Min Filter", (int*)&t_is.minFilter, filter, IM_ARRAYSIZE(filter));
+	ImGui::Combo("Mag Filter", (int*)&t_is.magFilter, filter, IM_ARRAYSIZE(filter));
 	ImGui::PopItemWidth();
 
 	if (t_is.UseMipmap())
@@ -638,6 +638,8 @@ void PanelInspector::ShowShaderObjectInspector() const
 	ImGui::TextColored(BLUE, "%s", shaderObject->GetFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", shaderObject->GetUuid());
+	ImGui::Text("References:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", shaderObject->GetReferencesCount());
 
 	ImGui::Spacing();
 
@@ -803,6 +805,9 @@ void PanelInspector::ShowMaterialInspector() const
 	}
 
 	ImGui::SameLine(); ImGui::Text("%s", shader->GetName());
+
+	if (ImGui::Button("EDIT"))
+		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shader->GetUuid());
 
 	ImGui::Spacing();
 

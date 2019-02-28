@@ -20,6 +20,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMaterial.h"
 #include "ResourceShaderProgram.h"
+#include "ResourcePrefab.h"
 
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
@@ -51,6 +52,35 @@ bool PanelAssets::Draw()
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
 		CreateResourcePopUp(DIR_ASSETS);
+
+		//Create the dummy to receive GameObject drops from the hierarchy;
+		ImVec2 drawingPos = ImGui::GetCursorScreenPos();
+		ImVec2 winSize = ImGui::GetWindowSize();
+
+		ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+		ImGui::Dummy(winSize);
+		ImGui::SetCursorScreenPos(drawingPos);
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECTS_HIERARCHY", 0);
+			if (payload)
+			{
+				GameObject* gameObject = *(GameObject**)payload->Data;
+
+				ResourceData data;
+				data.file = DIR_ASSETS_PREFAB + std::string("/") + gameObject->GetName() + EXTENSION_PREFAB;
+				data.exportedFile = "";
+				data.name = gameObject->GetName();
+
+				PrefabData prefabData;
+				prefabData.root = gameObject;
+
+				App->res->ExportFile(ResourceTypes::PrefabResource, data, &prefabData, std::string());			
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		if (treeNodeOpened)
 		{
 			RecursiveDrawAssetsDir(App->fs->rootAssets);
@@ -156,7 +186,9 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 				{		
 					std::vector<uint> uids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+					std::vector<uint> bone_uuids;
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					ResourceMesh* tempRes = (ResourceMesh*)App->res->GetResource(uids[0]);
 					SELECT(tempRes->GetSpecificData().meshImportSettings);
@@ -165,7 +197,9 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				if(fbxOpened)
 				{
 					std::vector<uint> uids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids);
+					std::vector<uint> bone_uuids;
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					for (int i = 0; i < uids.size(); ++i)
 					{

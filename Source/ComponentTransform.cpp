@@ -18,7 +18,7 @@
 
 ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, ComponentTypes::TransformComponent) {}
 
-ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform) : Component(componentTransform.parent, ComponentTypes::TransformComponent)
+ComponentTransform::ComponentTransform(const ComponentTransform& componentTransform, GameObject* parent) : Component(parent, ComponentTypes::TransformComponent)
 {
 	position = componentTransform.position;
 	rotation = componentTransform.rotation;
@@ -59,15 +59,11 @@ void ComponentTransform::OnUniqueEditor()
 			scale = math::float3::one;
 		}
 
-		const double f64_lo_a = -1000000000000000.0, f64_hi_a = +1000000000000000.0;
+		math::float4x4 matrix = parent->transform->GetMatrix();
 
 		ImGui::Text("Position");
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##PosX", ImGuiDataType_Float, (void*)&position.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##PosY", ImGuiDataType_Float, (void*)&position.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##PosZ", ImGuiDataType_Float, (void*)&position.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+		if (ImGui::DragFloat3("##Pos", &position[0], 0.01f, 0.0f, 0.0f, "%.3f"))
+			SavePrevTransform(matrix);
 
 		ImGui::Text("Rotation");
 		math::float3 axis;
@@ -75,31 +71,21 @@ void ComponentTransform::OnUniqueEditor()
 		rotation.ToAxisAngle(axis, angle);
 		axis *= angle;
 		axis *= RADTODEG;
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##AxisAngleX", ImGuiDataType_Float, (void*)&axis.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##AxisAngleY", ImGuiDataType_Float, (void*)&axis.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##AxisAngleZ", ImGuiDataType_Float, (void*)&axis.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+		if (ImGui::DragFloat3("##Rot", &axis[0], 0.1f, 0.0f, 0.0f, "%.3f"))
+		{
+			SavePrevTransform(matrix);
 		axis *= DEGTORAD;
 		rotation.SetFromAxisAngle(axis.Normalized(), axis.Length());
+		}
 
 		ImGui::Text("Scale");
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##ScaleX", ImGuiDataType_Float, (void*)&scale.x, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##ScaleY", ImGuiDataType_Float, (void*)&scale.y, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f); ImGui::SameLine();
-		ImGui::PushItemWidth(TRANSFORMINPUTSWIDTH);
-		ImGui::DragScalar("##ScaleZ", ImGuiDataType_Float, (void*)&scale.z, 0.1f, &f64_lo_a, &f64_hi_a, "%f", 1.0f);
+		if (ImGui::DragFloat3("##Scale", &scale[0], 0.01f, 0.0f, 0.0f, "%.3f"))
+			SavePrevTransform(matrix);
 
 		if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
 		{
-			// Transform updated: if the game object has a rigid body, update its transform
-			if (parent->cmp_rigidActor != nullptr)
-			{
-				math::float4x4 globalMatrix = GetGlobalMatrix();
-				parent->cmp_rigidActor->UpdateTransform(globalMatrix);
-			}
+			// Transform updated: if the game object or its children have a rigid body, update its transform
+			ComponentRigidActor::RecursiveUpdateTransforms(parent);
 
 			// Transform updated: if the game object has a camera, update its frustum
 			if (parent->cmp_camera != nullptr)
@@ -138,11 +124,13 @@ void ComponentTransform::OnUniqueEditor()
 
 void ComponentTransform::SavePrevTransform(const math::float4x4 & prevTransformMat)
 {
+#ifndef GAMEMODE
 	if (dragTransform)
 	{
 		App->scene->SaveLastTransform(prevTransformMat);
 		dragTransform = false;
 	}
+#endif // !GAMEMODE
 }
 
 math::float4x4& ComponentTransform::GetMatrix() const
@@ -189,12 +177,8 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 		newMatrix.Decompose(position, rotation, scale);
 	}
 
-	// Transform updated: if the game object has a rigid body, update its transform
-	if (parent->cmp_rigidActor != nullptr)
-	{
-		math::float4x4 globalMatrix = GetGlobalMatrix();
-		parent->cmp_rigidActor->UpdateTransform(globalMatrix);
-	}
+	// Transform updated: if the game object or its children have a rigid body, update its transform
+	ComponentRigidActor::RecursiveUpdateTransforms(parent);
 
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->cmp_camera != nullptr)

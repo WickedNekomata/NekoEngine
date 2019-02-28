@@ -17,19 +17,22 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent, bool disableTransform = false);
-	GameObject* Instanciate(GameObject* target, GameObject* newRoot = 0);
+	GameObject* Instanciate(GameObject* target, GameObject* newRoot = nullptr);
 	void DeleteGameObject(GameObject* toDelete);
 	void Kill(GameObject* go);
 
 	void GetGameobjects(std::vector<GameObject*>& gos) const;
 	void GetStaticGameobjects(std::vector<GameObject*>& gos) const;
 	void GetDynamicGameobjects(std::vector<GameObject*>& gos) const;
+	GameObject* GetGameObjectByUID(uint UID) const;
 
 	void ClearScene();
 
-	void RecalculateVector(GameObject* go); //if static or dynamic
+	void RecalculateVector(GameObject* go, bool sendEvent = true); //if static or dynamic
 
 	bool static SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh = false);
+	static GameObject* DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool navmesh = false);
+
 	bool LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh = false);
 
 	bool InvalidateResource(Resource* resource);

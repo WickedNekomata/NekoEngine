@@ -33,6 +33,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
 	case System_Event_Type::RecalculateBBoxes:
 
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
@@ -126,21 +127,12 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		InvalidateResource(event.resEvent.resource);
 		break;
 	case System_Event_Type::ScriptingDomainReloaded:
-	{
-		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if (event.goEvent.gameObject == *it)
-				(*it)->OnSystemEvent(event);
-		}
-		break;
-	}
-
 	case System_Event_Type::Stop:
+	case System_Event_Type::LoadFinished:
 	{
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{
-			if (event.goEvent.gameObject == *it)
-				(*it)->OnSystemEvent(event);
+		{			
+			(*it)->OnSystemEvent(event);
 		}
 		break;
 	}
@@ -174,17 +166,28 @@ GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, 
 GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
-	gameobjects.push_back(newGameObject);
 
-	if (!copy->IsStatic())
-		dynamicGos.push_back(newGameObject);
+	if(!newRoot)
+	{
+		newGameObject->SetParent(copy->GetParent());
+		copy->GetParent()->AddChild(newGameObject);
+	}
 	else
 	{
-		staticGos.push_back(newGameObject);
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
+		newGameObject->SetParent(newRoot);
+		newRoot->AddChild(newGameObject);
 	}
+
+	std::vector<GameObject*> childs; newGameObject->GetChildrenAndThisVectorFromLeaf(childs);
+	for (int i = 0; i < childs.size(); ++i)
+	{
+		gameobjects.push_back(childs[i]);
+		App->GOs->RecalculateVector(childs[i], false);
+	}
+
+	System_Event newEvent;
+	newEvent.type = System_Event_Type::RecreateQuadtree;
+	App->PushSystemEvent(newEvent);
 
 	return newGameObject;
 }
@@ -221,6 +224,18 @@ void ModuleGOs::GetDynamicGameobjects(std::vector<GameObject*>& gos) const
 	gos = dynamicGos;
 }
 
+GameObject* ModuleGOs::GetGameObjectByUID(uint UID) const
+{
+	for (int i = 0; i < gameobjects.size(); ++i)
+	{
+		if (gameobjects[i]->GetUUID() == UID)
+		{
+			return gameobjects[i];
+		}
+	}
+	return nullptr;
+}
+
 void ModuleGOs::ClearScene()
 {
 	for (int i = 0; i < gameobjects.size(); ++i)
@@ -233,7 +248,7 @@ void ModuleGOs::ClearScene()
 	App->scene->FreeRoot();
 }
 
-void ModuleGOs::RecalculateVector(GameObject* go)
+void ModuleGOs::RecalculateVector(GameObject* go, bool sendEvent)
 {
 	dynamicGos.erase(std::remove(dynamicGos.begin(), dynamicGos.end(), go), dynamicGos.end());
 	staticGos.erase(std::remove(staticGos.begin(), staticGos.end(), go), staticGos.end());
@@ -243,9 +258,12 @@ void ModuleGOs::RecalculateVector(GameObject* go)
 	else
 		dynamicGos.push_back(go);
 
-	System_Event newEvent;
-	newEvent.type = System_Event_Type::RecreateQuadtree;
-	App->PushSystemEvent(newEvent);
+	if (sendEvent)
+	{
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}	
 }
 
 bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)
@@ -275,6 +293,40 @@ bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_
 		App->navigation->SaveNavmesh(cursor);
 
 	return true;
+}
+
+GameObject* ModuleGOs::DeSerializeToNode(char*& buffer, size_t sizeBuffer, bool navmesh)
+{
+	char* cursor = buffer;
+	size_t bytes = sizeof(uint);
+	uint totalGO;
+	memcpy(&totalGO, cursor, bytes);
+	cursor += bytes;
+
+	std::vector<GameObject*> gos;
+	gos.reserve(totalGO);
+
+	for (int i = 0; i < totalGO; ++i)
+	{
+		GameObject* go = new GameObject("", nullptr, true);
+		go->OnLoad(cursor, false);
+
+		for (int i = gos.size() - 1; i >= 0; --i)
+		{
+			if (gos[i]->GetUUID() == go->GetParentUUID())
+			{
+				go->SetParent(gos[i]);
+				gos[i]->AddChild(go);
+			}
+		}
+
+		if (go->GetParent() == 0)
+			go->SetParent(0);
+
+		gos.push_back(go);
+	}
+
+	return gos[0]; //the root node
 }
 
 bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
@@ -329,6 +381,10 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 	// Discuss if this should be a resource
 	if (navmesh)
 		App->navigation->LoadNavmesh(cursor);
+
+	System_Event event;
+	event.type = System_Event_Type::LoadFinished;
+	App->PushSystemEvent(event);
 
 	return true;
 }

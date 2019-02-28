@@ -9,7 +9,12 @@ class ComponentScript : public Component
 {
 public:
 	ComponentScript(std::string scriptName, GameObject* gameObject = nullptr);
+	ComponentScript(ComponentScript& copy, GameObject* gameObject, bool includeComponents = true);
 	virtual ~ComponentScript();
+
+	//NOTE: If you override this method, make sure to call the base class method. 
+	//(Component::OnSystemEvent(event); at start)
+	void OnSystemEvent(System_Event event);
 
 	void Awake();
 	void Start();
@@ -27,6 +32,7 @@ public:
 	
 	uint GetInternalSerializationBytes();
 	uint GetPublicVarsSerializationBytes() const;
+	uint GetPublicVarsSerializationBytesFromBuffer(char* buffer) const;
 
 	void SavePublicVars(char*& cursor) const;
 	void LoadPublicVars(char*& cursor);
@@ -36,6 +42,7 @@ public:
 
 public:
 	void InstanceClass();
+	void InstanceClass(MonoObject* classInstance);
 
 public:
 	bool awaked = false;
@@ -43,6 +50,8 @@ public:
 
 	uint scriptResUUID = 0;
 
-	uint32_t handleID = 0;
+	uint tempBufferBytes = 0u;
+	char* tempBuffer = nullptr;
+
 	MonoObject* classInstance = nullptr;
 };

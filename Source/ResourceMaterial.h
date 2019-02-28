@@ -48,13 +48,14 @@ public:
 
 	void SetResourceTexture(uint textureUuid, uint& textureUuidUniform, uint& textureIdUniform);
 	std::vector<Uniform>& GetUniforms();
+	void ResetUniforms();
 
 private:
 
 	void InitResources();
 	void DeinitResources();
 
-	void SetUniformsAsUsed() const;
+	void SetUniformsAsUsed();
 	void SetUniformsAsUnused() const;
 
 	void EditTextureMatrix(uint textureUuid);

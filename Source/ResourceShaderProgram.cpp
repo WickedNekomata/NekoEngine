@@ -93,6 +93,7 @@ uint ResourceShaderProgram::CreateMeta(const char* file, uint shaderProgramUuid,
 	uint uuidsSize = 1;
 	uint nameSize = DEFAULT_BUF_SIZE;
 	uint namesSize = shaderObjectsNames.size();
+	assert(namesSize > 0);
 
 	// Name
 	char shaderName[DEFAULT_BUF_SIZE];
@@ -293,6 +294,7 @@ uint ResourceShaderProgram::SetNameToMeta(const char* metaFile, const std::strin
 	uint uuidsSize = 1;
 	uint nameSize = DEFAULT_BUF_SIZE;
 	uint namesSize = shaderObjectsNames.size();
+	assert(namesSize > 0);
 
 	// Name
 	char shaderName[DEFAULT_BUF_SIZE];
@@ -410,16 +412,6 @@ bool ResourceShaderProgram::Link()
 	{
 		DeleteShaderProgram(shaderProgram);
 		ret = false;
-	}
-	else
-	{
-		if (!App->firstFrame)
-		{
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::ShaderProgramChanged;
-			newEvent.shaderEvent.shader = shaderProgram;
-			App->PushSystemEvent(newEvent);
-		}
 	}
 
 	return ret;

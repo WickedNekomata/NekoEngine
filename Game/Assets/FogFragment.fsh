@@ -5,8 +5,6 @@ in vec3 fNormal;
 in vec4 fColor;
 in vec2 fTexCoord;
 
-in vec4 fProjectorTexCoord;
-
 out vec4 FragColor;
 
 struct Material
@@ -28,8 +26,6 @@ struct Light
 uniform vec3 viewPos;
 uniform Light light;
 uniform Material material;
-
-uniform sampler2D projectorTex;
 
 vec3 phong(vec3 ambient, vec3 diffuse, vec3 specular, float shininess, bool blinn)
 {
@@ -68,11 +64,5 @@ void main()
 	vec3 a = vec3(albedo);
 	vec3 s = vec3(texture(material.specular, fTexCoord));
 	vec3 phong = phong(a, a, s, 32.0, true);
-	vec4 color = vec4(phong, albedo.a);
-	
-	vec4 projectedTexColor = vec4(0.0);
-	if (fProjectorTexCoord.w > 0.0)
-	     projectedTexColor = textureProj(projectorTex, fProjectorTexCoord);
-	 
-	FragColor = projectedTexColor;
+	FragColor = vec4(phong, albedo.a);
 }

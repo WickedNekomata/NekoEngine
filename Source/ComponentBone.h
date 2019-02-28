@@ -11,23 +11,24 @@ public:
 
 	ComponentBone(GameObject* embedded_game_object);
 	ComponentBone(GameObject* embedded_game_object, uint resource);
+	ComponentBone(const ComponentBone& component_bone, GameObject* parent, bool include = true);
 	~ComponentBone();
 
+	void OnEditor();
+	void OnUniqueEditor();
+
 	uint GetInternalSerializationBytes();
-	bool Save(JSON_Object* component_obj) const;
-	bool Load(const JSON_Object* component_obj);
 
 	bool SetResource(uint resource);
 
-	void OnInternalSave(char*& cursor) {}
-	void OnInternalLoad(char*& cursor) {}
+	void OnInternalSave(char*& cursor);
+	void OnInternalLoad(char*& cursor);
 
 public:
-
 	ComponentMesh* attached_mesh = nullptr;
 
-	uint res = 0;
-
+	uint res = 0u;
+	uint attachedMesh = 0u;
 };
 
 #endif // __COMPONENT_BONE_H__

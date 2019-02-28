@@ -29,22 +29,39 @@ ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, C
 	frustum.nearPlaneDistance = 1.0f;
 	frustum.farPlaneDistance = 500.0f;
 	frustum.verticalFov = 60.0f * DEGTORAD;
-	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.3f);
+	frustum.horizontalFov = 60.0f * DEGTORAD;
 
 	// -----
 
 	App->renderer3D->AddProjectorComponent(this);
 }
 
-ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector) : Component(componentProjector.parent, ComponentTypes::ProjectorComponent)
+ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector, GameObject* parent) : Component(parent, ComponentTypes::ProjectorComponent)
 {
-	// TODO
+	SetMaterialRes(componentProjector.materialRes);
+
+	// Init frustum
+	frustum.type = componentProjector.frustum.type;
+
+	frustum.pos = componentProjector.frustum.pos;
+	frustum.front = componentProjector.frustum.front;
+	frustum.up = componentProjector.frustum.up;
+
+	frustum.nearPlaneDistance = componentProjector.frustum.nearPlaneDistance;
+	frustum.farPlaneDistance = componentProjector.frustum.farPlaneDistance;
+	frustum.verticalFov = componentProjector.frustum.verticalFov;
+	frustum.horizontalFov = componentProjector.frustum.horizontalFov;
+
+	// -----
+
+	App->renderer3D->AddProjectorComponent(this);
 }
 
 ComponentProjector::~ComponentProjector()
 {
 	App->renderer3D->EraseProjectorComponent(this);
 	parent->cmp_projector = nullptr;
+	SetMaterialRes(0);
 }
 
 void ComponentProjector::UpdateTransform()
@@ -60,16 +77,18 @@ void ComponentProjector::OnUniqueEditor()
 #ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Projector", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Near clip plane"); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
-		ImGui::InputFloat("##nearClipPlane", &frustum.nearPlaneDistance);
-
-		ImGui::Text("Far clip plane "); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
-		ImGui::InputFloat("##farClipPlane", &frustum.farPlaneDistance);
-
 		ImGui::Text("Field of view"); ImGui::SameLine(); ImGui::AlignTextToFramePadding();
 		float fov = frustum.verticalFov * RADTODEG;
 		if (ImGui::SliderFloat("##fov", &fov, 0.0f, 180.0f))
 			SetFOV(fov);
+
+		ImGui::Text("Near clip plane"); ImGui::PushItemWidth(50.0f);
+		ImGui::DragFloat("##nearClipPlane", &frustum.nearPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+		ImGui::PopItemWidth();
+
+		ImGui::Text("Far clip plane"); ImGui::PushItemWidth(50.0f);
+		ImGui::DragFloat("##farClipPlane", &frustum.farPlaneDistance, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+		ImGui::PopItemWidth();
 
 		// Material
 		const Resource* resource = App->res->GetResource(materialRes);
@@ -159,18 +178,41 @@ void ComponentProjector::OnUniqueEditor()
 
 uint ComponentProjector::GetInternalSerializationBytes()
 {
-	// TODO
-	return uint();
+	return sizeof(math::Frustum) +
+		sizeof(uint) +
+		sizeof(uint);
 }
 
 void ComponentProjector::OnInternalSave(char*& cursor)
 {
-	// TODO
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(cursor, &frustum, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &materialRes, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &filterMask, bytes);
+	cursor += bytes;
 }
 
 void ComponentProjector::OnInternalLoad(char*& cursor)
 {
-	// TODO
+	size_t bytes = sizeof(math::Frustum);
+	memcpy(&frustum, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint resource = 0;
+	memcpy(&resource, cursor, bytes);
+	SetMaterialRes(resource);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&filterMask, cursor, bytes);
+	cursor += bytes;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -178,7 +220,7 @@ void ComponentProjector::OnInternalLoad(char*& cursor)
 void ComponentProjector::SetFOV(float fov)
 {
 	frustum.verticalFov = fov * DEGTORAD;
-	frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * App->window->GetWindowWidth() / App->window->GetWindowHeight());
+	frustum.horizontalFov = fov * DEGTORAD;
 }
 
 float ComponentProjector::GetFOV() const
@@ -220,6 +262,11 @@ uint ComponentProjector::GetMaterialRes() const
 void ComponentProjector::SetFilterMask(uint filterMask)
 {
 	this->filterMask = filterMask;
+}
+
+uint ComponentProjector::GetFilterMask() const
+{
+	return filterMask;
 }
 
 math::Frustum ComponentProjector::GetFrustum() const

@@ -33,6 +33,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	void UpdateShape(physx::PxShape* shape) const;
+	static void RecursiveUpdateTransforms(GameObject* gameObject);
 	void UpdateTransform(math::float4x4& globalMatrix) const;
 	void UpdateGameObjectTransform() const;
 

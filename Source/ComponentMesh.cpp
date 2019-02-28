@@ -7,6 +7,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleFileSystem.h"
+#include "ResourceMesh.h"
 
 #include "imgui\imgui.h"
 
@@ -15,9 +16,10 @@ ComponentMesh::ComponentMesh(GameObject* parent) : Component(parent, ComponentTy
 	App->renderer3D->AddMeshComponent(this);
 }
 
-ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh) : Component(componentMesh.parent, ComponentTypes::MeshComponent)
+ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh, GameObject* parent, bool include) : Component(parent, ComponentTypes::MeshComponent)
 {
-	App->renderer3D->AddMeshComponent(this);
+	if (include)
+		App->renderer3D->AddMeshComponent(this);
 	SetResource(componentMesh.res);
 }
 
@@ -32,22 +34,32 @@ void ComponentMesh::Update() {}
 
 void ComponentMesh::SetResource(uint res_uuid)
 {
-	if (res != 0)
+	if (res > 0)
 		App->res->SetAsUnused(res);
 
-	if (res_uuid != 0) 
+	if (res_uuid > 0)
 	{
 		if (App->res->SetAsUsed(res_uuid) == -1)
 			return;
 	}
+	else
+		return;
 
 	res = res_uuid;
-	
+
+	//Calculate the new mesh BoundingBox
+	System_Event createBB;
+	createBB.goEvent.gameObject = parent;
+	createBB.type = System_Event_Type::CalculateBBoxes;
+	App->PushSystemEvent(createBB);
+
 	// Mesh updated: recalculate bounding boxes
-	System_Event newEvent;
-	newEvent.goEvent.gameObject = parent;
-	newEvent.type = System_Event_Type::RecalculateBBoxes;
-	App->PushSystemEvent(newEvent);
+	System_Event updateBB;
+	updateBB.goEvent.gameObject = parent;
+	updateBB.type = System_Event_Type::RecalculateBBoxes;
+	App->PushSystemEvent(updateBB);
+
+
 
 	if (parent->IsStatic())
 	{
@@ -109,6 +121,10 @@ void ComponentMesh::OnInternalSave(char*& cursor)
 	bytes = sizeof(bool);
 	memcpy(cursor, &nv_walkable, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &root_bones_uid, bytes);
+	cursor += bytes;
 }
 
 void ComponentMesh::OnInternalLoad(char*& cursor)
@@ -121,5 +137,9 @@ void ComponentMesh::OnInternalLoad(char*& cursor)
 
 	bytes = sizeof(bool);
 	memcpy(&nv_walkable, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&root_bones_uid, cursor, bytes);
 	cursor += bytes;
 }

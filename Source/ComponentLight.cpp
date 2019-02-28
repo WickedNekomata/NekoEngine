@@ -6,7 +6,7 @@ ComponentLight::ComponentLight(GameObject* parent) : Component(parent, Component
 {
 }
 
-ComponentLight::ComponentLight(const ComponentLight& componentLight) : Component(parent, ComponentTypes::LightComponent)
+ComponentLight::ComponentLight(const ComponentLight& componentLight, GameObject* parent) : Component(parent, ComponentTypes::LightComponent)
 {
 	lightType = componentLight.lightType;
 	intensity = componentLight.intensity;

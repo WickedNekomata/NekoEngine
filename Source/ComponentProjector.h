@@ -20,7 +20,7 @@ class ComponentProjector : public Component
 public:
 
 	ComponentProjector(GameObject* parent);
-	ComponentProjector(const ComponentProjector& componentProjector);
+	ComponentProjector(const ComponentProjector& componentProjector, GameObject* parent);
 	~ComponentProjector();
 
 	void UpdateTransform();
@@ -43,6 +43,7 @@ public:
 	void SetMaterialRes(uint materialUuid);
 	uint GetMaterialRes() const;
 	void SetFilterMask(uint filterMask);
+	uint GetFilterMask() const;
 
 	// Gets
 	math::Frustum GetFrustum() const;

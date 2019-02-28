@@ -25,7 +25,7 @@ ComponentEmitter::ComponentEmitter(GameObject* gameObject) : Component(gameObjec
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
-ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : Component(componentEmitter.parent, EmitterComponent)
+ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, GameObject* parent, bool include) : Component(parent, EmitterComponent)
 {
 	duration = componentEmitter.duration;
 
@@ -83,7 +83,8 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter) : C
 	if (parent)
 		App->scene->quadtree.Insert(parent);
 
-	App->particle->emitters.push_back(this);
+	if(include)
+		App->particle->emitters.push_back(this);
 
 	SetMaterialRes(App->resHandler->defaultMaterial);
 }
@@ -502,9 +503,9 @@ void ComponentEmitter::ParticleAABB()
 		{
 			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(size,GetParent()->transform->position);
+				SetAABB(size, posDifAABB);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(size, GetParent()->transform->position);
+				SetAABB(size, posDifAABB);
 		}
 	}
 #endif
@@ -598,7 +599,7 @@ void ComponentEmitter::ParticleSubEmitter()
 				subEmitter = App->GOs->CreateGameObject("SubEmition",parent);
 				subEmitter->AddComponent(EmitterComponent);
 				((ComponentEmitter*)subEmitter->GetComponent(EmitterComponent))->isSubEmitter = true;
-				subEmitter->boundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
+				subEmitter->originalBoundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
 				App->scene->quadtree.Insert(subEmitter);
 			}
 		}
@@ -685,7 +686,17 @@ bool ComponentEmitter::EditColor(ColorTime &colorTime, uint pos)
 
 void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extraPosition)
 {
-	GetParent()->boundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+	GameObject* gameObject = GetParent();
+
+	if (gameObject)
+	{
+		gameObject->originalBoundingBox.SetFromCenterAndSize(extraPosition, size);
+
+		System_Event newEvent;
+		newEvent.goEvent.gameObject = gameObject;
+		newEvent.type = System_Event_Type::RecalculateBBoxes;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 void ComponentEmitter::SetMaterialRes(uint materialUuid)
@@ -724,17 +735,21 @@ uint ComponentEmitter::GetInternalSerializationBytes()
 		sizeOfList += (*it).GetColorListSerializationBytes();
 	}
 
-	//		Value Checkers +	StartValues
-	return sizeof(bool) * 8 + sizeof(StartValues) + sizeof(rateOverTime) + sizeof(duration)
+	//bool * 13 + int*3 + float * 5 + uint * 3 + ShapeType * 2 + ParticleAnimation + AABB + float3 + string
+	//		Value Checkers 
+	return sizeof(bool) * 8 + sizeof(rateOverTime) + sizeof(duration) + sizeof(uint) //UUID Material
 		+ sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(repeatTime) + sizeof(uint)//UUID Subemiter
 		+ sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
-		+ sizeof(boxCreation) + sizeof(burstType) + sizeof(float) * 2 //Circle and Sphere rad
-		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst) + sizeOfList//Size of list of ColorTime Struct
-		+ sizeof(minPart) + sizeof(maxPart) + sizeof(char) * burstTypeName.size() + sizeof(uint); //Size of name;
+		+ sizeof(uint)/*size of particleColor list*/ + sizeof(boxCreation) + sizeof(burstType) + sizeof(float) * 2 //Circle and Sphere rad
+		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst)
+		+ sizeof(minPart) + sizeof(maxPart) + sizeof(char) * burstTypeName.size() + sizeof(uint)//Size of name;
+		+ sizeof(math::float2) * 7 + sizeof(math::float3) * 2 + sizeof(bool) * 2 + sizeOfList;//Bytes of all Start Values Struct;
 }
 
 void ComponentEmitter::OnInternalSave(char *& cursor)
 {
+	startValues.OnInternalSave(cursor);
+
 	size_t bytes = sizeof(bool);
 	memcpy(cursor, &checkLife, bytes);
 	cursor += bytes;
@@ -809,9 +824,9 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, &uuid, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(StartValues);
-	memcpy(cursor, &startValues, bytes);
+	memcpy(cursor, &materialRes, bytes);
 	cursor += bytes;
+	SetMaterialRes(materialRes);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(cursor, &particleAnim, bytes);
@@ -833,26 +848,19 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(uint);
-	uint nameLenght = burstTypeName.length();
-	memcpy(cursor, &nameLenght, bytes);
+	uint nameLenghtt = burstTypeName.size();
+	memcpy(cursor, &nameLenghtt, bytes);
 	cursor += bytes;
 
-	bytes = nameLenght;
+	bytes = nameLenghtt;
 	memcpy(cursor, burstTypeName.c_str(), bytes);
 	cursor += bytes;
-
-	uint size = startValues.color.size();
-	memcpy(cursor, &size, bytes);
-	cursor += bytes;
-
-	for (std::list<ColorTime>::iterator it = startValues.color.begin(); it != startValues.color.end(); ++it)
-	{
-		(*it).OnInternalSave(cursor);
-	}
 }
 
 void ComponentEmitter::OnInternalLoad(char *& cursor)
 {
+	startValues.OnInternalLoad(cursor);
+
 	size_t bytes = sizeof(bool);
 	memcpy(&checkLife, cursor, bytes);
 	cursor += bytes;
@@ -927,8 +935,7 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(StartValues);
-	memcpy(&startValues, cursor, bytes);
+	memcpy(&materialRes, cursor, bytes);
 	cursor += bytes;
 
 	bytes = sizeof(ParticleAnimation);
@@ -951,39 +958,137 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	cursor += bytes;
 
 	bytes = sizeof(uint);
-	uint nameLenght;
-	memcpy(&nameLenght, cursor, bytes);
+	uint nameLenghtt;
+	memcpy(&nameLenghtt, cursor, bytes);
 	cursor += bytes;
 
-	bytes = nameLenght;
-	burstTypeName.resize(nameLenght);
+	bytes = nameLenghtt;
+	burstTypeName.resize(nameLenghtt);
 	memcpy((void*)burstTypeName.c_str(), cursor, bytes);
-	burstTypeName.resize(nameLenght);
+	burstTypeName.resize(nameLenghtt);
+	cursor += bytes;
+}
+
+//Start Values Save&Load
+void StartValues::OnInternalSave(char *& cursor)
+{
+	size_t bytes = sizeof(math::float2);
+	memcpy(cursor, &life, bytes);
 	cursor += bytes;
 
-	uint size;
-	memcpy(&size, cursor, bytes);
+	memcpy(cursor, &speed, bytes);
 	cursor += bytes;
 
-	//startValues.color.pop_back();
-	for (int i = 0; i < size; ++i)
+	memcpy(cursor, &size, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &sizeOverTime, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &rotation, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &angularAcceleration, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &angularVelocity, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(cursor, &acceleration3, bytes);
+	cursor += bytes;
+	
+	memcpy(cursor, &particleDirection, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &timeColor, bytes);
+	cursor += bytes;
+
+	memcpy(cursor, &subEmitterActive, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	uint listSize = color.size();
+	memcpy(cursor, &listSize, bytes);
+	cursor += bytes;
+
+	for (std::list<ColorTime>::iterator it = color.begin(); it != color.end(); ++it)
 	{
-		ColorTime color;
-		color.OnInternalLoad(cursor);
-		startValues.color.push_back(color);
+		(*it).OnInternalSave(cursor);
 	}
 }
 
+void StartValues::OnInternalLoad(char *& cursor)
+{
+	size_t bytes = sizeof(math::float2);
+	memcpy(&life, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&speed, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&size, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&sizeOverTime, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&rotation, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&angularAcceleration, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&angularVelocity, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(math::float3);
+	memcpy(&acceleration3 , cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&particleDirection, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&timeColor, cursor, bytes);
+	cursor += bytes;
+
+	memcpy(&subEmitterActive, cursor, bytes);
+	cursor += bytes;
+
+	uint listSize;
+	bytes = sizeof(uint);
+	memcpy(&listSize, cursor, bytes);
+	cursor += bytes;
+
+	color.pop_back();//Pop started value
+	for (int i = 0; i < listSize; ++i)
+	{
+		ColorTime colorTime;
+		colorTime.OnInternalLoad(cursor);
+		color.push_back(colorTime);
+	}
+}
 
 //COLOR TIME Save&Load
 uint ColorTime::GetColorListSerializationBytes()
 {
-	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.length() + sizeof(uint);//Size of name
+	return sizeof(bool) + sizeof(float) + sizeof(math::float4) + sizeof(char) * name.size() + sizeof(uint);//Size of name
 }
 
 void ColorTime::OnInternalSave(char* &cursor)
 {
-	size_t bytes = sizeof(bool);
+	size_t bytes = sizeof(uint);
+	uint nameLenght = name.size();
+	memcpy(cursor, &nameLenght, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	memcpy(cursor, name.c_str(), bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
 	memcpy(cursor, &changingColor, bytes);
 	cursor += bytes;
 
@@ -995,19 +1100,23 @@ void ColorTime::OnInternalSave(char* &cursor)
 	memcpy(cursor, &color, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	uint nameLenght = name.length();
-	memcpy(cursor, &nameLenght, bytes);
-	cursor += bytes;
-
-	bytes = nameLenght;
-	memcpy(cursor, name.c_str(), bytes);
-	cursor += bytes;
 }
 
 void ColorTime::OnInternalLoad(char *& cursor)
 {
-	size_t bytes = sizeof(bool);
+	//Load lenght + string
+	size_t bytes = sizeof(uint);
+	uint nameLenght;
+	memcpy(&nameLenght, cursor, bytes);
+	cursor += bytes;
+
+	bytes = nameLenght;
+	name.resize(nameLenght);
+	memcpy((void*)name.c_str(), cursor, bytes);
+	name.resize(nameLenght);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
 	memcpy(&changingColor, cursor, bytes);
 	cursor += bytes;
 
@@ -1019,15 +1128,27 @@ void ColorTime::OnInternalLoad(char *& cursor)
 	memcpy(&color, cursor, bytes);
 	cursor += bytes;
 
-	//Load lenght + string
-	bytes = sizeof(uint);
-	uint nameLenght;
-	memcpy(&nameLenght, cursor, bytes);
-	cursor += bytes;
+}
 
-	bytes = nameLenght;
-	name.resize(nameLenght);
-	memcpy((void*)name.c_str(), cursor, bytes);
-	name.resize(nameLenght);
-	cursor += bytes;
+void StartValues::operator=(StartValues startValue)
+{
+	life = startValue.life;
+	speed = startValue.speed;
+	acceleration3 = startValue.acceleration3;
+	sizeOverTime = startValue.sizeOverTime;
+	size = startValue.size;
+	rotation = startValue.rotation;
+	angularAcceleration = startValue.angularAcceleration;
+	angularVelocity = startValue.angularVelocity;
+
+	timeColor = startValue.timeColor;
+	subEmitterActive = startValue.subEmitterActive;
+
+	particleDirection = startValue.particleDirection;
+
+
+	for (std::list<ColorTime>::iterator it = startValue.color.begin(); it != startValue.color.end(); ++it)
+	{
+		color.push_back(*it);
+	}
 }

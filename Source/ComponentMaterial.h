@@ -8,7 +8,7 @@ class ComponentMaterial : public Component
 public:
 
 	ComponentMaterial(GameObject* parent);
-	ComponentMaterial(const ComponentMaterial& componentMaterial);
+	ComponentMaterial(const ComponentMaterial& componentMaterial, GameObject* parent);
 	~ComponentMaterial();
 
 	void Update();

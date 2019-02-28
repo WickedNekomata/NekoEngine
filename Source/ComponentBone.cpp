@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "ResourceMesh.h"
 #include "ResourceBone.h"
+
+#include "imgui\imgui.h"
 //#include "BoneImporter.h"
 
 ComponentBone::ComponentBone(GameObject * embedded_game_object) :
@@ -22,73 +24,85 @@ ComponentBone::ComponentBone(GameObject * embedded_game_object, uint resource) :
 	res = resource;
 }
 
+ComponentBone::ComponentBone(const ComponentBone& component_bone, GameObject* parent, bool include) : Component(parent, ComponentTypes::BoneComponent)
+{
+	res = component_bone.res;
+	attachedMesh = component_bone.attachedMesh;
+}
+
 ComponentBone::~ComponentBone()
 {
-	
-	/*Resource* res = (Resource*)GetResource();
-	
-	if (res)
-		res->Release();*/ //CHECK THIS
+
+}
+
+void ComponentBone::OnEditor()
+{
+	OnUniqueEditor();
+}
+
+void ComponentBone::OnUniqueEditor()
+{
+#ifndef GAMEMODE
+	if (ImGui::CollapsingHeader("Bone", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Bone");
+		ImGui::SameLine();
+
+		std::string fileName = "Empty Bone";
+		const ResourceBone* resource = (ResourceBone*)App->res->GetResource(res);
+		if (resource != nullptr)
+			fileName = resource->GetName();
+
+		ImGui::Text("Bone name: %s", resource->boneData.name);
+		ImGui::Text("Mesh UUID reference: %i",resource->boneData.mesh_uid);
+		ImGui::Text("Bone weights size: %i", resource->boneData.bone_weights_size);
+
+		ImGui::PushID("bone");
+		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", res);
+			ImGui::EndTooltip();
+		}
+	}
+#endif
 }
 
 uint ComponentBone::GetInternalSerializationBytes()
 {
-	return 0;
+	return sizeof(uint) + sizeof(uint);
 }
 
-bool ComponentBone::Save(JSON_Object* component_obj) const
+void ComponentBone::OnInternalSave(char*& cursor)
 {
-	Resource* resource = App->res->GetResource(this->res);
-	
-	if (resource) {
-		const char* exported_file = resource->GetExportedFile();
-		json_object_set_string(component_obj, "path", exported_file);
-	}
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &res, bytes);
+	cursor += bytes;
 
-	return true;
+	bytes = sizeof(uint);
+	memcpy(cursor, &attachedMesh, bytes);
+	cursor += bytes;
 }
 
-bool ComponentBone::Load(const JSON_Object * component_obj)
+void ComponentBone::OnInternalLoad(char*& cursor)
 {
-	bool ret = true;
+	uint loadedRes;
+	size_t bytes = sizeof(uint);
+	memcpy(&loadedRes, cursor, bytes);
+	cursor += bytes;
+	SetResource(loadedRes);
 
-	JSON_Value* value = json_object_get_value(component_obj, "path");
-	const char* file_path = json_value_get_string(value);
-
-	//todo clean
-	if (file_path) {
-		std::string uid_force = file_path;
-		const size_t last_slash = uid_force.find_last_of("\\/");
-		if (std::string::npos != last_slash)
-			uid_force.erase(0, last_slash + 1);
-		const size_t extension = uid_force.rfind('.');
-		if (std::string::npos != extension)
-			uid_force.erase(extension);
-		uint uid = 0u;
-		if (!uid_force.empty())
-			uid = static_cast<unsigned int>(std::stoul(uid_force));
-
-		/*if (uid > 0u)
-			SetResource(App->res->bone_importer->GenerateResourceFromFile(file_path, uid));
-		else
-			SetResource(App->res->bone_importer->GenerateResourceFromFile(file_path));*/
-	}
-
-	return ret;
+	bytes = sizeof(uint);
+	memcpy(&attachedMesh, cursor, bytes);
+	cursor += bytes;
 }
 
 bool ComponentBone::SetResource(uint resource) //check all this
 {
-
-	if (Resource* res = (Resource*)App->res->GetResource(resource)) {
-		//res->UnloadMemory();
-	}
-	
 	res = resource;
-	ResourceBone* bone_res = (ResourceBone*)(Resource*)App->res->GetResource(resource);
-
-	if (bone_res)
-		uint num_references = bone_res->LoadInMemory(); 
 
 	return true;
 }

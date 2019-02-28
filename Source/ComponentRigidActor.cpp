@@ -49,7 +49,8 @@ void ComponentRigidActor::Update() {}
 uint ComponentRigidActor::GetInternalSerializationBytes()
 {
 	return sizeof(bool) +
-		sizeof(RigidActorTypes);
+		sizeof(RigidActorTypes) +
+		sizeof(math::float4x4);
 }
 
 void ComponentRigidActor::OnInternalSave(char*& cursor)
@@ -61,6 +62,15 @@ void ComponentRigidActor::OnInternalSave(char*& cursor)
 	bytes = sizeof(RigidActorTypes);
 	memcpy(cursor, &rigidActorType, bytes);
 	cursor += bytes;
+
+	physx::PxTransform gTransform = gActor->getGlobalPose();
+	math::Quat rotation(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+	math::float3 position(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+	math::float4x4 globalMatrix(rotation, position);
+
+	bytes = sizeof(math::float4x4);
+	memcpy(cursor, &globalMatrix, bytes);
+	cursor += bytes;
 }
 
 void ComponentRigidActor::OnInternalLoad(char*& cursor)
@@ -71,6 +81,12 @@ void ComponentRigidActor::OnInternalLoad(char*& cursor)
 
 	bytes = sizeof(RigidActorTypes);
 	memcpy(&rigidActorType, cursor, bytes);
+	cursor += bytes;
+
+	math::float4x4 globalMatrix;
+	bytes = sizeof(math::float4x4);
+	memcpy(&globalMatrix, cursor, bytes);
+	UpdateTransform(globalMatrix);
 	cursor += bytes;
 }
 
@@ -105,6 +121,21 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 
 	if (attach)
 		gActor->attachShape(*shape);
+}
+
+void ComponentRigidActor::RecursiveUpdateTransforms(GameObject* gameObject)
+{
+	if (gameObject->cmp_rigidActor != nullptr)
+	{
+		math::float4x4 globalMatrix = gameObject->transform->GetGlobalMatrix();
+		gameObject->cmp_rigidActor->UpdateTransform(globalMatrix);
+	}
+
+	std::vector<GameObject*> children;
+	gameObject->GetChildrenVector(children, false);
+
+	for (uint i = 0; i < children.size(); ++i)
+		RecursiveUpdateTransforms(children[i]);
 }
 
 void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const

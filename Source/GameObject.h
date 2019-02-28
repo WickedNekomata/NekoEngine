@@ -87,6 +87,7 @@ public:
 	class ComponentCanvasRenderer* cmp_canvasRenderer = nullptr;
 	class ComponentImage* cmp_image = nullptr;
 	class ComponentButton* cmp_button = nullptr;
+	class ComponentLabel* cmp_label = nullptr;
 	class ComponentLight*	   cmp_light = 0;
 	class ComponentProjector*  cmp_projector = 0;
 

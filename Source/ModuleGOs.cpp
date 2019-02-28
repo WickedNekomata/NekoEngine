@@ -113,6 +113,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::ButtonComponent:
 			go->cmp_button = nullptr;
 			break;
+		case ComponentTypes::LabelComponent:
+			go->cmp_label = nullptr;
+			break;
 		case ComponentTypes::CanvasRendererComponent:
 			go->cmp_canvasRenderer = nullptr;
 			break;

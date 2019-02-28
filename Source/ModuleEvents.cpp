@@ -24,6 +24,7 @@
 #include "ComponentImage.h"
 #include "ComponentRectTransform.h"
 #include "ComponentButton.h"
+#include "ComponentLabel.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"

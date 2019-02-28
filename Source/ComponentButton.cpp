@@ -16,6 +16,8 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 	state = UIState::IDLE;
 	input = "z";
 	button_blinded = (uint)SDL_GetScancodeFromKey(SDL_GetKeyFromName(input.c_str()));
+	if (parent->cmp_image == nullptr)
+		parent->AddComponent(ImageComponent);
 }
 
 ComponentButton::ComponentButton(const ComponentButton & componentButton) : Component(parent, ComponentTypes::ButtonComponent)
@@ -45,38 +47,35 @@ void ComponentButton::Update()
 		if (MouseInScreen(rect))
 		{
 			state = HOVERED;
-			sate_flag[B_STATE_IDLE] = false;
-			sate_flag[B_STATE_HOVERED] = true;
+			//sate_flag[B_STATE_IDLE] = false;
+			//sate_flag[B_STATE_HOVERED] = true;
 		}
 		break;
 	case HOVERED:
 		if (!MouseInScreen(rect))
 		{
 			state = IDLE;
-			sate_flag[B_STATE_IDLE] = true;
-			sate_flag[B_STATE_HOVERED] = false;
+			//sate_flag[B_STATE_IDLE] = true;
+			//sate_flag[B_STATE_HOVERED] = false;
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 		{
 			state = R_CLICK;
-			sate_flag[B_STATE_R_CLICK] = true;
+			//sate_flag[B_STATE_R_CLICK] = true;
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		{
 			state = L_CLICK;
-			sate_flag[B_STATE_L_CLICK] = true;
+			//sate_flag[B_STATE_L_CLICK] = true;
 		}
-		CONSOLE_LOG(LogTypes::Normal, "HOVER");
 		break;
 	case R_CLICK:
-		CONSOLE_LOG(LogTypes::Normal, "CLICKRRRR");
 		state = HOVERED;
-		sate_flag[B_STATE_R_CLICK] = false;
+		//sate_flag[B_STATE_R_CLICK] = false;
 		break;
 	case L_CLICK:
-		CONSOLE_LOG(LogTypes::Normal, "CLICKLLL");
 		state = HOVERED;
-		sate_flag[B_STATE_L_CLICK] = false;
+		//sate_flag[B_STATE_L_CLICK] = false;
 		break;
 	default:
 		break;
@@ -104,6 +103,8 @@ void ComponentButton::OnInternalLoad(char *& cursor)
 
 void ComponentButton::OnUniqueEditor()
 {
+#ifndef GAMEMODE
+
 	static char inputBlind[2] = { input.at(0) };
 	if (ImGui::InputText("Blind key", inputBlind, IM_ARRAYSIZE(inputBlind), ImGuiInputTextFlags_EnterReturnsTrue))
 		SetNewKey(inputBlind);
@@ -117,12 +118,13 @@ void ComponentButton::OnUniqueEditor()
 		ImGui::Text("This button is Hovered.");
 		break;
 	case R_CLICK:
-		ImGui::Text("This button is Hovered.");
+		ImGui::Text("This button is Right Clicked.");
 		break;
 	case L_CLICK:
-		ImGui::Text("This button is Hovered.");
+		ImGui::Text("This button is Left Clicked.");
 		break;
 	}
+#endif
 }
 
 bool ComponentButton::MouseInScreen(const uint* rect) const

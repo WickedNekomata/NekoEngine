@@ -17,6 +17,7 @@ enum ComponentTypes
 	CanvasRendererComponent,
 	ImageComponent,
 	ButtonComponent,
+	LabelComponent,
 	LightComponent,
 	ProjectorComponent,
 	// Physics

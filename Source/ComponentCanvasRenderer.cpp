@@ -57,7 +57,9 @@ void ComponentCanvasRenderer::Update()
 
 void ComponentCanvasRenderer::OnEditor()
 {
+#ifndef GAMEMODE
 	OnUniqueEditor();
+#endif
 }
 
 ComponentCanvasRenderer::ToUIRend* ComponentCanvasRenderer::GetDrawAvaiable() const

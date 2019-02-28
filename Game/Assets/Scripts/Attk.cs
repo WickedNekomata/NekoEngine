@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using JellyBitEngine;
 
-public class attack : JellyScript
+public class Attk : JellyScript
 {
     //Alita propeties
     int life = 50;
     int damage = 20;
-  
+
     // Raycast
     private RaycastHit hit;
     private int terrainMask = LayerMask.GetMask("Default");
@@ -28,7 +28,7 @@ public class attack : JellyScript
 
     //Enemy
     GameObject enemy;
-    Unit enemy_unit;
+    //Unit enemy_unit;
 
     //Variables about attack distance and time
     public float attack_dist = 2.0f;
@@ -43,9 +43,6 @@ public class attack : JellyScript
     //Called every frame
     public override void Update()
     {
-        if (agent == null)
-            agent = gameObject.GetComponent<NavMeshAgent>();
-
         CheckState();
         CheckForMouseClick();
     }
@@ -90,7 +87,7 @@ public class attack : JellyScript
     private void CheckForMouseClick()
     {
         //Attack
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
+        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
@@ -98,13 +95,14 @@ public class attack : JellyScript
                 //Go to attack
                 state = Alita_State.GOING_TO_ATTK;
                 enemy = hit.gameObject;
-
+               
                 //Determine a place a little further than enemy position
                 Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
                 Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
-                agent.SetDestination(hit.point);
+               
+                agent.SetDestination(enemy_pos);
 
-                enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
+                //enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
 
                 Debug.Log("GOING TO ENEMY");
 
@@ -113,11 +111,14 @@ public class attack : JellyScript
         }
 
         //Move
-       if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
+                if (agent == null)
+                    agent = gameObject.GetComponent<NavMeshAgent>();
+
                 if (agent != null)
                 {
                     Debug.Log("GOING TO SPOT");
@@ -136,7 +137,7 @@ public class attack : JellyScript
         //Attack every second
         if (attk_cool_down >= attk_period)
         {
-            enemy_unit.Hit(damage);
+            //enemy_unit.Hit(damage);
             Debug.Log("ENEMY HIT");
 
             attk_cool_down = 0.0f;

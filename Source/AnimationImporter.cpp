@@ -63,7 +63,7 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string&
 
 	// -------------- CALCULATING ANIMATION DATA SIZE --------------
 
-	uint anim_name_size = sizeof(char)*MAX_BUF_SIZE;
+	uint anim_name_size = sizeof(char)*DEFAULT_BUF_SIZE;
 	uint duration_size = sizeof(anim_data->duration);
 	uint ticks_size = sizeof(anim_data->ticks_per_second);
 	uint num_keys_size = sizeof(anim_data->numKeys);
@@ -107,11 +107,11 @@ bool AnimationImporter::SaveAnimation(ResourceAnimation* anim_data, std::string&
 	// -------------- Saving animation generic data --------------
 
 	// Saving anim name
-	uint bytes = sizeof(char)*MAX_BUF_SIZE;
+	uint bytes = sizeof(char)*DEFAULT_BUF_SIZE;
 
-	char name[MAX_BUF_SIZE];
-	memset(name, 0, sizeof(char) * MAX_BUF_SIZE);
-	strcpy_s(name, MAX_BUF_SIZE, anim_data->name.c_str());
+	char name[DEFAULT_BUF_SIZE];
+	memset(name, 0, sizeof(char) * DEFAULT_BUF_SIZE);
+	strcpy_s(name, DEFAULT_BUF_SIZE, anim_data->name.c_str());
 
 	memcpy(cursor, name, bytes);
 
@@ -384,4 +384,116 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 	RELEASE_ARRAY(buffer);
 
 	return resource->GetUID();*/
+}
+
+void AnimationImporter::Load(const char * file_path, ResourceData & data, ResourceAnimationData & anim_data, uint uid_to_force)
+{
+	// Reading file
+	char* buffer = nullptr;
+	App->fs->Load(file_path, &buffer);
+
+	// Checking for errors
+	if (buffer == nullptr)
+	{
+		DEPRECATED_LOG("AnimationImporter: Unable to open file...");
+		
+	}
+
+	char* cursor = buffer;
+
+	// Load anim name
+	uint bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+	char name[DEFAULT_BUF_SIZE];
+	memcpy(&name, cursor, bytes);
+	anim_data.name = name;
+
+	// Load duration
+	cursor += bytes;
+	bytes = sizeof(anim_data.duration);
+	memcpy(&anim_data.duration, cursor, bytes);
+
+	// Load ticks per second
+	cursor += bytes;
+	bytes = sizeof(anim_data.ticksPerSecond);
+	memcpy(&anim_data.ticksPerSecond, cursor, bytes);
+
+	// Load amount Bone transformations
+	cursor += bytes;
+	bytes = sizeof(anim_data.numKeys);
+	memcpy(&anim_data.numKeys, cursor, bytes);
+
+	anim_data.boneKeys= new BoneTransformation[anim_data.numKeys];
+
+	char buff[4096];
+	for (uint i = 0; i < anim_data.numKeys; ++i)
+	{
+		BoneTransformation* bone = &anim_data.boneKeys[i];
+		uint count = 0;
+
+		// load bone name size
+		cursor += bytes;
+		bytes = sizeof(count);
+		memcpy(&count, cursor, bytes);
+
+		// load bone name
+		cursor += bytes;
+		bytes = sizeof(char) * count + 1;
+		memcpy(buff, cursor, bytes);
+		bone->bone_name = buff;
+
+		// load num_positions -------------------------------
+		cursor += bytes;
+		bytes = sizeof(count);
+		memcpy(&count, cursor, bytes);
+		bone->positions.Init(BoneTransformation::Key::KeyType::POSITION, count);
+
+		// load position times
+		cursor += bytes;
+		bytes = sizeof(double) * count;
+		memcpy(bone->positions.time, cursor, bytes);
+
+		// load position values
+		cursor += bytes;
+		bytes = sizeof(float) * 3 * count;
+		memcpy(bone->positions.value, cursor, bytes);
+
+		// load num rotations -------------------------------
+		count = 0;
+		cursor += bytes;
+		bytes = sizeof(count);
+		memcpy(&count, cursor, bytes);
+		bone->rotations.Init(BoneTransformation::Key::KeyType::ROTATION, count);
+
+		// load rotation times
+		cursor += bytes;
+		bytes = sizeof(double) * count;
+		memcpy(bone->rotations.time, cursor, bytes);
+
+		// load rotation values
+		cursor += bytes;
+		bytes = sizeof(float) * 4 * count;
+		memcpy(bone->rotations.value, cursor, bytes);
+
+		// load num_scales -------------------------------
+		count = 0;
+		cursor += bytes;
+		bytes = sizeof(count);
+		memcpy(&count, cursor, bytes);
+		bone->scalings.Init(BoneTransformation::Key::KeyType::SCALE, count);
+
+		// load position times
+		cursor += bytes;
+		bytes = sizeof(double) * count;
+		memcpy(bone->scalings.time, cursor, bytes);
+
+		// load position values
+		cursor += bytes;
+		bytes = sizeof(float) * 3 * count;
+		memcpy(bone->scalings.value, cursor, bytes);
+	}
+
+	// TODO: WHEN THIS
+	//App->animation->SetAnimationGos(resource);
+
+	RELEASE_ARRAY(buffer);
 }

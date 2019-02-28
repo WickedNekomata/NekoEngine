@@ -16,12 +16,14 @@
 #include "BoneImporter.h"
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
+#include "AnimationImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 #include "ModuleNavigation.h"
 #include "ScriptingModule.h"
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
+#include "ModuleAnimation.h"
 #include "ModuleLayers.h"
 
 #include "parson\parson.h"
@@ -41,6 +43,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	boneImporter = new BoneImporter();
+	animImporter = new AnimationImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
 	navigation = new ModuleNavigation();
@@ -48,6 +51,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	scripting = new ScriptingModule();
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
+	animation = new ModuleAnimation();
 	layers = new ModuleLayers();
 
 #ifndef GAMEMODE
@@ -72,6 +76,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	AddModule(particle);
 	AddModule(physics);
+	AddModule(animation);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);
@@ -102,6 +107,7 @@ Application::~Application()
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
 	RELEASE(boneImporter);
+	RELEASE(animImporter);
 	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
 }

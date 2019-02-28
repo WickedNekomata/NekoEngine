@@ -18,6 +18,8 @@ public:
 
 	uint GenerateResourceFromFile(const char* file_path, uint uid_to_force = 0u);
 
+	void Load(mutable const char* file_path, mutable ResourceData& data, mutable ResourceAnimationData& anim_data, mutable uint uid_to_force = 0u);
+
 	uint Import(const aiAnimation* new_anim, std::string& output);
 
 	bool SaveAnimation(ResourceAnimation* anim, std::string& output);

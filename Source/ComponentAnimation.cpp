@@ -21,74 +21,45 @@ ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 ComponentAnimation::ComponentAnimation(GameObject* embedded_game_object, uint resource) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)
 {
-	//this->resource = resource;
+	res = resource;
+}
+
+ComponentAnimation::ComponentAnimation(const ComponentAnimation & component_anim, GameObject * parent, bool include) : Component(parent, ComponentTypes::AnimationComponent)
+{
+	res = component_anim.res;
 }
 
 ComponentAnimation::~ComponentAnimation()
 {
-	//Resource* res = (Resource*)GetResource();
-	//if (res)
-		//res->Release();
+	
 }
 
 uint ComponentAnimation::GetInternalSerializationBytes()
 {
-	return 0u;
+	return sizeof(uint);
 }
 
-bool ComponentAnimation::Save(JSON_Object* component_obj) const
+void ComponentAnimation::OnInternalSave(char*& cursor)
 {
-	//todo: get resource path etc
-	/*const Resource* res = this->GetResource();
-	if (res)
-		json_object_set_string(component_obj, "path", res->GetExportedFile());*/
-	return true;
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &res, bytes);
+	cursor += bytes;
+
 }
 
-bool ComponentAnimation::Load(const JSON_Object * component_obj)
+void ComponentAnimation::OnInternalLoad(char*& cursor)
 {
-	bool ret = true;
+	uint loadedRes;
+	size_t bytes = sizeof(uint);
+	memcpy(&loadedRes, cursor, bytes);
+	cursor += bytes;
+	SetResource(loadedRes);
 
-	/*JSON_Value* value = json_object_get_value(component_obj, "path");
-	const char* file_path = json_value_get_string(value);
-
-	//todo clean
-	if (file_path) {
-		std::string uid_force = file_path;
-		const size_t last_slash = uid_force.find_last_of("\\/");
-		if (std::string::npos != last_slash)
-			uid_force.erase(0, last_slash + 1);
-		const size_t extension = uid_force.rfind('.');
-		if (std::string::npos != extension)
-			uid_force.erase(extension);
-		UID uid = 0u;
-		if (!uid_force.empty())
-			uid = static_cast<unsigned int>(std::stoul(uid_force));
-
-		if (uid > 0u)
-			SetResource(App->resources->animation_importer->GenerateResourceFromFile(file_path, uid));
-		else
-			SetResource(App->resources->animation_importer->GenerateResourceFromFile(file_path));
-	}*/
-
-	return ret;
 }
 
-bool ComponentAnimation::SetResource(uint resource)
+bool ComponentAnimation::SetResource(uint resource) //check all this
 {
-	/*if (Resource* res = (Resource*)GetResource()) {
-		res->Release();
-	}
-
-	this->resource = resource;
-	ResourceAnimation* bone_res = (ResourceAnimation*)this->GetResource();
-
-	if (bone_res)
-		uint num_references = bone_res->LoadToMemory();
-
-	//if(bone_res)
-		//App->animation->SetAnimationGos(bone_res);
-		*/
+	res = resource;
 
 	return true;
 }

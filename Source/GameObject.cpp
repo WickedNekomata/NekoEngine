@@ -103,6 +103,11 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
+		case ComponentTypes::AnimationComponent:
+			cmp_animation = new ComponentAnimation(*gameObject.cmp_animation, this);
+			cmp_animation->SetParent(this);
+			components.push_back(cmp_animation);
+			break;
 		case ComponentTypes::LightComponent:
 			cmp_light = new ComponentLight(*gameObject.cmp_light, this);
 			cmp_light->SetParent(this);

@@ -59,7 +59,10 @@ SceneImporter::~SceneImporter()
 	aiDetachAllLogStreams();
 }
 
-bool SceneImporter::Import(const char* file, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forced_mesh_uuids, std::vector<uint>& forced_bone_uuids) const
+bool SceneImporter::Import(const char* file,
+	std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& anim_files,
+	const ResourceMeshImportSettings& importSettings, 
+	std::vector<uint>& forced_mesh_uuids, std::vector<uint>& forced_bone_uuids, std::vector<uint>& forced_anim_uuids) const
 {
 	assert(file != nullptr);
 
@@ -73,7 +76,7 @@ bool SceneImporter::Import(const char* file, std::vector<std::string>& mesh_file
 	if (size > 0)
 	{
 		CONSOLE_LOG(LogTypes::Normal, "SCENE IMPORTER: Successfully loaded Model '%s'", fileName.data());
-		ret = Import(buffer, size, fileName.data(), mesh_files, bone_files, importSettings, forced_mesh_uuids, forced_bone_uuids);
+		ret = Import(buffer, size, fileName.data(), mesh_files, bone_files, anim_files, importSettings, forced_mesh_uuids, forced_bone_uuids, forced_anim_uuids);
 		RELEASE_ARRAY(buffer);
 	}
 	else
@@ -82,7 +85,10 @@ bool SceneImporter::Import(const char* file, std::vector<std::string>& mesh_file
 	return ret;
 }
 
-bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, const ResourceMeshImportSettings& importSettings, std::vector<uint>& forced_meshes_uuids, std::vector<uint>& forced_bones_uuids) const
+bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName, 
+	std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& anim_files,
+	const ResourceMeshImportSettings& importSettings, 
+	std::vector<uint>& forced_meshes_uuids, std::vector<uint>& forced_bones_uuids, std::vector<uint>& forced_anim_uuids) const
 {
 	assert(buffer != nullptr && size > 0);
 
@@ -149,11 +155,13 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		GameObject* rootGameObject = new GameObject(rootNode->mName.data, dummy); // Root game object will never be a transformation
 
 		std::vector<uint> dummyForcedUuids = forced_meshes_uuids;
-		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files, dummyForcedUuids);
+		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files/*not needed but ok*/, dummyForcedUuids);
 
 		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);
 
-		ImportAnimations(scene, prefabName);
+		ImportAnimations(scene, anim_files, forced_anim_uuids);
+
+		root_bone = nullptr; // c: 
 
 		// Prefab creation
 		GameObject* prefab_go = rootGameObject;
@@ -875,7 +883,8 @@ void SceneImporter::GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO
 	defaultPlaneIndicesSize = this->defaultPlaneIndicesSize;
 }
 
-void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable const aiNode * node, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids)const
+void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene, 
+	mutable const aiNode * node, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids)const
 {
 	std::map<std::string, aiBone*>::iterator it = bones.find(node->mName.C_Str());
 
@@ -932,7 +941,8 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 		RecursiveProcessBones(scene, node->mChildren[i],bone_files);
 }
 
-void SceneImporter::ImportAnimations(mutable const aiScene * scene, mutable const char * filename_path)const
+void SceneImporter::ImportAnimations(mutable const aiScene * scene
+	, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids)const
 {
 	for (uint i = 0; i < scene->mNumAnimations; ++i)
 	{

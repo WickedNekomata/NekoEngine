@@ -1519,6 +1519,12 @@ bool OverlapSphere(float radius, MonoArray* center, MonoArray** overlapHit, uint
 		return false;
 }
 
+void SetCompActive(MonoObject* monoComponent, bool active)
+{
+	Component* component = App->scripting->ComponentFrom(monoComponent);
+	component->IsActive() != active ? component->ToggleIsActive() : void();
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1589,6 +1595,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
 	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 	mono_add_internal_call("JellyBitEngine.Physics::_OverlapSphere", (const void*)&OverlapSphere);
+	mono_add_internal_call("JellyBitEngine.Component::SetActive", (const void*)&SetCompActive);
 
 	ClearMap();
 

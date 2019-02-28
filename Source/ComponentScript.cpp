@@ -47,10 +47,10 @@ ComponentScript::~ComponentScript()
 		scriptResUUID = 0;
 	}
 
-	if (handleID != 0)
+	if (monoCompHandle != 0)
 	{
-		mono_gchandle_free(handleID);
-		handleID = 0;
+		mono_gchandle_free(monoCompHandle);
+		monoCompHandle = 0;
 	}
 
 	App->scripting->ClearScriptComponent(this);
@@ -2441,18 +2441,19 @@ void ComponentScript::InstanceClass()
 		return;
 
 	classInstance = mono_object_new(App->scripting->domain, klass);
-
 	mono_runtime_object_init(classInstance);
 
-	//Reference the gameObject var with the MonoObject relative to this GameObject
-	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);
+	int gameObjectAddress = (int)GetParent();
+	int componentAddress = (int)this;
 
-	//SetUp this monoGO inside the class Instance
-	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");
-	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "gameObjectAddress"), &gameObjectAddress);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "componentAddress"), &componentAddress);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "gameObject"), App->scripting->MonoObjectFrom(GetParent()));
 
-	//Create the handle storage to make sure the garbage collector doesn't delete the classInstance
-	handleID = mono_gchandle_new(classInstance, true);
+	monoCompHandle = mono_gchandle_new(classInstance, true);
+	SetMonoComponent(monoCompHandle);
+
+	App->scripting->monoComponentHandles.push_back(monoCompHandle);
 }
 
 void ComponentScript::InstanceClass(MonoObject* _classInstance)
@@ -2468,20 +2469,27 @@ void ComponentScript::InstanceClass(MonoObject* _classInstance)
 		event.compEvent.type = System_Event_Type::ComponentDestroyed;
 		event.compEvent.component = this;
 		App->PushSystemEvent(event);
-		
+
 		return;
 	}
 
 	MonoClass* klass = mono_class_from_name(App->scripting->scriptsImage, "", scriptName.data());
+
+	if (!klass)
+		return;
+
 	classInstance = _classInstance;
+	mono_runtime_object_init(classInstance);
 
-	//Reference the gameObject var with the MonoObject relative to this GameObject
-	MonoObject* monoGO = App->scripting->MonoObjectFrom(parent);
+	int gameObjectAddress = (int)GetParent();
+	int componentAddress = (int)this;
 
-	//SetUp this monoGO inside the class Instance
-	MonoClassField* instanceMonoGo = mono_class_get_field_from_name(klass, "gameObject");
-	mono_field_set_value(classInstance, instanceMonoGo, monoGO);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "gameObjectAddress"), &gameObjectAddress);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "componentAddress"), &componentAddress);
+	mono_field_set_value(classInstance, mono_class_get_field_from_name(klass, "gameObject"), App->scripting->MonoObjectFrom(GetParent()));
 
-	//Create the handle storage to make sure the garbage collector doesn't delete the classInstance
-	handleID = mono_gchandle_new(classInstance, true);
+	monoCompHandle = mono_gchandle_new(classInstance, true);
+	SetMonoComponent(monoCompHandle);
+
+	App->scripting->monoComponentHandles.push_back(monoCompHandle);
 }

@@ -124,6 +124,21 @@ void ComponentRectTransform::ParentChanged(bool size_changed)
 	else
 	{
 		if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
+		{
+			rectTransform[X_RECT] = anchor[LEFT_RECT] + rectParent[X_RECT];
+			rectTransform[Y_RECT] = anchor[TOP_RECT] + rectParent[Y_RECT];
+			anchor[RIGHT_RECT] = rectParent[XDIST_RECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
+			anchor[BOTTOM_RECT] = rectParent[YDIST_RECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
+		}
+		else
+		{
+			rectTransform[X_RECT] = (rectParent[X_RECT] + rectParent[XDIST_RECT]) - anchor[RIGHT_RECT] - rectTransform[XDIST_RECT];
+			rectTransform[Y_RECT] = (rectParent[Y_RECT] + rectParent[YDIST_RECT]) - anchor[BOTTOM_RECT] - rectTransform[YDIST_RECT];
+			anchor[LEFT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) + anchor[RIGHT_RECT];
+			anchor[TOP_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) + anchor[BOTTOM_RECT];
+		}
+		/*
+		if (anchor_flags[LEFT_RECT] == TOPLEFT_ANCHOR)
 			rectTransform[X_RECT] = rectParent[X_RECT] + anchor[LEFT_RECT];
 		else
 			rectTransform[X_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[LEFT_RECT];
@@ -142,7 +157,7 @@ void ComponentRectTransform::ParentChanged(bool size_changed)
 			rectTransform[YDIST_RECT] = rectParent[Y_RECT] + anchor[BOTTOM_RECT] - rectTransform[Y_RECT];
 		else
 			rectTransform[YDIST_RECT] = rectParent[Y_RECT] + rectParent[YDIST_RECT] - anchor[BOTTOM_RECT] - rectTransform[Y_RECT];
-
+			*/
 		RecaculatePercentage();
 	}
 }
@@ -232,8 +247,8 @@ void ComponentRectTransform::RecaculateAnchors(int type)
 	{
 		if (rectParent != nullptr)
 		{
-			rectTransform[X_RECT] = (rectParent[XDIST_RECT] + rectParent[X_RECT]) - anchor[RIGHT_RECT] - rectTransform[XDIST_RECT];
-			rectTransform[Y_RECT] = (rectParent[YDIST_RECT]  + rectParent[YDIST_RECT]) - anchor[BOTTOM_RECT] - rectTransform[YDIST_RECT];
+			rectTransform[X_RECT] = (rectParent[X_RECT] + rectParent[XDIST_RECT]) - anchor[RIGHT_RECT] - rectTransform[XDIST_RECT];
+			rectTransform[Y_RECT] = (rectParent[Y_RECT]  + rectParent[YDIST_RECT]) - anchor[BOTTOM_RECT] - rectTransform[YDIST_RECT];
 			anchor[LEFT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) + anchor[RIGHT_RECT];
 			anchor[TOP_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) + anchor[BOTTOM_RECT];
 		}
@@ -269,7 +284,7 @@ void ComponentRectTransform::RecaculatePercentage()
 
 uint ComponentRectTransform::GetInternalSerializationBytes()
 {
-	return sizeof(uint) * 8 + sizeof(bool) * 4;
+	return sizeof(uint) * 8 + sizeof(bool) * 5;
 }
 
 void ComponentRectTransform::OnInternalSave(char *& cursor)
@@ -285,6 +300,10 @@ void ComponentRectTransform::OnInternalSave(char *& cursor)
 	bytes = sizeof(bool) * 4;
 	memcpy(cursor, &anchor_flags, bytes);
 	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(cursor, &use_margin, bytes);
+	cursor += bytes;
 }
 
 void ComponentRectTransform::OnInternalLoad(char *& cursor)
@@ -299,6 +318,10 @@ void ComponentRectTransform::OnInternalLoad(char *& cursor)
 
 	bytes = sizeof(bool) * 4;
 	memcpy(&anchor_flags, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(bool);
+	memcpy(&use_margin, cursor, bytes);
 	cursor += bytes;
 }
 
@@ -439,13 +462,13 @@ void ComponentRectTransform::OnUniqueEditor()
 			uint max_topAnchor = 0;
 			if (rectParent)
 			{
-				max_leftAnhor = (rectParent[X_RECT] + rectParent[XDIST_RECT]) - rectTransform[XDIST_RECT];
-				max_topAnchor = (rectParent[Y_RECT] + rectParent[YDIST_RECT]) - rectTransform[YDIST_RECT];
+				max_leftAnhor = rectParent[XDIST_RECT] - rectTransform[XDIST_RECT];
+				max_topAnchor = rectParent[YDIST_RECT] - rectTransform[YDIST_RECT];
 			}
 			else
 			{
-				max_leftAnhor = (ui_rect[UI_XRECT] + ui_rect[UI_WIDTHRECT]) - rectTransform[XDIST_RECT];
-				max_topAnchor = (ui_rect[UI_YRECT] + ui_rect[UI_HEIGHTRECT]) - rectTransform[YDIST_RECT];
+				max_leftAnhor = ui_rect[UI_WIDTHRECT] - rectTransform[XDIST_RECT];
+				max_topAnchor = ui_rect[UI_HEIGHTRECT] - rectTransform[YDIST_RECT];
 			}
 
 			ImGui::Text("Left/Top");
@@ -465,13 +488,13 @@ void ComponentRectTransform::OnUniqueEditor()
 
 			if (rectParent)
 			{
-				max_rightAnhor = rectParent[XDIST_RECT] - (rectParent[X_RECT] + rectTransform[XDIST_RECT]);
-				max_bottomAnchor = rectParent[YDIST_RECT] - (rectParent[Y_RECT] + rectTransform[YDIST_RECT]);
+				max_rightAnhor = rectParent[XDIST_RECT] - rectTransform[XDIST_RECT];
+				max_bottomAnchor = rectParent[YDIST_RECT] - rectTransform[YDIST_RECT];
 			}
 			else
 			{
-				max_rightAnhor = ui_rect[UI_WIDTHRECT] - (ui_rect[UI_XRECT] + rectTransform[XDIST_RECT]);
-				max_bottomAnchor = ui_rect[UI_HEIGHTRECT] - (ui_rect[UI_YRECT] + rectTransform[YDIST_RECT]);
+				max_rightAnhor = ui_rect[UI_WIDTHRECT] - rectTransform[XDIST_RECT];
+				max_bottomAnchor = ui_rect[UI_HEIGHTRECT] -rectTransform[YDIST_RECT];
 			}
 
 			ImGui::Text("Right/Bottom");

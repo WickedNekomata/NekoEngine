@@ -33,6 +33,7 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 	memcpy(rectTransform, componentRectTransform.rectTransform, sizeof(uint) * 4);
 	memcpy(anchor, componentRectTransform.anchor, sizeof(uint) * 4);
 	memcpy(anchor_flags, componentRectTransform.anchor_flags, sizeof(bool) * 4);
+	use_margin = componentRectTransform.use_margin;
 
 	Component* rect = nullptr;
 	if (parent->GetParent() != nullptr && (rect = parent->GetParent()->GetComponent(ComponentTypes::RectTransformComponent)) != nullptr)
@@ -94,7 +95,7 @@ void ComponentRectTransform::ChangeChildsRect(bool its_me, bool size_changed)
 {
 	if (!its_me)
 	{
-		if(use_margin)
+		if (use_margin)
 			ParentChanged(false);
 		else
 			ParentChanged(size_changed);
@@ -105,7 +106,7 @@ void ComponentRectTransform::ChangeChildsRect(bool its_me, bool size_changed)
 	std::reverse(childs.begin(), childs.end());
 	for (GameObject* c_go : childs)
 	{
-		if(c_go != parent)
+		if (c_go != parent)
 			((ComponentRectTransform*)c_go->GetComponent(ComponentTypes::RectTransformComponent))->ChangeChildsRect(false, size_changed);
 	}
 }
@@ -142,17 +143,14 @@ void ComponentRectTransform::ParentChanged(bool size_changed)
 			rectTransform[X_RECT] = rectParent[X_RECT] + anchor[LEFT_RECT];
 		else
 			rectTransform[X_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[LEFT_RECT];
-
 		if (anchor_flags[TOP_RECT] == TOPLEFT_ANCHOR)
 			rectTransform[Y_RECT] = rectParent[Y_RECT] + anchor[TOP_RECT];
 		else
 			rectTransform[Y_RECT] = rectParent[Y_RECT] + rectParent[YDIST_RECT] - anchor[TOP_RECT];
-
 		if (anchor_flags[RIGHT_RECT] == TOPLEFT_ANCHOR)
 			rectTransform[XDIST_RECT] = rectParent[X_RECT] + anchor[RIGHT_RECT] - rectTransform[X_RECT];
 		else
 			rectTransform[XDIST_RECT] = rectParent[X_RECT] + rectParent[XDIST_RECT] - anchor[RIGHT_RECT] - rectTransform[X_RECT];
-
 		if (anchor_flags[BOTTOM_RECT] == TOPLEFT_ANCHOR)
 			rectTransform[YDIST_RECT] = rectParent[Y_RECT] + anchor[BOTTOM_RECT] - rectTransform[Y_RECT];
 		else
@@ -239,7 +237,7 @@ void ComponentRectTransform::RecaculateAnchors(int type)
 		{
 			rectTransform[X_RECT] = anchor[LEFT_RECT] + ui_rect[UI_XRECT];
 			rectTransform[Y_RECT] = anchor[TOP_RECT] + ui_rect[UI_YRECT];
-			anchor[RIGHT_RECT] =  ui_rect[UI_WIDTHRECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
+			anchor[RIGHT_RECT] = ui_rect[UI_WIDTHRECT] - (rectTransform[X_RECT] + rectTransform[XDIST_RECT]);
 			anchor[BOTTOM_RECT] = ui_rect[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
 		}
 	}
@@ -248,7 +246,7 @@ void ComponentRectTransform::RecaculateAnchors(int type)
 		if (rectParent != nullptr)
 		{
 			rectTransform[X_RECT] = (rectParent[X_RECT] + rectParent[XDIST_RECT]) - anchor[RIGHT_RECT] - rectTransform[XDIST_RECT];
-			rectTransform[Y_RECT] = (rectParent[Y_RECT]  + rectParent[YDIST_RECT]) - anchor[BOTTOM_RECT] - rectTransform[YDIST_RECT];
+			rectTransform[Y_RECT] = (rectParent[Y_RECT] + rectParent[YDIST_RECT]) - anchor[BOTTOM_RECT] - rectTransform[YDIST_RECT];
 			anchor[LEFT_RECT] = (rectTransform[X_RECT] + rectTransform[XDIST_RECT]) + anchor[RIGHT_RECT];
 			anchor[TOP_RECT] = (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]) + anchor[BOTTOM_RECT];
 		}
@@ -396,13 +394,14 @@ void ComponentRectTransform::OnUniqueEditor()
 
 	if (needed_recalculate)
 	{
+		RecaculateAnchors();
 		RecaculatePercentage();
 		ChangeChildsRect(true, size_changed);
 	}
 
 	ImGui::Checkbox("Use margin", &use_margin);
 	ImGui::SameLine();
-	if(ImGui::Button("Set to childs"))
+	if (ImGui::Button("Set to childs"))
 		UseMarginChanged(use_margin);
 
 	if (use_margin)
@@ -431,21 +430,18 @@ void ComponentRectTransform::OnUniqueEditor()
 			anchor_flags[TOP_RECT] = current_anchor_flag;
 			needed_recalculate = true;
 		}
-
 		current_anchor_flag = (int)anchor_flags[RIGHT_RECT];
 		if (ImGui::Combo(RIGHT_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
 		{
 			anchor_flags[RIGHT_RECT] = current_anchor_flag;
 			needed_recalculate = true;
 		}
-
 		current_anchor_flag = (int)anchor_flags[BOTTOM_RECT];
 		if (ImGui::Combo(BOTTOM_RECT_STR, (int*)&current_anchor_flag, ANCHORS_POINTS_STR))
 		{
 			anchor_flags[BOTTOM_RECT] = current_anchor_flag;
 			needed_recalculate = true;
 		}
-
 		if (needed_recalculate)
 			RecaculateAnchors();
 		*/
@@ -494,7 +490,7 @@ void ComponentRectTransform::OnUniqueEditor()
 			else
 			{
 				max_rightAnhor = ui_rect[UI_WIDTHRECT] - rectTransform[XDIST_RECT];
-				max_bottomAnchor = ui_rect[UI_HEIGHTRECT] -rectTransform[YDIST_RECT];
+				max_bottomAnchor = ui_rect[UI_HEIGHTRECT] - rectTransform[YDIST_RECT];
 			}
 
 			ImGui::Text("Right/Bottom");

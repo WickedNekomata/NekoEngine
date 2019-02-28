@@ -61,7 +61,7 @@ private:
 	void RecursivelyImportNodes(const aiScene* scene, const aiNode* node, const GameObject* parent, const GameObject* transformation, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids = std::vector<uint>()) const;
 	
 	void RecursiveProcessBones(mutable const aiScene* scene,mutable const aiNode* node, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids = std::vector<uint>())const;
-	void ImportAnimations(const aiScene* scene, const char* filename_path);
+	void ImportAnimations(mutable const aiScene* scene, mutable const char* filename_path) const;
 
 	bool Load(const void* buffer, uint size, ResourceData& outputData, ResourceMeshData& outputMeshData) const;
 

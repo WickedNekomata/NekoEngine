@@ -28,10 +28,12 @@ public:
 
 public:
 
-	uint res = 0;
+	uint res = 0u;
 
 	// navmesh utility
 	bool nv_walkable = true;
+
+	uint root_bones_uid = 0u;
 };
 
 #endif

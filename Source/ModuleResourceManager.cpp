@@ -312,6 +312,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		ResourceMeshImportSettings meshImportSettings;
 		std::vector<std::string> mesh_files;
 		std::vector<std::string> bone_files;
+		std::vector<std::string> animation_files;
 		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files))
 		{
 			std::vector<uint> resourcesUuids;

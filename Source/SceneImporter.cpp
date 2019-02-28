@@ -18,6 +18,7 @@
 #include "ComponentMaterial.h"
 #include "ComponentTransform.h"
 #include "ComponentBone.h"
+#include "ComponentAnimation.h"
 #include "BoneImporter.h"
 
 #include "Assimp\include\cimport.h"
@@ -151,6 +152,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files, dummyForcedUuids);
 
 		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);
+
+		ImportAnimations(scene, prefabName);
 
 		// Prefab creation
 		GameObject* prefab_go = rootGameObject;
@@ -918,21 +921,33 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,mutable 
 
 		bone_files.push_back(outputFile);
 
-		//App->res->ExportFile(ResourceTypes::BoneResource, data, &res_data, outputFile);
-
-		//uint bone_uid = App->boneImporter->Import(bone, mesh_bone[bone], output, go);
-		
-		
-		/*if (go->GetParent() == nullptr ||
+		if (go->GetParent() == nullptr ||
 			(go->GetParent() && !go->GetParent()->GetComponent(ComponentTypes::BoneComponent)))
-			bone_root_uid = go->GetUUID();
+			bone_root_uid = go->GetUUID(); // working? 
 
-
-		comp_bone->SetResource(bone_uid);
-		imported_bones[node->mName.C_Str()] = bone_uid;*/
 		DEPRECATED_LOG("->-> Added Bone component");
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
 		RecursiveProcessBones(scene, node->mChildren[i],bone_files);
+}
+
+void SceneImporter::ImportAnimations(mutable const aiScene * scene, mutable const char * filename_path)const
+{
+	for (uint i = 0; i < scene->mNumAnimations; ++i)
+	{
+		const aiAnimation* anim = scene->mAnimations[i];
+		DEPRECATED_LOG("Importing animation [%s] -----------------", anim->mName.C_Str());
+		std::string output;
+
+		if (root_bone) {
+			ComponentAnimation* anim_co = (ComponentAnimation*)root_bone->AddComponent(ComponentTypes::AnimationComponent);
+
+			//anim_co->SetResource(App->resources->animation_importer->Import(anim, output));
+
+			// TODO check this for 2 animations
+			ComponentMesh* mesh_co = (ComponentMesh*)root_bone->GetComponent(ComponentTypes::MeshComponent);
+			mesh_co->root_bones_uid = bone_root_uid;
+		}
+	}
 }

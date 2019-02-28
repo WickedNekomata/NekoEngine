@@ -251,7 +251,30 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					monoObjectHandles.erase(monoObjectHandles.begin() + i);
 					i--;
 				}
-			}			
+			}		
+			break;
+		}
+
+		case System_Event_Type::ComponentDestroyed:
+		{
+			Component* toDelete = event.compEvent.component;
+			MonoObject* monoComponent = toDelete->GetMonoComponent();
+			if (monoComponent)
+			{
+				bool destroyed = true;
+				mono_field_set_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "destroyed"), &destroyed);
+
+				for (int i = 0; i < monoComponentHandles.size(); ++i)
+				{
+					if (monoComponent == mono_gchandle_get_target(monoComponentHandles[i]))
+					{
+						mono_gchandle_free(monoComponentHandles[i]);
+						monoComponentHandles.erase(monoComponentHandles.begin() + i);
+						i--;
+					}						
+				}
+			}
+			break;
 		}
 	}
 }
@@ -443,6 +466,8 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 
 	uint32_t handleID = mono_gchandle_new(monoComponent, true);
 	component->SetMonoComponent(handleID);
+
+	monoComponentHandles.push_back(handleID);
 
 	return monoComponent;
 }

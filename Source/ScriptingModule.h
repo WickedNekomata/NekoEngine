@@ -87,6 +87,7 @@ public:
 	_MonoImage*				scriptsImage		= nullptr;
 
 	std::vector<uint32_t>	monoObjectHandles;
+	std::vector<uint32_t>	monoComponentHandles;
 
 private:
 

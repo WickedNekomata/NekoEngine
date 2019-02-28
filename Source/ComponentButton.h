@@ -21,6 +21,10 @@ public:
 	
 	void Update();
 
+	bool* GetFlags();
+
+	void KeyPressed();
+
 private:
 	uint GetInternalSerializationBytes();
 	void OnInternalSave(char*& cursor);
@@ -40,10 +44,6 @@ private:
 
 	void SetNewKey(const char* key);
 	void SetNewKey(uint key);
-
-	void KeyPressed();
-
-	bool* GetFlags();
 };
 
 #endif

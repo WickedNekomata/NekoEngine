@@ -14,6 +14,7 @@
 #include "ComponentCamera.h"
 #include "ComponentRectTransform.h"
 #include "ComponentCanvasRenderer.h"
+#include "ComponentButton.h"
 
 #include "ResourceMaterial.h"
 
@@ -86,8 +87,7 @@ bool ModuleUI::Start()
 
 update_status ModuleUI::PreUpdate()
 {
-	//orthonormalMatrix = math::float4x4(App->camera->camera->frustum.NearPlane().OrthoProjection());
-
+	anyItemIsHovered = false;
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -96,6 +96,9 @@ update_status ModuleUI::Update()
 	for (std::list<Component*>::iterator iteratorUI = componentsUI.begin(); iteratorUI != componentsUI.end(); ++iteratorUI)
 	{
 		(*iteratorUI)->Update();
+		if(!anyItemIsHovered)
+			if ((*iteratorUI)->GetType() == ComponentTypes::ButtonComponent)
+				anyItemIsHovered = ((ComponentButton*)(*iteratorUI))->GetFlags()[B_STATE_HOVERED];
 	}
 
 	return update_status::UPDATE_CONTINUE;
@@ -220,6 +223,11 @@ void ModuleUI::SetRectToShader(ComponentRectTransform * rect)
 	setFloat(ui_shader, "bottomLeft", pos.x, pos.y);
 	pos = math::Frustum::ScreenToViewportSpace({ (float)rect_points[X_RECT] + (float)rect_points[XDIST_RECT], (float)rect_points[Y_RECT] + (float)rect_points[YDIST_RECT] }, w_width, w_height);
 	setFloat(ui_shader, "bottomRight", pos.x, pos.y);
+}
+
+bool ModuleUI::IsUIHovered()
+{
+	return anyItemIsHovered;
 }
 
 

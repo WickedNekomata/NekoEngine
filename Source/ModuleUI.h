@@ -63,6 +63,8 @@ private:
 
 	void SetRectToShader(ComponentRectTransform* rect);
 
+	bool IsUIHovered();
+
 public:
 	std::list<Component*> componentsUI;
 
@@ -75,6 +77,8 @@ private:
 	uint ui_shader = 0;
 
 	bool uiMode = false;
+	
+	bool anyItemIsHovered = false;
 
 	//Shader functions
 		// use/activate the shader

@@ -9,6 +9,7 @@
 #include "ModuleResourceManager.h"
 #include "ResourceMesh.h"
 #include "ResourceBone.h"
+#include "ResourceAnimation.h"
 
 #include "ResourcePrefab.h"
 
@@ -20,6 +21,9 @@
 #include "ComponentBone.h"
 #include "ComponentAnimation.h"
 #include "BoneImporter.h"
+#include "AnimationImporter.h"
+
+#include "ModuleAnimation.h"
 
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
@@ -896,7 +900,6 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 
 		ComponentBone* comp_bone = (ComponentBone*)go->AddComponent(ComponentTypes::BoneComponent);
 
-		std::string output;
 
 		if (forcedUuids.size() > 0)
 		{
@@ -942,7 +945,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 }
 
 void SceneImporter::ImportAnimations(mutable const aiScene * scene
-	, std::vector<std::string>& bone_files, std::vector<uint>& forcedUuids)const
+	, std::vector<std::string>& anim_files, std::vector<uint>& forcedUuids)const
 {
 	for (uint i = 0; i < scene->mNumAnimations; ++i)
 	{
@@ -953,9 +956,49 @@ void SceneImporter::ImportAnimations(mutable const aiScene * scene
 		if (root_bone) {
 			ComponentAnimation* anim_co = (ComponentAnimation*)root_bone->AddComponent(ComponentTypes::AnimationComponent);
 
-			//anim_co->SetResource(App->resources->animation_importer->Import(anim, output));
+			GameObject* go = root_bone;
+			if (forcedUuids.size() > 0)
+			{
+				go->cmp_animation->res = forcedUuids.front();
+				forcedUuids.erase(forcedUuids.begin());
+			}
+			else
+				go->cmp_animation->res = App->GenerateRandomNumber();
 
-			// TODO check this for 2 animations
+			std::string outputFile = std::to_string(go->cmp_animation->res);
+
+			ResourceData data;
+			data.name = outputFile;
+			data.file = outputFile;
+
+			ResourceAnimationData res_data;
+			
+
+			static int take_count = 1;
+			std::string filename = "Take00";
+			filename.append(std::to_string(take_count++));
+			res_data.name = filename;
+
+			res_data.ticksPerSecond= anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 24;
+			res_data.duration = anim->mDuration / res_data.ticksPerSecond;
+
+			res_data.numKeys = anim->mNumChannels;
+
+			// Once we have the animation data we populate the animation keys with the bones' data
+			res_data.boneKeys = new BoneTransformation[res_data.numKeys];
+			
+			for (uint i = 0; i < anim->mNumChannels; ++i)
+				App->animImporter->ImportBoneTransform(anim->mChannels[i], res_data.boneKeys[i]);
+
+			
+
+			App->animImporter->SaveAnimation(data, res_data, outputFile,false);
+
+			// TODO_G: Check this
+			//App->animation->SetAnimationGos(anim);
+
+			anim_files.push_back(outputFile);
+
 			ComponentMesh* mesh_co = (ComponentMesh*)root_bone->GetComponent(ComponentTypes::MeshComponent);
 			mesh_co->root_bones_uid = bone_root_uid;
 		}

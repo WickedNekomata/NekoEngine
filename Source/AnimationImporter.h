@@ -22,7 +22,8 @@ public:
 
 	uint Import(const aiAnimation* new_anim, std::string& output);
 
-	bool SaveAnimation(ResourceAnimation* anim, std::string& output);
+	bool SaveAnimation(mutable ResourceData & res_data, mutable ResourceAnimationData & bone_data, mutable std::string & outputFile, mutable bool overwrite) const;
+
 
 	void ImportBoneTransform(const aiNodeAnim * anim_node, BoneTransformation& bones_transform) const;
 

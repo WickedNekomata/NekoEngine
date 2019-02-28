@@ -64,7 +64,7 @@ bool ComponentAnimation::SetResource(uint resource) //check all this
 	return true;
 }
 
-bool ComponentAnimation::PlayAnimation(char * anim_name)
+bool ComponentAnimation::PlayAnimation(uint anim_name)
 {
 	// mimimi
 	return true;

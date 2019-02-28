@@ -14,6 +14,11 @@
 #define TOPLEFT_ANCHOR 0
 #define BOTTOMRIGHT_ANCHOR 1
 
+#define X0_PERCENTAGE 0
+#define X1_PERCENTAGE 1
+#define Y0_PERCENTAGE 2
+#define Y1_PERCENTAGE 3
+
 #define LEFT_RECT_STR "Left"
 #define TOP_RECT_STR "Top"
 #define RIGHT_RECT_STR "Right"
@@ -44,22 +49,28 @@ public:
 
 	void CheckParentRect();
 
-	void ChangeChildsRect(bool its_me = false);
+	void ChangeChildsRect(bool its_me = false, bool size_changed = false);
 
 private:
 	//x, y, x_dist, y_dist
 	uint rectTransform[4] = { 0, 0, 100, 100 };
 
 	//True, references top-left. False, refernces bottom-right. For every point of rect.
+	bool use_margin = false;
 	uint anchor[4] = {0,0,0,0};
 	bool anchor_flags[4] = { false, false, false, false };
+	float anchor_percenatges[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
+private:
 	void RecaculateAnchors();
+	void RecaculateAnchors(int type);
+	void RecaculatePercentage();
 
 	uint* ui_rect = nullptr;
 	uint* rectParent = nullptr;
 
-	void ParentChanged();
+	void ParentChanged(bool size_changed = false);
+	void UseMarginChanged(bool useMargin);
 
 	virtual uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);

@@ -109,7 +109,7 @@ void ComponentMesh::OnUniqueEditor()
 
 uint ComponentMesh::GetInternalSerializationBytes()
 {
-	return sizeof(uint) + sizeof(bool);
+	return sizeof(uint) + sizeof(bool) + sizeof(uint);
 }
 
 void ComponentMesh::OnInternalSave(char*& cursor)

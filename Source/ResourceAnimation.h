@@ -80,13 +80,6 @@ public:
 	static bool LoadFile(const char* file, ResourceAnimationData& prefab_data_output);
 
 public:
-	std::string name;
-	double duration;
-	double ticks_per_second;
-
-	uint numKeys = 0;
-	BoneTransformation* bone_keys;
-
 	ResourceAnimationData animationData;
 };
 

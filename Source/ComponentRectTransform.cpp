@@ -243,7 +243,7 @@ void ComponentRectTransform::RecaculateAnchors(int type)
 			anchor[BOTTOM_RECT] = ui_rect[UI_HEIGHTRECT] - (rectTransform[Y_RECT] + rectTransform[YDIST_RECT]);
 		}
 	}
-	else
+	else if (BOTTOMRIGHT_ANCHOR == type)
 	{
 		if (rectParent != nullptr)
 		{

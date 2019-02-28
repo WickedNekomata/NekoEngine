@@ -501,7 +501,7 @@ void ComponentEmitter::ParticleAABB()
 		ImGui::Checkbox("Bounding Box", &drawAABB);
 		if (drawAABB)
 		{
-			math::float3 size = parent->originalBoundingBox.Size();
+			math::float3 size = parent->boundingBox.Size();///
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
 				SetAABB(size,GetParent()->transform->position);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))

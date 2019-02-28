@@ -32,6 +32,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
 	case System_Event_Type::RecalculateBBoxes:
 
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)

@@ -40,6 +40,8 @@ public:
 	void OnDisable();
 	void RecursiveRecalculateBoundingBoxes();
 
+	void CalculateBoundingBox();
+
 	void OnSystemEvent(System_Event event);
 
 	void Destroy();

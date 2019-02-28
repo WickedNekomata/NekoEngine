@@ -8,6 +8,7 @@ enum System_Event_Type
 
 	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
 
+	CalculateBBoxes, // GameObjectEvent
 	RecalculateBBoxes, // GameObjectEvent
 	RecreateQuadtree,
 	Play,

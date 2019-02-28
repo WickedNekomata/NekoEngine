@@ -285,10 +285,29 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		children[i]->RecursiveRecalculateBoundingBoxes();
 }
 
+void GameObject::CalculateBoundingBox()
+{
+	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
+	{
+		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
+		int nVerts = meshRes->GetVerticesCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetTris(vertices);
+		originalBoundingBox.SetNegativeInfinity();
+		originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
+		delete[] vertices;
+
+	}
+}
+
+
 void GameObject::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
+		CalculateBoundingBox();
+		break;
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;

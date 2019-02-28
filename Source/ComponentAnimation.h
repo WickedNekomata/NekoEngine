@@ -17,7 +17,8 @@ public:
 
 	void OnInternalSave(char*& cursor);
 	void OnInternalLoad(char*& cursor);
-
+	void OnEditor();
+	void OnUniqueEditor();
 
 public:
 	uint res = 0;

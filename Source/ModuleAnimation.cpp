@@ -119,11 +119,11 @@ bool ModuleAnimation::Update(float dt)
 void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 {
 	Animation* animation = new Animation();
-	animation->name = res->name;
-	for (uint i = 0; i < res->numKeys; ++i)
-		RecursiveGetAnimableGO(App->scene->root, &res->bone_keys[i], animation);
+	animation->name = res->animationData.name;
+	for (uint i = 0; i < res->animationData.numKeys; ++i)
+		RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
 
-	animation->duration = res->duration;
+	animation->duration = res->animationData.duration;
 
 	animations.push_back(animation);
 	current_anim = animations[0];

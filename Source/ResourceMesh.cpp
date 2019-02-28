@@ -10,12 +10,24 @@
 
 #include <assert.h>
 
-ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {}
+ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {
+
+	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
+	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
+	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
+	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
+	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
+	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
+	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
+}
 
 ResourceMesh::~ResourceMesh()
 {
 	RELEASE_ARRAY(meshData.vertices);
 	RELEASE_ARRAY(meshData.indices);
+
+	RELEASE_ARRAY(deformableMeshData.vertices);
+	RELEASE_ARRAY(deformableMeshData.indices);
 }
 
 void ResourceMesh::OnPanelAssets()

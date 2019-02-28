@@ -110,6 +110,12 @@ private:
 	uint VAO = 0;
 
 	ResourceMeshData meshData;
+
+	uint DVBO = 0;
+	uint DIBO = 0;
+	uint DVAO = 0;
+
+	ResourceMeshData deformableMeshData;
 };
 
 #endif

@@ -9,7 +9,7 @@ class ComponentLight : public Component
 public:
 
 	ComponentLight(GameObject* parent);
-	ComponentLight(const ComponentLight& componentCamera);
+	ComponentLight(const ComponentLight& componentCamera, GameObject* parent);
 	~ComponentLight();
 
 	void OnUniqueEditor();

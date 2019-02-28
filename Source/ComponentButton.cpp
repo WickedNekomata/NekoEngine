@@ -23,7 +23,6 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 ComponentButton::ComponentButton(const ComponentButton & componentButton, GameObject* parent) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	state = componentButton.state;
-	memcpy(sate_flag, componentButton.sate_flag, sizeof(bool) * 4);
 	button_blinded = componentButton.button_blinded;
 	input = componentButton.input;
 	App->ui->componentsUI.push_back(this);
@@ -47,35 +46,27 @@ void ComponentButton::Update()
 		if (MouseInScreen(rect))
 		{
 			state = HOVERED;
-			//sate_flag[B_STATE_IDLE] = false;
-			//sate_flag[B_STATE_HOVERED] = true;
 		}
 		break;
 	case HOVERED:
 		if (!MouseInScreen(rect))
 		{
 			state = IDLE;
-			//sate_flag[B_STATE_IDLE] = true;
-			//sate_flag[B_STATE_HOVERED] = false;
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 		{
 			state = R_CLICK;
-			//sate_flag[B_STATE_R_CLICK] = true;
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		{
 			state = L_CLICK;
-			//sate_flag[B_STATE_L_CLICK] = true;
 		}
 		break;
 	case R_CLICK:
 		state = HOVERED;
-		//sate_flag[B_STATE_R_CLICK] = false;
 		break;
 	case L_CLICK:
 		state = HOVERED;
-		//sate_flag[B_STATE_L_CLICK] = false;
 		break;
 	default:
 		break;
@@ -153,7 +144,7 @@ void ComponentButton::KeyPressed()
 	CONSOLE_LOG(LogTypes::Normal, "GG");
 }
 
-bool * ComponentButton::GetFlags()
+UIState ComponentButton::GetState() const
 {
-	return sate_flag;
+	return state;
 }

@@ -45,6 +45,8 @@ public:
 
 	void LinkAllRectsTransform();
 
+	bool IsUIHovered();
+
 private:
 
 	bool Init(JSON_Object* jObject);
@@ -62,8 +64,6 @@ private:
 	void DrawUITexture(ComponentRectTransform* rect, uint texture = 0, float rotation = 0.0f);
 
 	void SetRectToShader(ComponentRectTransform* rect);
-
-	bool IsUIHovered();
 
 public:
 	std::list<Component*> componentsUI;

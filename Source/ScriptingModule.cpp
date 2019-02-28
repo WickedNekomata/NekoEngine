@@ -114,6 +114,13 @@ update_status ScriptingModule::Update()
 
 update_status ScriptingModule::PostUpdate()
 {
+	if (someScriptModified || engineOpened)
+	{
+		RecompileScripts();
+		someScriptModified = false;
+		engineOpened = false;
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -141,7 +148,7 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 	{
 		case System_Event_Type::Play:
 		{
-			//Check if some files have compile errors and don't let the user hit the play.
+			//TODO: Check if some files have compile errors and don't let the user hit the play.
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -307,7 +314,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		ResourceData data;
 		data.name = scriptName;
 		data.file = "Assets/Scripts/" + scriptName + ".cs";
-		data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
+		data.exportedFile = "";
 	
 		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
 
@@ -319,9 +326,9 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		App->fs->Save("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
-		delete[] buffer;
+		someScriptModified = true;
 
-		scriptRes->Compile();
+		delete[] buffer;
 	}
 
 	App->res->SetAsUsed(scriptRes->GetUuid());
@@ -412,6 +419,12 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 		case ComponentTypes::SphereColliderComponent:
 		{
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Collider"));
+			break;
+		}
+
+		case ComponentTypes::NavAgentComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
 			break;
 		}
 	}
@@ -565,7 +578,17 @@ void ScriptingModule::CreateInternalCSProject()
 
 std::string ScriptingModule::getReferencePath() const
 {
-	return std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("JellyBitCS.dll\" ");
+	std::string internalCommand = std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("JellyBitCS.dll\" " + std::string("-lib:\"") + App->fs->getAppPath() + "\\Library\\Scripts\" ");
+	std::string referencesCommand;
+
+	/*std::vector<Resource*> scripts = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		ResourceScript* script = (ResourceScript*)scripts[i];
+		referencesCommand += std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("Library\\Scripts\\") + script->scriptName + ".dll" + std::string("\" ");
+	}*/
+
+	return internalCommand + referencesCommand;
 }
 
 std::string ScriptingModule::clearSpaces(std::string& scriptName)
@@ -596,6 +619,8 @@ void ScriptingModule::ClearMap()
 
 Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 {
+	//May be new file or generic file event
+
 	std::string file = fileAssets;
 	std::string metaFile = file + ".meta";
 
@@ -605,7 +630,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 	ResourceData data;
 	data.name = scriptName;
 	data.file = "Assets/Scripts/" + scriptName + ".cs";
-	data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
+	data.exportedFile = "";
 
 	ResourceScript* scriptRes = nullptr;
 
@@ -648,6 +673,8 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 				cursor = metaBuffer;
 				memcpy(cursor, &lastModTime, sizeof(int64_t));
 				App->fs->Save(metaFile, metaBuffer, size);
+
+				someScriptModified = true;
 			}
 
 			scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData(), uid);
@@ -657,25 +684,13 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 			delete[] metaBuffer;
 		}
 	}
-
-	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll") || scriptModified)
-	{
-		if (!scriptRes->preCompileErrors())
-		{
-			scriptRes->Compile();
-		}
-	}
-	else
-	{
-		scriptRes->referenceMethods();
-	}
 		
 	return scriptRes;
 }
 
 void ScriptingModule::ScriptModified(const char* scriptPath)
 {
-	char metaFile[DEFAULT_BUF_SIZE];
+	/*char metaFile[DEFAULT_BUF_SIZE];
 	strcpy(metaFile, scriptPath);
 	strcat(metaFile, ".meta");
 
@@ -695,16 +710,57 @@ void ScriptingModule::ScriptModified(const char* scriptPath)
 
 	System_Event event;
 	event.type = System_Event_Type::ScriptingDomainReloaded;
-	App->PushSystemEvent(event);
+	App->PushSystemEvent(event);*/
+
+	someScriptModified = true;
 }
 
 void ScriptingModule::RecompileScripts()
 {
-	std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
-	for (int i = 0; i < scriptResources.size(); ++i)
+	std::string goRoot(R"(cd\ )");
+	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
+	std::string compileCommand(" mcs -target:library ");
+
+	/*std::string fileName = data.file.substr(data.file.find_last_of("/") + 1);
+	std::string windowsFormattedPath = pathToWindowsNotation(data.file);*/
+
+	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + std::string("\\Assets\\Scripts\\*.cs") + "\"";
+	std::string redirectOutput(" 1> \"" + /*pathToWindowsNotation*/(App->fs->getAppPath()) + "LogError.txt\"" + std::string(" 2>&1"));
+	std::string outputFile(" -o ..\\..\\Library\\Scripts\\Scripting.dll ");
+
+	std::string error;
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + outputFile + App->scripting->getReferencePath() + redirectOutput).data(), error))
 	{
-		ResourceScript* res = (ResourceScript*)scriptResources[i];
-		res->Compile();
+		char* buffer;
+		int size = App->fs->Load("LogError.txt", &buffer);
+		if (size > 0)
+		{
+			std::string outPut(buffer);
+			outPut.resize(size);
+
+			CONSOLE_LOG(LogTypes::Error, "Error compiling Scripting assembly. Error: %s", outPut.data());
+
+			delete[] buffer;
+		}		
+	}
+	else
+	{
+		//Send the DomainReloaded event
+		System_Event event;
+		event.type = System_Event_Type::ScriptingDomainReloaded;
+		App->PushSystemEvent(event);
+
+		App->scripting->CreateDomain();
+		App->scripting->UpdateScriptingReferences();
+
+		std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+		for (int i = 0; i < scriptResources.size(); ++i)
+		{
+			ResourceScript* scriptRes = (ResourceScript*)scriptResources[i];
+			scriptRes->referenceMethods();
+		}
+
+		App->scripting->ReInstance();
 	}
 }
 
@@ -1241,54 +1297,31 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 {
 	MonoObject* monoComp = nullptr;
 
-	const char* name2 = mono_class_get_name(mono_object_get_class(type));
+	std::string className = mono_class_get_name(mono_object_get_class(type));
 
-	union
+	if (className == "NavMeshAgent")
 	{
-		char name[DEFAULT_BUF_SIZE];
-		uint32_t translated;
-	} dictionary;
-	
-	strcpy(dictionary.name, name2);
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
 
-	uint32_t translation = dictionary.translated;
+		Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
 
-	switch (translation)
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else
 	{
-		case NAVMESHAGENT_ASCII:
+		//Find a script named as this class
+
+		for (int i = 0; i < App->scripting->scripts.size(); ++i)
 		{
-			int address = 0u;
-			mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
-
-			GameObject* gameObject = (GameObject*)address;
-			if (!gameObject)
-				return nullptr;
-
-			Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
-
-			if (!comp)
-				return nullptr;
-
-			monoComp = comp->GetMonoComponent();
-
-			if (!monoComp)
+			if (App->scripting->scripts[i]->scriptName == className)
 			{
-				monoComp = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
-				mono_runtime_object_init(monoComp);
-
-				int compAddress = (int)comp;
-
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObjectAddress"), &address);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "componentAddress"), &compAddress);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObject"), monoObject);
-
-				uint32_t compHandle = mono_gchandle_new(monoComp, true);
-				comp->SetMonoComponent(compHandle);
+				return App->scripting->scripts[i]->classInstance;
 			}
-			else		
-				return monoComp;
-
-			break;
 		}
 	}
 
@@ -1535,4 +1568,19 @@ void ScriptingModule::CreateDomain()
 	ClearMap();
 
 	firstDomain = false;
+}
+
+void ScriptingModule::UpdateScriptingReferences()
+{
+	char* buffer;
+	int size = App->fs->Load("Library/Scripts/Scripting.dll", &buffer);
+	if (size <= 0)
+		return;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	scriptsImage = mono_image_open_from_data(buffer, size, 1, &status);
+	scriptsAssembly = mono_assembly_load_from(scriptsImage, "ScriptingAssembly", &status);
+
+	delete[] buffer;
 }

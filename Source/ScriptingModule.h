@@ -62,6 +62,8 @@ public:
 	std::string clearSpaces(std::string& scriptName = std::string());
 
 	void CreateDomain();
+	void UpdateScriptingReferences();
+
 	void ReInstance();
 
 	void ClearMap();
@@ -77,14 +79,19 @@ private:
 	void ExecuteCallbacks(GameObject* gameObject);
 
 public:
-	_MonoDomain* domain = nullptr;
-	_MonoAssembly* internalAssembly = nullptr;
-	_MonoImage* internalImage = nullptr;
+	_MonoDomain*			domain				= nullptr;
+	_MonoAssembly*			internalAssembly	= nullptr;
+	_MonoImage*				internalImage		= nullptr;
 
-	std::vector<uint32_t> monoObjectHandles;
+	_MonoAssembly*			scriptsAssembly		= nullptr;
+	_MonoImage*				scriptsImage		= nullptr;
+
+	std::vector<uint32_t>	monoObjectHandles;
 
 private:
 
+	bool someScriptModified = false;
+	bool engineOpened = true;
 	std::vector<ComponentScript*> scripts;
 };
 

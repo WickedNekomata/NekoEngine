@@ -38,15 +38,6 @@ class ResourceScript : public Resource
 {
 public:
 
-	enum class ScriptState
-	{
-		NO_STATE = -1,
-		NO_COMPILED,
-		COMPILED_WITH_ERRORS,
-		COMPILED_FINE
-		
-	} state = ScriptState::NO_COMPILED;
-
 	ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData);
 	virtual ~ResourceScript();
 
@@ -61,8 +52,6 @@ public:
 	void DeSerializeFromMeta(char*& cursor);
 	uint bytesToSerializeMeta() const;
 
-	bool preCompileErrors();
-	bool Compile();
 	bool referenceMethods();
 
 	static std::vector<std::string> getScriptNames() { return scriptNames; }
@@ -85,12 +74,7 @@ public:
 	_MonoMethod* disableMethod = nullptr;
 	_MonoMethod* stopMethod = nullptr;
 
-	//The assembly and image containing all the .cs code
-	_MonoAssembly* assembly = nullptr;
-	_MonoImage* image = nullptr;
-
 private:
-	bool firstCompiled = true;
 	static std::vector<std::string> scriptNames;
 
 	ResourceScriptData scriptData;

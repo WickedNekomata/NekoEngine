@@ -26,9 +26,10 @@ public class Testing : JellyScript
             Testing testing = gameObject.GetComponent<Testing>();
             Debug.Log("Spot is " + testing.spot.ToString());
 
-            DataHolder holder = new DataHolder();
+            DataHolder holder = anotherGO.GetComponent<DataHolder>();
             if(holder != null)
             {
+                Debug.Log("JODER ESTO ES BRUTAL");
                 Debug.Log("Holders a is " + holder.a.ToString());
                 Debug.Log("Holders b is " + holder.b);
             }         

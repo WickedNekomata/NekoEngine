@@ -105,8 +105,13 @@ void PanelInspector::ShowGameObjectInspector() const
 
 	ImGui::PushItemWidth(100.0f);
 	ImGuiInputTextFlags inputFlag = ImGuiInputTextFlags_EnterReturnsTrue;
-	if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName)))
-		gameObject->SetName(objName);
+	if (ImGui::InputText("##objName", objName, IM_ARRAYSIZE(objName), inputFlag))
+	{
+		if (std::strcmp(objName, "Canvas") != 0)
+			gameObject->SetName(objName);
+		else
+			CONSOLE_LOG(LogTypes::Warning, "Canvas is a reserved name.");
+	}
 	ImGui::PopItemWidth();
 
 	ImGui::SameLine(0.0f, 30.f);
@@ -153,7 +158,6 @@ void PanelInspector::ShowGameObjectInspector() const
 			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
 			gameObject->AddComponent(script);
 			script->SetParent(gameObject);
-			script->InstanceClass();
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -199,6 +203,25 @@ void PanelInspector::ShowGameObjectInspector() const
 				gameObject->AddComponent(ComponentTypes::ProjectorComponent);
 				ImGui::CloseCurrentPopup();
 			}
+
+		if (gameObject->GetLayer() == UILAYER)
+		{
+			if (gameObject->cmp_image == nullptr)
+				if (ImGui::Selectable("Image UI")) {
+					gameObject->AddComponent(ComponentTypes::ImageComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_button == nullptr)
+				if (ImGui::Selectable("Button UI")) {
+					gameObject->AddComponent(ComponentTypes::ButtonComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_button == nullptr)
+				if (ImGui::Selectable("Text UI")) {
+					gameObject->AddComponent(ComponentTypes::LabelComponent);
+					ImGui::CloseCurrentPopup();
+				}
+		}
 
 		if (ImGui::Selectable("Script"))
 		{

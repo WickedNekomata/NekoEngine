@@ -25,8 +25,14 @@
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
 #include "ComponentScript.h"
+#include "ComponentRectTransform.h"
+#include "ComponentCanvasRenderer.h"
+#include "ComponentImage.h"
+#include "ComponentButton.h"
+#include "ComponentLabel.h"
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
+#include "ComponentAnimation.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -60,7 +66,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 	seenLastFrame = gameObject.seenLastFrame;
 
 	uuid = App->GenerateRandomNumber();
-	
+
 	for (int i = 0; i < gameObject.components.size(); ++i)
 	{
 		ComponentTypes type = gameObject.components[i]->GetType();
@@ -102,6 +108,11 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			cmp_bone->SetParent(this);
 			components.push_back(cmp_bone);
 			break;
+		case ComponentTypes::AnimationComponent:
+			cmp_animation = new ComponentAnimation(*gameObject.cmp_animation, this);
+			cmp_animation->SetParent(this);
+			components.push_back(cmp_animation);
+			break;
 		case ComponentTypes::LightComponent:
 			cmp_light = new ComponentLight(*gameObject.cmp_light, this);
 			cmp_light->SetParent(this);
@@ -142,6 +153,21 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
+		case ComponentTypes::RectTransformComponent:
+			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			break;
+		case ComponentTypes::CanvasRendererComponent:
+			cmp_canvasRenderer = new ComponentCanvasRenderer(*gameObject.cmp_canvasRenderer);
+			break;
+		case ComponentTypes::ImageComponent:
+			cmp_image = new ComponentImage(*gameObject.cmp_image);
+			break;
+		case ComponentTypes::ButtonComponent:
+			cmp_button = new ComponentButton(*gameObject.cmp_button);
+			break;
+		case ComponentTypes::LabelComponent:
+			cmp_label = new ComponentLabel(*gameObject.cmp_label);
+			break;
 		case ComponentTypes::ScriptComponent:
 		{
 			ComponentScript* script = new ComponentScript(*(ComponentScript*)gameObject.components[i], this, includeComponents);
@@ -156,10 +182,10 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
 	{
-		GameObject* childClone = new GameObject(*gameObject.children[i], includeComponents);		
+		GameObject* childClone = new GameObject(*gameObject.children[i], includeComponents);
 		childClone->parent = this;
 		childClone->parent_uuid = this->uuid;
-				
+
 		children.push_back(childClone);
 	}
 }
@@ -285,10 +311,29 @@ void GameObject::RecursiveRecalculateBoundingBoxes()
 		children[i]->RecursiveRecalculateBoundingBoxes();
 }
 
+void GameObject::CalculateBoundingBox()
+{
+	if (cmp_mesh != nullptr && cmp_mesh->res != 0)
+	{
+		const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
+		int nVerts = meshRes->GetVerticesCount();
+		float* vertices = new float[nVerts * 3];
+		meshRes->GetTris(vertices);
+		originalBoundingBox.SetNegativeInfinity();
+		originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
+		delete[] vertices;
+
+	}
+}
+
+
 void GameObject::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
+		CalculateBoundingBox();
+		break;
 	case System_Event_Type::RecalculateBBoxes:
 		RecursiveRecalculateBoundingBoxes();
 		break;
@@ -451,9 +496,35 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		assert(cmp_emitter == NULL);
 		newComponent = cmp_emitter = new ComponentEmitter(this);
 		break;
+	case ComponentTypes::RectTransformComponent:
+		assert(cmp_rectTransform == nullptr);
+		newComponent = cmp_rectTransform = new ComponentRectTransform(this);
+		break;
+	case ComponentTypes::CanvasRendererComponent:
+		newComponent = cmp_canvasRenderer = new ComponentCanvasRenderer(this);
+		break;
+	case ComponentTypes::ImageComponent:
+		if (cmp_canvasRenderer == nullptr)
+			AddComponent(ComponentTypes::CanvasRendererComponent);
+		newComponent = cmp_image = new ComponentImage(this);
+		break;
+	case ComponentTypes::ButtonComponent:
+		if (cmp_canvasRenderer == nullptr)
+			AddComponent(ComponentTypes::CanvasRendererComponent);
+		newComponent = cmp_button = new ComponentButton(this);
+		break;
+	case ComponentTypes::LabelComponent:
+		if (cmp_canvasRenderer == nullptr)
+			AddComponent(ComponentTypes::CanvasRendererComponent);
+		newComponent = cmp_label = new ComponentLabel(this);
+		break;
 	case ComponentTypes::BoneComponent:
 		assert(cmp_bone == NULL);
 		newComponent = cmp_bone = new ComponentBone(this);
+		break;
+	case ComponentTypes::AnimationComponent:
+		assert(cmp_animation == NULL);
+		newComponent = cmp_animation = new ComponentAnimation(this);
 		break;
 	case ComponentTypes::LightComponent:
 		assert(cmp_light == NULL);
@@ -486,7 +557,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 	case ComponentTypes::PlaneColliderComponent:
 		assert(cmp_collider == nullptr);
 		newComponent = cmp_collider = new ComponentPlaneCollider(this);
-		break;		
+		break;
 	case ComponentTypes::ScriptComponent:
 	{
 		newComponent = new ComponentScript("", this);
@@ -495,7 +566,7 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		break;
 	}
 	}
-	
+
 	components.push_back(newComponent);
 
 	if (newMaterial)
@@ -582,7 +653,7 @@ void GameObject::GetChildrenVector(std::vector<GameObject*>& go, bool thisGo)
 }
 
 uint GameObject::GetSerializationBytes() const
-{	
+{
 	// uuid + parent + layer + active + static + name + number of components
 	size_t size = sizeof(uint) * 3 + sizeof(bool) * 2 + sizeof(char) * DEFAULT_BUF_SIZE + sizeof(int);
 

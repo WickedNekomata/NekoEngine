@@ -159,37 +159,40 @@ void ModuleScene::Draw() const
 #ifndef GAMEMODE
 void ModuleScene::OnGizmos(GameObject* gameObject)
 {
-	ImGuiViewport* vport = ImGui::GetMainViewport();
-	ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
-
-	math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
-	math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
-	math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
-	transformMatrix = transformMatrix.Transposed();
-
-	ImGuizmo::MODE mode = currentImGuizmoMode;
-	if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
-		mode = ImGuizmo::MODE::LOCAL;
-
-	ImGuizmo::Manipulate(
-		viewMatrix.ptr(), projectionMatrix.ptr(),
-		currentImGuizmoOperation, mode, transformMatrix.ptr()
-	);
-
-	if (ImGuizmo::IsUsing())
+	if (gameObject->GetLayer() != UILAYER)
 	{
-		if (!saveTransform)
-		{
-			saveTransform = true;
-			lastMat = transformMatrix;
-		}
+		ImGuiViewport* vport = ImGui::GetMainViewport();
+		ImGuizmo::SetRect(vport->Pos.x, vport->Pos.y, vport->Size.x, vport->Size.y);
+
+		math::float4x4 viewMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLViewMatrix();
+		math::float4x4 projectionMatrix = App->renderer3D->GetCurrentCamera()->GetOpenGLProjectionMatrix();
+		math::float4x4 transformMatrix = gameObject->transform->GetGlobalMatrix();
 		transformMatrix = transformMatrix.Transposed();
-		gameObject->transform->SetMatrixFromGlobal(transformMatrix);
-	}
-	else if (saveTransform)
-	{
-		SaveLastTransform(lastMat.Transposed());
-		saveTransform = false;
+
+		ImGuizmo::MODE mode = currentImGuizmoMode;
+		if (currentImGuizmoOperation == ImGuizmo::OPERATION::SCALE && mode != ImGuizmo::MODE::LOCAL)
+			mode = ImGuizmo::MODE::LOCAL;
+
+		ImGuizmo::Manipulate(
+			viewMatrix.ptr(), projectionMatrix.ptr(),
+			currentImGuizmoOperation, mode, transformMatrix.ptr()
+		);
+
+		if (ImGuizmo::IsUsing())
+		{
+			if (!saveTransform)
+			{
+				saveTransform = true;
+				lastMat = transformMatrix;
+			}
+			transformMatrix = transformMatrix.Transposed();
+			gameObject->transform->SetMatrixFromGlobal(transformMatrix);
+		}
+		else if (saveTransform)
+		{
+			SaveLastTransform(lastMat.Transposed());
+			saveTransform = false;
+		}
 	}
 }
 

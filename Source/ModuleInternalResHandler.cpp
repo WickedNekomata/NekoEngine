@@ -16,6 +16,7 @@ bool ModuleInternalResHandler::Start()
 	CreateCube();
 	CreateDefaultShaderProgram(vShaderTemplate, fShaderTemplate, ShaderProgramTypes::Standard);
 	CreateDefaultShaderProgram(Particle_vShaderTemplate, Particle_fShaderTemplate, ShaderProgramTypes::Particles);
+	CreateUIShaderProgram();
 	CreateDefaultMaterial();
 
 	return true;
@@ -182,6 +183,40 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 void ModuleInternalResHandler::CreateCubemapShaderProgram()
 {
 	// CUBEMAP_SHADER_PROGRAM_UUID
+}
+
+void ModuleInternalResHandler::CreateUIShaderProgram()
+{
+	ResourceData vertexData;
+	ResourceShaderObjectData vertexShaderData;
+	vertexData.name = "UI vertex object";
+	vertexShaderData.shaderObjectType = ShaderObjectTypes::VertexType;
+	vertexShaderData.SetSource(uivShader, strlen(uivShader));
+	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
+	if (vObj->Compile())
+		vObj->isValid = false;
+	UIVertexShaderObject = vObj->shaderObject;
+
+	ResourceData fragmentData;
+	ResourceShaderObjectData fragmentShaderData;
+	fragmentData.name = "UI fragment object";
+	fragmentShaderData.shaderObjectType = ShaderObjectTypes::FragmentType;
+	fragmentShaderData.SetSource(uifShader, strlen(uifShader));
+	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
+	if (fObj->Compile())
+		fObj->isValid = false;
+	UIFragmentShaderObject = fObj->shaderObject;
+
+	ResourceData shaderData;
+	ResourceShaderProgramData programShaderData;
+	shaderData.name = "UI shader program";
+	programShaderData.shaderObjects.push_back(vObj);
+	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderProgramType = ShaderProgramTypes::UI;
+	ResourceShaderProgram* pShader = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UI_UUID);
+	if (pShader->Link())
+		pShader->isValid = false;
+	UIShaderProgram = pShader->shaderProgram;
 }
 
 void ModuleInternalResHandler::CreateDefaultMaterial()

@@ -14,6 +14,7 @@ enum ShaderProgramTypes
 {
 	Standard,
 	Particles,
+	UI,
 	Custom
 };
 

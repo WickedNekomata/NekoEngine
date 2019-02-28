@@ -2435,6 +2435,9 @@ void ComponentScript::InstanceClass()
 		return;
 	}
 
+	if (!App->scripting->scriptsImage)
+		return;
+
 	MonoClass* klass = mono_class_from_name(App->scripting->scriptsImage, "", scriptName.data());
 
 	if (!klass)

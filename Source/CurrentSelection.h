@@ -80,7 +80,8 @@ public:
 
 #ifndef GAMEMODE
 		// New game object selected. Update the camera reference
-		App->camera->SetReference(newSelection->transform->position);
+		if(newSelection->GetLayer() != UILAYER)
+			App->camera->SetReference(newSelection->transform->position);
 #endif
 
 		return *this;

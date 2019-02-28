@@ -11,6 +11,7 @@
 #include "ResourceShaderProgram.h"
 
 #include "ModuleRenderer3D.h"
+#include "ModuleUI.h"
 
 #include <assert.h>
 
@@ -32,6 +33,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::CalculateBBoxes:
 	case System_Event_Type::RecalculateBBoxes:
 
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
@@ -103,6 +105,21 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::PlaneColliderComponent:
 			go->cmp_collider = 0;
 			break;
+		case ComponentTypes::RectTransformComponent:
+			go->cmp_rectTransform = nullptr; // Uh
+			break;
+		case ComponentTypes::ImageComponent:
+			go->cmp_image = nullptr;
+			break;
+		case ComponentTypes::ButtonComponent:
+			go->cmp_button = nullptr;
+			break;
+		case ComponentTypes::LabelComponent:
+			go->cmp_label = nullptr;
+			break;
+		case ComponentTypes::CanvasRendererComponent:
+			go->cmp_canvasRenderer = nullptr;
+			break;
 		}
 		break;
 	}
@@ -120,6 +137,22 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		break;
 	}
 	}
+}
+
+GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
+{
+	assert(canvas == nullptr);
+	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
+	newGameObject->AddComponent(ComponentTypes::RectTransformComponent);
+	newGameObject->SetLayer(UILAYER);
+	gameobjects.push_back(newGameObject);
+	dynamicGos.push_back(newGameObject);
+	return newGameObject;
+}
+
+void ModuleGOs::DeleteCanvasPointer()
+{
+	canvas = nullptr;
 }
 
 GameObject* ModuleGOs::CreateGameObject(const char* goName, GameObject* parent, bool disableTransform)
@@ -334,6 +367,17 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 		gos.push_back(go);
 	}
 
+	std::vector<GameObject*> children;
+	App->scene->root->GetChildrenVector(children);
+	for each (GameObject* child in children)
+	{
+		if (std::strcmp(child->GetName(), "Canvas") == 0)
+		{
+			canvas = child;
+			App->ui->LinkAllRectsTransform();
+		}
+	}
+
 	// Discuss if this should be a resource
 	if (navmesh)
 		App->navigation->LoadNavmesh(cursor);
@@ -365,4 +409,14 @@ bool ModuleGOs::InvalidateResource(Resource* resource)
 	}
 
 	return true;
+}
+
+bool ModuleGOs::ExistCanvas() const
+{
+	return (canvas != nullptr);
+}
+
+GameObject * ModuleGOs::GetCanvas() const
+{
+	return canvas;
 }

@@ -13,9 +13,13 @@ enum ComponentTypes
 	ScriptComponent,
 	BoneComponent,
 	AnimationComponent,
+	RectTransformComponent,
+	CanvasRendererComponent,
+	ImageComponent,
+	ButtonComponent,
+	LabelComponent,
 	LightComponent,
 	ProjectorComponent,
-
 	// Physics
 	/// Rigid Actors
 	RigidStaticComponent,

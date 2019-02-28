@@ -16,13 +16,17 @@
 #include "BoneImporter.h"
 #include "SceneImporter.h"
 #include "ShaderImporter.h"
+#include "AnimationImporter.h"
 #include "DebugDrawer.h"
 #include "Raycaster.h"
 #include "ModuleNavigation.h"
 #include "ScriptingModule.h"
 #include "ModuleEvents.h"
 #include "ModulePhysics.h"
+#include "ModuleUI.h"
+#include "ModuleAnimation.h"
 #include "ModuleLayers.h"
+
 
 #include "parson\parson.h"
 #include "PCG\entropy.h"
@@ -41,6 +45,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	debugDrawer = new DebugDrawer();
 	materialImporter = new MaterialImporter();
 	boneImporter = new BoneImporter();
+	animImporter = new AnimationImporter();
 	sceneImporter = new SceneImporter();
 	shaderImporter = new ShaderImporter();
 	navigation = new ModuleNavigation();
@@ -48,7 +53,9 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	scripting = new ScriptingModule();
 	events = new ModuleEvents();
 	physics = new ModulePhysics();
+	animation = new ModuleAnimation();
 	layers = new ModuleLayers();
+	ui = new ModuleUI();
 
 #ifndef GAMEMODE
 	camera = new ModuleCameraEditor();
@@ -59,7 +66,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
-	
+
 	AddModule(layers);
 	AddModule(res);
 	AddModule(resHandler);
@@ -72,6 +79,8 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 
 	AddModule(particle);
 	AddModule(physics);
+	AddModule(ui);
+	AddModule(animation);
 	AddModule(GOs);
 	AddModule(fs);
 	AddModule(window);
@@ -102,6 +111,7 @@ Application::~Application()
 	RELEASE(debugDrawer);
 	RELEASE(materialImporter);
 	RELEASE(boneImporter);
+	RELEASE(animImporter);
 	RELEASE(sceneImporter);
 	RELEASE(shaderImporter);
 }
@@ -433,7 +443,7 @@ void Application::Play()
 		// Enter editor mode
 		engineState = engine_states::ENGINE_PLAY;
 		break;
-	
+
 	case engine_states::ENGINE_EDITOR:
 	{
 		// Enter play mode

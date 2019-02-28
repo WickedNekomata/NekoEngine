@@ -501,11 +501,11 @@ void ComponentEmitter::ParticleAABB()
 		ImGui::Checkbox("Bounding Box", &drawAABB);
 		if (drawAABB)
 		{
-			math::float3 size = parent->originalBoundingBox.Size();
+			math::float3 size = parent->boundingBox.Size();
 			if (ImGui::DragFloat3("Dimensions", &size.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(size,GetParent()->transform->position);
+				SetAABB(size, posDifAABB);
 			if (ImGui::DragFloat3("Pos", &posDifAABB.x, 1.0f, 0.0f, 0.0f, "%.0f"))
-				SetAABB(size, GetParent()->transform->position);
+				SetAABB(size, posDifAABB);
 		}
 	}
 #endif
@@ -599,7 +599,7 @@ void ComponentEmitter::ParticleSubEmitter()
 				subEmitter = App->GOs->CreateGameObject("SubEmition",parent);
 				subEmitter->AddComponent(EmitterComponent);
 				((ComponentEmitter*)subEmitter->GetComponent(EmitterComponent))->isSubEmitter = true;
-				subEmitter->boundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
+				subEmitter->originalBoundingBox.SetFromCenterAndSize(subEmitter->transform->position, math::float3::one);
 				App->scene->quadtree.Insert(subEmitter);
 			}
 		}
@@ -688,12 +688,15 @@ void ComponentEmitter::SetAABB(const math::float3 size, const math::float3 extra
 {
 	GameObject* gameObject = GetParent();
 
-	gameObject->originalBoundingBox.SetFromCenterAndSize(extraPosition + posDifAABB, size);
+	if (gameObject)
+	{
+		gameObject->originalBoundingBox.SetFromCenterAndSize(extraPosition, size);
 
-	System_Event newEvent;
-	newEvent.goEvent.gameObject = gameObject;
-	newEvent.type = System_Event_Type::RecalculateBBoxes;
-	App->PushSystemEvent(newEvent);
+		System_Event newEvent;
+		newEvent.goEvent.gameObject = gameObject;
+		newEvent.type = System_Event_Type::RecalculateBBoxes;
+		App->PushSystemEvent(newEvent);
+	}
 }
 
 void ComponentEmitter::SetMaterialRes(uint materialUuid)

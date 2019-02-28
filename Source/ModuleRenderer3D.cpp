@@ -11,6 +11,7 @@
 #include "ModuleGui.h"
 #include "ModuleGOs.h"
 #include "ModuleParticles.h"
+#include "ModuleUI.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
 #include "Quadtree.h"
@@ -229,6 +230,7 @@ update_status ModuleRenderer3D::PostUpdate()
 	App->particle->Draw();
 	//glDepthMask(GL_TRUE);
 
+
 #ifndef GAMEMODE
 
 	App->navigation->Draw();
@@ -402,6 +404,10 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	// 3. Editor
 	App->gui->Draw();
+
+	//UIOnEditor
+	if (App->ui->GetUIMode())
+		App->ui->DrawCanvas();
 #endif // GAME
 
 	// 4. Swap buffers

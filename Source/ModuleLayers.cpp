@@ -58,8 +58,8 @@ ModuleLayers::ModuleLayers(bool start_enabled) : Module(start_enabled)
 	layers[0]->name = "Default";
 	layers[0]->builtin = true;
 
-	layers[1]->name = "UI";
-	layers[1]->builtin = true;
+	layers[UILAYER]->name = "UI";
+	layers[UILAYER]->builtin = true;
 }
 
 ModuleLayers::~ModuleLayers() {}
@@ -101,7 +101,7 @@ void ModuleLayers::LoadStatus(const JSON_Object* jObject)
 			continue;
 
 		sprintf_s(layerName, DEFAULT_BUF_SIZE, "Layer %i", layers[i]->GetNumber());
-		JSON_Object* layerObject = json_object_get_object(jObject, layerName);		
+		JSON_Object* layerObject = json_object_get_object(jObject, layerName);
 		if (layerObject == nullptr)
 			continue;
 

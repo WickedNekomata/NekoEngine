@@ -40,6 +40,8 @@ public:
 	void OnDisable();
 	void RecursiveRecalculateBoundingBoxes();
 
+	void CalculateBoundingBox();
+
 	void OnSystemEvent(System_Event event);
 
 	void Destroy();
@@ -76,18 +78,24 @@ public:
 	uint GetLayer() const;
 
 public:
-	
-	class ComponentTransform*  transform = 0;
-	class ComponentMesh*       cmp_mesh = 0;
-	class ComponentMaterial*   cmp_material = 0;
-	class ComponentCamera*     cmp_camera = 0;
-	class ComponentNavAgent*   cmp_navAgent = 0;
-	class ComponentEmitter*    cmp_emitter = 0;
-	class ComponentRigidActor* cmp_rigidActor = 0;
-	class ComponentCollider*   cmp_collider = 0;
-	class ComponentBone*	   cmp_bone = 0;
-	class ComponentLight*	   cmp_light = 0;
-	class ComponentProjector*  cmp_projector = 0;
+
+	class ComponentTransform*  transform = nullptr; //Nullptr a puño y fuego D:<
+	class ComponentMesh*       cmp_mesh = nullptr;
+	class ComponentMaterial*   cmp_material = nullptr;
+	class ComponentCamera*     cmp_camera = nullptr;
+	class ComponentNavAgent*   cmp_navAgent = nullptr;
+	class ComponentEmitter*    cmp_emitter = nullptr;
+	class ComponentRigidActor* cmp_rigidActor = nullptr;
+	class ComponentCollider*   cmp_collider = nullptr;
+	class ComponentBone*	   cmp_bone = nullptr;
+	class ComponentRectTransform* cmp_rectTransform = nullptr;
+	class ComponentCanvasRenderer* cmp_canvasRenderer = nullptr;
+	class ComponentImage* cmp_image = nullptr;
+	class ComponentButton* cmp_button = nullptr;
+	class ComponentLabel* cmp_label = nullptr;
+	class ComponentAnimation*  cmp_animation = nullptr;
+	class ComponentLight*	   cmp_light = nullptr;
+	class ComponentProjector*  cmp_projector = nullptr;
 
 	ResourcePrefab* prefab = nullptr;
 

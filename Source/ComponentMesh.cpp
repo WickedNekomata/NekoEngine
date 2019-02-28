@@ -48,11 +48,11 @@ void ComponentMesh::SetResource(uint res_uuid)
 	res = res_uuid;
 
 	//Calculate the new mesh BoundingBox
-	const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(cmp_mesh->res);
+	const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(res_uuid);
 	int nVerts = meshRes->GetVerticesCount();
 	float* vertices = new float[nVerts * 3];
 	meshRes->GetTris(vertices);
-	boundingBox.Enclose((const math::float3*)vertices, nVerts);
+	GetParent()->originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
 	delete[] vertices;
 
 	// Mesh updated: recalculate bounding boxes

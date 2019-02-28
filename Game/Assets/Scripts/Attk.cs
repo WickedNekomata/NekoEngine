@@ -9,8 +9,8 @@ public class Attk : JellyScript
 
     // Raycast
     private RaycastHit hit;
-    private int terrainMask = LayerMask.GetMask("Default");
-    private int enemyMask = LayerMask.GetMask("Enemy");
+    public LayerMask terrainMask = new LayerMask();
+    public LayerMask enemyMask = new LayerMask();
 
     //Agent
     private NavMeshAgent agent = null;
@@ -90,7 +90,7 @@ public class Attk : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)enemyMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 //Go to attack
                 state = Alita_State.GOING_TO_ATTK;
@@ -111,11 +111,13 @@ public class Attk : JellyScript
         }
 
         //Move
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
+                state = Alita_State.RUNNING;
+
                 if (agent == null)
                     agent = gameObject.GetComponent<NavMeshAgent>();
 

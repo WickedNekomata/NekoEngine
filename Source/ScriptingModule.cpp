@@ -1022,33 +1022,39 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, M
 void DestroyObj(MonoObject* obj)
 {
 	bool found = false;
-	for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
+
+	std::string className = mono_class_get_name(mono_object_get_class(obj));
+
+	if (className == "GameObject")
 	{
-		if (obj == mono_gchandle_get_target(App->scripting->monoObjectHandles[i]))
+		for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
 		{
-			found = true;
+			if (obj == mono_gchandle_get_target(App->scripting->monoObjectHandles[i]))
+			{
+				found = true;
 
-			MonoClass* monoClass = mono_object_get_class(obj);
-			MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
-			mono_field_set_value(obj, destroyed, &found);
+				MonoClass* monoClass = mono_object_get_class(obj);
+				MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
+				mono_field_set_value(obj, destroyed, &found);
 
-			int address;
-			mono_field_get_value(obj, mono_class_get_field_from_name(monoClass, "cppAddress"), &address);
+				int address;
+				mono_field_get_value(obj, mono_class_get_field_from_name(monoClass, "cppAddress"), &address);
 
-			GameObject* toDelete = (GameObject*)address;
+				GameObject* toDelete = (GameObject*)address;
 
-			mono_gchandle_free(App->scripting->monoObjectHandles[i]);
+				mono_gchandle_free(App->scripting->monoObjectHandles[i]);
 
-			App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
+				App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
 
-			//Send the event to destroy this gameObject
+				//Send the event to destroy this gameObject
 
-			System_Event event;
-			event.goEvent.type = System_Event_Type::GameObjectDestroyed;
-			event.goEvent.gameObject = toDelete;
-			App->PushSystemEvent(event);
+				System_Event event;
+				event.goEvent.type = System_Event_Type::GameObjectDestroyed;
+				event.goEvent.gameObject = toDelete;
+				App->PushSystemEvent(event);
 
-			break;
+				break;
+			}
 		}
 	}
 }

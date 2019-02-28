@@ -6,7 +6,7 @@ public class AnimationPlayer : JellyScript
     //Use this method for initialization
     public override void Awake()
     {
-
+        
     }
 
     //Called every frame
@@ -14,6 +14,7 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
+            Destroy(this);
             Animator animator = gameObject.GetComponent<Animator>();
             if (animator != null)
             {

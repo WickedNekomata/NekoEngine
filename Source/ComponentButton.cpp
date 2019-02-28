@@ -20,7 +20,7 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 		parent->AddComponent(ImageComponent);
 }
 
-ComponentButton::ComponentButton(const ComponentButton & componentButton) : Component(parent, ComponentTypes::ButtonComponent)
+ComponentButton::ComponentButton(const ComponentButton & componentButton, GameObject* parent) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	state = componentButton.state;
 	memcpy(sate_flag, componentButton.sate_flag, sizeof(bool) * 4);

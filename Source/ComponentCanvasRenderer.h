@@ -51,7 +51,7 @@ public:
 	};
 
 	ComponentCanvasRenderer(GameObject* parent, ComponentTypes componentType = ComponentTypes::CanvasRendererComponent);
-	ComponentCanvasRenderer(const ComponentCanvasRenderer& componentRectTransform);
+	ComponentCanvasRenderer(const ComponentCanvasRenderer& componentRectTransform, GameObject* parent);
 	~ComponentCanvasRenderer();
 
 	void Update();

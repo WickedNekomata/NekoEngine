@@ -1531,13 +1531,13 @@
     <ClInclude Include="ComponentImage.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentRectTransform.h">
-      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleUI.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
     <ClInclude Include="ComponentLabel.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRectTransform.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClInclude>
   </ItemGroup>

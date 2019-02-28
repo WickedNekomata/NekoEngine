@@ -15,7 +15,7 @@ class ComponentImage : public Component
 {
 public:
 	ComponentImage(GameObject* parent, ComponentTypes componentType = ComponentTypes::ImageComponent);
-	ComponentImage(const ComponentImage& componentImage);
+	ComponentImage(const ComponentImage& componentImage, GameObject* parent);
 	~ComponentImage();
 
 	void Update();

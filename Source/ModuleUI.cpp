@@ -75,7 +75,6 @@ bool ModuleUI::Start()
 	initRenderData();
 
 	//Shader
-	App->resHandler->CreateUIShaderProgram();
 	ui_shader = App->resHandler->UIShaderProgram;
 
 	ui_size_draw[UI_XRECT] = 0;
@@ -267,7 +266,7 @@ void ModuleUI::LinkAllRectsTransform()
 
 	std::vector<GameObject*> gos;
 	canvas->GetChildrenAndThisVectorFromLeaf(gos);
-
+	std::reverse(gos.begin(), gos.end());
 	for (GameObject* go_rect : gos)
 	{
 		ComponentRectTransform* cmp_rect = (ComponentRectTransform*)go_rect->GetComponent(ComponentTypes::RectTransformComponent);

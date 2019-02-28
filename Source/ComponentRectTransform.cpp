@@ -25,7 +25,7 @@ ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTyp
 	RecaculatePercentage();
 }
 
-ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & componentRectTransform) : Component(componentRectTransform.parent, ComponentTypes::RectTransformComponent)
+ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::RectTransformComponent)
 {
 	App->ui->componentsUI.push_back(this);
 	ui_rect = App->ui->GetRectUI();

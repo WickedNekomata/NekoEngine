@@ -15,7 +15,7 @@ class ComponentButton : public Component
 {
 public:
 	ComponentButton(GameObject * parent, ComponentTypes componentType = ComponentTypes::ButtonComponent);
-	ComponentButton(const ComponentButton & componentButton);
+	ComponentButton(const ComponentButton & componentButton, GameObject* parent);
 	
 	~ComponentButton();
 	

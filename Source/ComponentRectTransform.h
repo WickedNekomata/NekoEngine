@@ -36,7 +36,7 @@ class ComponentRectTransform : public Component
 {
 public:
 	ComponentRectTransform(GameObject* parent, ComponentTypes componentType = ComponentTypes::RectTransformComponent);
-	ComponentRectTransform(const ComponentRectTransform& componentRectTransform);
+	ComponentRectTransform(const ComponentRectTransform& componentRectTransform, GameObject* parent);
 	~ComponentRectTransform();
 
 	void Update();

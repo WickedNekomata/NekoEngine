@@ -8,7 +8,7 @@ class ComponentLabel : public Component
 {
 public:
 	ComponentLabel(GameObject* parent, ComponentTypes componentType = ComponentTypes::LabelComponent);
-	ComponentLabel(const ComponentLabel& componentLabel);
+	ComponentLabel(const ComponentLabel& componentLabel, GameObject* parent);
 	~ComponentLabel();
 
 	void Update();

@@ -16,7 +16,7 @@ ComponentImage::ComponentImage(GameObject * parent, ComponentTypes componentType
 	App->ui->componentsUI.push_back(this);
 }
 
-ComponentImage::ComponentImage(const ComponentImage & componentRectTransform) : Component(parent, ComponentTypes::ImageComponent)
+ComponentImage::ComponentImage(const ComponentImage & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::ImageComponent)
 {
 	use_color_vec = componentRectTransform.use_color_vec;
 	if (use_color_vec)

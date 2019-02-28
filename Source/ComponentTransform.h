@@ -16,7 +16,7 @@ class ComponentTransform : public Component
 public:
 
 	ComponentTransform(GameObject* parent);
-	ComponentTransform(const ComponentTransform& componentTransform);
+	ComponentTransform(const ComponentTransform& componentTransform, GameObject* parent);
 	~ComponentTransform();
 
 	void Update();

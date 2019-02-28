@@ -14,6 +14,9 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 	gMaterial = App->physics->GetDefaultMaterial();
 	assert(gMaterial != nullptr);
 
+	if (parent->cmp_rigidActor == nullptr)
+		CONSOLE_LOG(LogTypes::Warning, "Component Collider: You need to create a Component Rigid Actor in order to use the collider");
+
 	App->physics->AddColliderComponent(this);
 }
 

@@ -45,19 +45,22 @@ uint BoneImporter::Import(mutable aiBone* new_bone, mutable uint mesh, mutable s
 		res_data.bone_weights_indices[k] = new_bone->mWeights[k].mVertexId;
 		res_data.bone_weights[k] = new_bone->mWeights[k].mWeight;
 	}
-	
 
-	if(SaveBone(data,res_data, outputFile, true /* TODO_G: WHAT? */))
+	App->res->ExportFile(ResourceTypes::BoneResource, data, &res_data, outputFile);
+
+	/*
+	if(SaveBone(data,res_data, outputFile, true))
 		DEPRECATED_LOG("Saved bone correctly in path: [%s]", outputFile.c_str())
 	else
 		DEPRECATED_LOG("Error saving bone in path: [%s]", outputFile.c_str());
 
-	output = outputFile;
 
+	output = outputFile;
+	*/
 	return go->cmp_bone->res;
 }
 
-Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path, mutable uint uid_to_force)
+void BoneImporter::Load(mutable const char * file_path, mutable ResourceData& data, mutable ResourceBoneData& bone_data, mutable uint uid_to_force)
 {
 	// Reading file
 	char* buffer = nullptr;
@@ -67,11 +70,8 @@ Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path,
 	if (buffer == nullptr)
 	{
 		DEPRECATED_LOG("BoneImporter: Unable to open file...");
-		return false;
+		//return false;
 	}
-
-	ResourceData data;
-	ResourceBoneData bone_data;
 
 	char* cursor = buffer;
 	
@@ -105,23 +105,21 @@ Resource* BoneImporter::GenerateResourceFromFile(mutable const char * file_path,
 
 	RELEASE_ARRAY(buffer);
 
-	ResourceBone* resource = (ResourceBone*)App->res->CreateResource(ResourceTypes::BoneResource, data, &bone_data, uid_to_force);
+	//ResourceBone* resource = (ResourceBone*)App->res->CreateResource(ResourceTypes::BoneResource, data, &bone_data, uid_to_force);
 
-	return resource;
 }
 
 bool BoneImporter::SaveBone(mutable ResourceData& res_data, mutable ResourceBoneData& bone_data,mutable std::string& outputFile,mutable bool overwrite) const
 {
 	bool ret = false;
 
-	// TODO: uhm ...
 	if (overwrite)
 		outputFile = res_data.file;
 	else
 		outputFile = res_data.name;
 
 	// Format: mesh UID + 16 float matrix + num_weigths uint + indices uint * num_weight + weight float * num_weights
-	uint size = sizeof(bone_data.mesh_uid);
+	uint size = sizeof(bone_data.mesh_uid); // mesh_uid
 	size += sizeof(bone_data.offset_matrix);
 	size += sizeof(bone_data.bone_weights_size);
 	size += sizeof(uint) * bone_data.bone_weights_size;

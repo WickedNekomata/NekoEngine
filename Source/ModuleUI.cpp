@@ -241,6 +241,10 @@ void ModuleUI::OnWindowResize(uint width, uint height)
 {
 	ui_size_draw[UI_WIDTHRECT] = width;
 	ui_size_draw[UI_HEIGHTRECT] = height;
+
+#ifdef GAMEMODE
+	LinkAllRectsTransform();
+#endif // GAMEMODE
 }
 
  uint* ModuleUI::GetRectUI()
@@ -251,6 +255,15 @@ void ModuleUI::OnWindowResize(uint width, uint height)
 void ModuleUI::LinkAllRectsTransform()
 {
 	GameObject* canvas = App->GOs->GetCanvas();
+	
+#ifdef GAMEMODE
+	ComponentRectTransform* cmp_rect = (ComponentRectTransform*)canvas->GetComponent(ComponentTypes::RectTransformComponent);
+	uint* rect = cmp_rect->GetRect();
+	rect[X_RECT] = 0;
+	rect[Y_RECT] = 0;
+	rect[XDIST_RECT] = ui_size_draw[UI_WIDTHRECT];
+	rect[YDIST_RECT] = ui_size_draw[UI_HEIGHTRECT];
+#endif // GAMEMODE
 
 	std::vector<GameObject*> gos;
 	canvas->GetChildrenAndThisVectorFromLeaf(gos);

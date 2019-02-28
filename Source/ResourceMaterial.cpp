@@ -444,10 +444,7 @@ void ResourceMaterial::InitResources()
 {
 	// Set as used (shader)
 	if (materialData.shaderUuid > 0)
-	{
-		if (App->res->SetAsUsed(materialData.shaderUuid) == 0)
-			App->res->SetAsUsed(materialData.shaderUuid);
-	}
+		App->res->SetAsUsed(materialData.shaderUuid);
 
 	// Set as used (uniforms)
 	SetUniformsAsUsed();
@@ -463,7 +460,7 @@ void ResourceMaterial::DeinitResources()
 	SetUniformsAsUnused();
 }
 
-void ResourceMaterial::SetUniformsAsUsed() const
+void ResourceMaterial::SetUniformsAsUsed()
 {
 	for (uint i = 0; i < materialData.uniforms.size(); ++i)
 	{
@@ -472,7 +469,11 @@ void ResourceMaterial::SetUniformsAsUsed() const
 		case Uniforms_Values::Sampler2U_value:
 		{
 			if (materialData.uniforms[i].sampler2DU.value.uuid > 0)
+			{
 				App->res->SetAsUsed(materialData.uniforms[i].sampler2DU.value.uuid);
+				ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(materialData.uniforms[i].sampler2DU.value.uuid);
+				materialData.uniforms[i].sampler2DU.value.id = texture->GetId();
+			}
 		}
 		break;
 		}

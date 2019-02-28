@@ -55,7 +55,7 @@ private:
 	void InitResources();
 	void DeinitResources();
 
-	void SetUniformsAsUsed() const;
+	void SetUniformsAsUsed();
 	void SetUniformsAsUnused() const;
 
 	void EditTextureMatrix(uint textureUuid);

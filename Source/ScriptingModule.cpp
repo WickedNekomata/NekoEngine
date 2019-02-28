@@ -3,7 +3,10 @@
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
 #include "ComponentNavAgent.h"
+#include "ComponentAnimation.h"
+
 #include "GameObject.h"
+
 #include "ModuleInput.h"
 #include "ModuleScene.h"
 
@@ -450,6 +453,12 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
 			break;
 		}
+
+		case ComponentTypes::AnimationComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Animator"));
+			break;
+		}
 	}
 
 	if (!monoComponent)
@@ -751,7 +760,7 @@ void ScriptingModule::RecompileScripts()
 
 	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + std::string("\\Assets\\Scripts\\*.cs") + "\"";
 	std::string redirectOutput(" 1> \"" + /*pathToWindowsNotation*/(App->fs->getAppPath()) + "LogError.txt\"" + std::string(" 2>&1"));
-	std::string outputFile(" -o ..\\..\\Library\\Scripts\\Scripting.dll ");
+	std::string outputFile(" -out:..\\..\\Library\\Scripts\\Scripting.dll ");
 
 	std::string error;
 	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + outputFile + App->scripting->getReferencePath() + redirectOutput).data(), error))
@@ -1337,6 +1346,19 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 
 		return App->scripting->MonoComponentFrom(comp);
 	}
+	else if (className == "Animator")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::AnimationComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
 	else
 	{
 		//Find a script named as this class
@@ -1525,6 +1547,12 @@ void SetCompActive(MonoObject* monoComponent, bool active)
 	component->IsActive() != active ? component->ToggleIsActive() : void();
 }
 
+bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
+{
+	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
+	return animator->PlayAnimation(animUUID);
+}
+
 //---------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1596,6 +1624,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 	mono_add_internal_call("JellyBitEngine.Physics::_OverlapSphere", (const void*)&OverlapSphere);
 	mono_add_internal_call("JellyBitEngine.Component::SetActive", (const void*)&SetCompActive);
+	mono_add_internal_call("JellyBitEngine.Animator::PlayAnimation", (const void*)&PlayAnimation);
 
 	ClearMap();
 

@@ -158,7 +158,6 @@ void PanelInspector::ShowGameObjectInspector() const
 			ComponentScript* script = App->scripting->CreateScriptComponent(scriptRes->scriptName, scriptRes == nullptr);
 			gameObject->AddComponent(script);
 			script->SetParent(gameObject);
-			script->InstanceClass();
 		}
 		ImGui::EndDragDropTarget();
 	}

@@ -15,9 +15,12 @@ public:
 	uint GetInternalSerializationBytes();
 	bool SetResource(uint resource);
 
+	bool PlayAnimation(uint anim_name);
+
 	void OnInternalSave(char*& cursor);
 	void OnInternalLoad(char*& cursor);
-
+	void OnEditor();
+	void OnUniqueEditor();
 
 public:
 	uint res = 0;

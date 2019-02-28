@@ -190,15 +190,6 @@ bool AnimationImporter::SaveAnimation(mutable ResourceData& res_data, mutable Re
 	if (App->fs->SaveInGame((char*)data, final_size, FileTypes::AnimationFile, outputFile) > 0)
 		ret = true;
 
-	/*std::string tmp_str(L_ANIMATIONS_DIR);
-	tmp_str.append("/");
-	tmp_str.append(std::to_string(anim_data->GetUID()));
-	tmp_str.append(".trAnimation"); // Adding our own format extension
-
-	anim_data->SetExportedPath(tmp_str.c_str());
-
-	ret = App->file_system->WriteInFile(tmp_str.c_str(), data, final_size);
-	output = tmp_str;*/
 
 	RELEASE_ARRAY(data);
 

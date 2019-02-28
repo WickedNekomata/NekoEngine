@@ -119,11 +119,11 @@ bool ModuleAnimation::Update(float dt)
 void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 {
 	Animation* animation = new Animation();
-	animation->name = res->name;
-	for (uint i = 0; i < res->numKeys; ++i)
-		RecursiveGetAnimableGO(App->scene->root, &res->bone_keys[i], animation);
+	animation->name = res->animationData.name;
+	for (uint i = 0; i < res->animationData.numKeys; ++i)
+		RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
 
-	animation->duration = res->duration;
+	animation->duration = res->animationData.duration;
 
 	animations.push_back(animation);
 	current_anim = animations[0];
@@ -443,12 +443,12 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	ComponentMesh* mesh = component_bone->attached_mesh;
+	/*ComponentMesh* mesh = component_bone->attached_mesh;
 	//TODO_G: finish animation module
-	/*if (mesh != nullptr)
+	if (mesh != nullptr)
 	{
-		const ResourceBone* rbone = (const ResourceBone*)component_bone->GetResource();
-		const ResourceMesh* roriginal = (const ResourceMesh*)mesh->GetResource();
+		const ResourceBone* rbone = (const ResourceBone*)App->res->GetResource(component_bone->res);
+		const ResourceMesh* roriginal = (const ResourceMesh*)App->res->GetResource(mesh->res);
 		ResourceMesh* tmp_mesh = (ResourceMesh*)mesh->GetResource();
 		ResourceMesh* rmesh = (ResourceMesh*)tmp_mesh->deformable;
 

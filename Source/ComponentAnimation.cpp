@@ -64,6 +64,12 @@ bool ComponentAnimation::SetResource(uint resource) //check all this
 	return true;
 }
 
+bool ComponentAnimation::PlayAnimation(char * anim_name)
+{
+	// mimimi
+	return true;
+}
+
 void ComponentAnimation::OnEditor()
 {
 	OnUniqueEditor();

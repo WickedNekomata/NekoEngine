@@ -139,8 +139,11 @@ public class Attk : JellyScript
         //Attack every second
         if (attk_cool_down >= attk_period)
         {
-            //enemy_unit.Hit(damage);
-            Debug.Log("ENEMY HIT");
+           // if (enemy_unit != null)
+           // {
+           //     enemy_unit.Hit(damage);
+           //     Debug.Log("ENEMY HIT");
+           // }
 
             attk_cool_down = 0.0f;
         }

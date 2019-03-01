@@ -66,6 +66,7 @@ public class Unit : JellyScript
 
         if (current_life <= 0)
         {
+            Destroy(gameObject);
             //if (type == UNIT_TYPE.ALITA)
             //    alita.LethalHit();
             //else

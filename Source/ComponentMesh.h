@@ -2,11 +2,13 @@
 #define __COMPONENT_MESH_H__
 
 #include "Component.h"
+#include <vector>
 
 #include "Globals.h"
 
 struct Mesh;
 class ResourceMesh;
+class ComponentBone;
 
 class ComponentMesh : public Component
 {
@@ -36,6 +38,8 @@ public:
 	uint root_bones_uid = 0u;
 
 	uint root_bone = 0u;
+
+	std::vector<ComponentBone*> attached_bones;
 };
 
 #endif

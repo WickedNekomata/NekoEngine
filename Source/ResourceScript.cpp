@@ -31,6 +31,7 @@ ResourceScript::~ResourceScript()
 
 void ResourceScript::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -54,6 +55,7 @@ void ResourceScript::OnPanelAssets()
 		ImGui::SetDragDropPayload("SCRIPT_RESOURCE", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 void ResourceScript::SerializeToMeta(char*& cursor) const

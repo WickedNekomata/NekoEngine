@@ -65,6 +65,8 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 	isStatic = gameObject.isStatic;
 	seenLastFrame = gameObject.seenLastFrame;
 
+	layer = gameObject.layer;
+
 	uuid = App->GenerateRandomNumber();
 
 	for (int i = 0; i < gameObject.components.size(); ++i)
@@ -155,18 +157,28 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			break;
 		case ComponentTypes::RectTransformComponent:
 			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			cmp_rectTransform->SetParent(this);
+			components.push_back(cmp_rectTransform);
 			break;
 		case ComponentTypes::CanvasRendererComponent:
 			cmp_canvasRenderer = new ComponentCanvasRenderer(*gameObject.cmp_canvasRenderer);
+			cmp_canvasRenderer->SetParent(this);
+			components.push_back(cmp_canvasRenderer);
 			break;
 		case ComponentTypes::ImageComponent:
 			cmp_image = new ComponentImage(*gameObject.cmp_image);
+			cmp_image->SetParent(this);
+			components.push_back(cmp_image);
 			break;
 		case ComponentTypes::ButtonComponent:
 			cmp_button = new ComponentButton(*gameObject.cmp_button);
+			cmp_button->SetParent(this);
+			components.push_back(cmp_button);
 			break;
 		case ComponentTypes::LabelComponent:
 			cmp_label = new ComponentLabel(*gameObject.cmp_label);
+			cmp_label->SetParent(this);
+			components.push_back(cmp_label);
 			break;
 		case ComponentTypes::ScriptComponent:
 		{

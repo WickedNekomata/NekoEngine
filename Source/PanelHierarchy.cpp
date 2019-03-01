@@ -96,14 +96,13 @@ bool PanelHierarchy::Draw()
 		}
 		ImGui::EndDragDropTarget();
 	}
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && //You Found a Easter EGG!
+		App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
+	{
+		GameObject* toDuplicate = App->scene->selectedObject.GetCurrGameObject();
+		if (toDuplicate) App->GOs->Instanciate(toDuplicate, toDuplicate->GetParent());
+	}
 
-
-																																																																																																																							if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && //You Found a Easter EGG!
-																																																																																																																								App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
-																																																																																																																							{
-																																																																																																																								GameObject* toDuplicate = App->scene->selectedObject.GetCurrGameObject();
-																																																																																																																								if (toDuplicate) App->GOs->Instanciate(toDuplicate, toDuplicate->GetParent());
-																																																																																																																							}
 
 	return true;
 }
@@ -225,11 +224,13 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 				ImGui::CloseCurrentPopup();
 			}
 		}
-																																																																																																																				if (ImGui::Selectable("Duplicate at same parent"))
-																																																																																																																				{
-																																																																																																																					App->GOs->Instanciate(child, child->GetParent());
-																																																																																																																					ImGui::CloseCurrentPopup();
-																																																																																																																				}
+
+		if (ImGui::Selectable("Duplicate at same parent"))
+		{
+			App->GOs->Instanciate(child, child->GetParent());
+			ImGui::CloseCurrentPopup();
+		}
+
 		ImGui::EndPopup();
 	}
 }

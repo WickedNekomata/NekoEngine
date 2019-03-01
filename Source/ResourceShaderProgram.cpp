@@ -62,8 +62,8 @@ bool ResourceShaderProgram::ImportFile(const char* file, std::string& name, std:
 		uint uuid = 0;
 		int64_t lastModTime = 0;
 		std::string shaderName;
-		ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, shaderName, shaderObjectsNames, shaderProgramType, format);
-		assert(uuid > 0);
+		bool result = ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, shaderName, shaderObjectsNames, shaderProgramType, format);
+		assert(result);
 
 		name = shaderName.data();
 

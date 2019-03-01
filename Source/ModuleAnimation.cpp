@@ -9,6 +9,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
 #include "ModuleGOs.h"
+#include "ComponentTransform.h"
 
 //#include ".h" //TODO: delete this
 

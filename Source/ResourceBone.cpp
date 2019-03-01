@@ -2,6 +2,9 @@
 #include "imgui/imgui.h"
 #include "ModuleScene.h"
 #include "BoneImporter.h"
+#include "Application.h"
+
+#include <assert.h>
 
 ResourceBone::ResourceBone(ResourceTypes type, uint uuid, ResourceData data, ResourceBoneData boneData) : Resource(type, uuid, data), boneData(boneData) {}
 
@@ -21,6 +24,9 @@ bool ResourceBone::UnloadFromMemory()
 
 void ResourceBone::OnPanelAssets()
 {
+#ifndef GAMEMODE
+
+
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -43,6 +49,7 @@ void ResourceBone::OnPanelAssets()
 		ImGui::SetDragDropPayload("BONE_RESOURCE", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif // !
 }
 
 

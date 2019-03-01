@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using JellyBitEngine;
+using JellyBitEngine.UI;
 
 public class AnimationPlayer : JellyScript
 {
@@ -14,6 +15,8 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
+            UI.UIHovered();
+
             ParticleEmitter emitter = gameObject.GetComponent<ParticleEmitter>();
             if (emitter != null)
             {

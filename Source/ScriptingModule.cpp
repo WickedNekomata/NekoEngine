@@ -10,6 +10,7 @@
 
 #include "ModuleInput.h"
 #include "ModuleScene.h"
+#include "ModuleUI.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -1592,6 +1593,11 @@ void ParticleEmitterStop(MonoObject* particleComp)
 	}
 }
 
+bool UIHovered()
+{
+	return App->ui->IsUIHovered();
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1666,6 +1672,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Animator::PlayAnimation", (const void*)&PlayAnimation);
 	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Play", (const void*)&ParticleEmitterPlay);
 	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Stop", (const void*)&ParticleEmitterStop);
+	mono_add_internal_call("JellyBitEngine.UI.UI::UIHovered", (const void*)&UIHovered);
 
 	ClearMap();
 

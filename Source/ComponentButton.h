@@ -16,7 +16,6 @@ public:
 	
 	void Update();
 
-
 	void KeyPressed();
 	UIState GetState()const;
 

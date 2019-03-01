@@ -809,11 +809,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::ShaderObjectResource:
 	{
-		std::string fileName;
-		App->fs->GetFileName(file, fileName);
-		uint uuid = strtoul(fileName.data(), NULL, 0);
-		assert(uuid > 0);
-
 		ResourceData data;
 		ResourceShaderObjectData shaderObjectData;
 		data.exportedFile = file;
@@ -828,11 +823,11 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		strcpy_s(metaFile, strlen(file) + 1, file); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
+		uint uuid = 0;
 		if (App->fs->Exists(metaFile))
 		{
-			int64_t lastModTime = 0;
-			uint shaderObjectUuid = 0;
-			ResourceShaderObject::ReadMeta(metaFile, lastModTime, shaderObjectUuid, data.name);
+			int64_t lastModTime = 0;		
+			ResourceShaderObject::ReadMeta(metaFile, lastModTime, uuid, data.name);
 		}
 
 		uint shaderObject = 0;
@@ -848,11 +843,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::ShaderProgramResource:
 	{
-		std::string fileName;
-		App->fs->GetFileName(file, fileName);
-		uint uuid = strtoul(fileName.data(), NULL, 0);
-		assert(uuid > 0);
-
 		ResourceData data;
 		ResourceShaderProgramData shaderProgramData;
 		data.exportedFile = file;
@@ -862,12 +852,12 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		strcpy_s(metaFile, strlen(file) + 1, file); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
+		uint uuid = 0;
 		std::vector<std::string> shaderObjectsNames;
 		if (App->fs->Exists(metaFile))
 		{
 			int64_t lastModTime = 0;
-			uint shaderProgramUuid = 0;
-			ResourceShaderProgram::ReadMeta(metaFile, lastModTime, shaderProgramUuid, data.name, shaderObjectsNames, shaderProgramData.shaderProgramType, shaderProgramData.format);
+			ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, data.name, shaderObjectsNames, shaderProgramData.shaderProgramType, shaderProgramData.format);
 		}
 
 		uint shaderProgram = 0;
@@ -917,15 +907,22 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::MaterialResource:
 	{
-		std::string fileName;
-		App->fs->GetFileName(file, fileName);
-		uint uuid = strtoul(fileName.data(), NULL, 0);
-		assert(uuid > 0);
-
 		ResourceData data;
 		ResourceMaterialData materialData;
 		data.exportedFile = file;
-		data.name = fileName.data();
+
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		uint uuid = 0;
+		std::vector<std::string> shaderObjectsNames;
+		if (App->fs->Exists(metaFile))
+		{
+			int64_t lastModTime = 0;
+			ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, data.name);
+		}
 
 		ResourceMaterial::LoadFile(file, materialData);
 

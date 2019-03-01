@@ -93,6 +93,8 @@ void ComponentButton::OnInternalLoad(char *& cursor)
 	size_t bytes = sizeof(uint);
 	memcpy(&button_blinded, cursor, bytes);
 	cursor += bytes;
+
+	SetNewKey(button_blinded);
 }
 
 void ComponentButton::OnUniqueEditor()

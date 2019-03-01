@@ -15,13 +15,13 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
-            UI.UIHovered();
-
-            ParticleEmitter emitter = gameObject.GetComponent<ParticleEmitter>();
-            if (emitter != null)
+            RectTransform rect = gameObject.GetComponent<RectTransform>();
+            if(rect != null)
             {
-                emitter.Play();
-                emitter.Stop();
+                rect.x = 0;
+                rect.y = 0;
+                rect.x_dist = 0;
+                rect.y_dist = 0;
             }
         }
     }

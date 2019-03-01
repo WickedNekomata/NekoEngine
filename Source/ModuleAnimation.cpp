@@ -521,8 +521,9 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	//ComponentMesh* mesh = component_bone->attached_mesh;
-	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(component_bone->attachedMesh);
+	ComponentMesh* mesh = component_bone->attached_mesh;
+
+	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(mesh->res);
 	
 	if (mesh_res != nullptr)
 	{
@@ -565,6 +566,7 @@ void ModuleAnimation::ResetMesh(ComponentBone * component_bone)
 		{
 			memset(original->deformableMeshData.vertices[i].position, 0, 3  * sizeof(float));
 		}
+		//original->GenerateAndBindDeformableMesh();
 	}
 		
 }

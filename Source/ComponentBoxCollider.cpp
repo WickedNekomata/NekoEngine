@@ -114,6 +114,9 @@ void ComponentBoxCollider::EncloseGeometry()
 		center = globalMatrix.Float3x3Part().Inverted() * center;
 
 		halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
+		halfSize.x *= scale.x;
+		halfSize.y *= scale.y;
+		halfSize.z *= scale.z;
 	}
 
 	RecalculateShape();

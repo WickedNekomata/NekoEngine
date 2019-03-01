@@ -207,6 +207,18 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	if (currentCamera != nullptr)
 	{
+		for (uint i = 0; i < cameraComponents.size(); ++i)
+		{
+			if (cameraComponents[i]->IsActive())
+				cameraComponents[i]->UpdateTransform();
+		}
+
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+		{
+			if (projectorComponents[i]->IsActive())
+				projectorComponents[i]->UpdateTransform();
+		}
+
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
@@ -321,6 +333,7 @@ update_status ModuleRenderer3D::PostUpdate()
 			for (uint i = 0; i < rigidActorComponents.size(); ++i)
 			{
 				physx::PxRigidActor* gActor = rigidActorComponents[i]->GetActor();
+
 				physx::PxShape* gShape = nullptr;
 				gActor->getShapes(&gShape, 1);
 				if (gShape == nullptr)

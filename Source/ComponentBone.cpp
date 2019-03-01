@@ -9,8 +9,9 @@
 #include "GameObject.h"
 #include "ResourceMesh.h"
 #include "ResourceBone.h"
-
+#ifndef GAMEMODE
 #include "imgui\imgui.h"
+#endif
 //#include "BoneImporter.h"
 
 ComponentBone::ComponentBone(GameObject * embedded_game_object) :

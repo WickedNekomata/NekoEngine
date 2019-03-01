@@ -21,12 +21,13 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 		parent->AddComponent(ImageComponent);
 }
 
-ComponentButton::ComponentButton(const ComponentButton & componentButton, GameObject* parent) : Component(parent, ComponentTypes::ButtonComponent)
+ComponentButton::ComponentButton(const ComponentButton & componentButton, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	state = componentButton.state;
 	button_blinded = componentButton.button_blinded;
 	input = componentButton.input;
-	App->ui->componentsUI.push_back(this);
+	if(includeComponents)
+		App->ui->componentsUI.push_back(this);
 }
 
 ComponentButton::~ComponentButton()

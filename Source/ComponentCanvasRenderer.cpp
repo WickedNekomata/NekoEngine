@@ -17,11 +17,14 @@ ComponentCanvasRenderer::ComponentCanvasRenderer(GameObject * parent, ComponentT
 	rend_queue.push_back(new ToUIRend());
 }
 
-ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::CanvasRendererComponent)
+ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer & componentRectTransform, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::CanvasRendererComponent)
 {
-	App->ui->componentsUI.push_back(this);
-	rend_queue.push_back(new ToUIRend());
-	rend_queue.push_back(new ToUIRend());
+	if (includeComponents)
+	{
+		App->ui->componentsUI.push_back(this);
+		rend_queue.push_back(new ToUIRend());
+		rend_queue.push_back(new ToUIRend());
+	}
 }
 
 ComponentCanvasRenderer::~ComponentCanvasRenderer()

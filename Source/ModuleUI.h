@@ -47,13 +47,14 @@ public:
 
 	bool IsUIHovered();
 
+	GameObject* DuplicateUIGO(GameObject* toDuplicate, GameObject* parent = nullptr);
+
 private:
 
 	bool Init(JSON_Object* jObject);
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();
-	update_status FixedUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
 

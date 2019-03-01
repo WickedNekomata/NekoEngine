@@ -182,32 +182,6 @@ void PanelInspector::ShowGameObjectInspector() const
 	bool scriptSelected = false;
 	if (ImGui::BeginPopupContextItem((const char*)0, 0))
 	{
-		if (gameObject->cmp_mesh == nullptr)
-			if (ImGui::Selectable("Mesh")) {
-				gameObject->AddComponent(ComponentTypes::MeshComponent);
-				ImGui::CloseCurrentPopup();
-			}
-		if (gameObject->cmp_camera == nullptr)
-			if (ImGui::Selectable("Camera")) {
-				gameObject->AddComponent(ComponentTypes::CameraComponent);
-				ImGui::CloseCurrentPopup();
-			}
-		if (gameObject->cmp_emitter == nullptr)
-			if (ImGui::Selectable("Particle Emitter")) {
-				gameObject->AddComponent(ComponentTypes::EmitterComponent);
-				ImGui::CloseCurrentPopup();
-			}
-		if (gameObject->cmp_light == nullptr)
-			if (ImGui::Selectable("Light")) {
-				gameObject->AddComponent(ComponentTypes::LightComponent);
-				ImGui::CloseCurrentPopup();
-			}
-		if (gameObject->cmp_projector == nullptr)
-			if (ImGui::Selectable("Projector")) {
-				gameObject->AddComponent(ComponentTypes::ProjectorComponent);
-				ImGui::CloseCurrentPopup();
-			}
-
 		if (gameObject->GetLayer() == UILAYER)
 		{
 			if (gameObject->cmp_image == nullptr)
@@ -225,50 +199,86 @@ void PanelInspector::ShowGameObjectInspector() const
 					gameObject->AddComponent(ComponentTypes::LabelComponent);
 					ImGui::CloseCurrentPopup();
 				}
-		}
 
-		if (ImGui::Selectable("Script"))
+			if (ImGui::Selectable("Script"))
+			{
+				//Open new Popup, with input text and autocompletion to select scripts by name
+				scriptSelected = true;
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		else
 		{
-			//Open new Popup, with input text and autocompletion to select scripts by name
-			scriptSelected = true;
-			ImGui::CloseCurrentPopup();
-		}
 
-		if (gameObject->cmp_navAgent == nullptr) {
-			if (ImGui::Selectable("Nav Agent")) {
-				gameObject->AddComponent(ComponentTypes::NavAgentComponent);
-				ImGui::CloseCurrentPopup();
-			}
-		}
+			if (gameObject->cmp_mesh == nullptr)
+				if (ImGui::Selectable("Mesh")) {
+					gameObject->AddComponent(ComponentTypes::MeshComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_camera == nullptr)
+				if (ImGui::Selectable("Camera")) {
+					gameObject->AddComponent(ComponentTypes::CameraComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_emitter == nullptr)
+				if (ImGui::Selectable("Particle Emitter")) {
+					gameObject->AddComponent(ComponentTypes::EmitterComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_light == nullptr)
+				if (ImGui::Selectable("Light")) {
+					gameObject->AddComponent(ComponentTypes::LightComponent);
+					ImGui::CloseCurrentPopup();
+				}
+			if (gameObject->cmp_projector == nullptr)
+				if (ImGui::Selectable("Projector")) {
+					gameObject->AddComponent(ComponentTypes::ProjectorComponent);
+					ImGui::CloseCurrentPopup();
+				}
 
-		if (gameObject->cmp_rigidActor == nullptr) {
-			if (ImGui::Selectable("Rigid Static")) {
-				gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
+			if (ImGui::Selectable("Script"))
+			{
+				//Open new Popup, with input text and autocompletion to select scripts by name
+				scriptSelected = true;
 				ImGui::CloseCurrentPopup();
 			}
-			else if ((gameObject->cmp_collider == nullptr || gameObject->cmp_collider->GetType() != ComponentTypes::PlaneColliderComponent)
-				&& ImGui::Selectable("Rigid Dynamic")) {
-				gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
-				ImGui::CloseCurrentPopup();
+
+			if (gameObject->cmp_navAgent == nullptr) {
+				if (ImGui::Selectable("Nav Agent")) {
+					gameObject->AddComponent(ComponentTypes::NavAgentComponent);
+					ImGui::CloseCurrentPopup();
+				}
 			}
-		}
-		if (gameObject->cmp_collider == nullptr) {
-			if (ImGui::Selectable("Box Collider")) {
-				gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
-				ImGui::CloseCurrentPopup();
+
+			if (gameObject->cmp_rigidActor == nullptr) {
+				if (ImGui::Selectable("Rigid Static")) {
+					gameObject->AddComponent(ComponentTypes::RigidStaticComponent);
+					ImGui::CloseCurrentPopup();
+				}
+				else if ((gameObject->cmp_collider == nullptr || gameObject->cmp_collider->GetType() != ComponentTypes::PlaneColliderComponent)
+					&& ImGui::Selectable("Rigid Dynamic")) {
+					gameObject->AddComponent(ComponentTypes::RigidDynamicComponent);
+					ImGui::CloseCurrentPopup();
+				}
 			}
-			else if (ImGui::Selectable("Sphere Collider")) {
-				gameObject->AddComponent(ComponentTypes::SphereColliderComponent);
-				ImGui::CloseCurrentPopup();
-			}
-			else if (ImGui::Selectable("Capsule Collider")) {
-				gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
-				ImGui::CloseCurrentPopup();
-			}
-			else if ((gameObject->cmp_rigidActor == nullptr || gameObject->cmp_rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
-				&& ImGui::Selectable("Plane Collider")) {
-				gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
-				ImGui::CloseCurrentPopup();
+			if (gameObject->cmp_collider == nullptr) {
+				if (ImGui::Selectable("Box Collider")) {
+					gameObject->AddComponent(ComponentTypes::BoxColliderComponent);
+					ImGui::CloseCurrentPopup();
+				}
+				else if (ImGui::Selectable("Sphere Collider")) {
+					gameObject->AddComponent(ComponentTypes::SphereColliderComponent);
+					ImGui::CloseCurrentPopup();
+				}
+				else if (ImGui::Selectable("Capsule Collider")) {
+					gameObject->AddComponent(ComponentTypes::CapsuleColliderComponent);
+					ImGui::CloseCurrentPopup();
+				}
+				else if ((gameObject->cmp_rigidActor == nullptr || gameObject->cmp_rigidActor->GetType() == ComponentTypes::RigidStaticComponent)
+					&& ImGui::Selectable("Plane Collider")) {
+					gameObject->AddComponent(ComponentTypes::PlaneColliderComponent);
+					ImGui::CloseCurrentPopup();
+				}
 			}
 		}
 		ImGui::EndPopup();

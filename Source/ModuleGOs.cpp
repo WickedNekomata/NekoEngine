@@ -10,6 +10,10 @@
 #include "ModuleResourceManager.h"
 #include "ResourceShaderProgram.h"
 
+#include "ModuleAnimation.h"
+#include "ResourceAnimation.h"
+#include "ComponentAnimation.h"
+
 #include "ModuleRenderer3D.h"
 #include "ModuleUI.h"
 
@@ -183,6 +187,19 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	{
 		gameobjects.push_back(childs[i]);
 		App->GOs->RecalculateVector(childs[i], false);
+	}
+
+	// Animation stuff // TODO_G : this can be better in vert 2
+	std::vector<GameObject*> gos;
+	this->GetGameobjects(gos);
+	for (uint i = 0u; i < gos.size(); i++)
+	{
+		ComponentAnimation* anim_co =(ComponentAnimation*)gos[i]->GetComponent(ComponentTypes::AnimationComponent);
+		if (anim_co) {
+			ResourceAnimation* anim = (ResourceAnimation*)App->res->GetResource(anim_co->res);
+			if (anim)
+				App->animation->SetAnimationGos(anim);
+		}
 	}
 
 	System_Event newEvent;

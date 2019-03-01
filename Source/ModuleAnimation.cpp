@@ -111,7 +111,7 @@ update_status ModuleAnimation::Update()
 	for (uint i = 0; i < current_anim->animable_gos.size(); ++i)
 	{
 		ComponentBone* bone = (ComponentBone*)current_anim->animable_gos.at(i)->GetComponent(ComponentTypes::BoneComponent);
-
+		Resource*res = App->res->GetResource(bone->attachedMesh);
 		if (bone && bone->attached_mesh)
 		{
 			DeformMesh(bone);

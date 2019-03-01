@@ -1421,11 +1421,11 @@ MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponen
 	return ret;
 }
 
-int LayerToBit(MonoString* layerName)
+uint LayerToBit(MonoString* layerName)
 {
 	char* layerCName = mono_string_to_utf8(layerName);
 
-	int bits = 0; 
+	uint bits = 0; 
 	int res = App->layers->NameToNumber(layerCName);
 	res != -1 ? bits |= 1 << res : bits = 0;
 

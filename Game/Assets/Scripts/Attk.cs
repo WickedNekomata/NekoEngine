@@ -93,19 +93,22 @@ public class Attk : JellyScript
             if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 //Go to attack
-                state = Alita_State.GOING_TO_ATTK;
                 enemy = hit.gameObject;
-               
-                //Determine a place a little further than enemy position
-                Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
-                Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
-               
-                agent.SetDestination(enemy_pos);
+                if (enemy != null)
+                {
+                    state = Alita_State.GOING_TO_ATTK;
+                    //Determine a place a little further than enemy position
+                    Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
+                    Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
 
-                enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
+                    agent.SetDestination(enemy_pos);
 
-                Debug.Log("GOING TO ENEMY");
+                    enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
 
+                    Debug.Log("GOING TO ENEMY");
+                }
+                else
+                    Debug.Log("ENEMY IS NULL");
             }
 
         }

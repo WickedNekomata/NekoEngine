@@ -25,7 +25,7 @@ public class Unit : JellyScript
             current_life = value;
         }
     }
-    private int max_life = 100;
+    public int max_life = 100;
     public int MaxLife { get { return max_life; } }
 
     // Components

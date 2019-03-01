@@ -123,10 +123,8 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 		gActor->attachShape(*shape);
 }
 
-void ComponentRigidActor::RecursiveUpdateColliderAndRigidActor(GameObject* gameObject)
+void ComponentRigidActor::RecursiveUpdateTransforms(GameObject* gameObject)
 {
-	if (gameObject->cmp_collider != nullptr)
-		gameObject->cmp_collider->EncloseGeometry();
 	if (gameObject->cmp_rigidActor != nullptr)
 	{
 		math::float4x4 globalMatrix = gameObject->transform->GetGlobalMatrix();
@@ -137,7 +135,7 @@ void ComponentRigidActor::RecursiveUpdateColliderAndRigidActor(GameObject* gameO
 	gameObject->GetChildrenVector(children, false);
 
 	for (uint i = 0; i < children.size(); ++i)
-		RecursiveUpdateColliderAndRigidActor(children[i]);
+		RecursiveUpdateTransforms(children[i]);
 }
 
 void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const

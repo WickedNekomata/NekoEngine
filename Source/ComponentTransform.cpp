@@ -85,7 +85,7 @@ void ComponentTransform::OnUniqueEditor()
 		if (!position.Equals(lastPosition) || !rotation.Equals(lastRotation) || !scale.Equals(lastScale))
 		{
 			// Transform updated: if the game object or its children have a rigid body, update its transform
-			ComponentRigidActor::RecursiveUpdateColliderAndRigidActor(parent);
+			ComponentRigidActor::RecursiveUpdateTransforms(parent);
 
 			// Transform updated: if the game object has a camera, update its frustum
 			if (parent->cmp_camera != nullptr)
@@ -178,7 +178,7 @@ void ComponentTransform::SetMatrixFromGlobal(math::float4x4& globalMatrix)
 	}
 
 	// Transform updated: if the game object or its children have a rigid body, update its transform
-	ComponentRigidActor::RecursiveUpdateColliderAndRigidActor(parent);
+	ComponentRigidActor::RecursiveUpdateTransforms(parent);
 
 	// Transform updated: if the game object has a camera, update its frustum
 	if (parent->cmp_camera != nullptr)

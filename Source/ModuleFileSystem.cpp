@@ -101,9 +101,11 @@ bool ModuleFileSystem::Start()
 		App->PushSystemEvent(event);
 	}
 
+#ifndef GAMEMODE
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;
 	App->PushSystemEvent(event);
+#endif
 
 	return true;
 }
@@ -993,7 +995,14 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 		std::string extension;
 		GetExtension(filePath, extension);
 
-		switch (App->res->GetResourceTypeByExtension(extension.data()))
+		ResourceTypes resourceType = ResourceTypes::NoResourceType;
+#ifndef GAMEMODE
+		resourceType = App->res->GetResourceTypeByExtension(extension.data());
+#else
+		resourceType = App->res->GetLibraryResourceTypeByExtension(extension.data());
+#endif
+
+		switch (resourceType)
 		{
 			case ResourceTypes::MaterialResource:
 			{

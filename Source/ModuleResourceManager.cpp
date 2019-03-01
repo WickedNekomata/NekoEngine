@@ -58,6 +58,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 	break;
 
+	case System_Event_Type::ImportLibraryFile:
+	{
+		// 1. Import Library file
+		ImportLibraryFile(event.fileEvent.file);
+	}
+	break;
+
 	case System_Event_Type::FileOverwritten:
 	case System_Event_Type::ReImportFile:
 	{
@@ -167,6 +174,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::FileRemoved:
 	{
+		return;
 		// 1. Delete meta
 
 		// Search for the meta associated to the file
@@ -651,7 +659,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	case ResourceTypes::PrefabResource:
 	{
 		resource = ResourcePrefab::ImportFile(file);
-		this->resources[resource->GetUuid()] = resource;
+		resources[resource->GetUuid()] = resource;
 		break;
 	}
 
@@ -938,8 +946,8 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::PrefabResource:
 	{
-		//resource = ResourcePrefab::ImportFile(file);
-		//this->resources[resource->GetUuid()] = resource; // TODO
+		resource = ResourcePrefab::ImportFile(file);
+		resources[resource->GetUuid()] = resource;
 	}
 	break;
 

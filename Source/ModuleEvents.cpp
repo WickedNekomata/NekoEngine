@@ -20,6 +20,7 @@
 #include "ComponentBone.h"
 #include "ComponentLight.h"
 #include "ComponentScript.h"
+#include "ComponentAudioListener.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"

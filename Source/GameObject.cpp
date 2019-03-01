@@ -26,6 +26,7 @@
 #include "ComponentBone.h"
 #include "ComponentScript.h"
 #include "ComponentLight.h"
+#include "ComponentAudioListener.h"
 
 #include "MathGeoLib/include/Geometry/OBB.h"
 
@@ -108,6 +109,11 @@ GameObject::GameObject(GameObject& gameObject, GameObject* newRoot)
 		case ComponentTypes::PlaneColliderComponent:
 			// TODO
 			cmp_collider = App->physics->CreateColliderComponent(this, type);
+			break;
+		case ComponentTypes::AudioListenerComponent:
+			cmp_audioListener = new ComponentAudioListener(*gameObject.cmp_audioListener);
+			cmp_audioListener->SetParent(this);
+			components.push_back(cmp_audioListener);
 			break;
 		}
 	}
@@ -438,6 +444,9 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 			break;
 		}
+	case ComponentTypes::AudioListenerComponent:
+		newComponent = cmp_audioListener = new ComponentAudioListener(this);
+		break;
 	}
 	
 	components.push_back(newComponent);

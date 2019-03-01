@@ -21,7 +21,10 @@ enum ComponentTypes
 	BoxColliderComponent,
 	SphereColliderComponent,
 	CapsuleColliderComponent,
-	PlaneColliderComponent
+	PlaneColliderComponent,
+
+	//Audio
+	AudioListenerComponent
 };
 
 #endif

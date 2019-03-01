@@ -235,6 +235,9 @@
     <Filter Include="Sources\3rd Party\Wwise\AK\Win32">
       <UniqueIdentifier>{46aa5dbc-74db-4976-a487-059a666548d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\Audio">
+      <UniqueIdentifier>{55f2ee1b-7091-4d42-a0f8-dec9eda507a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1768,6 +1771,9 @@
     <ClInclude Include="AK\AkWwiseSDKVersion.h">
       <Filter>Sources\3rd Party\Wwise\AK</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentAudioListener.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2258,6 +2264,9 @@
     </ClCompile>
     <ClCompile Include="AK\Win32\stdafx.cpp">
       <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioListener.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

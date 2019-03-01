@@ -35,10 +35,10 @@ written agreement between you and Audiokinetic Inc.
 
 #include "../Win32/stdafx.h"
 #include "AkFilePackageLUT.h"
-#include <AK/SoundEngine/Common/AkMemoryMgr.h>
-#include <AK/SoundEngine/Common/AkSoundEngine.h>	// For string hash.
-#include <AK/Tools/Common/AkPlatformFuncs.h>
-#include <AK/Tools/Common/AkFNVHash.h>
+#include "../SoundEngine/Common/AkMemoryMgr.h"
+#include "../SoundEngine/Common/AkSoundEngine.h"	// For string hash.
+#include "../Tools/Common/AkPlatformFuncs.h"
+#include "../Tools/Common/AkFNVHash.h"
 
 #ifdef _DEBUG
 	template<bool> struct AkCompileTimeAssert;

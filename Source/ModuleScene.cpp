@@ -304,7 +304,10 @@ void ModuleScene::RecalculateQuadtree()
 	App->GOs->GetStaticGameobjects(staticGameObjects);
 
 	for (uint i = 0; i < staticGameObjects.size(); ++i)
-		App->scene->quadtree.Insert(staticGameObjects[i]);
+	{
+		if (staticGameObjects[i]->GetLayer() != UILAYER)
+			App->scene->quadtree.Insert(staticGameObjects[i]);
+	}
 }
 
 void ModuleScene::CreateRandomStaticGameObject()

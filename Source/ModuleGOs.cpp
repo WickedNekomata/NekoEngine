@@ -167,13 +167,48 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
 
-	if(!newRoot)
+	if (!newRoot)
 	{
+		if (newGameObject->GetLayer() == UILAYER && copy->GetParent()->GetLayer() != UILAYER)
+			return nullptr;
+
 		newGameObject->SetParent(copy->GetParent());
 		copy->GetParent()->AddChild(newGameObject);
 	}
 	else
 	{
+		if (newGameObject->GetLayer() == UILAYER)
+		{
+			if (std::strcmp(newGameObject->GetName(), "Canvas") == 0)
+			{
+				if (ExistCanvas())
+				{
+					std::vector<GameObject*> childs;
+					newGameObject->GetChildrenVector(childs, true);
+					for (int i = 0; i < childs.size(); ++i)
+					{
+						gameobjects.push_back(childs[i]);
+						App->GOs->RecalculateVector(childs[i], false);
+					}
+					childs.clear();
+
+					newGameObject->GetChildrenVector(childs, false);
+					for (GameObject* child : childs)
+					{
+						if (child->GetParent()->GetParent() == nullptr)
+						{
+							canvas->AddChild(child);
+							child->SetParent(canvas);
+						}
+					}
+					App->ui->LinkAllRectsTransform();
+					return canvas;
+				}
+				else
+					canvas = newGameObject;
+			}
+		}
+
 		newGameObject->SetParent(newRoot);
 		newRoot->AddChild(newGameObject);
 	}
@@ -185,9 +220,14 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 		App->GOs->RecalculateVector(childs[i], false);
 	}
 
-	System_Event newEvent;
-	newEvent.type = System_Event_Type::RecreateQuadtree;
-	App->PushSystemEvent(newEvent);
+	if (newGameObject->GetLayer() != UILAYER)
+	{
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
+	else
+		App->ui->LinkAllRectsTransform();
 
 	return newGameObject;
 }

@@ -4,7 +4,7 @@ using JellyBitEngine;
 public class Mov : JellyScript
 {
     private RaycastHit hit;
-    private uint mask = LayerMask.GetMask("Default");
+    private uint mask = LayerMask.GetMask("Terrain");
     private NavMeshAgent agent = null;
 
     public override void Start()

@@ -246,22 +246,22 @@ GameObject* ModuleUI::DuplicateUIGO(GameObject * toDuplicate, GameObject* parent
 	if (toDuplicate->cmp_canvasRenderer)
 	{
 		const ComponentCanvasRenderer* rend = (ComponentCanvasRenderer*)toDuplicate->GetComponent(ComponentTypes::CanvasRendererComponent);
-		go->AddComponent(new ComponentCanvasRenderer(*rend, go));
+		go->AddComponent(go->cmp_canvasRenderer = new ComponentCanvasRenderer(*rend, go));
 	}
 	if (toDuplicate->cmp_image)
 	{
 		const ComponentImage* image = (ComponentImage*)toDuplicate->GetComponent(ComponentTypes::ImageComponent);
-		go->AddComponent(new ComponentImage(*image, go));
+		go->AddComponent(go->cmp_image = new ComponentImage(*image, go));
 	}
 	if (toDuplicate->cmp_button)
 	{
 		const ComponentButton* button = (ComponentButton*)toDuplicate->GetComponent(ComponentTypes::ButtonComponent);
-		go->AddComponent(new ComponentButton(*button, go));
+		go->AddComponent(go->cmp_button = new ComponentButton(*button, go));
 	}
 	if (toDuplicate->cmp_label)
 	{
 		const ComponentLabel* label = (ComponentLabel*)toDuplicate->GetComponent(ComponentTypes::LabelComponent);
-		go->AddComponent(new ComponentLabel(*label, go));
+		go->AddComponent(go->cmp_label = new ComponentLabel(*label, go));
 	}
 
 	std::vector<GameObject*> childs;

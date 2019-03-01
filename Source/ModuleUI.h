@@ -47,6 +47,8 @@ public:
 
 	bool IsUIHovered();
 
+	GameObject* DuplicateUIGO(GameObject* toDuplicate, GameObject* parent = nullptr);
+
 private:
 
 	bool Init(JSON_Object* jObject);

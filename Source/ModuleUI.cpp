@@ -16,6 +16,8 @@
 #include "ComponentRectTransform.h"
 #include "ComponentCanvasRenderer.h"
 #include "ComponentButton.h"
+#include "ComponentImage.h"
+#include "ComponentLabel.h"
 
 #include "ResourceMaterial.h"
 
@@ -227,6 +229,48 @@ void ModuleUI::SetRectToShader(ComponentRectTransform * rect)
 bool ModuleUI::IsUIHovered()
 {
 	return anyItemIsHovered;
+}
+
+GameObject* ModuleUI::DuplicateUIGO(GameObject * toDuplicate, GameObject* parent)
+{
+	GameObject *go = nullptr;
+	if(parent)
+		go = App->GOs->CreateGameObject(parent->GetName(), parent, true);
+	else
+		go = App->GOs->CreateGameObject(toDuplicate->GetName(), toDuplicate->GetParent(), true);
+	go->SetLayer(UILAYER);
+
+
+	const ComponentRectTransform* rect = (ComponentRectTransform*)toDuplicate->GetComponent(ComponentTypes::RectTransformComponent);
+	go->AddComponent(new ComponentRectTransform(*rect, go));
+	if (toDuplicate->cmp_canvasRenderer)
+	{
+		const ComponentCanvasRenderer* rend = (ComponentCanvasRenderer*)toDuplicate->GetComponent(ComponentTypes::CanvasRendererComponent);
+		go->AddComponent(new ComponentCanvasRenderer(*rend, go));
+	}
+	if (toDuplicate->cmp_image)
+	{
+		const ComponentImage* image = (ComponentImage*)toDuplicate->GetComponent(ComponentTypes::ImageComponent);
+		go->AddComponent(new ComponentImage(*image, go));
+	}
+	if (toDuplicate->cmp_button)
+	{
+		const ComponentButton* button = (ComponentButton*)toDuplicate->GetComponent(ComponentTypes::ButtonComponent);
+		go->AddComponent(new ComponentButton(*button, go));
+	}
+	if (toDuplicate->cmp_label)
+	{
+		const ComponentLabel* label = (ComponentLabel*)toDuplicate->GetComponent(ComponentTypes::LabelComponent);
+		go->AddComponent(new ComponentLabel(*label, go));
+	}
+
+	std::vector<GameObject*> childs;
+	toDuplicate->GetChildrenVector(childs, false);
+
+	for (GameObject* child : childs)
+		DuplicateUIGO(child, go);
+
+	return go;
 }
 
 

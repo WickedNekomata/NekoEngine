@@ -1046,12 +1046,8 @@ void DestroyObj(MonoObject* obj)
 
 				App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
 
-				//Send the event to destroy this gameObject
-
-				System_Event event;
-				event.goEvent.type = System_Event_Type::GameObjectDestroyed;
-				event.goEvent.gameObject = toDelete;
-				App->PushSystemEvent(event);
+				//Destroy this GameObject
+				App->GOs->DeleteGameObject(toDelete);				
 
 				break;
 			}

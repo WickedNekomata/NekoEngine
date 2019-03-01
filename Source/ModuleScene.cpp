@@ -134,6 +134,9 @@ void ModuleScene::OnSystemEvent(System_Event event)
 
 		//Remove GO in list if its deleted
 
+		if (selectedObject == event.goEvent.gameObject)
+			SELECT(NULL);
+
 		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
 
 		while (!prevTransforms.empty() && iterator != prevTransforms.end())

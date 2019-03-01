@@ -94,7 +94,6 @@ update_status ModuleScene::Update()
 		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
 			GetPreviousTransform();
 	}
-
 #endif
 
 	return UPDATE_CONTINUE;

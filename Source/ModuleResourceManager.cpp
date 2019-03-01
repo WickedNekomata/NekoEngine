@@ -549,12 +549,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				for (uint i = 0; i < shaderObjectsNames.size(); ++i)
 				{
 					// Check if the resource exists
-					std::string outputFile;
-#ifndef GAMEMODE
-					outputFile = DIR_ASSETS;
-#else
-					outputFile = DIR_LIBRARY;
-#endif
+					std::string outputFile = DIR_ASSETS;
 					if (App->fs->RecursiveExists(shaderObjectsNames[i].data(), outputFile.data(), outputFile))
 					{
 						uint uuid = 0;
@@ -749,6 +744,240 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	}
 	break;
 
+	}
+
+	return resource;
+}
+
+Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
+{
+	assert(file != nullptr);
+
+	Resource* resource = nullptr;
+
+	std::string extension;
+	App->fs->GetExtension(file, extension);
+	ResourceTypes type = GetLibraryResourceTypeByExtension(extension.data());
+
+	switch (type)
+	{
+	case ResourceTypes::MeshResource:
+	{
+		std::string fileName;
+		App->fs->GetFileName(file, fileName);
+		uint uuid = strtoul(fileName.data(), NULL, 0);
+		assert(uuid > 0);
+
+		ResourceData data;
+		ResourceMeshData meshData;
+		data.exportedFile = file;
+		data.name = fileName.data();
+
+		App->sceneImporter->Load(file, data, meshData);
+
+		resource = CreateResource(ResourceTypes::MeshResource, data, &meshData, uuid);
+	}
+	break;
+
+	case ResourceTypes::TextureResource:
+	{
+		std::string fileName;
+		App->fs->GetFileName(file, fileName);
+		uint uuid = strtoul(fileName.data(), NULL, 0);
+		assert(uuid > 0);
+
+		ResourceData data;
+		ResourceTextureData textureData;
+		data.exportedFile = file;
+		data.name = fileName.data();
+
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		if (App->fs->Exists(metaFile))
+		{
+			int64_t lastModTime = 0;
+			uint textureUuid = 0;
+			ResourceTexture::ReadMeta(metaFile, lastModTime, textureData.textureImportSettings, textureUuid);
+		}
+
+		resource = CreateResource(ResourceTypes::TextureResource, data, &textureData, uuid);
+	}
+	break;
+
+	case ResourceTypes::ShaderObjectResource:
+	{
+		ResourceData data;
+		ResourceShaderObjectData shaderObjectData;
+		data.exportedFile = file;
+
+		if (IS_VERTEX_SHADER(extension.data()))
+			shaderObjectData.shaderObjectType = ShaderObjectTypes::VertexType;
+		else if (IS_FRAGMENT_SHADER(extension.data()))
+			shaderObjectData.shaderObjectType = ShaderObjectTypes::FragmentType;
+
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		uint uuid = 0;
+		if (App->fs->Exists(metaFile))
+		{
+			int64_t lastModTime = 0;		
+			ResourceShaderObject::ReadMeta(metaFile, lastModTime, uuid, data.name);
+		}
+
+		uint shaderObject = 0;
+		bool success = ResourceShaderObject::LoadFile(file, shaderObjectData, shaderObject);
+
+		resource = CreateResource(ResourceTypes::ShaderObjectResource, data, &shaderObjectData, uuid);
+		ResourceShaderObject* shaderObjectResource = (ResourceShaderObject*)resource;
+		shaderObjectResource->isValid = success;
+		if (success)
+			shaderObjectResource->shaderObject = shaderObject;
+	}
+	break;
+
+	case ResourceTypes::ShaderProgramResource:
+	{
+		ResourceData data;
+		ResourceShaderProgramData shaderProgramData;
+		data.exportedFile = file;
+
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		uint uuid = 0;
+		std::vector<std::string> shaderObjectsNames;
+		if (App->fs->Exists(metaFile))
+		{
+			int64_t lastModTime = 0;
+			ResourceShaderProgram::ReadMeta(metaFile, lastModTime, uuid, data.name, shaderObjectsNames, shaderProgramData.shaderProgramType, shaderProgramData.format);
+		}
+
+		uint shaderProgram = 0;
+		bool success = ResourceShaderProgram::LoadFile(file, shaderProgramData, shaderProgram);
+
+		std::list<ResourceShaderObject*> shaderObjects;
+		for (uint i = 0; i < shaderObjectsNames.size(); ++i)
+		{
+			// Check if the resource exists
+			std::string outputFile = DIR_LIBRARY;
+			if (App->fs->RecursiveExists(shaderObjectsNames[i].data(), outputFile.data(), outputFile))
+			{
+				uint uuid = 0;
+				std::vector<uint> uuids;
+				if (GetResourcesUuidsByFile(outputFile.data(), uuids))
+					uuid = uuids.front();
+				else
+					// If the shader object is not a resource yet, import it
+					uuid = ImportFile(outputFile.data())->GetUuid();
+
+				if (uuid > 0)
+					shaderObjects.push_back((ResourceShaderObject*)GetResource(uuid));
+			}
+		}
+
+		if (shaderObjectsNames.size() == shaderObjects.size())
+		{
+			shaderProgramData.shaderObjects = shaderObjects;
+
+			if (!success)
+			{
+				// If the binary hasn't loaded correctly, link the shader program with the shader objects
+				shaderProgram = ResourceShaderProgram::Link(shaderObjects);
+
+				if (shaderProgram > 0)
+					success = true;
+			}
+		}
+
+		resource = CreateResource(ResourceTypes::ShaderProgramResource, data, &shaderProgramData, uuid);
+		ResourceShaderProgram* shaderProgramResource = (ResourceShaderProgram*)resource;
+		shaderProgramResource->isValid = success;
+		if (success)
+			shaderProgramResource->shaderProgram = shaderProgram;
+	}
+	break;
+
+	case ResourceTypes::MaterialResource:
+	{
+		ResourceData data;
+		ResourceMaterialData materialData;
+		data.exportedFile = file;
+
+		// Search for the meta associated to the file
+		char metaFile[DEFAULT_BUF_SIZE];
+		strcpy_s(metaFile, strlen(file) + 1, file); // file
+		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+		uint uuid = 0;
+		std::vector<std::string> shaderObjectsNames;
+		if (App->fs->Exists(metaFile))
+		{
+			int64_t lastModTime = 0;
+			ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, data.name);
+		}
+
+		ResourceMaterial::LoadFile(file, materialData);
+
+		resource = CreateResource(ResourceTypes::MaterialResource, data, &materialData, uuid);
+	}
+	break;
+
+	case ResourceTypes::ScriptResource:
+	{
+		//resource = App->scripting->ImportScriptResource(file); // TODO
+	}
+	break;
+
+	case ResourceTypes::PrefabResource:
+	{
+		//resource = ResourcePrefab::ImportFile(file);
+		//this->resources[resource->GetUuid()] = resource; // TODO
+	}
+	break;
+
+	case ResourceTypes::BoneResource:
+	{
+		std::string fileName;
+		App->fs->GetFileName(file, fileName);
+		uint uuid = strtoul(fileName.data(), NULL, 0);
+		assert(uuid > 0);
+
+		ResourceData data;
+		ResourceBoneData boneData;
+		data.file = file;
+		data.name = fileName.data();
+
+		ResourceBone::LoadFile(file, boneData);
+
+		resource = CreateResource(ResourceTypes::BoneResource, data, &boneData, uuid);
+	}
+	break;
+
+	case ResourceTypes::AnimationResource:
+	{
+		std::string fileName;
+		App->fs->GetFileName(file, fileName);
+		uint uuid = strtoul(fileName.data(), NULL, 0);
+		assert(uuid > 0);
+
+		ResourceData data;
+		ResourceAnimationData animationData;
+		data.file = file;
+		data.name = fileName.data();
+
+		ResourceAnimation::LoadFile(file, animationData);
+
+		resource = CreateResource(ResourceTypes::AnimationResource, data, &animationData, uuid);
+	}
+	break;
 	}
 
 	return resource;
@@ -1110,14 +1339,41 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	case ASCIIpsh: case ASCIIPSH:
 		return ResourceTypes::ShaderProgramResource;
 		break;
-	case ASCIIcs: case ASCIICS:
-		return ResourceTypes::ScriptResource;
 	case ASCIImat: case ASCIIMAT:
 		return ResourceTypes::MaterialResource;
 		break;
+	case ASCIIcs: case ASCIICS:
+		return ResourceTypes::ScriptResource;
+		break;
 	case ASCIIpfb: case ASCIIPFB:
 		return ResourceTypes::PrefabResource;
+		break;
 	}
+
+	return ResourceTypes::NoResourceType;
+}
+
+ResourceTypes ModuleResourceManager::GetLibraryResourceTypeByExtension(const char* extension) const
+{
+	if (strcmp(extension, EXTENSION_MESH) == 0)
+		return ResourceTypes::MeshResource;
+	else if (strcmp(extension, EXTENSION_TEXTURE) == 0)
+		return ResourceTypes::TextureResource;
+	else if (strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
+		|| strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0)
+		return ResourceTypes::ShaderObjectResource;
+	else if (strcmp(extension, EXTENSION_SHADER_PROGRAM) == 0)
+		return ResourceTypes::ShaderProgramResource;
+	else if (strcmp(extension, EXTENSION_MATERIAL) == 0)
+		return ResourceTypes::MaterialResource;
+	else if (strcmp(extension, EXTENSION_ANIMATION) == 0)
+		return ResourceTypes::AnimationResource;
+	else if (strcmp(extension, EXTENSION_BONE) == 0)
+		return ResourceTypes::BoneResource;
+	else if (strcmp(extension, EXTENSION_SCRIPT) == 0)
+		return ResourceTypes::ScriptResource;
+	else if (strcmp(extension, EXTENSION_PREFAB) == 0)
+		return ResourceTypes::PrefabResource;
 
 	return ResourceTypes::NoResourceType;
 }

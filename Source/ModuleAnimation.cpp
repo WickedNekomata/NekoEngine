@@ -58,10 +58,10 @@ bool ModuleAnimation::CleanUp()
 	return true;
 }
 
-bool ModuleAnimation::Update(float dt)
+update_status ModuleAnimation::Update()
 {
 	if (current_anim == nullptr)
-		return true;
+		return update_status::UPDATE_CONTINUE;
 
 	if (current_anim->anim_timer >= current_anim->duration && current_anim->duration > 0.0f)
 	{
@@ -74,7 +74,7 @@ bool ModuleAnimation::Update(float dt)
 	switch (anim_state)
 	{
 	case AnimationState::PLAYING:
-		current_anim->anim_timer += dt * current_anim->anim_speed;
+		current_anim->anim_timer += App->GetDt() * current_anim->anim_speed;
 		MoveAnimationForward(current_anim->anim_timer, current_anim);
 		break;
 
@@ -88,9 +88,9 @@ bool ModuleAnimation::Update(float dt)
 		break;
 
 	case AnimationState::BLENDING:
-		last_anim->anim_timer += dt * last_anim->anim_speed;
-		current_anim->anim_timer += dt * current_anim->anim_speed;
-		blend_timer += dt;
+		last_anim->anim_timer += App->GetDt() * last_anim->anim_speed;
+		current_anim->anim_timer += App->GetDt() * current_anim->anim_speed;
+		blend_timer += App->GetDt();
 		float blend_percentage = blend_timer / BLEND_TIME;
 		MoveAnimationForward(last_anim->anim_timer, last_anim);
 		MoveAnimationForward(current_anim->anim_timer, current_anim, blend_percentage);
@@ -111,14 +111,14 @@ bool ModuleAnimation::Update(float dt)
 	for (uint i = 0; i < current_anim->animable_gos.size(); ++i)
 	{
 		ComponentBone* bone = (ComponentBone*)current_anim->animable_gos.at(i)->GetComponent(ComponentTypes::BoneComponent);
-
+		Resource*res = App->res->GetResource(bone->attachedMesh);
 		if (bone && bone->attached_mesh)
 		{
 			DeformMesh(bone);
 		}
 	}
 
-	return true;
+	return update_status::UPDATE_CONTINUE;
 }
 
 bool ModuleAnimation::StartAttachingBones()
@@ -142,7 +142,7 @@ bool ModuleAnimation::StartAttachingBones()
 
 				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
 				
-				if (res->deformableMeshData.verticesSize > 0)
+				if (res->deformableMeshData.verticesSize == 0)
 				{
 					res->DuplicateMesh(res);
 					res->GenerateAndBindDeformableMesh();
@@ -169,11 +169,12 @@ void ModuleAnimation::RecursiveFindBones(const GameObject * go, std::vector<Comp
 	for (uint i = 0u; i < gos.size(); i++)
 	{
 		GameObject* curr_go = gos[i];
-		if (ComponentBone* bone = (ComponentBone*)curr_go->GetComponent(ComponentTypes::BoneComponent)) {
+		ComponentBone* bone = (ComponentBone*)curr_go->GetComponent(ComponentTypes::BoneComponent);
+		if (bone) {
 			
 			ResourceBone* res = (ResourceBone*)App->res->GetResource(bone->res);
 
-			if (res != nullptr && res->boneData.mesh_uid == go->GetUUID())
+			if (res != nullptr && res->boneData.mesh_uid == ((ComponentMesh*)go->GetComponent(ComponentTypes::MeshComponent))->res)
 			{
 				output.push_back(bone);
 			}
@@ -520,8 +521,9 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	//ComponentMesh* mesh = component_bone->attached_mesh;
-	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(component_bone->attachedMesh);
+	ComponentMesh* mesh = component_bone->attached_mesh;
+
+	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(mesh->res);
 	
 	if (mesh_res != nullptr)
 	{
@@ -564,6 +566,7 @@ void ModuleAnimation::ResetMesh(ComponentBone * component_bone)
 		{
 			memset(original->deformableMeshData.vertices[i].position, 0, 3  * sizeof(float));
 		}
+		//original->GenerateAndBindDeformableMesh();
 	}
 		
 }

@@ -10,6 +10,10 @@
 #include "ModuleResourceManager.h"
 #include "ResourceShaderProgram.h"
 
+#include "ModuleAnimation.h"
+#include "ResourceAnimation.h"
+#include "ComponentAnimation.h"
+
 #include "ModuleRenderer3D.h"
 #include "ModuleUI.h"
 
@@ -131,7 +135,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	case System_Event_Type::LoadFinished:
 	{
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{			
+		{
 			(*it)->OnSystemEvent(event);
 		}
 		break;
@@ -220,11 +224,30 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 		App->GOs->RecalculateVector(childs[i], false);
 	}
 
+
 	if (newGameObject->GetLayer() != UILAYER)
 	{
+		if (copy->GetParent() == nullptr)
+		{
+			// Animation stuff // TODO_G : this can be better in vert 2
+			App->animation->Start();
+			std::vector<GameObject*> gos;
+			this->GetGameobjects(gos);
+			for (uint i = 0u; i < gos.size(); i++)
+			{
+
+				ComponentAnimation* anim_co = (ComponentAnimation*)gos[i]->GetComponent(ComponentTypes::AnimationComponent);
+				if (anim_co) {
+					ResourceAnimation* anim = (ResourceAnimation*)App->res->GetResource(anim_co->res);
+					if (anim)
+						App->animation->SetAnimationGos(anim);
+				}
+			}
+		}
 		System_Event newEvent;
 		newEvent.type = System_Event_Type::RecreateQuadtree;
 		App->PushSystemEvent(newEvent);
+
 	}
 	else
 		App->ui->LinkAllRectsTransform();
@@ -303,7 +326,7 @@ void ModuleGOs::RecalculateVector(GameObject* go, bool sendEvent)
 		System_Event newEvent;
 		newEvent.type = System_Event_Type::RecreateQuadtree;
 		App->PushSystemEvent(newEvent);
-	}	
+	}
 }
 
 bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)

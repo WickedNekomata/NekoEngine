@@ -4,7 +4,6 @@
 enum System_Event_Type 
 { 
 	NoEvent,
-	CopyShadersIntoLibrary,
 
 	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
 

@@ -68,6 +68,8 @@ void Particle::SetActive(math::float3 pos, StartValues data, ParticleAnimation p
 	textureRowsNorm = partAnim.textureRowsNorm;
 	textureColumnsNorm = partAnim.textureColumnsNorm;
 	animationSpeed = partAnim.animationSpeed;
+	currMinUVCoord.x = (currentFrame % textureColumns) * textureColumnsNorm;
+	currMinUVCoord.y = ((textureRows - 1) - (currentFrame / textureColumns)) * textureRowsNorm;
 
 	active = true;
 	subEmitterActive = data.subEmitterActive;
@@ -129,12 +131,12 @@ bool Particle::Update(float dt)
 			animationTime += dt;
 			if (animationTime > animationSpeed)
 			{
-				if ((textureColumns* textureRows) >= currentFrame + 1)
+				if ((textureColumns * textureRows) >= currentFrame + 1)
 				{
 					currentFrame++;
 
 					currMinUVCoord.x = (currentFrame % textureColumns) * textureColumnsNorm;
-					currMinUVCoord.y = (textureColumns - (currentFrame / textureColumns) - 1) * textureRowsNorm;
+					currMinUVCoord.y = ((textureRows - 1) - (currentFrame / textureColumns)) * textureRowsNorm;
 				}
 				else if (owner->dieOnAnimation)
 				{

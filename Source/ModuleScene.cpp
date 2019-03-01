@@ -45,7 +45,7 @@ bool ModuleScene::Start()
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr, true);
 
-#ifdef GAMEMODE
+#ifndef GAMEMODE
 	App->GOs->LoadScene("Settings/GameReady.nekoScene");
 	App->renderer3D->SetCurrentCamera();
 	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
@@ -104,8 +104,9 @@ bool ModuleScene::CleanUp()
 	bool ret = true;
 
 	RELEASE(grid);
-
+#ifndef GAMEMODE
 	SELECT(NULL);
+#endif
 
 	quadtree.Clear();
 
@@ -129,13 +130,13 @@ void ModuleScene::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecreateQuadtree:
 		RecreateQuadtree();
 		break;
+#ifndef GAMEMODE
 	case System_Event_Type::GameObjectDestroyed:
 
 		//Remove GO in list if its deleted
 
 		if (selectedObject == event.goEvent.gameObject)
 			SELECT(NULL);
-
 		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
 
 		while (!prevTransforms.empty() && iterator != prevTransforms.end())
@@ -148,7 +149,9 @@ void ModuleScene::OnSystemEvent(System_Event event)
 			else
 				++iterator;
 		}
+
 		break;
+#endif
 	}
 }
 

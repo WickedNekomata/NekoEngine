@@ -14,6 +14,9 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
+// TODO_G : delete this
+#include "ModuleAnimation.h"
+
 #include "imgui/imgui.h"
 
 #include <list>
@@ -56,6 +59,11 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
+	//TESTING
+	// TODO_G : delete this
+	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
+		App->animation->Start();
+	}
 #ifndef GAMEMODE
 	if (!App->IsEditor())
 		return UPDATE_CONTINUE;

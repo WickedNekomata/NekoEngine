@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
 #include "Application.h"
+#include "ModuleAnimation.h"
 
 #include <assert.h>
 

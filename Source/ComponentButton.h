@@ -23,6 +23,7 @@ public:
 	void Update();
 
 	void KeyPressed();
+	void RightClickPressed();
 	UIState GetState()const;
 
 	void SetNewKey(uint key);

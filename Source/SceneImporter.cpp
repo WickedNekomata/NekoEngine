@@ -160,9 +160,8 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		std::vector<uint> dummyForcedUuids = forced_meshes_uuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files/*not needed but ok*/, dummyForcedUuids);
-
-		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);
-
+		rootGameObject->transform->scale *= importSettings.scale;
+		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);	
 		ImportAnimations(scene, anim_files, forced_anim_uuids);
 
 		root_bone = nullptr; // c: 
@@ -225,14 +224,14 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	relations[node] = gameObject;
 
 	// Transform
-	aiVector3D position;
-	aiVector3D scale;
-	aiQuaternion rotation;
-	node->mTransformation.Decompose(scale, rotation, position);
+	aiVector3D aPosition;
+	aiVector3D aScale;
+	aiQuaternion aRotation;
+	node->mTransformation.Decompose(aScale, aRotation, aPosition);
 
-	math::float3 newPosition = { position.x, position.y, position.z };
-	math::Quat newRotation = { rotation.x, rotation.y, rotation.z, rotation.w };
-	math::float3 newScale = { scale.x, scale.y, scale.z };
+	math::float3 newPosition = { aPosition.x, aPosition.y, aPosition.z };
+	math::Quat newRotation = { aRotation.x, aRotation.y, aRotation.z, aRotation.w };
+	math::float3 newScale = { aScale.x, aScale.y, aScale.z };
 
 	if (transformation != nullptr)
 	{

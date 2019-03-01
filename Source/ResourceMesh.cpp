@@ -168,7 +168,7 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 		sizeof(int) +
 		sizeof(uint) +
-		sizeof(uint);
+		sizeof(float);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -231,8 +231,8 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	memcpy(cursor, &meshImportSettings.size, bytes);
+	bytes = sizeof(float);
+	memcpy(cursor, &meshImportSettings.scale, bytes);
 
 	// --------------------------------------------------
 
@@ -328,8 +328,8 @@ bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, Resource
 
 		cursor += bytes;
 
-		bytes = sizeof(uint);
-		memcpy(&meshImportSettings.size, cursor, bytes);
+		bytes = sizeof(float);
+		memcpy(&meshImportSettings.scale, cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -436,7 +436,7 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 		sizeof(int) +
 		sizeof(uint) +
-		sizeof(uint);
+		sizeof(float);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -498,8 +498,8 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	memcpy(cursor, &meshImportSettings.size, bytes);
+	bytes = sizeof(float);
+	memcpy(cursor, &meshImportSettings.scale, bytes);
 
 	// --------------------------------------------------
 
@@ -652,8 +652,8 @@ bool ResourceMesh::ReadMeshImportSettingsFromMeta(const char* metaFile, Resource
 
 		cursor += bytes;
 
-		bytes = sizeof(uint);
-		memcpy(&meshImportSettings.size, cursor, bytes);
+		bytes = sizeof(float);
+		memcpy(&meshImportSettings.scale, cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);

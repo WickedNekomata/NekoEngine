@@ -95,6 +95,10 @@ public:
 	uint GetVerticesCount() const;
 	uint GetIndicesCount() const;
 
+	void GenerateAndBindDeformableMesh();
+
+	void DuplicateMesh(ResourceMesh * mesh);
+
 	uint GetVBO() const;
 	uint GetIBO() const;
 	uint GetVAO() const;
@@ -114,6 +118,8 @@ private:
 	uint VAO = 0;
 
 	ResourceMeshData meshData;
+
+public:
 
 	uint DVBO = 0;
 	uint DIBO = 0;

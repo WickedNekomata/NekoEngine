@@ -55,7 +55,6 @@ private:
 	bool Start();
 	update_status PreUpdate();
 	update_status Update();
-	update_status FixedUpdate();
 	update_status PostUpdate();
 	bool CleanUp();
 

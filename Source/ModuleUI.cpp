@@ -105,11 +105,6 @@ update_status ModuleUI::Update()
 	return update_status::UPDATE_CONTINUE;
 }
 
-update_status ModuleUI::FixedUpdate()
-{
-	return update_status::UPDATE_CONTINUE;
-}
-
 update_status ModuleUI::PostUpdate()
 {
 	return update_status::UPDATE_CONTINUE;

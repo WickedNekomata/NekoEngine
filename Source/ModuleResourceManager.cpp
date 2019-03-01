@@ -64,13 +64,15 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		std::string extension;
 		App->fs->GetExtension(event.fileEvent.file, extension);
 		ResourceTypes type = GetResourceTypeByExtension(extension.data());
+
 		switch (type)
 		{
 		case ResourceTypes::ScriptResource:
 		{
 			App->scripting->ScriptModified(event.fileEvent.file);
-			break;
 		}
+		break;
+
 		case ResourceTypes::PrefabResource:
 		{
 			char metaFile[DEFAULT_BUF_SIZE];
@@ -90,9 +92,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			prefab->UpdateRoot();
 
 			delete[] metaBuffer;
-
-			break;
 		}
+		break;
+
 		case ResourceTypes::MeshResource:
 		case ResourceTypes::TextureResource:
 		{
@@ -112,11 +114,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			newEvent.type = System_Event_Type::ImportFile;
 			strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
 			App->PushSystemEvent(newEvent);
-
-			break;
 		}
-		case ResourceTypes::ShaderProgramResource:
+		break;
 
+		case ResourceTypes::ShaderProgramResource:
+		{
 			std::vector<Resource*> materials = GetResourcesByType(ResourceTypes::MaterialResource);
 			for (uint i = 0; i < materials.size(); ++i)
 			{
@@ -132,8 +134,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
 				}
 			}
-
-			break;
+		}
+		break;
 		}
 	}
 	break;
@@ -197,7 +199,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 		App->fs->deleteFile(metaFile);
-
 
 		std::vector<uint> resourcesUuids;
 		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
@@ -277,7 +278,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 	break;
 
-	//Prefabs events
+	// Prefabs events
 	case System_Event_Type::ScriptingDomainReloaded:
 	case System_Event_Type::Stop:
 	{
@@ -290,6 +291,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			}
 		}
 	}
+	break;
 	}
 }
 

@@ -64,8 +64,8 @@ bool ResourceMaterial::ImportFile(const char* file, std::string& name, std::stri
 		// Read the meta
 		uint uuid = 0;
 		int64_t lastModTime = 0;
-		ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, name);
-		assert(uuid > 0 && lastModTime > 0);
+		bool result = ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, name);
+		assert(result);
 
 		// The uuid of the resource would be the entry
 		char entry[DEFAULT_BUF_SIZE];

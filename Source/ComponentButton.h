@@ -18,6 +18,7 @@ public:
 
 
 	void KeyPressed();
+	void RightClickPressed();
 	UIState GetState()const;
 
 private:

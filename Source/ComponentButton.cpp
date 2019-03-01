@@ -9,6 +9,7 @@
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
+#include "imgui\imgui_stl.h"
 
 ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::ButtonComponent)
 {
@@ -56,10 +57,12 @@ void ComponentButton::Update()
 		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 		{
 			state = R_CLICK;
+			RightClickPressed();
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 		{
 			state = L_CLICK;
+			KeyPressed();
 		}
 		break;
 	case R_CLICK:
@@ -96,9 +99,14 @@ void ComponentButton::OnUniqueEditor()
 {
 #ifndef GAMEMODE
 
-	static char inputBlind[2] = { input.at(0) };
-	if (ImGui::InputText("Blind key", inputBlind, IM_ARRAYSIZE(inputBlind), ImGuiInputTextFlags_EnterReturnsTrue))
-		SetNewKey(inputBlind);
+
+	if (ImGui::InputText("Blind key", &input), ImGuiInputTextFlags_EnterReturnsTrue)
+	{
+		input[1] = '\0';
+		button_blinded = (uint)SDL_GetScancodeFromKey(SDL_GetKeyFromName(input.data()));
+	}
+
+	ImGui::Text(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)button_blinded)));
 
 	switch (state)
 	{
@@ -142,6 +150,10 @@ void ComponentButton::SetNewKey(uint key)
 void ComponentButton::KeyPressed()
 {
 	CONSOLE_LOG(LogTypes::Normal, "GG");
+}
+
+void ComponentButton::RightClickPressed()
+{
 }
 
 UIState ComponentButton::GetState() const

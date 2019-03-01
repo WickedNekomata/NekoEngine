@@ -443,7 +443,8 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	/*ComponentMesh* mesh = component_bone->attached_mesh;
+	ComponentMesh* mesh = component_bone->attached_mesh;
+	/*ResourceMesh* mesh_res = App->res->GetResource(component_bone->attachedMesh);
 	//TODO_G: finish animation module
 	if (mesh != nullptr)
 	{

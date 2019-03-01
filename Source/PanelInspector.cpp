@@ -31,6 +31,7 @@
 #include "ResourceShaderProgram.h"
 #include "ResourceScript.h"
 #include "ResourceMaterial.h"
+#include "ResourceAnimation.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -71,6 +72,9 @@ bool PanelInspector::Draw()
 				break;
 			case ResourceTypes::MaterialResource:
 				ShowMaterialInspector();
+				break;
+			case ResourceTypes::AnimationResource:
+				ShowAnimationInspector();
 				break;
 			}
 			break;
@@ -714,6 +718,19 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	if (ImGui::Button("EDIT SHADER PROGRAM"))
 		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUuid());
+}
+
+void PanelInspector::ShowAnimationInspector() const
+{
+	ImGui::Text("Animation");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ResourceAnimation* animation = (ResourceAnimation*)App->scene->selectedObject.Get();
+
+	// Name
+	ImGui::Text("Name:"); ImGui::SameLine(); ImGui::Text("%s", animation->animationData.name.data());
+
 }
 
 void PanelInspector::ShowMaterialInspector() const

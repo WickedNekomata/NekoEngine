@@ -19,6 +19,7 @@ public class AnimationPlayer : JellyScript
             if(button != null)
             {
                 button.SetKey(KeyCode.KEY_0);
+                Debug.Log(button.state.ToString());
             }
         }
     }

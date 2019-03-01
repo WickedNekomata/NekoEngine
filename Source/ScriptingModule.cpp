@@ -1700,6 +1700,15 @@ void ButtonSetKey(MonoObject* buttonComp, uint key)
 	}
 }
 
+int ButtonGetState(MonoObject* buttonComp)
+{
+	ComponentButton* button = (ComponentButton*)App->scripting->ComponentFrom(buttonComp);
+	if (button)
+	{
+		return button->GetState();
+	}
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1778,6 +1787,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.UI.RectTransform::GetRect", (const void*)&RectTransform_GetRect);
 	mono_add_internal_call("JellyBitEngine.UI.RectTransform::SetRect", (const void*)&RectTransform_SetRect);
 	mono_add_internal_call("JellyBitEngine.UI.Button::SetKey", (const void*)&ButtonSetKey);
+	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
 
 	ClearMap();
 

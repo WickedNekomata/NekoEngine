@@ -12,8 +12,9 @@
 #include "ResourceAnimation.h"
 #include "AnimationImporter.h"
 #include "ModuleAnimation.h"
-
+#ifndef GAMEMODE
 #include "imgui\imgui.h"
+#endif
 
 ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)

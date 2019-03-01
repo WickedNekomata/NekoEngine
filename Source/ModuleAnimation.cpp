@@ -36,6 +36,10 @@ bool ModuleAnimation::Awake(JSON_Object* config)
 
 bool ModuleAnimation::Start()
 {
+
+	// Call here to attach bones and everytime that we reimport things
+	StartAttachingBones();
+
 	if (current_anim) {
 		current_anim->interpolate = true;
 		current_anim->loop = true;
@@ -114,6 +118,80 @@ bool ModuleAnimation::Update(float dt)
 	}
 
 	return true;
+}
+
+bool ModuleAnimation::StartAttachingBones()
+{
+	std::vector<GameObject*>gos;
+	App->GOs->GetGameobjects(gos);
+
+	for (uint i = 0u; i < gos.size(); i++)
+	{
+		GameObject* curr_go = gos[i];
+		if (curr_go->GetComponent(ComponentTypes::MeshComponent)) {
+			std::vector<ComponentBone*> bones;
+			RecursiveFindBones(curr_go, bones);
+
+			if (bones.size() > 0)
+			{
+				DetachBones(curr_go);
+				ComponentMesh*mesh_co = (ComponentMesh*)curr_go->GetComponent(ComponentTypes::MeshComponent);
+				mesh_co->root_bone = curr_go->GetUUID();
+				mesh_co->attached_bones = bones;
+
+				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
+				// TODO_G : FOLLOW THE DRAMAS
+				/*if (res->deformable == nullptr) //drama
+				{
+					res->deformable = (ResourceMesh*)App->resources->CreateNewResource(Resource::Type::MESH); //mas drama
+
+					res->DuplicateMesh(res); //dramon
+					res->GenerateAndBindMesh(true); //le petite dramet
+				}*/
+
+				for (std::vector<ComponentBone*>::iterator it = mesh_co->attached_bones.begin(); it != mesh_co->attached_bones.end(); ++it)
+					(*it)->attached_mesh = mesh_co;
+			}
+
+		}
+	}
+
+	return true;
+}
+
+void ModuleAnimation::RecursiveFindBones(const GameObject * go, std::vector<ComponentBone*>& output) const
+{
+	if (go == nullptr)
+		return;
+
+	std::vector<GameObject*>gos;
+	App->GOs->GetGameobjects(gos);
+
+	for (uint i = 0u; i < gos.size(); i++)
+	{
+		GameObject* curr_go = gos[i];
+		if (ComponentBone* bone = (ComponentBone*)curr_go->GetComponent(ComponentTypes::BoneComponent)) {
+			
+			ResourceBone* res = (ResourceBone*)App->res->GetResource(bone->res);
+
+			if (res != nullptr && res->boneData.mesh_uid == go->GetUUID())
+			{
+				output.push_back(bone);
+			}
+		}
+	}
+}
+
+void ModuleAnimation::DetachBones(GameObject * go)
+{
+	ComponentMesh* mesh_com = (ComponentMesh*)go->GetComponent(ComponentTypes::MeshComponent);
+	for (std::vector<ComponentBone*>::iterator it = mesh_com->attached_bones.begin(); it != mesh_com->attached_bones.end(); ++it)
+		(*it)->attached_mesh = nullptr;
+	mesh_com->attached_bones.clear();
+
+	ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_com->res);
+	//todo release deformable
+	//RELEASE(res->deformable);
 }
 
 void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)

@@ -8,6 +8,7 @@
 #define CUBE_UUID 1451315056
 #define DEFAULT_SHADER_PROGRAM_UUID 1608702687
 #define DEFAULT_SHADER_PROGRAM_PARTICLE_UUID 2628722347
+#define DEFAULT_SHADER_PROGRAM_UI_UUID 1246832795 
 #define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
 #define DEFAULT_MATERIAL_UUID 2168314292
 #define REPLACE_ME_TEXTURE_UUID 3462814329
@@ -255,6 +256,47 @@ enum ShaderProgramTypes;
 "	FragColor = texture(skybox, ourTexCoord);\n" \
 "}"
 
+//UI
+
+#define uivShader \
+"#version 330 core\n" \
+"layout(location = 0) in vec2 vertex; // <vec2 position, vec2 texCoords>\n" \
+"layout(location = 1) in vec2 texture_coords; // <vec2 position, vec2 texCoords>\n" \
+"out vec2 TexCoords;\n" \
+"uniform vec2 topRight;\n" \
+"uniform vec2 topLeft;\n" \
+"uniform vec2 bottomLeft;\n" \
+"uniform vec2 bottomRight;\n" \
+"void main()\n" \
+"{\n" \
+"	vec2 position = topRight;\n" \
+"	if (vertex.x > 0.0 && vertex.y > 0.0)\n" \
+"		position = topRight;\n" \
+"	else if (vertex.x > 0.0 && vertex.y < 0.0)\n" \
+"		position = bottomRight;\n" \
+"	else if (vertex.x < 0.0 && vertex.y > 0.0)\n" \
+"		position = topLeft;\n" \
+"	else if (vertex.x < 0.0 && vertex.y < 0.0)\n" \
+"		position = bottomLeft;\n" \
+"	TexCoords = texture_coords;\n" \
+"	gl_Position = vec4(position, 0.0, 1.0);\n" \
+"}"
+
+#define uifShader \
+"#version 330 core\n" \
+"in vec2 TexCoords;\n" \
+"out vec4 FragColor;\n" \
+"uniform int use_color;\n"\
+"uniform sampler2D image;\n" \
+"uniform vec4 spriteColor;\n" \
+"void main()\n" \
+"{\n" \
+"	if(use_color == 1)\n"\
+"		FragColor = spriteColor;\n" \
+"	else\n"\
+"		FragColor = texture(image, TexCoords);\n" \
+"}"
+
 #pragma endregion
 
 class ModuleInternalResHandler : public Module
@@ -271,6 +313,7 @@ public:
 	// Shader resources
 	void CreateDefaultShaderProgram(const char * vShader, const char * fShader, ShaderProgramTypes type);
 	void CreateCubemapShaderProgram();
+	void CreateUIShaderProgram();
 
 	// Material resources
 	void CreateDefaultMaterial();
@@ -290,6 +333,9 @@ public:
 	uint defaultShaderProgram;
 	uint defaultParticleShaderProgram;
 	uint cubemapShaderProgram;
+	uint UIVertexShaderObject;
+	uint UIFragmentShaderObject;
+	uint UIShaderProgram;
 
 	// Material resources
 	uint defaultMaterial;

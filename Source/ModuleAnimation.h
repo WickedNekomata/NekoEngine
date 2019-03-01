@@ -54,6 +54,10 @@ public:
 	bool CleanUp();
 	bool Update(float dt);
 
+	bool StartAttachingBones();
+	void RecursiveFindBones(const GameObject * go, std::vector<ComponentBone*>& found) const;
+	void DetachBones(GameObject* go);
+
 	void SetAnimationGos(ResourceAnimation* res);
 	void DeformMesh(ComponentBone* component_bone);
 	void ResetMesh(ComponentBone* component_bone);

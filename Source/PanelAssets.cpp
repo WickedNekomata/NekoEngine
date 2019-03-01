@@ -183,21 +183,24 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 				bool fbxOpened = ImGui::TreeNodeEx(id, flags);
 
 				ImVec2 mouseDelta = ImGui::GetMouseDragDelta(0);
-				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
-				{		
+				if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)
+					&& (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+				{
 					std::vector<uint> uids;
 					std::vector<uint> bone_uuids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					ResourceMesh* tempRes = (ResourceMesh*)App->res->GetResource(uids[0]);
 					SELECT(tempRes->GetSpecificData().meshImportSettings);
 				}
 			
-				if(fbxOpened)
+				if (fbxOpened)
 				{
 					std::vector<uint> uids;
 					std::vector<uint> bone_uuids;
-					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids);
+					std::vector<uint> anim_uuids;
+					ResourceMesh::ReadMeshesUuidsFromBuffer(cursor, uids, bone_uuids, anim_uuids);
 
 					for (int i = 0; i < uids.size(); ++i)
 					{
@@ -205,6 +208,14 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 						if (res)
 							res->OnPanelAssets();
 					}
+
+					for (int i = 0; i < anim_uuids.size(); ++i)
+					{
+						Resource* res = (Resource*)App->res->GetResource(anim_uuids[i]);
+						if (res)
+							res->OnPanelAssets();
+					}
+
 					ImGui::TreePop();
 				}
 			
@@ -213,13 +224,13 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 
 			default:
 			{
-				uint uid;
+				uint uuid;
 				cursor += sizeof(int64_t);
 				cursor += sizeof(uint);
 				
-				memcpy(&uid, cursor, sizeof(uint));
+				memcpy(&uuid, cursor, sizeof(uint));
 
-				Resource* res = (Resource*)App->res->GetResource(uid);
+				Resource* res = (Resource*)App->res->GetResource(uuid);
 				if (res)
 					res->OnPanelAssets();
 

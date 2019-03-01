@@ -22,7 +22,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -206,18 +206,27 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="BoneImporter.h" />
     <ClInclude Include="ComponentAnimation.h" />
+    <ClInclude Include="ComponentButton.h" />
+    <ClInclude Include="ComponentCanvasRenderer.h" />
     <ClInclude Include="ComponentD6Joint.h" />
     <ClInclude Include="ComponentDistanceJoint.h" />
     <ClInclude Include="ComponentFixedJoint.h" />
+    <ClInclude Include="ComponentImage.h" />
     <ClInclude Include="ComponentJoint.h" />
+    <ClInclude Include="ComponentLabel.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentPrismaticJoint.h" />
     <ClInclude Include="ComponentProjector.h" />
+    <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentRevoluteJoint.h" />
     <ClInclude Include="ComponentSphericalJoint.h" />
+    <ClInclude Include="Freetype\freetype\config\ftheader.h" />
+    <ClInclude Include="Freetype\ft2build.h" />
     <ClInclude Include="ModuleAnimation.h" />
+    <ClInclude Include="ModuleFreetype.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="ModuleLayers.h" />
+    <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceMaterial.h" />
@@ -610,18 +619,25 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
     <ClCompile Include="ComponentAnimation.cpp" />
+    <ClCompile Include="ComponentButton.cpp" />
+    <ClCompile Include="ComponentCanvasRenderer.cpp" />
     <ClCompile Include="ComponentD6Joint.cpp" />
     <ClCompile Include="ComponentDistanceJoint.cpp" />
     <ClCompile Include="ComponentFixedJoint.cpp" />
+    <ClCompile Include="ComponentImage.cpp" />
     <ClCompile Include="ComponentJoint.cpp" />
+    <ClCompile Include="ComponentLabel.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentPrismaticJoint.cpp" />
     <ClCompile Include="ComponentProjector.cpp" />
+    <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ComponentRevoluteJoint.cpp" />
     <ClCompile Include="ComponentSphericalJoint.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />
+    <ClCompile Include="ModuleFreetype.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="ModuleLayers.cpp" />
+    <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
     <ClCompile Include="ResourceMaterial.cpp" />
     <ClCompile Include="SceneQueries.cpp" />

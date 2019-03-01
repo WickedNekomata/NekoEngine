@@ -12,6 +12,9 @@
 #include "ResourceAnimation.h"
 #include "AnimationImporter.h"
 #include "ModuleAnimation.h"
+#ifndef GAMEMODE
+#include "imgui\imgui.h"
+#endif
 
 ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)
@@ -21,74 +24,85 @@ ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 ComponentAnimation::ComponentAnimation(GameObject* embedded_game_object, uint resource) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)
 {
-	//this->resource = resource;
+	res = resource;
+}
+
+ComponentAnimation::ComponentAnimation(const ComponentAnimation & component_anim, GameObject * parent, bool include) : Component(parent, ComponentTypes::AnimationComponent)
+{
+	this->SetResource(component_anim.res);
 }
 
 ComponentAnimation::~ComponentAnimation()
 {
-	//Resource* res = (Resource*)GetResource();
-	//if (res)
-		//res->Release();
+	
 }
 
 uint ComponentAnimation::GetInternalSerializationBytes()
 {
-	return 0u;
+	return sizeof(uint);
 }
 
-bool ComponentAnimation::Save(JSON_Object* component_obj) const
+void ComponentAnimation::OnInternalSave(char*& cursor)
 {
-	//todo: get resource path etc
-	/*const Resource* res = this->GetResource();
-	if (res)
-		json_object_set_string(component_obj, "path", res->GetExportedFile());*/
+	size_t bytes = sizeof(uint);
+	memcpy(cursor, &res, bytes);
+	cursor += bytes;
+}
+
+void ComponentAnimation::OnInternalLoad(char*& cursor)
+{
+	uint loadedRes;
+	size_t bytes = sizeof(uint);
+	memcpy(&loadedRes, cursor, bytes);
+	cursor += bytes;
+	SetResource(loadedRes);
+}
+
+bool ComponentAnimation::SetResource(uint resource) //check all this
+{
+	res = resource;
+
 	return true;
 }
 
-bool ComponentAnimation::Load(const JSON_Object * component_obj)
+bool ComponentAnimation::PlayAnimation(uint anim_name)
 {
-	bool ret = true;
-
-	/*JSON_Value* value = json_object_get_value(component_obj, "path");
-	const char* file_path = json_value_get_string(value);
-
-	//todo clean
-	if (file_path) {
-		std::string uid_force = file_path;
-		const size_t last_slash = uid_force.find_last_of("\\/");
-		if (std::string::npos != last_slash)
-			uid_force.erase(0, last_slash + 1);
-		const size_t extension = uid_force.rfind('.');
-		if (std::string::npos != extension)
-			uid_force.erase(extension);
-		UID uid = 0u;
-		if (!uid_force.empty())
-			uid = static_cast<unsigned int>(std::stoul(uid_force));
-
-		if (uid > 0u)
-			SetResource(App->resources->animation_importer->GenerateResourceFromFile(file_path, uid));
-		else
-			SetResource(App->resources->animation_importer->GenerateResourceFromFile(file_path));
-	}*/
-
-	return ret;
+	// mimimi
+	return true;
 }
 
-bool ComponentAnimation::SetResource(uint resource)
+void ComponentAnimation::OnEditor()
 {
-	/*if (Resource* res = (Resource*)GetResource()) {
-		res->Release();
+	OnUniqueEditor();
+}
+
+void ComponentAnimation::OnUniqueEditor()
+{
+#ifndef GAMEMODE
+	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Animation");
+		ImGui::SameLine();
+
+		std::string fileName = "Empty Animation";
+		const ResourceAnimation* resource = (ResourceAnimation*)App->res->GetResource(res);
+		if (resource != nullptr)
+			fileName = resource->GetName();
+
+		ImGui::Text("Animation name: %s", resource->animationData.name);
+		ImGui::Text("Animation numKeys: %i", resource->animationData.numKeys);
+		ImGui::Text("Animation UUID: %i", resource->GetUuid());
+
+		ImGui::PushID("animation");
+		ImGui::Button(fileName.data(), ImVec2(150.0f, 0.0f));
+		ImGui::PopID();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%u", res);
+			ImGui::EndTooltip();
+		}
 	}
-
-	this->resource = resource;
-	ResourceAnimation* bone_res = (ResourceAnimation*)this->GetResource();
-
-	if (bone_res)
-		uint num_references = bone_res->LoadToMemory();
-
-	//if(bone_res)
-		//App->animation->SetAnimationGos(bone_res);
-		*/
-
-	return true;
+#endif
 }

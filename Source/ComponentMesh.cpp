@@ -38,28 +38,21 @@ void ComponentMesh::SetResource(uint res_uuid)
 		App->res->SetAsUnused(res);
 
 	if (res_uuid > 0)
-	{
-		if (App->res->SetAsUsed(res_uuid) == -1)
-			return;
-	}
-	else
-		return;
+		App->res->SetAsUsed(res_uuid);
 
 	res = res_uuid;
 
 	//Calculate the new mesh BoundingBox
-	const ResourceMesh* meshRes = (const ResourceMesh*)App->res->GetResource(res_uuid);
-	int nVerts = meshRes->GetVerticesCount();
-	float* vertices = new float[nVerts * 3];
-	meshRes->GetTris(vertices);
-	GetParent()->originalBoundingBox.Enclose((const math::float3*)vertices, nVerts);
-	delete[] vertices;
+	System_Event createBB;
+	createBB.goEvent.gameObject = parent;
+	createBB.type = System_Event_Type::CalculateBBoxes;
+	App->PushSystemEvent(createBB);
 
 	// Mesh updated: recalculate bounding boxes
-	System_Event newEvent;
-	newEvent.goEvent.gameObject = parent;
-	newEvent.type = System_Event_Type::RecalculateBBoxes;
-	App->PushSystemEvent(newEvent);
+	System_Event updateBB;
+	updateBB.goEvent.gameObject = parent;
+	updateBB.type = System_Event_Type::RecalculateBBoxes;
+	App->PushSystemEvent(updateBB);
 
 	if (parent->IsStatic())
 	{
@@ -109,7 +102,7 @@ void ComponentMesh::OnUniqueEditor()
 
 uint ComponentMesh::GetInternalSerializationBytes()
 {
-	return sizeof(uint) + sizeof(bool);
+	return sizeof(uint) + sizeof(bool) + sizeof(uint) + sizeof(uint);
 }
 
 void ComponentMesh::OnInternalSave(char*& cursor)
@@ -120,6 +113,14 @@ void ComponentMesh::OnInternalSave(char*& cursor)
 
 	bytes = sizeof(bool);
 	memcpy(cursor, &nv_walkable, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &root_bones_uid, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(cursor, &root_bone, bytes);
 	cursor += bytes;
 }
 
@@ -133,5 +134,13 @@ void ComponentMesh::OnInternalLoad(char*& cursor)
 
 	bytes = sizeof(bool);
 	memcpy(&nv_walkable, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&root_bones_uid, cursor, bytes);
+	cursor += bytes;
+
+	bytes = sizeof(uint);
+	memcpy(&root_bone, cursor, bytes);
 	cursor += bytes;
 }

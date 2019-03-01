@@ -1,3 +1,5 @@
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleCameraEditor.h"
 #include "GameObject.h"
@@ -80,7 +82,8 @@ public:
 
 #ifndef GAMEMODE
 		// New game object selected. Update the camera reference
-		App->camera->SetReference(newSelection->transform->position);
+		if(newSelection->GetLayer() != UILAYER)
+			App->camera->SetReference(newSelection->transform->position);
 #endif
 
 		return *this;
@@ -131,3 +134,5 @@ public:
 
 	// Add operators in case of new kinds of selection :)
 };
+
+#endif

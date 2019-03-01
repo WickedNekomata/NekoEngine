@@ -3,7 +3,11 @@
 #include "ResourceScript.h"
 #include "ComponentTransform.h"
 #include "ComponentNavAgent.h"
+#include "ComponentAnimation.h"
+#include "ComponentEmitter.h"
+
 #include "GameObject.h"
+
 #include "ModuleInput.h"
 #include "ModuleScene.h"
 
@@ -114,6 +118,13 @@ update_status ScriptingModule::Update()
 
 update_status ScriptingModule::PostUpdate()
 {
+	if (someScriptModified || engineOpened)
+	{
+		RecompileScripts();
+		someScriptModified = false;
+		engineOpened = false;
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -141,7 +152,7 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 	{
 		case System_Event_Type::Play:
 		{
-			//Check if some files have compile errors and don't let the user hit the play.
+			//TODO: Check if some files have compile errors and don't let the user hit the play.
 
 			for (int i = 0; i < scripts.size(); ++i)
 			{
@@ -244,7 +255,30 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					monoObjectHandles.erase(monoObjectHandles.begin() + i);
 					i--;
 				}
-			}			
+			}		
+			break;
+		}
+
+		case System_Event_Type::ComponentDestroyed:
+		{
+			Component* toDelete = event.compEvent.component;
+			MonoObject* monoComponent = toDelete->GetMonoComponent();
+			if (monoComponent)
+			{
+				bool destroyed = true;
+				mono_field_set_value(monoComponent, mono_class_get_field_from_name(mono_object_get_class(monoComponent), "destroyed"), &destroyed);
+
+				for (int i = 0; i < monoComponentHandles.size(); ++i)
+				{
+					if (monoComponent == mono_gchandle_get_target(monoComponentHandles[i]))
+					{
+						mono_gchandle_free(monoComponentHandles[i]);
+						monoComponentHandles.erase(monoComponentHandles.begin() + i);
+						i--;
+					}						
+				}
+			}
+			break;
 		}
 	}
 }
@@ -307,7 +341,7 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 		ResourceData data;
 		data.name = scriptName;
 		data.file = "Assets/Scripts/" + scriptName + ".cs";
-		data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
+		data.exportedFile = "";
 	
 		scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData());
 
@@ -319,9 +353,9 @@ ComponentScript* ScriptingModule::CreateScriptComponent(std::string scriptName, 
 
 		App->fs->Save("Assets/Scripts/" + scriptName + ".cs.meta", buffer, bytes);
 
-		delete[] buffer;
+		someScriptModified = true;
 
-		scriptRes->Compile();
+		delete[] buffer;
 	}
 
 	App->res->SetAsUsed(scriptRes->GetUuid());
@@ -414,6 +448,23 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Collider"));
 			break;
 		}
+
+		case ComponentTypes::NavAgentComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
+			break;
+		}
+
+		case ComponentTypes::AnimationComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Animator"));
+			break;
+		}
+		case ComponentTypes::EmitterComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "ParticleEmitter"));
+			break;
+		}
 	}
 
 	if (!monoComponent)
@@ -430,6 +481,8 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 
 	uint32_t handleID = mono_gchandle_new(monoComponent, true);
 	component->SetMonoComponent(handleID);
+
+	monoComponentHandles.push_back(handleID);
 
 	return monoComponent;
 }
@@ -565,7 +618,17 @@ void ScriptingModule::CreateInternalCSProject()
 
 std::string ScriptingModule::getReferencePath() const
 {
-	return std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("JellyBitCS.dll\" ");
+	std::string internalCommand = std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("JellyBitCS.dll\" " + std::string("-lib:\"") + App->fs->getAppPath() + "\\Library\\Scripts\" ");
+	std::string referencesCommand;
+
+	/*std::vector<Resource*> scripts = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		ResourceScript* script = (ResourceScript*)scripts[i];
+		referencesCommand += std::string("-r:") + std::string("\"") + App->fs->getAppPath() + std::string("Library\\Scripts\\") + script->scriptName + ".dll" + std::string("\" ");
+	}*/
+
+	return internalCommand + referencesCommand;
 }
 
 std::string ScriptingModule::clearSpaces(std::string& scriptName)
@@ -596,6 +659,8 @@ void ScriptingModule::ClearMap()
 
 Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 {
+	//May be new file or generic file event
+
 	std::string file = fileAssets;
 	std::string metaFile = file + ".meta";
 
@@ -605,7 +670,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 	ResourceData data;
 	data.name = scriptName;
 	data.file = "Assets/Scripts/" + scriptName + ".cs";
-	data.exportedFile = "Library/Scripts/" + scriptName + ".dll";
+	data.exportedFile = "";
 
 	ResourceScript* scriptRes = nullptr;
 
@@ -648,6 +713,8 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 				cursor = metaBuffer;
 				memcpy(cursor, &lastModTime, sizeof(int64_t));
 				App->fs->Save(metaFile, metaBuffer, size);
+
+				someScriptModified = true;
 			}
 
 			scriptRes = (ResourceScript*)App->res->CreateResource(ResourceTypes::ScriptResource, data, &ResourceScriptData(), uid);
@@ -657,25 +724,13 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 			delete[] metaBuffer;
 		}
 	}
-
-	if (!App->fs->Exists("Library/Scripts/" + scriptName + ".dll") || scriptModified)
-	{
-		if (!scriptRes->preCompileErrors())
-		{
-			scriptRes->Compile();
-		}
-	}
-	else
-	{
-		scriptRes->referenceMethods();
-	}
 		
 	return scriptRes;
 }
 
 void ScriptingModule::ScriptModified(const char* scriptPath)
 {
-	char metaFile[DEFAULT_BUF_SIZE];
+	/*char metaFile[DEFAULT_BUF_SIZE];
 	strcpy(metaFile, scriptPath);
 	strcat(metaFile, ".meta");
 
@@ -695,16 +750,57 @@ void ScriptingModule::ScriptModified(const char* scriptPath)
 
 	System_Event event;
 	event.type = System_Event_Type::ScriptingDomainReloaded;
-	App->PushSystemEvent(event);
+	App->PushSystemEvent(event);*/
+
+	someScriptModified = true;
 }
 
 void ScriptingModule::RecompileScripts()
 {
-	std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
-	for (int i = 0; i < scriptResources.size(); ++i)
+	std::string goRoot(R"(cd\ )");
+	std::string goMonoBin(" cd \"" + App->fs->getAppPath() + "\\Mono\\bin\"");
+	std::string compileCommand(" mcs -target:library ");
+
+	/*std::string fileName = data.file.substr(data.file.find_last_of("/") + 1);
+	std::string windowsFormattedPath = pathToWindowsNotation(data.file);*/
+
+	std::string path = std::string("\"" + std::string(App->fs->getAppPath())) + std::string("\\Assets\\Scripts\\*.cs") + "\"";
+	std::string redirectOutput(" 1> \"" + /*pathToWindowsNotation*/(App->fs->getAppPath()) + "LogError.txt\"" + std::string(" 2>&1"));
+	std::string outputFile(" -out:..\\..\\Library\\Scripts\\Scripting.dll ");
+
+	std::string error;
+	if (!exec(std::string(goRoot + "&" + goMonoBin + "&" + compileCommand + path + " " + outputFile + App->scripting->getReferencePath() + redirectOutput).data(), error))
 	{
-		ResourceScript* res = (ResourceScript*)scriptResources[i];
-		res->Compile();
+		char* buffer;
+		int size = App->fs->Load("LogError.txt", &buffer);
+		if (size > 0)
+		{
+			std::string outPut(buffer);
+			outPut.resize(size);
+
+			CONSOLE_LOG(LogTypes::Error, "Error compiling Scripting assembly. Error: %s", outPut.data());
+
+			delete[] buffer;
+		}		
+	}
+	else
+	{
+		//Send the DomainReloaded event
+		System_Event event;
+		event.type = System_Event_Type::ScriptingDomainReloaded;
+		App->PushSystemEvent(event);
+
+		App->scripting->CreateDomain();
+		App->scripting->UpdateScriptingReferences();
+
+		std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+		for (int i = 0; i < scriptResources.size(); ++i)
+		{
+			ResourceScript* scriptRes = (ResourceScript*)scriptResources[i];
+			scriptRes->referenceMethods();
+		}
+
+		App->scripting->ReInstance();
 	}
 }
 
@@ -932,33 +1028,35 @@ MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, M
 void DestroyObj(MonoObject* obj)
 {
 	bool found = false;
-	for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
+
+	std::string className = mono_class_get_name(mono_object_get_class(obj));
+
+	if (className == "GameObject")
 	{
-		if (obj == mono_gchandle_get_target(App->scripting->monoObjectHandles[i]))
+		for (int i = 0; i < App->scripting->monoObjectHandles.size(); ++i)
 		{
-			found = true;
+			if (obj == mono_gchandle_get_target(App->scripting->monoObjectHandles[i]))
+			{
+				found = true;
 
-			MonoClass* monoClass = mono_object_get_class(obj);
-			MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
-			mono_field_set_value(obj, destroyed, &found);
+				MonoClass* monoClass = mono_object_get_class(obj);
+				MonoClassField* destroyed = mono_class_get_field_from_name(monoClass, "destroyed");
+				mono_field_set_value(obj, destroyed, &found);
 
-			int address;
-			mono_field_get_value(obj, mono_class_get_field_from_name(monoClass, "cppAddress"), &address);
+				int address;
+				mono_field_get_value(obj, mono_class_get_field_from_name(monoClass, "cppAddress"), &address);
 
-			GameObject* toDelete = (GameObject*)address;
+				GameObject* toDelete = (GameObject*)address;
 
-			mono_gchandle_free(App->scripting->monoObjectHandles[i]);
+				mono_gchandle_free(App->scripting->monoObjectHandles[i]);
 
-			App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
+				App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
 
-			//Send the event to destroy this gameObject
+				//Destroy this GameObject
+				App->GOs->DeleteGameObject(toDelete);				
 
-			System_Event event;
-			event.goEvent.type = System_Event_Type::GameObjectDestroyed;
-			event.goEvent.gameObject = toDelete;
-			App->PushSystemEvent(event);
-
-			break;
+				break;
+			}
 		}
 	}
 }
@@ -1241,54 +1339,57 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 {
 	MonoObject* monoComp = nullptr;
 
-	const char* name2 = mono_class_get_name(mono_object_get_class(type));
+	std::string className = mono_class_get_name(mono_object_get_class(type));
 
-	union
+	if (className == "NavMeshAgent")
 	{
-		char name[DEFAULT_BUF_SIZE];
-		uint32_t translated;
-	} dictionary;
-	
-	strcpy(dictionary.name, name2);
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
 
-	uint32_t translation = dictionary.translated;
+		Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
 
-	switch (translation)
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else if (className == "Animator")
 	{
-		case NAVMESHAGENT_ASCII:
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::AnimationComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else if (className == "ParticleEmitter")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::EmitterComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else
+	{
+		//Find a script named as this class
+
+		for (int i = 0; i < App->scripting->scripts.size(); ++i)
 		{
-			int address = 0u;
-			mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
-
-			GameObject* gameObject = (GameObject*)address;
-			if (!gameObject)
-				return nullptr;
-
-			Component* comp = gameObject->GetComponent(ComponentTypes::NavAgentComponent);
-
-			if (!comp)
-				return nullptr;
-
-			monoComp = comp->GetMonoComponent();
-
-			if (!monoComp)
+			if (App->scripting->scripts[i]->scriptName == className)
 			{
-				monoComp = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "NavMeshAgent"));
-				mono_runtime_object_init(monoComp);
-
-				int compAddress = (int)comp;
-
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObjectAddress"), &address);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "componentAddress"), &compAddress);
-				mono_field_set_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoComp), "gameObject"), monoObject);
-
-				uint32_t compHandle = mono_gchandle_new(monoComp, true);
-				comp->SetMonoComponent(compHandle);
+				return App->scripting->scripts[i]->classInstance;
 			}
-			else		
-				return monoComp;
-
-			break;
 		}
 	}
 
@@ -1339,11 +1440,11 @@ MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponen
 	return ret;
 }
 
-int LayerToBit(MonoString* layerName)
+uint LayerToBit(MonoString* layerName)
 {
 	char* layerCName = mono_string_to_utf8(layerName);
 
-	int bits = 0; 
+	uint bits = 0; 
 	int res = App->layers->NameToNumber(layerCName);
 	res != -1 ? bits |= 1 << res : bits = 0;
 
@@ -1461,7 +1562,37 @@ bool OverlapSphere(float radius, MonoArray* center, MonoArray** overlapHit, uint
 		return false;
 }
 
-//---------------------------------
+void SetCompActive(MonoObject* monoComponent, bool active)
+{
+	Component* component = App->scripting->ComponentFrom(monoComponent);
+	component->IsActive() != active ? component->ToggleIsActive() : void();
+}
+
+bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
+{
+	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
+	return animator->PlayAnimation(animUUID);
+}
+
+void ParticleEmitterPlay(MonoObject* particleComp)
+{
+	ComponentEmitter* emitter = (ComponentEmitter*)App->scripting->ComponentFrom(particleComp);
+	if (emitter)
+	{
+		emitter->StartEmitter();
+	}
+}
+
+void ParticleEmitterStop(MonoObject* particleComp)
+{
+	ComponentEmitter* emitter = (ComponentEmitter*)App->scripting->ComponentFrom(particleComp);
+	if (emitter)
+	{
+		emitter->ClearEmitter();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
 {
@@ -1531,8 +1662,27 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_Raycast", (const void*)&Raycast);
 	mono_add_internal_call("JellyBitEngine.NavMeshAgent::_SetDestination", (const void*)&SetDestination);
 	mono_add_internal_call("JellyBitEngine.Physics::_OverlapSphere", (const void*)&OverlapSphere);
+	mono_add_internal_call("JellyBitEngine.Component::SetActive", (const void*)&SetCompActive);
+	mono_add_internal_call("JellyBitEngine.Animator::PlayAnimation", (const void*)&PlayAnimation);
+	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Play", (const void*)&ParticleEmitterPlay);
+	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Stop", (const void*)&ParticleEmitterStop);
 
 	ClearMap();
 
 	firstDomain = false;
+}
+
+void ScriptingModule::UpdateScriptingReferences()
+{
+	char* buffer;
+	int size = App->fs->Load("Library/Scripts/Scripting.dll", &buffer);
+	if (size <= 0)
+		return;
+
+	//Loading assemblies from data instead of from file
+	MonoImageOpenStatus status = MONO_IMAGE_ERROR_ERRNO;
+	scriptsImage = mono_image_open_from_data(buffer, size, 1, &status);
+	scriptsAssembly = mono_assembly_load_from(scriptsImage, "ScriptingAssembly", &status);
+
+	delete[] buffer;
 }

@@ -9,6 +9,7 @@
 #include "MaterialImporter.h"
 #include "ShaderImporter.h"
 #include "BoneImporter.h"
+#include "AnimationImporter.h"
 
 #include "ResourceTypes.h"
 #include "Resource.h"
@@ -63,13 +64,15 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		std::string extension;
 		App->fs->GetExtension(event.fileEvent.file, extension);
 		ResourceTypes type = GetResourceTypeByExtension(extension.data());
+
 		switch (type)
 		{
 		case ResourceTypes::ScriptResource:
 		{
 			App->scripting->ScriptModified(event.fileEvent.file);
-			break;
 		}
+		break;
+
 		case ResourceTypes::PrefabResource:
 		{
 			char metaFile[DEFAULT_BUF_SIZE];
@@ -89,9 +92,9 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			prefab->UpdateRoot();
 
 			delete[] metaBuffer;
-
-			break;
 		}
+		break;
+
 		case ResourceTypes::MeshResource:
 		case ResourceTypes::TextureResource:
 		{
@@ -111,11 +114,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			newEvent.type = System_Event_Type::ImportFile;
 			strcpy_s(newEvent.fileEvent.file, DEFAULT_BUF_SIZE, event.fileEvent.file);
 			App->PushSystemEvent(newEvent);
-
-			break;
 		}
-		case ResourceTypes::ShaderProgramResource:
+		break;
 
+		case ResourceTypes::ShaderProgramResource:
+		{
 			std::vector<Resource*> materials = GetResourcesByType(ResourceTypes::MaterialResource);
 			for (uint i = 0; i < materials.size(); ++i)
 			{
@@ -131,8 +134,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 					App->res->ExportFile(ResourceTypes::MaterialResource, material->GetData(), &material->GetSpecificData(), outputFile, true, false);
 				}
 			}
-
-			break;
+		}
+		break;
 		}
 	}
 	break;
@@ -196,7 +199,6 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 		App->fs->deleteFile(metaFile);
-
 
 		std::vector<uint> resourcesUuids;
 		if (GetResourcesUuidsByFile(event.fileEvent.file, resourcesUuids))
@@ -276,7 +278,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	}
 	break;
 
-	//Prefabs events
+	// Prefabs events
 	case System_Event_Type::ScriptingDomainReloaded:
 	case System_Event_Type::Stop:
 	{
@@ -289,6 +291,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 			}
 		}
 	}
+	break;
 	}
 }
 
@@ -312,11 +315,13 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 		ResourceMeshImportSettings meshImportSettings;
 		std::vector<std::string> mesh_files;
 		std::vector<std::string> bone_files;
-		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files))
+		std::vector<std::string> animation_files;
+		if (ResourceMesh::ImportFile(file, meshImportSettings, mesh_files, bone_files,animation_files))
 		{
 			std::vector<uint> resourcesUuids;
 			std::vector<uint> meshes_uuids;
 			std::vector<uint> bones_uuids;
+			std::vector<uint> animation_uuids;
 			if (!GetResourcesUuidsByFile(file, resourcesUuids))
 			{
 				// Create the resources
@@ -367,6 +372,28 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 						bones_uuids.push_back(uuid);
 				}
 				bones_uuids.shrink_to_fit();
+
+				// 3. Anims c:
+				animation_uuids.reserve(animation_files.size());
+				for (uint i = 0; i < animation_files.size(); ++i)
+				{
+					std::string fileName;
+					App->fs->GetFileName(animation_files[i].data(), fileName);
+					uint uuid = strtoul(fileName.data(), NULL, 0);
+					assert(uuid > 0);
+
+					ResourceData data;
+					ResourceAnimationData anim_data;
+					data.file = file;
+					data.exportedFile = animation_files[i].data();
+					App->fs->GetFileName(file, data.name);
+					App->animImporter->Load(animation_files[i].data(), data, anim_data);
+
+					resource = CreateResource(ResourceTypes::AnimationResource, data, &anim_data, uuid);
+					if (resource != nullptr)
+						animation_uuids.push_back(uuid);
+				}
+				animation_uuids.shrink_to_fit();
 			}
 			
 			// TODO_G : separate mesh / bones resources uuids from resourcesUuids
@@ -378,6 +405,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					meshes_uuids.push_back(resourcesUuids[i]);
 				else if (tmp_res->GetType() == ResourceTypes::BoneResource)
 					bones_uuids.push_back(resourcesUuids[i]);
+				else if (tmp_res->GetType() == ResourceTypes::AnimationResource)
+					animation_uuids.push_back(resourcesUuids[i]);
 			}
 
 			// bone mesh etc todo
@@ -385,7 +414,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 			// 2. Meta
 			// TODO: only create meta if any of its fields has been modificated
 			std::string outputMetaFile;
-			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, meshes_uuids, bones_uuids, outputMetaFile);
+			int64_t lastModTime = ResourceMesh::CreateMeta(file, meshImportSettings, meshes_uuids, bones_uuids, animation_uuids, outputMetaFile);
 			assert(lastModTime > 0);
 		}
 	}
@@ -961,6 +990,8 @@ void ModuleResourceManager::RecursiveDeleteUnusedEntries(const char* dir, std::s
 		{
 			std::string extension;
 			App->fs->GetExtension(*it, extension);
+			if (strcmp(extension.data(), EXTENSION_SCRIPT) == 0)
+				continue;
 			ResourceTypes type = GetResourceTypeByExtension(extension.data());
 
 			uint resourceUuid = 0;

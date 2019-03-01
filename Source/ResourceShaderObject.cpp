@@ -26,6 +26,7 @@ ResourceShaderObject::~ResourceShaderObject()
 
 void ResourceShaderObject::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -49,6 +50,7 @@ void ResourceShaderObject::OnPanelAssets()
 		ImGui::SetDragDropPayload("SHADER_OBJECT", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -67,8 +69,8 @@ bool ResourceShaderObject::ImportFile(const char* file, std::string& name, std::
 		uint uuid = 0;
 		int64_t lastModTime = 0;
 		std::string shaderName;
-		ResourceShaderObject::ReadMeta(metaFile, lastModTime, uuid, shaderName);
-		assert(uuid > 0);
+		bool result = ResourceShaderObject::ReadMeta(metaFile, lastModTime, uuid, shaderName);
+		assert(result);
 
 		name = shaderName.data();
 

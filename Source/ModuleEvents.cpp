@@ -18,8 +18,14 @@
 #include "ComponentNavAgent.h"
 #include "ComponentEmitter.h"
 #include "ComponentBone.h"
+#include "ComponentAnimation.h"
 #include "ComponentLight.h"
 #include "ComponentScript.h"
+#include "ComponentCanvasRenderer.h"
+#include "ComponentImage.h"
+#include "ComponentRectTransform.h"
+#include "ComponentButton.h"
+#include "ComponentLabel.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"
@@ -62,7 +68,9 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		}
 		case System_Event_Type::Stop:
 			assert(App->GOs->sceneStateBuffer != 0);
+#ifndef GAMEMODE
 			App->scene->selectedObject = 0;
+#endif
 			App->GOs->ClearScene();
 			App->GOs->LoadScene(App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
 			delete[] App->GOs->sceneStateBuffer;
@@ -79,7 +87,9 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			size_t size = App->fs->Load(file, &buf);
 			if (size != 0)
 			{
+#ifndef GAMEMODE
 				App->scene->selectedObject = 0;
+#endif
 				App->GOs->ClearScene();
 				App->GOs->LoadScene(buf, size, true);
 				delete[] buf;
@@ -91,13 +101,6 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			else
 				CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
 			break;
-		}
-
-		case System_Event_Type::ScriptingDomainReloaded:
-		{
-			App->scripting->CreateDomain();
-			App->scripting->RecompileScripts();
-			App->scripting->ReInstance();
 		}
 	}
 }

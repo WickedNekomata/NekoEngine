@@ -15,6 +15,7 @@ ResourceTexture::~ResourceTexture() {}
 
 void ResourceTexture::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -37,6 +38,7 @@ void ResourceTexture::OnPanelAssets()
 		ImGui::SetDragDropPayload("TEXTURE_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -64,7 +66,8 @@ bool ResourceTexture::ImportFile(const char* file, ResourceTextureImportSettings
 	{
 		uint uuid = 0;
 		int64_t lastModTime = 0;
-		assert(ResourceTexture::ReadMeta(metaFile, lastModTime, textureImportSettings, uuid));
+		bool result = ResourceTexture::ReadMeta(metaFile, lastModTime, textureImportSettings, uuid);
+		assert(result);
 
 		char entry[DEFAULT_BUF_SIZE];
 		sprintf_s(entry, "%u%s", uuid, EXTENSION_TEXTURE);
@@ -121,12 +124,14 @@ uint ResourceTexture::CreateMeta(const char* file, ResourceTextureImportSettings
 
 	// 2. Store uuids size
 	bytes = sizeof(uint);
+	assert(uuidsSize > 0);
 	memcpy(cursor, &uuidsSize, bytes);
 
 	cursor += bytes;
 
 	// 3. Store texture uuid
 	bytes = sizeof(uint) * uuidsSize;
+	assert(textureUuid > 0);
 	memcpy(cursor, &textureUuid, bytes);
 
 	cursor += bytes;
@@ -192,6 +197,7 @@ bool ResourceTexture::ReadMeta(const char* metaFile, int64_t& lastModTime, Resou
 		// 1. Load last modification time
 		uint bytes = sizeof(int64_t);
 		memcpy(&lastModTime, cursor, bytes);
+		assert(lastModTime > 0);
 
 		cursor += bytes;
 
@@ -206,6 +212,7 @@ bool ResourceTexture::ReadMeta(const char* metaFile, int64_t& lastModTime, Resou
 		// 3. Load texture uuid
 		bytes = sizeof(uint) * uuidsSize;
 		memcpy(&textureUuid, cursor, bytes);
+		assert(textureUuid > 0);
 
 		cursor += bytes;
 
@@ -278,18 +285,21 @@ uint ResourceTexture::SetTextureImportSettingsToMeta(const char* metaFile, const
 
 	// 1. Store last modification time
 	uint bytes = sizeof(int64_t);
+	assert(lastModTime > 0);
 	memcpy(cursor, &lastModTime, bytes);
 
 	cursor += bytes;
 
 	// 2. Store uuids size
 	bytes = sizeof(uint);
+	assert(uuidsSize > 0);
 	memcpy(cursor, &uuidsSize, bytes);
 
 	cursor += bytes;
 
 	// 3. Store texture uuid
 	bytes = sizeof(uint) * uuidsSize;
+	assert(textureUuid > 0);
 	memcpy(cursor, &textureUuid, bytes);
 
 	cursor += bytes;
@@ -385,6 +395,7 @@ bool ResourceTexture::ReadTextureUuidFromMeta(const char* metaFile, uint& textur
 		// 3. Load texture uuid
 		bytes = sizeof(uint) * uuidsSize;
 		memcpy(&textureUuid, cursor, bytes);
+		assert(textureUuid > 0);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -397,8 +408,8 @@ bool ResourceTexture::ReadTextureUuidFromMeta(const char* metaFile, uint& textur
 
 	if (textureUuid > 0)
 		return true;
-	else
-		return false;
+
+	return false;
 }
 
 bool ResourceTexture::ReadTextureImportSettingsFromMeta(const char* metaFile, ResourceTextureImportSettings& textureImportSettings)

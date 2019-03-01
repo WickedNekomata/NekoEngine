@@ -190,6 +190,12 @@
     <Filter Include="Sources\Modules\GO&amp;Components\Components\Physics\Rigid Actors">
       <UniqueIdentifier>{db6dadfd-5eff-45e8-8ea7-ccb88e0dbde7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Modules\GO&amp;Components\Components\UI">
+      <UniqueIdentifier>{d5199576-7acc-4f60-8726-8296ca8eae2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Freetype">
+      <UniqueIdentifier>{6f671ab3-7b93-4ac6-b814-ea3f2dc51726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1519,6 +1525,33 @@
     <ClInclude Include="ComponentProjector.h">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentButton.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCanvasRenderer.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentImage.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentLabel.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRectTransform.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleUI.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Freetype\ft2build.h">
+      <Filter>Sources\3rd Party\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Freetype\freetype\config\ftheader.h">
+      <Filter>Sources\3rd Party\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFreetype.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2012,6 +2045,27 @@
     </ClCompile>
     <ClCompile Include="ComponentProjector.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentButton.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCanvasRenderer.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentImage.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentLabel.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRectTransform.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleUI.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFreetype.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

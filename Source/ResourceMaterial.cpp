@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 
 #include "ResourceShaderProgram.h"
+#include "ResourceTexture.h"
 
 #include "imgui\imgui.h"
 
@@ -24,6 +25,7 @@ ResourceMaterial::~ResourceMaterial()
 
 void ResourceMaterial::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -46,6 +48,7 @@ void ResourceMaterial::OnPanelAssets()
 		ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -64,8 +67,8 @@ bool ResourceMaterial::ImportFile(const char* file, std::string& name, std::stri
 		// Read the meta
 		uint uuid = 0;
 		int64_t lastModTime = 0;
-		ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, name);
-		assert(uuid > 0 && lastModTime > 0);
+		bool result = ResourceMaterial::ReadMeta(metaFile, lastModTime, uuid, name);
+		assert(result);
 
 		// The uuid of the resource would be the entry
 		char entry[DEFAULT_BUF_SIZE];
@@ -444,10 +447,7 @@ void ResourceMaterial::InitResources()
 {
 	// Set as used (shader)
 	if (materialData.shaderUuid > 0)
-	{
-		if (App->res->SetAsUsed(materialData.shaderUuid) == 0)
-			App->res->SetAsUsed(materialData.shaderUuid);
-	}
+		App->res->SetAsUsed(materialData.shaderUuid);
 
 	// Set as used (uniforms)
 	SetUniformsAsUsed();
@@ -463,7 +463,7 @@ void ResourceMaterial::DeinitResources()
 	SetUniformsAsUnused();
 }
 
-void ResourceMaterial::SetUniformsAsUsed() const
+void ResourceMaterial::SetUniformsAsUsed()
 {
 	for (uint i = 0; i < materialData.uniforms.size(); ++i)
 	{
@@ -472,7 +472,11 @@ void ResourceMaterial::SetUniformsAsUsed() const
 		case Uniforms_Values::Sampler2U_value:
 		{
 			if (materialData.uniforms[i].sampler2DU.value.uuid > 0)
+			{
 				App->res->SetAsUsed(materialData.uniforms[i].sampler2DU.value.uuid);
+				ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(materialData.uniforms[i].sampler2DU.value.uuid);
+				materialData.uniforms[i].sampler2DU.value.id = texture->GetId();
+			}
 		}
 		break;
 		}

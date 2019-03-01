@@ -195,12 +195,12 @@ update_status ModulePhysics::Update()
 {
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
-	//	|| App->GetEngineState() == engine_states::ENGINE_STEP)
-	//{
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		|| App->GetEngineState() == engine_states::ENGINE_STEP)
+	{
 		// Step physics
-		//gAccumulator += App->timeManager->GetDt();
-		gAccumulator += App->timeManager->GetRealDt();
+		gAccumulator += App->timeManager->GetDt();
+		//gAccumulator += App->timeManager->GetRealDt();
 		if (gAccumulator >= PhysicsConstants::FIXED_DT)
 		{
 			gAccumulator = 0.0f;
@@ -218,11 +218,11 @@ update_status ModulePhysics::Update()
 			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
 				(*it)->Update();
 		}
-	//}
+	}
 
 	// *****Debug*****
-	if (debugRay.IsFinite())
-		App->debugDrawer->DebugDraw(debugRay, Red);
+	//if (debugRay.IsFinite())
+		//App->debugDrawer->DebugDraw(debugRay, Red);
 	//if (debugTransform.IsFinite())
 		//App->debugDrawer->DebugDrawSphere(debugRadius, Red, debugTransform);
 	//_*****Debug*****
@@ -232,10 +232,12 @@ update_status ModulePhysics::Update()
 
 update_status ModulePhysics::FixedUpdate()
 {
+#ifndef GAMEMODE
 	if (App->gui->WantTextInput() || App->gui->IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;
+#endif
 
-	Debug();
+	//Debug();
 
 	return UPDATE_CONTINUE;
 }

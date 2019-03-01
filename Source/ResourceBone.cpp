@@ -48,9 +48,7 @@ void ResourceBone::OnPanelAssets()
 
 bool ResourceBone::ImportFile(const char * file, std::string & name, std::string & outputFile)
 {
-
 	assert(file != nullptr);
-
 
 	return true;
 }

@@ -9,8 +9,8 @@ public class AreaAttack : JellyScript
 
     // Raycast
     private RaycastHit hit;
-    private int terrainMask = LayerMask.GetMask("Default");
-    private int enemyMask = LayerMask.GetMask("Default");
+    private uint terrainMask = LayerMask.GetMask("Default");
+    private uint enemyMask = LayerMask.GetMask("Default");
 
     //Agent
     private NavMeshAgent agent = null;
@@ -103,7 +103,7 @@ public class AreaAttack : JellyScript
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 //Go to attack
                 state = Alita_State.GOING_TO_ATTK;
@@ -126,7 +126,7 @@ public class AreaAttack : JellyScript
         if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 if (agent != null)
                 {
@@ -186,7 +186,7 @@ public class AreaAttack : JellyScript
         float circleRadius = 100.0f;
 
         OverlapHit[] hitInfo;
-        if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, (uint)enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
             foreach (OverlapHit hit in hitInfo)
             {

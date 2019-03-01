@@ -5,8 +5,8 @@ public class Alita : JellyScript
 {
     //Masks
     public LayerMask mask = new LayerMask();
-    private int terrainMask = LayerMask.GetMask("Terrain");
-    private int enemyMask = LayerMask.GetMask("Enemy");
+    private uint terrainMask = LayerMask.GetMask("Terrain");
+    private uint enemyMask = LayerMask.GetMask("Enemy");
 
     //Unit script
     private Unit unit;
@@ -140,7 +140,7 @@ public class Alita : JellyScript
     private RaycastHit GetMouseRayCastHit()
     {
         Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-        ray_has_hit = Physics.Raycast(ray, out hit, float.MaxValue, (uint)mask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static);
+        ray_has_hit = Physics.Raycast(ray, out hit, float.MaxValue, mask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static);
 
         return hit;
     }

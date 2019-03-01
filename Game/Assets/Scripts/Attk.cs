@@ -90,7 +90,7 @@ public class Attk : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)enemyMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 //Go to attack
                 state = Alita_State.GOING_TO_ATTK;
@@ -114,7 +114,7 @@ public class Attk : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)terrainMask.masks, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 state = Alita_State.RUNNING;
 

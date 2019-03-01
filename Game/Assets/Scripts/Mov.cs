@@ -4,7 +4,7 @@ using JellyBitEngine;
 public class Mov : JellyScript
 {
     private RaycastHit hit;
-    private int mask = LayerMask.GetMask("Default");
+    private uint mask = LayerMask.GetMask("Default");
     private NavMeshAgent agent = null;
 
     public override void Start()
@@ -23,7 +23,7 @@ public class Mov : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, (uint)mask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, mask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 if (agent == null)
                     agent = gameObject.GetComponent<NavMeshAgent>();

@@ -28,7 +28,7 @@ public class Attk : JellyScript
 
     //Enemy
     GameObject enemy;
-    //Unit enemy_unit;
+    Unit enemy_unit;
 
     //Variables about attack distance and time
     public float attack_dist = 2.0f;
@@ -102,7 +102,7 @@ public class Attk : JellyScript
                
                 agent.SetDestination(enemy_pos);
 
-                //enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
+                enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
 
                 Debug.Log("GOING TO ENEMY");
 
@@ -139,11 +139,11 @@ public class Attk : JellyScript
         //Attack every second
         if (attk_cool_down >= attk_period)
         {
-           // if (enemy_unit != null)
-           // {
-           //     enemy_unit.Hit(damage);
-           //     Debug.Log("ENEMY HIT");
-           // }
+            if (enemy_unit != null)
+            {
+                enemy_unit.Hit(damage);
+                Debug.Log("ENEMY HIT");
+            }
 
             attk_cool_down = 0.0f;
         }

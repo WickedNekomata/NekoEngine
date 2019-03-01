@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using JellyBitEngine;
 
-
-public enum UNIT_TYPE : short
-{
-    NONE,
-    ALITA,
-    ENEMY
-};
-
 public class Unit : JellyScript
 {
+    public enum UNIT_TYPE : short
+    {
+        NONE,
+        ALITA,
+        ENEMY
+    };
+
     // General Stats
     public int damage = 25;
     public float mov_speed = 12.0f;
@@ -30,8 +29,8 @@ public class Unit : JellyScript
     public int MaxLife { get { return max_life; } }
 
     // Components
-    private NavMeshAgent agent = null;
-    private Alita alita = null;
+     private NavMeshAgent agent = null;
+     private Alita alita = null;
 
     // Start is called before the first frame update
     public override void Start()
@@ -41,15 +40,15 @@ public class Unit : JellyScript
             case UNIT_TYPE.ALITA:
                 {
                     agent = gameObject.GetComponent<NavMeshAgent>();
-
-                    alita = gameObject.GetComponent<Alita>();
-
+      
+                    //alita = gameObject.GetComponent<Alita>();
+      
                     break;
                 }
             case UNIT_TYPE.ENEMY:
                 {
                     //agent = gameObject.GetComponent<NavMeshAgent>();
-
+      
                     break;
                 }
         }
@@ -57,7 +56,7 @@ public class Unit : JellyScript
 
     public void MoveTo(Vector3 world_pos)
     {
-        agent.SetDestination(world_pos);
+       agent.SetDestination(world_pos);
     }
 
     public void Hit(int damage)

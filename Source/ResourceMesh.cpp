@@ -59,7 +59,7 @@ void ResourceMesh::OnPanelAssets()
 // ----------------------------------------------------------------------------------------------------
 
 bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& meshImportSettings, 
-	std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& animation_files) // NewFile
+	std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& animation_files)
 {
 	assert(file != nullptr);
 
@@ -117,7 +117,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			sprintf_s(entry, "%u%s", animation_uuids[i], EXTENSION_ANIMATION);
 			entryFile = DIR_LIBRARY;
 			if (App->fs->RecursiveExists(entry, DIR_LIBRARY, entryFile))
-				bone_entry_files.push_back(entryFile);
+				animation_entry_files.push_back(entryFile);
 			entryFile.clear();
 		}
 

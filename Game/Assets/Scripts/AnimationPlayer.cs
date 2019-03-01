@@ -15,13 +15,10 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
-            RectTransform rect = gameObject.GetComponent<RectTransform>();
-            if(rect != null)
+            Button button = gameObject.GetComponent<Button>();
+            if(button != null)
             {
-                rect.x = 0;
-                rect.y = 0;
-                rect.x_dist = 0;
-                rect.y_dist = 0;
+                button.SetKey(KeyCode.KEY_0);
             }
         }
     }

@@ -19,6 +19,8 @@ public:
 	void KeyPressed();
 	UIState GetState()const;
 
+	void SetNewKey(uint key);
+
 private:
 	uint GetInternalSerializationBytes();
 	void OnInternalSave(char*& cursor);
@@ -35,7 +37,6 @@ private:
 	uint button_blinded;
 
 	void SetNewKey(const char* key);
-	void SetNewKey(uint key);
 };
 
 #endif

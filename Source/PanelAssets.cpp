@@ -43,12 +43,6 @@ bool PanelAssets::Draw()
 			event.type = System_Event_Type::DeleteUnusedFiles;
 			App->PushSystemEvent(event);
 		}
-		else if (ImGui::Button("Copy Shaders Into Library"))
-		{
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::CopyShadersIntoLibrary;
-			App->PushSystemEvent(newEvent);
-		}
 
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
 		CreateResourcePopUp(DIR_ASSETS);

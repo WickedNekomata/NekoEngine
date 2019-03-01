@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleFileSystem.h"
 #include "ModuleInput.h"
 #include "Primitive.h"
 #include "SceneImporter.h"
@@ -45,10 +46,20 @@ bool ModuleScene::Start()
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr, true);
 
-#ifndef GAMEMODE
-	App->GOs->LoadScene("Settings/GameReady.nekoScene");
-	App->renderer3D->SetCurrentCamera();
-	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+#ifdef GAMEMODE
+	char* buf;
+	size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
+	if (size > 0)
+	{
+		App->GOs->LoadScene(buf, size, true);
+		delete[] buf;
+		App->renderer3D->SetCurrentCamera();
+		App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 #endif
 
 	return true;
@@ -309,12 +320,10 @@ void ModuleScene::CreateRandomStaticGameObject()
 }
 
 #ifndef GAMEMODE
-
 bool ModuleScene::IsGizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }
-
 #endif
 
 void ModuleScene::FreeRoot()

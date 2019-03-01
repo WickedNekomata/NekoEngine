@@ -28,7 +28,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _KEYDEF_H_
 #define _KEYDEF_H_
 
-#include <AK/Tools/Common/AkArray.h> //For ArrayPoolDefault
+#include "AkArray.h"	//For ArrayPoolDefault
 
 template <class T_KEY, class T_ITEM> 
 struct MapStruct

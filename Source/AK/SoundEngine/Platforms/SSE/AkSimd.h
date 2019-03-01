@@ -33,7 +33,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_SIMD_SSE_H_
 #define _AK_SIMD_SSE_H_
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "../../Common/AkTypes.h"
 #include <xmmintrin.h>
 
 ////////////////////////////////////////////////////////////////////////

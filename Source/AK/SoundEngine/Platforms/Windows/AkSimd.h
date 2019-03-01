@@ -38,7 +38,8 @@ the specific language governing permissions and limitations under the License.
 	#define AKSIMD_GETELEMENT_V2F32( __vName, __num__ )			(__vName).m64_f32[(__num__)]	///< Retrieve scalar element from vector.
 	#define AKSIMD_GETELEMENT_V2I64( __vName, __num__ )			(__vName).m128i_i64[(__num__)]	///< Retrieve scalar element from vector.
 	
-	#include <AK/SoundEngine/Platforms/SSE/AkSimd.h>
+	#include "../SSE/AkSimd.h"
+
 #endif
 
 #if defined AK_CPU_ARM_NEON

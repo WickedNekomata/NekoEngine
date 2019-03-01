@@ -34,10 +34,10 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_QUERYPARAMS_H_
 #define _AK_QUERYPARAMS_H_
 
-#include <AK/SoundEngine/Common/AkSoundEngineExport.h>
-#include <AK/SoundEngine/Common/AkTypes.h>
-#include <AK/SoundEngine/Common/AkCommonDefs.h>
-#include <AK/Tools/Common/AkArray.h>
+#include "AkSoundEngineExport.h"
+#include "AkTypes.h"
+#include "AkCommonDefs.h"
+#include "../../Tools/Common/AkArray.h"
 
 /// Positioning information obtained from an object
 struct AkPositioningInfo

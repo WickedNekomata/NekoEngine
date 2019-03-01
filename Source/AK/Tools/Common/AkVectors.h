@@ -30,12 +30,12 @@ the specific language governing permissions and limitations under the License.
 
 #pragma once
 
-#include <AK/SoundEngine/Common/AkTypes.h>
-#include <AK/SoundEngine/Common/AkSimd.h>
-#include <AK/SoundEngine/Common/AkSpeakerVolumes.h>
-#include <AK/SoundEngine/Common/IAkPluginMemAlloc.h>
-#include <AK/Tools/Common/AkArray.h>
-#include <AK/Tools/Common/AkObject.h>
+#include "../../SoundEngine/Common/AkTypes.h"
+#include "../../SoundEngine/Common/AkSimd.h"
+#include "../../SoundEngine/Common/AkSpeakerVolumes.h"
+#include "../../SoundEngine/Common/IAkPluginMemAlloc.h"
+#include "AkArray.h"
+#include "AkObject.h"
 
 #include <math.h>
 #include <stdio.h>

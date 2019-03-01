@@ -28,8 +28,8 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_SOUNDENGINE_AKDYNAMICSEQUENCE_H
 #define _AK_SOUNDENGINE_AKDYNAMICSEQUENCE_H
 
-#include <AK/SoundEngine/Common/AkSoundEngine.h>
-#include <AK/Tools/Common/AkArray.h>
+#include "AkSoundEngine.h"
+#include "../../Tools/Common/AkArray.h"
 
 class AkExternalSourceArray;
 

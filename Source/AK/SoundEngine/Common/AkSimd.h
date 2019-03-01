@@ -33,14 +33,14 @@ the specific language governing permissions and limitations under the License.
 #ifndef _AK_SIMD_H_
 #define _AK_SIMD_H_
 
-#include <AK/SoundEngine/Common/AkTypes.h>
+#include "AkTypes.h"
 
 // Platform-specific section.
 //----------------------------------------------------------------------------------------------------
 
 #if defined( AK_WIN ) || defined( AK_XBOXONE )
 	
-	#include <AK/SoundEngine/Platforms/Windows/AkSimd.h>
+	#include "../Platforms/Windows/AkSimd.h"
 
 #elif defined( AK_APPLE )
 

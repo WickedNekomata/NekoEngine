@@ -28,8 +28,8 @@ Copyright (c) 2006-2018 Audiokinetic Inc.
 #ifndef _KEYARRAY_H_
 #define _KEYARRAY_H_
 
-#include <AK/Tools/Common/AkArray.h>
-#include <AK/Tools/Common/AkKeyDef.h>
+#include "AkArray.h"
+#include "AkKeyDef.h"
 
 // The Key list is simply a list that may be referenced using a key
 // NOTE : 

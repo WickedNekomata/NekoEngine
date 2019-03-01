@@ -1,6 +1,7 @@
 #include "PanelEdit.h"
 
 #ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleTimeManager.h"

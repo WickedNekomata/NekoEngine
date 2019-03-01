@@ -14,6 +14,8 @@
 #include "ModuleUI.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 #include "Quadtree.h"
 #include "PanelSkybox.h"
 
@@ -161,6 +163,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
+
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
 	//App->materialImporter->LoadSkyboxTexture();

@@ -30,13 +30,22 @@ public:
 
 private:
 	uint GetInternalSerializationBytes();
+	uint BytesToOnClick();
+	uint BytesToOnClickFromBuffer(char*& cursor);
+
 	void OnInternalSave(char*& cursor);
+	void OnSaveOnClick(char*& cursor);
+
 	void OnInternalLoad(char*& cursor);
+	void OnLoadOnClick(char*& cursor);
+
 	void OnUniqueEditor();
 
 	bool MouseInScreen(const uint* rect) const;
 
 private:
+
+	char* tempBuffer = nullptr;
 
 	UIState state;
 

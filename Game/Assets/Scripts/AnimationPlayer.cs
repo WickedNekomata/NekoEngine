@@ -33,11 +33,5 @@ public class AnimationPlayer : JellyScript
     {
         Debug.Log("Daddy I'm being clicked ;)");
     }
-
-    public void Jejeje()
-    {
-
-    }
-
 }
 

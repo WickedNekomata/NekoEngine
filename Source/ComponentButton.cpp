@@ -5,6 +5,7 @@
 #include "ModuleUI.h"
 #include "ModuleInput.h"
 #include "ScriptingModule.h"
+#include "ModuleGOs.h"
 
 #include "GameObject.h"
 #include "Application.h"
@@ -15,7 +16,7 @@
 
 #include <mono/metadata/attrdefs.h>
 
-ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::ButtonComponent)
+ComponentButton::ComponentButton(GameObject* parent, ComponentTypes componentType) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	App->ui->componentsUI.push_back(this);
 	state = UIState::IDLE;
@@ -25,12 +26,15 @@ ComponentButton::ComponentButton(GameObject * parent, ComponentTypes componentTy
 		parent->AddComponent(ImageComponent);
 }
 
-ComponentButton::ComponentButton(const ComponentButton & componentButton, GameObject* parent) : Component(parent, ComponentTypes::ButtonComponent)
+ComponentButton::ComponentButton(const ComponentButton& componentButton, GameObject* parent) : Component(parent, ComponentTypes::ButtonComponent)
 {
 	state = componentButton.state;
 	button_blinded = componentButton.button_blinded;
 	input = componentButton.input;
 	App->ui->componentsUI.push_back(this);
+
+	scriptInstance = componentButton.scriptInstance;
+	methodToCall = componentButton.methodToCall;
 }
 
 ComponentButton::~ComponentButton()
@@ -51,8 +55,16 @@ void ComponentButton::OnSystemEvent(System_Event event)
 
 			break;
 		}
-	}
+		case System_Event_Type::LoadFinished:
+		{
+			OnLoadOnClick(tempBuffer);
 
+			delete[] tempBuffer;
+			tempBuffer = nullptr;
+
+			break;
+		}
+	}
 }
 
 void ComponentButton::Update()
@@ -99,7 +111,55 @@ void ComponentButton::Update()
 
 uint ComponentButton::GetInternalSerializationBytes()
 {
-	return sizeof(uint);
+	return sizeof(uint) + BytesToOnClick();
+}
+
+uint ComponentButton::BytesToOnClick()
+{
+	if (methodToCall && scriptInstance)
+	{
+		//Something serialized + GameObject UID + Component UID + methodNameSize + methodName
+		return sizeof(bool) + sizeof(uint) * 3 + std::string(mono_method_get_name(methodToCall)).size();
+	}
+	else
+	{
+		//Something serialized
+		return sizeof(bool);
+	}
+}
+
+uint ComponentButton::BytesToOnClickFromBuffer(char*& cursor)
+{
+	uint serializedBytes = 0u;
+
+	char* tempCursor = cursor;
+
+	uint bytes = sizeof(bool);
+
+	bool somethingSerialized;
+	memcpy(&somethingSerialized, tempCursor, bytes);
+	tempCursor += bytes;
+	serializedBytes += bytes;
+
+	if (somethingSerialized)
+	{
+		bytes = sizeof(uint);
+		tempCursor += bytes;
+		serializedBytes += bytes;
+
+		tempCursor += bytes;
+		serializedBytes += bytes;
+
+		uint nameSize;
+		memcpy(&nameSize, tempCursor, bytes);
+		tempCursor += bytes;
+		serializedBytes += bytes;
+
+		tempCursor += nameSize;
+		serializedBytes += nameSize;
+	}
+
+	return serializedBytes;
 }
 
 void ComponentButton::OnInternalSave(char *& cursor)
@@ -107,6 +167,44 @@ void ComponentButton::OnInternalSave(char *& cursor)
 	size_t bytes = sizeof(uint);
 	memcpy(cursor, &button_blinded, bytes);
 	cursor += bytes;
+
+	OnSaveOnClick(cursor);
+}
+
+void ComponentButton::OnSaveOnClick(char*& cursor)
+{
+	if (methodToCall && scriptInstance)
+	{
+		uint bytes = sizeof(bool);
+		bool temp = true;
+		memcpy(cursor, &temp, bytes);
+		cursor += bytes;
+	
+		ComponentScript* methodComponent = (ComponentScript*)App->scripting->ComponentFrom(scriptInstance);
+		GameObject* methodGO = methodComponent->GetParent();
+
+		bytes = sizeof(uint);
+		uint goUID = methodGO->GetUUID();
+		memcpy(cursor, &goUID, bytes);
+		cursor += bytes;
+
+		memcpy(cursor, &methodComponent->UUID, bytes);
+		cursor += bytes;
+
+		std::string methodName = mono_method_get_name(methodToCall);
+		uint nameSize = methodName.size();
+		memcpy(cursor, &nameSize, bytes);
+		cursor += bytes;
+
+		memcpy(cursor, methodName.data(), nameSize);
+		cursor += nameSize;
+	}
+	else
+	{
+		bool temp = false;
+		memcpy(cursor, &temp, sizeof(bool));
+		cursor += sizeof(bool);
+	}
 }
 
 void ComponentButton::OnInternalLoad(char *& cursor)
@@ -116,6 +214,82 @@ void ComponentButton::OnInternalLoad(char *& cursor)
 	cursor += bytes;
 
 	SetNewKey(button_blinded);
+
+	uint bytesOnClick = BytesToOnClickFromBuffer(cursor);
+	tempBuffer = new char[bytesOnClick];
+	memcpy(tempBuffer, cursor, bytesOnClick);
+	cursor += bytesOnClick;
+}
+
+void ComponentButton::OnLoadOnClick(char*& tempBuffer)
+{
+	char* cursor = tempBuffer;
+
+	uint bytes = sizeof(bool);
+
+	bool somethingSerialized;
+	memcpy(&somethingSerialized, cursor, bytes);
+	cursor += bytes;
+
+	if (somethingSerialized)
+	{
+		bytes = sizeof(uint);
+		uint goUID;
+		memcpy(&goUID, cursor, bytes);
+		cursor += bytes;
+
+		uint scriptUID;
+		memcpy(&scriptUID, cursor, bytes);
+		cursor += bytes;
+
+		uint nameSize;
+		memcpy(&nameSize, cursor, bytes);
+		cursor += bytes;
+
+		std::string name;
+		name.resize(nameSize);
+		memcpy((char*)name.data(), cursor, nameSize);
+		name.resize(nameSize);
+
+		cursor += nameSize;
+
+		//Search for the references
+		GameObject* go = App->GOs->GetGameObjectByUID(goUID);
+		if (go)
+		{
+			for (int i = 0; i < go->components.size(); ++i)
+			{
+				if (go->components[i]->UUID == scriptUID)
+				{
+					scriptInstance = App->scripting->MonoComponentFrom(go->components[i]);
+					break;
+				}
+			}
+
+			if (scriptInstance)
+			{
+				MonoClass* monoClass = mono_object_get_class(scriptInstance);
+
+				void* iterator = 0;
+				MonoMethod* method = mono_class_get_methods(monoClass, &iterator);
+				while (method)
+				{
+					uint32_t flags = 0;
+					uint32_t another = mono_method_get_flags(method, &flags);
+					if (another & MONO_METHOD_ATTR_PUBLIC && !(another & MONO_METHOD_ATTR_STATIC))
+					{
+						std::string savedName = mono_method_get_name(method);
+						if (savedName == name)
+						{
+							methodToCall = method;
+							break;
+						}
+					}
+					method = mono_class_get_methods(monoClass, &iterator);
+				}
+			}
+		}
+	}
 }
 
 void ComponentButton::OnUniqueEditor()
@@ -244,9 +418,8 @@ void ComponentButton::OnUniqueEditor()
 
 		if (App->input->GetKey(SDL_SCANCODE_BACKSPACE) == KEY_DOWN)
 		{
-			
-
-			
+			methodToCall = nullptr;
+			scriptInstance = nullptr;
 		}
 	}
 

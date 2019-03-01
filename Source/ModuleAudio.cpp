@@ -34,6 +34,7 @@ bool ModuleAudio::CleanUp()
 {
 	//audio_sources.clear();
 	event_list.clear();
+	WwiseT::CloseSoundEngine();
 	return true;
 }
 

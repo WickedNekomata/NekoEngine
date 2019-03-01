@@ -79,7 +79,11 @@ update_status ModuleFileSystem::PreUpdate()
 
 bool ModuleFileSystem::Start()
 {
+#ifndef GAMEMODE
 	rootAssets = RecursiveGetFilesFromDir("Assets");
+#else
+	rootAssets = RecursiveGetFilesFromDir("Library");
+#endif
 
 	std::vector<std::string> lateEvents;
 	ImportFilesEvents(rootAssets, lateEvents);
@@ -88,7 +92,11 @@ bool ModuleFileSystem::Start()
 	{
 		//The ResourceManager already manages the .meta, already imported files etc. on his own.
 		System_Event event;
+#ifndef GAMEMODE
 		event.fileEvent.type = System_Event_Type::ImportFile;
+#else
+		event.fileEvent.type = System_Event_Type::ImportLibraryFile;
+#endif
 		strcpy(event.fileEvent.file, lateEvents[i].data());
 		App->PushSystemEvent(event);
 	}
@@ -996,7 +1004,11 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 			{
 				//The ResourceManager already manages the .meta, already imported files etc. on his own.
 				System_Event event;
+#ifndef GAMEMODE
 				event.fileEvent.type = System_Event_Type::ImportFile;
+#else
+				event.fileEvent.type = System_Event_Type::ImportLibraryFile;
+#endif
 				strcpy(event.fileEvent.file, filePath);
 				App->PushSystemEvent(event);
 

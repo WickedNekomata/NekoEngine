@@ -2,6 +2,5 @@
 #define __GAME_MODE_H__
 
 // Uncomment the following line for Game exe.
-#define GAMEMODE
 
 #endif

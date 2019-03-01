@@ -6,7 +6,7 @@ enum System_Event_Type
 	NoEvent,
 	CopyShadersIntoLibrary,
 
-	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
+	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, ImportLibraryFile,// FileEvent
 
 	CalculateBBoxes, // GameObjectEvent
 	RecalculateBBoxes, // GameObjectEvent

@@ -39,7 +39,8 @@ public class AreaAttk : JellyScript
     private float attk_cool_down = 0.0f;
 
     //Variables for SP attacks
-    bool isAreaActive = false;
+    private bool isAreaActive = false;
+    //public GameObject areaCircle;
 
     public override void Start()
     {
@@ -168,7 +169,6 @@ public class AreaAttk : JellyScript
         {
             if (!isAreaActive)
             {
-                //Instance circle
                 isAreaActive = true;
                 Debug.Log("ACIVATE AREA");
             }
@@ -213,17 +213,17 @@ public class AreaAttk : JellyScript
     private void AreaAttack()
     {
         Debug.Log("AREA ATTACK!!!!!");
-       // float circleRadius = 100.0f;
-       //
-       // OverlapHit[] hitInfo;
-       // if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-       // {
-       //     foreach (OverlapHit hit in hitInfo)
-       //     {
-       //         hit.gameObject.GetComponent<Unit>().Hit(damage); //Not change this
-       //         Debug.Log("HIT ENEMY: " + hit.gameObject.name);
-       //     }
-       // }
+        float circleRadius = 10.0f;
+       
+        OverlapHit[] hitInfo;
+        if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        {
+            foreach (OverlapHit hit in hitInfo)
+            {
+                hit.gameObject.GetComponent<Unit>().Hit(damage); //Not change this
+                Debug.Log("HIT ENEMY: " + hit.gameObject.name);
+            }
+        }
     }
 
 }

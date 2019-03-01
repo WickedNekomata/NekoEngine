@@ -25,6 +25,7 @@ PanelShaderEditor::~PanelShaderEditor() {}
 
 bool PanelShaderEditor::Draw()
 {
+	// TODO ADD GEOMETRY SHADER
 	if (ImGui::Begin(name, &enabled))
 	{
 		ImGui::Text("Shader Program:"); ImGui::SameLine();

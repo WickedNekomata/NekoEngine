@@ -392,6 +392,9 @@ void PanelAssets::CreateResourceConfirmationPopUp()
 				case ShaderObjectTypes::FragmentType:
 					shaderObjectData.SetSource(fShaderTemplate, strlen(fShaderTemplate));
 					break;
+				case ShaderObjectTypes::GeometryType:
+					shaderObjectData.SetSource(fShaderTemplate, strlen(fShaderTemplate)); // TODO GEOM GEOMETRY TEMPLATE
+					break;
 				}
 
 				// Export the new file

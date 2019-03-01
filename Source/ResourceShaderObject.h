@@ -5,12 +5,14 @@
 
 #define IS_VERTEX_SHADER(extension) strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
 #define IS_FRAGMENT_SHADER(extension) strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0
+#define IS_GEOMETRY_SHADER(extension) strcmp(extension, EXTENSION_GEOMETRY_SHADER_OBJECT) == 0
 
 enum ShaderObjectTypes
 {
 	NoShaderObjectType,
 	VertexType,
-	FragmentType
+	FragmentType,
+	GeometryType
 };
 
 struct ResourceShaderObjectData

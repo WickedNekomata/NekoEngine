@@ -4,6 +4,7 @@
 #include "ComponentTransform.h"
 #include "ComponentNavAgent.h"
 #include "ComponentAnimation.h"
+#include "ComponentEmitter.h"
 
 #include "GameObject.h"
 
@@ -457,6 +458,11 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 		case ComponentTypes::AnimationComponent:
 		{
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "Animator"));
+			break;
+		}
+		case ComponentTypes::EmitterComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "ParticleEmitter"));
 			break;
 		}
 	}
@@ -1361,6 +1367,19 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 
 		return App->scripting->MonoComponentFrom(comp);
 	}
+	else if (className == "ParticleEmitter")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::EmitterComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
 	else
 	{
 		//Find a script named as this class
@@ -1555,7 +1574,25 @@ bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
 	return animator->PlayAnimation(animUUID);
 }
 
-//---------------------------------
+void ParticleEmitterPlay(MonoObject* particleComp)
+{
+	ComponentEmitter* emitter = (ComponentEmitter*)App->scripting->ComponentFrom(particleComp);
+	if (emitter)
+	{
+		emitter->StartEmitter();
+	}
+}
+
+void ParticleEmitterStop(MonoObject* particleComp)
+{
+	ComponentEmitter* emitter = (ComponentEmitter*)App->scripting->ComponentFrom(particleComp);
+	if (emitter)
+	{
+		emitter->ClearEmitter();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
 {
@@ -1627,6 +1664,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Physics::_OverlapSphere", (const void*)&OverlapSphere);
 	mono_add_internal_call("JellyBitEngine.Component::SetActive", (const void*)&SetCompActive);
 	mono_add_internal_call("JellyBitEngine.Animator::PlayAnimation", (const void*)&PlayAnimation);
+	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Play", (const void*)&ParticleEmitterPlay);
+	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Stop", (const void*)&ParticleEmitterStop);
 
 	ClearMap();
 

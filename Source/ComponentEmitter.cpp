@@ -10,6 +10,7 @@
 #include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
 #include <vector>
 
@@ -513,6 +514,7 @@ void ComponentEmitter::ParticleAABB()
 
 void ComponentEmitter::ParticleTexture()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
 		const Resource* resource = App->res->GetResource(materialRes);
@@ -557,8 +559,10 @@ void ComponentEmitter::ParticleTexture()
 		if (particleAnim.isParticleAnimated)
 		{
 			ImGui::DragFloat("Animation Speed", &particleAnim.animationSpeed, 0.001f, 0.0f, 5.0f, "%.3f");
-			ImGui::DragInt("Rows", &particleAnim.textureRows, 1, 1, 10);
-			ImGui::DragInt("Columns", &particleAnim.textureColumns, 1, 1, 10);
+			if(ImGui::DragInt("Rows", &particleAnim.textureRows, 1, 1, 10))
+				particleAnim.textureRowsNorm = 1.0f / particleAnim.textureRows;
+			if(ImGui::DragInt("Columns", &particleAnim.textureColumns, 1, 1, 10))
+				particleAnim.textureColumnsNorm = 1.0f / particleAnim.textureColumns;
 
 			ImGui::Checkbox("Kill particle with animation", &dieOnAnimation);
 			if (dieOnAnimation)
@@ -573,6 +577,7 @@ void ComponentEmitter::ParticleTexture()
 		}
 		ImGui::Separator();
 	}
+	#endif
 }
 
 void ComponentEmitter::SetNewAnimation()

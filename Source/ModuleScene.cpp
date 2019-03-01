@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleFileSystem.h"
 #include "ModuleInput.h"
 #include "Primitive.h"
 #include "SceneImporter.h"
@@ -46,9 +47,19 @@ bool ModuleScene::Start()
 	root = new GameObject("Root", nullptr, true);
 
 #ifdef GAMEMODE
-	App->GOs->LoadScene("Settings/GameReady.nekoScene");
-	App->renderer3D->SetCurrentCamera();
-	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+	char* buf;
+	size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
+	if (size > 0)
+	{
+		App->GOs->LoadScene(buf, size, true);
+		delete[] buf;
+		App->renderer3D->SetCurrentCamera();
+		App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+	}
 #endif
 
 	return true;
@@ -94,7 +105,6 @@ update_status ModuleScene::Update()
 		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
 			GetPreviousTransform();
 	}
-
 #endif
 
 	return UPDATE_CONTINUE;
@@ -105,8 +115,9 @@ bool ModuleScene::CleanUp()
 	bool ret = true;
 
 	RELEASE(grid);
-
+#ifndef GAMEMODE
 	SELECT(NULL);
+#endif
 
 	quadtree.Clear();
 
@@ -130,13 +141,13 @@ void ModuleScene::OnSystemEvent(System_Event event)
 	case System_Event_Type::RecreateQuadtree:
 		RecreateQuadtree();
 		break;
+#ifndef GAMEMODE
 	case System_Event_Type::GameObjectDestroyed:
 
 		//Remove GO in list if its deleted
 
 		if (selectedObject == event.goEvent.gameObject)
 			SELECT(NULL);
-
 		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
 
 		while (!prevTransforms.empty() && iterator != prevTransforms.end())
@@ -149,7 +160,9 @@ void ModuleScene::OnSystemEvent(System_Event event)
 			else
 				++iterator;
 		}
+
 		break;
+#endif
 	}
 }
 
@@ -307,12 +320,10 @@ void ModuleScene::CreateRandomStaticGameObject()
 }
 
 #ifndef GAMEMODE
-
 bool ModuleScene::IsGizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }
-
 #endif
 
 void ModuleScene::FreeRoot()

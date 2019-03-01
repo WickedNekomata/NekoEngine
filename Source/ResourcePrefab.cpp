@@ -5,6 +5,8 @@
 #include "ModuleGOs.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
+#include "GameObject.h"
+#include <assert.h>
 
 ResourcePrefab::ResourcePrefab(uint uuid, ResourceData data, PrefabData customData) : Resource(ResourceTypes::PrefabResource, uuid, data)
 {
@@ -21,6 +23,7 @@ ResourcePrefab::~ResourcePrefab()
 
 void ResourcePrefab::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -44,6 +47,7 @@ void ResourcePrefab::OnPanelAssets()
 		ImGui::SetDragDropPayload("PREFAB_RESOURCE", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 ResourcePrefab* ResourcePrefab::ImportFile(const char* file)

@@ -596,6 +596,9 @@ int ModuleNavigation::GetNavMeshSerialitzationBytes() const
 		tile = ((const dtNavMesh*)m_navMesh)->getTile(i);
 		size += tile->dataSize;
 	}
+
+	size += sizeof(rcConfig);
+
 	return size;
 }
 
@@ -622,6 +625,9 @@ void ModuleNavigation::SaveNavmesh(char*& cursor)
 		memcpy(cursor, tile->data, sizeof(uchar) * tile->dataSize);
 		cursor += sizeof(uchar) * tile->dataSize;
 	}
+
+	memcpy(cursor, &m_cfg, sizeof(rcConfig));
+	cursor += sizeof(rcConfig);
 }
 
 void ModuleNavigation::LoadNavmesh(char*& cursor)
@@ -634,11 +640,17 @@ void ModuleNavigation::LoadNavmesh(char*& cursor)
 	cursor += sizeof(size_t);
 
 	if (size <= 0)
+	{
+		cursor += sizeof(rcConfig);
 		return;
+	}
 
 	uchar* data = (uchar*)dtAlloc(size, dtAllocHint::DT_ALLOC_PERM);
 	memcpy(data, cursor, size);
 	cursor += size;
+
+	memcpy(&m_cfg, cursor, sizeof(rcConfig));
+	cursor += sizeof(rcConfig);
 
 	m_navMesh = dtAllocNavMesh();
 	if (!m_navMesh)

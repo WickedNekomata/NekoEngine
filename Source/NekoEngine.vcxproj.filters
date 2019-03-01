@@ -193,6 +193,9 @@
     <Filter Include="Sources\Modules\GO&amp;Components\Components\UI">
       <UniqueIdentifier>{d5199576-7acc-4f60-8726-8296ca8eae2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\Freetype">
+      <UniqueIdentifier>{6f671ab3-7b93-4ac6-b814-ea3f2dc51726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -1540,6 +1543,15 @@
     <ClInclude Include="ModuleUI.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Freetype\ft2build.h">
+      <Filter>Sources\3rd Party\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Freetype\freetype\config\ftheader.h">
+      <Filter>Sources\3rd Party\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFreetype.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2050,6 +2062,9 @@
       <Filter>Sources\Modules\GO&amp;Components\Components\UI</Filter>
     </ClCompile>
     <ClCompile Include="ModuleUI.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFreetype.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>

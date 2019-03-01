@@ -19,11 +19,13 @@
 class PrimitiveGrid;
 class GameObject;
 
+#ifndef GAMEMODE
 struct LastTransform
 {
 	math::float4x4 matrix;
 	GameObject* object;
 };
+#endif
 
 class ModuleScene : public Module
 {
@@ -84,9 +86,9 @@ public:
 	math::float4x4 lastMat;
 	std::list<LastTransform> prevTransforms;
 	bool saveTransform = false;
-#endif
 
 	CurrentSelection selectedObject;
+#endif
 
 	GameObject* child = nullptr;
 	GameObject* root = nullptr;

@@ -10,6 +10,7 @@
 #include "ModuleGui.h"
 #include "ModuleInternalResHandler.h"
 #include "ModuleResourceManager.h"
+#include "ModuleUI.h"
 
 #include "SDL\include\SDL_scancode.h"
 #include "ModuleGOs.h"
@@ -177,6 +178,14 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 	{
 		if (child->GetLayer() == UILAYER)
 		{
+			if (App->GOs->GetCanvas() != child)
+			{
+				if (ImGui::Selectable("Duplicate at same parent"))
+				{
+					App->ui->DuplicateUIGO(child);
+					ImGui::CloseCurrentPopup();
+				}
+			}
 			if (ImGui::Selectable("Create Empty"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("GameObjectCanvas", child, true);

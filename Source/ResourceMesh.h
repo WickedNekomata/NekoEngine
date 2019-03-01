@@ -38,7 +38,7 @@ struct ResourceMeshImportSettings
 	PostProcessConfigurationFlags postProcessConfigurationFlags = PostProcessConfigurationFlags::TARGET_REALTIME_MAX_QUALITY;
 	uint customConfigurationFlags = 0;
 
-	uint size = 0;
+	float scale = 1.0f;
 
 	char modelPath[DEFAULT_BUF_SIZE];
 };
@@ -95,6 +95,10 @@ public:
 	uint GetVerticesCount() const;
 	uint GetIndicesCount() const;
 
+	void GenerateAndBindDeformableMesh();
+
+	void DuplicateMesh(ResourceMesh * mesh);
+
 	uint GetVBO() const;
 	uint GetIBO() const;
 	uint GetVAO() const;
@@ -114,6 +118,8 @@ private:
 	uint VAO = 0;
 
 	ResourceMeshData meshData;
+
+public:
 
 	uint DVBO = 0;
 	uint DIBO = 0;

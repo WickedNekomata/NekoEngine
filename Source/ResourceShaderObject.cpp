@@ -26,6 +26,7 @@ ResourceShaderObject::~ResourceShaderObject()
 
 void ResourceShaderObject::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -49,6 +50,7 @@ void ResourceShaderObject::OnPanelAssets()
 		ImGui::SetDragDropPayload("SHADER_OBJECT", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------

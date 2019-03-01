@@ -11,14 +11,11 @@
 #include <assert.h>
 
 ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {
-
-	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
-	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
-	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
-	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
-	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
-	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
-	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
+	
+	deformableMeshData.verticesSize = 0u;
+	deformableMeshData.indicesSize = 0u;
+	deformableMeshData.vertices = nullptr;
+	deformableMeshData.indices = nullptr;
 }
 
 ResourceMesh::~ResourceMesh()
@@ -32,6 +29,7 @@ ResourceMesh::~ResourceMesh()
 
 void ResourceMesh::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -54,6 +52,7 @@ void ResourceMesh::OnPanelAssets()
 		ImGui::SetDragDropPayload("MESH_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -168,7 +167,7 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 		sizeof(int) +
 		sizeof(uint) +
-		sizeof(uint);
+		sizeof(float);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -231,8 +230,8 @@ uint ResourceMesh::CreateMeta(const char* file, ResourceMeshImportSettings& mesh
 
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	memcpy(cursor, &meshImportSettings.size, bytes);
+	bytes = sizeof(float);
+	memcpy(cursor, &meshImportSettings.scale, bytes);
 
 	// --------------------------------------------------
 
@@ -328,8 +327,8 @@ bool ResourceMesh::ReadMeta(const char* metaFile, int64_t& lastModTime, Resource
 
 		cursor += bytes;
 
-		bytes = sizeof(uint);
-		memcpy(&meshImportSettings.size, cursor, bytes);
+		bytes = sizeof(float);
+		memcpy(&meshImportSettings.scale, cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);
@@ -436,7 +435,7 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 		sizeof(int) +
 		sizeof(uint) +
-		sizeof(uint);
+		sizeof(float);
 
 	char* data = new char[size];
 	char* cursor = data;
@@ -498,8 +497,8 @@ uint ResourceMesh::SetMeshImportSettingsToMeta(const char* metaFile, const Resou
 
 	cursor += bytes;
 
-	bytes = sizeof(uint);
-	memcpy(cursor, &meshImportSettings.size, bytes);
+	bytes = sizeof(float);
+	memcpy(cursor, &meshImportSettings.scale, bytes);
 
 	// --------------------------------------------------
 
@@ -535,6 +534,7 @@ void ResourceMesh::GetTris(float* verticesPosition) const
 	}
 }
 
+
 void ResourceMesh::GetIndicesReference(uint*& indices) const
 {
 	indices = meshData.indices;
@@ -553,6 +553,27 @@ uint ResourceMesh::GetVerticesCount() const
 uint ResourceMesh::GetIndicesCount() const
 {
 	return meshData.indicesSize;
+}
+
+void ResourceMesh::GenerateAndBindDeformableMesh()
+{
+	assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0
+		&& deformableMeshData.indices != nullptr && deformableMeshData.indicesSize > 0);
+
+	App->sceneImporter->GenerateVBO(DVBO, deformableMeshData.vertices, deformableMeshData.verticesSize);
+	App->sceneImporter->GenerateIBO(DIBO, deformableMeshData.indices, deformableMeshData.indicesSize);
+	App->sceneImporter->GenerateVAO(DVAO, DVBO);
+}
+
+void ResourceMesh::DuplicateMesh(ResourceMesh * mesh)
+{
+	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
+	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
+	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
+	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
+	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
+	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
+	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
 }
 
 uint ResourceMesh::GetVBO() const
@@ -652,8 +673,8 @@ bool ResourceMesh::ReadMeshImportSettingsFromMeta(const char* metaFile, Resource
 
 		cursor += bytes;
 
-		bytes = sizeof(uint);
-		memcpy(&meshImportSettings.size, cursor, bytes);
+		bytes = sizeof(float);
+		memcpy(&meshImportSettings.scale, cursor, bytes);
 
 		CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: Successfully loaded meta '%s'", metaFile);
 		RELEASE_ARRAY(buffer);

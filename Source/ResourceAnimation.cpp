@@ -2,6 +2,9 @@
 #include "imgui/imgui.h"
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
+#include "Application.h"
+
+#include <assert.h>
 
 ResourceAnimation::ResourceAnimation(ResourceTypes type, uint uuid, ResourceData data, ResourceAnimationData animationData) : Resource(type, uuid, data), animationData(animationData) {}
 
@@ -21,6 +24,8 @@ bool ResourceAnimation::UnloadFromMemory()
 
 void ResourceAnimation::OnPanelAssets()
 {
+#ifndef GAMEMODE
+
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -43,6 +48,7 @@ void ResourceAnimation::OnPanelAssets()
 		ImGui::SetDragDropPayload("ANIMATION_RESOURCE", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif // !GAMEMODE
 }
 
 bool ResourceAnimation::ImportFile(const char* file, std::string& name, std::string& outputFile)

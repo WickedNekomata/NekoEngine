@@ -294,7 +294,26 @@ void ComponentButton::SetNewKey(uint key)
 
 void ComponentButton::KeyPressed()
 {
-	CONSOLE_LOG(LogTypes::Normal, "GG");
+	if (methodToCall && scriptInstance)
+	{
+		MonoObject* exc = nullptr;
+		if (IsTreeActive())
+		{
+			mono_runtime_invoke(methodToCall, scriptInstance, NULL, &exc);
+			if (exc)
+			{
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
+
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
+				mono_free(toLogMessage);
+			}
+		}	
+	}
 }
 
 void ComponentButton::RightClickPressed()

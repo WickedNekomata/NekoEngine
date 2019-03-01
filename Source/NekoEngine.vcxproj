@@ -22,7 +22,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>NekoEngine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -220,7 +220,10 @@
     <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentRevoluteJoint.h" />
     <ClInclude Include="ComponentSphericalJoint.h" />
+    <ClInclude Include="Freetype\freetype\config\ftheader.h" />
+    <ClInclude Include="Freetype\ft2build.h" />
     <ClInclude Include="ModuleAnimation.h" />
+    <ClInclude Include="ModuleFreetype.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="ModuleLayers.h" />
     <ClInclude Include="ModuleUI.h" />
@@ -631,6 +634,7 @@
     <ClCompile Include="ComponentRevoluteJoint.cpp" />
     <ClCompile Include="ComponentSphericalJoint.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />
+    <ClCompile Include="ModuleFreetype.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="ModuleLayers.cpp" />
     <ClCompile Include="ModuleUI.cpp" />

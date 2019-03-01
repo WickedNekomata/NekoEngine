@@ -190,6 +190,7 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	}
 
 	// Animation stuff // TODO_G : this can be better in vert 2
+	App->animation->Start();
 	std::vector<GameObject*> gos;
 	this->GetGameobjects(gos);
 	for (uint i = 0u; i < gos.size(); i++)

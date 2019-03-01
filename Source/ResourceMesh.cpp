@@ -567,13 +567,13 @@ void ResourceMesh::GenerateAndBindDeformableMesh()
 
 void ResourceMesh::DuplicateMesh(ResourceMesh * mesh)
 {
-	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
-	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
-	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
-	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
+	deformableMeshData.vertices = new Vertex[meshData.verticesSize];
+	deformableMeshData.verticesSize = meshData.verticesSize;
+	deformableMeshData.indices = new uint[meshData.indicesSize];
+	deformableMeshData.indicesSize = meshData.indicesSize;
 	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
-	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
-	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
+	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * meshData.verticesSize);
+	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * meshData.indicesSize);
 }
 
 uint ResourceMesh::GetVBO() const

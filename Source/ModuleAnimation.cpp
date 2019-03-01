@@ -142,7 +142,7 @@ bool ModuleAnimation::StartAttachingBones()
 
 				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
 				
-				if (res->deformableMeshData.verticesSize > 0)
+				if (res->deformableMeshData.verticesSize == 0)
 				{
 					res->DuplicateMesh(res);
 					res->GenerateAndBindDeformableMesh();

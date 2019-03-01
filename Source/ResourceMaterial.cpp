@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 
 #include "ResourceShaderProgram.h"
+#include "ResourceTexture.h"
 
 #include "imgui\imgui.h"
 
@@ -24,6 +25,7 @@ ResourceMaterial::~ResourceMaterial()
 
 void ResourceMaterial::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -46,6 +48,7 @@ void ResourceMaterial::OnPanelAssets()
 		ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------

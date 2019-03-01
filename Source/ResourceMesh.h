@@ -38,7 +38,7 @@ struct ResourceMeshImportSettings
 	PostProcessConfigurationFlags postProcessConfigurationFlags = PostProcessConfigurationFlags::TARGET_REALTIME_MAX_QUALITY;
 	uint customConfigurationFlags = 0;
 
-	uint size = 0;
+	float scale = 1.0f;
 
 	char modelPath[DEFAULT_BUF_SIZE];
 };

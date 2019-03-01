@@ -1,5 +1,3 @@
-#include "GameMode.h"
-
 #include "MaterialImporter.h"
 
 #include "Application.h"

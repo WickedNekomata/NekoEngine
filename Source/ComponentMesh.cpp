@@ -38,12 +38,7 @@ void ComponentMesh::SetResource(uint res_uuid)
 		App->res->SetAsUnused(res);
 
 	if (res_uuid > 0)
-	{
-		if (App->res->SetAsUsed(res_uuid) == -1)
-			return;
-	}
-	else
-		return;
+		App->res->SetAsUsed(res_uuid);
 
 	res = res_uuid;
 
@@ -58,8 +53,6 @@ void ComponentMesh::SetResource(uint res_uuid)
 	updateBB.goEvent.gameObject = parent;
 	updateBB.type = System_Event_Type::RecalculateBBoxes;
 	App->PushSystemEvent(updateBB);
-
-
 
 	if (parent->IsStatic())
 	{

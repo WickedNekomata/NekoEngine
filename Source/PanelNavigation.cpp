@@ -1,5 +1,7 @@
 #include "PanelNavigation.h"
 
+#ifndef GAMEMODE
+
 #include "imgui/imgui.h"
 
 #include "Application.h"
@@ -219,3 +221,5 @@ void PanelNavigation::HandleInputMeshes() const
 	}
 	delete[] p_inputGeom.i_meshes;
 }
+
+#endif

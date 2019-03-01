@@ -502,6 +502,9 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 	ImGui::Text("Import Settings");
 	ImGui::Spacing();
 
+	ImGui::Text("Scale"); ImGui::PushItemWidth(50.0f);
+	ImGui::DragFloat("##Scale", &m_is.scale, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+
 	const char* postProcessConfiguration[] = { "Target Realtime Fast", "Target Realtime Quality", "Target Realtime Max Quality", "Custom" };
 	
 	ImGui::PushItemWidth(100.0f);
@@ -542,7 +545,7 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 		strcpy_s(metaFile, strlen(m_is.modelPath) + 1, m_is.modelPath); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		// cambiar meta
+		// Update meta
 		ResourceMesh::SetMeshImportSettingsToMeta(metaFile, m_is);
 
 		// Reimport Mesh file
@@ -600,6 +603,7 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		strcpy_s(metaFile, strlen(res->GetFile()) + 1, res->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
+		// Update meta
 		ResourceTexture::SetTextureImportSettingsToMeta(metaFile, t_is);
 
 		// Reimport Mesh file

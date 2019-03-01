@@ -1046,12 +1046,8 @@ void DestroyObj(MonoObject* obj)
 
 				App->scripting->monoObjectHandles.erase(App->scripting->monoObjectHandles.begin() + i);
 
-				//Send the event to destroy this gameObject
-
-				System_Event event;
-				event.goEvent.type = System_Event_Type::GameObjectDestroyed;
-				event.goEvent.gameObject = toDelete;
-				App->PushSystemEvent(event);
+				//Destroy this GameObject
+				App->GOs->DeleteGameObject(toDelete);				
 
 				break;
 			}
@@ -1425,11 +1421,11 @@ MonoObject* ScreenToRay(MonoArray* screenCoordinates, MonoObject* cameraComponen
 	return ret;
 }
 
-int LayerToBit(MonoString* layerName)
+uint LayerToBit(MonoString* layerName)
 {
 	char* layerCName = mono_string_to_utf8(layerName);
 
-	int bits = 0; 
+	uint bits = 0; 
 	int res = App->layers->NameToNumber(layerCName);
 	res != -1 ? bits |= 1 << res : bits = 0;
 

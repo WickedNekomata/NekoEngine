@@ -14,7 +14,7 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
-            Destroy(this);
+            Destroy(gameObject);
             Animator animator = gameObject.GetComponent<Animator>();
             if (animator != null)
             {

@@ -11,14 +11,11 @@
 #include <assert.h>
 
 ResourceMesh::ResourceMesh(ResourceTypes type, uint uuid, ResourceData data, ResourceMeshData meshData) : Resource(type, uuid, data), meshData(meshData) {
-
-	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
-	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
-	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
-	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
-	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
-	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
-	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
+	
+	deformableMeshData.verticesSize = 0u;
+	deformableMeshData.indicesSize = 0u;
+	deformableMeshData.vertices = nullptr;
+	deformableMeshData.indices = nullptr;
 }
 
 ResourceMesh::~ResourceMesh()
@@ -535,6 +532,7 @@ void ResourceMesh::GetTris(float* verticesPosition) const
 	}
 }
 
+
 void ResourceMesh::GetIndicesReference(uint*& indices) const
 {
 	indices = meshData.indices;
@@ -553,6 +551,27 @@ uint ResourceMesh::GetVerticesCount() const
 uint ResourceMesh::GetIndicesCount() const
 {
 	return meshData.indicesSize;
+}
+
+void ResourceMesh::GenerateAndBindDeformableMesh()
+{
+	assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0
+		&& deformableMeshData.indices != nullptr && deformableMeshData.indicesSize > 0);
+
+	App->sceneImporter->GenerateVBO(DVBO, deformableMeshData.vertices, deformableMeshData.verticesSize);
+	App->sceneImporter->GenerateIBO(DIBO, deformableMeshData.indices, deformableMeshData.indicesSize);
+	App->sceneImporter->GenerateVAO(DVAO, DVBO);
+}
+
+void ResourceMesh::DuplicateMesh(ResourceMesh * mesh)
+{
+	deformableMeshData.vertices = new Vertex[deformableMeshData.verticesSize];
+	deformableMeshData.verticesSize = deformableMeshData.verticesSize;
+	deformableMeshData.indices = new uint[deformableMeshData.indicesSize];
+	deformableMeshData.indicesSize = deformableMeshData.indicesSize;
+	deformableMeshData.meshImportSettings = meshData.meshImportSettings;
+	memcpy(deformableMeshData.vertices, meshData.vertices, sizeof(Vertex) * deformableMeshData.verticesSize);
+	memcpy(deformableMeshData.indices, meshData.indices, sizeof(uint) * deformableMeshData.indicesSize);
 }
 
 uint ResourceMesh::GetVBO() const

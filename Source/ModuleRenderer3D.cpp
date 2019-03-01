@@ -900,9 +900,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	glBindVertexArray(mesh->GetVAO());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
-	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	glBindVertexArray((mesh->deformableMeshData.indicesSize == 0) ? mesh->GetVAO() : mesh->DVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (mesh->deformableMeshData.indicesSize == 0) ? mesh->GetIBO() : mesh->DIBO);
+	glDrawElements(GL_TRIANGLES, (mesh->deformableMeshData.indicesSize == 0) ? 
+		mesh->GetIndicesCount() : mesh->deformableMeshData.indicesSize, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 

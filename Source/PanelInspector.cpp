@@ -758,7 +758,7 @@ void PanelInspector::ShowMaterialInspector() const
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
 	assert(shader != nullptr);
 
-	const char* shaderTypes[] = { "Standard", "Particles", "Custom" };
+	const char* shaderTypes[] = { "Standard", "Particles", "UI", "Custom" };
 
 	if (ImGui::Button("Shader"))
 		ImGui::OpenPopup("shader_popup");

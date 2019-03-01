@@ -26,7 +26,6 @@ uint AnimationImporter::Import(const aiAnimation* new_anim, std::string& output)
 	if (new_anim->mNumChannels == 0)
 		return false;
 
-	// TODO_G : Now we dont create resources here uwu
 	return 0u;
 	// Creating animation resource an filling its data
 	/*ResourceAnimation* anim = (ResourceAnimation*)App->res->CreateNewResource(Resource::Type::ANIMATION);
@@ -274,7 +273,6 @@ uint AnimationImporter::GenerateResourceFromFile(const char * file_path, uint ui
 	}
 
 	return 0u;
-	// TODO_G : Now we dont create resources here uwu
 	/*ResourceAnimation* resource = (ResourceAnimation*)App->resources->CreateNewResource(Resource::Type::ANIMATION, uid_to_force);
 
 	char* cursor = buffer;

@@ -31,6 +31,7 @@
 #include "ResourceShaderProgram.h"
 #include "ResourceScript.h"
 #include "ResourceMaterial.h"
+#include "ResourceAnimation.h"
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
@@ -71,6 +72,9 @@ bool PanelInspector::Draw()
 				break;
 			case ResourceTypes::MaterialResource:
 				ShowMaterialInspector();
+				break;
+			case ResourceTypes::AnimationResource:
+				ShowAnimationInspector();
 				break;
 			}
 			break;
@@ -726,6 +730,19 @@ void PanelInspector::ShowShaderProgramInspector() const
 		App->gui->panelShaderEditor->OpenShaderInShaderEditor(shaderProgram->GetUuid());
 }
 
+void PanelInspector::ShowAnimationInspector() const
+{
+	ImGui::Text("Animation");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	ResourceAnimation* animation = (ResourceAnimation*)App->scene->selectedObject.Get();
+
+	// Name
+	ImGui::Text("Name:"); ImGui::SameLine(); ImGui::Text("%s", animation->animationData.name.data());
+
+}
+
 void PanelInspector::ShowMaterialInspector() const
 {
 	ImGui::Text("Material");
@@ -768,7 +785,7 @@ void PanelInspector::ShowMaterialInspector() const
 	ResourceShaderProgram* shader = (ResourceShaderProgram*)App->res->GetResource(material->GetShaderUuid());
 	assert(shader != nullptr);
 
-	const char* shaderTypes[] = { "Standard", "Particles", "Custom" };
+	const char* shaderTypes[] = { "Standard", "Particles", "UI", "Custom" };
 
 	if (ImGui::Button("Shader"))
 		ImGui::OpenPopup("shader_popup");

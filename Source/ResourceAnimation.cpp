@@ -47,7 +47,6 @@ void ResourceAnimation::OnPanelAssets()
 
 bool ResourceAnimation::ImportFile(const char* file, std::string& name, std::string& outputFile)
 {
-
 	assert(file != nullptr);
 
 	// Search for the meta associated to the file
@@ -60,18 +59,15 @@ bool ResourceAnimation::ImportFile(const char* file, std::string& name, std::str
 		// Read the meta
 		uint uuid = 0;
 		int64_t lastModTime = 0;
-		ResourceAnimation::ReadMeta(metaFile, lastModTime, uuid, name);
-		assert(uuid > 0 && lastModTime > 0);
+		bool result = ResourceAnimation::ReadMeta(metaFile, lastModTime, uuid, name);
+		assert(result);
 
 		// The uuid of the resource would be the entry
 		char entry[DEFAULT_BUF_SIZE];
 		sprintf_s(entry, "%u", uuid);
 		outputFile = entry;
 	}
-
-
 	
-
 	return true;
 }
 

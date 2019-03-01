@@ -34,6 +34,8 @@ public:
 	bool nv_walkable = true;
 
 	uint root_bones_uid = 0u;
+
+	uint root_bone = 0u;
 };
 
 #endif

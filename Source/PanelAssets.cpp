@@ -207,6 +207,14 @@ void PanelAssets::RecursiveDrawAssetsDir(const Directory& directory)
 						if (res)
 							res->OnPanelAssets();
 					}
+
+					for (int i = 0; i < anim_uuids.size(); ++i)
+					{
+						Resource* res = (Resource*)App->res->GetResource(anim_uuids[i]);
+						if (res)
+							res->OnPanelAssets();
+					}
+
 					ImGui::TreePop();
 				}
 			

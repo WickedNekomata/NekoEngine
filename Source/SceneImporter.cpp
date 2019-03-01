@@ -990,8 +990,6 @@ void SceneImporter::ImportAnimations(mutable const aiScene * scene
 			for (uint i = 0; i < anim->mNumChannels; ++i)
 				App->animImporter->ImportBoneTransform(anim->mChannels[i], res_data.boneKeys[i]);
 
-			
-
 			App->animImporter->SaveAnimation(data, res_data, outputFile,false);
 
 			// TODO_G: Check this

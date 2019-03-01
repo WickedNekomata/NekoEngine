@@ -14,11 +14,11 @@ public class AnimationPlayer : JellyScript
     {
         if (Input.GetKeyDown(KeyCode.KEY_1))
         {
-            Destroy(gameObject);
-            Animator animator = gameObject.GetComponent<Animator>();
-            if (animator != null)
+            ParticleEmitter emitter = gameObject.GetComponent<ParticleEmitter>();
+            if (emitter != null)
             {
-                animator.PlayAnimation(0);
+                emitter.Play();
+                emitter.Stop();
             }
         }
     }

@@ -36,6 +36,7 @@ private:
 	void ShowShaderObjectInspector() const;
 	void ShowShaderProgramInspector() const;
 	void ShowMaterialInspector() const;
+	void ShowAnimationInspector() const;
 
 	ResourceMeshImportSettings m_is;
 	ResourceTextureImportSettings t_is;

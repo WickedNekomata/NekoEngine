@@ -134,7 +134,7 @@ bool Particle::Update(float dt)
 					currentFrame++;
 
 					currMinUVCoord.x = (currentFrame % textureColumns) * textureColumnsNorm;
-					currMinUVCoord.y = (currentFrame / textureColumns) * textureRowsNorm;
+					currMinUVCoord.y = (textureColumns - (currentFrame / textureColumns) - 1) * textureRowsNorm;
 				}
 				else if (owner->dieOnAnimation)
 				{

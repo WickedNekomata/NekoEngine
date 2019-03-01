@@ -50,6 +50,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	Resource* ImportFile(const char* file);
+	Resource* ImportLibraryFile(const char* file);
 	Resource* ExportFile(ResourceTypes type, ResourceData& data, void* specificData, std::string& outputFile, bool overwrite = false, bool resources = true);
 	Resource* CreateResource(ResourceTypes type, ResourceData& data, void* specificData, uint forcedUuid = 0);
 
@@ -72,6 +73,7 @@ public:
 	bool GetResourcesUuidsByFile(const char* file, std::vector<uint>& resourcesUuids) const;
 	bool GetResourceUuidByExportedFile(const char* file, uint& resourceUuid) const;
 	ResourceTypes GetResourceTypeByExtension(const char* extension) const;
+	ResourceTypes GetLibraryResourceTypeByExtension(const char* extension) const;
 	std::vector<Resource*> GetResourcesByType(ResourceTypes type);
 
 private:

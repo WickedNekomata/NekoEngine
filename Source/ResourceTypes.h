@@ -9,11 +9,11 @@ enum ResourceTypes
 	TextureResource,
 	ShaderObjectResource,
 	ShaderProgramResource,
+	MaterialResource,
 	AnimationResource,
 	BoneResource,
 	ScriptResource,
-	PrefabResource,
-	MaterialResource
+	PrefabResource
 };
 
 #endif

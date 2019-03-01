@@ -1,3 +1,5 @@
+#ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleCameraEditor.h"
 #include "GameObject.h"
@@ -132,3 +134,5 @@ public:
 
 	// Add operators in case of new kinds of selection :)
 };
+
+#endif

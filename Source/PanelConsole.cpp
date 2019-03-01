@@ -2,7 +2,6 @@
 
 #ifndef GAMEMODE
 
-
 #include "Application.h"
 #include "ModuleWindow.h"
 

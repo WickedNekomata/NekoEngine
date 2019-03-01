@@ -9,6 +9,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleTimeManager.h"
 #include "ModuleGOs.h"
+#include "ComponentTransform.h"
 
 //#include ".h" //TODO: delete this
 
@@ -36,6 +37,10 @@ bool ModuleAnimation::Awake(JSON_Object* config)
 
 bool ModuleAnimation::Start()
 {
+
+	// Call here to attach bones and everytime that we reimport things
+	StartAttachingBones();
+
 	if (current_anim) {
 		current_anim->interpolate = true;
 		current_anim->loop = true;
@@ -114,6 +119,78 @@ bool ModuleAnimation::Update(float dt)
 	}
 
 	return true;
+}
+
+bool ModuleAnimation::StartAttachingBones()
+{
+	std::vector<GameObject*>gos;
+	App->GOs->GetGameobjects(gos);
+
+	for (uint i = 0u; i < gos.size(); i++)
+	{
+		GameObject* curr_go = gos[i];
+		if (curr_go->GetComponent(ComponentTypes::MeshComponent)) {
+			std::vector<ComponentBone*> bones;
+			RecursiveFindBones(curr_go, bones);
+
+			if (bones.size() > 0)
+			{
+				DetachBones(curr_go);
+				ComponentMesh*mesh_co = (ComponentMesh*)curr_go->GetComponent(ComponentTypes::MeshComponent);
+				mesh_co->root_bone = curr_go->GetUUID();
+				mesh_co->attached_bones = bones;
+
+				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
+				
+				if (res->deformableMeshData.verticesSize > 0)
+				{
+					res->DuplicateMesh(res);
+					res->GenerateAndBindDeformableMesh();
+				}
+
+				for (std::vector<ComponentBone*>::iterator it = mesh_co->attached_bones.begin(); it != mesh_co->attached_bones.end(); ++it)
+					(*it)->attached_mesh = mesh_co;
+			}
+
+		}
+	}
+
+	return true;
+}
+
+void ModuleAnimation::RecursiveFindBones(const GameObject * go, std::vector<ComponentBone*>& output) const
+{
+	if (go == nullptr)
+		return;
+
+	std::vector<GameObject*>gos;
+	App->GOs->GetGameobjects(gos);
+
+	for (uint i = 0u; i < gos.size(); i++)
+	{
+		GameObject* curr_go = gos[i];
+		if (ComponentBone* bone = (ComponentBone*)curr_go->GetComponent(ComponentTypes::BoneComponent)) {
+			
+			ResourceBone* res = (ResourceBone*)App->res->GetResource(bone->res);
+
+			if (res != nullptr && res->boneData.mesh_uid == go->GetUUID())
+			{
+				output.push_back(bone);
+			}
+		}
+	}
+}
+
+void ModuleAnimation::DetachBones(GameObject * go)
+{
+	ComponentMesh* mesh_com = (ComponentMesh*)go->GetComponent(ComponentTypes::MeshComponent);
+	for (std::vector<ComponentBone*>::iterator it = mesh_com->attached_bones.begin(); it != mesh_com->attached_bones.end(); ++it)
+		(*it)->attached_mesh = nullptr;
+	mesh_com->attached_bones.clear();
+
+	ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_com->res);
+	//todo release deformable
+	//RELEASE(res->deformable);
 }
 
 void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
@@ -443,43 +520,50 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	ComponentMesh* mesh = component_bone->attached_mesh;
-	/*ResourceMesh* mesh_res = App->res->GetResource(component_bone->attachedMesh);
-	//TODO_G: finish animation module
-	if (mesh != nullptr)
+	//ComponentMesh* mesh = component_bone->attached_mesh;
+	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(component_bone->attachedMesh);
+	
+	if (mesh_res != nullptr)
 	{
 		const ResourceBone* rbone = (const ResourceBone*)App->res->GetResource(component_bone->res);
-		const ResourceMesh* roriginal = (const ResourceMesh*)App->res->GetResource(mesh->res);
-		ResourceMesh* tmp_mesh = (ResourceMesh*)mesh->GetResource();
-		ResourceMesh* rmesh = (ResourceMesh*)tmp_mesh->deformable;
+		ResourceMesh* roriginal = mesh_res;
+		ResourceMesh* tmp_mesh = mesh_res;
+		
 
-		float4x4 trans = component_bone->GetEmbeddedObject()->GetTransform()->GetMatrix();
-		trans = trans * component_bone->attached_mesh->GetEmbeddedObject()->GetTransform()->GetLocal().Inverted();
+		math::float4x4 trans = component_bone->GetParent()->transform->GetMatrix();
+		trans = trans * component_bone->attached_mesh->GetParent()->transform->GetMatrix().Inverted();
 
-		trans = trans * rbone->offset_matrix;
+		trans = trans * rbone->boneData.offset_matrix;
 
-		for (uint i = 0; i < rbone->bone_weights_size; ++i)
+		for (uint i = 0; i < rbone->boneData.bone_weights_size; ++i)
 		{
-			uint index = rbone->bone_weights_indices[i];
-			float3 original(&roriginal->vertices[index * 3]);
+			uint index = rbone->boneData.bone_weights_indices[i];
+			
+			math::float3 original(roriginal->GetSpecificData().vertices[index].position);
 
-			float3 vertex = trans.TransformPos(original);
+			math::float3 vertex = trans.TransformPos(original);
 
-			rmesh->vertices[index * 3] += vertex.x * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 1] += vertex.y * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 2] += vertex.z * rbone->bone_weights[i] * SCALE;
+			vertex *= rbone->boneData.bone_weights[i] * SCALE;
+
+			float pos[3] = { vertex.x,vertex.y,vertex.z };
+			memcpy(tmp_mesh->deformableMeshData.vertices[index].position, pos, sizeof(float) * 3);
+			
 		}
-	}*/
+	}
 }
 
 void ModuleAnimation::ResetMesh(ComponentBone * component_bone)
 {
-	//TODO_G: finish animation module
-	/*ResourceBone* rbone = (ResourceBone*)component_bone->GetResource();
+	ResourceBone* rbone = (ResourceBone*)App->res->GetResource(component_bone->res);
 	ResourceMesh* original = nullptr;
 	if (rbone)
-		original = (ResourceMesh*)App->resources->Get(rbone->mesh_uid);
+		original = (ResourceMesh*)App->res->GetResource(rbone->boneData.mesh_uid);
 
-	if (original)
-		memset(original->deformable->vertices, 0, original->vertex_size * sizeof(float));*/
+	if (original) {
+		for (uint i = 0u; i < original->deformableMeshData.verticesSize; i++)
+		{
+			memset(original->deformableMeshData.vertices[i].position, 0, 3  * sizeof(float));
+		}
+	}
+		
 }

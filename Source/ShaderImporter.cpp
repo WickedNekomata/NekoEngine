@@ -1,5 +1,3 @@
-#include "GameMode.h"
-
 #include "ShaderImporter.h"
 
 #include "Application.h"

@@ -139,7 +139,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	}
 }
 
-GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
+GameObject* ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
 {
 	assert(canvas == nullptr);
 	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
@@ -416,7 +416,7 @@ bool ModuleGOs::ExistCanvas() const
 	return (canvas != nullptr);
 }
 
-GameObject * ModuleGOs::GetCanvas() const
+GameObject* ModuleGOs::GetCanvas() const
 {
 	return canvas;
 }

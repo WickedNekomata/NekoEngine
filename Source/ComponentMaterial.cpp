@@ -28,7 +28,7 @@ void ComponentMaterial::Update() {}
 
 void ComponentMaterial::OnUniqueEditor()
 {
-#ifndef GAME
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		const Resource* resource = App->res->GetResource(res);

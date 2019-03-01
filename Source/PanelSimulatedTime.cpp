@@ -1,6 +1,7 @@
 #include "PanelSimulatedTime.h"
 
 #ifndef GAMEMODE
+
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "ModuleGui.h"

@@ -87,7 +87,9 @@ void ComponentCanvasRenderer::OnInternalLoad(char *& cursor)
 
 void ComponentCanvasRenderer::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Canvas Renderer");
+#endif
 }
 
 //Rend Queue Struct

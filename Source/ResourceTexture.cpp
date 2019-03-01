@@ -15,6 +15,7 @@ ResourceTexture::~ResourceTexture() {}
 
 void ResourceTexture::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -37,6 +38,7 @@ void ResourceTexture::OnPanelAssets()
 		ImGui::SetDragDropPayload("TEXTURE_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------

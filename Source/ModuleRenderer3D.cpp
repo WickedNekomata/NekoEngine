@@ -14,6 +14,8 @@
 #include "ModuleUI.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 #include "Quadtree.h"
 #include "PanelSkybox.h"
 
@@ -161,6 +163,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
+
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
 	//App->materialImporter->LoadSkyboxTexture();
@@ -207,6 +210,18 @@ update_status ModuleRenderer3D::PostUpdate()
 
 	if (currentCamera != nullptr)
 	{
+		for (uint i = 0; i < cameraComponents.size(); ++i)
+		{
+			if (cameraComponents[i]->IsActive())
+				cameraComponents[i]->UpdateTransform();
+		}
+
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+		{
+			if (projectorComponents[i]->IsActive())
+				projectorComponents[i]->UpdateTransform();
+		}
+
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
@@ -321,6 +336,7 @@ update_status ModuleRenderer3D::PostUpdate()
 			for (uint i = 0; i < rigidActorComponents.size(); ++i)
 			{
 				physx::PxRigidActor* gActor = rigidActorComponents[i]->GetActor();
+
 				physx::PxShape* gShape = nullptr;
 				gActor->getShapes(&gShape, 1);
 				if (gShape == nullptr)
@@ -887,9 +903,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	glBindVertexArray(mesh->GetVAO());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
-	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	glBindVertexArray((mesh->deformableMeshData.indicesSize == 0) ? mesh->GetVAO() : mesh->DVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (mesh->deformableMeshData.indicesSize == 0) ? mesh->GetIBO() : mesh->DIBO);
+	glDrawElements(GL_TRIANGLES, (mesh->deformableMeshData.indicesSize == 0) ? 
+		mesh->GetIndicesCount() : mesh->deformableMeshData.indicesSize, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 

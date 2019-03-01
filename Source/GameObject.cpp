@@ -624,6 +624,17 @@ Component* GameObject::GetComponent(ComponentTypes type) const
 	return comp;
 }
 
+std::vector<Component*> GameObject::GetComponents(ComponentTypes type) const
+{
+	std::vector<Component*> ret;
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			ret.push_back(components[i]);
+	}
+	return ret;
+}
+
 int GameObject::GetComponentsLength()
 {
 	return components.size();

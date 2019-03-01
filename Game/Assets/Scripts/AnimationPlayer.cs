@@ -23,5 +23,16 @@ public class AnimationPlayer : JellyScript
             }
         }
     }
+
+    public void OnClick()
+    {
+
+    }
+
+    public void Jejeje()
+    {
+
+    }
+
 }
 

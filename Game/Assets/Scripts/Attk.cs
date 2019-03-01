@@ -8,9 +8,11 @@ public class Attk : JellyScript
     int damage = 20;
 
     // Raycast
-    private RaycastHit hit;
     public LayerMask terrainMask = new LayerMask();
     public LayerMask enemyMask = new LayerMask();
+
+    //Place to go
+    Vector3 placeToGo = new Vector3(0,0,0);
 
     //Agent
     private NavMeshAgent agent = null;
@@ -27,8 +29,8 @@ public class Attk : JellyScript
     Alita_State state = Alita_State.IDLE;
 
     //Enemy
-    GameObject enemy;
-    Unit enemy_unit;
+    GameObject enemy = null;
+    Unit enemy_unit = null;
 
     //Variables about attack distance and time
     public float attack_dist = 2.0f;
@@ -56,8 +58,11 @@ public class Attk : JellyScript
                 break;
             case Alita_State.RUNNING:
 
-                if (hit.point == transform.position)
+                if (placeToGo == transform.position)
+                {
+                    agent.SetDestination(transform.position);
                     state = Alita_State.IDLE;
+                }
 
                 break;
             case Alita_State.GOING_TO_ATTK:
@@ -66,15 +71,21 @@ public class Attk : JellyScript
                 if (diff <= attack_dist + 1.0f)
                 {
                     Debug.Log("ARRIVE TO ENEMY");
+                    agent.SetDestination(transform.position);
                     state = Alita_State.ATTK;
                 }
+
                 break;
             case Alita_State.ATTK:
 
                 if (enemy != null)
                     NormalAttack();
                 else
+                {
+                    enemy = null;
+                    enemy_unit = null;
                     state = Alita_State.IDLE;
+                }
                 break;
 
             case Alita_State.AREA_ATTK:
@@ -90,6 +101,7 @@ public class Attk : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+            RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 //Go to attack
@@ -103,7 +115,7 @@ public class Attk : JellyScript
 
                     agent.SetDestination(enemy_pos);
 
-                    enemy_unit = enemy.GetComponent<Unit>(); /////HERE GET ANOTHER SCRIPT MAYBE???? I DON'T KNOW xd
+                    enemy_unit = enemy.GetComponent<Unit>();
 
                     Debug.Log("GOING TO ENEMY");
                 }
@@ -117,6 +129,7 @@ public class Attk : JellyScript
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+            RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 state = Alita_State.RUNNING;
@@ -128,9 +141,11 @@ public class Attk : JellyScript
                 {
                     Debug.Log("GOING TO SPOT");
                     agent.SetDestination(hit.point);
+                    placeToGo = hit.point;
                 }
                 else
                     Debug.Log("AGENT IS NULL");
+
             }
         }
     }
@@ -142,7 +157,7 @@ public class Attk : JellyScript
         //Attack every second
         if (attk_cool_down >= attk_period)
         {
-            if (enemy_unit != null)
+            if (enemy != null && enemy_unit != null)
             {
                 enemy_unit.Hit(damage);
                 Debug.Log("ENEMY HIT");

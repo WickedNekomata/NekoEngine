@@ -30,7 +30,6 @@ public class Unit : JellyScript
 
     // Components
      private NavMeshAgent agent = null;
-     private Alita alita = null;
 
     // Start is called before the first frame update
     public override void Start()
@@ -41,13 +40,10 @@ public class Unit : JellyScript
                 {
                     agent = gameObject.GetComponent<NavMeshAgent>();
       
-                    //alita = gameObject.GetComponent<Alita>();
-      
                     break;
                 }
             case UNIT_TYPE.ENEMY:
                 {
-                    //agent = gameObject.GetComponent<NavMeshAgent>();
       
                     break;
                 }
@@ -64,13 +60,8 @@ public class Unit : JellyScript
         CurrentLife -= damage;
 
         if (current_life <= 0)
-        {
             Destroy(gameObject);
-            //if (type == UNIT_TYPE.ALITA)
-            //    alita.LethalHit();
-            //else
-            //    Destroy(gameObject, 0.2f);
-        }
+
     }
 
 }

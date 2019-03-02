@@ -263,7 +263,7 @@
 //   Inline sort     :  6.54 s     5.65 s
 //   New rasterizer  :  5.63 s     5.00 s
 
-#include "../GameMode.h"
+
 
 #ifndef GAMEMODE
 

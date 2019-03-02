@@ -44,6 +44,15 @@ bool PanelAssets::Draw()
 			App->PushSystemEvent(event);
 		}
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Generate Library Files"))
+		{
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::GenerateLibraryFiles;
+			App->PushSystemEvent(newEvent);
+		}
+
 		bool treeNodeOpened = ImGui::TreeNodeEx(DIR_ASSETS);
 		CreateResourcePopUp(DIR_ASSETS);
 

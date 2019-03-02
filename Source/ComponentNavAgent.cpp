@@ -45,38 +45,49 @@ void ComponentNavAgent::OnUniqueEditor()
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Agent Radius");
 		ImGui::SameLine();
-		ImGui::DragFloat("##ARadius", &radius, 0.1f);
+		if (ImGui::DragFloat("##ARadius", &radius, 0.1f))
+			UpdateParams();
 
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Agent Height");
 		ImGui::SameLine();
-		ImGui::DragFloat("##AHeight", &height, 0.1f);
+		if (ImGui::DragFloat("##AHeight", &height, 0.1f))
+			UpdateParams();
 
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Max Acceleration");
 		ImGui::SameLine();
-		ImGui::DragFloat("##MAcc", &maxAcceleration, 0.1f);
+		if (ImGui::DragFloat("##MAcc", &maxAcceleration, 0.1f))
+			UpdateParams();
 
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Max Speed");
 		ImGui::SameLine();
-		ImGui::DragFloat("##MSpeed", &maxSpeed, 0.1f);
+		if (ImGui::DragFloat("##MSpeed", &maxSpeed, 0.1f))
+			UpdateParams();
 
-		ImGui::CheckboxFlags("Anticipate Turns", &params, 1);
-		ImGui::CheckboxFlags("Optimize Visibility", &params, 8);
-		ImGui::CheckboxFlags("Optimize Topology", &params, 16);
-		ImGui::CheckboxFlags("Obstacle Avoidance", &params, 2);
+		if (ImGui::CheckboxFlags("Anticipate Turns", &params, 1))
+			UpdateParams();
+		if (ImGui::CheckboxFlags("Optimize Visibility", &params, 8))
+			UpdateParams();
+		if (ImGui::CheckboxFlags("Optimize Topology", &params, 16))
+			UpdateParams();
+		if (ImGui::CheckboxFlags("Obstacle Avoidance", &params, 2))
+			UpdateParams();
 
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Avoidance Quality");
 		ImGui::SameLine();
-		ImGui::SliderInt("##AQuality", &avoidanceQuality, 0.0f, 3.0f);
+		if (ImGui::SliderInt("##AQuality", &avoidanceQuality, 0.0f, 3.0f))
+			UpdateParams();
 
-		ImGui::CheckboxFlags("Separation", &params, 4);
+		if (ImGui::CheckboxFlags("Separation", &params, 4))
+			UpdateParams();
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Separation Weight");
 		ImGui::SameLine();
-		ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f);
+		if (ImGui::DragFloat("##SWeight", &separationWeight, 0.1f, 0.0f, 30.0f))
+			UpdateParams();
 	}
 #endif
 }

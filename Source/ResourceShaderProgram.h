@@ -48,6 +48,8 @@ public:
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderProgramUuid, std::string& name, std::vector<std::string>& shaderObjectsNames, ShaderProgramTypes& shaderProgramType, uint& format);
 	static uint SetNameToMeta(const char* metaFile, const std::string& name);
 
+	bool GenerateLibraryFiles() const;
+
 	// ----------------------------------------------------------------------------------------------------
 
 	bool Link();

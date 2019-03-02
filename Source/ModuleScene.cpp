@@ -55,7 +55,8 @@ bool ModuleScene::Start()
 	if (size > 0)
 	{
 		App->GOs->LoadScene(buf, size, true);
-		delete[] buf;
+		RELEASE_ARRAY(buf);
+
 		App->renderer3D->SetCurrentCamera();
 		App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
 

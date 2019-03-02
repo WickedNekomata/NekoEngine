@@ -4,6 +4,7 @@
 enum ComponentTypes
 {
 	NoComponentType,
+
 	TransformComponent,
 	MeshComponent,
 	MaterialComponent,
@@ -20,6 +21,7 @@ enum ComponentTypes
 	LabelComponent,
 	LightComponent,
 	ProjectorComponent,
+
 	// Physics
 	/// Rigid Actors
 	RigidStaticComponent,

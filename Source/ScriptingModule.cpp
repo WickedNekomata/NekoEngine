@@ -95,16 +95,17 @@ bool ScriptingModule::Init(JSON_Object* data)
 
 bool ScriptingModule::Start()
 {
+
+#ifndef GAMEMODE
 	CreateScriptingProject();
 	IncludeCSFiles();
+#endif
+
 	return true;
 }
 
 update_status ScriptingModule::PreUpdate()
 {
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
-		CreateInternalCSProject();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -122,9 +123,30 @@ update_status ScriptingModule::PostUpdate()
 {
 	if (someScriptModified || engineOpened)
 	{
+#ifndef GAMEMODE
 		RecompileScripts();
 		someScriptModified = false;
 		engineOpened = false;
+#else
+		//Engine opened recently, import the .dll if found
+
+		System_Event event;
+		event.type = System_Event_Type::ScriptingDomainReloaded;
+		App->PushSystemEvent(event);
+
+		App->scripting->CreateDomain();
+		App->scripting->UpdateScriptingReferences();
+
+		std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+		for (int i = 0; i < scriptResources.size(); ++i)
+		{
+			ResourceScript* scriptRes = (ResourceScript*)scriptResources[i];
+			scriptRes->referenceMethods();
+		}
+
+		App->scripting->ReInstance();
+
+#endif
 	}
 
 	return UPDATE_CONTINUE;

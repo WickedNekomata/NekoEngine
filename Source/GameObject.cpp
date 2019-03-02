@@ -190,7 +190,6 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 		}
 	}
 
-
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
 	{
@@ -276,6 +275,12 @@ void GameObject::ToggleIsStatic()
 {
 	isStatic = !isStatic;
 	App->GOs->RecalculateVector(this);
+}
+
+void GameObject::ForceStaticNoVector()
+{
+	assert(isStatic == false);
+	isStatic = true;
 }
 
 bool GameObject::IsActive() const

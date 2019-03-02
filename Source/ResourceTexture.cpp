@@ -350,6 +350,45 @@ uint ResourceTexture::SetTextureImportSettingsToMeta(const char* metaFile, const
 	return lastModTime;
 }
 
+bool ResourceTexture::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	std::string outputAssetsFile = DIR_ASSETS;
+	if (App->fs->RecursiveExists(metaFile, outputAssetsFile.data(), outputAssetsFile))
+	{
+		// Change the name of the meta for the uuid of the resource
+		std::string path = outputAssetsFile.data();
+
+		uint found = path.find_last_of("\\");
+		if (found != std::string::npos)
+			path = path.substr(0, found);
+
+		std::string extension = outputAssetsFile.data();
+
+		found = extension.find_first_of(".");
+		if (found != std::string::npos)
+			extension = extension.substr(found, extension.size());
+
+		// TODO
+
+
+		std::string outputLibraryFile;
+		uint size = App->fs->Copy(outputAssetsFile.data(), DIR_LIBRARY_TEXTURES, outputLibraryFile);
+
+		if (size > 0)
+			return true;
+	}
+
+	return false;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 uint ResourceTexture::GetId() const

@@ -390,6 +390,36 @@ uint ResourceMaterial::SetNameToMeta(const char* metaFile, const std::string& na
 	return lastModTime;
 }
 
+bool ResourceMaterial::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	std::string outputAssetsFile = DIR_ASSETS;
+	if (App->fs->RecursiveExists(metaFile, outputAssetsFile.data(), outputAssetsFile))
+	{
+		std::string outputLibraryFile;
+		uint size = App->fs->Copy(outputAssetsFile.data(), DIR_LIBRARY_MATERIALS, outputLibraryFile);
+
+		if (size > 0)
+		{
+			// 2. Copy material
+			outputLibraryFile.clear();
+			uint size = App->fs->Copy(data.file.data(), DIR_LIBRARY_MATERIALS, outputLibraryFile);
+
+			if (size > 0)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ResourceMaterial::SetResourceShader(uint shaderUuid)

@@ -123,6 +123,11 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 			break;
 		case ComponentTypes::CanvasRendererComponent:
 			go->cmp_canvasRenderer = nullptr;
+		case ComponentTypes::AudioListenerComponent:
+			go->cmp_audioListener = 0;
+			break;
+		case ComponentTypes::AudioSourceComponent:
+			go->cmp_audioSource = 0;
 			break;
 		}
 		break;

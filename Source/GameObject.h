@@ -98,6 +98,8 @@ public:
 	class ComponentAnimation*  cmp_animation = nullptr;
 	class ComponentLight*	   cmp_light = nullptr;
 	class ComponentProjector*  cmp_projector = nullptr;
+	class ComponentAudioListener* cmp_audioListener = nullptr;
+	class ComponentAudioSource*   cmp_audioSource = nullptr;
 
 	ResourcePrefab* prefab = nullptr;
 

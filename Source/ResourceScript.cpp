@@ -83,16 +83,34 @@ bool ResourceScript::GenerateLibraryFiles() const
 			App->fs->GetExtension(metaFile, extension);
 
 			char newMetaFile[DEFAULT_BUF_SIZE];
-			sprintf_s(newMetaFile, "%s/%u%s", DIR_LIBRARY_SCRIPTS, uuid, extension.data());
+			sprintf_s(newMetaFile, "%s/%s%s%s", DIR_LIBRARY_SCRIPTS, data.name.data(), ".cs", extension.data());
 
 			// Save the new meta (info + new name)
 			size = App->fs->Save(newMetaFile, buffer, size);
 			if (size > 0)
-				return true;
+				delete[] buffer;						
 		}
 	}
 
-	return false;
+	//2 Copy .cs file
+	// Read the info of the meta
+	if (App->fs->Exists(data.file.data()))
+	{
+		char* buffer;
+		uint size = App->fs->Load(data.file.data(), &buffer);
+		if (size > 0)
+		{
+			char newFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newFile, "%s/%s%s", DIR_LIBRARY_SCRIPTS, data.name.data(), ".cs");
+
+			// Save the new file
+			size = App->fs->Save(newFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+
+	return true;
 }
 
 void ResourceScript::SerializeToMeta(char*& cursor) const

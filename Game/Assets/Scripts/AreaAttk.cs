@@ -117,6 +117,9 @@ public class AreaAttk : JellyScript
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
+                if (agent == null)
+                    agent = gameObject.GetComponent<NavMeshAgent>();
+
                 //Go to attack
                 enemy = hit.gameObject;
                 if (enemy != null)

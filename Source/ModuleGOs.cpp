@@ -113,6 +113,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::PlaneColliderComponent:
 			go->cmp_collider = 0;
 			break;
+		case ComponentTypes::AudioListenerComponent:
+			go->cmp_audioListener = 0;
+			break;
 		}
 		break;
 	}

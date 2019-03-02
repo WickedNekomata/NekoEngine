@@ -22,7 +22,7 @@ ComponentAudioListener::ComponentAudioListener(const ComponentAudioListener& com
 ComponentAudioListener::~ComponentAudioListener()
 {
 	parent->cmp_audioListener = nullptr;
-	RELEASE(listener);
+	//RELEASE(listener);
 }
 
 void ComponentAudioListener::Update()

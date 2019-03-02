@@ -46,6 +46,8 @@ public:
 
 	void OnPanelAssets();
 
+	bool GenerateLibraryFiles() const;
+
 public:
 
 	void SerializeToMeta(char*& cursor) const;

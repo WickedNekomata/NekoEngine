@@ -12,6 +12,8 @@
 #include "ScriptingModule.h"
 #include "imgui/imgui.h"
 
+#include <assert.h>
+
 std::vector<std::string>ResourceScript::scriptNames;
 
 ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
@@ -56,6 +58,41 @@ void ResourceScript::OnPanelAssets()
 		ImGui::EndDragDropSource();
 	}
 #endif
+}
+
+bool ResourceScript::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		// Read the info of the meta
+		char* buffer;
+		uint size = App->fs->Load(metaFile, &buffer);
+		if (size > 0)
+		{
+			// Create a new name for the meta
+			std::string extension;
+
+			App->fs->GetExtension(metaFile, extension);
+
+			char newMetaFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newMetaFile, "%s/%u%s", DIR_LIBRARY_SCRIPTS, uuid, extension.data());
+
+			// Save the new meta (info + new name)
+			size = App->fs->Save(newMetaFile, buffer, size);
+			if (size > 0)
+				return true;
+		}
+	}
+
+	return false;
 }
 
 void ResourceScript::SerializeToMeta(char*& cursor) const

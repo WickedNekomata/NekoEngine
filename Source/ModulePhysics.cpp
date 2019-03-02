@@ -237,7 +237,8 @@ update_status ModulePhysics::FixedUpdate()
 		return UPDATE_CONTINUE;
 #endif
 
-	//Debug();
+	Debug();
+	DestroyChest();
 
 	return UPDATE_CONTINUE;
 }
@@ -438,6 +439,11 @@ void ModulePhysics::Debug()
 			}
 		}
 	}
+}
+
+void ModulePhysics::DestroyChest()
+{
+
 }
 //_*****Debug*****
 

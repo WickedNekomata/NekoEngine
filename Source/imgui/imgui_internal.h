@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../GameMode.h"
+
 
 #ifndef GAMEMODE
 

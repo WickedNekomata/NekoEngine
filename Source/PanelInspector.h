@@ -1,7 +1,7 @@
 #ifndef __PANEL_INSPECTOR_H__
 #define __PANEL_INSPECTOR_H__
 
-#include "GameMode.h"
+
 
 #include "ResourceMesh.h"
 #include "ResourceTexture.h"

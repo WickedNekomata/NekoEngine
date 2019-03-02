@@ -475,7 +475,7 @@ void ResourceMaterial::SetUniformsAsUsed()
 			{
 				App->res->SetAsUsed(materialData.uniforms[i].sampler2DU.value.uuid);
 				ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(materialData.uniforms[i].sampler2DU.value.uuid);
-				materialData.uniforms[i].sampler2DU.value.id = texture->GetId();
+				materialData.uniforms[i].sampler2DU.value.id = texture ? texture->GetId() : 0;
 			}
 		}
 		break;

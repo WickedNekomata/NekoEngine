@@ -1,7 +1,7 @@
 #ifndef __MODULE_CAMERA_EDITOR_H__
 #define __MODULE_CAMERA_EDITOR_H__
 
-#include "GameMode.h"
+
 
 #ifndef GAMEMODE
 

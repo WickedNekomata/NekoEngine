@@ -1,7 +1,7 @@
 #ifndef __APPLICATION_H_
 #define __APPLICATION_H_
 
-#include "GameMode.h"
+
 
 #include <list>
 #include <vector>

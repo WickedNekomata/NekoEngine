@@ -1,7 +1,7 @@
 #ifndef __RAYCASTER_H__
 #define __RAYCASTER_H__
 
-#include "GameMode.h"
+
 
 #ifndef GAMEMODE
 

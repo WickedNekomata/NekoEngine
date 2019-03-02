@@ -49,7 +49,7 @@
 //  ES 3.0    300       "#version 300 es"
 //----------------------------------------
 
-#include "../GameMode.h"
+
 
 #ifndef GAMEMODE
 

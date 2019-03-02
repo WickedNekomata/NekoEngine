@@ -1,7 +1,7 @@
 #ifndef __PANEL_HIERARCHY_H__
 #define __PANEL_HIERARCHY_H__
 
-#include "GameMode.h"
+
 
 #ifndef GAMEMODE
 

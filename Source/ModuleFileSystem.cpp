@@ -65,6 +65,7 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 update_status ModuleFileSystem::PreUpdate()
 {
+#ifndef GAMEMODE
 	static float updateAssetsCounter = 0.0f;
 	updateAssetsCounter += App->timeManager->GetRealDt();
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
@@ -73,7 +74,7 @@ update_status ModuleFileSystem::PreUpdate()
 
 		UpdateAssetsDir();
 	}
-
+#endif
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -124,6 +125,7 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 	{
 		case System_Event_Type::FileDropped:
 		{
+#ifndef GAMEMODE
 			char* fileOrigin = event.fileEvent.file;
 
 			union
@@ -204,7 +206,7 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 			sprintf(originExFile, "Exception/%s", fileName.data());
 			MoveFileInto(originExFile, destinationFile);
 			EndTempException();
-
+#endif
 			break;
 		}
 	}

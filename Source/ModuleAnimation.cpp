@@ -10,7 +10,8 @@
 #include "ModuleTimeManager.h"
 #include "ModuleGOs.h"
 #include "ComponentTransform.h"
-
+#include "ModuleEvents.h"
+#include "EventSystem.h"
 #include "ModuleInput.h"
 
 //#include ".h" //TODO: delete this
@@ -208,6 +209,17 @@ void ModuleAnimation::SetUpAnimations()
 			RecursiveGetAnimableGO(App->scene->root, &it_anim->anim_res_data.boneKeys[j], it_anim);
 		}
 		
+	}
+}
+
+void ModuleAnimation::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+
+	case System_Event_Type::GameObjectDestroyed:
+		GameObject* go = event.goEvent.gameObject;
+		break;
 	}
 }
 

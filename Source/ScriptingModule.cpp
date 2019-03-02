@@ -84,7 +84,7 @@ bool ScriptingModule::Init(JSON_Object* data)
 	CreateDomain();
 
 	if (!internalAssembly)
-		return false;
+		return true;
 
 	char* args[1];
 	args[0] == "InternalAssembly";

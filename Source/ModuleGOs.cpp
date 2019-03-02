@@ -419,7 +419,7 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 		}
 		if (go->GetParent() == 0)
 		{
-			assert(App->scene->root == 0);
+			//assert(App->scene->root == 0);
 			App->scene->root = go;
 		}
 		else

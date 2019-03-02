@@ -39,8 +39,7 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 
 	// -----
 
-	physx::PxActorFlags actorFlags = gActor->getActorFlags();
-	useGravity = !(actorFlags & physx::PxActorFlag::eDISABLE_GRAVITY);
+	SetUseGravity(false);
 }
 
 ComponentRigidStatic::ComponentRigidStatic(const ComponentRigidStatic& componentRigidStatic, GameObject* parent) : ComponentRigidActor(componentRigidStatic, parent, ComponentTypes::RigidStaticComponent)

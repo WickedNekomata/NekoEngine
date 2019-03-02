@@ -18,7 +18,14 @@ ComponentNavAgent::ComponentNavAgent(GameObject* parent) : Component(parent, Com
 ComponentNavAgent::ComponentNavAgent(const ComponentNavAgent& componentNavAgent, GameObject* parent, bool include) :
 	Component(parent, ComponentTypes::NavAgentComponent)
 {
-	memcpy(&(ComponentNavAgent&)componentNavAgent, this, sizeof(ComponentNavAgent));
+	radius = componentNavAgent.radius;
+	height = componentNavAgent.height;
+	maxAcceleration = componentNavAgent.maxAcceleration;
+	maxSpeed = componentNavAgent.maxSpeed;
+	params = componentNavAgent.params;
+	separationWeight = componentNavAgent.separationWeight;
+	avoidanceQuality = componentNavAgent.avoidanceQuality;
+
 	AddAgent();
 
 	if(include)

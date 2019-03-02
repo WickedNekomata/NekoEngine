@@ -119,9 +119,19 @@ void ComponentNavAgent::SetDestination(const float* pos) const
 	App->navigation->SetDestination(pos, index);
 }
 
-bool ComponentNavAgent::IsWalking()
+bool ComponentNavAgent::IsWalking() const
 {
 	return App->navigation->IsWalking(index);
+}
+
+void ComponentNavAgent::RequestMoveVelocity(float* dir) const
+{
+	App->navigation->RequestMoveVelocity(index, dir);
+}
+
+void ComponentNavAgent::ResetMoveTarget() const
+{
+	App->navigation->ResetMoveTarget(index);
 }
 
 uint ComponentNavAgent::GetInternalSerializationBytes()

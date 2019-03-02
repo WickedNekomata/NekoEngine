@@ -96,6 +96,7 @@ public:
 	uint GetIndicesCount() const;
 
 	void GenerateAndBindDeformableMesh();
+	void UnloadDeformableMeshFromMemory();
 
 	void DuplicateMesh(ResourceMesh * mesh);
 

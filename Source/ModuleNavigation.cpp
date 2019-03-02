@@ -267,7 +267,7 @@ int ModuleNavigation::AddAgent(const float* p, float radius, float height, float
 
 bool ModuleNavigation::UpdateAgentParams(int indx, float radius, float height, float maxAcc, float maxSpeed, float collQueryRange, float pathOptimRange, unsigned char updateFlags, unsigned char obstacleAvoidanceType) const
 {
-	if (!m_crowd->getAgent(indx))
+	if (!m_crowd || !m_crowd->getAgent(indx))
 		return false;
 
 	dtCrowdAgentParams params;
@@ -308,6 +308,16 @@ bool ModuleNavigation::IsWalking(int index) const
 {
 	const dtCrowdAgent* ag = m_crowd->getAgent(index);
 	return ag->state == DT_CROWDAGENT_STATE_WALKING;
+}
+
+void ModuleNavigation::RequestMoveVelocity(int index, const float* vel)
+{
+	m_crowd->requestMoveVelocity(index, vel);
+}
+
+void ModuleNavigation::ResetMoveTarget(int index)
+{
+	m_crowd->resetMoveTarget(index);
 }
 
 void ModuleNavigation::calcVel(float* vel, const float* pos, const float* tgt, const float speed)

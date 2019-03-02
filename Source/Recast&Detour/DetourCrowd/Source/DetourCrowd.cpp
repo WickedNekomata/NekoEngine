@@ -537,7 +537,12 @@ int dtCrowd::addAgent(const float* pos, const dtCrowdAgentParams* params)
 		dtVcopy(nearest, pos);
 		ref = 0;
 	}
-	
+
+	// Calculate the offset from the original position to the navmesh position
+	ag->offsetPos[0] = pos[0] - nearest[0];
+	ag->offsetPos[1] = pos[1] - nearest[1];
+	ag->offsetPos[2] = pos[2] - nearest[2];
+
 	ag->corridor.reset(ref, nearest);
 	ag->boundary.reset();
 	ag->partial = false;

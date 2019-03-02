@@ -65,6 +65,11 @@ update_status ModuleNavigation::Update()
 				ComponentTransform* trm = agent->GetParent()->transform;
 				memcpy(&trm->position, ag->npos, sizeof(float) * 3);
 
+				// Add the offset to obtain the real gameobject position
+				trm->position[0] += ag->offsetPos[0];
+				trm->position[1] += ag->offsetPos[1];
+				trm->position[2] += ag->offsetPos[2];
+
 				// Face gameobject to velocity dir
 				// vel equals to current velocity, nvel equals to desired velocity
 				// using nvel instead of vel would end up with a non smoothy rotation.

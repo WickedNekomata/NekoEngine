@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using JellyBitEngine;
 
 public class AreaAttk : JellyScript
@@ -17,6 +16,9 @@ public class AreaAttk : JellyScript
 
     //Agent
     private NavMeshAgent agent = null;
+
+    //Particles
+    ParticleEmitter smoke = null;
 
     //Alita states
     private enum Alita_State
@@ -45,6 +47,7 @@ public class AreaAttk : JellyScript
     public override void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
+        smoke = gameObject.GetComponent<ParticleEmitter>();
     }
 
     //Called every frame
@@ -60,7 +63,7 @@ public class AreaAttk : JellyScript
 
     //Check for... functions
     //---------------------------------------------------------------------------------------------------------------------------------
-    
+
     private void CheckState()
     {
         switch (state)
@@ -141,7 +144,7 @@ public class AreaAttk : JellyScript
         }
 
         //Move
-        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             RaycastHit hit;
@@ -206,9 +209,10 @@ public class AreaAttk : JellyScript
                 enemy_unit.Hit(damage);
                 Debug.Log("ENEMY HIT");
 
-                ParticleEmitter part = gameObject.GetComponent<ParticleEmitter>();
-                part.transform.position = transform.position;
-                part.Play();
+                //Particles
+                if (smoke == null)
+                    smoke = gameObject.GetComponent<ParticleEmitter>();
+                smoke.Play();
             }
 
             attk_cool_down = 0.0f;
@@ -220,7 +224,7 @@ public class AreaAttk : JellyScript
     {
         Debug.Log("AREA ATTACK!!!!!");
         float circleRadius = 10.0f;
-       
+
         OverlapHit[] hitInfo;
         if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {

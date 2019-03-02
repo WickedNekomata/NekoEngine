@@ -69,8 +69,11 @@ ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& compon
 	density = componentRigidDynamic.density;
 
 	physx::PxShape* gShape = nullptr;
-	if (parent->boundingBox.IsFinite())
-		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+
+	if (componentRigidDynamic.parent->cmp_collider != nullptr)
+		gShape = componentRigidDynamic.parent->cmp_collider->GetShape();
+	else if (componentRigidDynamic.parent->boundingBox.IsFinite())
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(componentRigidDynamic.parent->boundingBox.HalfSize().x, componentRigidDynamic.parent->boundingBox.HalfSize().y, componentRigidDynamic.parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
 	else
 		gShape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
 	assert(gShape != nullptr);
@@ -81,13 +84,11 @@ ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& compon
 	rigidActorType = componentRigidDynamic.rigidActorType;
 
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
-	if (parent->cmp_collider != nullptr)
-	{
-		UpdateShape(parent->cmp_collider->GetShape());
-		UpdateMassAndInertia();
-	}
+
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	UpdateTransform(globalMatrix);
+
+	// -----
 
 	SetUseGravity(componentRigidDynamic.useGravity);
 

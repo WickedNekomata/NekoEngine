@@ -46,8 +46,11 @@ ComponentRigidStatic::ComponentRigidStatic(GameObject* parent) : ComponentRigidA
 ComponentRigidStatic::ComponentRigidStatic(const ComponentRigidStatic& componentRigidStatic) : ComponentRigidActor(componentRigidStatic, ComponentTypes::RigidStaticComponent)
 {
 	physx::PxShape* gShape = nullptr;
-	if (parent->boundingBox.IsFinite())
-		gShape = App->physics->CreateShape(physx::PxBoxGeometry(parent->boundingBox.HalfSize().x, parent->boundingBox.HalfSize().y, parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
+
+	if (componentRigidStatic.parent->cmp_collider != nullptr)
+		gShape = componentRigidStatic.parent->cmp_collider->GetShape();
+	else if (componentRigidStatic.parent->boundingBox.IsFinite())
+		gShape = App->physics->CreateShape(physx::PxBoxGeometry(componentRigidStatic.parent->boundingBox.HalfSize().x, componentRigidStatic.parent->boundingBox.HalfSize().y, componentRigidStatic.parent->boundingBox.HalfSize().z), *App->physics->GetDefaultMaterial());
 	else
 		gShape = App->physics->CreateShape(physx::PxBoxGeometry(PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE, PhysicsConstants::GEOMETRY_HALF_SIZE), *App->physics->GetDefaultMaterial());
 	assert(gShape != nullptr);
@@ -58,10 +61,11 @@ ComponentRigidStatic::ComponentRigidStatic(const ComponentRigidStatic& component
 	rigidActorType = componentRigidStatic.rigidActorType;
 
 	gActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
-	if (parent->cmp_collider != nullptr)
-		UpdateShape(parent->cmp_collider->GetShape());
+
 	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
 	UpdateTransform(globalMatrix);
+
+	// -----
 
 	SetUseGravity(componentRigidStatic.useGravity);
 }

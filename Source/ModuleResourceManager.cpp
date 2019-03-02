@@ -950,7 +950,7 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::ScriptResource:
 	{
-		//resource = App->scripting->ImportScriptResource(file); // TODO
+		resource = App->scripting->ImportScriptResource(file);
 	}
 	break;
 

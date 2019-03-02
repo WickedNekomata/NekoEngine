@@ -1264,7 +1264,7 @@ uint ComponentScript::GetPublicVarsSerializationBytesFromBuffer(char* buffer) co
 		case VarType::INT:
 		{
 			bytes = sizeof(int);
-			bool var;
+			int32_t var;
 			memcpy(&var, cursor, bytes);
 			totalSize += bytes;
 			cursor += bytes;
@@ -1952,7 +1952,7 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		case VarType::DOUBLE:
 		{
 			bytes = sizeof(double);
-			bool var;
+			double var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -1979,8 +1979,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::INT8:
 		{
-			bytes = sizeof(signed char);
-			bool var;
+			bytes = sizeof(int8_t);
+			int8_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2007,8 +2007,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::UINT8:
 		{
-			bytes = sizeof(unsigned char);
-			bool var;
+			bytes = sizeof(uint8_t);
+			uint8_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2035,8 +2035,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::INT16:
 		{
-			bytes = sizeof(short);
-			bool var;
+			bytes = sizeof(int16_t);
+			int16_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2063,8 +2063,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::UINT16:
 		{
-			bytes = sizeof(unsigned short);
-			bool var;
+			bytes = sizeof(uint16_t);
+			uint16_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2091,8 +2091,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::INT:
 		{
-			bytes = sizeof(int);
-			bool var;
+			bytes = sizeof(int32_t);
+			int32_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2119,8 +2119,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::UINT:
 		{
-			bytes = sizeof(uint);
-			bool var;
+			bytes = sizeof(uint32_t);
+			uint32_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2147,8 +2147,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::INT64:
 		{
-			bytes = sizeof(long long);
-			bool var;
+			bytes = sizeof(int64_t);
+			int64_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2175,8 +2175,8 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		}
 		case VarType::UINT64:
 		{
-			bytes = sizeof(unsigned long long);
-			bool var;
+			bytes = sizeof(uint64_t);
+			uint64_t var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;
@@ -2204,7 +2204,7 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 		case VarType::CHAR:
 		{
 			bytes = sizeof(char);
-			bool var;
+			char var;
 			memcpy(&var, cursor, bytes);
 			cursor += bytes;
 			void* iterator = 0;

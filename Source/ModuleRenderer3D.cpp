@@ -419,13 +419,17 @@ update_status ModuleRenderer3D::PostUpdate()
 		App->debugDrawer->EndDebugDraw();
 	}
 
+	if (App->ui->GetUIMode())
+		App->ui->DrawCanvas();
+
 	// 3. Editor
 	App->gui->Draw();
-
-#endif // GAME
+#else
 	//UIOnEditor
 	if (App->ui->GetUIMode())
 		App->ui->DrawCanvas();
+#endif // GAME
+
 
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);

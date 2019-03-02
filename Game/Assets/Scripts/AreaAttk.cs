@@ -4,7 +4,7 @@ using JellyBitEngine;
 public class AreaAttk : JellyScript
 {
     //Alita propeties
-    int life = 50;
+    public int life = 50;
     int damage = 20;
 
     // Raycast
@@ -42,7 +42,8 @@ public class AreaAttk : JellyScript
 
     //Variables for SP attacks
     private bool isAreaActive = false;
-    //public GameObject areaCircle;
+    public GameObject areaCircle;
+    public float circleRadius = 5.0f;
 
     public override void Start()
     {
@@ -55,6 +56,11 @@ public class AreaAttk : JellyScript
     {
         CheckState();
         CheckForMouseClick();
+
+        if (Input.GetKeyDown(KeyCode.KEY_MINUS))
+        {
+            life -= 5;
+        }
 
         if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
             CheckForSPAttack(); //Only special attacks when no normal attacking
@@ -174,13 +180,14 @@ public class AreaAttk : JellyScript
         {
             if (!isAreaActive)
             {
+                areaCircle.active = true;
                 isAreaActive = true;
                 Debug.Log("ACIVATE AREA");
             }
 
             else if (isAreaActive)
             {
-                //Destroy circle
+                areaCircle.active = false;
                 isAreaActive = false;
                 Debug.Log("DESACTIVATE AREA");
             }
@@ -190,7 +197,10 @@ public class AreaAttk : JellyScript
         {
             state = Alita_State.AREA_ATTK;
             isAreaActive = false;
-            //Destroy circle
+            areaCircle.active = false;
+
+            if (agent == null)
+                agent = gameObject.GetComponent<NavMeshAgent>();
         }
     }
 
@@ -223,8 +233,7 @@ public class AreaAttk : JellyScript
     private void AreaAttack()
     {
         Debug.Log("AREA ATTACK!!!!!");
-        float circleRadius = 10.0f;
-
+        
         OverlapHit[] hitInfo;
         if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
@@ -234,6 +243,11 @@ public class AreaAttk : JellyScript
                 Debug.Log("HIT ENEMY: " + hit.gameObject.name);
             }
         }
+
+        if (smoke == null)
+            smoke = gameObject.GetComponent<ParticleEmitter>();
+        smoke.Play();
+
     }
 
 }

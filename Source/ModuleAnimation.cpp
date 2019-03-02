@@ -11,8 +11,6 @@
 #include "ModuleGOs.h"
 #include "ComponentTransform.h"
 
-#include "ModuleInput.h"
-
 //#include ".h" //TODO: delete this
 
 #include "ComponentBone.h"
@@ -113,16 +111,10 @@ update_status ModuleAnimation::Update()
 	for (uint i = 0; i < current_anim->animable_gos.size(); ++i)
 	{
 		ComponentBone* bone = (ComponentBone*)current_anim->animable_gos.at(i)->GetComponent(ComponentTypes::BoneComponent);
-		
+		Resource*res = App->res->GetResource(bone->attachedMesh);
 		if (bone && bone->attached_mesh)
 		{
 			DeformMesh(bone);
-			ResourceMesh*res = (ResourceMesh*)App->res->GetResource(bone->attached_mesh->res);
-
-			if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT) {
-				res->GenerateAndBindDeformableMesh();
-			}
-			
 		}
 	}
 
@@ -547,26 +539,16 @@ void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 
 		for (uint i = 0; i < rbone->boneData.bone_weights_size; ++i)
 		{
-			/*
-			uint index = rbone->bone_weights_indices[i];
-			float3 original(&roriginal->vertices[index * 3]);
-
-			float3 vertex = trans.TransformPos(original);
-
-			rmesh->vertices[index * 3] += vertex.x * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 1] += vertex.y * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 2] += vertex.z * rbone->bone_weights[i] * SCALE;
-			*/
-
 			uint index = rbone->boneData.bone_weights_indices[i];
 			
 			math::float3 original(roriginal->GetSpecificData().vertices[index].position);
 
 			math::float3 vertex = trans.TransformPos(original);
 
-			tmp_mesh->deformableMeshData.vertices[index].position[0] = vertex.x * rbone->boneData.bone_weights[i];
-			tmp_mesh->deformableMeshData.vertices[index].position[1] = vertex.y * rbone->boneData.bone_weights[i];
-			tmp_mesh->deformableMeshData.vertices[index].position[2] = vertex.z * rbone->boneData.bone_weights[i];
+			vertex *= rbone->boneData.bone_weights[i] * SCALE;
+
+			float pos[3] = { vertex.x,vertex.y,vertex.z };
+			memcpy(tmp_mesh->deformableMeshData.vertices[index].position, pos, sizeof(float) * 3);
 			
 		}
 	}
@@ -582,8 +564,7 @@ void ModuleAnimation::ResetMesh(ComponentBone * component_bone)
 	if (original) {
 		for (uint i = 0u; i < original->deformableMeshData.verticesSize; i++)
 		{
-			memset(original->deformableMeshData.vertices[i].position, 0, 3 * sizeof(float));
-			//memset(original->deformableMeshData.vertices, 0, original->GetSpecificData().verticesSize * sizeof(float));
+			memset(original->deformableMeshData.vertices[i].position, 0, 3  * sizeof(float));
 		}
 		//original->GenerateAndBindDeformableMesh();
 	}

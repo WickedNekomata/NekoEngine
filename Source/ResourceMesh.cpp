@@ -557,8 +557,8 @@ uint ResourceMesh::GetIndicesCount() const
 
 void ResourceMesh::GenerateAndBindDeformableMesh()
 {
-	assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0
-		&& deformableMeshData.indices != nullptr && deformableMeshData.indicesSize > 0);
+	//assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0
+		//&& deformableMeshData.indices != nullptr && deformableMeshData.indicesSize > 0);
 
 	App->sceneImporter->GenerateVBO(DVBO, deformableMeshData.vertices, deformableMeshData.verticesSize);
 	App->sceneImporter->GenerateIBO(DIBO, deformableMeshData.indices, deformableMeshData.indicesSize);

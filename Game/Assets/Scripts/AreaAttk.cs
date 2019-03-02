@@ -57,9 +57,9 @@ public class AreaAttk : JellyScript
         CheckState();
         CheckForMouseClick();
 
-        if (Input.GetKeyDown(KeyCode.KEY_MINUS))
+        if (Input.GetKeyDown(KeyCode.KEY_D))
         {
-            life -= 5;
+            life -= 1;
         }
 
         if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)

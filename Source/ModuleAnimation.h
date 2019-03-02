@@ -48,6 +48,8 @@ public:
 	ModuleAnimation();
 	~ModuleAnimation();
 
+	void OnSystemEvent(System_Event event);
+
 	// Called before render is available
 	bool Awake(JSON_Object* config = nullptr);
 

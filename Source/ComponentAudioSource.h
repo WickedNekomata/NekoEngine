@@ -17,6 +17,8 @@ public:
 
 	void UpdateSourcePos();
 
+	void OnUniqueEditor();
+
 	//Getters
 	std::string GetAudioToPlay() const;
 	bool isMuted()const;

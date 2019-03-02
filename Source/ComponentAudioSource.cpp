@@ -7,6 +7,9 @@
 #include "MathGeoLib/include/Math/Quat.h"
 #include "MathGeoLib/include/Math/float3.h"
 
+#include "imgui\imgui.h"
+#include "imgui\imgui_internal.h"
+
 ComponentAudioSource::ComponentAudioSource(GameObject* parent) : Component(parent, ComponentTypes::AudioSourceComponent)
 {
 	source = App->audio->CreateSoundEmitter("");
@@ -45,6 +48,64 @@ void ComponentAudioSource::UpdateSourcePos()
 
 		source->SetPos(vector_pos.x, vector_pos.y, vector_pos.z, vector_front.x, vector_front.y, vector_front.z, vector_up.x, vector_up.y, vector_up.z);
 	}
+}
+
+void ComponentAudioSource::OnUniqueEditor()
+{
+	char text[100];
+	strcpy_s(text, 100, audio_to_play.c_str());
+	ImGui::Text("AudioClip");
+	if (ImGui::InputText("", text, 100, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)) {
+		SetAudio(text);
+	}
+	
+	if (ImGui::Button("Play")) {
+		PlayAudio();
+	}
+	ImGui::SameLine();
+	ImGui::SameLine();
+	if (ImGui::Button("Stop")) {
+		StopAudio();
+	}
+
+	bool muted = isMuted();
+	if (ImGui::Checkbox("Mute", &muted)) {
+		SetMuted(muted);
+	}
+
+	bool play_awake = GetPlayOnAwake();
+	if (ImGui::Checkbox("Play On Awake", &play_awake)) {
+		SetPlayOnAwake(play_awake);
+	}
+
+	int prior = GetPriority();
+	if (ImGui::SliderInt("Priority", &prior, 1, 100)) {
+		SetPriority(prior);
+	}
+
+	float vol = GetVolume();
+	if (ImGui::SliderFloat("Volume", &vol, 0, 10)) {
+		SetVolume(vol);
+	}
+
+	float audio_pitch = GetPitch();
+	if (ImGui::SliderFloat("Pitch", &audio_pitch, 0, 15)) {
+		SetPitch(audio_pitch);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Only for 2D tracks:");
+	ImGui::Separator();
+
+	int pan_l = GetStereoPanLeft();
+	if (ImGui::SliderInt("Pan Left difference", &pan_l, 0, 100)) {
+		SetStereoPanLeft(pan_l);
+	}
+	int pan_r = GetStereoPanRight();
+	if (ImGui::SliderInt("Pan Right difference", &pan_r, 0, 100)) {
+		SetStereoPanRight(pan_r);
+	}
+
 }
 
 //Getters

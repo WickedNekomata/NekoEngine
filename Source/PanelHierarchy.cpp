@@ -142,6 +142,9 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				if (App->scene->selectedObject == child
 					&& !App->gui->WantTextInput() && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 				{
+					if (std::strcmp(child->GetName(), "Canvas") == 0)
+						App->GOs->DeleteCanvasPointer();
+						
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
 					App->GOs->DeleteGameObject(child);
 				}

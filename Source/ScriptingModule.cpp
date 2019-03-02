@@ -83,12 +83,12 @@ bool ScriptingModule::Init(JSON_Object* data)
 
 	CreateDomain();
 
+	if (!internalAssembly)
+		return false;
+
 	char* args[1];
 	args[0] == "InternalAssembly";
 	mono_jit_exec(domain, internalAssembly, 1, args);
-
-	if (!internalAssembly)
-		return false;
 
 	return true;
 }

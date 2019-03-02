@@ -708,3 +708,10 @@ bool ResourceMesh::UnloadFromMemory()
 
 	return true;
 }
+
+void ResourceMesh::UnloadDeformableMeshFromMemory()
+{
+	App->sceneImporter->DeleteBufferObject(DVBO);
+	App->sceneImporter->DeleteBufferObject(DIBO);
+	App->sceneImporter->DeleteVertexArrayObject(DVAO);
+}

@@ -118,10 +118,8 @@ update_status ModuleAnimation::Update()
 			DeformMesh(bone);
 			ResourceMesh*res = (ResourceMesh*)App->res->GetResource(bone->attached_mesh->res);
 
-			if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT) {
-				res->GenerateAndBindDeformableMesh();
-			}
-			
+			res->UnloadDeformableMeshFromMemory();
+			res->GenerateAndBindDeformableMesh();
 		}
 	}
 

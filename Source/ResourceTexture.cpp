@@ -360,30 +360,28 @@ bool ResourceTexture::GenerateLibraryFiles() const
 	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 	// 1. Copy meta
-	std::string outputAssetsFile = DIR_ASSETS;
-	if (App->fs->RecursiveExists(metaFile, outputAssetsFile.data(), outputAssetsFile))
+	if (App->fs->Exists(metaFile))
 	{
-		// Change the name of the meta for the uuid of the resource
-		std::string path = outputAssetsFile.data();
-
-		uint found = path.find_last_of("\\");
-		if (found != std::string::npos)
-			path = path.substr(0, found);
-
-		std::string extension = outputAssetsFile.data();
-
-		found = extension.find_first_of(".");
-		if (found != std::string::npos)
-			extension = extension.substr(found, extension.size());
-
-		// TODO
-
-
-		std::string outputLibraryFile;
-		uint size = App->fs->Copy(outputAssetsFile.data(), DIR_LIBRARY_TEXTURES, outputLibraryFile);
-
+		// Read the info of the meta
+		char* buffer;
+		uint size = App->fs->Load(metaFile, &buffer);
 		if (size > 0)
-			return true;
+		{
+			// Create a new name for the meta
+			std::string extension = metaFile;
+
+			uint found = extension.find_first_of(".");
+			if (found != std::string::npos)
+				extension = extension.substr(found, extension.size());
+
+			char newMetaFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newMetaFile, "%s/%u%s", DIR_LIBRARY_TEXTURES, uuid, extension.data());
+
+			// Save the new meta (info + new name)
+			size = App->fs->Save(newMetaFile, buffer, size);
+			if (size > 0)
+				return true;
+		}		
 	}
 
 	return false;

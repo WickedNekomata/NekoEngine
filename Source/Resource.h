@@ -12,6 +12,8 @@ struct ResourceData
 	std::string file;
 	std::string exportedFile;
 	std::string name;
+
+	bool internal = false;
 };
 
 class Resource
@@ -25,7 +27,7 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 	
-	virtual bool GenerateLibraryFiles() { return true; }
+	virtual bool GenerateLibraryFiles() const { return true; }
 
 	static uint SetLastModTimeToMeta(const char* metaFile, const uint64_t& lastModTime);
 

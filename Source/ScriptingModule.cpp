@@ -83,12 +83,12 @@ bool ScriptingModule::Init(JSON_Object* data)
 
 	CreateDomain();
 
+	if (!internalAssembly)
+		return true;
+
 	char* args[1];
 	args[0] == "InternalAssembly";
 	mono_jit_exec(domain, internalAssembly, 1, args);
-
-	if (!internalAssembly)
-		return false;
 
 	return true;
 }
@@ -1444,13 +1444,22 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 	}
 	else
 	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
 		//Find a script named as this class
 
-		for (int i = 0; i < App->scripting->scripts.size(); ++i)
+		for (int i = 0; i < gameObject->components.size(); ++i)
 		{
-			if (App->scripting->scripts[i]->scriptName == className)
+			Component* comp = gameObject->components[i];
+			if (comp->GetType() == ComponentTypes::ScriptComponent)
 			{
-				return App->scripting->scripts[i]->classInstance;
+				ComponentScript* script = (ComponentScript*)comp;
+				if (script->scriptName == className)
+				{
+					return script->classInstance;
+				}
 			}
 		}
 	}

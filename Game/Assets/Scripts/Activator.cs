@@ -3,6 +3,8 @@ using JellyBitEngine;
 
 public class Activator : JellyScript
 {
+    public GameObject temp;
+
     //Use this method for initialization
     public override void Awake()
     {

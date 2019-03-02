@@ -26,7 +26,7 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
 }
 
-ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider) : ComponentCollider(componentSphereCollider, ComponentTypes::SphereColliderComponent)
+ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider, GameObject* parent) : ComponentCollider(componentSphereCollider, parent, ComponentTypes::SphereColliderComponent)
 {
 	EncloseGeometry();
 

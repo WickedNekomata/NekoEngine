@@ -64,7 +64,7 @@ ComponentRigidDynamic::ComponentRigidDynamic(GameObject* parent) : ComponentRigi
 	isKinematic = rigidBodyFlags & physx::PxRigidBodyFlag::Enum::eKINEMATIC;
 }
 
-ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& componentRigidDynamic) : ComponentRigidActor(componentRigidDynamic, ComponentTypes::RigidDynamicComponent)
+ComponentRigidDynamic::ComponentRigidDynamic(const ComponentRigidDynamic& componentRigidDynamic, GameObject* parent) : ComponentRigidActor(componentRigidDynamic, parent, ComponentTypes::RigidDynamicComponent)
 {
 	density = componentRigidDynamic.density;
 

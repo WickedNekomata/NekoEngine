@@ -19,7 +19,7 @@ class ComponentRigidActor : public Component
 public:
 
 	ComponentRigidActor(GameObject* parent, ComponentTypes componentRigidActorType);
-	ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType);
+	ComponentRigidActor(const ComponentRigidActor& componentRigidActor, GameObject* parent, ComponentTypes componentRigidActorType);
 	virtual ~ComponentRigidActor();
 
 	virtual void OnUniqueEditor();
@@ -33,6 +33,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------
 
 	void UpdateShape(physx::PxShape* shape) const;
+	void ClearActor();
 	static void RecursiveUpdateTransforms(GameObject* gameObject);
 	void UpdateTransform(math::float4x4& globalMatrix) const;
 	void UpdateGameObjectTransform() const;

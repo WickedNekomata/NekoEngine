@@ -691,19 +691,19 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
+Resource* ScriptingModule::ImportScriptResource(const char* file)
 {
 	//May be new file or generic file event
 
-	std::string file = fileAssets;
-	std::string metaFile = file + ".meta";
+	std::string fileString = file;
+	std::string metaFile = fileString + ".meta";
 
-	std::string scriptName = file.substr(file.find_last_of("/") + 1);
+	std::string scriptName = fileString.substr(fileString.find_last_of("/") + 1);
 	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
 	ResourceData data;
 	data.name = scriptName;
-	data.file = "Assets/Scripts/" + scriptName + ".cs";
+	data.file = file;
 	data.exportedFile = "";
 
 	ResourceScript* scriptRes = nullptr;
@@ -720,7 +720,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 		char* cursor = buffer;
 		scriptRes->SerializeToMeta(cursor);
 
-		App->fs->Save(file + ".meta", buffer, bytes);
+		App->fs->Save(fileString + ".meta", buffer, bytes);
 
 		delete[] buffer;
 	}
@@ -738,7 +738,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 			uint uid;
 			memcpy(&uid, cursor, sizeof(uint));
 
-			int64_t lastModTime = App->fs->GetLastModificationTime(fileAssets);
+			int64_t lastModTime = App->fs->GetLastModificationTime(file);
 			
 			scriptModified = lastSavedModTime != lastModTime;
 

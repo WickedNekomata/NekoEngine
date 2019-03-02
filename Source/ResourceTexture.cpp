@@ -381,6 +381,8 @@ bool ResourceTexture::GenerateLibraryFiles() const
 			size = App->fs->Save(newMetaFile, buffer, size);
 			if (size > 0)
 				return true;
+
+			RELEASE_ARRAY(buffer);
 		}		
 	}
 

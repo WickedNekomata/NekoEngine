@@ -39,10 +39,10 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void OnSystemEvent(System_Event event);
+
 	void SaveStatus(JSON_Object*) const;
 	void LoadStatus(const JSON_Object*);
-
-	void OnSystemEvent(System_Event event);
 
 	void Draw() const;
 

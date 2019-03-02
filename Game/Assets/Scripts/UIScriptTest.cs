@@ -10,8 +10,8 @@ public class UIScriptTest : JellyScript
     //Use this method for initialization
     public override void Awake()
     {
-        rect = gameObject.GetComponent<RectTransform>();
         btn = gameObject.GetComponent<Button>();
+        rect = gameObject.GetComponent<RectTransform>();
     }
 
     //Called every frame
@@ -25,9 +25,9 @@ public class UIScriptTest : JellyScript
                     break;
                 case ButtonState.HOVERED:
                     break;
-                case ButtonState.R_CLICK:
-                    break;
                 case ButtonState.L_CLICK:
+                    break;
+                case ButtonState.R_CLICK:
                     break;
             }
         }
@@ -45,4 +45,3 @@ public class UIScriptTest : JellyScript
         Debug.Log("GG");
     }
 }
-

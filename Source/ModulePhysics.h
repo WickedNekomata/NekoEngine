@@ -65,6 +65,7 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	void Debug();
+	void DestroyChest();
 
 	// ----------------------------------------------------------------------------------------------------
 

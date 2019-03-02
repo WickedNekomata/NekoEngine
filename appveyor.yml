@@ -63,7 +63,7 @@ for:
   branches:
     only:
       - game
-  configuration: Game
+  configuration: Game_Release
 
   after_build:
     - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release

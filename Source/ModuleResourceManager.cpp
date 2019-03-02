@@ -303,8 +303,11 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 
 	case System_Event_Type::GenerateLibraryFiles:
 	{
-		for (uint i = 0; i < resources.size(); ++i)
-			resources[i]->GenerateLibraryFiles();
+		for (std::unordered_map<uint, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+		{
+			if (!it->second->GetData().internal)
+				it->second->GenerateLibraryFiles();
+		}
 	}
 	break;
 	}

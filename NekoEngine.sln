@@ -8,12 +8,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Game_Release|Win32 = Game_Release|Win32
 		Game|Win32 = Game|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Debug|Win32.Build.0 = Debug|Win32
+		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Game_Release|Win32.ActiveCfg = Game_Release|Win32
+		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Game_Release|Win32.Build.0 = Game_Release|Win32
 		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Game|Win32.ActiveCfg = Game|Win32
 		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Game|Win32.Build.0 = Game|Win32
 		{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}.Release|Win32.ActiveCfg = Release|Win32

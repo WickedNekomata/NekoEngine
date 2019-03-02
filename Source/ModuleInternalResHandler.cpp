@@ -90,6 +90,7 @@ void ModuleInternalResHandler::CreatePlane()
 
 	ResourceData data;
 	data.name = "Default Plane";
+	data.internal = true;
 
 	plane = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, PLANE_UUID)->GetUuid();
 }
@@ -135,7 +136,8 @@ void ModuleInternalResHandler::CreateCube()
 
 	ResourceData data;
 	data.name = "Default Cube";
-
+	data.internal = true;
+	
 	cube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, CUBE_UUID)->GetUuid();
 }
 
@@ -144,6 +146,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	ResourceData vertexData;
 	ResourceShaderObjectData vertexShaderData;
 	vertexData.name = "Default vertex object";
+	vertexData.internal = true;
 	vertexShaderData.shaderObjectType = ShaderObjectTypes::VertexType;
 	vertexShaderData.SetSource(vShader, strlen(vShader));
 	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
@@ -153,6 +156,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	ResourceData fragmentData;
 	ResourceShaderObjectData fragmentShaderData;
 	fragmentData.name = "Default fragment object";
+	fragmentData.internal = true;
 	fragmentShaderData.shaderObjectType = ShaderObjectTypes::FragmentType;
 	fragmentShaderData.SetSource(fShader, strlen(fShader));
 	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
@@ -162,6 +166,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	ResourceData shaderData;
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "Default shader program";
+	shaderData.internal = true;
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
 	programShaderData.shaderProgramType = type;
@@ -190,6 +195,7 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	ResourceData vertexData;
 	ResourceShaderObjectData vertexShaderData;
 	vertexData.name = "UI vertex object";
+	vertexData.internal = true;
 	vertexShaderData.shaderObjectType = ShaderObjectTypes::VertexType;
 	vertexShaderData.SetSource(uivShader, strlen(uivShader));
 	ResourceShaderObject* vObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &vertexShaderData);
@@ -200,6 +206,7 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	ResourceData fragmentData;
 	ResourceShaderObjectData fragmentShaderData;
 	fragmentData.name = "UI fragment object";
+	fragmentData.internal = true;
 	fragmentShaderData.shaderObjectType = ShaderObjectTypes::FragmentType;
 	fragmentShaderData.SetSource(uifShader, strlen(uifShader));
 	ResourceShaderObject* fObj = (ResourceShaderObject*)App->res->CreateResource(ResourceTypes::ShaderObjectResource, vertexData, &fragmentShaderData);
@@ -210,6 +217,7 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	ResourceData shaderData;
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "UI shader program";
+	shaderData.internal = true;
 	programShaderData.shaderObjects.push_back(vObj);
 	programShaderData.shaderObjects.push_back(fObj);
 	programShaderData.shaderProgramType = ShaderProgramTypes::UI;
@@ -224,6 +232,7 @@ void ModuleInternalResHandler::CreateDefaultMaterial()
 	ResourceData data;
 	ResourceMaterialData materialData;
 	data.name = "Default material";
+	data.internal = true;
 	materialData.shaderUuid = DEFAULT_SHADER_PROGRAM_UUID;
 	((ResourceShaderProgram*)App->res->GetResource(materialData.shaderUuid))->GetUniforms(materialData.uniforms);
 	for (uint i = 0; i < materialData.uniforms.size(); ++i)

@@ -95,16 +95,17 @@ bool ScriptingModule::Init(JSON_Object* data)
 
 bool ScriptingModule::Start()
 {
+
+#ifndef GAMEMODE
 	CreateScriptingProject();
 	IncludeCSFiles();
+#endif
+
 	return true;
 }
 
 update_status ScriptingModule::PreUpdate()
 {
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
-		CreateInternalCSProject();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -122,9 +123,30 @@ update_status ScriptingModule::PostUpdate()
 {
 	if (someScriptModified || engineOpened)
 	{
+#ifndef GAMEMODE
 		RecompileScripts();
 		someScriptModified = false;
 		engineOpened = false;
+#else
+		//Engine opened recently, import the .dll if found
+
+		System_Event event;
+		event.type = System_Event_Type::ScriptingDomainReloaded;
+		App->PushSystemEvent(event);
+
+		App->scripting->CreateDomain();
+		App->scripting->UpdateScriptingReferences();
+
+		std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+		for (int i = 0; i < scriptResources.size(); ++i)
+		{
+			ResourceScript* scriptRes = (ResourceScript*)scriptResources[i];
+			scriptRes->referenceMethods();
+		}
+
+		App->scripting->ReInstance();
+
+#endif
 	}
 
 	return UPDATE_CONTINUE;
@@ -669,19 +691,19 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
+Resource* ScriptingModule::ImportScriptResource(const char* file)
 {
 	//May be new file or generic file event
 
-	std::string file = fileAssets;
-	std::string metaFile = file + ".meta";
+	std::string fileString = file;
+	std::string metaFile = fileString + ".meta";
 
-	std::string scriptName = file.substr(file.find_last_of("/") + 1);
+	std::string scriptName = fileString.substr(fileString.find_last_of("/") + 1);
 	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
 	ResourceData data;
 	data.name = scriptName;
-	data.file = "Assets/Scripts/" + scriptName + ".cs";
+	data.file = file;
 	data.exportedFile = "";
 
 	ResourceScript* scriptRes = nullptr;
@@ -698,7 +720,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 		char* cursor = buffer;
 		scriptRes->SerializeToMeta(cursor);
 
-		App->fs->Save(file + ".meta", buffer, bytes);
+		App->fs->Save(fileString + ".meta", buffer, bytes);
 
 		delete[] buffer;
 	}
@@ -716,7 +738,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 			uint uid;
 			memcpy(&uid, cursor, sizeof(uint));
 
-			int64_t lastModTime = App->fs->GetLastModificationTime(fileAssets);
+			int64_t lastModTime = App->fs->GetLastModificationTime(file);
 			
 			scriptModified = lastSavedModTime != lastModTime;
 

@@ -20,6 +20,9 @@ enum System_Event_Type
 	SaveScene,
 	LoadScene,
 
+	//GameMode events
+	LoadGMScene,
+
 	// LayerEvent
 	LayerNameReset,
 	LayerChanged,

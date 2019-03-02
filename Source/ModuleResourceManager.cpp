@@ -795,7 +795,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceData data;
 		ResourceMeshData meshData;
 		data.exportedFile = file;
-		data.name = fileName.data();
 
 		App->sceneImporter->Load(file, data, meshData);
 
@@ -813,7 +812,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceData data;
 		ResourceTextureData textureData;
 		data.exportedFile = file;
-		data.name = fileName.data();
 
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
@@ -956,7 +954,7 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 
 	case ResourceTypes::ScriptResource:
 	{
-		//resource = App->scripting->ImportScriptResource(file); // TODO
+		resource = App->scripting->ImportScriptResource(file);
 	}
 	break;
 
@@ -977,7 +975,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceData data;
 		ResourceBoneData boneData;
 		data.file = file;
-		data.name = fileName.data();
 
 		ResourceBone::LoadFile(file, boneData);
 
@@ -995,7 +992,6 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceData data;
 		ResourceAnimationData animationData;
 		data.file = file;
-		data.name = fileName.data();
 
 		ResourceAnimation::LoadFile(file, animationData);
 

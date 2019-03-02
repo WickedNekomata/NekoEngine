@@ -263,7 +263,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		if (!broken)
 		{
 			gameObject->AddComponent(ComponentTypes::MeshComponent);
-			gameObject->ToggleIsStatic();
+			gameObject->ForceStaticNoVector();
 			if (forcedUuids.size() > 0)
 			{
 				gameObject->cmp_mesh->res = forcedUuids.front();

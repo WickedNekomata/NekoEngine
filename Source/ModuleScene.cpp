@@ -49,22 +49,6 @@ bool ModuleScene::Start()
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr, true);
 
-#ifdef GAMEMODE
-	char* buf;
-	size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
-	if (size > 0)
-	{
-		App->GOs->LoadScene(buf, size, true);
-		delete[] buf;
-		App->renderer3D->SetCurrentCamera();
-		App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
-
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
-	}
-#endif
-
 	return true;
 }
 
@@ -134,28 +118,39 @@ bool ModuleScene::CleanUp()
 	return ret;
 }
 
-void ModuleScene::SaveStatus(JSON_Object* jObject) const
-{
-	json_object_set_boolean(jObject, "showGrid", showGrid);
-}
-
-void ModuleScene::LoadStatus(const JSON_Object* jObject)
-{
-	showGrid = json_object_get_boolean(jObject, "showGrid");
-}
-
 void ModuleScene::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::LoadGMScene:
+	{
+		char* buf;
+		size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
+		if (size > 0)
+		{
+			App->GOs->LoadScene(buf, size, true);
+			RELEASE_ARRAY(buf);
+
+			App->renderer3D->SetCurrentCamera();
+			App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RecreateQuadtree;
+			App->PushSystemEvent(newEvent);
+		}
+	}
+	break;
+
 	case System_Event_Type::RecreateQuadtree:
+	{
 		RecreateQuadtree();
-		break;
+	}
+	break;
+
 #ifndef GAMEMODE
 	case System_Event_Type::GameObjectDestroyed:
 
-		//Remove GO in list if its deleted
-
+		// Remove GO in list if its deleted
 		if (selectedObject == event.goEvent.gameObject)
 			SELECT(NULL);
 		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
@@ -174,6 +169,16 @@ void ModuleScene::OnSystemEvent(System_Event event)
 		break;
 #endif
 	}
+}
+
+void ModuleScene::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_boolean(jObject, "showGrid", showGrid);
+}
+
+void ModuleScene::LoadStatus(const JSON_Object* jObject)
+{
+	showGrid = json_object_get_boolean(jObject, "showGrid");
 }
 
 void ModuleScene::Draw() const

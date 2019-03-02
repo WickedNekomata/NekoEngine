@@ -34,6 +34,7 @@ public:
 	uint GetParentUUID() const;
 	void ToggleIsActive();
 	void ToggleIsStatic();
+	void ForceStaticNoVector();
 	bool IsActive() const;
 	bool IsStatic() const;
 	void OnEnable();

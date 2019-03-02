@@ -99,8 +99,12 @@ update_status ModuleUI::PreUpdate()
 
 update_status ModuleUI::Update()
 {
-	for (std::list<Component*>::iterator iteratorUI = componentsUI.begin(); iteratorUI != componentsUI.end(); ++iteratorUI)
+	for (std::list<Component*>::iterator iteratorUI = componentsRendererUI.begin(); iteratorUI != componentsRendererUI.end(); ++iteratorUI)
 		(*iteratorUI)->Update();
+
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
+		for (std::list<Component*>::iterator iteratorUI = componentsUI.begin(); iteratorUI != componentsUI.end(); ++iteratorUI)
+			(*iteratorUI)->Update();
 
 	return update_status::UPDATE_CONTINUE;
 }

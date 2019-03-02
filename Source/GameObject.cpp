@@ -126,32 +126,32 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(cmp_projector);
 			break;
 		case ComponentTypes::RigidStaticComponent:
-			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::RigidDynamicComponent:
-			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::BoxColliderComponent:
-			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::SphereColliderComponent:
-			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::CapsuleColliderComponent:
-			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::PlaneColliderComponent:
-			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
@@ -189,7 +189,6 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 		}
 		}
 	}
-
 
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
@@ -276,6 +275,12 @@ void GameObject::ToggleIsStatic()
 {
 	isStatic = !isStatic;
 	App->GOs->RecalculateVector(this);
+}
+
+void GameObject::ForceStaticNoVector()
+{
+	assert(isStatic == false);
+	isStatic = true;
 }
 
 bool GameObject::IsActive() const

@@ -54,6 +54,8 @@ void ComponentAudioSource::UpdateSourcePos()
 
 void ComponentAudioSource::OnUniqueEditor()
 {
+#ifndef GAMEMODE
+
 	ImGui::Text("AudioClip");
 	if (ImGui::InputText("", audio_to_play, DEFAULT_BUF_SIZE, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)) {
 		SetAudio(audio_to_play);
@@ -105,6 +107,8 @@ void ComponentAudioSource::OnUniqueEditor()
 	if (ImGui::SliderInt("Pan Right difference", &pan_r, 0, 100)) {
 		SetStereoPanRight(pan_r);
 	}
+
+#endif // !GAMEMODE
 
 }
 

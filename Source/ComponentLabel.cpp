@@ -12,10 +12,10 @@ ComponentLabel::ComponentLabel(GameObject * parent, ComponentTypes componentType
 	App->ui->componentsUI.push_back(this);
 }
 
-ComponentLabel::ComponentLabel(const ComponentLabel & componentLabel, GameObject* parent) : Component(parent, ComponentTypes::LabelComponent)
+ComponentLabel::ComponentLabel(const ComponentLabel & componentLabel, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::LabelComponent)
 {
-	App->ui->componentsUI.push_back(this);
-
+	if(includeComponents)
+		App->ui->componentsUI.push_back(this);
 }
 
 ComponentLabel::~ComponentLabel()

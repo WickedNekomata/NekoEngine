@@ -73,8 +73,8 @@ update_status ModuleFileSystem::PreUpdate()
 
 		UpdateAssetsDir();
 	}
+
 	return update_status::UPDATE_CONTINUE;
-	return UPDATE_CONTINUE;
 }
 
 bool ModuleFileSystem::Start()
@@ -156,6 +156,8 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 				case ASCIIFSH:	
 				case ASCIIvsh:
 				case ASCIIVSH:
+				case ASCIIgsh: 
+				case ASCIIGSH:
 				{
 					strcpy(destinationDir, DIR_ASSETS_SHADERS_OBJECTS);
 					break;
@@ -489,6 +491,11 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
 			outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
+			break;
+		case FileTypes::GeometryShaderObjectFile:
+			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+			outputFile.append(EXTENSION_GEOMETRY_SHADER_OBJECT);
 			break;
 		case FileTypes::MaterialFile:
 			outputFile.insert(0, DIR_ASSETS_MATERIALS);

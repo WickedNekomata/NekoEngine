@@ -15,6 +15,9 @@
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
 
+// TODO_G : delete this
+#include "ModuleAnimation.h"
+
 #include "imgui/imgui.h"
 
 #include <list>
@@ -304,7 +307,10 @@ void ModuleScene::RecalculateQuadtree()
 	App->GOs->GetStaticGameobjects(staticGameObjects);
 
 	for (uint i = 0; i < staticGameObjects.size(); ++i)
-		App->scene->quadtree.Insert(staticGameObjects[i]);
+	{
+		if (staticGameObjects[i]->GetLayer() != UILAYER)
+			App->scene->quadtree.Insert(staticGameObjects[i]);
+	}
 }
 
 void ModuleScene::CreateRandomStaticGameObject()

@@ -60,6 +60,7 @@ public:
 	void EraseComponent(Component* erased);
 	Component* GetComponent(int index) const;
 	Component* GetComponent(ComponentTypes type) const;
+	std::vector<Component*> GetComponents(ComponentTypes type) const;
 	int GetComponentsLength();
 	void ReorderComponents(Component* source, Component* target);
 

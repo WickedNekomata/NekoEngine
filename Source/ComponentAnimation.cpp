@@ -30,6 +30,7 @@ ComponentAnimation::ComponentAnimation(GameObject* embedded_game_object, uint re
 ComponentAnimation::ComponentAnimation(const ComponentAnimation & component_anim, GameObject * parent, bool include) : Component(parent, ComponentTypes::AnimationComponent)
 {
 	this->SetResource(component_anim.res);
+	//App->animation->SetAnimationGos((ResourceAnimation*)App->res->GetResource(res));
 }
 
 ComponentAnimation::~ComponentAnimation()

@@ -48,6 +48,7 @@ enum FileTypes
 
 	VertexShaderObjectFile,
 	FragmentShaderObjectFile,
+	GeometryShaderObjectFile,
 	ShaderProgramFile,
 
 	MaterialFile,

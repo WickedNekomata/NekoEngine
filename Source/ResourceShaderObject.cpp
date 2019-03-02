@@ -307,6 +307,9 @@ bool ResourceShaderObject::Compile()
 	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
 		break;
+	case ShaderObjectTypes::GeometryType:
+		shader = GL_GEOMETRY_SHADER;
+		break;
 	}
 
 	// Create a Shader Object
@@ -337,6 +340,9 @@ uint ResourceShaderObject::Compile(const char* source, ShaderObjectTypes shaderT
 		break;
 	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
+		break;
+	case ShaderObjectTypes::GeometryType:
+		shader = GL_GEOMETRY_SHADER;
 		break;
 	}
 
@@ -452,6 +458,8 @@ ShaderObjectTypes ResourceShaderObject::GetShaderObjectTypeByExtension(const cha
 		shaderObjectType = ShaderObjectTypes::VertexType;
 	else if (IS_FRAGMENT_SHADER(extension))
 		shaderObjectType = ShaderObjectTypes::FragmentType;
+	else if (IS_FRAGMENT_SHADER(extension))
+		shaderObjectType = ShaderObjectTypes::GeometryType;
 
 	return shaderObjectType;
 }

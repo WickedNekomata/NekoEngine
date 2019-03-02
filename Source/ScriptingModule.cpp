@@ -1166,63 +1166,6 @@ MonoArray* RotateAxisAngle(MonoArray* axis, float deg)
 	return ret;
 }
 
-MonoArray* GetGlobalPos(MonoObject* monoObject)
-{
-	GameObject* gameObject = nullptr;
-
-	int address;
-	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
-
-	gameObject = (GameObject*)address;
-
-	if (!gameObject)
-		return nullptr;
-
-	if (!gameObject->transform)
-		return nullptr;
-
-	math::float3 position, scale;
-	math::Quat rotation;
-
-	gameObject->transform->GetGlobalMatrix().Decompose(position, rotation, scale);
-
-	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
-	mono_array_set(ret, float, 0, position.x);
-	mono_array_set(ret, float, 1, position.y);
-	mono_array_set(ret, float, 2, position.z);
-
-	return ret;
-}
-
-MonoArray* GetGlobalRotation(MonoObject* monoObject)
-{
-	GameObject* gameObject = nullptr;
-
-	int address;
-	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
-
-	gameObject = (GameObject*)address;
-
-	if (!gameObject)
-		return nullptr;
-
-	if (!gameObject->transform)
-		return nullptr;
-
-	math::float3 position, scale;
-	math::Quat rotation;
-
-	gameObject->transform->GetGlobalMatrix().Decompose(position, rotation, scale);
-
-	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
-	mono_array_set(ret, float, 0, rotation.x);
-	mono_array_set(ret, float, 1, rotation.y);
-	mono_array_set(ret, float, 2, rotation.z);
-	mono_array_set(ret, float, 3, rotation.w);
-
-	return ret;
-}
-
 MonoString* GetGOName(MonoObject* monoObject)
 {
 	int address;
@@ -1391,6 +1334,148 @@ void SetLocalScale(MonoObject* monoObject, MonoArray* scale)
 	gameObject->transform->scale.x = mono_array_get(scale, float, 0);
 	gameObject->transform->position.y = mono_array_get(scale, float, 1);
 	gameObject->transform->scale.z = mono_array_get(scale, float, 2);
+}
+
+MonoArray* GetGlobalPos(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
+		return nullptr;
+
+	math::float3 position, scale;
+	math::Quat rotation;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, position.x);
+	mono_array_set(ret, float, 1, position.y);
+	mono_array_set(ret, float, 2, position.z);
+
+	return ret;
+}
+
+MonoArray* GetGlobalRotation(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
+		return nullptr;
+
+	math::float3 position, scale;
+	math::Quat rotation;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
+	mono_array_set(ret, float, 0, rotation.x);
+	mono_array_set(ret, float, 1, rotation.y);
+	mono_array_set(ret, float, 2, rotation.z);
+	mono_array_set(ret, float, 3, rotation.w);
+
+	return ret;
+}
+
+MonoArray* GetGlobalScale(MonoObject* monoObject)
+{
+	GameObject* gameObject = nullptr;
+
+	int address;
+	mono_field_get_value(monoObject, mono_class_get_field_from_name(mono_object_get_class(monoObject), "cppAddress"), &address);
+
+	gameObject = (GameObject*)address;
+
+	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
+		return nullptr;
+
+	math::float3 position, scale;
+	math::Quat rotation;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
+	mono_array_set(ret, float, 0, scale.x);
+	mono_array_set(ret, float, 1, scale.y);
+	mono_array_set(ret, float, 2, scale.z);
+
+	return ret;
+}
+
+void SetGlobalPos(MonoObject* monoObject, MonoArray* globalPos)
+{
+	math::float3 position, scale, newGlobalPos;
+	math::Quat rotation;
+
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	if (!gameObject || !gameObject->transform)
+		return;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	newGlobalPos = {mono_array_get(globalPos, float, 0), mono_array_get(globalPos, float, 1), mono_array_get(globalPos, float, 2)};
+
+	math::float4x4 newGlobal = math::float4x4::FromTRS(newGlobalPos, rotation, scale);
+	gameObject->transform->SetMatrixFromGlobal(newGlobal);
+}
+
+void SetGlobalRot(MonoObject* monoObject, MonoArray* globalRot)
+{
+	math::float3 position, scale;
+	math::Quat rotation, newGlobalRot;
+
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	if (!gameObject || !gameObject->transform)
+		return;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	newGlobalRot = { mono_array_get(globalRot, float, 0), mono_array_get(globalRot, float, 1), mono_array_get(globalRot, float, 2),  mono_array_get(globalRot, float, 3)};
+
+	math::float4x4 newGlobal = math::float4x4::FromTRS(position, newGlobalRot, scale);
+	gameObject->transform->SetMatrixFromGlobal(newGlobal);
+}
+
+void SetGlobalScale(MonoObject* monoObject, MonoArray* globalScale)
+{
+	math::float3 position, scale, newGlobalScale;
+	math::Quat rotation;
+
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	if (!gameObject || !gameObject->transform)
+		return;
+
+	math::float4x4 global = gameObject->transform->GetGlobalMatrix();
+	global.Decompose(position, rotation, scale);
+
+	newGlobalScale = { mono_array_get(globalScale, float, 0), mono_array_get(globalScale, float, 1), mono_array_get(globalScale, float, 2) };
+
+	math::float4x4 newGlobal = math::float4x4::FromTRS(position, rotation, newGlobalScale);
+	gameObject->transform->SetMatrixFromGlobal(newGlobal);
 }
 
 MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
@@ -1801,8 +1886,6 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Quaternion::quatVec3", (const void*)&QuatVec3);
 	mono_add_internal_call("JellyBitEngine.Quaternion::toEuler", (const void*)&ToEuler);
 	mono_add_internal_call("JellyBitEngine.Quaternion::RotateAxisAngle", (const void*)&RotateAxisAngle);
-	mono_add_internal_call("JellyBitEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
-	mono_add_internal_call("JellyBitEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
 	mono_add_internal_call("JellyBitEngine.GameObject::getName", (const void*)&GetGOName);
 	mono_add_internal_call("JellyBitEngine.GameObject::setName", (const void*)&SetGOName);
 	mono_add_internal_call("JellyBitEngine.Time::getDeltaTime", (const void*)&GetDeltaTime);
@@ -1815,6 +1898,12 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalRotation", (const void*)&SetLocalRotation);
 	mono_add_internal_call("JellyBitEngine.Transform::getLocalScale", (const void*)&GetLocalScale);
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalScale", (const void*)&SetLocalScale);
+	mono_add_internal_call("JellyBitEngine.Transform::getGlobalPos", (const void*)&GetGlobalPos);
+	mono_add_internal_call("JellyBitEngine.Transform::getGlobalRotation", (const void*)&GetGlobalRotation);
+	mono_add_internal_call("JellyBitEngine.Transform::getGlobalScale", (const void*)&GetGlobalScale);
+	mono_add_internal_call("JellyBitEngine.Transform::setGlobalPos", (const void*)&SetGlobalPos);
+	mono_add_internal_call("JellyBitEngine.Transform::setGlobalRotation", (const void*)&SetGlobalRot);
+	mono_add_internal_call("JellyBitEngine.Transform::setGlobalScale", (const void*)&SetGlobalScale);
 	mono_add_internal_call("JellyBitEngine.GameObject::GetComponentByType", (const void*)&GetComponentByType);
 	mono_add_internal_call("JellyBitEngine.Camera::getMainCamera", (const void*)&GetGameCamera);
 	mono_add_internal_call("JellyBitEngine.Physics::_ScreenToRay", (const void*)&ScreenToRay);

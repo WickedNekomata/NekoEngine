@@ -42,7 +42,7 @@ public class AreaAttk : JellyScript
 
     //Variables for SP attacks
     private bool isAreaActive = false;
-    //public GameObject areaCircle;
+    public GameObject areaCircle;
 
     public override void Start()
     {
@@ -174,13 +174,14 @@ public class AreaAttk : JellyScript
         {
             if (!isAreaActive)
             {
+                areaCircle.active = true;
                 isAreaActive = true;
                 Debug.Log("ACIVATE AREA");
             }
 
             else if (isAreaActive)
             {
-                //Destroy circle
+                areaCircle.active = false;
                 isAreaActive = false;
                 Debug.Log("DESACTIVATE AREA");
             }
@@ -190,7 +191,10 @@ public class AreaAttk : JellyScript
         {
             state = Alita_State.AREA_ATTK;
             isAreaActive = false;
-            //Destroy circle
+            areaCircle.active = false;
+
+            if (agent == null)
+                agent = gameObject.GetComponent<NavMeshAgent>();
         }
     }
 
@@ -223,7 +227,7 @@ public class AreaAttk : JellyScript
     private void AreaAttack()
     {
         Debug.Log("AREA ATTACK!!!!!");
-        float circleRadius = 10.0f;
+        float circleRadius = 2.5f;
 
         OverlapHit[] hitInfo;
         if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))

@@ -14,19 +14,21 @@ ComponentAudioSource::ComponentAudioSource(GameObject* parent) : Component(paren
 {
 	source = App->audio->CreateSoundEmitter("");
 	App->audio->audio_sources.push_back(this);
+	memset(audio_to_play, '\0', DEFAULT_BUF_SIZE);
 }
 
 ComponentAudioSource::ComponentAudioSource(const ComponentAudioSource& componentAudioSource) : Component(componentAudioSource.parent, ComponentTypes::AudioSourceComponent)
 {
 	source = App->audio->CreateSoundEmitter("");
 	App->audio->audio_sources.push_back(this);
+	memset(audio_to_play, '\0', DEFAULT_BUF_SIZE);
 }
 
 ComponentAudioSource::~ComponentAudioSource()
 {
+	App->audio->audio_sources.remove(this);
 	parent->cmp_audioSource = nullptr;
 	//RELEASE(source);
-	audio_to_play.clear();
 }
 
 void ComponentAudioSource::Update()
@@ -52,11 +54,9 @@ void ComponentAudioSource::UpdateSourcePos()
 
 void ComponentAudioSource::OnUniqueEditor()
 {
-	char text[100];
-	strcpy_s(text, 100, audio_to_play.c_str());
 	ImGui::Text("AudioClip");
-	if (ImGui::InputText("", text, 100, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)) {
-		SetAudio(text);
+	if (ImGui::InputText("", audio_to_play, DEFAULT_BUF_SIZE, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue)) {
+		SetAudio(audio_to_play);
 	}
 	
 	if (ImGui::Button("Play")) {
@@ -169,7 +169,7 @@ int ComponentAudioSource::GetState()const
 //Setters
 void ComponentAudioSource::SetAudio(const char* audio)
 {
-	audio_to_play = audio;
+	strcpy(audio_to_play, audio);
 }
 void ComponentAudioSource::SetMuted(bool must_mute)
 {
@@ -249,27 +249,27 @@ void ComponentAudioSource::SetState(int new_state)
 void ComponentAudioSource::PlayAudio()
 {
 	this->StopAudio();
-	source->PlayEventByName(audio_to_play.c_str());
+	source->PlayEventByName(audio_to_play);
 }
 
 void ComponentAudioSource::PauseAudio()
 {
-	source->PauseEventByName(audio_to_play.c_str());
+	source->PauseEventByName(audio_to_play);
 }
 
 void ComponentAudioSource::ResumeAudio()
 {
-	source->ResumeEventByName(audio_to_play.c_str());
+	source->ResumeEventByName(audio_to_play);
 }
 
 void ComponentAudioSource::StopAudio()
 {
-	source->StopEventByName(audio_to_play.c_str());
+	source->StopEventByName(audio_to_play);
 }
 
 uint ComponentAudioSource::GetInternalSerializationBytes()
 {
-	return sizeof(WwiseT::AudioSource*) + (sizeof(char) * 128) + (sizeof(bool) * 5) + (sizeof(int) * 2) + (sizeof(float) * 6);
+	return sizeof(WwiseT::AudioSource*) + (sizeof(char) * DEFAULT_BUF_SIZE) + (sizeof(bool) * 5) + (sizeof(int) * 2) + (sizeof(float) * 6);
 }
 
 void ComponentAudioSource::OnInternalSave(char*& cursor)
@@ -278,7 +278,7 @@ void ComponentAudioSource::OnInternalSave(char*& cursor)
 	memcpy(cursor, &source, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(char)*128;
+	bytes = sizeof(char)*DEFAULT_BUF_SIZE;
 	memcpy(cursor, &audio_to_play, bytes);
 	cursor += bytes;
 
@@ -342,7 +342,7 @@ void ComponentAudioSource::OnInternalLoad(char*& cursor)
 	memcpy(&source, cursor, bytes);
 	cursor += bytes;
 
-	bytes = sizeof(char) * 128;
+	bytes = sizeof(char) * DEFAULT_BUF_SIZE;
 	memcpy(&audio_to_play, cursor, bytes);
 	cursor += bytes;
 

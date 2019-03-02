@@ -78,7 +78,7 @@ private:
 	float stereo_pan_r = 0.0f;
 	float min_distance = 1.0f;
 	float max_distance = 500.0f;
-	std::string audio_to_play;
+	char audio_to_play[DEFAULT_BUF_SIZE];
 	int current_state = 1;
 
 };

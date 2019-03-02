@@ -1661,6 +1661,18 @@ void SetCompActive(MonoObject* monoComponent, bool active)
 	component->IsActive() != active ? component->ToggleIsActive() : void();
 }
 
+void SetGameObjectActive(MonoObject* monoObject, bool active)
+{
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	gameObject->IsActive() != active ? gameObject->ToggleIsActive() : void();
+}
+
+bool GetGameObjectActive(MonoObject* monoObject, bool active)
+{
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	return gameObject->IsActive();
+}
+
 bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
 {
 	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
@@ -1819,6 +1831,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.UI.RectTransform::SetRect", (const void*)&RectTransform_SetRect);
 	mono_add_internal_call("JellyBitEngine.UI.Button::SetKey", (const void*)&ButtonSetKey);
 	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
+	mono_add_internal_call("JellyBitEngine.GameObject::GetActive", (const void*)&SetGameObjectActive);
+	mono_add_internal_call("JellyBitEngine.GameObject::SetActive", (const void*)&GetGameObjectActive);
 
 	ClearMap();
 

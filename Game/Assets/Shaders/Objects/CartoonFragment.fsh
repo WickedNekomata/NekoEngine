@@ -32,9 +32,11 @@ vec3 toonShade(vec3 ambient, vec3 diffuse, float scaleFactor)
     vec3 viewDir = normalize(fPosition - viewPos);
        
     float cosine = max(0.0, dot(reflectDir, viewDir));
-    
     vec3 diffuseColor = diffuse * floor(cosine * levels) * scaleFactor;
+     if (cosine > 0.9)
+         return vec3(1.0,1.0,1.0);
     return light.intensity * (ambient + diffuseColor);
+     
 }
 
 void main()
@@ -45,8 +47,8 @@ void main()
 	if (albedo.a < 0.1)
 		discard;
 
-	vec3 ambient = vec3(albedo);
-	
-	vec3 toon = toonShade(ambient, ambient, scaleFactor);
+	vec3 diffuse = vec3(albedo);
+	vec3 ambient = diffuse;
+	vec3 toon = toonShade(ambient, diffuse, scaleFactor);
 	FragColor = vec4(toon, albedo.a);
 }

@@ -40,7 +40,7 @@ void ComponentCanvasRenderer::Update()
 {
 	ComponentImage* cmp_image = (ComponentImage*)parent->GetComponent(ComponentTypes::ImageComponent);
 	if (cmp_image)
-		if (cmp_image->IsActive())
+		if (cmp_image->IsActive() && parent->IsActive())
 		{
 			if (cmp_image->UseColor())
 			{

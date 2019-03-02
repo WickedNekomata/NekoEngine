@@ -26,7 +26,6 @@ ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh, GameObject* par
 ComponentMesh::~ComponentMesh()
 {
 	App->renderer3D->EraseMeshComponent(this);
-
 	SetResource(0);
 }
 

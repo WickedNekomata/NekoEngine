@@ -20,7 +20,7 @@ ComponentCollider::ComponentCollider(GameObject* parent, ComponentTypes componen
 	App->physics->AddColliderComponent(this);
 }
 
-ComponentCollider::ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType) : Component(componentCollider.parent, componentColliderType)
+ComponentCollider::ComponentCollider(const ComponentCollider& componentCollider, GameObject* parent, ComponentTypes componentColliderType) : Component(parent, componentColliderType)
 {
 	gMaterial = App->physics->GetDefaultMaterial();
 	assert(gMaterial != nullptr);

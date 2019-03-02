@@ -28,6 +28,8 @@ ComponentTransform::ComponentTransform(const ComponentTransform& componentTransf
 ComponentTransform::~ComponentTransform()
 {
 	parent->transform = nullptr;
+	parent->originalBoundingBox.SetNegativeInfinity();
+	parent->boundingBox.SetNegativeInfinity();
 }
 
 void ComponentTransform::Update() {}

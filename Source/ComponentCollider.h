@@ -24,7 +24,7 @@ class ComponentCollider : public Component
 public:
 
 	ComponentCollider(GameObject* parent, ComponentTypes componentColliderType);
-	ComponentCollider(const ComponentCollider& componentCollider, ComponentTypes componentColliderType);
+	ComponentCollider(const ComponentCollider& componentCollider, GameObject* parent, ComponentTypes componentColliderType);
 	virtual ~ComponentCollider();
 
 	virtual void OnUniqueEditor();

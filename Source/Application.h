@@ -56,6 +56,7 @@ struct ModuleEvents;
 struct ModulePhysics;
 struct ModuleUI;
 struct ModuleLayers;
+struct ModuleAudio;
 
 class Application
 {
@@ -145,6 +146,7 @@ public:
 	ModulePhysics*			  physics;
   ModuleUI*				ui;
 	ModuleAnimation*		  animation;
+	ModuleAudio*              audio;
 	DebugDrawer*			  debugDrawer;
 	ModuleNavigation*		  navigation;
 	ModuleLayers*			  layers;

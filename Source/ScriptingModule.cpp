@@ -1920,8 +1920,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.UI.RectTransform::SetRect", (const void*)&RectTransform_SetRect);
 	mono_add_internal_call("JellyBitEngine.UI.Button::SetKey", (const void*)&ButtonSetKey);
 	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
-	mono_add_internal_call("JellyBitEngine.GameObject::GetActive", (const void*)&SetGameObjectActive);
-	mono_add_internal_call("JellyBitEngine.GameObject::SetActive", (const void*)&GetGameObjectActive);
+	mono_add_internal_call("JellyBitEngine.GameObject::GetActive", (const void*)&GetGameObjectActive);
+	mono_add_internal_call("JellyBitEngine.GameObject::SetActive", (const void*)&SetGameObjectActive);
 
 	ClearMap();
 

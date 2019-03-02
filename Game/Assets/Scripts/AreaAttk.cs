@@ -43,6 +43,7 @@ public class AreaAttk : JellyScript
     //Variables for SP attacks
     private bool isAreaActive = false;
     public GameObject areaCircle;
+    public float circleRadius = 5.0f;
 
     public override void Start()
     {
@@ -227,8 +228,7 @@ public class AreaAttk : JellyScript
     private void AreaAttack()
     {
         Debug.Log("AREA ATTACK!!!!!");
-        float circleRadius = 2.5f;
-
+        
         OverlapHit[] hitInfo;
         if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {

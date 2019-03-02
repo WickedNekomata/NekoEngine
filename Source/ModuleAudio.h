@@ -28,6 +28,8 @@ public:
 	void Resume()const;
 	void SetListener(WwiseT::AudioSource* new_listener);
 
+	void OnSystemEvent(System_Event event);
+
 private:
 	std::list<WwiseT::AudioSource*> event_list;
 	WwiseT::AudioSource* listener;

@@ -16,6 +16,9 @@ bool ModuleAudio::Start()
 	// Init wwise and audio banks
 	WwiseT::InitSoundEngine();
 	WwiseT::LoadBank("Assignment3.bnk");
+#ifdef GAMEMODE
+	PlayOnAwake();
+#endif // GAMEMODE
 	return true;
 }
 
@@ -81,4 +84,20 @@ void ModuleAudio::SetListener(WwiseT::AudioSource* new_listener)
 {
 	listener = new_listener;
 	WwiseT::SetDefaultListener(new_listener->GetID());
+}
+
+void ModuleAudio::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+	case System_Event_Type::Play:
+		PlayOnAwake();
+		break;
+	case System_Event_Type::Pause:
+		WwiseT::PauseAll();
+		break;
+	case System_Event_Type::Stop:
+		WwiseT::StopAllEvents();
+		break;
+	}
 }

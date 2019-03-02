@@ -12,7 +12,7 @@
 
 ComponentCanvasRenderer::ComponentCanvasRenderer(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::CanvasRendererComponent)
 {
-	App->ui->componentsUI.push_back(this);
+	App->ui->componentsRendererUI.push_back(this);
 	rend_queue.push_back(new ToUIRend());
 	rend_queue.push_back(new ToUIRend());
 }
@@ -21,7 +21,7 @@ ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer &
 {
 	if (includeComponents)
 	{
-		App->ui->componentsUI.push_back(this);
+		App->ui->componentsRendererUI.push_back(this);
 		rend_queue.push_back(new ToUIRend());
 		rend_queue.push_back(new ToUIRend());
 	}
@@ -29,7 +29,7 @@ ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer &
 
 ComponentCanvasRenderer::~ComponentCanvasRenderer()
 {
-	App->ui->componentsUI.remove(this);
+	App->ui->componentsRendererUI.remove(this);
 
 	for (ToUIRend* rend : rend_queue)
 		RELEASE(rend);

@@ -282,6 +282,7 @@
     <ClInclude Include="BoneImporter.h" />
     <ClInclude Include="ComponentAnimation.h" />
     <ClInclude Include="ComponentAudioListener.h" />
+    <ClInclude Include="ComponentAudioSource.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ModuleAnimation.h" />
     <ClInclude Include="ModuleAudio.h" />
@@ -686,6 +687,7 @@
     <ClCompile Include="BoneImporter.cpp" />
     <ClCompile Include="ComponentAnimation.cpp" />
     <ClCompile Include="ComponentAudioListener.cpp" />
+    <ClCompile Include="ComponentAudioSource.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />
     <ClCompile Include="ModuleAudio.cpp" />

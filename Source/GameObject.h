@@ -84,6 +84,7 @@ public:
 	class ComponentBone*	   cmp_bone = 0;
 	class ComponentLight*	   cmp_light = 0;
 	class ComponentAudioListener* cmp_audioListener = 0;
+	class ComponentAudioSource*   cmp_audioSource = 0;
 
 	std::vector<Component*> components;
 

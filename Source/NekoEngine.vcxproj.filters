@@ -1774,6 +1774,9 @@
     <ClInclude Include="ComponentAudioListener.h">
       <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentAudioSource.h">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2266,6 +2269,9 @@
       <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
     </ClCompile>
     <ClCompile Include="ComponentAudioListener.cpp">
+      <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioSource.cpp">
       <Filter>Sources\Modules\GO&amp;Components\Components\Audio</Filter>
     </ClCompile>
   </ItemGroup>

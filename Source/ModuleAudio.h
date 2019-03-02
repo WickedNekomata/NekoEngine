@@ -3,6 +3,9 @@
 
 #include "Module.h"
 #include "WwiseT.h"
+#include <list>
+
+struct ComponentAudioSource;
 
 class ModuleAudio : public Module
 {
@@ -30,7 +33,7 @@ private:
 	WwiseT::AudioSource* listener;
 
 public:
-	//std::list<CompAudioSource*> audio_sources;
+	std::list<ComponentAudioSource*> audio_sources;
 };
 
 #endif // !__MODULE_AUDIO_H__

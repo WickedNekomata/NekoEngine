@@ -24,7 +24,8 @@ enum ComponentTypes
 	PlaneColliderComponent,
 
 	//Audio
-	AudioListenerComponent
+	AudioListenerComponent,
+	AudioSourceComponent
 };
 
 #endif

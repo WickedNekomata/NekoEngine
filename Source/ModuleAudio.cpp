@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleAudio.h"
-//#include "CompAudioSource.h"
+#include "ComponentAudioSource.h"
 
 ModuleAudio::ModuleAudio(bool start_enabled) : Module(start_enabled)
 {
@@ -32,7 +32,7 @@ update_status ModuleAudio::PostUpdate(/*float dt*/)
 
 bool ModuleAudio::CleanUp()
 {
-	//audio_sources.clear();
+	audio_sources.clear();
 	event_list.clear();
 	WwiseT::CloseSoundEngine();
 	return true;
@@ -52,14 +52,14 @@ uint ModuleAudio::GetListenerID() const
 
 void ModuleAudio::PlayOnAwake() const
 {
-	//std::list<CompAudioSource*>::const_iterator iterator;
-	//for (iterator = App->audio->audio_sources.begin(); iterator != App->audio->audio_sources.end(); ++iterator) 
-	//{
-	//	if (iterator._Ptr->_Myval->GetPlayOnAwake() == true) 
-	//	{
-	//		iterator._Ptr->_Myval->PlayAudio();
-	//	}
-	//}
+	std::list<ComponentAudioSource*>::const_iterator iterator;
+	for (iterator = App->audio->audio_sources.begin(); iterator != App->audio->audio_sources.end(); ++iterator) 
+	{
+		if (iterator._Ptr->_Myval->GetPlayOnAwake() == true) 
+		{
+			iterator._Ptr->_Myval->PlayAudio();
+		}
+	}
 }
 
 void ModuleAudio::Stop() const

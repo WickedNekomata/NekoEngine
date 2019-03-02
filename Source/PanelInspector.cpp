@@ -242,6 +242,12 @@ void PanelInspector::ShowGameObjectInspector() const
 				ImGui::CloseCurrentPopup();
 			}
 		}
+		if (gameObject->cmp_audioSource == nullptr) {
+			if (ImGui::Selectable("Audio Source")) {
+				gameObject->AddComponent(ComponentTypes::AudioSourceComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
 		ImGui::EndPopup();
 	}
 

@@ -116,6 +116,9 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 		case ComponentTypes::AudioListenerComponent:
 			go->cmp_audioListener = 0;
 			break;
+		case ComponentTypes::AudioSourceComponent:
+			go->cmp_audioSource = 0;
+			break;
 		}
 		break;
 	}

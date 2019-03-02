@@ -55,6 +55,9 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderObjec
 	case ShaderObjectTypes::FragmentType:
 		fileType = FileTypes::FragmentShaderObjectFile;
 		break;
+	case ShaderObjectTypes::GeometryType:
+		fileType = FileTypes::GeometryShaderObjectFile;
+		break;
 	}
 
 	if (App->fs->SaveInGame((char*)buffer, size, fileType, outputFile, overwrite) > 0)

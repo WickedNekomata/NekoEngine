@@ -25,9 +25,10 @@ ComponentRectTransform::ComponentRectTransform(GameObject * parent, ComponentTyp
 	RecaculatePercentage();
 }
 
-ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::RectTransformComponent)
+ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & componentRectTransform, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::RectTransformComponent)
 {
-	App->ui->componentsUI.push_back(this);
+	if(!includeComponents)
+		App->ui->componentsUI.push_back(this);
 	ui_rect = App->ui->GetRectUI();
 
 	memcpy(rectTransform, componentRectTransform.rectTransform, sizeof(uint) * 4);
@@ -41,10 +42,10 @@ ComponentRectTransform::ComponentRectTransform(const ComponentRectTransform & co
 		rectParent = ((ComponentRectTransform*)rect)->GetRect();
 
 		ParentChanged();
-	}
 
-	RecaculateAnchors();
-	RecaculatePercentage();
+		RecaculateAnchors();
+		RecaculatePercentage();
+	}
 }
 
 ComponentRectTransform::~ComponentRectTransform()

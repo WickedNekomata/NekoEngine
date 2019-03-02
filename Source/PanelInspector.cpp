@@ -626,6 +626,9 @@ void PanelInspector::ShowShaderObjectInspector() const
 	case ShaderObjectTypes::FragmentType:
 		ImGui::Text("Fragment Shader Object");
 		break;
+	case ShaderObjectTypes::GeometryType:
+		ImGui::Text("Geometry Shader Object");
+		break;
 	}
 	ImGui::Separator();
 	ImGui::Spacing();

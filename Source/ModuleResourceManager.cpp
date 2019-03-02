@@ -489,6 +489,8 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 					shaderObjectData.shaderObjectType = ShaderObjectTypes::VertexType;
 				else if (IS_FRAGMENT_SHADER(extension.data()))
 					shaderObjectData.shaderObjectType = ShaderObjectTypes::FragmentType;
+				else if (IS_GEOMETRY_SHADER(extension.data()))
+					shaderObjectData.shaderObjectType = ShaderObjectTypes::GeometryType;
 
 				uint shaderObject = 0;
 				bool success = ResourceShaderObject::LoadFile(file, shaderObjectData, shaderObject);
@@ -1334,6 +1336,7 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 		break;
 	case ASCIIvsh: case ASCIIVSH:
 	case ASCIIfsh: case ASCIIFSH:
+	case ASCIIgsh: case ASCIIGSH:
 		return ResourceTypes::ShaderObjectResource;
 		break;
 	case ASCIIpsh: case ASCIIPSH:

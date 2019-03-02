@@ -52,6 +52,7 @@ public:
 	// Called before the first frame
 	bool Start();
 	bool CleanUp();
+	update_status Update();
 	bool Update(float dt);
 
 	bool StartAttachingBones();

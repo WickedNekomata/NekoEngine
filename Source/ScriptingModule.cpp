@@ -5,11 +5,10 @@
 #include "ComponentNavAgent.h"
 #include "ComponentAnimation.h"
 #include "ComponentEmitter.h"
+#include "ComponentRectTransform.h"
+#include "ComponentButton.h"
 
 #include "GameObject.h"
-
-#include "ModuleInput.h"
-#include "ModuleScene.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/jit/jit.h>
@@ -29,6 +28,9 @@
 #include "ModuleLayers.h"
 #include "ModulePhysics.h"
 #include "SceneQueries.h"
+#include "ModuleInput.h"
+#include "ModuleScene.h"
+#include "ModuleUI.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
 
@@ -463,6 +465,16 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 		case ComponentTypes::EmitterComponent:
 		{
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine", "ParticleEmitter"));
+			break;
+		}
+		case ComponentTypes::RectTransformComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine.UI", "RectTransform"));
+			break;
+		}
+		case ComponentTypes::ButtonComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine.UI", "Button"));
 			break;
 		}
 	}
@@ -1144,6 +1156,9 @@ MonoArray* GetGlobalPos(MonoObject* monoObject)
 	if (!gameObject)
 		return nullptr;
 
+	if (!gameObject->transform)
+		return nullptr;
+
 	math::float3 position, scale;
 	math::Quat rotation;
 
@@ -1167,6 +1182,9 @@ MonoArray* GetGlobalRotation(MonoObject* monoObject)
 	gameObject = (GameObject*)address;
 
 	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
 		return nullptr;
 
 	math::float3 position, scale;
@@ -1241,6 +1259,9 @@ MonoArray* GetLocalPosition(MonoObject* monoObject)
 	if (!gameObject)
 		return nullptr;
 
+	if (!gameObject->transform)
+		return nullptr;
+
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
 
 	mono_array_set(ret, float, 0, gameObject->transform->position.x);
@@ -1260,6 +1281,9 @@ void SetLocalPosition(MonoObject* monoObject, MonoArray* position)
 	if (!gameObject)
 		return;
 
+	if (!gameObject->transform)
+		return;
+
 	gameObject->transform->position.x = mono_array_get(position, float, 0);
 	gameObject->transform->position.y = mono_array_get(position, float, 1);
 	gameObject->transform->position.z = mono_array_get(position, float, 2);
@@ -1273,6 +1297,9 @@ MonoArray* GetLocalRotation(MonoObject* monoObject)
 	GameObject* gameObject = (GameObject*)address;
 
 	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
 		return nullptr;
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 4);
@@ -1295,6 +1322,9 @@ void SetLocalRotation(MonoObject* monoObject, MonoArray* rotation)
 	if (!gameObject)
 		return;
 
+	if (!gameObject->transform)
+		return;
+
 	gameObject->transform->rotation.x = mono_array_get(rotation, float, 0);
 	gameObject->transform->rotation.y = mono_array_get(rotation, float, 1);
 	gameObject->transform->rotation.z = mono_array_get(rotation, float, 2);
@@ -1309,6 +1339,9 @@ MonoArray* GetLocalScale(MonoObject* monoObject)
 	GameObject* gameObject = (GameObject*)address;
 
 	if (!gameObject)
+		return nullptr;
+
+	if (!gameObject->transform)
 		return nullptr;
 
 	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_int32_class(), 3);
@@ -1328,6 +1361,9 @@ void SetLocalScale(MonoObject* monoObject, MonoArray* scale)
 	GameObject* gameObject = (GameObject*)address;
 
 	if (!gameObject)
+		return;
+
+	if (!gameObject->transform)
 		return;
 
 	gameObject->transform->scale.x = mono_array_get(scale, float, 0);
@@ -1374,6 +1410,32 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 			return nullptr;
 
 		Component* comp = gameObject->GetComponent(ComponentTypes::EmitterComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else if (className == "RectTransform")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::RectTransformComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else if (className == "Button")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::ButtonComponent);
 
 		if (!comp)
 			return nullptr;
@@ -1592,6 +1654,61 @@ void ParticleEmitterStop(MonoObject* particleComp)
 	}
 }
 
+bool UIHovered()
+{
+	return App->ui->IsUIHovered();
+}
+
+MonoArray* RectTransform_GetRect(MonoObject* rectComp)
+{
+	MonoArray* ret = mono_array_new(App->scripting->domain, mono_get_uint32_class(), 4);
+
+	ComponentRectTransform* rectCpp = (ComponentRectTransform*)App->scripting->ComponentFrom(rectComp);
+	if (!rectCpp)
+		return nullptr;
+
+	uint* rectVector = rectCpp->GetRect();
+	mono_array_set(ret, uint, 0, rectVector[0]);
+	mono_array_set(ret, uint, 1, rectVector[1]);
+	mono_array_set(ret, uint, 2, rectVector[2]);
+	mono_array_set(ret, uint, 3, rectVector[3]);
+
+	return ret;
+}
+
+void RectTransform_SetRect(MonoObject* rectComp, MonoArray* newRect)
+{
+	ComponentRectTransform* rectCpp = (ComponentRectTransform*)App->scripting->ComponentFrom(rectComp);
+	if (!rectCpp)
+		return;
+
+	uint rectVector[4];
+	rectVector[0] = mono_array_get(newRect, uint, 0);
+	rectVector[1] = mono_array_get(newRect, uint, 1);
+	rectVector[2] = mono_array_get(newRect, uint, 2);
+	rectVector[3] = mono_array_get(newRect, uint, 3);
+	
+	rectCpp->SetRect(rectVector[0], rectVector[1], rectVector[2], rectVector[3]);
+}
+
+void ButtonSetKey(MonoObject* buttonComp, uint key)
+{
+	ComponentButton* button = (ComponentButton*)App->scripting->ComponentFrom(buttonComp);
+	if (button)
+	{
+		button->SetNewKey(key);
+	}
+}
+
+int ButtonGetState(MonoObject* buttonComp)
+{
+	ComponentButton* button = (ComponentButton*)App->scripting->ComponentFrom(buttonComp);
+	if (button)
+	{
+		return button->GetState();
+	}
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1666,6 +1783,11 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Animator::PlayAnimation", (const void*)&PlayAnimation);
 	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Play", (const void*)&ParticleEmitterPlay);
 	mono_add_internal_call("JellyBitEngine.ParticleEmitter::Stop", (const void*)&ParticleEmitterStop);
+	mono_add_internal_call("JellyBitEngine.UI.UI::UIHovered", (const void*)&UIHovered);
+	mono_add_internal_call("JellyBitEngine.UI.RectTransform::GetRect", (const void*)&RectTransform_GetRect);
+	mono_add_internal_call("JellyBitEngine.UI.RectTransform::SetRect", (const void*)&RectTransform_SetRect);
+	mono_add_internal_call("JellyBitEngine.UI.Button::SetKey", (const void*)&ButtonSetKey);
+	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
 
 	ClearMap();
 

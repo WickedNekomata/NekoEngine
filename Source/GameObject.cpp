@@ -33,6 +33,8 @@
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
 #include "ComponentAnimation.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -126,32 +128,32 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(cmp_projector);
 			break;
 		case ComponentTypes::RigidStaticComponent:
-			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::RigidDynamicComponent:
-			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::BoxColliderComponent:
-			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::SphereColliderComponent:
-			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::CapsuleColliderComponent:
-			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::PlaneColliderComponent:
-			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
@@ -187,6 +189,16 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(script);
 			break;
 		}
+		case ComponentTypes::AudioListenerComponent:
+			cmp_audioListener = new ComponentAudioListener(*gameObject.cmp_audioListener);
+			cmp_audioListener->SetParent(this);
+			components.push_back(cmp_audioListener);
+			break;
+		case ComponentTypes::AudioSourceComponent:
+			cmp_audioSource = new ComponentAudioSource(*gameObject.cmp_audioSource);
+			cmp_audioSource->SetParent(this);
+			components.push_back(cmp_audioSource);
+			break;
 		}
 	}
 
@@ -581,7 +593,13 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		if(includeInModules)
 			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 		break;
-	}
+		}
+	case ComponentTypes::AudioListenerComponent:
+		newComponent = cmp_audioListener = new ComponentAudioListener(this);
+		break;
+	case ComponentTypes::AudioSourceComponent:
+		newComponent = cmp_audioSource = new ComponentAudioSource(this);
+		break;
 	}
 
 	components.push_back(newComponent);

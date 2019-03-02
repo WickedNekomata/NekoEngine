@@ -9,11 +9,14 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleCameraEditor.h"
+#include "ModuleResourceManager.h"
+#include "ModuleScene.h"
 #include "ModuleGOs.h"
 #include "ModuleGui.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
 #include "DebugDrawer.h"
+#include "ResourcePrefab.h"
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 #include "MathGeoLib\include\Geometry\LineSegment.h"
@@ -466,7 +469,60 @@ void ModulePhysics::DestroyChest()
 				gameObject->Destroy();
 
 				// 2. Instantiate game object (broken mesh)
+				ResourcePrefab* prefab = nullptr;
 
+				std::vector<Resource*> prefabs = App->res->GetResourcesByType(ResourceTypes::PrefabResource);
+				for (uint i = 0; i < prefabs.size(); ++i)
+				{
+					if (strcmp(prefabs[i]->GetName(), "BC1.pfb") == 0)
+					{
+						prefab = (ResourcePrefab*)prefabs[i];
+						break;
+					}
+				}
+
+				if (prefab != nullptr)
+				{
+					App->res->SetAsUsed(prefab->GetUuid());
+
+					GameObject* brokenChest = prefab->GetRoot();
+
+					if (brokenChest != nullptr)
+					{
+						GameObject* brokenChestInstance = App->GOs->Instanciate(brokenChest, App->scene->root);
+
+						if (brokenChestInstance != nullptr)
+						{
+							App->res->SetAsUnused(prefab->GetUuid());
+
+							// a) Move broken mesh to original mesh
+							math::float4x4 globalMatrix = gameObject->transform->GetGlobalMatrix();
+							brokenChestInstance->transform->SetMatrixFromGlobal(globalMatrix);
+
+							// b) Apply forces to broken mesh
+							std::vector<GameObject*> go;
+							brokenChestInstance->GetChildrenVector(go, false);
+
+							for (uint i = 0; i < go.size(); ++i)
+							{
+								ComponentRigidDynamic* rigidDynamic = (ComponentRigidDynamic*)go[i]->cmp_rigidActor;
+								
+								if (rigidDynamic != nullptr)
+								{
+									float force = 10.0f;
+									int max = 1;
+									int min = -1;
+
+									float forceX = force * ((rand() % (max - min)) + min);
+									float forceY = force * ((rand() % (max - min)) + min);
+									float forceZ = force * ((rand() % (max - min)) + min);
+
+									rigidDynamic->AddForce(math::float3(forceX, forceY, forceZ), physx::PxForceMode::eIMPULSE);
+								}
+							}
+						}					
+					}
+				}
 			}
 		}
 	}

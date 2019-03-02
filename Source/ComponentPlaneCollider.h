@@ -9,7 +9,7 @@ class ComponentPlaneCollider : public ComponentCollider
 public:
 
 	ComponentPlaneCollider(GameObject* parent);
-	ComponentPlaneCollider(const ComponentPlaneCollider& componentPlaneCollider);
+	ComponentPlaneCollider(const ComponentPlaneCollider& componentPlaneCollider, GameObject* parent);
 	~ComponentPlaneCollider();
 
 	void OnUniqueEditor();

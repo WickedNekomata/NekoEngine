@@ -4,6 +4,7 @@ using JellyBitEngine;
 public class Activator : JellyScript
 {
     public GameObject temp;
+    public int cavaio = 2;
 
     //Use this method for initialization
     public override void Awake()
@@ -16,7 +17,7 @@ public class Activator : JellyScript
     {
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
-            gameObject.active = !gameObject.active;
+            temp.active = !temp.active;
         }
     }
 }

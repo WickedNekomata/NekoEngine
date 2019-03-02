@@ -1,0 +1,42 @@
+Event	ID	Name			Wwise Object Path	Notes
+	452547817	Stop_All			\Default Work Unit\Stop_All	
+	1467305928	background_tracks			\Default Work Unit\background_tracks	
+	2607198564	music_TheDillards_Dooley			\Default Work Unit\music_TheDillards_Dooley	
+	3412057565	train			\Default Work Unit\train	
+	3585407402	music_TheGrowlers_GoingGetsTuff			\Default Work Unit\music_TheGrowlers_GoingGetsTuff	
+	3679762312	Resume_All			\Default Work Unit\Resume_All	
+	3864097025	Pause_All			\Default Work Unit\Pause_All	
+
+State Group	ID	Name			Wwise Object Path	Notes
+	128914588	swap_music			\Default Work Unit\swap_music	
+
+State	ID	Name	State Group			Notes
+	0	None	swap_music			
+	1208172673	state1	swap_music			
+	1208172674	state2	swap_music			
+
+Custom State	ID	Name	State Group	Owner		Notes
+	454330767	state2	swap_music	\Actor-Mixer Hierarchy\Default Work Unit\The Dillards - Dooley		
+	687525093	state1	swap_music	\Actor-Mixer Hierarchy\Default Work Unit\The Growlers-Going Gets Tuff		
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	1879753049	PanLeft			\Default Work Unit\PanLeft	
+	1908158473	Pitch			\Default Work Unit\Pitch	
+	2223055028	LowPassFilter			\Default Work Unit\LowPassFilter	
+	2647461264	HighPassFilter			\Default Work Unit\HighPassFilter	
+	4071927180	PanRight			\Default Work Unit\PanRight	
+
+Audio Bus	ID	Name			Wwise Object Path	Notes
+	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
+
+Auxiliary Bus	ID	Name			Wwise Object Path	Notes
+	3059984139	tunnel			\Default Work Unit\Master Audio Bus\tunnel	
+
+Effect plug-ins	ID	Name	Type				Notes
+	602546716	Room_Large	Wwise RoomVerb			
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	5030772	The Growlers-Going Gets Tuff	D:\Documentos\WwiseProjects\Assignment3_2017v\.cache\Windows\SFX\The Growlers-Going Gets Tuff_F17FB28C.wem		\Actor-Mixer Hierarchy\Default Work Unit\The Growlers-Going Gets Tuff		36845820
+	352902853	The Dillards - Dooley	D:\Documentos\WwiseProjects\Assignment3_2017v\.cache\Windows\SFX\The Dillards - Dooley_F17FB28C.wem		\Actor-Mixer Hierarchy\Default Work Unit\The Dillards - Dooley		10850368
+	496129679	train	D:\Documentos\WwiseProjects\Assignment3_2017v\.cache\Windows\SFX\train_F17FB28C.wem		\Actor-Mixer Hierarchy\Default Work Unit\train		2029888
+

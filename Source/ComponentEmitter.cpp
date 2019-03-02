@@ -10,6 +10,7 @@
 #include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
 #include <vector>
 
@@ -513,6 +514,7 @@ void ComponentEmitter::ParticleAABB()
 
 void ComponentEmitter::ParticleTexture()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
 		const Resource* resource = App->res->GetResource(materialRes);
@@ -575,6 +577,7 @@ void ComponentEmitter::ParticleTexture()
 		}
 		ImGui::Separator();
 	}
+	#endif
 }
 
 void ComponentEmitter::SetNewAnimation()

@@ -65,6 +65,8 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 	isStatic = gameObject.isStatic;
 	seenLastFrame = gameObject.seenLastFrame;
 
+	layer = gameObject.layer;
+
 	uuid = App->GenerateRandomNumber();
 
 	for (int i = 0; i < gameObject.components.size(); ++i)
@@ -154,19 +156,29 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::RectTransformComponent:
-			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			cmp_rectTransform = new ComponentRectTransform(*(ComponentRectTransform*)gameObject.cmp_rectTransform, this, includeComponents);
+			cmp_rectTransform->SetParent(this);
+			components.push_back(cmp_rectTransform);
 			break;
 		case ComponentTypes::CanvasRendererComponent:
-			cmp_canvasRenderer = new ComponentCanvasRenderer(*gameObject.cmp_canvasRenderer);
+			cmp_canvasRenderer = new ComponentCanvasRenderer(*(ComponentCanvasRenderer*)gameObject.cmp_canvasRenderer, this, includeComponents);
+			cmp_canvasRenderer->SetParent(this);
+			components.push_back(cmp_canvasRenderer);
 			break;
 		case ComponentTypes::ImageComponent:
-			cmp_image = new ComponentImage(*gameObject.cmp_image);
+			cmp_image = new ComponentImage(*(ComponentImage*)gameObject.cmp_image, this, includeComponents);
+			cmp_image->SetParent(this);
+			components.push_back(cmp_image);
 			break;
 		case ComponentTypes::ButtonComponent:
-			cmp_button = new ComponentButton(*gameObject.cmp_button);
+			cmp_button = new ComponentButton(*(ComponentButton*)gameObject.cmp_button, this, includeComponents);
+			cmp_button->SetParent(this);
+			components.push_back(cmp_button);
 			break;
 		case ComponentTypes::LabelComponent:
-			cmp_label = new ComponentLabel(*gameObject.cmp_label);
+			cmp_label = new ComponentLabel(*(ComponentLabel*)gameObject.cmp_label, this, includeComponents);
+			cmp_label->SetParent(this);
+			components.push_back(cmp_label);
 			break;
 		case ComponentTypes::ScriptComponent:
 		{
@@ -622,6 +634,17 @@ Component* GameObject::GetComponent(ComponentTypes type) const
 			comp = components[i];
 	}
 	return comp;
+}
+
+std::vector<Component*> GameObject::GetComponents(ComponentTypes type) const
+{
+	std::vector<Component*> ret;
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			ret.push_back(components[i]);
+	}
+	return ret;
 }
 
 int GameObject::GetComponentsLength()

@@ -9,7 +9,7 @@ class ComponentBoxCollider : public ComponentCollider
 public:
 
 	ComponentBoxCollider(GameObject* parent);
-	ComponentBoxCollider(const ComponentBoxCollider& componentBoxCollider);
+	ComponentBoxCollider(const ComponentBoxCollider& componentBoxCollider, GameObject* parent);
 	~ComponentBoxCollider();
 
 	void OnUniqueEditor();

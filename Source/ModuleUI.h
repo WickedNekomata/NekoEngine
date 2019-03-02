@@ -76,7 +76,7 @@ private:
 
 	uint ui_shader = 0;
 
-	bool uiMode = false;
+	bool uiMode = true;
 	
 	bool anyItemIsHovered = false;
 

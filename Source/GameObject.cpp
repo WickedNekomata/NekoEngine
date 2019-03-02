@@ -188,6 +188,7 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			script->SetParent(this);
 			components.push_back(script);
 			break;
+		}
 		case ComponentTypes::AudioListenerComponent:
 			cmp_audioListener = new ComponentAudioListener(*gameObject.cmp_audioListener);
 			cmp_audioListener->SetParent(this);
@@ -198,7 +199,6 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			cmp_audioSource->SetParent(this);
 			components.push_back(cmp_audioSource);
 			break;
-		}
 		}
 	}
 

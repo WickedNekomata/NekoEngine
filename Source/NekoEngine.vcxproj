@@ -197,6 +197,7 @@
     <ClInclude Include="AK\SoundEngine\Common\IAkProcessorFeatures.h" />
     <ClInclude Include="AK\SoundEngine\Common\IAkRTPCSubscriber.h" />
     <ClInclude Include="AK\SoundEngine\Common\IAkStreamMgr.h" />
+    <ClInclude Include="AK\SoundEngine\Platforms\SSE\AkSimd.h" />
     <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkSimd.h" />
     <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkTypes.h" />
     <ClInclude Include="AK\SoundEngine\Platforms\Windows\AkWinSoundEngine.h" />
@@ -280,6 +281,8 @@
     <ClInclude Include="Assimp\include\version.h" />
     <ClInclude Include="BoneImporter.h" />
     <ClInclude Include="ComponentAnimation.h" />
+    <ClInclude Include="ComponentAudioListener.h" />
+    <ClInclude Include="ComponentAudioSource.h" />
     <ClInclude Include="ComponentButton.h" />
     <ClInclude Include="ComponentCanvasRenderer.h" />
     <ClInclude Include="ComponentD6Joint.h" />
@@ -297,6 +300,7 @@
     <ClInclude Include="Freetype\freetype\config\ftheader.h" />
     <ClInclude Include="Freetype\ft2build.h" />
     <ClInclude Include="ModuleAnimation.h" />
+    <ClInclude Include="ModuleAudio.h" />
     <ClInclude Include="ModuleFreetype.h" />
     <ClInclude Include="ModuleInternalResHandler.h" />
     <ClInclude Include="ModuleLayers.h" />
@@ -699,6 +703,8 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BoneImporter.cpp" />
     <ClCompile Include="ComponentAnimation.cpp" />
+    <ClCompile Include="ComponentAudioListener.cpp" />
+    <ClCompile Include="ComponentAudioSource.cpp" />
     <ClCompile Include="ComponentButton.cpp" />
     <ClCompile Include="ComponentCanvasRenderer.cpp" />
     <ClCompile Include="ComponentD6Joint.cpp" />
@@ -714,6 +720,7 @@
     <ClCompile Include="ComponentRevoluteJoint.cpp" />
     <ClCompile Include="ComponentSphericalJoint.cpp" />
     <ClCompile Include="ModuleAnimation.cpp" />
+    <ClCompile Include="ModuleAudio.cpp" />
     <ClCompile Include="ModuleFreetype.cpp" />
     <ClCompile Include="ModuleInternalResHandler.cpp" />
     <ClCompile Include="ModuleLayers.cpp" />

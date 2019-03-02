@@ -39,7 +39,7 @@ enum ComponentTypes
 	SphericalJointComponent,
 	RevoluteJointComponent,
 	PrismaticJointComponent,
-	D6JointComponent
+	D6JointComponent,
 	//Audio
 	AudioListenerComponent,
 	AudioSourceComponent

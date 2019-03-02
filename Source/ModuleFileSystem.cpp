@@ -111,6 +111,13 @@ bool ModuleFileSystem::Start()
 		App->PushSystemEvent(event);
 	}
 
+#ifdef GAMEMODE
+	System_Event event;
+	event.type = System_Event_Type::LoadGMScene;
+	App->PushSystemEvent(event);
+#endif
+	
+
 #ifndef GAMEMODE
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;

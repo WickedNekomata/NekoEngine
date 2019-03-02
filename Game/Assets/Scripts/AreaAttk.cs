@@ -238,6 +238,11 @@ public class AreaAttk : JellyScript
                 Debug.Log("HIT ENEMY: " + hit.gameObject.name);
             }
         }
+
+        if (smoke == null)
+            smoke = gameObject.GetComponent<ParticleEmitter>();
+        smoke.Play();
+
     }
 
 }

@@ -242,7 +242,7 @@ update_status ModulePhysics::FixedUpdate()
 #endif
 
 	//Debug();
-	DestroyChest();
+	//DestroyChest();
 
 	return UPDATE_CONTINUE;
 }

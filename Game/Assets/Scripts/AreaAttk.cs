@@ -4,7 +4,7 @@ using JellyBitEngine;
 public class AreaAttk : JellyScript
 {
     //Alita propeties
-    int life = 50;
+    public int life = 50;
     int damage = 20;
 
     // Raycast
@@ -56,6 +56,11 @@ public class AreaAttk : JellyScript
     {
         CheckState();
         CheckForMouseClick();
+
+        if (Input.GetKeyDown(KeyCode.KEY_MINUS))
+        {
+            life -= 5;
+        }
 
         if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
             CheckForSPAttack(); //Only special attacks when no normal attacking

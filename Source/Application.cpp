@@ -91,7 +91,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	// Renderer last!
 	AddModule(renderer3D);
 
-	//No, I'm last ;)
+	// No, I'm last ;)
 	AddModule(events);
 }
 

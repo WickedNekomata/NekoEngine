@@ -33,6 +33,8 @@
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
 #include "ComponentAnimation.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -187,6 +189,16 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(script);
 			break;
 		}
+		case ComponentTypes::AudioListenerComponent:
+			cmp_audioListener = new ComponentAudioListener(*gameObject.cmp_audioListener);
+			cmp_audioListener->SetParent(this);
+			components.push_back(cmp_audioListener);
+			break;
+		case ComponentTypes::AudioSourceComponent:
+			cmp_audioSource = new ComponentAudioSource(*gameObject.cmp_audioSource);
+			cmp_audioSource->SetParent(this);
+			components.push_back(cmp_audioSource);
+			break;
 		}
 	}
 
@@ -581,7 +593,13 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		if(includeInModules)
 			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 		break;
-	}
+		}
+	case ComponentTypes::AudioListenerComponent:
+		newComponent = cmp_audioListener = new ComponentAudioListener(this);
+		break;
+	case ComponentTypes::AudioSourceComponent:
+		newComponent = cmp_audioSource = new ComponentAudioSource(this);
+		break;
 	}
 
 	components.push_back(newComponent);

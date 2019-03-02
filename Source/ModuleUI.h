@@ -66,6 +66,7 @@ private:
 
 public:
 	std::list<Component*> componentsUI;
+	std::list<Component*> componentsRendererUI;
 
 private:
 	uint ui_size_draw[4];

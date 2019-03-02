@@ -691,19 +691,19 @@ void ScriptingModule::ClearMap()
 	monoObjectHandles.clear();
 }
 
-Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
+Resource* ScriptingModule::ImportScriptResource(const char* file)
 {
 	//May be new file or generic file event
 
-	std::string file = fileAssets;
-	std::string metaFile = file + ".meta";
+	std::string fileString = file;
+	std::string metaFile = fileString + ".meta";
 
-	std::string scriptName = file.substr(file.find_last_of("/") + 1);
+	std::string scriptName = fileString.substr(fileString.find_last_of("/") + 1);
 	scriptName = scriptName.substr(0, scriptName.find_last_of("."));
 
 	ResourceData data;
 	data.name = scriptName;
-	data.file = "Assets/Scripts/" + scriptName + ".cs";
+	data.file = file;
 	data.exportedFile = "";
 
 	ResourceScript* scriptRes = nullptr;
@@ -720,7 +720,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 		char* cursor = buffer;
 		scriptRes->SerializeToMeta(cursor);
 
-		App->fs->Save(file + ".meta", buffer, bytes);
+		App->fs->Save(fileString + ".meta", buffer, bytes);
 
 		delete[] buffer;
 	}
@@ -738,7 +738,7 @@ Resource* ScriptingModule::ImportScriptResource(const char* fileAssets)
 			uint uid;
 			memcpy(&uid, cursor, sizeof(uint));
 
-			int64_t lastModTime = App->fs->GetLastModificationTime(fileAssets);
+			int64_t lastModTime = App->fs->GetLastModificationTime(file);
 			
 			scriptModified = lastSavedModTime != lastModTime;
 
@@ -1661,10 +1661,22 @@ void SetCompActive(MonoObject* monoComponent, bool active)
 	component->IsActive() != active ? component->ToggleIsActive() : void();
 }
 
+void SetGameObjectActive(MonoObject* monoObject, bool active)
+{
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	gameObject->IsActive() != active ? gameObject->ToggleIsActive() : void();
+}
+
+bool GetGameObjectActive(MonoObject* monoObject, bool active)
+{
+	GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+	return gameObject->IsActive();
+}
+
 bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
 {
 	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
-	return animator->PlayAnimation(animUUID);
+	return animator->PlayAnimation("JONYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY XD");
 }
 
 void ParticleEmitterPlay(MonoObject* particleComp)
@@ -1819,6 +1831,8 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.UI.RectTransform::SetRect", (const void*)&RectTransform_SetRect);
 	mono_add_internal_call("JellyBitEngine.UI.Button::SetKey", (const void*)&ButtonSetKey);
 	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
+	mono_add_internal_call("JellyBitEngine.GameObject::GetActive", (const void*)&SetGameObjectActive);
+	mono_add_internal_call("JellyBitEngine.GameObject::SetActive", (const void*)&GetGameObjectActive);
 
 	ClearMap();
 

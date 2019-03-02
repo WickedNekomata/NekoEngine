@@ -168,6 +168,16 @@ bool ResourcePrefab::LoadInMemory()
 		return false;
 
 	GameObject* temp = App->GOs->DeSerializeToNode(buffer, size);
+
+	std::vector<GameObject*> childs;
+	temp->GetChildrenVector(childs, true);
+
+	System_Event event;
+	event.type = System_Event_Type::LoadFinished;
+
+	for(auto gameObject : childs)
+		gameObject->OnSystemEvent(event);
+
 	prefabData.root = new GameObject(*temp, false);
 	prefabData.root->ForceUUID(uuid);
 	prefabData.root->prefab = this;

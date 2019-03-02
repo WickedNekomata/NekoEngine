@@ -9,6 +9,7 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleCameraEditor.h"
+#include "ModuleGOs.h"
 #include "ModuleGui.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
@@ -238,6 +239,7 @@ update_status ModulePhysics::FixedUpdate()
 #endif
 
 	//Debug();
+	//DestroyChest();
 
 	return UPDATE_CONTINUE;
 }
@@ -435,6 +437,36 @@ void ModulePhysics::Debug()
 			{
 				if (touchesInfo[i].GetGameObject() != nullptr)
 					CONSOLE_LOG(LogTypes::Normal, "The overlap touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
+		}
+	}
+}
+
+void ModulePhysics::DestroyChest()
+{
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		// Raycast
+		RaycastHit hitInfo;
+		std::vector<RaycastHit> touchesInfo;
+		math::Ray ray = App->renderer3D->GetCurrentCamera()->ScreenToRay(math::float2(App->input->GetMouseX(), App->input->GetMouseY()));
+
+		// Layer
+		Layer* chestLayer = App->layers->GetLayer(App->layers->NameToNumber("Destructibles"));
+		uint filterGroup = chestLayer->GetFilterGroup();
+
+		if (Raycast(ray.pos, ray.dir, hitInfo, FLT_MAX, filterGroup))
+		{
+			GameObject* gameObject = hitInfo.GetGameObject();
+
+			// Hit
+			if (gameObject != nullptr)
+			{
+				// 1. Destroy game object (original mesh)
+				gameObject->Destroy();
+
+				// 2. Instantiate game object (broken mesh)
+
 			}
 		}
 	}

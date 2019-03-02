@@ -10,7 +10,8 @@
 #include "ModuleTimeManager.h"
 #include "ModuleGOs.h"
 #include "ComponentTransform.h"
-
+#include "ModuleEvents.h"
+#include "EventSystem.h"
 #include "ModuleInput.h"
 
 //#include ".h" //TODO: delete this
@@ -147,11 +148,10 @@ bool ModuleAnimation::StartAttachingBones()
 
 				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
 				
-				if (res->deformableMeshData.verticesSize == 0)
-				{
+				
 					res->DuplicateMesh(res);
 					res->GenerateAndBindDeformableMesh();
-				}
+				
 
 				for (std::vector<ComponentBone*>::iterator it = mesh_co->attached_bones.begin(); it != mesh_co->attached_bones.end(); ++it)
 					(*it)->attached_mesh = mesh_co;
@@ -199,12 +199,37 @@ void ModuleAnimation::DetachBones(GameObject * go)
 	//RELEASE(res->deformable);
 }
 
+void ModuleAnimation::SetUpAnimations()
+{
+	for (uint i = 0u; i < animations.size(); i++)
+	{
+		Animation* it_anim = animations[i];
+		for (uint j = 0u; j < it_anim->anim_res_data.numKeys; j++)
+		{
+			RecursiveGetAnimableGO(App->scene->root, &it_anim->anim_res_data.boneKeys[j], it_anim);
+		}
+		
+	}
+}
+
+void ModuleAnimation::OnSystemEvent(System_Event event)
+{
+	switch (event.type)
+	{
+
+	case System_Event_Type::GameObjectDestroyed:
+		GameObject* go = event.goEvent.gameObject;
+		break;
+	}
+}
+
 void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 {
 	Animation* animation = new Animation();
 	animation->name = res->animationData.name;
-	for (uint i = 0; i < res->animationData.numKeys; ++i)
-		RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
+	animation->anim_res_data = res->animationData;
+	//for (uint i = 0; i < res->animationData.numKeys; ++i)
+		//RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
 
 	animation->duration = res->animationData.duration;
 
@@ -455,13 +480,22 @@ void ModuleAnimation::SetCurrentAnimationTime(float time)
 	MoveAnimationForward(current_anim->anim_timer, current_anim);
 }
 
-void ModuleAnimation::SetCurrentAnimation(int i)
+bool ModuleAnimation::SetCurrentAnimation(const char* anim_name)
 {
-	anim_state = BLENDING;
-	blend_timer = 0.0f;
-	last_anim = current_anim;
-	current_anim = animations.at(i);
-	SetCurrentAnimationTime(0.0f);
+	for (uint i = 0u; i < animations.size(); i++)
+	{
+		Animation* it_anim = animations[i];
+		if (strcmp(it_anim->name.c_str(), anim_name) == 0) {
+			anim_state = BLENDING;
+			blend_timer = 0.0f;
+			last_anim = current_anim;
+			current_anim = it_anim;
+			SetCurrentAnimationTime(0.0f);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void ModuleAnimation::CleanAnimableGOS()

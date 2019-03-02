@@ -81,7 +81,12 @@ update_status ModuleCameraEditor::Update()
 		float cameraMovementSpeed = movementSpeed * App->timeManager->GetRealDt();
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-			cameraMovementSpeed *= 2.0f; // double speed
+		{
+			cameraMovementSpeed *= increaseVelFactor; // half speed
+			increaseVelFactor += App->timeManager->GetRealDt() * CAMERASPEED;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_UP)
+			increaseVelFactor = 1.0f;
 
 		camera->frustum.Translate(offsetPosition * cameraMovementSpeed);
 
@@ -104,7 +109,7 @@ update_status ModuleCameraEditor::Update()
 		float cameraZoomSpeed = zoomSpeed * App->timeManager->GetRealDt();
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT)
-			cameraZoomSpeed *= 0.5f; // half speed
+			cameraZoomSpeed *= 0.5; // half speed
 
 		math::float3 offsetPosition = camera->frustum.front * (float)mouseWheel * cameraZoomSpeed;
 		camera->frustum.Translate(offsetPosition);

@@ -17,8 +17,8 @@
 #define DIR_LIBRARY_SHADERS "Library/Shaders"
 #define DIR_LIBRARY_SHADERS_OBJECTS "Library/Shaders/Objects"
 #define DIR_LIBRARY_SHADERS_PROGRAMS "Library/Shaders/Programs"
-#define DIR_LIBRARY_PREFAB "Assets/Prefabs"
-#define DIR_LIBRARY_SCENES "Assets/Scenes"
+#define DIR_LIBRARY_PREFAB "Library/Prefabs"
+#define DIR_LIBRARY_SCENES "Library/Scenes"
 #define DIR_LIBRARY_SCRIPTS "Library/Scripts"
 
 #define DIR_ASSETS "Assets"

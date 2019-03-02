@@ -16,15 +16,14 @@ ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes comp
 	App->physics->AddRigidActorComponent(this);
 }
 
-ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType) : Component(componentRigidActor.parent, componentRigidActorType)
+ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, GameObject* parent, ComponentTypes componentRigidActorType) : Component(parent, componentRigidActorType)
 {
 	App->physics->AddRigidActorComponent(this);
 }
 
 ComponentRigidActor::~ComponentRigidActor()
 {
-	App->physics->RemoveActor(*gActor);
-	gActor->release();
+	ClearActor();
 
 	App->physics->EraseRigidActorComponent(this);
 	parent->cmp_rigidActor = nullptr;
@@ -121,6 +120,16 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 
 	if (attach)
 		gActor->attachShape(*shape);
+}
+
+void ComponentRigidActor::ClearActor()
+{
+	if (gActor != nullptr)
+	{
+		App->physics->RemoveActor(*gActor);
+		gActor->release();
+	}
+	gActor = nullptr;
 }
 
 void ComponentRigidActor::RecursiveUpdateTransforms(GameObject* gameObject)

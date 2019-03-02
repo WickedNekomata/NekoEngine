@@ -138,7 +138,6 @@ public class AreaAttk : JellyScript
                 else
                     Debug.Log("ENEMY IS NULL");
             }
-
         }
 
         //Move
@@ -206,6 +205,10 @@ public class AreaAttk : JellyScript
             {
                 enemy_unit.Hit(damage);
                 Debug.Log("ENEMY HIT");
+
+                ParticleEmitter part = gameObject.GetComponent<ParticleEmitter>();
+                part.transform.position = transform.position;
+                part.Play();
             }
 
             attk_cool_down = 0.0f;

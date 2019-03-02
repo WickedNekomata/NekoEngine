@@ -40,6 +40,9 @@ enum ComponentTypes
 	RevoluteJointComponent,
 	PrismaticJointComponent,
 	D6JointComponent
+	//Audio
+	AudioListenerComponent,
+	AudioSourceComponent
 };
 
 #endif

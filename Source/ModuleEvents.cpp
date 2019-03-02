@@ -26,6 +26,7 @@
 #include "ComponentRectTransform.h"
 #include "ComponentButton.h"
 #include "ComponentLabel.h"
+#include "ComponentAudioListener.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"

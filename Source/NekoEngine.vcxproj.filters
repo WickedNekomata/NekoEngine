@@ -2119,5 +2119,8 @@
     <None Include="NMBuildContext.h">
       <Filter>Sources\Helpers\NavMesh</Filter>
     </None>
+    <None Include="AK\Win32\AkFilePackageLowLevelIO.inl">
+      <Filter>Sources\3rd Party\Wwise\AK\Win32</Filter>
+    </None>
   </ItemGroup>
 </Project>

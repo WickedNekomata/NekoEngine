@@ -39,7 +39,6 @@ bool ModuleAnimation::Awake(JSON_Object* config)
 
 bool ModuleAnimation::Start()
 {
-
 	// Call here to attach bones and everytime that we reimport things
 	StartAttachingBones();
 
@@ -119,10 +118,8 @@ update_status ModuleAnimation::Update()
 			DeformMesh(bone);
 			ResourceMesh*res = (ResourceMesh*)App->res->GetResource(bone->attached_mesh->res);
 
-			if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT) {
-				res->GenerateAndBindDeformableMesh();
-			}
-			
+			res->UnloadDeformableMeshFromMemory();
+			res->GenerateAndBindDeformableMesh();
 		}
 	}
 
@@ -529,45 +526,28 @@ void ModuleAnimation::StepForward()
 
 void ModuleAnimation::DeformMesh(ComponentBone* component_bone)
 {
-	ComponentMesh* mesh = component_bone->attached_mesh;
+	ComponentMesh* mesh_co = component_bone->attached_mesh;
 
-	ResourceMesh* mesh_res = (ResourceMesh*)App->res->GetResource(mesh->res);
-	
-	if (mesh_res != nullptr)
+	if (mesh_co != nullptr)
 	{
-		const ResourceBone* rbone = (const ResourceBone*)App->res->GetResource(component_bone->res);
-		ResourceMesh* roriginal = mesh_res;
-		ResourceMesh* tmp_mesh = mesh_res;
-		
+		ResourceBone* rbone = (ResourceBone*)App->res->GetResource(component_bone->res);
+		ResourceMesh* mesh = (ResourceMesh*)App->res->GetResource(mesh_co->res);
 
-		math::float4x4 trans = component_bone->GetParent()->transform->GetMatrix();
-		trans = trans * component_bone->attached_mesh->GetParent()->transform->GetMatrix().Inverted();
+		math::float4x4 trans = component_bone->GetParent()->transform->GetGlobalMatrix();
+		trans = trans * component_bone->attached_mesh->GetParent()->transform->GetGlobalMatrix().Inverse();
 
 		trans = trans * rbone->boneData.offset_matrix;
 
 		for (uint i = 0; i < rbone->boneData.bone_weights_size; ++i)
 		{
-			/*
-			uint index = rbone->bone_weights_indices[i];
-			float3 original(&roriginal->vertices[index * 3]);
-
-			float3 vertex = trans.TransformPos(original);
-
-			rmesh->vertices[index * 3] += vertex.x * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 1] += vertex.y * rbone->bone_weights[i] * SCALE;
-			rmesh->vertices[index * 3 + 2] += vertex.z * rbone->bone_weights[i] * SCALE;
-			*/
-
 			uint index = rbone->boneData.bone_weights_indices[i];
-			
-			math::float3 original(roriginal->GetSpecificData().vertices[index].position);
+			math::float3 original(mesh->GetSpecificData().vertices[index].position);
 
 			math::float3 vertex = trans.TransformPos(original);
 
-			tmp_mesh->deformableMeshData.vertices[index].position[0] = vertex.x * rbone->boneData.bone_weights[i];
-			tmp_mesh->deformableMeshData.vertices[index].position[1] = vertex.y * rbone->boneData.bone_weights[i];
-			tmp_mesh->deformableMeshData.vertices[index].position[2] = vertex.z * rbone->boneData.bone_weights[i];
-			
+			mesh->deformableMeshData.vertices[index].position[0] += vertex.x * rbone->boneData.bone_weights[i] * SCALE;
+			mesh->deformableMeshData.vertices[index].position[1] += vertex.y * rbone->boneData.bone_weights[i] * SCALE;
+			mesh->deformableMeshData.vertices[index].position[2] += vertex.z * rbone->boneData.bone_weights[i] * SCALE;
 		}
 	}
 }
@@ -584,8 +564,12 @@ void ModuleAnimation::ResetMesh(ComponentBone * component_bone)
 		{
 			memset(original->deformableMeshData.vertices[i].position, 0, 3 * sizeof(float));
 			//memset(original->deformableMeshData.vertices, 0, original->GetSpecificData().verticesSize * sizeof(float));
+			//memset(original->deformable->vertices, 0, original->vertex_size * sizeof(float));
 		}
+		//memcpy(original->deformableMeshData.vertices, original->GetSpecificData().vertices, original->GetSpecificData().verticesSize);
 		//original->GenerateAndBindDeformableMesh();
 	}
+
+	int a = 0;
 		
 }

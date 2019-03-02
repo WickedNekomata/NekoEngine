@@ -162,7 +162,7 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files/*not needed but ok*/, dummyForcedUuids);
 		rootGameObject->transform->scale *= importSettings.scale;
 		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);	
-		ImportAnimations(scene, anim_files, forced_anim_uuids);
+		ImportAnimations(scene, anim_files, prefabName, forced_anim_uuids);
 
 		root_bone = nullptr; // c: 
 
@@ -944,7 +944,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 }
 
 void SceneImporter::ImportAnimations(mutable const aiScene * scene
-	, std::vector<std::string>& anim_files, std::vector<uint>& forcedUuids)const
+	, std::vector<std::string>& anim_files, const char* anim_name, std::vector<uint>& forcedUuids)const
 {
 	for (uint i = 0; i < scene->mNumAnimations; ++i)
 	{
@@ -972,10 +972,9 @@ void SceneImporter::ImportAnimations(mutable const aiScene * scene
 
 			ResourceAnimationData res_data;
 			
-
-			static int take_count = 1;
-			std::string filename = "Take00";
-			filename.append(std::to_string(take_count++));
+			//static int take_count = 1;
+			std::string filename = anim_name;
+			//filename.append(std::to_string(take_count++));
 			res_data.name = filename;
 
 			res_data.ticksPerSecond= anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 24;

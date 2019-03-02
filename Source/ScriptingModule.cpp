@@ -1642,7 +1642,7 @@ void SetCompActive(MonoObject* monoComponent, bool active)
 bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
 {
 	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
-	return animator->PlayAnimation(animUUID);
+	return animator->PlayAnimation("JONYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY XD");
 }
 
 void ParticleEmitterPlay(MonoObject* particleComp)

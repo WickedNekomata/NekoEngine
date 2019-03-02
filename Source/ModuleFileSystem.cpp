@@ -25,7 +25,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	if (PHYSFS_init(nullptr) == 0)
 	{
 		const char* error = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-		DEPRECATED_LOG("Could not initialize PHYSFS. Error: %s", error);
+		CONSOLE_LOG(LogTypes::Error, "Could not initialize PHYSFS. Error: %s", error);
 	}
 
 	AddPath(".");
@@ -38,25 +38,36 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	AddPath("./internal.f", "Internal");
 
 	if (PHYSFS_setWriteDir(".") == 0)
-		DEPRECATED_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
+		CONSOLE_LOG(LogTypes::Error, "Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
 #ifndef GAMEMODE
-	CreateDir(DIR_ASSETS_SCENES);
+	CreateDir(DIR_ASSETS_MESHES);
+	CreateDir(DIR_ASSETS_ANIMATIONS);
+	// No bones
+	CreateDir(DIR_ASSETS_TEXTURES);
+	CreateDir(DIR_ASSETS_MATERIALS);
 	CreateDir(DIR_ASSETS_SHADERS);
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
-	CreateDir(DIR_ASSETS_SCRIPTS);
 	CreateDir(DIR_ASSETS_PREFAB);
-	CreateDir(DIR_ASSETS_MATERIALS);
+	CreateDir(DIR_ASSETS_SCENES);
+	CreateDir(DIR_ASSETS_SCRIPTS);
 #endif
+
 	if (CreateDir(DIR_LIBRARY))
 	{
 		AddPath("./Library/", "Library");
 
 		CreateDir(DIR_LIBRARY_MESHES);
-		CreateDir(DIR_LIBRARY_MATERIALS);
-		CreateDir(DIR_LIBRARY_BONES);
 		CreateDir(DIR_LIBRARY_ANIMATIONS);
+		CreateDir(DIR_LIBRARY_BONES);
+		CreateDir(DIR_LIBRARY_TEXTURES);
+		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_SHADERS);
+		CreateDir(DIR_LIBRARY_SHADERS_OBJECTS);
+		CreateDir(DIR_LIBRARY_SHADERS_PROGRAMS);
+		CreateDir(DIR_LIBRARY_PREFAB);
+		CreateDir(DIR_LIBRARY_SCENES);
 		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }
@@ -464,25 +475,25 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
 			outputFile.append(EXTENSION_MESH);
 			break;
-		case FileTypes::TextureFile:
-			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
-			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
-			outputFile.append(EXTENSION_TEXTURE);
+		case FileTypes::AnimationFile:
+			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
+			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
+			outputFile.append(EXTENSION_ANIMATION);
 			break;
 		case FileTypes::BoneFile:
 			outputFile.insert(0, DIR_LIBRARY_BONES);
 			outputFile.insert(strlen(DIR_LIBRARY_BONES), "/");
 			outputFile.append(EXTENSION_BONE);
 			break;
-		case FileTypes::AnimationFile:
-			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
-			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
-			outputFile.append(EXTENSION_ANIMATION);
+		case FileTypes::TextureFile:
+			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
+			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
+			outputFile.append(EXTENSION_TEXTURE);
 			break;
-		case FileTypes::SceneFile:
-			outputFile.insert(0, DIR_ASSETS_SCENES);
-			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
-			outputFile.append(EXTENSION_SCENE);
+		case FileTypes::MaterialFile:
+			outputFile.insert(0, DIR_ASSETS_MATERIALS);
+			outputFile.insert(strlen(DIR_ASSETS_MATERIALS), "/");
+			outputFile.append(EXTENSION_MATERIAL);
 			break;
 		case FileTypes::VertexShaderObjectFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
@@ -499,11 +510,6 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
 			outputFile.append(EXTENSION_GEOMETRY_SHADER_OBJECT);
 			break;
-		case FileTypes::MaterialFile:
-			outputFile.insert(0, DIR_ASSETS_MATERIALS);
-			outputFile.insert(strlen(DIR_ASSETS_MATERIALS), "/");
-			outputFile.append(EXTENSION_MATERIAL);
-			break;
 		case FileTypes::ShaderProgramFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_PROGRAMS), "/");
@@ -514,6 +520,12 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_ASSETS_PREFAB), "/");
 			outputFile.append(EXTENSION_PREFAB);
 			break;
+		case FileTypes::SceneFile:
+			outputFile.insert(0, DIR_ASSETS_SCENES);
+			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
+			outputFile.append(EXTENSION_SCENE);
+			break;
+		// Scripts
 		}
 	}
 

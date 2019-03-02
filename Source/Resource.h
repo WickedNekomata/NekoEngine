@@ -25,6 +25,8 @@ public:
 
 	// ----------------------------------------------------------------------------------------------------
 	
+	virtual bool GenerateLibraryFiles() { return true; }
+
 	static uint SetLastModTimeToMeta(const char* metaFile, const uint64_t& lastModTime);
 
 	uint IncreaseReferences();

@@ -71,6 +71,8 @@ public:
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, ResourceTextureImportSettings& textureImportSettings, uint& textureUuid);
 	static uint SetTextureImportSettingsToMeta(const char* metaFile, const ResourceTextureImportSettings& textureImportSettings);
 
+	bool GenerateLibraryFiles() const;
+
 	// ----------------------------------------------------------------------------------------------------
 
 	inline ResourceTextureData& GetSpecificData() { return textureData; }

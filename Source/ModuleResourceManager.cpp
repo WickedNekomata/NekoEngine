@@ -300,6 +300,13 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 		}
 	}
 	break;
+
+	case System_Event_Type::GenerateLibraryFiles:
+	{
+		for (uint i = 0; i < resources.size(); ++i)
+			resources[i]->GenerateLibraryFiles();
+	}
+	break;
 	}
 }
 

@@ -400,17 +400,16 @@ bool ResourceMaterial::GenerateLibraryFiles() const
 	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
 	// 1. Copy meta
-	std::string outputAssetsFile = DIR_ASSETS;
-	if (App->fs->RecursiveExists(metaFile, outputAssetsFile.data(), outputAssetsFile))
+	if (App->fs->Exists(metaFile))
 	{
-		std::string outputLibraryFile;
-		uint size = App->fs->Copy(outputAssetsFile.data(), DIR_LIBRARY_MATERIALS, outputLibraryFile);
+		std::string outputFile;
+		uint size = App->fs->Copy(metaFile, DIR_LIBRARY_MATERIALS, outputFile);
 
 		if (size > 0)
 		{
 			// 2. Copy material
-			outputLibraryFile.clear();
-			uint size = App->fs->Copy(data.file.data(), DIR_LIBRARY_MATERIALS, outputLibraryFile);
+			outputFile.clear();
+			uint size = App->fs->Copy(data.file.data(), DIR_LIBRARY_MATERIALS, outputFile);
 
 			if (size > 0)
 				return true;

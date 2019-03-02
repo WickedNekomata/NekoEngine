@@ -23,7 +23,6 @@
 
 #define DIR_ASSETS "Assets"
 #define DIR_ASSETS_MESHES "Assets/Meshes"
-#define DIR_ASSETS_ANIMATIONS "Assets/Animations"
 #define DIR_ASSETS_TEXTURES "Assets/Textures"
 #define DIR_ASSETS_MATERIALS "Assets/Materials"
 #define DIR_ASSETS_SHADERS "Assets/Shaders"

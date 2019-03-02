@@ -42,8 +42,6 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 
 #ifndef GAMEMODE
 	CreateDir(DIR_ASSETS_MESHES);
-	CreateDir(DIR_ASSETS_ANIMATIONS);
-	// No bones
 	CreateDir(DIR_ASSETS_TEXTURES);
 	CreateDir(DIR_ASSETS_MATERIALS);
 	CreateDir(DIR_ASSETS_SHADERS);
@@ -354,7 +352,7 @@ void ModuleFileSystem::GetFileName(const char* file, std::string& fileName, bool
 {
 	fileName = file;
 
-	uint found = fileName.find_last_of("\\");
+	int found = fileName.find_last_of("\\");
 	if (found != std::string::npos)
 		fileName = fileName.substr(found + 1, fileName.size());
 
@@ -374,7 +372,7 @@ void ModuleFileSystem::GetExtension(const char* file, std::string& extension) co
 {
 	extension = file;
 
-	uint found = extension.find_last_of(".");
+	int found = extension.find_last_of(".");
 	if (found != std::string::npos)
 		extension = extension.substr(found);
 }
@@ -384,13 +382,13 @@ void ModuleFileSystem::GetMetaExtension(const char* file, std::string& extension
 	std::string ex = file;
 	extension = ex;
 
-	uint foundMeta = extension.find_last_of(".");
+	int foundMeta = extension.find_last_of(".");
 	if (foundMeta != std::string::npos)
 	{
 		ex = ex.substr(foundMeta);
 		extension = extension.substr(0, foundMeta);
 	}
-	uint foundExtension = extension.find_last_of(".");
+	int foundExtension = extension.find_last_of(".");
 	if (foundExtension != std::string::npos)
 		extension = extension.substr(foundExtension);
 }
@@ -399,7 +397,7 @@ void ModuleFileSystem::GetFileFromMeta(const char* metaFile, std::string& file) 
 {
 	file = metaFile;
 
-	uint foundMeta = file.find_last_of(".");
+	int foundMeta = file.find_last_of(".");
 	if (foundMeta != std::string::npos)
 		file = file.substr(0, foundMeta);
 }
@@ -410,7 +408,7 @@ void ModuleFileSystem::GetPath(const char* file, std::string& path, bool bar) co
 
 	uint add = bar ? 1 : 0;
 
-	uint found = path.find_last_of("\\");
+	int found = path.find_last_of("\\");
 	if (found != std::string::npos)
 		path = path.substr(0, found + add);
 
@@ -486,8 +484,8 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.append(EXTENSION_BONE);
 			break;
 		case FileTypes::TextureFile:
-			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
-			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
+			outputFile.insert(0, DIR_LIBRARY_TEXTURES);
+			outputFile.insert(strlen(DIR_LIBRARY_TEXTURES), "/");
 			outputFile.append(EXTENSION_TEXTURE);
 			break;
 		case FileTypes::MaterialFile:

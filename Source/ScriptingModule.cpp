@@ -130,7 +130,7 @@ update_status ScriptingModule::PostUpdate()
 #else
 		//Engine opened recently, import the .dll if found
 
-		System_Event event;
+		/*System_Event event;
 		event.type = System_Event_Type::ScriptingDomainReloaded;
 		App->PushSystemEvent(event);
 
@@ -145,6 +145,8 @@ update_status ScriptingModule::PostUpdate()
 		}
 
 		App->scripting->ReInstance();
+
+		engineOpened = false;*/
 
 #endif
 	}
@@ -302,6 +304,32 @@ void ScriptingModule::OnSystemEvent(System_Event event)
 					}						
 				}
 			}
+			break;
+		}
+
+		case System_Event_Type::LoadGMScene:
+		{
+			//Engine opened recently, import the .dll if found
+			if (engineOpened)
+			{
+				System_Event event;
+				event.type = System_Event_Type::ScriptingDomainReloaded;
+				App->PushSystemEvent(event);
+
+				App->scripting->CreateDomain();
+				App->scripting->UpdateScriptingReferences();
+
+				std::vector<Resource*> scriptResources = App->res->GetResourcesByType(ResourceTypes::ScriptResource);
+				for (int i = 0; i < scriptResources.size(); ++i)
+				{
+					ResourceScript* scriptRes = (ResourceScript*)scriptResources[i];
+					scriptRes->referenceMethods();
+				}
+
+				App->scripting->ReInstance();
+
+				engineOpened = false;
+			}		
 			break;
 		}
 	}

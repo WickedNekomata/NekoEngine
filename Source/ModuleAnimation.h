@@ -92,6 +92,7 @@ private:
 
 	Animation* current_anim = nullptr;
 	Animation* last_anim = nullptr;
+	bool stop_all = false;
 
 	float blend_timer = 0.0f;
 	std::vector<ResourceAnimation*> available_animations;

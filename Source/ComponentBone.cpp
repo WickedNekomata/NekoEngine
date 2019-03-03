@@ -54,7 +54,7 @@ void ComponentBone::OnUniqueEditor()
 		if (resource != nullptr)
 			fileName = resource->GetName();
 
-		ImGui::Text("Bone name: %s", resource->boneData.name);
+		ImGui::Text("Bone name: %s", resource->boneData.name.data());
 		ImGui::Text("Mesh UUID reference: %i",resource->boneData.mesh_uid);
 		ImGui::Text("Bone weights size: %i", resource->boneData.bone_weights_size);
 

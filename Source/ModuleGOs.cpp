@@ -258,6 +258,8 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 	else
 		App->ui->LinkAllRectsTransform();
 
+	
+
 	return newGameObject;
 }
 
@@ -450,6 +452,8 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 	// Discuss if this should be a resource
 	if (navmesh)
 		App->navigation->LoadNavmesh(cursor);
+
+	//App->animation->SetUpAnimations();
 
 	System_Event event;
 	event.type = System_Event_Type::LoadFinished;

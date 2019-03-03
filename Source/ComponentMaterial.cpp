@@ -36,6 +36,8 @@ void ComponentMaterial::OnUniqueEditor()
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		const Resource* resource = App->res->GetResource(res);
+		if (!resource)
+			return;
 		std::string materialName = resource->GetName();
 
 		ImGui::PushID("material");

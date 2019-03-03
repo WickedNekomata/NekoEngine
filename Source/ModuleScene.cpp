@@ -56,10 +56,13 @@ bool ModuleScene::Start()
 update_status ModuleScene::Update()
 {
 	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
-		App->animation->SetCurrentAnimation("HipHopDancing");
+		App->animation->SetCurrentAnimation("Idle");
 	}
 	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN) {
-		App->animation->SetCurrentAnimation("MacarenaDance");
+		App->animation->SetCurrentAnimation("Running");
+	}
+	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
+		App->animation->SetCurrentAnimation("Kick");
 	}
 
 #ifndef GAMEMODE

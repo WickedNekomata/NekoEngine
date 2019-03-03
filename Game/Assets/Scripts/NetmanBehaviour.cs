@@ -25,7 +25,8 @@ class NetmanBehaviour : JellyScript
 
     public override void Awake()
     {
-        BulletMovement.direction = alita;
+        //BulletMovement.direction = alita;
+        bullet.GetComponent<BulletMovement>().isInmortal = true;
     }
 
     public override void Update()
@@ -59,7 +60,7 @@ class NetmanBehaviour : JellyScript
 
                 // Create the bullet itself
                 GameObject newBullet = GameObject.Instantiate(bullet, instanciatePosition.transform.position);
-
+                newBullet.GetComponent<BulletMovement>().isInmortal = false;
                 // Reset shoot timer
                 actualTime = 0.0f;
             }

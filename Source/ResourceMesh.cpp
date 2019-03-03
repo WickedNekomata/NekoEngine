@@ -125,7 +125,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 		if (mesh_entry_files.size() == mesh_uuids.size() && 
 			bone_entry_files.size() == bones_uuids.size() && 
 			animation_entry_files.size() == animation_uuids.size())
-		{
+		{ 
 			mesh_files = mesh_entry_files;
 			bone_files = bone_entry_files;
 			animation_files = animation_entry_files;

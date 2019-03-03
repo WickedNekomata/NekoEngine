@@ -224,7 +224,17 @@ void ModuleAnimation::OnSystemEvent(System_Event event)
 	{
 
 	case System_Event_Type::GameObjectDestroyed:
-		//GameObject* go = event.goEvent.gameObject;
+		GameObject* go = event.goEvent.gameObject;
+		for (uint i = 0u; i < animations.size(); i++)
+		{
+			Animation* it_anim = animations[i];
+			for (uint j = 0u; j < it_anim->animable_gos.size(); j++)
+			{
+				if (it_anim->animable_gos[j] == go) {
+					current_anim = nullptr;
+				}
+			}
+		}
 		break;
 	case System_Event_Type::LoadGMScene:
 	case System_Event_Type::LoadFinished:

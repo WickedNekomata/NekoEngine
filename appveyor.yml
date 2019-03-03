@@ -69,7 +69,7 @@ for:
     - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release
     - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit /EXCLUDE:gameExcluded.md
-    - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    - cmd: move %APPVEYOR_BUILD_FOLDER%\docs\README.md %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - cmd: move "%APPVEYOR_BUILD_FOLDER%\Mono.zip" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - 7z a Alita_JellyBit.zip %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit

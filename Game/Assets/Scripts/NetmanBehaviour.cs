@@ -21,6 +21,8 @@ class NetmanBehaviour : JellyScript
 
     private bool startParticles = true;
 
+    public int life = 100;
+
     public override void Awake()
     {
         BulletMovement.direction = alita;
@@ -74,4 +76,15 @@ class NetmanBehaviour : JellyScript
             transform.rotation = Quaternion.Rotate(Vector3.up, (float)(-90.0f +targetDegrees));
         }
     }
+
+    public void TakeDamage(int dmg)
+    {
+        life -= dmg;
+
+        if(life <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }

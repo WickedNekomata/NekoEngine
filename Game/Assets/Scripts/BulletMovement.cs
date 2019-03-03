@@ -12,6 +12,9 @@ class BulletMovement : JellyScript
     private Vector3 dir = new Vector3(0, 0, 0);
     private bool getDirection = true;
 
+    //Life and dmg
+    public int damage = 10;
+    private int current_life = 100;
 
     public override void Awake()
     {
@@ -34,4 +37,13 @@ class BulletMovement : JellyScript
             Destroy(gameObject);
         }
     }
+
+    public void Hit(int damage)
+    {
+        current_life -= damage;
+
+        if (current_life <= 0)
+            Destroy(gameObject);
+    }
+
 }

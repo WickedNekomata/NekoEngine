@@ -137,7 +137,7 @@ bool ResourceMesh::ImportFile(const char* file, ResourceMeshImportSettings& mesh
 			// Import the file (using the import settings from the meta)
 			CONSOLE_LOG(LogTypes::Normal, "Resource Mesh: The file '%s' has Library file(s) that need(s) to be reimported", file);
 
-			imported = App->sceneImporter->Import(file, mesh_files,bone_files, animation_files, meshImportSettings, mesh_uuids);
+			imported = App->sceneImporter->Import(file, mesh_files,bone_files, animation_files, meshImportSettings, mesh_uuids,bones_uuids,animation_uuids);
 		}
 	}
 

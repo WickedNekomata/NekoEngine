@@ -941,7 +941,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 	}
 
 	for (uint i = 0; i < node->mNumChildren; ++i)
-		RecursiveProcessBones(scene, node->mChildren[i],bone_files);
+		RecursiveProcessBones(scene, node->mChildren[i],bone_files, forcedUuids);
 }
 
 void SceneImporter::ImportAnimations(mutable const aiScene * scene

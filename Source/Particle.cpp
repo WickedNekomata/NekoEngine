@@ -18,8 +18,6 @@
 
 #include <vector>
 
-//#include "pcg-c-basic-0.9/pcg_basic.h"
-
 Particle::Particle(math::float3 pos, StartValues data)
 {}
 
@@ -126,7 +124,7 @@ bool Particle::Update(float dt)
 		angle += angularVelocity * dt;
 		transform.rotation = transform.rotation.Mul(math::Quat::RotateZ(angle));
 
-		if (isParticleAnimated)
+		if (isParticleAnimated && textureRows > 1 && textureColumns > 1)
 		{
 			animationTime += dt;
 			if (animationTime > animationSpeed)

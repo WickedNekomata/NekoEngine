@@ -194,6 +194,7 @@ private:
 	// Warm up the particle emitter (if true the particle emitter will be already started at play-time)
 	bool preWarm = true;
 
+	bool startOnPlay = false;
 	ParticleAnimation particleAnim;
 
 	//Burst options

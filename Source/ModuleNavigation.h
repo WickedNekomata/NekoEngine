@@ -22,7 +22,7 @@ public:
 	bool CleanUp();
 
 	void OnSystemEvent(System_Event e);
-
+	void InitDetour();
 	void Draw() const;
 	void AddComponent(class ComponentNavAgent*);
 	void EraseComponent(class ComponentNavAgent*);

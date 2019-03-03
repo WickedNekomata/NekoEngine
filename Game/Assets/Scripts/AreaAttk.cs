@@ -256,7 +256,7 @@ public class AreaAttk : JellyScript
         {
             if (enemy != null && enemy_unit != null)
             {
-                if (enemyParticle.name == "Blood_particle")
+                if (enemy.name == "Netman")
                 {
                     Debug.Log("BLOOOD");
                     if (blood == null)

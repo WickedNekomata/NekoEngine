@@ -31,9 +31,12 @@ public class LifeBarScript : JellyScript
         {
             rect = gameObject.GetComponent<RectTransform>();
             maxSize = rect.x_dist;
-        }        
+        }
 
-        rect.x_dist = (uint)((maxSize * player.life) / maxHP);
+        if (rect.x_dist > 0)
+        {
+            rect.x_dist = (uint)((maxSize * player.life) / maxHP);
+        }
     }
 }
 

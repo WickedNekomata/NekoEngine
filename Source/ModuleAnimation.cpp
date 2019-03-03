@@ -223,7 +223,7 @@ void ModuleAnimation::OnSystemEvent(System_Event event)
 	switch (event.type)
 	{
 
-	case System_Event_Type::GameObjectDestroyed:
+	case System_Event_Type::GameObjectDestroyed: {
 		GameObject* go = event.goEvent.gameObject;
 		for (uint i = 0u; i < animations.size(); i++)
 		{
@@ -235,6 +235,7 @@ void ModuleAnimation::OnSystemEvent(System_Event event)
 				}
 			}
 		}
+	}
 		break;
 	case System_Event_Type::LoadGMScene:
 	case System_Event_Type::LoadFinished:
@@ -287,7 +288,6 @@ void ModuleAnimation::RecursiveGetAnimableGO(GameObject * go, BoneTransformation
 
 void ModuleAnimation::MoveAnimationForward(float time, Animation* current_animation, float blend)
 {
-
 	for (uint i = 0; i < current_animation->animable_gos.size(); ++i)
 	{
 		BoneTransformation* transform = current_animation->animable_data_map.find(current_animation->animable_gos[i])->second;

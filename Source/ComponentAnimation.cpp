@@ -89,7 +89,7 @@ void ComponentAnimation::OnUniqueEditor()
 		if (resource != nullptr)
 			fileName = resource->GetName();
 
-		ImGui::Text("Animation name: %s", resource->animationData.name);
+		ImGui::Text("Animation name: %s", resource->animationData.name.data());
 		ImGui::Text("Animation numKeys: %i", resource->animationData.numKeys);
 		ImGui::Text("Animation UUID: %i", resource->GetUuid());
 

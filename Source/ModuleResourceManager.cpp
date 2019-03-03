@@ -976,7 +976,8 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceBoneData boneData;
 		data.file = file;
 
-		ResourceBone::LoadFile(file, boneData);
+		App->boneImporter->Load(file, data, boneData);
+		//ResourceBone::LoadFile(file, boneData);
 
 		resource = CreateResource(ResourceTypes::BoneResource, data, &boneData, uuid);
 	}
@@ -996,6 +997,7 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceAnimation::LoadFile(file, animationData);
 
 		resource = CreateResource(ResourceTypes::AnimationResource, data, &animationData, uuid);
+		App->animation->SetAnimationGos((ResourceAnimation*)resource);
 	}
 	break;
 	}

@@ -76,7 +76,7 @@ update_status ModuleAnimation::Update()
 	switch (anim_state)
 	{
 	case AnimationState::PLAYING:
-		current_anim->anim_timer += App->GetDt() * current_anim->anim_speed;
+		current_anim->anim_timer += App->timeManager->GetDt() * current_anim->anim_speed;
 		MoveAnimationForward(current_anim->anim_timer, current_anim);
 		break;
 
@@ -90,9 +90,9 @@ update_status ModuleAnimation::Update()
 		break;
 
 	case AnimationState::BLENDING:
-		last_anim->anim_timer += App->GetDt() * last_anim->anim_speed;
-		current_anim->anim_timer += App->GetDt() * current_anim->anim_speed;
-		blend_timer += App->GetDt();
+		last_anim->anim_timer += App->timeManager->GetDt() * last_anim->anim_speed;
+		current_anim->anim_timer += App->timeManager->GetDt() * current_anim->anim_speed;
+		blend_timer += App->timeManager->GetDt();
 		float blend_percentage = blend_timer / BLEND_TIME;
 		MoveAnimationForward(last_anim->anim_timer, last_anim);
 		MoveAnimationForward(current_anim->anim_timer, current_anim, blend_percentage);
@@ -149,8 +149,8 @@ bool ModuleAnimation::StartAttachingBones()
 				ResourceMesh* res = (ResourceMesh*)App->res->GetResource(mesh_co->res);
 				
 				
-					res->DuplicateMesh(res);
-					res->GenerateAndBindDeformableMesh();
+				res->DuplicateMesh(res);
+				res->GenerateAndBindDeformableMesh();
 				
 
 				for (std::vector<ComponentBone*>::iterator it = mesh_co->attached_bones.begin(); it != mesh_co->attached_bones.end(); ++it)
@@ -208,7 +208,6 @@ void ModuleAnimation::SetUpAnimations()
 		{
 			RecursiveGetAnimableGO(App->scene->root, &it_anim->anim_res_data.boneKeys[j], it_anim);
 		}
-		
 	}
 }
 
@@ -218,8 +217,13 @@ void ModuleAnimation::OnSystemEvent(System_Event event)
 	{
 
 	case System_Event_Type::GameObjectDestroyed:
-		GameObject* go = event.goEvent.gameObject;
+		//GameObject* go = event.goEvent.gameObject;
 		break;
+	case System_Event_Type::LoadGMScene:
+	{
+		StartAttachingBones(); SetUpAnimations();
+	}
+	break;
 	}
 }
 
@@ -228,8 +232,11 @@ void ModuleAnimation::SetAnimationGos(ResourceAnimation * res)
 	Animation* animation = new Animation();
 	animation->name = res->animationData.name;
 	animation->anim_res_data = res->animationData;
-	//for (uint i = 0; i < res->animationData.numKeys; ++i)
-		//RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
+
+#ifdef  GAMEMODE
+	for (uint i = 0; i < res->animationData.numKeys; ++i)
+		RecursiveGetAnimableGO(App->scene->root, &res->animationData.boneKeys[i], animation);
+#endif //  GAMEMODE
 
 	animation->duration = res->animationData.duration;
 
@@ -248,12 +255,11 @@ void ModuleAnimation::RecursiveGetAnimableGO(GameObject * go, BoneTransformation
 	{
 		GameObject* current_go = all_gos.at(i);
 
-		if (bone_transformation->bone_name.compare(current_go->GetName()) == 0)
+		if (strcmp(bone_transformation->bone_name.data(), current_go->GetName()) == 0)
 		{
 			if (/*!go->to_destroy*/1 /* TODO_G */) {
 				anim->animable_data_map.insert(std::pair<GameObject*, BoneTransformation*>(current_go, bone_transformation));
 				anim->animable_gos.push_back(current_go);
-				return;
 			}
 		}
 	}

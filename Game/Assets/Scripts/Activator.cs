@@ -8,17 +8,18 @@ public class Activator : JellyScript
     public LayerMask LayerMask = new LayerMask();
     public enum TEST
     {
-        ONE,
-        TWO,
-        THREE
+        CALABASA,
+        ARKAXOFA,
+        SIDA,
+        MATENME
     }
 
-    public TEST testEnum = TEST.THREE;
+    public TEST testEnum;
 
     //Use this method for initialization
     public override void Awake()
     {
-        testEnum = TEST.ONE;
+       
     }
 
     //Called every frame
@@ -26,6 +27,9 @@ public class Activator : JellyScript
     {
         if(Input.GetKeyDown(KeyCode.KEY_1))
         {
+            testEnum.GetType();
+            System.Enum.GetValues(typeof(TEST));
+            System.Enum.GetName(typeof(TEST), 1);
             Image image = gameObject.GetComponent<Image>();
             image.SetActive(!imageActive);
             imageActive = !imageActive;

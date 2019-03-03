@@ -31,7 +31,8 @@ enum class VarType
 	STRING,
 	GAMEOBJECT,
 	TRANSFORM,
-	LAYERMASK
+	LAYERMASK, 
+	ENUM
 };
 
 class ResourceScript : public Resource

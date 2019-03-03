@@ -1,196 +1,114 @@
-# Neko Engine
+#Alita Game (Temporal name)
 
-Neko Engine is a 3D game engine currently being developed by two students from CITM-UPC Terrassa, Sandra Alvarez and Guillem Costa. The entire development has been supervised by the lecturer Ricard Pillosu.
+_Alita Game (Temporal name)_ is an action RPG based on the GUNNM / Alita: Battle Angel world. You will control Alita, and defeat all kind of enemies with your habilities.
 
-The code is written in C++.
+This project is done by students from UPC-CITM (Terrassa, Catalunya), VideoGame Development & Design degree.
 
-<img src="NekoEngine.PNG" width="600"><br>
+* [Github repository](https://github.com/JellyBitStudios/JellyBitEngine)  
+* [Twitter](https://twitter.com/studiojellybit)
+* [Youtube](https://www.youtube.com/channel/UCmsBJ78Bx4eBhqPdRcir0Ww)
+* [Instagram](https://www.instagram.com/studiojellybit/)
 
-- GitHub repository: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
+## About the game  
 
-## Team
+This game is an action RPG in the Alita world. In this game you can fight against some of the more iconic enemies of the movie and the GUNM manga, like Grewishka (or Makaku in the manga), the netmans and some other frightening enemies! 
 
-<img src="team_photo.JPG" width="600"><br>
+The game have the core gameplay of all action RPG’s: you go dungeon over dungeon killing big hordes of enemies, leveling up and looting items to become more powerful. 
 
-- Our GitHub organization: [WickedNekomata](https://github.com/WickedNekomata)
+This first version contains the next features:
+-	Alita character, who can attack the first enemies: the netmans
+-	1 Ability (alita hits the floor and causes damage in area)
+-	The netmans. This enemies are static and shoots you, like a turret.
 
-### Sandra Alvarez
-Sandra's GitHub account: [Sandruski](https://github.com/Sandruski)
 
-- Time Management (Play, Pause, Tick)
-- Quadtree and Frustum Culling
-- Camera
-- Resource Manager (offline)
-- FileSystem
-- ImGui panels
-- Shaders
-- Importers and import options
-- Multitexturing
-- Assets and Library
-- Bounding Boxes
-- Gizmos
+## Installation instructions  
 
-### Guillem Costa
-Guillem's GitHub account: [DatBeQuiet](https://github.com/DatBeQuiet)
+Download the zip file and unzip it.
+Unzip mono.zip (inside game folder).
+Execute the .exe and enjoy!
 
-- Json (Parson)
-- Save and Load
-- Game Objects and components
-- Resource Manager (online)
-- FileSystem
-- ImGui panels
-- Shaders
-- Selection
-- Mouse picking
-- Skybox
-- Docking
-- Game.exe
-- Gizmos
+_**IMPORTANT:** do not modify, change or add any folder or file as you might not be able to execute the game._  
 
-## Main Core Sub-Systems
+## Controls
 
-For the team, it was super important to keep every sub-system as simple as possible, but always with the maximum efficiency that we could obtain.
+Left Button ===>  Attack
+Right Button ===> Move
 
-### Game Objects (Entity-Component-Pattern)
-To implement the Game Objects, we followed the Entity-Component-Pattern, since it is modular.
-The components that can be attached are: Transform Component, Mesh Component, Material Component and Camera Component.
+(Special Attack)
+Q ===> Activate/Deactivate Area
+Left Button when area is actived ===> Area attack
 
-![](GameObjectsSheme.png)
+## Tools used  
 
-As you can see in the image above, there is a main class called 'GameObject' that has instances for every component attached.
-These instances are virtual classes that inherit from a base class called 'Component'.
+* **IDE:** Microsoft Visual Studio 2017  
+* **Language:** C++  
+* **Graphics and audio:** OpenGL  
+* **Filesystem:** PhysicsFS
+* **Profiler:** Brofiler
+* **Code repository:** GitHub  
+* **Art:** Adobe Photoshop CS6, Maya 2018
 
-If we implement a n-child tree of game objects using this Entity-Component-Pattern we get a Unity-like Game Objects system. 
+# Team members
 
-### Resource Manager (Reference Counting, Library and Metas)
-The Resource Manager takes care of the resources, which are: Mesh Resource, Material Resource, Shader Object Resource and Shader Program Resource. 
+## Management
 
-We wanted to achive an easy but efficient way to manage vram. The best way to do it was using a Reference Counting system. Basically, the Resource Manager keeps track of every Resource and, thanks to a variable stored in them, we can count every reference to them. When a Resource goes from 0 to 1 references we load it to memory. The same goes when the references down from 1 to 0, but, in this case, we unload it from memory.
+_Isaac Calvis Gil_
+* [Github account](https://github.com/isaaccalvis)  
 
-Due to the amount of data stored in a model (FBX, etc.), some formats are very slow to read. In order to fix this issue, we store all the meshes in our own simple format in the Library folder. The same concept is applied for every resource so, at the end of the day, the time required for loading a scene is reduced by far.
+## Code
 
-We also wanted to allow the user to manage their assets in a Unity-style way. In order to approach it, .metas joined the party. A .meta is a text file that stores the properties of a resource and its UUID (unique identifier) and works as a link between the asset and the resource.
+_Guillermo García Subirana_
+* [Github account](https://github.com/Wilhelman)  
 
-### GUI (using ImGui)
-In any game engine an easy-to-use UI is a must and, thanks to the ImGui library, this was super fast an simple to implement.
-The way we did it was having a GUI module that works as a manager for all ImGui panels. To approach the Inspector panel, we implemented an OnEditor method at each component so, when a game object is selected, we draw its components on the Inspector.
+_Jonathan Molina-Prados Ciudad_
+* [Github account](https://github.com/Jony635)  
 
-## Shaders Sub-System
-The engine uses a Shader Pipeline to render.
+_Sandra Alvarez Garcia_
+* [Github account](https://github.com/sandruski)  
 
-<img src="game.gif" width="600"><br>
- 
-Each mesh has its own VBO, IBO and VAO. The VBO contains positions, normals, colours, texture coordinates, tangents and bitangents.
-To manage the data, compilation and linking of shaders, we have the Shader Object and the Shader Program classes. 
-To edit shaders, we have the Shader Editor panel and the Code Editor panel.
+_Guillem Costa Miquel_
+* [Github account](https://github.com/DatBeQuiet)  
 
-![](driver_graphics_pipeline.jpg)
+_Óscar Hernández Gómez_
+* [Github account](https://github.com/OscarHernandezG)  
 
-[Image Source](https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_shaders/opengl_shaders.html)
+_Aleix Gabarró Martos_
+* [Github account](https://github.com/aleixgab)  
 
-### Shader Objects
-New Shader Objects (Vertex or Fragment) can be created from the Assets panel. The Code Editor panel allows to edit them.
-We can Compile them and Save them wihout having compiled.
+_Julià Mauri Costa_
+* [Github account](https://github.com/juliamauri)  
 
-### Shader Programs
-New Shader Programs can be created from the Shader Editor panel. Shader Programs are created with one or more Vertex and Fragment shaders.
-If all the Shader Objects that form a Shader Program compile, we can Link and Save the Shader Program.
+_Manel Mourelo Montero_
+* [Github account](https://github.com/manelmourelo)  
 
-Shader Programs are used by the Component Material of the meshes.
-Each mesh has its own Shader Program.
-From the Component Material, the Shader Program used by a mesh can be changed. Shader Programs that not link cannot be used.
-If a mesh has no Shader Program, it will use the default one.
+## Design
 
-### Default Shader
+_Alex Campamar Redol_
+* [Github account](https://github.com/Acaree)  
 
-The Default Shader is hardcoded in the engine.
+_David Valdivia Martínez_
+* [Github account](https://github.com/ValdiviaDev)  
 
-#### Default Vertex Shader
-The Default Vertex Shader simply calculates the final position of the vertex. 
-It also sends to the default fragment shader the position, normal, texture coordinate and colour.
+_Joan Valiente Lorite _
+* [Github account](https://github.com/JoanValiente)  
 
-#### Default Fragment Shader
-The Default Fragment Shader uses the albedo and specular textures of the Component Material.
-After retrieving the colour from them, it calculates the final colour of the mesh by applying the Blinn-Phong pixel lighting.
-This lighting model uses a Directional Light, which allows to calculate the Ambient, Diffuse and Specular colours of the light.
+_Rubén Sardón Roldán_
+* [Github account](https://github.com/cumus)  
 
-### Component Material
-The Component Material is automatically created when the Component Mesh is added to a game object.
-Since it allows multitexturing, it has the Ambient, Specular and Normal Map textures. 
-Depending on the Shader Program used by the Component Material, it will use more or less textures to calculate the position and the colour of each of the vertices of the mesh.
+_Oriol de Dios_
+* [Github account](https://github.com/orioldedios)  
 
-### Uniforms
-If the Shader Program used by the Component Material has Uniforms, they will appear in the Inspector. From there, they can be modified in real-time.
-The simplicity of these modifications allows to try lots of values and achieve the best combinations in the Shader Programs.
+_Alfonso Sanchez-Cortes Puerta_
+* [Github account](https://github.com/Siitoo)  
 
-<img src="editor.gif" width="600"><br>
+## Art
 
-### Binary Shader Loading
-When a new Shader Program is linked and saved, we automatically generate its Shader Binary. 
-Every time we open the engine, we try to load this Shader Binary. If the loading fails, we Compile its Shader Objects and Link the Shader Program again.
+_Víctor Masó Garcia_
+* [Github account](https://github.com/nintervik)  
 
-## Other Features
-- Time Management
-- Raycast
-- Quadtree and Frustum Culling
-- Camera Editor
-- Scene Serialization
-- Importers (Scene, Material and Shaders)
-- Event System
-- Mouse Picking
-- FileSystem
+_Ricardo Gutiérrez Llenas_
+* [Github account](https://github.com/Ricardogll)  
 
-## Video
+_David Lozano Sánchez_
+* [Github account](https://github.com/DavidTheMaaster)  
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/DVAqsAiQ2Us" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## Source code and latest release
-
-- Source: [NekoEngine](https://github.com/WickedNekomata/NekoEngine)
-
-- Latest Release: [NekoEngine](https://github.com/WickedNekomata/NekoEngine/releases/tag/Assignment3.0)
-
-### Tools used to develop the engine
-
-- IDE: Microsoft Visual Studio 2017
-- External libraries: 
-	- SDL 2.0.8
-	- OpenGL 3.1
-	- Glew 2.1
-	- Assimp 4.1
-	- DevIL 1.8
-	- ImGui 1.66 WIP
-	- ImGuiColorTextEdit 1.0
-	- ImGuizmo 1.0
-	- MathGeoLib 1.5
-	- PCG Random Number Generator 0.94
-	- Parson
-	- PhysFS 3.0.1
-	- MMGR
-	- ImGuiColorTextEdit
-
-## License
-
-```
-MIT License
-
-Copyright (c) 2018 WickedNekomata (Sandra Alvarez & Guillem Costa)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```

@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using JellyBitEngine;
+using JellyBitEngine.UI;
 
 public class Activator : JellyScript
 {
+    bool imageActive = true;
     public LayerMask LayerMask = new LayerMask();
     public enum TEST
     {
@@ -22,7 +24,12 @@ public class Activator : JellyScript
     //Called every frame
     public override void Update()
     {
-       
+        if(Input.GetKeyDown(KeyCode.KEY_1))
+        {
+            Image image = gameObject.GetComponent<Image>();
+            image.SetActive(!imageActive);
+            imageActive = !imageActive;
+        }
     }
 }
 

@@ -499,6 +499,11 @@ MonoObject* ScriptingModule::MonoComponentFrom(Component* component)
 			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine.UI", "Button"));
 			break;
 		}
+		case ComponentTypes::ImageComponent:
+		{
+			monoComponent = mono_object_new(App->scripting->domain, mono_class_from_name(App->scripting->internalImage, "JellyBitEngine.UI", "Image"));
+			break;
+		}
 	}
 
 	if (!monoComponent)
@@ -1543,6 +1548,19 @@ MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type)
 			return nullptr;
 
 		Component* comp = gameObject->GetComponent(ComponentTypes::ButtonComponent);
+
+		if (!comp)
+			return nullptr;
+
+		return App->scripting->MonoComponentFrom(comp);
+	}
+	else if (className == "Image")
+	{
+		GameObject* gameObject = App->scripting->GameObjectFrom(monoObject);
+		if (!gameObject)
+			return nullptr;
+
+		Component* comp = gameObject->GetComponent(ComponentTypes::ImageComponent);
 
 		if (!comp)
 			return nullptr;

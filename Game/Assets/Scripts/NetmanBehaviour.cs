@@ -6,7 +6,7 @@ using System;
 class NetmanBehaviour : JellyScript
 {
     public GameObject alita;
-
+    public GameObject particleShoot;
     //For netman shoot
     public GameObject bullet;
     public GameObject instanciatePosition; //bullet instanciate position.
@@ -20,6 +20,8 @@ class NetmanBehaviour : JellyScript
     double Rad2Deg = 57.29577;
 
     private bool startParticles = true;
+
+    public int life = 100;
 
     public override void Awake()
     {
@@ -37,7 +39,7 @@ class NetmanBehaviour : JellyScript
             if (actualTime >= timeToLoad && startParticles)
             {
                 // Play charge particles
-                gameObject.GetComponent<ParticleEmitter>().Play();
+                particleShoot.GetComponent<ParticleEmitter>().Play();
                 actualTime += Time.deltaTime;
 
                 // Play charge sound
@@ -49,7 +51,7 @@ class NetmanBehaviour : JellyScript
             else if (actualTime >= timeToShot)
             {
                 // Stop partilce effect
-                gameObject.GetComponent<ParticleEmitter>().Stop();
+                particleShoot.GetComponent<ParticleEmitter>().Stop();
                 startParticles = true; // Allow particles to start again later
 
                 // Play shoot sound
@@ -71,7 +73,18 @@ class NetmanBehaviour : JellyScript
             Vector3 faceDirection = (alita.transform.position - transform.position).normalized();
             double targetDegrees = Math.Atan2(faceDirection.x, faceDirection.z) * Rad2Deg;
 
-            transform.rotation = Quaternion.Rotate(Vector3.up, (float)targetDegrees);
+            transform.rotation = Quaternion.Rotate(Vector3.up, (float)(-90.0f +targetDegrees));
         }
     }
+
+    public void TakeDamage(int dmg)
+    {
+        life -= dmg;
+
+        if(life <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }

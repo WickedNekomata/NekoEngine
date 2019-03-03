@@ -795,7 +795,8 @@ void PanelInspector::ShowMaterialInspector() const
 	ImGui::TextColored(BLUE, "%s", material->GetFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", material->GetUuid());
-
+	ImGui::Text("References:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", material->GetReferencesCount());
 	ImGui::Spacing();
 
 	char id[DEFAULT_BUF_SIZE];

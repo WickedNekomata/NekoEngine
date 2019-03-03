@@ -95,6 +95,18 @@ update_status ModuleNavigation::Update()
 
 bool ModuleNavigation::CleanUp()
 {
+#ifndef GAMEMODE
+	if (m_navMesh)
+	{
+		for each (ComponentNavAgent* ag in c_agents)
+			RemoveAgent(ag->GetIndex());
+
+		dtFreeCrowd(m_crowd);
+		dtFreeNavMeshQuery(m_navQuery);
+		m_crowd = 0;
+		m_navQuery = 0;
+	}
+#endif
 	cleanup();
 	return true;
 }
@@ -105,25 +117,7 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 	{
 	case System_Event_Type::Play:
 	{
-		if (!m_navMesh)
-			return;
-
-		m_navQuery = dtAllocNavMeshQuery();
-
-		dtStatus status;
-
-		status = m_navQuery->init(m_navMesh, 2048);
-		if (dtStatusFailed(status))
-		{
-			DEPRECATED_LOG("Could not init Detour navmesh query");
-			return;
-		}
-
-		InitCrowd();
-
-		for each (ComponentNavAgent* ag in c_agents)
-			ag->AddAgent();
-
+		InitDetour();
 		break;
 	}
 	case System_Event_Type::Stop:
@@ -141,6 +135,28 @@ void ModuleNavigation::OnSystemEvent(System_Event e)
 	}
 		break;
 	}
+}
+
+void ModuleNavigation::InitDetour()
+{
+	if (!m_navMesh)
+		return;
+
+	m_navQuery = dtAllocNavMeshQuery();
+
+	dtStatus status;
+
+	status = m_navQuery->init(m_navMesh, 2048);
+	if (dtStatusFailed(status))
+	{
+		DEPRECATED_LOG("Could not init Detour navmesh query");
+		return;
+	}
+
+	InitCrowd();
+
+	for each (ComponentNavAgent* ag in c_agents)
+		ag->AddAgent();
 }
 
 void ModuleNavigation::InitCrowd()

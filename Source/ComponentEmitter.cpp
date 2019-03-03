@@ -81,13 +81,15 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, Gam
 
 	rateOverTime = componentEmitter.rateOverTime;
 
+	startOnPlay = componentEmitter.startOnPlay;
+
 	if (parent)
 		App->scene->quadtree.Insert(parent);
 
 	if(include)
 		App->particle->emitters.push_back(this);
 
-	SetMaterialRes(App->resHandler->defaultMaterial);
+	SetMaterialRes(componentEmitter.materialRes);
 }
 
 
@@ -263,8 +265,13 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 	math::float3 global = math::float3::zero;
 	if (parent)
-		global = parent->transform->position;
+	{
+		math::float4x4 trans = parent->transform->GetGlobalMatrix();
+		math::Quat identity = math::Quat::identity;
+		math::float3 zero = math::float3::zero;
 
+		trans.Decompose(global,identity, zero);
+	}
 	return spawn + global;
 }
 
@@ -336,6 +343,9 @@ void ComponentEmitter::ParticleValues()
 		if (ImGui::Checkbox("Loop", &loop))
 			loopTimer.Start();
 		ImGui::DragFloat("Duration", &duration, 0.5f, 0.5f, 20.0f, "%.2f");
+		ImGui::Separator();
+
+		ImGui::Checkbox("Start on play", &startOnPlay);
 	}
 #endif
 }
@@ -746,7 +756,7 @@ uint ComponentEmitter::GetInternalSerializationBytes()
 		+ sizeof(drawAABB) + sizeof(isSubEmitter) + sizeof(repeatTime) + sizeof(uint)//UUID Subemiter
 		+ sizeof(dieOnAnimation) + sizeof(normalShapeType) + sizeof(ParticleAnimation)
 		+ sizeof(uint)/*size of particleColor list*/ + sizeof(boxCreation) + sizeof(burstType) + sizeof(float) * 2 //Circle and Sphere rad
-		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst)
+		+ sizeof(gravity) + sizeof(posDifAABB) + sizeof(loop) + sizeof(burst) + sizeof(startOnPlay)
 		+ sizeof(minPart) + sizeof(maxPart) + sizeof(char) * burstTypeName.size() + sizeof(uint)//Size of name;
 		+ sizeof(math::float2) * 7 + sizeof(math::float3) * 2 + sizeof(bool) * 2 + sizeOfList;//Bytes of all Start Values Struct;
 }
@@ -795,6 +805,9 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 	memcpy(cursor, &burst, bytes);
 	cursor += bytes;
 
+	memcpy(cursor, &startOnPlay, bytes);
+	cursor += bytes;
+
 	bytes = sizeof(int);
 	memcpy(cursor, &rateOverTime, bytes);
 	cursor += bytes;
@@ -831,7 +844,6 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 
 	memcpy(cursor, &materialRes, bytes);
 	cursor += bytes;
-	SetMaterialRes(materialRes);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(cursor, &particleAnim, bytes);
@@ -906,6 +918,9 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	memcpy(&burst, cursor, bytes);
 	cursor += bytes;
 
+	memcpy(&startOnPlay, cursor, bytes);
+	cursor += bytes;
+
 	bytes = sizeof(int);
 	memcpy(&rateOverTime, cursor, bytes);
 	cursor += bytes;
@@ -940,8 +955,10 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
-	memcpy(&materialRes, cursor, bytes);
+	uint newMaterial = 0;
+	memcpy(&newMaterial, cursor, bytes);
 	cursor += bytes;
+	SetMaterialRes(newMaterial);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(&particleAnim, cursor, bytes);

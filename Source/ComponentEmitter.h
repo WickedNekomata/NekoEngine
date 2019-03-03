@@ -171,6 +171,7 @@ public:
 
 	// Material
 	uint materialRes = 0;
+	bool startOnPlay = false;
 
 private:
 	// General info

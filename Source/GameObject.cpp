@@ -33,6 +33,8 @@
 #include "ComponentLight.h"
 #include "ComponentProjector.h"
 #include "ComponentAnimation.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 
 #include "MathGeoLib\include\Geometry\OBB.h"
 
@@ -64,6 +66,8 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 	isActive = gameObject.isActive;
 	isStatic = gameObject.isStatic;
 	seenLastFrame = gameObject.seenLastFrame;
+
+	layer = gameObject.layer;
 
 	uuid = App->GenerateRandomNumber();
 
@@ -124,49 +128,59 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(cmp_projector);
 			break;
 		case ComponentTypes::RigidStaticComponent:
-			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidStatic(*(ComponentRigidStatic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::RigidDynamicComponent:
-			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor);
+			cmp_rigidActor = new ComponentRigidDynamic(*(ComponentRigidDynamic*)gameObject.cmp_rigidActor, this);
 			cmp_rigidActor->SetParent(this);
 			components.push_back(cmp_rigidActor);
 			break;
 		case ComponentTypes::BoxColliderComponent:
-			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentBoxCollider(*(ComponentBoxCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::SphereColliderComponent:
-			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentSphereCollider(*(ComponentSphereCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::CapsuleColliderComponent:
-			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentCapsuleCollider(*(ComponentCapsuleCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::PlaneColliderComponent:
-			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider);
+			cmp_collider = new ComponentPlaneCollider(*(ComponentPlaneCollider*)gameObject.cmp_collider, this);
 			cmp_collider->SetParent(this);
 			components.push_back(cmp_collider);
 			break;
 		case ComponentTypes::RectTransformComponent:
-			cmp_rectTransform = new ComponentRectTransform(*gameObject.cmp_rectTransform);
+			cmp_rectTransform = new ComponentRectTransform(*(ComponentRectTransform*)gameObject.cmp_rectTransform, this, includeComponents);
+			cmp_rectTransform->SetParent(this);
+			components.push_back(cmp_rectTransform);
 			break;
 		case ComponentTypes::CanvasRendererComponent:
-			cmp_canvasRenderer = new ComponentCanvasRenderer(*gameObject.cmp_canvasRenderer);
+			cmp_canvasRenderer = new ComponentCanvasRenderer(*(ComponentCanvasRenderer*)gameObject.cmp_canvasRenderer, this, includeComponents);
+			cmp_canvasRenderer->SetParent(this);
+			components.push_back(cmp_canvasRenderer);
 			break;
 		case ComponentTypes::ImageComponent:
-			cmp_image = new ComponentImage(*gameObject.cmp_image);
+			cmp_image = new ComponentImage(*(ComponentImage*)gameObject.cmp_image, this, includeComponents);
+			cmp_image->SetParent(this);
+			components.push_back(cmp_image);
 			break;
 		case ComponentTypes::ButtonComponent:
-			cmp_button = new ComponentButton(*gameObject.cmp_button);
+			cmp_button = new ComponentButton(*(ComponentButton*)gameObject.cmp_button, this, includeComponents);
+			cmp_button->SetParent(this);
+			components.push_back(cmp_button);
 			break;
 		case ComponentTypes::LabelComponent:
-			cmp_label = new ComponentLabel(*gameObject.cmp_label);
+			cmp_label = new ComponentLabel(*(ComponentLabel*)gameObject.cmp_label, this, includeComponents);
+			cmp_label->SetParent(this);
+			components.push_back(cmp_label);
 			break;
 		case ComponentTypes::ScriptComponent:
 		{
@@ -175,9 +189,18 @@ GameObject::GameObject(GameObject& gameObject, bool includeComponents)
 			components.push_back(script);
 			break;
 		}
+		case ComponentTypes::AudioListenerComponent:
+			cmp_audioListener = new ComponentAudioListener(*gameObject.cmp_audioListener);
+			cmp_audioListener->SetParent(this);
+			components.push_back(cmp_audioListener);
+			break;
+		case ComponentTypes::AudioSourceComponent:
+			cmp_audioSource = new ComponentAudioSource(*gameObject.cmp_audioSource);
+			cmp_audioSource->SetParent(this);
+			components.push_back(cmp_audioSource);
+			break;
 		}
 	}
-
 
 	children.reserve(gameObject.children.size());
 	for (int i = 0; i < gameObject.children.size(); ++i)
@@ -264,6 +287,12 @@ void GameObject::ToggleIsStatic()
 {
 	isStatic = !isStatic;
 	App->GOs->RecalculateVector(this);
+}
+
+void GameObject::ForceStaticNoVector()
+{
+	assert(isStatic == false);
+	isStatic = true;
 }
 
 bool GameObject::IsActive() const
@@ -564,7 +593,13 @@ Component* GameObject::AddComponent(ComponentTypes componentType, bool createDep
 		if(includeInModules)
 			App->scripting->AddScriptComponent((ComponentScript*)newComponent);
 		break;
-	}
+		}
+	case ComponentTypes::AudioListenerComponent:
+		newComponent = cmp_audioListener = new ComponentAudioListener(this);
+		break;
+	case ComponentTypes::AudioSourceComponent:
+		newComponent = cmp_audioSource = new ComponentAudioSource(this);
+		break;
 	}
 
 	components.push_back(newComponent);
@@ -622,6 +657,17 @@ Component* GameObject::GetComponent(ComponentTypes type) const
 			comp = components[i];
 	}
 	return comp;
+}
+
+std::vector<Component*> GameObject::GetComponents(ComponentTypes type) const
+{
+	std::vector<Component*> ret;
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i]->GetType() == type)
+			ret.push_back(components[i]);
+	}
+	return ret;
 }
 
 int GameObject::GetComponentsLength()

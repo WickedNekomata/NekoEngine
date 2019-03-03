@@ -34,6 +34,7 @@ public:
 	uint GetParentUUID() const;
 	void ToggleIsActive();
 	void ToggleIsStatic();
+	void ForceStaticNoVector();
 	bool IsActive() const;
 	bool IsStatic() const;
 	void OnEnable();
@@ -60,6 +61,7 @@ public:
 	void EraseComponent(Component* erased);
 	Component* GetComponent(int index) const;
 	Component* GetComponent(ComponentTypes type) const;
+	std::vector<Component*> GetComponents(ComponentTypes type) const;
 	int GetComponentsLength();
 	void ReorderComponents(Component* source, Component* target);
 
@@ -96,6 +98,8 @@ public:
 	class ComponentAnimation*  cmp_animation = nullptr;
 	class ComponentLight*	   cmp_light = nullptr;
 	class ComponentProjector*  cmp_projector = nullptr;
+	class ComponentAudioListener* cmp_audioListener = nullptr;
+	class ComponentAudioSource*   cmp_audioSource = nullptr;
 
 	ResourcePrefab* prefab = nullptr;
 

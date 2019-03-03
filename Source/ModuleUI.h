@@ -47,8 +47,6 @@ public:
 
 	bool IsUIHovered();
 
-	GameObject* DuplicateUIGO(GameObject* toDuplicate, GameObject* parent = nullptr);
-
 private:
 
 	bool Init(JSON_Object* jObject);
@@ -68,6 +66,7 @@ private:
 
 public:
 	std::list<Component*> componentsUI;
+	std::list<Component*> componentsRendererUI;
 
 private:
 	uint ui_size_draw[4];
@@ -77,7 +76,7 @@ private:
 
 	uint ui_shader = 0;
 
-	bool uiMode = false;
+	bool uiMode = true;
 	
 	bool anyItemIsHovered = false;
 

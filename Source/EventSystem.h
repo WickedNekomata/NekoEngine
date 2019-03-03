@@ -4,9 +4,9 @@
 enum System_Event_Type 
 { 
 	NoEvent,
-	CopyShadersIntoLibrary,
 
-	FileDropped, NewFile, FileRemoved, FileOverwritten, FileMoved, ImportFile, ReImportFile, ForceReImport, DeleteUnusedFiles, // FileEvent
+	FileDropped, NewFile, FileMoved, ImportFile, ReImportFile, ForceReImport, FileRemoved, FileOverwritten,
+	DeleteUnusedFiles, GenerateLibraryFiles, ImportLibraryFile, // FileEvent
 
 	CalculateBBoxes, // GameObjectEvent
 	RecalculateBBoxes, // GameObjectEvent
@@ -19,6 +19,9 @@ enum System_Event_Type
 	ComponentDestroyed,
 	SaveScene,
 	LoadScene,
+
+	//GameMode events
+	LoadGMScene,
 
 	// LayerEvent
 	LayerNameReset,

@@ -26,7 +26,7 @@ ComponentSphereCollider::ComponentSphereCollider(GameObject* parent) : Component
 	participateInSceneQueries = shapeFlags & physx::PxShapeFlag::Enum::eSCENE_QUERY_SHAPE;
 }
 
-ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider) : ComponentCollider(componentSphereCollider, ComponentTypes::SphereColliderComponent)
+ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider, GameObject* parent) : ComponentCollider(componentSphereCollider, parent, ComponentTypes::SphereColliderComponent)
 {
 	EncloseGeometry();
 
@@ -111,7 +111,12 @@ void ComponentSphereCollider::EncloseGeometry()
 		center = parent->boundingBox.CenterPoint() - pos;
 		center = globalMatrix.Float3x3Part().Inverted() * center;
 
-		radius = parent->boundingBox.HalfSize().Length();
+		math::float3 halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
+		halfSize.x *= scale.x;
+		halfSize.y *= scale.y;
+		halfSize.z *= scale.z;
+
+		radius = halfSize.Length();
 	}
 
 	RecalculateShape();

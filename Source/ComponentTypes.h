@@ -4,6 +4,7 @@
 enum ComponentTypes
 {
 	NoComponentType,
+
 	TransformComponent,
 	MeshComponent,
 	MaterialComponent,
@@ -20,6 +21,7 @@ enum ComponentTypes
 	LabelComponent,
 	LightComponent,
 	ProjectorComponent,
+
 	// Physics
 	/// Rigid Actors
 	RigidStaticComponent,
@@ -37,7 +39,10 @@ enum ComponentTypes
 	SphericalJointComponent,
 	RevoluteJointComponent,
 	PrismaticJointComponent,
-	D6JointComponent
+	D6JointComponent,
+	//Audio
+	AudioListenerComponent,
+	AudioSourceComponent
 };
 
 #endif

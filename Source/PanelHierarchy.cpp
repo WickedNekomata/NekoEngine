@@ -18,6 +18,7 @@
 #include "imgui\imgui_internal.h"
 
 #include "ComponentTransform.h"
+#include "ComponentRectTransform.h"
 
 #include "ResourcePrefab.h"
 
@@ -52,15 +53,17 @@ bool PanelHierarchy::Draw()
 		{
 			if (ImGui::Selectable("Create Empty"))
 			{
-				App->GOs->CreateGameObject("GameObject", root);
+				GameObject* newGO = App->GOs->CreateGameObject("GameObject", root);
 				ImGui::CloseCurrentPopup();
+				SELECT(newGO);
 			}
 			if(!App->GOs->ExistCanvas())
 			{
 				if (ImGui::Selectable("Create Screen Canvas"))
 				{
-					App->GOs->CreateCanvas("Canvas", root);
+					GameObject* newGO = App->GOs->CreateCanvas("Canvas", root);
 					ImGui::CloseCurrentPopup();
+					SELECT(newGO);
 				}
 			}
 			if (ImGui::Selectable("Create Cube"))
@@ -68,12 +71,14 @@ bool PanelHierarchy::Draw()
 				GameObject* go = App->GOs->CreateGameObject("Cube", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
 				go->cmp_mesh->SetResource(App->resHandler->cube);
+				SELECT(go);
 			}
 			if (ImGui::Selectable("Create Plane"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("Plane", root);
 				go->AddComponent(ComponentTypes::MeshComponent);
 				go->cmp_mesh->SetResource(App->resHandler->plane);
+				SELECT(go);
 			}
 
 			ImGui::EndPopup();
@@ -96,6 +101,13 @@ bool PanelHierarchy::Draw()
 		}
 		ImGui::EndDragDropTarget();
 	}
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && //You Found a Easter EGG!
+		App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
+	{
+		GameObject* toDuplicate = App->scene->selectedObject.GetCurrGameObject();
+		if (toDuplicate) App->GOs->Instanciate(toDuplicate, toDuplicate->GetParent());
+	}
+
 
 	return true;
 }
@@ -131,6 +143,9 @@ void PanelHierarchy::IterateAllChildren(GameObject* root) const
 				if (App->scene->selectedObject == child
 					&& !App->gui->WantTextInput() && App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 				{
+					if (std::strcmp(child->GetName(), "Canvas") == 0)
+						App->GOs->DeleteCanvasPointer();
+						
 					App->scene->selectedObject = CurrentSelection::SelectedType::null;
 					App->GOs->DeleteGameObject(child);
 				}
@@ -178,14 +193,6 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 	{
 		if (child->GetLayer() == UILAYER)
 		{
-			if (App->GOs->GetCanvas() != child)
-			{
-				if (ImGui::Selectable("Duplicate at same parent"))
-				{
-					App->ui->DuplicateUIGO(child);
-					ImGui::CloseCurrentPopup();
-				}
-			}
 			if (ImGui::Selectable("Create Empty"))
 			{
 				GameObject* go = App->GOs->CreateGameObject("GameObjectCanvas", child, true);
@@ -225,6 +232,13 @@ void PanelHierarchy::AtGameObjectPopUp(GameObject* child) const
 				ImGui::CloseCurrentPopup();
 			}
 		}
+
+		if (ImGui::Selectable("Duplicate at same parent"))
+		{
+			App->GOs->Instanciate(child, child->GetParent());
+			ImGui::CloseCurrentPopup();
+		}
+
 		ImGui::EndPopup();
 	}
 }
@@ -254,12 +268,25 @@ void PanelHierarchy::SetGameObjectDragAndDropTarget(GameObject* target) const
 
 			if (!payload_n->IsChild(target, true))
 			{
-				math::float4x4 globalMatrix = payload_n->transform->GetGlobalMatrix();
-				payload_n->GetParent()->EraseChild(payload_n);
-				target->AddChild(payload_n);
+				if (payload_n->GetLayer() == target->GetLayer())
+				{
+					math::float4x4 globalMatrix;
+					if (payload_n->GetLayer() != UILAYER)
+						globalMatrix = payload_n->transform->GetGlobalMatrix();
+					payload_n->GetParent()->EraseChild(payload_n);
 
-				payload_n->SetParent(target);
-				payload_n->transform->SetMatrixFromGlobal(globalMatrix);
+					target->AddChild(payload_n);
+					payload_n->SetParent(target);
+
+					if (payload_n->GetLayer() != UILAYER)
+						payload_n->transform->SetMatrixFromGlobal(globalMatrix);
+					else if (payload_n->GetLayer() == UILAYER)
+					{
+						ComponentRectTransform* rect = (ComponentRectTransform*)payload_n->GetComponent(ComponentTypes::RectTransformComponent);
+						rect->CheckParentRect();
+						rect->ChangeChildsRect();
+					}
+				}
 			}
 			else
 				DEPRECATED_LOG("ERROR: Invalid Target. Don't be so badass ;)");

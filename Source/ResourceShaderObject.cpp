@@ -26,6 +26,7 @@ ResourceShaderObject::~ResourceShaderObject()
 
 void ResourceShaderObject::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -49,6 +50,7 @@ void ResourceShaderObject::OnPanelAssets()
 		ImGui::SetDragDropPayload("SHADER_OBJECT", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -290,6 +292,33 @@ uint ResourceShaderObject::SetNameToMeta(const char* metaFile, const std::string
 	return lastModTime;
 }
 
+bool ResourceShaderObject::GenerateLibraryFiles() const
+{
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		std::string outputFile;
+		uint size = App->fs->Copy(metaFile, DIR_LIBRARY_SHADERS_OBJECTS, outputFile);
+
+		if (size > 0)
+		{
+			// 2. Copy shader object
+			outputFile.clear();
+			uint size = App->fs->Copy(data.file.data(), DIR_LIBRARY_SHADERS_OBJECTS, outputFile);
+
+			if (size > 0)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 bool ResourceShaderObject::Compile()
@@ -304,6 +333,9 @@ bool ResourceShaderObject::Compile()
 		break;
 	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
+		break;
+	case ShaderObjectTypes::GeometryType:
+		shader = GL_GEOMETRY_SHADER;
 		break;
 	}
 
@@ -335,6 +367,9 @@ uint ResourceShaderObject::Compile(const char* source, ShaderObjectTypes shaderT
 		break;
 	case ShaderObjectTypes::FragmentType:
 		shader = GL_FRAGMENT_SHADER;
+		break;
+	case ShaderObjectTypes::GeometryType:
+		shader = GL_GEOMETRY_SHADER;
 		break;
 	}
 
@@ -450,6 +485,8 @@ ShaderObjectTypes ResourceShaderObject::GetShaderObjectTypeByExtension(const cha
 		shaderObjectType = ShaderObjectTypes::VertexType;
 	else if (IS_FRAGMENT_SHADER(extension))
 		shaderObjectType = ShaderObjectTypes::FragmentType;
+	else if (IS_FRAGMENT_SHADER(extension))
+		shaderObjectType = ShaderObjectTypes::GeometryType;
 
 	return shaderObjectType;
 }

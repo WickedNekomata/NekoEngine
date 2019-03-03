@@ -1,5 +1,6 @@
 #include "ComponentLight.h"
 
+
 #include "imgui/imgui.h"
 
 ComponentLight::ComponentLight(GameObject* parent) : Component(parent, ComponentTypes::LightComponent)
@@ -18,6 +19,7 @@ ComponentLight::~ComponentLight()
 
 void ComponentLight::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("Type");
 	ImGui::SameLine();
@@ -29,6 +31,7 @@ void ComponentLight::OnUniqueEditor()
 	ImGui::Text("Intensity");
 	ImGui::SameLine();
 	ImGui::DragScalar("##Light Intesity", ImGuiDataType_::ImGuiDataType_U32, &intensity, 1.0f);
+#endif
 }
 
 uint ComponentLight::GetInternalSerializationBytes()

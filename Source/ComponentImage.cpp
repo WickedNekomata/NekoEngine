@@ -16,7 +16,7 @@ ComponentImage::ComponentImage(GameObject * parent, ComponentTypes componentType
 	App->ui->componentsUI.push_back(this);
 }
 
-ComponentImage::ComponentImage(const ComponentImage & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::ImageComponent)
+ComponentImage::ComponentImage(const ComponentImage & componentRectTransform, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::ImageComponent)
 {
 	use_color_vec = componentRectTransform.use_color_vec;
 	if (use_color_vec)
@@ -24,9 +24,11 @@ ComponentImage::ComponentImage(const ComponentImage & componentRectTransform, Ga
 	else
 	{
 		res_image = componentRectTransform.res_image;
-		App->res->SetAsUsed(res_image);
+		if(includeComponents)
+			App->res->SetAsUsed(res_image);
 	}
-	App->ui->componentsUI.push_back(this);
+	if (includeComponents)
+		App->ui->componentsUI.push_back(this);
 }
 
 ComponentImage::~ComponentImage()
@@ -119,14 +121,21 @@ void ComponentImage::OnUniqueEditor()
 		float max_color = MAX_COLOR;
 		float max_alpha = MAX_ALPHA;
 
+		float color_r = color[COLOR_R] * 255.f;
+		float color_g = color[COLOR_G] * 255.f;
+		float color_b = color[COLOR_B] * 255.f;
+
 		ImGui::Text("Color RGB with alpha");
-		ImGui::DragScalar("##ColorR", ImGuiDataType_Float, (void*)&color[COLOR_R], 1.0f, &min, &max_color, "%1.f", 1.0f);
+		if (ImGui::DragScalar("##ColorR", ImGuiDataType_Float, (void*)&color_r, 1.0f, &min, &max_color, "%1.f", 1.0f))
+			color[COLOR_R] = color_r / 255.f;
 		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-		ImGui::DragScalar("##ColorG", ImGuiDataType_Float, (void*)&color[COLOR_G], 1.0f, &min, &max_color, "%1.f", 1.0f);
+		if(ImGui::DragScalar("##ColorG", ImGuiDataType_Float, (void*)&color_g, 1.0f, &min, &max_color, "%1.f", 1.0f))
+			color[COLOR_G] = color_g / 255.f;
 		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
-		ImGui::DragScalar("##ColorB", ImGuiDataType_Float, (void*)&color[COLOR_B], 1.0f, &min, &max_color, "%1.f", 1.0f);
+		if(ImGui::DragScalar("##ColorB", ImGuiDataType_Float, (void*)&color_b, 1.0f, &min, &max_color, "%1.f", 1.0f))
+			color[COLOR_B] = color_b / 255.f;
 		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);		
-		ImGui::DragScalar("##ColorA", ImGuiDataType_Float, (void*)&color[COLOR_A], 0.1f, &min, &max_alpha, "%0.1f", 1.0f);
+		if (ImGui::DragScalar("##ColorA", ImGuiDataType_Float, (void*)&color[COLOR_A], 0.1f, &min, &max_alpha, "%0.1f", 1.0f))
 		ImGui::SameLine(); ImGui::PushItemWidth(50.0f);
 	}
 	else

@@ -19,7 +19,9 @@ public:
 	int  GetIndex() const { return index; }
 	bool UpdateParams() const;
 	void SetDestination(const float* pos) const;
-	bool IsWalking();
+	bool IsWalking() const;
+	void RequestMoveVelocity(float* dir) const;
+	void ResetMoveTarget() const;
 
 	uint GetInternalSerializationBytes();
 	virtual void OnInternalSave(char*& cursor);

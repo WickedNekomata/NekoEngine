@@ -10,6 +10,10 @@
 #include "ModuleResourceManager.h"
 #include "ResourceShaderProgram.h"
 
+#include "ModuleAnimation.h"
+#include "ResourceAnimation.h"
+#include "ComponentAnimation.h"
+
 #include "ModuleRenderer3D.h"
 #include "ModuleUI.h"
 
@@ -119,6 +123,11 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 			break;
 		case ComponentTypes::CanvasRendererComponent:
 			go->cmp_canvasRenderer = nullptr;
+		case ComponentTypes::AudioListenerComponent:
+			go->cmp_audioListener = 0;
+			break;
+		case ComponentTypes::AudioSourceComponent:
+			go->cmp_audioSource = 0;
 			break;
 		}
 		break;
@@ -131,7 +140,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	case System_Event_Type::LoadFinished:
 	{
 		for (auto it = gameobjects.begin(); it != gameobjects.end(); ++it)
-		{			
+		{
 			(*it)->OnSystemEvent(event);
 		}
 		break;
@@ -139,7 +148,7 @@ void ModuleGOs::OnSystemEvent(System_Event event)
 	}
 }
 
-GameObject * ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
+GameObject* ModuleGOs::CreateCanvas(const char * name, GameObject * parent)
 {
 	assert(canvas == nullptr);
 	GameObject* newGameObject = canvas = new GameObject(name, parent, true);
@@ -167,13 +176,48 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 {
 	GameObject* newGameObject = new GameObject(*copy);
 
-	if(!newRoot)
+	if (!newRoot)
 	{
+		if (newGameObject->GetLayer() == UILAYER && copy->GetParent()->GetLayer() != UILAYER)
+			return nullptr;
+
 		newGameObject->SetParent(copy->GetParent());
 		copy->GetParent()->AddChild(newGameObject);
 	}
 	else
 	{
+		if (newGameObject->GetLayer() == UILAYER)
+		{
+			if (std::strcmp(newGameObject->GetName(), "Canvas") == 0)
+			{
+				if (ExistCanvas())
+				{
+					std::vector<GameObject*> childs;
+					newGameObject->GetChildrenVector(childs, true);
+					for (int i = 0; i < childs.size(); ++i)
+					{
+						gameobjects.push_back(childs[i]);
+						App->GOs->RecalculateVector(childs[i], false);
+					}
+					childs.clear();
+
+					newGameObject->GetChildrenVector(childs, false);
+					for (GameObject* child : childs)
+					{
+						if (child->GetParent()->GetParent() == nullptr)
+						{
+							canvas->AddChild(child);
+							child->SetParent(canvas);
+						}
+					}
+					App->ui->LinkAllRectsTransform();
+					return canvas;
+				}
+				else
+					canvas = newGameObject;
+			}
+		}
+
 		newGameObject->SetParent(newRoot);
 		newRoot->AddChild(newGameObject);
 	}
@@ -185,9 +229,34 @@ GameObject* ModuleGOs::Instanciate(GameObject* copy, GameObject* newRoot)
 		App->GOs->RecalculateVector(childs[i], false);
 	}
 
-	System_Event newEvent;
-	newEvent.type = System_Event_Type::RecreateQuadtree;
-	App->PushSystemEvent(newEvent);
+
+	if (newGameObject->GetLayer() != UILAYER)
+	{
+		if (copy->GetParent() == nullptr)
+		{
+			// Animation stuff // TODO_G : this can be better in vert 2
+			App->animation->Start();
+			std::vector<GameObject*> gos;
+			this->GetGameobjects(gos);
+			for (uint i = 0u; i < gos.size(); i++)
+			{
+
+				ComponentAnimation* anim_co = (ComponentAnimation*)gos[i]->GetComponent(ComponentTypes::AnimationComponent);
+				if (anim_co) {
+					ResourceAnimation* anim = (ResourceAnimation*)App->res->GetResource(anim_co->res);
+					App->animation->SetUpAnimations();
+					/*if (anim)
+						App->animation->SetAnimationGos(anim);*/
+				}
+			}
+		}
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+
+	}
+	else
+		App->ui->LinkAllRectsTransform();
 
 	return newGameObject;
 }
@@ -263,7 +332,7 @@ void ModuleGOs::RecalculateVector(GameObject* go, bool sendEvent)
 		System_Event newEvent;
 		newEvent.type = System_Event_Type::RecreateQuadtree;
 		App->PushSystemEvent(newEvent);
-	}	
+	}
 }
 
 bool ModuleGOs::SerializeFromNode(GameObject* node, char*& outStateBuffer, size_t& sizeBuffer, bool navmesh)
@@ -356,7 +425,7 @@ bool ModuleGOs::LoadScene(char*& buffer, size_t sizeBuffer, bool navmesh)
 		}
 		if (go->GetParent() == 0)
 		{
-			assert(App->scene->root == 0);
+			//assert(App->scene->root == 0);
 			App->scene->root = go;
 		}
 		else
@@ -416,7 +485,7 @@ bool ModuleGOs::ExistCanvas() const
 	return (canvas != nullptr);
 }
 
-GameObject * ModuleGOs::GetCanvas() const
+GameObject* ModuleGOs::GetCanvas() const
 {
 	return canvas;
 }

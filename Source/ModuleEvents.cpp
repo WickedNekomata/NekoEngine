@@ -26,6 +26,7 @@
 #include "ComponentRectTransform.h"
 #include "ComponentButton.h"
 #include "ComponentLabel.h"
+#include "ComponentAudioListener.h"
 
 #include "Application.h"
 #include "ModuleGOs.h"
@@ -68,7 +69,9 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 		}
 		case System_Event_Type::Stop:
 			assert(App->GOs->sceneStateBuffer != 0);
+#ifndef GAMEMODE
 			App->scene->selectedObject = 0;
+#endif
 			App->GOs->ClearScene();
 			App->GOs->LoadScene(App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
 			delete[] App->GOs->sceneStateBuffer;
@@ -85,7 +88,9 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 			size_t size = App->fs->Load(file, &buf);
 			if (size != 0)
 			{
+#ifndef GAMEMODE
 				App->scene->selectedObject = 0;
+#endif
 				App->GOs->ClearScene();
 				App->GOs->LoadScene(buf, size, true);
 				delete[] buf;

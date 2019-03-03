@@ -20,7 +20,7 @@ Index of this file:
 
 */
 
-#include "../GameMode.h"
+
 
 #ifndef GAMEMODE
 

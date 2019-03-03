@@ -12,8 +12,9 @@
 #include "ResourceAnimation.h"
 #include "AnimationImporter.h"
 #include "ModuleAnimation.h"
-
+#ifndef GAMEMODE
 #include "imgui\imgui.h"
+#endif
 
 ComponentAnimation::ComponentAnimation(GameObject * embedded_game_object) :
 	Component(embedded_game_object, ComponentTypes::AnimationComponent)
@@ -29,6 +30,7 @@ ComponentAnimation::ComponentAnimation(GameObject* embedded_game_object, uint re
 ComponentAnimation::ComponentAnimation(const ComponentAnimation & component_anim, GameObject * parent, bool include) : Component(parent, ComponentTypes::AnimationComponent)
 {
 	this->SetResource(component_anim.res);
+	//App->animation->SetAnimationGos((ResourceAnimation*)App->res->GetResource(res));
 }
 
 ComponentAnimation::~ComponentAnimation()
@@ -64,10 +66,9 @@ bool ComponentAnimation::SetResource(uint resource) //check all this
 	return true;
 }
 
-bool ComponentAnimation::PlayAnimation(uint anim_name)
+bool ComponentAnimation::PlayAnimation(const char* anim_name)
 {
-	// mimimi
-	return true;
+	return App->animation->SetCurrentAnimation(anim_name);
 }
 
 void ComponentAnimation::OnEditor()

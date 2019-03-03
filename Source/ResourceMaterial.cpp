@@ -7,6 +7,7 @@
 #include "ModuleScene.h"
 
 #include "ResourceShaderProgram.h"
+#include "ResourceTexture.h"
 
 #include "imgui\imgui.h"
 
@@ -24,6 +25,7 @@ ResourceMaterial::~ResourceMaterial()
 
 void ResourceMaterial::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -46,6 +48,7 @@ void ResourceMaterial::OnPanelAssets()
 		ImGui::SetDragDropPayload("MATERIAL_INSPECTOR_SELECTOR", &uuid, sizeof(uint));
 		ImGui::EndDragDropSource();
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -387,6 +390,35 @@ uint ResourceMaterial::SetNameToMeta(const char* metaFile, const std::string& na
 	return lastModTime;
 }
 
+bool ResourceMaterial::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		std::string outputFile;
+		uint size = App->fs->Copy(metaFile, DIR_LIBRARY_MATERIALS, outputFile);
+
+		if (size > 0)
+		{
+			// 2. Copy material
+			outputFile.clear();
+			uint size = App->fs->Copy(data.file.data(), DIR_LIBRARY_MATERIALS, outputFile);
+
+			if (size > 0)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 void ResourceMaterial::SetResourceShader(uint shaderUuid)
@@ -472,7 +504,7 @@ void ResourceMaterial::SetUniformsAsUsed()
 			{
 				App->res->SetAsUsed(materialData.uniforms[i].sampler2DU.value.uuid);
 				ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(materialData.uniforms[i].sampler2DU.value.uuid);
-				materialData.uniforms[i].sampler2DU.value.id = texture->GetId();
+				materialData.uniforms[i].sampler2DU.value.id = texture ? texture->GetId() : 0;
 			}
 		}
 		break;

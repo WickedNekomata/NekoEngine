@@ -281,6 +281,18 @@ void PanelInspector::ShowGameObjectInspector() const
 				}
 			}
 		}
+		if (gameObject->cmp_audioListener == nullptr) {
+			if (ImGui::Selectable("Audio Listener")) {
+				gameObject->AddComponent(ComponentTypes::AudioListenerComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		if (gameObject->cmp_audioSource == nullptr) {
+			if (ImGui::Selectable("Audio Source")) {
+				gameObject->AddComponent(ComponentTypes::AudioSourceComponent);
+				ImGui::CloseCurrentPopup();
+			}
+		}
 		ImGui::EndPopup();
 	}
 
@@ -502,6 +514,9 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 	ImGui::Text("Import Settings");
 	ImGui::Spacing();
 
+	ImGui::Text("Scale"); ImGui::PushItemWidth(50.0f);
+	ImGui::DragFloat("##Scale", &m_is.scale, 0.01f, 0.0f, FLT_MAX, "%.2f", 1.0f);
+
 	const char* postProcessConfiguration[] = { "Target Realtime Fast", "Target Realtime Quality", "Target Realtime Max Quality", "Custom" };
 	
 	ImGui::PushItemWidth(100.0f);
@@ -542,7 +557,7 @@ void PanelInspector::ShowMeshImportSettingsInspector()
 		strcpy_s(metaFile, strlen(m_is.modelPath) + 1, m_is.modelPath); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
-		// cambiar meta
+		// Update meta
 		ResourceMesh::SetMeshImportSettingsToMeta(metaFile, m_is);
 
 		// Reimport Mesh file
@@ -600,6 +615,7 @@ void PanelInspector::ShowTextureImportSettingsInspector() const
 		strcpy_s(metaFile, strlen(res->GetFile()) + 1, res->GetFile()); // file
 		strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
 
+		// Update meta
 		ResourceTexture::SetTextureImportSettingsToMeta(metaFile, t_is);
 
 		// Reimport Mesh file
@@ -621,6 +637,9 @@ void PanelInspector::ShowShaderObjectInspector() const
 		break;
 	case ShaderObjectTypes::FragmentType:
 		ImGui::Text("Fragment Shader Object");
+		break;
+	case ShaderObjectTypes::GeometryType:
+		ImGui::Text("Geometry Shader Object");
 		break;
 	}
 	ImGui::Separator();
@@ -776,7 +795,8 @@ void PanelInspector::ShowMaterialInspector() const
 	ImGui::TextColored(BLUE, "%s", material->GetFile());
 	ImGui::Text("UUID:"); ImGui::SameLine();
 	ImGui::TextColored(BLUE, "%u", material->GetUuid());
-
+	ImGui::Text("References:"); ImGui::SameLine();
+	ImGui::TextColored(BLUE, "%u", material->GetReferencesCount());
 	ImGui::Spacing();
 
 	char id[DEFAULT_BUF_SIZE];

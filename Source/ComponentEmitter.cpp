@@ -10,6 +10,7 @@
 #include "ModuleInternalResHandler.h"
 
 #include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
 #include <vector>
 
@@ -86,7 +87,7 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, Gam
 	if(include)
 		App->particle->emitters.push_back(this);
 
-	SetMaterialRes(App->resHandler->defaultMaterial);
+	SetMaterialRes(componentEmitter.materialRes);
 }
 
 
@@ -513,6 +514,7 @@ void ComponentEmitter::ParticleAABB()
 
 void ComponentEmitter::ParticleTexture()
 {
+#ifndef GAMEMODE
 	if (ImGui::CollapsingHeader("Particle Texture", ImGuiTreeNodeFlags_FramePadding))
 	{
 		const Resource* resource = App->res->GetResource(materialRes);
@@ -575,6 +577,7 @@ void ComponentEmitter::ParticleTexture()
 		}
 		ImGui::Separator();
 	}
+	#endif
 }
 
 void ComponentEmitter::SetNewAnimation()
@@ -828,7 +831,6 @@ void ComponentEmitter::OnInternalSave(char *& cursor)
 
 	memcpy(cursor, &materialRes, bytes);
 	cursor += bytes;
-	SetMaterialRes(materialRes);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(cursor, &particleAnim, bytes);
@@ -937,8 +939,10 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 	memcpy(&uuid, cursor, bytes);
 	cursor += bytes;
 
-	memcpy(&materialRes, cursor, bytes);
+	uint newMaterial = 0;
+	memcpy(&newMaterial, cursor, bytes);
 	cursor += bytes;
+	SetMaterialRes(newMaterial);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(&particleAnim, cursor, bytes);

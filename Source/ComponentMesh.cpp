@@ -26,7 +26,6 @@ ComponentMesh::ComponentMesh(const ComponentMesh& componentMesh, GameObject* par
 ComponentMesh::~ComponentMesh()
 {
 	App->renderer3D->EraseMeshComponent(this);
-
 	SetResource(0);
 }
 
@@ -38,35 +37,33 @@ void ComponentMesh::SetResource(uint res_uuid)
 		App->res->SetAsUnused(res);
 
 	if (res_uuid > 0)
+		App->res->SetAsUsed(res_uuid);
+
+	Resource* resource = App->res->GetResource(res_uuid);
+
+	res = resource ? res_uuid : 0;
+
+	if (resource)
 	{
-		if (App->res->SetAsUsed(res_uuid) == -1)
-			return;
-	}
-	else
-		return;
+		//Calculate the new mesh BoundingBox
+		System_Event createBB;
+		createBB.goEvent.gameObject = parent;
+		createBB.type = System_Event_Type::CalculateBBoxes;
+		App->PushSystemEvent(createBB);
 
-	res = res_uuid;
+		// Mesh updated: recalculate bounding boxes
+		System_Event updateBB;
+		updateBB.goEvent.gameObject = parent;
+		updateBB.type = System_Event_Type::RecalculateBBoxes;
+		App->PushSystemEvent(updateBB);
 
-	//Calculate the new mesh BoundingBox
-	System_Event createBB;
-	createBB.goEvent.gameObject = parent;
-	createBB.type = System_Event_Type::CalculateBBoxes;
-	App->PushSystemEvent(createBB);
-
-	// Mesh updated: recalculate bounding boxes
-	System_Event updateBB;
-	updateBB.goEvent.gameObject = parent;
-	updateBB.type = System_Event_Type::RecalculateBBoxes;
-	App->PushSystemEvent(updateBB);
-
-
-
-	if (parent->IsStatic())
-	{
-		// Bounding box changed: recreate quadtree
-		System_Event newEvent;
-		newEvent.type = System_Event_Type::RecreateQuadtree;
-		App->PushSystemEvent(newEvent);
+		if (parent->IsStatic())
+		{
+			// Bounding box changed: recreate quadtree
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RecreateQuadtree;
+			App->PushSystemEvent(newEvent);
+		}
 	}
 }
 

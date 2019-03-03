@@ -15,7 +15,7 @@ public:
 	uint GetInternalSerializationBytes();
 	bool SetResource(uint resource);
 
-	bool PlayAnimation(uint anim_name);
+	bool PlayAnimation(const char* anim_name);
 
 	void OnInternalSave(char*& cursor);
 	void OnInternalLoad(char*& cursor);

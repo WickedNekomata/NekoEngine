@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "ModuleWindow.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleFileSystem.h"
 #include "ModuleInput.h"
 #include "Primitive.h"
 #include "SceneImporter.h"
@@ -13,6 +14,9 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "ComponentMesh.h"
+
+// TODO_G : delete this
+#include "ModuleAnimation.h"
 
 #include "imgui/imgui.h"
 
@@ -45,17 +49,18 @@ bool ModuleScene::Start()
 	grid->ShowAxis(true);
 	root = new GameObject("Root", nullptr, true);
 
-#ifdef GAMEMODE
-	App->GOs->LoadScene("Settings/GameReady.nekoScene");
-	App->renderer3D->SetCurrentCamera();
-	App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
-#endif
-
 	return true;
 }
 
 update_status ModuleScene::Update()
 {
+	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
+		App->animation->SetCurrentAnimation("HipHopDancing");
+	}
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN) {
+		App->animation->SetCurrentAnimation("MacarenaDance");
+	}
+
 #ifndef GAMEMODE
 	if (!App->IsEditor())
 		return UPDATE_CONTINUE;
@@ -94,7 +99,6 @@ update_status ModuleScene::Update()
 		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
 			GetPreviousTransform();
 	}
-
 #endif
 
 	return UPDATE_CONTINUE;
@@ -105,38 +109,50 @@ bool ModuleScene::CleanUp()
 	bool ret = true;
 
 	RELEASE(grid);
-
+#ifndef GAMEMODE
 	SELECT(NULL);
+#endif
 
 	quadtree.Clear();
 
 	return ret;
 }
 
-void ModuleScene::SaveStatus(JSON_Object* jObject) const
-{
-	json_object_set_boolean(jObject, "showGrid", showGrid);
-}
-
-void ModuleScene::LoadStatus(const JSON_Object* jObject)
-{
-	showGrid = json_object_get_boolean(jObject, "showGrid");
-}
-
 void ModuleScene::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
+	case System_Event_Type::LoadGMScene:
+	{
+		char* buf;
+		size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
+		if (size > 0)
+		{
+			App->GOs->LoadScene(buf, size, true);
+			RELEASE_ARRAY(buf);
+
+			App->renderer3D->SetCurrentCamera();
+			App->renderer3D->OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
+
+			System_Event newEvent;
+			newEvent.type = System_Event_Type::RecreateQuadtree;
+			App->PushSystemEvent(newEvent);
+		}
+	}
+	break;
+
 	case System_Event_Type::RecreateQuadtree:
+	{
 		RecreateQuadtree();
-		break;
+	}
+	break;
+
+#ifndef GAMEMODE
 	case System_Event_Type::GameObjectDestroyed:
 
-		//Remove GO in list if its deleted
-
+		// Remove GO in list if its deleted
 		if (selectedObject == event.goEvent.gameObject)
 			SELECT(NULL);
-
 		std::list<LastTransform>::iterator iterator = prevTransforms.begin();
 
 		while (!prevTransforms.empty() && iterator != prevTransforms.end())
@@ -149,8 +165,20 @@ void ModuleScene::OnSystemEvent(System_Event event)
 			else
 				++iterator;
 		}
+
 		break;
+#endif
 	}
+}
+
+void ModuleScene::SaveStatus(JSON_Object* jObject) const
+{
+	json_object_set_boolean(jObject, "showGrid", showGrid);
+}
+
+void ModuleScene::LoadStatus(const JSON_Object* jObject)
+{
+	showGrid = json_object_get_boolean(jObject, "showGrid");
 }
 
 void ModuleScene::Draw() const
@@ -291,7 +319,10 @@ void ModuleScene::RecalculateQuadtree()
 	App->GOs->GetStaticGameobjects(staticGameObjects);
 
 	for (uint i = 0; i < staticGameObjects.size(); ++i)
-		App->scene->quadtree.Insert(staticGameObjects[i]);
+	{
+		if (staticGameObjects[i]->GetLayer() != UILAYER)
+			App->scene->quadtree.Insert(staticGameObjects[i]);
+	}
 }
 
 void ModuleScene::CreateRandomStaticGameObject()
@@ -307,12 +338,10 @@ void ModuleScene::CreateRandomStaticGameObject()
 }
 
 #ifndef GAMEMODE
-
 bool ModuleScene::IsGizmoValid() const
 {
 	return ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 }
-
 #endif
 
 void ModuleScene::FreeRoot()

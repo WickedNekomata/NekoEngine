@@ -14,6 +14,8 @@
 #include "ModuleUI.h"
 #include "DebugDrawer.h"
 #include "ShaderImporter.h"
+#include "MaterialImporter.h"
+#include "SceneImporter.h"
 #include "Quadtree.h"
 #include "PanelSkybox.h"
 
@@ -120,7 +122,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 			ret = false;
 		}
 
-		directionalLight.direction = math::float3(-0.2f, -1.0f, -0.2);
+		directionalLight.direction = math::float3(-0.4f, -1.0f, -0.5f);
 		directionalLight.ambient = math::float3(0.25f, 0.25f, 0.25f);
 		directionalLight.diffuse = math::float3(0.5f, 0.5f, 0.5f);
 		directionalLight.specular = math::float3(1.0f, 1.0f, 1.0f);
@@ -161,6 +163,7 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
+
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
 	//App->materialImporter->LoadSkyboxTexture();
@@ -205,8 +208,22 @@ update_status ModuleRenderer3D::PostUpdate()
 	// 1. Level geometry
 	App->scene->Draw();
 
+	App->debugDrawer->DebugDrawLine(-directionalLight.direction, -directionalLight.direction * 100.0f, Yellow);
+
 	if (currentCamera != nullptr)
 	{
+		for (uint i = 0; i < cameraComponents.size(); ++i)
+		{
+			if (cameraComponents[i]->IsActive())
+				cameraComponents[i]->UpdateTransform();
+		}
+
+		for (uint i = 0; i < projectorComponents.size(); ++i)
+		{
+			if (projectorComponents[i]->IsActive())
+				projectorComponents[i]->UpdateTransform();
+		}
+
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
 
@@ -214,13 +231,14 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)
 		{
-			if (projectorComponents[i]->IsActive())
+			if (projectorComponents[i]->GetParent()->IsActive() && projectorComponents[i]->IsActive())
 				DrawProjectors(projectorComponents[i]);
 		}
 
 		for (uint i = 0; i < meshComponents.size(); ++i)
 		{
-			if (meshComponents[i]->IsActive() && meshComponents[i]->GetParent()->seenLastFrame)
+			if (meshComponents[i]->GetParent()->IsActive() && meshComponents[i]->IsActive() 
+				&& meshComponents[i]->GetParent()->seenLastFrame)
 				DrawMesh(meshComponents[i]);
 		}
 	}
@@ -321,6 +339,7 @@ update_status ModuleRenderer3D::PostUpdate()
 			for (uint i = 0; i < rigidActorComponents.size(); ++i)
 			{
 				physx::PxRigidActor* gActor = rigidActorComponents[i]->GetActor();
+
 				physx::PxShape* gShape = nullptr;
 				gActor->getShapes(&gShape, 1);
 				if (gShape == nullptr)
@@ -402,13 +421,17 @@ update_status ModuleRenderer3D::PostUpdate()
 		App->debugDrawer->EndDebugDraw();
 	}
 
+	if (App->ui->GetUIMode())
+		App->ui->DrawCanvas();
+
 	// 3. Editor
 	App->gui->Draw();
-
+#else
 	//UIOnEditor
 	if (App->ui->GetUIMode())
 		App->ui->DrawCanvas();
 #endif // GAME
+
 
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
@@ -887,9 +910,10 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 	// Mesh
 	const ResourceMesh* mesh = (const ResourceMesh*)App->res->GetResource(toDraw->res);
 
-	glBindVertexArray(mesh->GetVAO());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIBO());
-	glDrawElements(GL_TRIANGLES, mesh->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
+	glBindVertexArray((mesh->deformableMeshData.indicesSize == 0) ? mesh->GetVAO() : mesh->DVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (mesh->deformableMeshData.indicesSize == 0) ? mesh->GetIBO() : mesh->DIBO);
+	glDrawElements(GL_TRIANGLES, (mesh->deformableMeshData.indicesSize == 0) ? 
+		mesh->GetIndicesCount() : mesh->deformableMeshData.indicesSize, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 

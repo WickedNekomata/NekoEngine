@@ -25,7 +25,7 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	if (PHYSFS_init(nullptr) == 0)
 	{
 		const char* error = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-		DEPRECATED_LOG("Could not initialize PHYSFS. Error: %s", error);
+		CONSOLE_LOG(LogTypes::Error, "Could not initialize PHYSFS. Error: %s", error);
 	}
 
 	AddPath(".");
@@ -38,25 +38,34 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled) : Module(start_enabled)
 	AddPath("./internal.f", "Internal");
 
 	if (PHYSFS_setWriteDir(".") == 0)
-		DEPRECATED_LOG("Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
+		CONSOLE_LOG(LogTypes::Error, "Could not set Write Dir. ERROR: %s", PHYSFS_getLastError());
 
 #ifndef GAMEMODE
-	CreateDir(DIR_ASSETS_SCENES);
+	CreateDir(DIR_ASSETS_MESHES);
+	CreateDir(DIR_ASSETS_TEXTURES);
+	CreateDir(DIR_ASSETS_MATERIALS);
 	CreateDir(DIR_ASSETS_SHADERS);
 	CreateDir(DIR_ASSETS_SHADERS_OBJECTS);
 	CreateDir(DIR_ASSETS_SHADERS_PROGRAMS);
-	CreateDir(DIR_ASSETS_SCRIPTS);
 	CreateDir(DIR_ASSETS_PREFAB);
-	CreateDir(DIR_ASSETS_MATERIALS);
+	CreateDir(DIR_ASSETS_SCENES);
+	CreateDir(DIR_ASSETS_SCRIPTS);
 #endif
+
 	if (CreateDir(DIR_LIBRARY))
 	{
 		AddPath("./Library/", "Library");
 
 		CreateDir(DIR_LIBRARY_MESHES);
-		CreateDir(DIR_LIBRARY_MATERIALS);
-		CreateDir(DIR_LIBRARY_BONES);
 		CreateDir(DIR_LIBRARY_ANIMATIONS);
+		CreateDir(DIR_LIBRARY_BONES);
+		CreateDir(DIR_LIBRARY_TEXTURES);
+		CreateDir(DIR_LIBRARY_MATERIALS);
+		CreateDir(DIR_LIBRARY_SHADERS);
+		CreateDir(DIR_LIBRARY_SHADERS_OBJECTS);
+		CreateDir(DIR_LIBRARY_SHADERS_PROGRAMS);
+		CreateDir(DIR_LIBRARY_PREFAB);
+		CreateDir(DIR_LIBRARY_SCENES);
 		CreateDir(DIR_LIBRARY_SCRIPTS);
 	}
 }
@@ -65,6 +74,7 @@ ModuleFileSystem::~ModuleFileSystem() {}
 
 update_status ModuleFileSystem::PreUpdate()
 {
+#ifndef GAMEMODE
 	static float updateAssetsCounter = 0.0f;
 	updateAssetsCounter += App->timeManager->GetRealDt();
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
@@ -73,13 +83,17 @@ update_status ModuleFileSystem::PreUpdate()
 
 		UpdateAssetsDir();
 	}
+#endif
 	return update_status::UPDATE_CONTINUE;
-	return UPDATE_CONTINUE;
 }
 
 bool ModuleFileSystem::Start()
 {
+#ifndef GAMEMODE
 	rootAssets = RecursiveGetFilesFromDir("Assets");
+#else
+	rootAssets = RecursiveGetFilesFromDir("Library");
+#endif
 
 	std::vector<std::string> lateEvents;
 	ImportFilesEvents(rootAssets, lateEvents);
@@ -88,14 +102,27 @@ bool ModuleFileSystem::Start()
 	{
 		//The ResourceManager already manages the .meta, already imported files etc. on his own.
 		System_Event event;
+#ifndef GAMEMODE
 		event.fileEvent.type = System_Event_Type::ImportFile;
+#else
+		event.fileEvent.type = System_Event_Type::ImportLibraryFile;
+#endif
 		strcpy(event.fileEvent.file, lateEvents[i].data());
 		App->PushSystemEvent(event);
 	}
 
+#ifdef GAMEMODE
+	System_Event event;
+	event.type = System_Event_Type::LoadGMScene;
+	App->PushSystemEvent(event);
+#endif
+	
+
+#ifndef GAMEMODE
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;
 	App->PushSystemEvent(event);
+#endif
 
 	return true;
 }
@@ -114,6 +141,7 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 	{
 		case System_Event_Type::FileDropped:
 		{
+#ifndef GAMEMODE
 			char* fileOrigin = event.fileEvent.file;
 
 			union
@@ -146,6 +174,8 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 				case ASCIIFSH:	
 				case ASCIIvsh:
 				case ASCIIVSH:
+				case ASCIIgsh: 
+				case ASCIIGSH:
 				{
 					strcpy(destinationDir, DIR_ASSETS_SHADERS_OBJECTS);
 					break;
@@ -192,7 +222,7 @@ void ModuleFileSystem::OnSystemEvent(System_Event event)
 			sprintf(originExFile, "Exception/%s", fileName.data());
 			MoveFileInto(originExFile, destinationFile);
 			EndTempException();
-
+#endif
 			break;
 		}
 	}
@@ -329,7 +359,7 @@ void ModuleFileSystem::GetFileName(const char* file, std::string& fileName, bool
 {
 	fileName = file;
 
-	uint found = fileName.find_last_of("\\");
+	int found = fileName.find_last_of("\\");
 	if (found != std::string::npos)
 		fileName = fileName.substr(found + 1, fileName.size());
 
@@ -349,7 +379,7 @@ void ModuleFileSystem::GetExtension(const char* file, std::string& extension) co
 {
 	extension = file;
 
-	uint found = extension.find_last_of(".");
+	int found = extension.find_last_of(".");
 	if (found != std::string::npos)
 		extension = extension.substr(found);
 }
@@ -359,13 +389,13 @@ void ModuleFileSystem::GetMetaExtension(const char* file, std::string& extension
 	std::string ex = file;
 	extension = ex;
 
-	uint foundMeta = extension.find_last_of(".");
+	int foundMeta = extension.find_last_of(".");
 	if (foundMeta != std::string::npos)
 	{
 		ex = ex.substr(foundMeta);
 		extension = extension.substr(0, foundMeta);
 	}
-	uint foundExtension = extension.find_last_of(".");
+	int foundExtension = extension.find_last_of(".");
 	if (foundExtension != std::string::npos)
 		extension = extension.substr(foundExtension);
 }
@@ -374,7 +404,7 @@ void ModuleFileSystem::GetFileFromMeta(const char* metaFile, std::string& file) 
 {
 	file = metaFile;
 
-	uint foundMeta = file.find_last_of(".");
+	int foundMeta = file.find_last_of(".");
 	if (foundMeta != std::string::npos)
 		file = file.substr(0, foundMeta);
 }
@@ -385,7 +415,7 @@ void ModuleFileSystem::GetPath(const char* file, std::string& path, bool bar) co
 
 	uint add = bar ? 1 : 0;
 
-	uint found = path.find_last_of("\\");
+	int found = path.find_last_of("\\");
 	if (found != std::string::npos)
 		path = path.substr(0, found + add);
 
@@ -450,25 +480,25 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_LIBRARY_MESHES), "/");
 			outputFile.append(EXTENSION_MESH);
 			break;
-		case FileTypes::TextureFile:
-			outputFile.insert(0, DIR_LIBRARY_MATERIALS);
-			outputFile.insert(strlen(DIR_LIBRARY_MATERIALS), "/");
-			outputFile.append(EXTENSION_TEXTURE);
+		case FileTypes::AnimationFile:
+			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
+			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
+			outputFile.append(EXTENSION_ANIMATION);
 			break;
 		case FileTypes::BoneFile:
 			outputFile.insert(0, DIR_LIBRARY_BONES);
 			outputFile.insert(strlen(DIR_LIBRARY_BONES), "/");
 			outputFile.append(EXTENSION_BONE);
 			break;
-		case FileTypes::AnimationFile:
-			outputFile.insert(0, DIR_LIBRARY_ANIMATIONS);
-			outputFile.insert(strlen(DIR_LIBRARY_ANIMATIONS), "/");
-			outputFile.append(EXTENSION_ANIMATION);
+		case FileTypes::TextureFile:
+			outputFile.insert(0, DIR_LIBRARY_TEXTURES);
+			outputFile.insert(strlen(DIR_LIBRARY_TEXTURES), "/");
+			outputFile.append(EXTENSION_TEXTURE);
 			break;
-		case FileTypes::SceneFile:
-			outputFile.insert(0, DIR_ASSETS_SCENES);
-			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
-			outputFile.append(EXTENSION_SCENE);
+		case FileTypes::MaterialFile:
+			outputFile.insert(0, DIR_ASSETS_MATERIALS);
+			outputFile.insert(strlen(DIR_ASSETS_MATERIALS), "/");
+			outputFile.append(EXTENSION_MATERIAL);
 			break;
 		case FileTypes::VertexShaderObjectFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
@@ -480,10 +510,10 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
 			outputFile.append(EXTENSION_FRAGMENT_SHADER_OBJECT);
 			break;
-		case FileTypes::MaterialFile:
-			outputFile.insert(0, DIR_ASSETS_MATERIALS);
-			outputFile.insert(strlen(DIR_ASSETS_MATERIALS), "/");
-			outputFile.append(EXTENSION_MATERIAL);
+		case FileTypes::GeometryShaderObjectFile:
+			outputFile.insert(0, DIR_ASSETS_SHADERS_OBJECTS);
+			outputFile.insert(strlen(DIR_ASSETS_SHADERS_OBJECTS), "/");
+			outputFile.append(EXTENSION_GEOMETRY_SHADER_OBJECT);
 			break;
 		case FileTypes::ShaderProgramFile:
 			outputFile.insert(0, DIR_ASSETS_SHADERS_PROGRAMS);
@@ -495,6 +525,12 @@ uint ModuleFileSystem::SaveInGame(char* buffer, uint size, FileTypes fileType, s
 			outputFile.insert(strlen(DIR_ASSETS_PREFAB), "/");
 			outputFile.append(EXTENSION_PREFAB);
 			break;
+		case FileTypes::SceneFile:
+			outputFile.insert(0, DIR_ASSETS_SCENES);
+			outputFile.insert(strlen(DIR_ASSETS_SCENES), "/");
+			outputFile.append(EXTENSION_SCENE);
+			break;
+		// Scripts
 		}
 	}
 
@@ -985,7 +1021,14 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 		std::string extension;
 		GetExtension(filePath, extension);
 
-		switch (App->res->GetResourceTypeByExtension(extension.data()))
+		ResourceTypes resourceType = ResourceTypes::NoResourceType;
+#ifndef GAMEMODE
+		resourceType = App->res->GetResourceTypeByExtension(extension.data());
+#else
+		resourceType = App->res->GetLibraryResourceTypeByExtension(extension.data());
+#endif
+
+		switch (resourceType)
 		{
 			case ResourceTypes::MaterialResource:
 			{
@@ -996,7 +1039,11 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 			{
 				//The ResourceManager already manages the .meta, already imported files etc. on his own.
 				System_Event event;
+#ifndef GAMEMODE
 				event.fileEvent.type = System_Event_Type::ImportFile;
+#else
+				event.fileEvent.type = System_Event_Type::ImportLibraryFile;
+#endif
 				strcpy(event.fileEvent.file, filePath);
 				App->PushSystemEvent(event);
 

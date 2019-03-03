@@ -10,22 +10,27 @@
 
 #define DIR_LIBRARY "Library"
 #define DIR_LIBRARY_MESHES "Library/Meshes"
-#define DIR_LIBRARY_MATERIALS "Library/Materials"
-#define DIR_LIBRARY_BONES "Library/Bones"
 #define DIR_LIBRARY_ANIMATIONS "Library/Animations"
+#define DIR_LIBRARY_BONES "Library/Bones"
+#define DIR_LIBRARY_TEXTURES "Library/Textures"
+#define DIR_LIBRARY_MATERIALS "Library/Materials"
 #define DIR_LIBRARY_SHADERS "Library/Shaders"
+#define DIR_LIBRARY_SHADERS_OBJECTS "Library/Shaders/Objects"
+#define DIR_LIBRARY_SHADERS_PROGRAMS "Library/Shaders/Programs"
+#define DIR_LIBRARY_PREFAB "Library/Prefabs"
+#define DIR_LIBRARY_SCENES "Library/Scenes"
 #define DIR_LIBRARY_SCRIPTS "Library/Scripts"
+
 #define DIR_ASSETS "Assets"
-#define DIR_ASSETS_SCENES "Assets/Scenes"
+#define DIR_ASSETS_MESHES "Assets/Meshes"
+#define DIR_ASSETS_TEXTURES "Assets/Textures"
+#define DIR_ASSETS_MATERIALS "Assets/Materials"
 #define DIR_ASSETS_SHADERS "Assets/Shaders"
 #define DIR_ASSETS_SHADERS_OBJECTS "Assets/Shaders/Objects"
 #define DIR_ASSETS_SHADERS_PROGRAMS "Assets/Shaders/Programs"
 #define DIR_ASSETS_PREFAB "Assets/Prefabs"
+#define DIR_ASSETS_SCENES "Assets/Scenes"
 #define DIR_ASSETS_SCRIPTS "Assets/Scripts"
-#define DIR_ASSETS_ANIMATIONS "Assets/Animations"
-#define DIR_ASSETS_MESHES "Assets/Meshes"
-#define DIR_ASSETS_TEXTURES "Assets/Textures"
-#define DIR_ASSETS_MATERIALS "Assets/Materials"
 
 #define IS_SCENE(extension) strcmp(extension, EXTENSION_SCENE) == 0
 #define IS_META(extension) strcmp(extension, EXTENSION_META) == 0
@@ -48,6 +53,7 @@ enum FileTypes
 
 	VertexShaderObjectFile,
 	FragmentShaderObjectFile,
+	GeometryShaderObjectFile,
 	ShaderProgramFile,
 
 	MaterialFile,
@@ -308,7 +314,8 @@ public:
 	bool deleteFile(const std::string& filePath) const;
 	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
 	void SendEvents(const Directory& newAssetsDir);
-	void ImportFilesEvents(const Directory& newAssetsDir, std::vector<std::string>& lateEvents = std::vector<std::string>());
+
+	void ImportFilesEvents(const Directory& newDir, std::vector<std::string>& lateEvents = std::vector<std::string>());
 	void ForceReImport(const Directory& assetsDir);
 
 	void BeginTempException(std::string directory);

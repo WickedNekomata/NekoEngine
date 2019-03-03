@@ -16,15 +16,14 @@ ComponentRigidActor::ComponentRigidActor(GameObject* parent, ComponentTypes comp
 	App->physics->AddRigidActorComponent(this);
 }
 
-ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, ComponentTypes componentRigidActorType) : Component(componentRigidActor.parent, componentRigidActorType)
+ComponentRigidActor::ComponentRigidActor(const ComponentRigidActor& componentRigidActor, GameObject* parent, ComponentTypes componentRigidActorType) : Component(parent, componentRigidActorType)
 {
 	App->physics->AddRigidActorComponent(this);
 }
 
 ComponentRigidActor::~ComponentRigidActor()
 {
-	App->physics->RemoveActor(*gActor);
-	gActor->release();
+	ClearActor();
 
 	App->physics->EraseRigidActorComponent(this);
 	parent->cmp_rigidActor = nullptr;
@@ -123,6 +122,16 @@ void ComponentRigidActor::UpdateShape(physx::PxShape* shape) const
 		gActor->attachShape(*shape);
 }
 
+void ComponentRigidActor::ClearActor()
+{
+	if (gActor != nullptr)
+	{
+		App->physics->RemoveActor(*gActor);
+		gActor->release();
+	}
+	gActor = nullptr;
+}
+
 void ComponentRigidActor::RecursiveUpdateTransforms(GameObject* gameObject)
 {
 	if (gameObject->cmp_rigidActor != nullptr)
@@ -158,10 +167,18 @@ void ComponentRigidActor::UpdateTransform(math::float4x4& globalMatrix) const
 
 void ComponentRigidActor::UpdateGameObjectTransform() const
 {
+	math::float4x4 globalMatrix = parent->transform->GetGlobalMatrix();
+	math::float3 position = math::float3::zero;
+	math::Quat rotation = math::Quat::identity;
+	math::float3 scale = math::float3::zero;
+	globalMatrix.Decompose(position, rotation, scale);
+
 	physx::PxTransform gTransform = gActor->getGlobalPose();
-	math::Quat rotation(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
-	math::float3 position(gTransform.p.x, gTransform.p.y, gTransform.p.z);
-	math::float4x4 globalMatrix(rotation, position);
+	position = math::float3(gTransform.p.x, gTransform.p.y, gTransform.p.z);
+	rotation = math::Quat(gTransform.q.x, gTransform.q.y, gTransform.q.z, gTransform.q.w);
+
+	globalMatrix = math::float4x4::FromTRS(position, rotation, scale);
+
 	parent->transform->SetMatrixFromGlobal(globalMatrix);
 }
 

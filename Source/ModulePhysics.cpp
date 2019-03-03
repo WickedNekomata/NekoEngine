@@ -9,10 +9,14 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 #include "ModuleCameraEditor.h"
+#include "ModuleResourceManager.h"
+#include "ModuleScene.h"
+#include "ModuleGOs.h"
 #include "ModuleGui.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
 #include "DebugDrawer.h"
+#include "ResourcePrefab.h"
 
 #include "MathGeoLib\include\Geometry\Frustum.h"
 #include "MathGeoLib\include\Geometry\LineSegment.h"
@@ -195,12 +199,12 @@ update_status ModulePhysics::Update()
 {
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
-	//if (App->GetEngineState() == engine_states::ENGINE_PLAY
-	//	|| App->GetEngineState() == engine_states::ENGINE_STEP)
-	//{
+	if (App->GetEngineState() == engine_states::ENGINE_PLAY
+		|| App->GetEngineState() == engine_states::ENGINE_STEP)
+	{
 		// Step physics
-		//gAccumulator += App->timeManager->GetDt();
-		gAccumulator += App->timeManager->GetRealDt();
+		gAccumulator += App->timeManager->GetDt();
+		//gAccumulator += App->timeManager->GetRealDt();
 		if (gAccumulator >= PhysicsConstants::FIXED_DT)
 		{
 			gAccumulator = 0.0f;
@@ -218,11 +222,11 @@ update_status ModulePhysics::Update()
 			for (std::vector<ComponentRigidActor*>::const_iterator it = rigidActorComponents.begin(); it != rigidActorComponents.end(); ++it)
 				(*it)->Update();
 		}
-	//}
+	}
 
 	// *****Debug*****
-	if (debugRay.IsFinite())
-		App->debugDrawer->DebugDraw(debugRay, Red);
+	//if (debugRay.IsFinite())
+		//App->debugDrawer->DebugDraw(debugRay, Red);
 	//if (debugTransform.IsFinite())
 		//App->debugDrawer->DebugDrawSphere(debugRadius, Red, debugTransform);
 	//_*****Debug*****
@@ -232,10 +236,13 @@ update_status ModulePhysics::Update()
 
 update_status ModulePhysics::FixedUpdate()
 {
+#ifndef GAMEMODE
 	if (App->gui->WantTextInput() || App->gui->IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;
+#endif
 
-	Debug();
+	//Debug();
+	//DestroyChest();
 
 	return UPDATE_CONTINUE;
 }
@@ -433,6 +440,89 @@ void ModulePhysics::Debug()
 			{
 				if (touchesInfo[i].GetGameObject() != nullptr)
 					CONSOLE_LOG(LogTypes::Normal, "The overlap touched the game object '%s'", touchesInfo[i].GetGameObject()->GetName());
+			}
+		}
+	}
+}
+
+void ModulePhysics::DestroyChest()
+{
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		// Raycast
+		RaycastHit hitInfo;
+		std::vector<RaycastHit> touchesInfo;
+		math::Ray ray = App->renderer3D->GetCurrentCamera()->ScreenToRay(math::float2(App->input->GetMouseX(), App->input->GetMouseY()));
+
+		// Layer
+		Layer* chestLayer = App->layers->GetLayer(App->layers->NameToNumber("Destructibles"));
+		uint filterGroup = chestLayer->GetFilterGroup();
+
+		if (Raycast(ray.pos, ray.dir, hitInfo, FLT_MAX, filterGroup))
+		{
+			GameObject* gameObject = hitInfo.GetGameObject();
+
+			// Hit
+			if (gameObject != nullptr)
+			{
+				// 1. Destroy game object (original mesh)
+				gameObject->Destroy();
+
+				// 2. Instantiate game object (broken mesh)
+				ResourcePrefab* prefab = nullptr;
+
+				std::vector<Resource*> prefabs = App->res->GetResourcesByType(ResourceTypes::PrefabResource);
+				for (uint i = 0; i < prefabs.size(); ++i)
+				{
+					if (strcmp(prefabs[i]->GetName(), "BC1.pfb") == 0)
+					{
+						prefab = (ResourcePrefab*)prefabs[i];
+						break;
+					}
+				}
+
+				if (prefab != nullptr)
+				{
+					App->res->SetAsUsed(prefab->GetUuid());
+
+					GameObject* brokenChest = prefab->GetRoot();
+
+					if (brokenChest != nullptr)
+					{
+						GameObject* brokenChestInstance = App->GOs->Instanciate(brokenChest, App->scene->root);
+
+						if (brokenChestInstance != nullptr)
+						{
+							App->res->SetAsUnused(prefab->GetUuid());
+
+							// a) Move broken mesh to original mesh
+							math::float4x4 globalMatrix = gameObject->transform->GetGlobalMatrix();
+							brokenChestInstance->transform->SetMatrixFromGlobal(globalMatrix);
+
+							// b) Apply forces to broken mesh
+							std::vector<GameObject*> go;
+							brokenChestInstance->GetChildrenVector(go, false);
+
+							for (uint i = 0; i < go.size(); ++i)
+							{
+								ComponentRigidDynamic* rigidDynamic = (ComponentRigidDynamic*)go[i]->cmp_rigidActor;
+								
+								if (rigidDynamic != nullptr)
+								{
+									float force = 10.0f;
+									int max = 1;
+									int min = -1;
+
+									float forceX = force * ((rand() % (max - min)) + min);
+									float forceY = force * ((rand() % (max - min)) + min);
+									float forceZ = force * ((rand() % (max - min)) + min);
+
+									rigidDynamic->AddForce(math::float3(forceX, forceY, forceZ), physx::PxForceMode::eIMPULSE);
+								}
+							}
+						}					
+					}
+				}
 			}
 		}
 	}

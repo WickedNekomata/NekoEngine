@@ -12,6 +12,8 @@
 #include "ScriptingModule.h"
 #include "imgui/imgui.h"
 
+#include <assert.h>
+
 std::vector<std::string>ResourceScript::scriptNames;
 
 ResourceScript::ResourceScript(uint uuid, ResourceData data, ResourceScriptData scriptData) : Resource(ResourceTypes::ScriptResource, uuid, data), scriptData(scriptData) 
@@ -31,6 +33,7 @@ ResourceScript::~ResourceScript()
 
 void ResourceScript::OnPanelAssets()
 {
+#ifndef GAMEMODE
 	ImGuiTreeNodeFlags flags = 0;
 	flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf;
 
@@ -54,6 +57,60 @@ void ResourceScript::OnPanelAssets()
 		ImGui::SetDragDropPayload("SCRIPT_RESOURCE", &res, sizeof(Resource*));
 		ImGui::EndDragDropSource();
 	}
+#endif
+}
+
+bool ResourceScript::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		// Read the info of the meta
+		char* buffer;
+		uint size = App->fs->Load(metaFile, &buffer);
+		if (size > 0)
+		{
+			// Create a new name for the meta
+			std::string extension;
+
+			App->fs->GetExtension(metaFile, extension);
+
+			char newMetaFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newMetaFile, "%s/%s%s%s", DIR_LIBRARY_SCRIPTS, data.name.data(), ".cs", extension.data());
+
+			// Save the new meta (info + new name)
+			size = App->fs->Save(newMetaFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;						
+		}
+	}
+
+	//2 Copy .cs file
+	// Read the info of the meta
+	if (App->fs->Exists(data.file.data()))
+	{
+		char* buffer;
+		uint size = App->fs->Load(data.file.data(), &buffer);
+		if (size > 0)
+		{
+			char newFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newFile, "%s/%s%s", DIR_LIBRARY_SCRIPTS, data.name.data(), ".cs");
+
+			// Save the new file
+			size = App->fs->Save(newFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+
+	return true;
 }
 
 void ResourceScript::SerializeToMeta(char*& cursor) const

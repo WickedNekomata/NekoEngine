@@ -9,7 +9,7 @@ class ComponentSphereCollider : public ComponentCollider
 public:
 
 	ComponentSphereCollider(GameObject* parent);
-	ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider);
+	ComponentSphereCollider(const ComponentSphereCollider& componentSphereCollider, GameObject* parent);
 	~ComponentSphereCollider();
 
 	void OnUniqueEditor();

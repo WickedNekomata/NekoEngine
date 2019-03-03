@@ -1,4 +1,4 @@
-#include "GameMode.h"
+
 
 #include "SceneImporter.h"
 
@@ -160,10 +160,9 @@ bool SceneImporter::Import(const void* buffer, uint size, const char* prefabName
 
 		std::vector<uint> dummyForcedUuids = forced_meshes_uuids;
 		RecursivelyImportNodes(scene, rootNode, rootGameObject, nullptr, mesh_files, bone_files/*not needed but ok*/, dummyForcedUuids);
-
-		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);
-
-		ImportAnimations(scene, anim_files, forced_anim_uuids);
+		rootGameObject->transform->scale *= importSettings.scale;
+		RecursiveProcessBones(scene, scene->mRootNode, bone_files,forced_bones_uuids);	
+		ImportAnimations(scene, anim_files, prefabName, forced_anim_uuids);
 
 		root_bone = nullptr; // c: 
 
@@ -225,14 +224,14 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 	relations[node] = gameObject;
 
 	// Transform
-	aiVector3D position;
-	aiVector3D scale;
-	aiQuaternion rotation;
-	node->mTransformation.Decompose(scale, rotation, position);
+	aiVector3D aPosition;
+	aiVector3D aScale;
+	aiQuaternion aRotation;
+	node->mTransformation.Decompose(aScale, aRotation, aPosition);
 
-	math::float3 newPosition = { position.x, position.y, position.z };
-	math::Quat newRotation = { rotation.x, rotation.y, rotation.z, rotation.w };
-	math::float3 newScale = { scale.x, scale.y, scale.z };
+	math::float3 newPosition = { aPosition.x, aPosition.y, aPosition.z };
+	math::Quat newRotation = { aRotation.x, aRotation.y, aRotation.z, aRotation.w };
+	math::float3 newScale = { aScale.x, aScale.y, aScale.z };
 
 	if (transformation != nullptr)
 	{
@@ -264,7 +263,7 @@ void SceneImporter::RecursivelyImportNodes(const aiScene* scene, const aiNode* n
 		if (!broken)
 		{
 			gameObject->AddComponent(ComponentTypes::MeshComponent);
-			gameObject->ToggleIsStatic();
+			gameObject->ForceStaticNoVector();
 			if (forcedUuids.size() > 0)
 			{
 				gameObject->cmp_mesh->res = forcedUuids.front();
@@ -657,7 +656,7 @@ void SceneImporter::GenerateVBO(uint& VBO, Vertex* vertices, uint verticesSize) 
 	// Bind the VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verticesSize, vertices, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -673,7 +672,7 @@ void SceneImporter::GenerateIBO(uint& IBO, uint* indices, uint indicesSize) cons
 	// Bind the IBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesSize, indices, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -945,7 +944,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 }
 
 void SceneImporter::ImportAnimations(mutable const aiScene * scene
-	, std::vector<std::string>& anim_files, std::vector<uint>& forcedUuids)const
+	, std::vector<std::string>& anim_files, const char* anim_name, std::vector<uint>& forcedUuids)const
 {
 	for (uint i = 0; i < scene->mNumAnimations; ++i)
 	{
@@ -973,10 +972,9 @@ void SceneImporter::ImportAnimations(mutable const aiScene * scene
 
 			ResourceAnimationData res_data;
 			
-
-			static int take_count = 1;
-			std::string filename = "Take00";
-			filename.append(std::to_string(take_count++));
+			//static int take_count = 1;
+			std::string filename = anim_name;
+			//filename.append(std::to_string(take_count++));
 			res_data.name = filename;
 
 			res_data.ticksPerSecond= anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 24;

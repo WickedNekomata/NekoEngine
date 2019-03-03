@@ -1,5 +1,3 @@
-#include "GameMode.h"
-
 #include "ShaderImporter.h"
 
 #include "Application.h"
@@ -56,6 +54,9 @@ bool ShaderImporter::SaveShaderObject(const void* buffer, uint size, ShaderObjec
 		break;
 	case ShaderObjectTypes::FragmentType:
 		fileType = FileTypes::FragmentShaderObjectFile;
+		break;
+	case ShaderObjectTypes::GeometryType:
+		fileType = FileTypes::GeometryShaderObjectFile;
 		break;
 	}
 

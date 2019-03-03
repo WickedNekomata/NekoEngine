@@ -1,8 +1,6 @@
 #ifndef __MODULE_CAMERA_EDITOR_H__
 #define __MODULE_CAMERA_EDITOR_H__
 
-#include "GameMode.h"
-
 #ifndef GAMEMODE
 
 #include "Module.h"
@@ -12,6 +10,8 @@
 #include "MathGeoLib\include\Math\float4x4.h"
 
 class ComponentCamera;
+
+#define CAMERASPEED 2.5f
 
 class ModuleCameraEditor : public Module
 {
@@ -46,6 +46,7 @@ private:
 	float rotationSpeed = 0.0f;
 	float zoomSpeed = 0.0f;
 	float referenceRadius = 0.0f;
+	float increaseVelFactor = 1.0f;
 };
 
 #endif

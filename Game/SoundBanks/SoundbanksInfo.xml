@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="128">
+	<RootPaths>
+		<ProjectRoot>D:\Documentos\WwiseProjects\Assignment3_2017v\</ProjectRoot>
+		<SourceFilesRoot>D:\Documentos\WwiseProjects\Assignment3_2017v\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>D:\Proyectos GitHub\PalmGine-3D\3D Engine\Game\SoundBanks\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>D:\Documentos\WwiseProjects\Assignment3_2017v\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1860126629" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Assignment3</ObjectPath>
+			<ShortName>Assignment3</ShortName>
+			<Path>Assignment3.bnk</Path>
+			<IncludedEvents>
+				<Event Id="1467305928" Name="background_tracks" ObjectPath="\Events\Default Work Unit\background_tracks"/>
+				<Event Id="2607198564" Name="music_TheDillards_Dooley" ObjectPath="\Events\Default Work Unit\music_TheDillards_Dooley"/>
+				<Event Id="3585407402" Name="music_TheGrowlers_GoingGetsTuff" ObjectPath="\Events\Default Work Unit\music_TheGrowlers_GoingGetsTuff"/>
+				<Event Id="3864097025" Name="Pause_All" ObjectPath="\Events\Default Work Unit\Pause_All"/>
+				<Event Id="3679762312" Name="Resume_All" ObjectPath="\Events\Default Work Unit\Resume_All"/>
+				<Event Id="452547817" Name="Stop_All" ObjectPath="\Events\Default Work Unit\Stop_All"/>
+				<Event Id="3412057565" Name="train" ObjectPath="\Events\Default Work Unit\train"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="5030772" Language="SFX">
+					<ShortName>The Growlers-Going Gets Tuff.wav</ShortName>
+					<Path>SFX\The Growlers-Going Gets Tuff_F17FB28C.wem</Path>
+				</File>
+				<File Id="352902853" Language="SFX">
+					<ShortName>The Dillards - Dooley.wav</ShortName>
+					<Path>SFX\The Dillards - Dooley_F17FB28C.wem</Path>
+				</File>
+				<File Id="496129679" Language="SFX">
+					<ShortName>train.wav</ShortName>
+					<Path>SFX\train_F17FB28C.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

@@ -5,12 +5,14 @@
 
 #define IS_VERTEX_SHADER(extension) strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
 #define IS_FRAGMENT_SHADER(extension) strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0
+#define IS_GEOMETRY_SHADER(extension) strcmp(extension, EXTENSION_GEOMETRY_SHADER_OBJECT) == 0
 
 enum ShaderObjectTypes
 {
 	NoShaderObjectType,
 	VertexType,
-	FragmentType
+	FragmentType,
+	GeometryType
 };
 
 struct ResourceShaderObjectData
@@ -43,6 +45,8 @@ public:
 	static uint CreateMeta(const char* file, uint shaderObjectUuid, std::string& name, std::string& outputMetaFile);
 	static bool ReadMeta(const char* metaFile, int64_t& lastModTime, uint& shaderObjectUuid, std::string& name);
 	static uint SetNameToMeta(const char* metaFile, const std::string& name);
+
+	bool GenerateLibraryFiles() const;
 
 	// ----------------------------------------------------------------------------------------------------
 

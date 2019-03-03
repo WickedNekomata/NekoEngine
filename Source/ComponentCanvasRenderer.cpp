@@ -12,21 +12,24 @@
 
 ComponentCanvasRenderer::ComponentCanvasRenderer(GameObject * parent, ComponentTypes componentType) : Component(parent, ComponentTypes::CanvasRendererComponent)
 {
-	App->ui->componentsUI.push_back(this);
+	App->ui->componentsRendererUI.push_back(this);
 	rend_queue.push_back(new ToUIRend());
 	rend_queue.push_back(new ToUIRend());
 }
 
-ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer & componentRectTransform, GameObject* parent) : Component(parent, ComponentTypes::CanvasRendererComponent)
+ComponentCanvasRenderer::ComponentCanvasRenderer(const ComponentCanvasRenderer & componentRectTransform, GameObject* parent, bool includeComponents) : Component(parent, ComponentTypes::CanvasRendererComponent)
 {
-	App->ui->componentsUI.push_back(this);
-	rend_queue.push_back(new ToUIRend());
-	rend_queue.push_back(new ToUIRend());
+	if (includeComponents)
+	{
+		App->ui->componentsRendererUI.push_back(this);
+		rend_queue.push_back(new ToUIRend());
+		rend_queue.push_back(new ToUIRend());
+	}
 }
 
 ComponentCanvasRenderer::~ComponentCanvasRenderer()
 {
-	App->ui->componentsUI.remove(this);
+	App->ui->componentsRendererUI.remove(this);
 
 	for (ToUIRend* rend : rend_queue)
 		RELEASE(rend);
@@ -37,20 +40,23 @@ void ComponentCanvasRenderer::Update()
 {
 	ComponentImage* cmp_image = (ComponentImage*)parent->GetComponent(ComponentTypes::ImageComponent);
 	if (cmp_image)
-		if (cmp_image->UseColor())
+		if (cmp_image->IsActive() && parent->IsActive())
 		{
-			for (ToUIRend* rend : rend_queue)
+			if (cmp_image->UseColor())
 			{
-				if (rend->isRendered())
-					rend->Set(RenderTypes::COLOR_VECTOR, cmp_image);
+				for (ToUIRend* rend : rend_queue)
+				{
+					if (rend->isRendered())
+						rend->Set(RenderTypes::COLOR_VECTOR, cmp_image);
+				}
 			}
-		}
-		else
-		{
-			for (ToUIRend* rend : rend_queue)
+			else
 			{
-				if (rend->isRendered())
-					rend->Set(RenderTypes::TEXTURE, cmp_image);
+				for (ToUIRend* rend : rend_queue)
+				{
+					if (rend->isRendered())
+						rend->Set(RenderTypes::TEXTURE, cmp_image);
+				}
 			}
 		}
 }
@@ -87,7 +93,9 @@ void ComponentCanvasRenderer::OnInternalLoad(char *& cursor)
 
 void ComponentCanvasRenderer::OnUniqueEditor()
 {
+#ifndef GAMEMODE
 	ImGui::Text("Canvas Renderer");
+#endif
 }
 
 //Rend Queue Struct

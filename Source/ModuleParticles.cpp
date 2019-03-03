@@ -50,14 +50,6 @@ update_status ModuleParticle::Update()
 	return UPDATE_CONTINUE;
 }
 
-void ModuleParticle::StartAllEmiters()
-{
-	for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
-	{
-		(*emitter)->StartEmitter();
-	}
-}
-
 void ModuleParticle::Draw()
 {
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);

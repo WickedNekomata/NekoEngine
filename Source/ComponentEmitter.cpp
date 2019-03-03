@@ -109,7 +109,7 @@ ComponentEmitter::~ComponentEmitter()
 
 void ComponentEmitter::StartEmitter()
 {
-	if (!isSubEmitter && startOnPlay)
+	if (!isSubEmitter)
 	{
 		timer.Start();
 		burstTime.Start();

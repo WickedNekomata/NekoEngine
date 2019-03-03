@@ -125,7 +125,8 @@ void ModuleParticle::OnSystemEvent(System_Event event)
 	case System_Event_Type::Play:
 		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
 		{
-			(*emitter)->StartEmitter();
+			if((*emitter)->startOnPlay)
+				(*emitter)->StartEmitter();
 		}
 	case System_Event_Type::Stop:
 		for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)

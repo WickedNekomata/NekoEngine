@@ -59,7 +59,7 @@ public class AreaAttk : JellyScript
     public override void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
-        //smoke2 = particleGO.GetComponent<ParticleEmitter>();
+        smoke2 = particleGO.GetComponent<ParticleEmitter>();
         animator = gameObject.GetComponent<Animator>();
     }
 
@@ -76,8 +76,8 @@ public class AreaAttk : JellyScript
             animator.PlayAnimation("Idle");
         }
 
-        //if (smoke2 == null)
-        //    smoke2 = particleGO.GetComponent<ParticleEmitter>();
+        if (smoke2 == null)
+            smoke2 = particleGO.GetComponent<ParticleEmitter>();
 
         CheckState();
         CheckForMouseClick();
@@ -288,9 +288,9 @@ public class AreaAttk : JellyScript
             }
         }
 
-       // if (smoke2 == null)
-       //     smoke2 = gameObject.GetComponent<ParticleEmitter>();
-       // smoke2.Play();
+        if (smoke2 == null)
+            smoke2 = gameObject.GetComponent<ParticleEmitter>();
+        smoke2.Play();
     }
 
     private void TimerDecal()

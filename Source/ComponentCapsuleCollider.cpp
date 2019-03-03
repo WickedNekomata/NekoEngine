@@ -139,14 +139,8 @@ void ComponentCapsuleCollider::EncloseGeometry()
 		math::float3 scale = math::float3::one;
 		globalMatrix.Decompose(pos, rot, scale);
 
-		assert(parent->boundingBox.IsFinite());
 		center = parent->boundingBox.CenterPoint() - pos;
-		center = globalMatrix.Float3x3Part().Inverted() * center;
-
-		math::float3 halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
-		halfSize.x *= scale.x;
-		halfSize.y *= scale.y;
-		halfSize.z *= scale.z;
+		math::float3 halfSize = parent->boundingBox.HalfSize();
 
 		switch (direction)
 		{

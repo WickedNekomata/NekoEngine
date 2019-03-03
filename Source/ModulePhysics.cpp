@@ -242,7 +242,7 @@ update_status ModulePhysics::FixedUpdate()
 #endif
 
 	//Debug();
-	//DestroyChest();
+	DestroyChest();
 
 	return UPDATE_CONTINUE;
 }
@@ -466,7 +466,7 @@ void ModulePhysics::DestroyChest()
 			if (gameObject != nullptr)
 			{
 				// 1. Destroy game object (original mesh)
-				gameObject->Destroy();
+				gameObject->GetParent()->Destroy();
 
 				// 2. Instantiate game object (broken mesh)
 				ResourcePrefab* prefab = nullptr;
@@ -474,7 +474,7 @@ void ModulePhysics::DestroyChest()
 				std::vector<Resource*> prefabs = App->res->GetResourcesByType(ResourceTypes::PrefabResource);
 				for (uint i = 0; i < prefabs.size(); ++i)
 				{
-					if (strcmp(prefabs[i]->GetName(), "BC1.pfb") == 0)
+					if (strcmp(prefabs[i]->GetName(), "BrokenChestFinal.pfb") == 0)
 					{
 						prefab = (ResourcePrefab*)prefabs[i];
 						break;

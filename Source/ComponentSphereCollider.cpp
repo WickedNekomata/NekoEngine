@@ -109,12 +109,7 @@ void ComponentSphereCollider::EncloseGeometry()
 		globalMatrix.Decompose(pos, rot, scale);
 
 		center = parent->boundingBox.CenterPoint() - pos;
-		center = globalMatrix.Float3x3Part().Inverted() * center;
-
-		math::float3 halfSize = globalMatrix.Float3x3Part().Inverted() * parent->boundingBox.HalfSize();
-		halfSize.x *= scale.x;
-		halfSize.y *= scale.y;
-		halfSize.z *= scale.z;
+		math::float3 halfSize = parent->boundingBox.HalfSize();
 
 		radius = halfSize.Length();
 	}

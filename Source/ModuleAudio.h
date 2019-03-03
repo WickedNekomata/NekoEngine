@@ -33,6 +33,7 @@ public:
 private:
 	std::list<WwiseT::AudioSource*> event_list;
 	WwiseT::AudioSource* listener;
+	bool audioisplayed = false;
 
 public:
 	std::list<ComponentAudioSource*> audio_sources;

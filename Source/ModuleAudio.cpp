@@ -16,14 +16,17 @@ bool ModuleAudio::Start()
 	// Init wwise and audio banks
 	WwiseT::InitSoundEngine();
 	WwiseT::LoadBank("Assignment3.bnk");
-#ifdef GAMEMODE
-	PlayOnAwake();
-#endif // GAMEMODE
 	return true;
 }
 
 update_status ModuleAudio::Update(/*float dt*/)
 {
+#ifdef GAMEMODE
+	if (audioisplayed == false) {
+		PlayOnAwake();
+		audioisplayed = true;
+	}
+#endif // GAMEMODE
 	return UPDATE_CONTINUE;
 }
 

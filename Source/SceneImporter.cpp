@@ -915,6 +915,7 @@ void SceneImporter::RecursiveProcessBones(mutable const aiScene * scene,
 		data.file = outputFile;
 
 		ResourceBoneData res_data;
+		res_data.name = bone->mName.data;
 		res_data.mesh_uid = mesh_bone[bone];
 		res_data.bone_weights_size = bone->mNumWeights;
 		memcpy(res_data.offset_matrix.v, &bone->mOffsetMatrix.a1, sizeof(float) * 16);

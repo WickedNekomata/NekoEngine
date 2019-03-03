@@ -74,7 +74,7 @@ bool ResourceAnimation::ImportFile(const char* file, std::string& name, std::str
 		sprintf_s(entry, "%u", uuid);
 		outputFile = entry;
 	}
-	
+
 	return true;
 }
 
@@ -84,7 +84,7 @@ bool ResourceAnimation::ExportFile(ResourceData& resourceData, ResourceAnimation
 
 	// -------------- CALCULATING ANIMATION DATA SIZE --------------
 
-	uint anim_name_size = sizeof(char)*MAX_BUF_SIZE;
+	uint anim_name_size = sizeof(char)*DEFAULT_BUF_SIZE;
 	uint duration_size = sizeof(animData.duration);
 	uint ticks_size = sizeof(animData.ticksPerSecond);
 	uint num_keys_size = sizeof(animData.numKeys);
@@ -94,7 +94,7 @@ bool ResourceAnimation::ExportFile(ResourceData& resourceData, ResourceAnimation
 	for (uint i = 0; i < animData.numKeys; i++)
 	{
 		uint id_size = sizeof(uint);
-		uint bone_name_size = sizeof(char)*animData.boneKeys[i].bone_name.size() + 1; // TODO: check this to do it with a define
+		uint bone_name_size = sizeof(char)*DEFAULT_BUF_SIZE; // TODO: check this to do it with a define
 
 		final_size += id_size + bone_name_size;
 
@@ -128,12 +128,11 @@ bool ResourceAnimation::ExportFile(ResourceData& resourceData, ResourceAnimation
 	// -------------- Saving animation generic data --------------
 
 	// Saving anim name
-	uint bytes = sizeof(char)*MAX_BUF_SIZE;
+	uint bytes = sizeof(char)*DEFAULT_BUF_SIZE;
 
-	char name[MAX_BUF_SIZE];
-	memset(name, 0, sizeof(char) * MAX_BUF_SIZE);
-	strcpy_s(name, MAX_BUF_SIZE, animData.name.c_str());
-
+	char name[DEFAULT_BUF_SIZE];
+	memset(name, 0, sizeof(char) * DEFAULT_BUF_SIZE);
+	strcpy_s(name, DEFAULT_BUF_SIZE, animData.name.c_str());
 	memcpy(cursor, name, bytes);
 
 	// Saving duration
@@ -156,7 +155,7 @@ bool ResourceAnimation::ExportFile(ResourceData& resourceData, ResourceAnimation
 	for (uint i = 0; i < animData.numKeys; i++)
 	{
 		// name size
-		cursor += bytes;
+		/*cursor += bytes;
 		bytes = sizeof(uint);
 		uint name_size = animData.boneKeys[i].bone_name.size();
 		memcpy(cursor, &name_size, bytes);
@@ -164,7 +163,14 @@ bool ResourceAnimation::ExportFile(ResourceData& resourceData, ResourceAnimation
 		// name
 		cursor += bytes;
 		bytes = sizeof(char) * name_size + 1;
-		memcpy(cursor, animData.boneKeys[i].bone_name.c_str(), bytes);
+		memcpy(cursor, animData.boneKeys[i].bone_name.c_str(), bytes);*/
+
+		cursor += bytes;
+		bytes = sizeof(char)*DEFAULT_BUF_SIZE;
+		char name[DEFAULT_BUF_SIZE];
+		memset(name, 0, sizeof(char) * DEFAULT_BUF_SIZE);
+		strcpy_s(name, DEFAULT_BUF_SIZE, animData.boneKeys[i].bone_name.data());
+		memcpy(cursor, name, bytes);
 
 		// Saving bone position data
 		cursor += bytes;
@@ -368,11 +374,15 @@ bool ResourceAnimation::LoadFile(const char* file, ResourceAnimationData& output
 
 		// Todo Title max length
 		// Load anim name
-		uint bytes = sizeof(char); //*TITLE_MAX_LENGTH;
-	//char name[TITLE_MAX_LENGTH];
-	//memcpy(&outputAnimationData.name, cursor, bytes);
+		uint bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+		char name[DEFAULT_BUF_SIZE];
+		memset(name, 0, sizeof(char) * DEFAULT_BUF_SIZE);
+		memcpy(name, cursor, bytes);
+		outputAnimationData.name.resize(DEFAULT_BUF_SIZE);
+		memcpy((char*)outputAnimationData.name.data(), name, bytes);
+		outputAnimationData.name.shrink_to_fit();
 
-	// Load duration
+		// Load duration
 		cursor += bytes;
 		bytes = sizeof(outputAnimationData.duration);
 		memcpy(&outputAnimationData.duration, cursor, bytes);
@@ -389,14 +399,13 @@ bool ResourceAnimation::LoadFile(const char* file, ResourceAnimationData& output
 
 		outputAnimationData.boneKeys = new BoneTransformation[outputAnimationData.numKeys];
 
-		char buff[4096];
 		for (uint i = 0; i < outputAnimationData.numKeys; ++i)
 		{
 			BoneTransformation* bone = &outputAnimationData.boneKeys[i];
 			uint count = 0;
 
 			// load bone name size
-			cursor += bytes;
+			/*cursor += bytes;
 			bytes = sizeof(count);
 			memcpy(&count, cursor, bytes);
 
@@ -404,7 +413,16 @@ bool ResourceAnimation::LoadFile(const char* file, ResourceAnimationData& output
 			cursor += bytes;
 			bytes = sizeof(char) * count + 1;
 			memcpy(buff, cursor, bytes);
-			bone->bone_name = buff;
+			bone->bone_name = buff;*/
+
+			cursor += bytes;
+			bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+			char name[DEFAULT_BUF_SIZE];
+			memset(name, 0, sizeof(char) * DEFAULT_BUF_SIZE);
+			memcpy(name, cursor, bytes);
+			bone->bone_name.resize(DEFAULT_BUF_SIZE);
+			memcpy((char*)bone->bone_name.data(), name, bytes);
+			bone->bone_name.shrink_to_fit();
 
 			// load num_positions -------------------------------
 			cursor += bytes;

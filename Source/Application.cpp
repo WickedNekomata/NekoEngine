@@ -83,7 +83,6 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(particle);
 	AddModule(physics);
 	AddModule(ui);
-	AddModule(animation);
 	AddModule(audio);
 	AddModule(GOs);
 	AddModule(fs);
@@ -91,6 +90,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(input);
 	AddModule(scene);
 	AddModule(scripting);
+	AddModule(animation);
 	AddModule(navigation);
 
 	// Renderer last!

@@ -428,6 +428,7 @@ void ComponentScript::OnUniqueEditor()
 			{
 				//This field is public and not static.
 				//Show the field, check the type and adapt the gui to it.
+				
 				MonoType* type = mono_field_get_type(field);
 
 				std::string typeName = mono_type_full_name(type);
@@ -952,6 +953,63 @@ void ComponentScript::OnUniqueEditor()
 						ImGui::PopItemWidth();
 					}
 				}
+
+				else if(flags & MONO_TYPE_ENUM)
+				{
+					//A public enum
+				
+					//Get the saved value, as int and as string
+					MonoClass* enumClass = mono_get_enum_class();
+
+					int32_t enumValue;
+					mono_field_get_value(classInstance, field, &enumValue);
+
+					MonoObject* enumOBJ = mono_field_get_value_object(App->scripting->domain, field, classInstance);
+
+					MonoMethodDesc* ToStringDesc = mono_method_desc_new("Enum::ToString", false);
+					MonoMethod* ToStringMethod = mono_method_desc_search_in_class(ToStringDesc, enumClass);
+					mono_method_desc_free(ToStringDesc);
+
+					MonoObject* ret = mono_runtime_invoke(ToStringMethod, enumOBJ, NULL, NULL);
+					MonoString* monoString = mono_object_to_string(ret, NULL);
+					
+					char* string = mono_string_to_utf8(monoString);
+
+					//Create the combo
+					if (ImGui::BeginCombo((fieldName + std::string("##") + std::to_string(UUID)).data(), string))
+					{
+						ImGui::TextColored({ 1,0,0,1 }, "IN PROGRESS");
+
+						////Get the number of values this enum has
+
+						//MonoMethodDesc* GetValuesDesc = mono_method_desc_new("Enum::GetValues", false);
+						//MonoMethod* GetValuesMethod = mono_method_desc_search_in_class(GetValuesDesc, enumClass);
+						//mono_method_desc_free(GetValuesDesc);
+
+						//MonoMethodDesc* GetTypeDesc = mono_method_desc_new("object::GetType", false);
+						//MonoMethod* GetTypeMethod = mono_method_desc_search_in_class(GetTypeDesc, mono_get_object_class());
+						//mono_method_desc_free(GetTypeDesc);
+
+						//MonoObject* enumType = mono_runtime_invoke(GetTypeMethod, enumOBJ, NULL, NULL);
+						//
+						//void* params[1];
+						//params[0] = &enumType;
+
+						//MonoObject* values = mono_runtime_invoke(GetValuesMethod, NULL, params, NULL);
+						//
+						//uint numValues = mono_array_length((MonoArray*)values);						
+						//	
+						//for (int i = 0; i < numValues; ++i)
+						//{
+						//	ImGui::Selectable(std::to_string(i).data());
+						//}
+
+						ImGui::EndCombo();
+					}
+
+
+					mono_free(string);
+				}
 			}
 
 			field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);
@@ -1382,6 +1440,27 @@ void ComponentScript::SavePublicVars(char*& cursor) const
 		uint32_t flags = mono_field_get_flags(field);
 		if (flags & MONO_FIELD_ATTR_PUBLIC && !(flags & MONO_FIELD_ATTR_STATIC))
 		{
+			MonoType* type = mono_field_get_type(field);
+			std::string typeName = mono_type_full_name(type);
+
+			if(	typeName == "bool"							||
+				typeName == "single"						||
+				typeName == "double"						||
+				typeName == "sbyte"							||
+				typeName == "byte"							||
+				typeName == "int16"							||
+				typeName == "uint16"						||
+				typeName == "int"							||
+				typeName == "uint"							||
+				typeName == "long"							||
+				typeName == "ulong"							||
+				typeName == "char"							||
+				typeName == "string"						||
+				typeName == "JellyBitEngine.GameObject"		||
+				typeName == "JellyBitEngine.Transform"		||
+				typeName == "JellyBitEngine.LayerMask")
+
+			//Only count the serializable ones
 			numVars++;
 		}
 		field = mono_class_get_fields(mono_object_get_class(classInstance), (void**)&iterator);

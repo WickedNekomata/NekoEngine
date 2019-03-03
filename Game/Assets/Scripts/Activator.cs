@@ -3,22 +3,26 @@ using JellyBitEngine;
 
 public class Activator : JellyScript
 {
-    public GameObject temp;
-    public int cavaio = 2;
+    public LayerMask LayerMask = new LayerMask();
+    public enum TEST
+    {
+        ONE,
+        TWO,
+        THREE
+    }
+
+    public TEST testEnum = TEST.THREE;
 
     //Use this method for initialization
     public override void Awake()
     {
-
+        testEnum = TEST.ONE;
     }
 
     //Called every frame
     public override void Update()
     {
-        if(Input.GetKeyDown(KeyCode.KEY_1))
-        {
-            temp.active = !temp.active;
-        }
+       
     }
 }
 

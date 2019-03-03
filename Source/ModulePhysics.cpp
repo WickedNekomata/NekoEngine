@@ -466,7 +466,7 @@ void ModulePhysics::DestroyChest()
 			if (gameObject != nullptr)
 			{
 				// 1. Destroy game object (original mesh)
-				gameObject->Destroy();
+				gameObject->GetParent()->Destroy();
 
 				// 2. Instantiate game object (broken mesh)
 				ResourcePrefab* prefab = nullptr;

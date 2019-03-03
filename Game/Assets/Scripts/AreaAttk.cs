@@ -3,12 +3,17 @@ using JellyBitEngine;
 
 public class AreaAttk : JellyScript
 {
+    float dectimer = 0.0f;
+    float TIM = 1.0f;
+    bool decbool = true;
+
     //Alita propeties
     public int life = 50;
     int damage = 20;
 
+    //Animator
     Animator animator = null;
-
+    
     // Raycast
     public LayerMask terrainMask = new LayerMask();
     public LayerMask enemyMask = new LayerMask();
@@ -20,7 +25,11 @@ public class AreaAttk : JellyScript
     private NavMeshAgent agent = null;
 
     //Particles
-    ParticleEmitter smoke = null;
+    public GameObject particleGO;
+    public GameObject decal;
+    public GameObject enemyParticle;
+    private Blood blood = null;
+    ParticleEmitter smoke2 = null;
 
     //Alita states
     private enum Alita_State
@@ -50,19 +59,25 @@ public class AreaAttk : JellyScript
     public override void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
-        smoke = gameObject.GetComponent<ParticleEmitter>();
+        //smoke2 = particleGO.GetComponent<ParticleEmitter>();
         animator = gameObject.GetComponent<Animator>();
     }
 
     //Called every frame
     public override void Update()
     {
+        if (decbool)
+            TimerDecal();
+
 
         if (animator == null)
         {
             animator = gameObject.GetComponent<Animator>();
-            animator.PlayAnimation("Running");
+            animator.PlayAnimation("Idle");
         }
+
+        //if (smoke2 == null)
+        //    smoke2 = particleGO.GetComponent<ParticleEmitter>();
 
         CheckState();
         CheckForMouseClick();
@@ -74,9 +89,6 @@ public class AreaAttk : JellyScript
 
         if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
             CheckForSPAttack(); //Only special attacks when no normal attacking
-
-        if (Input.GetKeyDown(KeyCode.KEY_1))
-            animator.PlayAnimation("Idle");
 
     }
 
@@ -93,7 +105,8 @@ public class AreaAttk : JellyScript
                 break;
             case Alita_State.RUNNING:
 
-                if (placeToGo == transform.position)
+                float dist = (float)(placeToGo - transform.position).magnitude;
+                if (dist <= 0.5)
                 {
                     agent.SetDestination(transform.position);
                     state = Alita_State.IDLE;
@@ -175,8 +188,11 @@ public class AreaAttk : JellyScript
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
+
+                if (state != Alita_State.RUNNING)
+                    animator.PlayAnimation("Running");
+
                 state = Alita_State.RUNNING;
-                animator.PlayAnimation("Running");
 
                 if (agent == null)
                     agent = gameObject.GetComponent<NavMeshAgent>();
@@ -217,10 +233,14 @@ public class AreaAttk : JellyScript
         {
             state = Alita_State.AREA_ATTK;
             isAreaActive = false;
+            decal.active = false;
             areaCircle.active = false;
 
             if (agent == null)
                 agent = gameObject.GetComponent<NavMeshAgent>();
+            decal.active = true;
+            decbool = true;
+
         }
     }
 
@@ -236,13 +256,17 @@ public class AreaAttk : JellyScript
         {
             if (enemy != null && enemy_unit != null)
             {
+                if (enemyParticle.name == "Blood_particle")
+                {
+                    Debug.Log("BLOOOD");
+                    if (blood == null)
+                        blood = enemyParticle.GetComponent<Blood>();
+                    blood.PartEmit();
+                }
+
                 enemy_unit.Hit(damage);
                 Debug.Log("ENEMY HIT");
 
-                //Particles
-                if (smoke == null)
-                    smoke = gameObject.GetComponent<ParticleEmitter>();
-                smoke.Play();
             }
 
             attk_cool_down = 0.0f;
@@ -264,11 +288,21 @@ public class AreaAttk : JellyScript
             }
         }
 
-        if (smoke == null)
-            smoke = gameObject.GetComponent<ParticleEmitter>();
-        smoke.Play();
-
+       // if (smoke2 == null)
+       //     smoke2 = gameObject.GetComponent<ParticleEmitter>();
+       // smoke2.Play();
     }
 
-}
+    private void TimerDecal()
+    {
+        dectimer += Time.deltaTime;
 
+        if(dectimer >= TIM)
+        {
+            decal.active = false;
+            dectimer = 0.0f;
+            decbool = false;
+        }
+
+    }
+}

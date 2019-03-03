@@ -71,16 +71,16 @@ for:
     - cmd: XCOPY /E "%APPVEYOR_BUILD_FOLDER%\JellyBitEngine\Game\*.*" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit /EXCLUDE:gameExcluded.md
     - cmd: move %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - cmd: move "%APPVEYOR_BUILD_FOLDER%\LICENSE" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
+    - cmd: move "%APPVEYOR_BUILD_FOLDER%\Mono.zip" %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     - 7z a Alita_JellyBit.zip %APPVEYOR_BUILD_FOLDER%\Release\Alita_JellyBit
     
   artifacts:  
   - path: "Alita_JellyBit.zip"
-  - path: "Mono.zip"
 
   deploy:
   - provider: GitHub
     release: "Alita_JellyBit-Release-v$(appveyor_build_version)"
-    artifact: "Alita_JellyBit.zip, Mono.zip"
+    artifact: "Alita_JellyBit.zip"
     auth_token:
       secure: mpvv4JtzhxltjCtSxrbMFASqOmfq91aRldyjg+pOeUsbbuVwv6cWGvGuX6TAz9e+
     draft: false

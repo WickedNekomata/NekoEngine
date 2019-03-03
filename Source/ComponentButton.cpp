@@ -303,8 +303,13 @@ void ComponentButton::OnUniqueEditor()
 
 	if (ImGui::InputText("Blind key", &input), ImGuiInputTextFlags_EnterReturnsTrue)
 	{
-		input[1] = '\0';
-		button_blinded = (uint)SDL_GetScancodeFromKey(SDL_GetKeyFromName(input.data()));
+		if (input[0] != '\0')
+		{
+			input[1] = '\0';
+			button_blinded = (uint)SDL_GetScancodeFromKey(SDL_GetKeyFromName(input.data()));
+		}
+		else
+			button_blinded = 0;
 	}
 
 	ImGui::Text(SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)button_blinded)));

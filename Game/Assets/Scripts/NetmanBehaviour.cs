@@ -71,7 +71,7 @@ class NetmanBehaviour : JellyScript
             Vector3 faceDirection = (alita.transform.position - transform.position).normalized();
             double targetDegrees = Math.Atan2(faceDirection.x, faceDirection.z) * Rad2Deg;
 
-            transform.rotation = Quaternion.Rotate(Vector3.up, (float)targetDegrees);
+            transform.rotation = Quaternion.Rotate(Vector3.up, (float)(-90.0f +targetDegrees));
         }
     }
 }

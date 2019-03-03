@@ -4,9 +4,10 @@ using JellyBitEngine;
 
 class BulletMovement : JellyScript
 {
-    public static GameObject direction;
+    public GameObject direction;
     public float speed = 25f;
     public float life = 10f;
+    public bool isInmortal = true;
 
     private float lifeTime = 0f;
     private Vector3 dir = new Vector3(0, 0, 0);
@@ -34,7 +35,8 @@ class BulletMovement : JellyScript
 
         if (Time.time > lifeTime + life)
         {
-            Destroy(gameObject);
+            if (!isInmortal)
+                Destroy(gameObject);
         }
     }
 
@@ -43,7 +45,8 @@ class BulletMovement : JellyScript
         current_life -= damage;
 
         if (current_life <= 0)
-            Destroy(gameObject);
+            if (!isInmortal)
+                Destroy(gameObject);
     }
 
 }

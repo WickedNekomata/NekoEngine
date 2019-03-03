@@ -17,7 +17,10 @@ ComponentMaterial::ComponentMaterial(GameObject* parent) : Component(parent, Com
 
 ComponentMaterial::ComponentMaterial(const ComponentMaterial& componentMaterial, GameObject* parent) : Component(parent, ComponentTypes::MaterialComponent)
 {
-	SetResource(componentMaterial.res);
+	if (App->res->GetResource(componentMaterial.res) != nullptr)
+		SetResource(componentMaterial.res);
+	else
+		SetResource(App->resHandler->defaultMaterial);
 }
 
 ComponentMaterial::~ComponentMaterial() 

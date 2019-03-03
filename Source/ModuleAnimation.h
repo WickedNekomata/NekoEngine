@@ -31,7 +31,7 @@ public:
 		std::vector<GameObject*> animable_gos;
 		std::map<GameObject*, BoneTransformation*> animable_data_map;
 
-		bool loop = false;
+		bool loop = true;
 		bool interpolate = false;
 		float anim_speed = 1.0f;
 
@@ -97,7 +97,7 @@ private:
 	std::vector<ResourceAnimation*> available_animations;
 
 public:
-	AnimationState anim_state = AnimationState::NOT_DEF_STATE;
+	AnimationState anim_state = AnimationState::PLAYING;
 
 };
 

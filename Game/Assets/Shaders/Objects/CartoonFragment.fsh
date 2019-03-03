@@ -15,7 +15,7 @@ struct Material
 struct Light
 {
 	vec3 direction;
-	vec3 intensity;
+	float intensity;
 };
 
 uniform vec3 viewPos;
@@ -30,11 +30,10 @@ vec3 toonShade(vec3 ambient, vec3 diffuse, float scaleFactor)
     vec3 lightDir = normalize(-light.direction);
     vec3 reflectDir = normalize(reflect(normal, -lightDir));
     vec3 viewDir = normalize(fPosition - viewPos);
-       
-    float cosine = max(0.0, dot(reflectDir, normal));
-
-    vec3 diffuseColor = diffuse * floor(cosine * levels) * scaleFactor;
-    
+      
+    float cosine = max(0.0, dot(normal, -lightDir));
+    //float cosine = max(0.0, dot(reflectDir, normal)); 
+    vec3 diffuseColor = diffuse * floor(cosine * levels) * scaleFactor;   
     vec3 toonColor = light.intensity * (ambient + diffuseColor);
     //toonColor = mix(toonColor, vec3(1.0, 1.0, 1.0), spec);
     

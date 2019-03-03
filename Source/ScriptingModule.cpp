@@ -1776,10 +1776,16 @@ bool GetGameObjectActive(MonoObject* monoObject, bool active)
 	return gameObject->IsActive();
 }
 
-bool PlayAnimation(MonoObject* animatorComp, uint animUUID)
+bool PlayAnimation(MonoObject* animatorComp, MonoString* animUUID)
 {
+	char* anim = mono_string_to_utf8(animUUID);
+
 	ComponentAnimation* animator = (ComponentAnimation*)App->scripting->ComponentFrom(animatorComp);
-	return animator->PlayAnimation("JONYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY XD");
+	bool ret = animator->PlayAnimation(anim);
+	
+	mono_free(anim);
+
+	return ret;
 }
 
 void ParticleEmitterPlay(MonoObject* particleComp)

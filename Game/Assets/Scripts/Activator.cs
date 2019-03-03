@@ -19,7 +19,7 @@ public class Activator : JellyScript
     //Use this method for initialization
     public override void Awake()
     {
-       
+
     }
 
     //Called every frame

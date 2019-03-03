@@ -6,6 +6,7 @@ public class OpenWindow : JellyScript
 {
 
     public GameObject window;
+    public GameObject exitBtn;
     //Use this method for initialization
     public override void Awake()
     {
@@ -21,6 +22,8 @@ public class OpenWindow : JellyScript
     public void OnClick()
     {
         window.active = !window.active;
+
+        exitBtn.active = !exitBtn.active;
     }
 }
 

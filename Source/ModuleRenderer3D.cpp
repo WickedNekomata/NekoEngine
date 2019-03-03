@@ -208,7 +208,7 @@ update_status ModuleRenderer3D::PostUpdate()
 	// 1. Level geometry
 	App->scene->Draw();
 
-	App->debugDrawer->DebugDrawLine(-directionalLight.direction, -directionalLight.direction * 100.0f, Yellow);
+	//App->debugDrawer->DebugDrawLine(-directionalLight.direction, -directionalLight.direction * 100.0f, Yellow);
 
 	if (currentCamera != nullptr)
 	{

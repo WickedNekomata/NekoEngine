@@ -41,7 +41,7 @@ bool ModuleAnimation::Awake(JSON_Object* config)
 bool ModuleAnimation::Start()
 {
 	// Call here to attach bones and everytime that we reimport things
-	StartAttachingBones();
+	//StartAttachingBones();
 
 	if (current_anim) {
 		current_anim->interpolate = true;
@@ -65,6 +65,13 @@ update_status ModuleAnimation::Update()
 	if (current_anim == nullptr)
 		return update_status::UPDATE_CONTINUE;
 
+	float dt = 0.0f;
+	dt = App->GetDt();
+#ifdef GAMEMODE
+	dt = App->timeManager->GetDt();
+#endif // GAMEMODE
+
+
 	if (current_anim->anim_timer >= current_anim->duration && current_anim->duration > 0.0f)
 	{
 		if (current_anim->loop)
@@ -76,7 +83,7 @@ update_status ModuleAnimation::Update()
 	switch (anim_state)
 	{
 	case AnimationState::PLAYING:
-		current_anim->anim_timer += App->timeManager->GetDt() * current_anim->anim_speed;
+		current_anim->anim_timer += dt * current_anim->anim_speed;
 		MoveAnimationForward(current_anim->anim_timer, current_anim);
 		break;
 
@@ -90,9 +97,9 @@ update_status ModuleAnimation::Update()
 		break;
 
 	case AnimationState::BLENDING:
-		last_anim->anim_timer += App->timeManager->GetDt() * last_anim->anim_speed;
-		current_anim->anim_timer += App->timeManager->GetDt() * current_anim->anim_speed;
-		blend_timer += App->timeManager->GetDt();
+		last_anim->anim_timer += dt * last_anim->anim_speed;
+		current_anim->anim_timer += dt * current_anim->anim_speed;
+		blend_timer += dt;
 		float blend_percentage = blend_timer / BLEND_TIME;
 		MoveAnimationForward(last_anim->anim_timer, last_anim);
 		MoveAnimationForward(current_anim->anim_timer, current_anim, blend_percentage);
@@ -220,8 +227,9 @@ void ModuleAnimation::OnSystemEvent(System_Event event)
 		//GameObject* go = event.goEvent.gameObject;
 		break;
 	case System_Event_Type::LoadGMScene:
+	case System_Event_Type::LoadFinished:
 	{
-		StartAttachingBones(); SetUpAnimations();
+		App->animation->StartAttachingBones(); App->animation->SetUpAnimations();
 	}
 	break;
 	}

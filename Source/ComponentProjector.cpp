@@ -6,6 +6,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleInternalResHandler.h"
 #include "ModuleLayers.h"
+#include "ModuleScene.h"
 
 #include "Resource.h"
 #include "GameObject.h"
@@ -113,6 +114,14 @@ void ComponentProjector::OnUniqueEditor()
 				SetMaterialRes(payload_n);
 			}
 			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		if (materialRes != App->resHandler->defaultMaterial)
+		{
+			if (ImGui::Button("EDIT"))
+				SELECT(App->res->GetResource(materialRes));
 		}
 
 		if (ImGui::SmallButton("Use default material"))

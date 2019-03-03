@@ -4,6 +4,7 @@
 #include "ModuleResourceManager.h"
 #include "ModuleInternalResHandler.h"
 #include "Resource.h"
+#include "ModuleScene.h"
 
 #include "imgui\imgui.h"
 
@@ -53,6 +54,14 @@ void ComponentMaterial::OnUniqueEditor()
 				SetResource(payload_n);
 			}
 			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::SameLine();
+
+		if (res != App->resHandler->defaultMaterial)
+		{
+			if (ImGui::Button("EDIT"))
+				SELECT(App->res->GetResource(res));
 		}
 
 		if (ImGui::SmallButton("Use default material"))

@@ -273,16 +273,17 @@ void ComponentAudioSource::StopAudio()
 
 uint ComponentAudioSource::GetInternalSerializationBytes()
 {
-	return sizeof(WwiseT::AudioSource*) + (sizeof(char) * DEFAULT_BUF_SIZE) + (sizeof(bool) * 5) + (sizeof(int) * 2) + (sizeof(float) * 6);
+	return /*sizeof(WwiseT::AudioSource*) +*/ (sizeof(char) * DEFAULT_BUF_SIZE) + (sizeof(bool) * 5) + (sizeof(int) * 2) + (sizeof(float) * 6);
 }
 
 void ComponentAudioSource::OnInternalSave(char*& cursor)
 {
-	size_t bytes = sizeof(WwiseT::AudioSource*);
+	/*size_t bytes = sizeof(WwiseT::AudioSource*);
 	memcpy(cursor, &source, bytes);
-	cursor += bytes;
+	cursor += bytes;*/
+	source = App->audio->CreateSoundEmitter("");
 
-	bytes = sizeof(char)*DEFAULT_BUF_SIZE;
+	size_t bytes = sizeof(char)*DEFAULT_BUF_SIZE;
 	memcpy(cursor, &audio_to_play, bytes);
 	cursor += bytes;
 
@@ -342,11 +343,11 @@ void ComponentAudioSource::OnInternalSave(char*& cursor)
 
 void ComponentAudioSource::OnInternalLoad(char*& cursor)
 {
-	size_t bytes = sizeof(WwiseT::AudioSource*);
+	/*size_t bytes = sizeof(WwiseT::AudioSource*);
 	memcpy(&source, cursor, bytes);
-	cursor += bytes;
+	cursor += bytes;*/
 
-	bytes = sizeof(char) * DEFAULT_BUF_SIZE;
+	size_t bytes = sizeof(char) * DEFAULT_BUF_SIZE;
 	memcpy(&audio_to_play, cursor, bytes);
 	cursor += bytes;
 

@@ -7,6 +7,8 @@ public class AreaAttk : JellyScript
     public int life = 50;
     int damage = 20;
 
+    Animator animator = null;
+
     // Raycast
     public LayerMask terrainMask = new LayerMask();
     public LayerMask enemyMask = new LayerMask();
@@ -49,11 +51,19 @@ public class AreaAttk : JellyScript
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
         smoke = gameObject.GetComponent<ParticleEmitter>();
+        animator = gameObject.GetComponent<Animator>();
     }
 
     //Called every frame
     public override void Update()
     {
+
+        if (animator == null)
+        {
+            animator = gameObject.GetComponent<Animator>();
+            animator.PlayAnimation("Running");
+        }
+
         CheckState();
         CheckForMouseClick();
 
@@ -64,6 +74,10 @@ public class AreaAttk : JellyScript
 
         if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
             CheckForSPAttack(); //Only special attacks when no normal attacking
+
+        if (Input.GetKeyDown(KeyCode.KEY_1))
+            animator.PlayAnimation("Idle");
+
     }
 
 
@@ -83,6 +97,7 @@ public class AreaAttk : JellyScript
                 {
                     agent.SetDestination(transform.position);
                     state = Alita_State.IDLE;
+                    animator.PlayAnimation("Idle");
                 }
 
                 break;
@@ -94,6 +109,7 @@ public class AreaAttk : JellyScript
                     Debug.Log("ARRIVE TO ENEMY");
                     agent.SetDestination(transform.position);
                     state = Alita_State.ATTK;
+                    animator.PlayAnimation("Kick");
                 }
 
                 break;
@@ -106,6 +122,7 @@ public class AreaAttk : JellyScript
                     enemy = null;
                     enemy_unit = null;
                     state = Alita_State.IDLE;
+                    animator.PlayAnimation("Idle");
                 }
                 break;
 
@@ -113,6 +130,7 @@ public class AreaAttk : JellyScript
                 agent.SetDestination(transform.position);
                 AreaAttack();
                 state = Alita_State.IDLE;
+                animator.PlayAnimation("Idle");
                 break;
         }
     }
@@ -134,6 +152,7 @@ public class AreaAttk : JellyScript
                 if (enemy != null)
                 {
                     state = Alita_State.GOING_TO_ATTK;
+                    animator.PlayAnimation("Running");
                     //Determine a place a little further than enemy position
                     Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
                     Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
@@ -157,6 +176,7 @@ public class AreaAttk : JellyScript
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 state = Alita_State.RUNNING;
+                animator.PlayAnimation("Running");
 
                 if (agent == null)
                     agent = gameObject.GetComponent<NavMeshAgent>();
@@ -233,7 +253,7 @@ public class AreaAttk : JellyScript
     private void AreaAttack()
     {
         Debug.Log("AREA ATTACK!!!!!");
-        
+
         OverlapHit[] hitInfo;
         if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
@@ -251,3 +271,4 @@ public class AreaAttk : JellyScript
     }
 
 }
+

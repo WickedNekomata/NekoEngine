@@ -263,8 +263,13 @@ math::float3 ComponentEmitter::RandPos(ShapeType shapeType)
 
 	math::float3 global = math::float3::zero;
 	if (parent)
-		global = parent->transform->position;
+	{
+		math::float4x4 trans = parent->transform->GetGlobalMatrix();
+		math::Quat identity = math::Quat::identity;
+		math::float3 zero = math::float3::zero;
 
+		trans.Decompose(global,identity, zero);
+	}
 	return spawn + global;
 }
 

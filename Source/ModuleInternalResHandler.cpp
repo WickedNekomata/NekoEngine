@@ -187,11 +187,6 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 
 }
 
-void ModuleInternalResHandler::CreateCubemapShaderProgram()
-{
-	// CUBEMAP_SHADER_PROGRAM_UUID
-}
-
 void ModuleInternalResHandler::CreateUIShaderProgram()
 {
 	ResourceData vertexData;

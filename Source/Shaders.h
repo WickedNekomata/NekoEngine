@@ -1,3 +1,8 @@
+#ifndef __SHADERS_H__
+#define __SHADERS_H__
+
+#pragma region ShaderDefault
+
 #define vShaderTemplate \
 "#version 330 core\n" \
 "\n" \
@@ -95,7 +100,9 @@
 "	FragColor = albedo;\n" \
 "}"
 
-//PARTICLE SHADER
+#pragma endregion
+
+#pragma region ShaderParticles
 
 #define Particle_vShaderTemplate \
 "#version 330 core\n" \
@@ -209,36 +216,10 @@
 "   vec4 textColor = vec4(phong, albedo.a);\n" \
 "	FragColor = mix(textColor, fColor, averageColor);" \
 "}"
+#pragma endregion
 
-// TODO: move operation to ignore translation at view to renderer and do it on cpu. we wanna do it once
-
-#define cubemapvShader \
-"#version 330 core\n" \
-"layout (location = 0) in vec3 position;\n" \
-"uniform mat4 view_matrix;\n" \
-"uniform mat4 proj_matrix;\n" \
-"out vec3 ourTexCoord;\n" \
-"void main()\n" \
-"{\n" \
-"	 mat3 mat3View = mat3(view_matrix); \n" \
-"	 mat4 noTranslationView = mat4(mat3View); \n" \
-"    ourTexCoord = position * vec3(1.0,-1.0,1.0);\n" \
-"    vec4 pos = proj_matrix * noTranslationView * vec4(position, 1.0f);\n" \
-"	 gl_Position = pos.xyww;\n" \
-"}"
-
-#define cubemapfShader \
-"#version 330 core\n" \
-"out vec4 FragColor\n;" \
-"in vec3 ourTexCoord\n;" \
-"uniform samplerCube skybox\n;" \
-"void main()\n" \
-"{\n" \
-"	FragColor = texture(skybox, ourTexCoord);\n" \
-"}"
-
+#pragma region ShaderUI
 //UI
-
 #define uivShader \
 "#version 330 core\n" \
 "layout(location = 0) in vec2 vertex; // <vec2 position, vec2 texCoords>\n" \
@@ -277,3 +258,7 @@
 "	else\n"\
 "		FragColor = texture(image, TexCoords);\n" \
 "}"
+
+#pragma endregion
+
+#endif

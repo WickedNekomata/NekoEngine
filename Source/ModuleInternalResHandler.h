@@ -25,10 +25,8 @@ public:
 	void CreatePlane();
 	void CreateCube();
 
-
 	// Shader resources
 	void CreateDefaultShaderProgram(const char * vShader, const char * fShader, ShaderProgramTypes type);
-	void CreateCubemapShaderProgram();
 	void CreateUIShaderProgram();
 
 	// Material resources

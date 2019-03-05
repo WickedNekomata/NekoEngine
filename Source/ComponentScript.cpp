@@ -2432,6 +2432,7 @@ void ComponentScript::LoadPublicVars(char*& buffer)
 				}
 				else
 				{
+					prefab->IncreaseReferences();
 					go = prefab->GetRoot();
 				}
 

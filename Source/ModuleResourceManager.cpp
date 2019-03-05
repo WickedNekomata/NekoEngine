@@ -290,6 +290,7 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 	// Prefabs events
 	case System_Event_Type::ScriptingDomainReloaded:
 	case System_Event_Type::Stop:
+	case System_Event_Type::LoadScene:
 	{
 		for (auto res = resources.begin(); res != resources.end(); ++res)
 		{
@@ -299,8 +300,8 @@ void ModuleResourceManager::OnSystemEvent(System_Event event)
 				prefab->UpdateRoot();
 			}
 		}
+		break;
 	}
-	break;
 
 	case System_Event_Type::GenerateLibraryFiles:
 	{

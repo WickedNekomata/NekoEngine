@@ -6,14 +6,22 @@ using System;
 
 class NetmanMeleeBehaviour : JellyScript
 {
+    //Alita dependences
     public GameObject alita;
+    Unit alita_unit = null;
+
+    //Netman Stats
+    int life = 50;
+    int damage = 20;
+
+    //Distance to move and offset
     public float minDistance = 0.5f;
     public float offset = 1.0f;
-    public LayerMask terrainMask = new LayerMask();
-    public LayerMask alitaMask = new LayerMask();
 
-    //Place to go
-    Vector3 placeToGo = new Vector3(0, 0, 0);
+    //Attack variables
+    public float attack_dist = 2.0f;
+    public float attk_period = 1.0f;
+    private float attk_cool_down = 0.0f;
 
     //Agent
     private NavMeshAgent agent = null;
@@ -34,6 +42,7 @@ class NetmanMeleeBehaviour : JellyScript
     public override void Awake()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
+        alita_unit = alita.GetComponent<Unit>();
     }
 
     public override void Update()
@@ -56,19 +65,34 @@ class NetmanMeleeBehaviour : JellyScript
                 float diff = (float)(alita.transform.position - transform.position).magnitude;
                 if (diff <= offset)
                 {
-                    Debug.Log("ARRIVE TO ENEMY");
                     agent.SetDestination(transform.position);
                     state = Enemy_State.ATTK;
                 }
+
+                if (distanceMagnitude < (minDistance * minDistance))
+                    state = Enemy_State.IDLE;
                 break;
+
             case Enemy_State.ATTK:
+                if(alita != null)
+                {
+                    attk_cool_down += Time.deltaTime;
+
+                    //Attack every second
+                    if (attk_cool_down >= attk_period)
+                    {
+                        if(alita_unit == null && alita != null)
+                            alita_unit = alita.GetComponent<Unit>();
+
+                        if (alita_unit != null)
+                            alita_unit.Hit(damage);
+
+                        attk_cool_down = 0.0f;
+                    }
+                }
                 break;
                 
         }
-
-
-
-
 
         if (state != Enemy_State.IDLE)
         {

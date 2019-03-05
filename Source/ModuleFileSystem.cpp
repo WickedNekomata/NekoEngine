@@ -1042,7 +1042,6 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 #else
 		resourceType = App->res->GetLibraryResourceTypeByExtension(extension.data());
 #endif
-
 		switch (resourceType)
 		{
 			case ResourceTypes::ShaderProgramResource:
@@ -1132,11 +1131,11 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 
 	for (int i = 0; i < directory.directories.size(); ++i)
 	{
-		ImportFilesEvents(directory.directories[i], lateEvents);
+		ImportFilesEvents(directory.directories[i], lateEvents, lateLateEvents);
 	}
 	for (int i = 0; i < directory.directories.size(); ++i)
 	{
-		ImportFilesEvents(directory.directories[i], lateLateEvents);
+		ImportFilesEvents(directory.directories[i], lateEvents, lateLateEvents);
 	}
 }
 

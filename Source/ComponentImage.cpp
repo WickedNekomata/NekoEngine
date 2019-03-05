@@ -45,6 +45,22 @@ const float * ComponentImage::GetColor() const
 	return color;
 }
 
+void ComponentImage::SetResImageUuid(uint res_image_uuid)
+{
+	if (this->res_image > 0)
+		App->res->SetAsUnused(this->res_image);
+
+	if (res_image > 0)
+		App->res->SetAsUsed(res_image);
+
+	this->res_image = res_image;
+}
+
+uint ComponentImage::GetResImageUuid() const
+{
+	return res_image;
+}
+
 uint ComponentImage::GetResImage()const
 {
 	ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(res_image);

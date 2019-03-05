@@ -1,5 +1,3 @@
-
-
 #include "SceneImporter.h"
 
 #include "Application.h"

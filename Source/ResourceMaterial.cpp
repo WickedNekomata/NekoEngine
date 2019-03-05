@@ -455,7 +455,7 @@ void ResourceMaterial::SetResourceTexture(uint textureUuid, uint& textureUuidUni
 
 	textureUuidUniform = textureUuid;
 	ResourceTexture* texture = (ResourceTexture*)App->res->GetResource(textureUuid);
-	textureIdUniform = texture == nullptr ? 0 : texture->GetId();
+	textureIdUniform = texture->GetId();
 }
 
 std::vector<Uniform>& ResourceMaterial::GetUniforms()

@@ -725,6 +725,11 @@ void ComponentEmitter::SetMaterialRes(uint materialUuid)
 	materialRes = materialUuid;
 }
 
+uint ComponentEmitter::GetMaterialRes() const
+{
+	return materialRes;
+}
+
 #ifndef GAMEMODE
 ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 {

@@ -167,8 +167,8 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "Default shader program";
 	shaderData.internal = true;
-	programShaderData.shaderObjects.push_back(vObj);
-	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderObjectsUuids.push_back(vObj->GetUuid());
+	programShaderData.shaderObjectsUuids.push_back(fObj->GetUuid());
 	programShaderData.shaderProgramType = type;
 	ResourceShaderProgram* prog = nullptr;
 	if(type == ShaderProgramTypes::Standard)
@@ -218,8 +218,8 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "UI shader program";
 	shaderData.internal = true;
-	programShaderData.shaderObjects.push_back(vObj);
-	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderObjectsUuids.push_back(vObj->GetUuid());
+	programShaderData.shaderObjectsUuids.push_back(fObj->GetUuid());
 	programShaderData.shaderProgramType = ShaderProgramTypes::UI;
 	ResourceShaderProgram* pShader = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UI_UUID);
 	if (pShader->Link())

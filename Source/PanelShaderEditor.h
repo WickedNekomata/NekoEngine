@@ -1,15 +1,12 @@
 #ifndef __PANEL_SHADER_EDITOR_H__
 #define __PANEL_SHADER_EDITOR_H__
 
-#include "Panel.h"
-
 #ifndef GAMEMODE
 
-#include <list>
+#include "Panel.h"
 #include "Globals.h"
 
-class ResourceShaderObject;
-class ResourceShaderProgram;
+#include <vector>
 
 class PanelShaderEditor : public Panel
 {
@@ -21,13 +18,11 @@ public:
 	bool Draw();
 	
 	void OpenShaderInShaderEditor(uint shaderProgramUuid);
-	uint GetShaderProgramUuid() const;
 
 private:
 
-	bool GetShaderObjects(std::list<ResourceShaderObject*>& shaderObjects) const;
-
 	bool TryLink() const;
+	uint GetShaderObjects(std::vector<uint>& shaderObjectsUuids) const;
 
 private:
 
@@ -37,8 +32,8 @@ public:
 
 	char shaderProgramName[INPUT_BUF_SIZE];
 
-	std::list<uint> vertexShadersUuids;
-	std::list<uint> fragmentShadersUuids;
+	std::vector<uint> vertexShadersUuids;
+	std::vector<uint> fragmentShadersUuids;
 };
 
 #endif

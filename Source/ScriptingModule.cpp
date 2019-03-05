@@ -35,8 +35,7 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Brofiler/Brofiler.h"
 
-
-#define NAVMESHAGENT_ASCII 1299603790
+#include "parson/parson.h"
 
 bool exec(const char* cmd, std::string& error)
 {
@@ -97,6 +96,7 @@ bool ScriptingModule::Init(JSON_Object* data)
 
 bool ScriptingModule::Start()
 {
+	InitPlayerPrefs();
 
 #ifndef GAMEMODE
 	CreateScriptingProject();
@@ -927,6 +927,25 @@ void ScriptingModule::ExecuteCallbacks(GameObject* gameObject)
 	for (int i = 0; i < gameObject->children.size(); ++i)
 	{
 		ExecuteCallbacks(gameObject->children[i]);
+	}
+}
+
+void ScriptingModule::InitPlayerPrefs()
+{
+	if (App->fs->Exists("PrefDir/playerPrefs.jb"))
+	{
+		char* buffer;
+		uint size = App->fs->Load("PrefDir/playerPrefs.jb", &buffer);
+		if (size > 0)
+		{
+			playerPrefs = json_parse_string(buffer);
+			playerPrefsOBJ = json_value_get_object(playerPrefs);
+		}
+	}
+	else
+	{
+		playerPrefs = json_value_init_object();
+		playerPrefsOBJ = json_value_get_object(playerPrefs);
 	}
 }
 
@@ -1897,6 +1916,102 @@ int ButtonGetState(MonoObject* buttonComp)
 	}
 }
 
+void PlayerPrefsSave()
+{
+	uint size = json_serialization_size(App->scripting->playerPrefs);
+	char* buffer = new char[size];
+	JSON_Status status = json_serialize_to_buffer(App->scripting->playerPrefs, buffer, size);
+
+	std::string writeDir = App->fs->GetWritePath();
+
+	bool success = App->fs->SetWriteDir(App->fs->GetPrefDir());
+	App->fs->Save("playerPrefs.jb", buffer, size);
+	App->fs->SetWriteDir(writeDir);
+}
+
+void PlayerPrefsSetNumber(MonoString* key, double value)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	json_object_set_number(App->scripting->playerPrefsOBJ, keyCpp, value);
+	mono_free(keyCpp);
+}
+
+double PlayerPrefsGetNumber(MonoString* key)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	double value = json_object_get_number(App->scripting->playerPrefsOBJ, keyCpp);
+	mono_free(keyCpp);
+
+	return value;
+}
+
+void PlayerPrefsSetString(MonoString* key, MonoString* string)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	char* stringCpp = mono_string_to_utf8(string);
+
+	json_object_set_string(App->scripting->playerPrefsOBJ, keyCpp, stringCpp);
+
+	mono_free(keyCpp);
+	mono_free(stringCpp);
+}
+
+MonoString* PlayerPrefsGetString(MonoString* key)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	char* stringCpp = (char*)json_object_get_string(App->scripting->playerPrefsOBJ, keyCpp);
+	
+	if (!stringCpp)
+		return nullptr;
+
+	MonoString* string = mono_string_new(App->scripting->domain, stringCpp);
+	
+	mono_free(keyCpp);
+
+	return string;
+}
+
+void PlayerPrefsSetBoolean(MonoString* key, bool boolean)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	json_object_set_boolean(App->scripting->playerPrefsOBJ, keyCpp, boolean);
+	mono_free(keyCpp);
+}
+
+bool PlayerPrefsGetBoolean(MonoString* key)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+	bool ret = json_object_get_boolean(App->scripting->playerPrefsOBJ, keyCpp);
+	mono_free(keyCpp);
+
+	return ret;
+}
+
+bool PlayerPrefsHasKey(MonoString* key)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+
+	bool ret = json_object_has_value(App->scripting->playerPrefsOBJ, keyCpp);
+
+	mono_free(keyCpp);
+
+	return ret;
+}
+
+void PlayerPrefsDeleteKey(MonoString* key)
+{
+	char* keyCpp = mono_string_to_utf8(key);
+
+	json_object_remove(App->scripting->playerPrefsOBJ, keyCpp);
+
+	mono_free(keyCpp);
+}
+
+void PlayerPrefsDeleteAll()
+{
+	json_object_clear(App->scripting->playerPrefsOBJ);
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -1982,6 +2097,16 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.UI.Button::GetState", (const void*)&ButtonGetState);
 	mono_add_internal_call("JellyBitEngine.GameObject::GetActive", (const void*)&GetGameObjectActive);
 	mono_add_internal_call("JellyBitEngine.GameObject::SetActive", (const void*)&SetGameObjectActive);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::Save", (const void*)&PlayerPrefsSave);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::GetNumber", (const void*)&PlayerPrefsGetNumber);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::SetNumber", (const void*)&PlayerPrefsSetNumber);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::GetString", (const void*)&PlayerPrefsGetString);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::SetString", (const void*)&PlayerPrefsSetString);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::GetBoolean", (const void*)&PlayerPrefsGetBoolean);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::SetBoolean", (const void*)&PlayerPrefsSetBoolean);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::HasKey", (const void*)&PlayerPrefsHasKey);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteKey", (const void*)&PlayerPrefsDeleteKey);
+	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteAll", (const void*)&PlayerPrefsDeleteAll);
 
 	ClearMap();
 

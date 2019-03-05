@@ -273,6 +273,7 @@ public:
 	~ModuleFileSystem();
 
 	update_status PreUpdate() override;
+	bool Init(JSON_Object* data);
 	bool Start();
 	bool CleanUp();
 
@@ -283,6 +284,7 @@ public:
 	bool DeleteFileOrDir(const char* path) const;
 
 	const char* GetBasePath() const;
+	const char* GetPrefDir() const;
 	const char* GetReadPaths() const;
 	const char* GetWritePath() const;
 	const char** GetFilesFromDir(const char* dir) const;
@@ -320,6 +322,8 @@ public:
 
 	void BeginTempException(std::string directory);
 	void EndTempException();
+
+	bool SetWriteDir(std::string writeDir) const;
 
 public:
 	Directory rootAssets;

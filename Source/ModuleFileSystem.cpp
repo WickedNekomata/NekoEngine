@@ -88,6 +88,12 @@ update_status ModuleFileSystem::PreUpdate()
 	return update_status::UPDATE_CONTINUE;
 }
 
+bool ModuleFileSystem::Init(JSON_Object * data)
+{
+	AddPath(GetPrefDir(), "PrefDir");
+	return true;
+}
+
 bool ModuleFileSystem::Start()
 {
 #ifndef GAMEMODE
@@ -272,6 +278,11 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 const char* ModuleFileSystem::GetBasePath() const
 {
 	return PHYSFS_getBaseDir();
+}
+
+const char* ModuleFileSystem::GetPrefDir() const
+{
+	return PHYSFS_getPrefDir(App->GetOrganizationName(), App->GetAppName());
 }
 
 const char* ModuleFileSystem::GetReadPaths() const
@@ -1165,4 +1176,9 @@ void ModuleFileSystem::EndTempException()
 
 	PHYSFS_unmount(tempException.data());
 	tempException.clear();
+}
+
+bool ModuleFileSystem::SetWriteDir(std::string writeDir) const
+{
+	return PHYSFS_setWriteDir(writeDir.data()) != 0;
 }

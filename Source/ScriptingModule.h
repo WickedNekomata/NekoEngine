@@ -23,6 +23,17 @@ class ScriptingModule : public Module
 	friend MonoObject* InstantiateGameObject(MonoObject* templateMO, MonoArray* position, MonoArray* rotation);
 	friend MonoObject* GetComponentByType(MonoObject* monoObject, MonoObject* type);
 
+	friend void PlayerPrefsSave();
+	friend void PlayerPrefsSetNumber(MonoString* key, double value);
+	friend double PlayerPrefsGetNumber(MonoString* key);
+	friend void PlayerPrefsSetString(MonoString* key, MonoString* string);
+	friend MonoString* PlayerPrefsGetString(MonoString* key);
+	friend void PlayerPrefsSetBoolean(MonoString* key, bool boolean);
+	friend bool PlayerPrefsGetBoolean(MonoString* key);
+	friend bool PlayerPrefsHasKey(MonoString* key);
+	friend void PlayerPrefsDeleteKey(MonoString* key);
+	friend void PlayerPrefsDeleteAll();
+
 public:
 	ScriptingModule(bool start_enabled = true) : Module(start_enabled) { name = "ScriptingModule"; }
 	~ScriptingModule() {}
@@ -77,6 +88,7 @@ public:
 private:
 	void UpdateMethods();
 	void ExecuteCallbacks(GameObject* gameObject);
+	void InitPlayerPrefs();
 
 public:
 	_MonoDomain*			domain				= nullptr;
@@ -94,6 +106,10 @@ private:
 	bool someScriptModified = false;
 	bool engineOpened = true;
 	std::vector<ComponentScript*> scripts;
+
+	JSON_Value* playerPrefs = nullptr;
+	JSON_Object* playerPrefsOBJ = nullptr;
+	std::string playerPrefsPath;
 };
 
 #endif

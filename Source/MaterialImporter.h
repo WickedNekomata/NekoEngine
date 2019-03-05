@@ -42,15 +42,6 @@ public:
 
 	uint GetDevILVersion() const;
 
-	// ----------------------------------------------------------------------------------------------------
-
-	// *****TODO*****
-	//void LoadSkyboxTexture();
-	uint LoadCubemapTexture(std::vector<uint>& faces);
-	uint GetSkyboxTexture() const;
-	std::vector<uint> GetSkyboxTextures() const;
-	//_*****TODO*****
-
 private:
 
 	bool Import(const void* buffer, uint size, std::string& outputFile, const ResourceTextureImportSettings& importSettings, uint forcedUuid = 0) const;
@@ -61,11 +52,6 @@ private:
 
 	bool isAnisotropySupported = false;
 	float largestSupportedAnisotropy = 0.0f;
-
-	// *****TODO*****
-	uint skyboxTexture = 0;
-	std::vector<uint> skyboxTextures;
-	//_*****TODO*****
 };
 
 #endif

@@ -5,21 +5,12 @@
 #include "ModuleFileSystem.h"
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
-// TODO ERASE THIS
-#include "ModuleInternalResHandler.h"
-#include "Shaders.h"
+
 #include <assert.h>
 
 ShaderImporter::ShaderImporter() {}
 
-ShaderImporter::~ShaderImporter()
-{
-	ResourceShaderProgram::DeleteShaderProgram(defaultShaderProgram);
-	ResourceShaderProgram::DeleteShaderProgram(cubemapShaderProgram);
-
-	ResourceShaderObject::DeleteShaderObject(defaultVertexShaderObject);
-	ResourceShaderObject::DeleteShaderObject(defaultFragmentShaderObject);
-}
+ShaderImporter::~ShaderImporter() {}
 
 bool ShaderImporter::SaveShaderObject(ResourceData& data, ResourceShaderObjectData& outputShaderObjectData, std::string& outputFile, bool overwrite) const
 {
@@ -214,84 +205,4 @@ void ShaderImporter::SetBinaryFormats(int formats)
 int ShaderImporter::GetBinaryFormats() const
 {
 	return formats;
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-void ShaderImporter::LoadDefaultShader()
-{
-	defaultVertexShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::VertexType);
-	defaultFragmentShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::FragmentType);
-	defaultShaderProgram = LoadShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
-}
-
-uint ShaderImporter::LoadDefaultShaderObject(ShaderObjectTypes shaderType) const
-{
-	const char* source = nullptr;
-
-	switch (shaderType)
-	{
-	case ShaderObjectTypes::VertexType:
-		source = vShaderTemplate;
-		break;
-	case ShaderObjectTypes::FragmentType:
-		source = fShaderTemplate;
-		break;
-	}
-
-	return ResourceShaderObject::Compile(source, shaderType);
-}
-
-#include "glew/include/GL/glew.h"
-
-uint ShaderImporter::LoadShaderProgram(uint vertexShaderObject, uint fragmentShaderObject) const
-{
-	// Create a Shader Program
-	GLuint shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShaderObject);
-	glAttachShader(shaderProgram, fragmentShaderObject);
-
-	// Link the Shader Program
-	glLinkProgram(shaderProgram);
-
-	glAttachShader(shaderProgram, vertexShaderObject);
-	glDetachShader(shaderProgram, fragmentShaderObject);
-
-	GLint success = 0;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		GLint logSize = 0;
-		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &logSize);
-
-		GLchar* infoLog = new GLchar[logSize];
-		glGetProgramInfoLog(shaderProgram, logSize, NULL, infoLog);
-
-		CONSOLE_LOG(LogTypes::Error, "Shader Program could not be linked. ERROR: %s", infoLog);
-	}
-	else
-		CONSOLE_LOG(LogTypes::Normal, "Successfully linked Shader Program");
-
-	return shaderProgram;
-}
-
-uint ShaderImporter::GetDefaultVertexShaderObject() const
-{
-	return defaultVertexShaderObject;
-}
-
-uint ShaderImporter::GetDefaultFragmentShaderObject() const
-{
-	return defaultFragmentShaderObject;
-}
-
-uint ShaderImporter::GetDefaultShaderProgram() const
-{
-	return defaultShaderProgram;
-}
-
-uint ShaderImporter::GetCubemapShaderProgram() const
-{
-	return cubemapShaderProgram;
 }

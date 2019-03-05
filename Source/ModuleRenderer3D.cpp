@@ -155,22 +155,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		App->shaderImporter->SetBinaryFormats(formats);
 	}
 
-	App->shaderImporter->LoadDefaultShader();
-
-<<<<<<< HEAD
-	App->materialImporter->LoadCheckers();
-	App->materialImporter->LoadDefaultTexture();
-=======
-	//App->materialImporter->LoadSkyboxTexture();
-
-	skyboxTextures = App->materialImporter->GetSkyboxTextures();
-	skyboxTexture = App->materialImporter->GetSkyboxTexture();
-	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
->>>>>>> Material
-
-	// Load primitives
-	App->sceneImporter->LoadPrimitivePlane();
-
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;

@@ -39,17 +39,9 @@ MaterialImporter::MaterialImporter()
 		ilutInit();
 		ilutRenderer(ILUT_OPENGL); // Tell DevIL that we're using OpenGL for our rendering
 	}
-
-	skyboxTextures.reserve(6);
 }
 
-MaterialImporter::~MaterialImporter() 
-{
-	glDeleteTextures(1, (GLuint*)&skyboxTexture);
-
-	for (uint i = 0; i < skyboxTextures.size(); ++i)
-		glDeleteTextures(1, (GLuint*)&skyboxTextures[i]);
-}
+MaterialImporter::~MaterialImporter() {}
 
 bool MaterialImporter::Import(const char* file, std::string& outputFile, const ResourceTextureImportSettings& importSettings, uint forcedUuid) const
 {
@@ -374,92 +366,4 @@ uint MaterialImporter::GetDevILVersion() const
 	return ilGetInteger(IL_VERSION_NUM);
 	// == iluGetInteger(ILU_VERSION_NUM)
 	// == ilutGetInteger(ILUT_VERSION_NUM)
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-/*
-void MaterialImporter::LoadSkyboxTexture()
-{
-	skyboxTextures.clear();
-
-	std::string outputFile;
-	ResourceTexture* sky = new ResourceTexture(ResourceTypes::TextureResource, App->GenerateRandomNumber());
-	TextureImportSettings* importSettings = new TextureImportSettings();
-
-	/// Right
-	App->materialImporter->Load("Settings/Skybox/right.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-	/// Left
-	App->materialImporter->Load("Settings/Skybox/left.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-	/// Bottom
-	App->materialImporter->Load("Settings/Skybox/bottom.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-	/// Top
-	App->materialImporter->Load("Settings/Skybox/top.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-	/// Front
-	App->materialImporter->Load("Settings/Skybox/front.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-	/// Back
-	App->materialImporter->Load("Settings/Skybox/back.nekoDDS", sky, importSettings);
-	skyboxTextures.push_back(sky->id);
-
-	RELEASE(importSettings);
-	RELEASE(sky);
-
-	skyboxTexture = LoadCubemapTexture(skyboxTextures);
-}
-*/
-
-uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
-{
-	uint result = 0;
-
-	glGenTextures(1, &result);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, result);
-
-	for (uint i = 0; i < 6; i++)
-	{
-		if (faces[i] == 0)
-			continue;
-
-		glBindTexture(GL_TEXTURE_2D, faces[i]);
-		int w, h;
-		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-		GLubyte* pixels = new GLubyte[w*h * 3];
-
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP, result);
-
-		glTexImage2D(
-			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-			0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels
-		);
-
-		delete[] pixels;
-	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	return result;
-}
-
-uint MaterialImporter::GetSkyboxTexture() const
-{
-	return skyboxTexture;
-}
-
-std::vector<uint> MaterialImporter::GetSkyboxTextures() const
-{
-	return skyboxTextures;
 }

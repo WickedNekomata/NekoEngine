@@ -33,20 +33,6 @@ public:
 	void SetBinaryFormats(int formats);
 	int GetBinaryFormats() const;
 
-	// ----------------------------------------------------------------------------------------------------
-
-	// *****TODO*****
-	void LoadDefaultShader();
-	void LoadCubemapShader();
-	uint LoadDefaultShaderObject(ShaderObjectTypes shaderType) const;
-	uint LoadShaderProgram(uint vertexShaderObject, uint fragmentShaderObject) const;
-
-	uint GetDefaultVertexShaderObject() const;
-	uint GetDefaultFragmentShaderObject() const;
-	uint GetDefaultShaderProgram() const;
-	uint GetCubemapShaderProgram() const;
-	//_*****TODO*****
-
 private:
 
 	bool SaveShaderObject(const void* buffer, uint size, ShaderObjectTypes shaderType, std::string& outputFile, bool overwrite = false) const;
@@ -58,14 +44,6 @@ private:
 private:
 
 	int formats = 0;
-
-	// *****TODO*****
-	uint defaultVertexShaderObject = 0;
-	uint defaultFragmentShaderObject = 0;
-	uint defaultShaderProgram = 0;
-
-	uint cubemapShaderProgram = 0;
-	//_*****TODO*****
 };
 
 #endif

@@ -432,7 +432,6 @@
     <ClInclude Include="PanelSimulatedTime.h" />
     <ClInclude Include="PanelPhysics.h" />
     <ClInclude Include="PanelShaderEditor.h" />
-    <ClInclude Include="PanelSkybox.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="physx\include\characterkinematic\PxBoxController.h" />
     <ClInclude Include="physx\include\characterkinematic\PxCapsuleController.h" />
@@ -806,7 +805,6 @@
     <ClCompile Include="PanelSimulatedTime.cpp" />
     <ClCompile Include="PanelPhysics.cpp" />
     <ClCompile Include="PanelShaderEditor.cpp" />
-    <ClCompile Include="PanelSkybox.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="pugui\pugixml.cpp" />
     <ClCompile Include="Raycaster.cpp" />

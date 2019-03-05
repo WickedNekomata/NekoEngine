@@ -23,6 +23,7 @@ public:
 
 	void Draw();
 	void DrawParticles();
+	void DebugDraw() const;
 	void SortParticles();
 	bool GetParticle(int& id);
 	void ClearEmitters();

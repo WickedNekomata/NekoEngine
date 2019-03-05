@@ -17,7 +17,6 @@
 #include "MaterialImporter.h"
 #include "SceneImporter.h"
 #include "Quadtree.h"
-#include "PanelSkybox.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -122,11 +121,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 			ret = false;
 		}
 
-		directionalLight.direction = math::float3(-0.4f, -1.0f, -0.5f);
-		directionalLight.ambient = math::float3(0.25f, 0.25f, 0.25f);
-		directionalLight.diffuse = math::float3(0.5f, 0.5f, 0.5f);
-		directionalLight.specular = math::float3(1.0f, 1.0f, 1.0f);
-
 		// GL capabilities
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -162,15 +156,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	}
 
 	App->shaderImporter->LoadDefaultShader();
-	App->shaderImporter->LoadCubemapShader();
 
 	App->materialImporter->LoadCheckers();
 	App->materialImporter->LoadDefaultTexture();
-	//App->materialImporter->LoadSkyboxTexture();
-
-	skyboxTextures = App->materialImporter->GetSkyboxTextures();
-	skyboxTexture = App->materialImporter->GetSkyboxTexture();
-	App->sceneImporter->LoadCubemap(skyboxVBO, skyboxVAO);
 
 	// Load primitives
 	App->sceneImporter->LoadPrimitivePlane();
@@ -206,12 +194,8 @@ update_status ModuleRenderer3D::PostUpdate()
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
 #endif
-	DrawSkybox();
 
-	// 1. Level geometry
 	App->scene->Draw();
-
-	//App->debugDrawer->DebugDrawLine(-directionalLight.direction, -directionalLight.direction * 100.0f, Yellow);
 
 	if (currentCamera != nullptr)
 	{
@@ -229,8 +213,6 @@ update_status ModuleRenderer3D::PostUpdate()
 
 		if (currentCamera->HasFrustumCulling())
 			FrustumCulling();
-
-		//std::sort(meshComponents.begin(), meshComponents.end(), ComponentMeshComparator());
 
 		for (uint i = 0; i < projectorComponents.size(); ++i)
 		{
@@ -251,14 +233,13 @@ update_status ModuleRenderer3D::PostUpdate()
 	App->particle->Draw();
 	//glDepthMask(GL_TRUE);
 
-
 #ifndef GAMEMODE
-
-	App->navigation->Draw();
 
 	// 2. Debug geometry
 	if (debugDraw)
 	{
+		App->navigation->Draw();
+
 		App->debugDrawer->StartDebugDraw();
 
 		if (drawBoundingBoxes) // boundingBoxesColor = Yellow
@@ -280,147 +261,17 @@ update_status ModuleRenderer3D::PostUpdate()
 				App->debugDrawer->DebugDraw(projectorComponents[i]->GetFrustum(), frustumsColor);
 		}
 
-		if (drawColliders) // boundingBoxesColor = Green
-		{
-			Color collidersColor = Green;
+		if (drawColliders)
+			App->physics->DrawColliders();
 
-			std::vector<ComponentCollider*> colliderComponents = App->physics->GetColliderComponents();
-			for (uint i = 0; i < colliderComponents.size(); ++i)
-			{
-				if (colliderComponents[i]->GetParent()->cmp_rigidActor == nullptr)
-					continue;
-
-				physx::PxShape* gShape = colliderComponents[i]->GetShape();
-				if (gShape == nullptr)
-					continue;
-
-				physx::PxTransform actorGlobalPose = gShape->getActor()->getGlobalPose();
-				physx::PxTransform shapeLocalPose = gShape->getLocalPose();
-				physx::PxTransform globalPose = actorGlobalPose * shapeLocalPose;
-
-				math::float4x4 globalMatrix(math::Quat(globalPose.q.x, globalPose.q.y, globalPose.q.z, globalPose.q.w),
-					math::float3(globalPose.p.x, globalPose.p.y, globalPose.p.z));
-
-				switch (gShape->getGeometryType())
-				{
-				case physx::PxGeometryType::Enum::eSPHERE:
-				{
-					physx::PxSphereGeometry gSphereGeometry;
-					gShape->getSphereGeometry(gSphereGeometry);
-
-					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, collidersColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eCAPSULE:
-				{
-					physx::PxCapsuleGeometry gCapsuleGeometry;
-					gShape->getCapsuleGeometry(gCapsuleGeometry);
-
-					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, collidersColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eBOX:
-				{
-					physx::PxBoxGeometry gBoxGeometry;
-					gShape->getBoxGeometry(gBoxGeometry);
-
-					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), collidersColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 10.0f, 10.0f), collidersColor, globalMatrix);
-					break;
-				}
-			}
-		}
-
-		if (drawRigidActors) // rigidActorsColor = Orange (static actors), Red and DarkRed (dynamic actors)
-		{
-			Color rigidActorsColor = Red;
-
-			std::vector<ComponentRigidActor*> rigidActorComponents = App->physics->GetRigidActorComponents();
-			for (uint i = 0; i < rigidActorComponents.size(); ++i)
-			{
-				physx::PxRigidActor* gActor = rigidActorComponents[i]->GetActor();
-
-				physx::PxShape* gShape = nullptr;
-				gActor->getShapes(&gShape, 1);
-				if (gShape == nullptr)
-					continue;
-
-				if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidStaticComponent)
-					rigidActorsColor = Orange;
-				else if (rigidActorComponents[i]->GetType() == ComponentTypes::RigidDynamicComponent
-					&& !((ComponentRigidDynamic*)rigidActorComponents[i])->IsSleeping())
-					rigidActorsColor = DarkRed;
-				else
-					rigidActorsColor = Red;
-
-				physx::PxTransform transform = gActor->getGlobalPose();
-				math::float4x4 globalMatrix(math::Quat(transform.q.x, transform.q.y, transform.q.z, transform.q.w),
-					math::float3(transform.p.x, transform.p.y, transform.p.z));
-
-				switch (gShape->getGeometryType())
-				{
-				case physx::PxGeometryType::Enum::eSPHERE:
-				{
-					physx::PxSphereGeometry gSphereGeometry;
-					gShape->getSphereGeometry(gSphereGeometry);
-
-					App->debugDrawer->DebugDrawSphere(gSphereGeometry.radius, rigidActorsColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eCAPSULE:
-				{
-					physx::PxCapsuleGeometry gCapsuleGeometry;
-					gShape->getCapsuleGeometry(gCapsuleGeometry);
-
-					App->debugDrawer->DebugDrawCapsule(gCapsuleGeometry.radius, gCapsuleGeometry.halfHeight, rigidActorsColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::eBOX:
-				{
-					physx::PxBoxGeometry gBoxGeometry;
-					gShape->getBoxGeometry(gBoxGeometry);
-
-					App->debugDrawer->DebugDrawBox(math::float3(gBoxGeometry.halfExtents.x, gBoxGeometry.halfExtents.y, gBoxGeometry.halfExtents.z), rigidActorsColor, globalMatrix);
-				}
-				break;
-				case physx::PxGeometryType::Enum::ePLANE:
-					App->debugDrawer->DebugDrawBox(math::float3(0.0f, 100.0f, 100.0f), rigidActorsColor, globalMatrix);
-					break;
-				}
-			}
-		}
+		if (drawRigidActors)
+			App->physics->DrawRigidActors();
 
 		if (drawQuadtree) // quadtreeColor = Blue, DarkBlue
 			RecursiveDrawQuadtree(App->scene->quadtree.root);
 
-		for (std::list<ComponentEmitter*>::iterator emitter = App->particle->emitters.begin(); emitter != App->particle->emitters.end(); ++emitter)
-		{
-			if ((*emitter)->drawShape)
-			{
-				math::float4x4 globalMat = (*emitter)->GetParent()->transform->GetGlobalMatrix();;
-				switch ((*emitter)->normalShapeType)
-				{
-				case ShapeType_BOX:
-					App->debugDrawer->DebugDraw((*emitter)->boxCreation, White, globalMat);
-					break;
-				case ShapeType_SPHERE:
-				case ShapeType_SPHERE_BORDER:
-				case ShapeType_SPHERE_CENTER:
-					App->debugDrawer->DebugDrawSphere((*emitter)->sphereCreation.r, White, globalMat);
-					break;
-				case ShapeType_CONE:
-					App->debugDrawer->DebugDrawCone((*emitter)->circleCreation.r, (*emitter)->coneHeight, White, globalMat);
-					break;
-				default:
-					break;
-				}
-			}
-			if((*emitter)->drawAABB)
-				App->debugDrawer->DebugDraw((*emitter)->GetParent()->boundingBox, White);
-		}
+		App->particle->DebugDraw();
+
 		App->debugDrawer->EndDebugDraw();
 	}
 
@@ -435,7 +286,6 @@ update_status ModuleRenderer3D::PostUpdate()
 		App->ui->DrawCanvas();
 #endif // GAME
 
-
 	// 4. Swap buffers
 	SDL_GL_MakeCurrent(App->window->window, context);
 	SDL_GL_SwapWindow(App->window->window);
@@ -446,12 +296,6 @@ update_status ModuleRenderer3D::PostUpdate()
 bool ModuleRenderer3D::CleanUp()
 {
 	bool ret = true;
-
-	ClearSkybox();
-
-	glDeleteVertexArrays(1, &skyboxVAO);
-	glDeleteBuffers(1, &skyboxVBO);
-	glDeleteTextures(1, &skyboxTexture);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	uint x, y;
@@ -594,66 +438,6 @@ bool ModuleRenderer3D::IsWireframeMode() const
 		ret = true;
 
 	return ret;
-}
-
-void ModuleRenderer3D::SetDebugDraw(bool debugDraw)
-{
-	this->debugDraw = debugDraw;
-}
-
-bool ModuleRenderer3D::GetDebugDraw() const 
-{
-	return debugDraw;
-}
-
-void ModuleRenderer3D::SetDrawBoundingBoxes(bool drawBoundingBoxes)
-{
-	this->drawBoundingBoxes = drawBoundingBoxes;
-}
-
-bool ModuleRenderer3D::GetDrawBoundingBoxes() const
-{
-	return drawBoundingBoxes;
-}
-
-void ModuleRenderer3D::SetDrawFrustums(bool drawFrustums)
-{
-	this->drawFrustums = drawFrustums;
-}
-
-bool ModuleRenderer3D::GetDrawFrustums() const
-{
-	return drawFrustums;
-}
-
-void ModuleRenderer3D::SetDrawColliders(bool drawColliders)
-{
-	this->drawColliders = drawColliders;
-}
-
-bool ModuleRenderer3D::GetDrawColliders() const
-{
-	return drawColliders;
-}
-
-void ModuleRenderer3D::SetDrawRigidActors(bool drawRigidActors)
-{
-	this->drawRigidActors = drawRigidActors;
-}
-
-bool ModuleRenderer3D::GetDrawRigidActors() const
-{
-	return drawRigidActors;
-}
-
-void ModuleRenderer3D::SetDrawQuadtree(bool drawQuadtree)
-{
-	this->drawQuadtree = drawQuadtree;
-}
-
-bool ModuleRenderer3D::GetDrawQuadtree() const
-{
-	return drawQuadtree;
 }
 
 bool ModuleRenderer3D::AddMeshComponent(ComponentMesh* toAdd)
@@ -845,30 +629,6 @@ void ModuleRenderer3D::FrustumCulling() const
 
 	for (uint i = 0; i < seen.size(); ++i)
 		seen[i]->seenLastFrame = true;
-}
-
-void ModuleRenderer3D::DrawSkybox()
-{
-	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-
-	uint shaderProgram = App->shaderImporter->GetCubemapShaderProgram();
-	glUseProgram(shaderProgram);
-
-	//math::float4x4 view = glm::mat4(glm::mat3(App->camera->camera->GetOpenGLViewMatrix())); // remove translation from the view matrix
-	uint location = glGetUniformLocation(shaderProgram, "view_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLViewMatrix().ptr());
-	location = glGetUniformLocation(shaderProgram, "proj_matrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, currentCamera->GetOpenGLProjectionMatrix().ptr());
-	
-	glBindVertexArray(skyboxVAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
@@ -1087,18 +847,6 @@ void ModuleRenderer3D::RecursiveDrawQuadtree(QuadtreeNode* node) const
 	}
 }
 
-void ModuleRenderer3D::ClearSkybox()
-{
-	for (uint i = 0; i < skyboxTextures.size(); ++i) 
-	{
-		ResourceTexture* res = (ResourceTexture*)App->res->GetResource(skyboxTextures[i]);
-		if (res != nullptr)
-			App->res->SetAsUnused(res->GetUuid());
-	}
-
-	skyboxTextures.clear();
-}
-
 void ModuleRenderer3D::LoadSpecificUniforms(uint& textureUnit, const std::vector<Uniform>& uniforms, const std::vector<const char*>& ignore) const
 {
 	for (uint i = 0; i < uniforms.size(); ++i)
@@ -1154,18 +902,8 @@ void ModuleRenderer3D::LoadSpecificUniforms(uint& textureUnit, const std::vector
 
 void ModuleRenderer3D::LoadGenericUniforms(uint shaderProgram) const
 {
-	uint location = glGetUniformLocation(shaderProgram, "light.direction");
-	glUniform3fv(location, 1, directionalLight.direction.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.ambient");
-	glUniform3fv(location, 1, directionalLight.ambient.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.diffuse");
-	glUniform3fv(location, 1, directionalLight.diffuse.ptr());
-	location = glGetUniformLocation(shaderProgram, "light.specular");
-	glUniform3fv(location, 1, directionalLight.specular.ptr());
-
-	location = glGetUniformLocation(shaderProgram, "viewPos");
+	uint location = glGetUniformLocation(shaderProgram, "viewPos");
 	glUniform3fv(location, 1, currentCamera->frustum.pos.ptr());
-	location = glGetUniformLocation(shaderProgram, "Time");
 	switch (App->GetEngineState())
 	{
 		// Game

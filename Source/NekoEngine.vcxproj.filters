@@ -789,9 +789,6 @@
     <ClInclude Include="PanelShaderEditor.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="PanelSkybox.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h">
       <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
     </ClInclude>
@@ -2109,9 +2106,6 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="PanelShaderEditor.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp">

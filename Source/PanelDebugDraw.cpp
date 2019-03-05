@@ -34,35 +34,20 @@ bool PanelDebugDraw::Draw()
 
 		ImGui::SameLine();
 
-		bool debugDraw = App->renderer3D->GetDebugDraw();
-		if (ImGui::Checkbox("Debug Draw", &debugDraw)) { App->renderer3D->SetDebugDraw(debugDraw); }
+		ImGui::Checkbox("Debug Draw", &App->renderer3D->debugDraw);
 
-		if (debugDraw)
+		if (App->renderer3D->debugDraw)
 		{
 			ImGui::SameLine();
-
-			bool drawBoundingBoxes = App->renderer3D->GetDrawBoundingBoxes();
-			if (ImGui::Checkbox("Bounding Boxes", &drawBoundingBoxes)) { App->renderer3D->SetDrawBoundingBoxes(drawBoundingBoxes); }
-
+			ImGui::Checkbox("Bounding Boxes", &App->renderer3D->drawBoundingBoxes);
 			ImGui::SameLine();
-
-			bool drawFrustums = App->renderer3D->GetDrawFrustums();
-			if (ImGui::Checkbox("Frustums", &drawFrustums)) { App->renderer3D->SetDrawFrustums(drawFrustums); }
-
+			ImGui::Checkbox("Frustums", &App->renderer3D->drawFrustums);
 			ImGui::SameLine();
-
-			bool drawColliders = App->renderer3D->GetDrawColliders();
-			if (ImGui::Checkbox("Colliders", &drawColliders)) { App->renderer3D->SetDrawColliders(drawColliders); }
-
+			ImGui::Checkbox("Colliders", &App->renderer3D->drawColliders);
 			ImGui::SameLine();
-
-			bool drawRigidActors = App->renderer3D->GetDrawRigidActors();
-			if (ImGui::Checkbox("Rigid Actors", &drawRigidActors)) { App->renderer3D->SetDrawRigidActors(drawRigidActors); }
-
+			ImGui::Checkbox("Rigid Actors", &App->renderer3D->drawRigidActors);
 			ImGui::SameLine();
-
-			bool drawQuadtree = App->renderer3D->GetDrawQuadtree();
-			if (ImGui::Checkbox("Quadtree", &drawQuadtree)) { App->renderer3D->SetDrawQuadtree(drawQuadtree); }
+			ImGui::Checkbox("Quadtree", &App->renderer3D->drawQuadtree);
 		}
 	}
 	ImGui::End();

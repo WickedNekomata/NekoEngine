@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleScene.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleFBOManager.h"
 #include "ModuleCameraEditor.h"
 #include "ModuleGui.h"
 #include "ModuleFileSystem.h"
@@ -38,6 +39,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	input = new ModuleInput();
 	scene = new ModuleScene();
 	renderer3D = new ModuleRenderer3D();
+	fbo = new ModuleFBOManager();
 	fs = new ModuleFileSystem();
 	GOs = new ModuleGOs();
 	timeManager = new ModuleTimeManager();
@@ -92,6 +94,7 @@ Application::Application() : fpsTrack(FPS_TRACK_SIZE), msTrack(MS_TRACK_SIZE)
 	AddModule(scripting);
 	AddModule(animation);
 	AddModule(navigation);
+	AddModule(fbo);
 
 	// Renderer last!
 	AddModule(renderer3D);

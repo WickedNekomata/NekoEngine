@@ -789,9 +789,6 @@
     <ClInclude Include="PanelShaderEditor.h">
       <Filter>Sources\Modules\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="PanelSkybox.h">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClInclude>
     <ClInclude Include="Recast&amp;Detour\DebugUtils\Include\DebugDraw.h">
       <Filter>Sources\3rd Party\Recast&amp;Detour\DebugUtils</Filter>
     </ClInclude>
@@ -1851,6 +1848,12 @@
     <ClInclude Include="AK\AkWwiseSDKVersion.h">
       <Filter>Sources\3rd Party\Wwise\AK</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleFBOManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2109,9 +2112,6 @@
       <Filter>Sources\Modules\Resources\Types</Filter>
     </ClCompile>
     <ClCompile Include="PanelShaderEditor.cpp">
-      <Filter>Sources\Modules\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelSkybox.cpp">
       <Filter>Sources\Modules\Panels</Filter>
     </ClCompile>
     <ClCompile Include="Recast&amp;Detour\DebugUtils\Source\DebugDraw.cpp">
@@ -2395,6 +2395,9 @@
     </ClCompile>
     <ClCompile Include="AK\Win32\stdafx.cpp">
       <Filter>Sources\3rd Party\Wwise\AK\WIN32</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFBOManager.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -57,7 +57,6 @@ public:
 	class PanelEdit*			panelEdit = nullptr;
 	class PanelCodeEditor*		panelCodeEditor = nullptr;
 	class PanelShaderEditor*	panelShaderEditor = nullptr;
-	class PanelSkybox*			panelSkybox = nullptr;
 	class PanelNavigation*		panelNavigation = nullptr;
 	class PanelSimulatedTime*	panelSimulatedTime = nullptr;
 	class PanelLayers*			panelLayers = nullptr;

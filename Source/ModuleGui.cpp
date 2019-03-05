@@ -25,7 +25,6 @@
 #include "PanelEdit.h"
 #include "PanelCodeEditor.h"
 #include "PanelShaderEditor.h"
-#include "PanelSkybox.h"
 #include "PanelNavigation.h"
 #include "PanelSimulatedTime.h"
 #include "PanelPhysics.h"
@@ -58,7 +57,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panelDebugDraw = new PanelDebugDraw("Debug Draw");
 	panelCodeEditor = new PanelCodeEditor("Code Editor");
 	panelShaderEditor = new PanelShaderEditor("Shader Editor");
-	panelSkybox = new PanelSkybox("Skybox");
 	panelNavigation = new PanelNavigation("Navigation");
 	panelSimulatedTime = new PanelSimulatedTime("Simulated Time");
 	panelPhysics = new PanelPhysics("Physics");
@@ -74,7 +72,6 @@ bool ModuleGui::Init(JSON_Object* jObject)
 	panels.push_back(panelDebugDraw);
 	panels.push_back(panelCodeEditor);
 	panels.push_back(panelShaderEditor);
-	panels.push_back(panelSkybox);
 	panels.push_back(panelNavigation);
 	panels.push_back(panelSimulatedTime);
 	panels.push_back(panelPhysics);
@@ -173,7 +170,6 @@ update_status ModuleGui::Update()
 		if (ImGui::BeginMenu("Edit"))
 		{
 			if (ImGui::MenuItem("Edit", "ALT+E")) { panelEdit->OnOff(); }
-			if (ImGui::MenuItem("Skybox")) { panelSkybox->OnOff(); }
 			if (ImGui::MenuItem("Shader Editor")) { panelShaderEditor->OnOff(); }
 			if (ImGui::MenuItem("Physics")) { panelPhysics->OnOff(); }
 
@@ -261,7 +257,6 @@ bool ModuleGui::CleanUp()
 	panelEdit = nullptr;
 	panelCodeEditor = nullptr;
 	panelShaderEditor = nullptr;
-	panelSkybox = nullptr;
 	panelSimulatedTime = nullptr;
 	panelPhysics = nullptr;
 	panelLayers = nullptr;

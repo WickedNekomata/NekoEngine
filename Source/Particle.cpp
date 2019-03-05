@@ -229,15 +229,6 @@ void Particle::Draw()
 		location = glGetUniformLocation(shaderProgram, "isAnimated");
 		glUniform1i(location, isParticleAnimated);
 
-		location = glGetUniformLocation(shaderProgram, "light.direction");
-		glUniform3fv(location, 1, App->renderer3D->directionalLight.direction.ptr());
-		location = glGetUniformLocation(shaderProgram, "light.ambient");
-		glUniform3fv(location, 1, App->renderer3D->directionalLight.ambient.ptr());
-		location = glGetUniformLocation(shaderProgram, "light.diffuse");
-		glUniform3fv(location, 1, App->renderer3D->directionalLight.diffuse.ptr());
-		location = glGetUniformLocation(shaderProgram, "light.specular");
-		glUniform3fv(location, 1, App->renderer3D->directionalLight.specular.ptr());
-
 		// Unknown uniforms
 		uint textureUnit = 0;
 		std::vector<Uniform> uniforms = resourceMaterial->GetUniforms();

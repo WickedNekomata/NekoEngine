@@ -1,8 +1,6 @@
 #ifndef __MODULE_RENDERER_3D_H__
 #define __MODULE_RENDERER_3D_H__
 
-
-
 #include "Module.h"
 #include "Globals.h"
 
@@ -23,15 +21,6 @@ class GameObject;
 class ComponentProjector;
 class QuadtreeNode;
 union Uniform;
-
-struct DirectionalLight
-{
-	math::float3 direction;
-
-	math::float3 ambient;
-	math::float3 diffuse;
-	math::float3 specular;
-};
 
 class ModuleRenderer3D : public Module
 {
@@ -64,24 +53,6 @@ public:
 	void SetWireframeMode(bool enable) const;
 	bool IsWireframeMode() const;
 
-	void SetDebugDraw(bool debugDraw);
-	bool GetDebugDraw() const;
-
-	void SetDrawBoundingBoxes(bool drawBoundingBoxes);
-	bool GetDrawBoundingBoxes() const;
-
-	void SetDrawFrustums(bool drawFrustums);
-	bool GetDrawFrustums() const;
-
-	void SetDrawColliders(bool drawColliders);
-	bool GetDrawColliders() const;
-
-	void SetDrawRigidActors(bool drawRigidActors);
-	bool GetDrawRigidActors() const;
-
-	void SetDrawQuadtree(bool drawQuadtree);
-	bool GetDrawQuadtree() const;
-
 	bool AddMeshComponent(ComponentMesh* toAdd);
 	bool EraseMeshComponent(ComponentMesh* toErase);
 
@@ -100,13 +71,10 @@ public:
 	void SetMeshComponentsSeenLastFrame(bool seenLastFrame);
 	void FrustumCulling() const;
 
-	void DrawSkybox();
 	void DrawMesh(ComponentMesh* toDraw) const;
 	void DrawProjectors(ComponentProjector* toDraw) const;
 
 	void RecursiveDrawQuadtree(QuadtreeNode* node) const;
-
-	void ClearSkybox();
 
 	void LoadSpecificUniforms(uint& textureUnit, const std::vector<Uniform>& uniforms, const std::vector<const char*>& ignore = std::vector<const char*>()) const;
 	void LoadGenericUniforms(uint shaderProgram) const;
@@ -125,13 +93,6 @@ private:
 
 public:
 
-	// Skybox
-	GLuint skyboxTexture = 0;
-	std::vector<GLuint> skyboxTextures;
-	GLuint skyboxVBO = 0;
-	GLuint skyboxVAO = 0;
-
-	DirectionalLight directionalLight;
 	SDL_GLContext context;
 	math::float3x3 NormalMatrix;
 	math::float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
@@ -144,26 +105,6 @@ public:
 	bool drawColliders = true;
 	bool drawRigidActors = true;
 	bool drawQuadtree = false;
-};
-
-struct ComponentMeshComparator
-{
-	bool operator()(const ComponentMesh* a, const ComponentMesh* b) const
-	{
-		math::float4x4 globalMatrix = math::float4x4::identity;
-		math::float3 pos = math::float3::zero;
-		math::Quat rot = math::Quat::identity;
-		math::float3 scale = math::float3::one;
-
-		globalMatrix = a->GetParent()->transform->GetGlobalMatrix();
-		globalMatrix.Decompose(pos, rot, scale);
-		float distanceToCamA = math::Abs(App->renderer3D->GetCurrentCamera()->frustum.pos - pos).Length();
-		globalMatrix = b->GetParent()->transform->GetGlobalMatrix();
-		globalMatrix.Decompose(pos, rot, scale);
-		float distanceToCamB = math::Abs(App->renderer3D->GetCurrentCamera()->frustum.pos - pos).Length();
-
-		return distanceToCamA < distanceToCamB;
-	}
 };
 
 #endif

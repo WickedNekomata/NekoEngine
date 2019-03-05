@@ -22,6 +22,8 @@
 #include "ResourceShaderProgram.h"
 #include "ResourcePrefab.h"
 
+#include "Shaders.h"
+
 PanelAssets::PanelAssets(const char* name) : Panel(name) {}
 
 PanelAssets::~PanelAssets() {}

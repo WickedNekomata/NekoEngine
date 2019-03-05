@@ -7,7 +7,7 @@
 #include "ResourceShaderProgram.h"
 // TODO ERASE THIS
 #include "ModuleInternalResHandler.h"
-
+#include "Shaders.h"
 #include <assert.h>
 
 ShaderImporter::ShaderImporter() {}
@@ -223,15 +223,6 @@ void ShaderImporter::LoadDefaultShader()
 	defaultVertexShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::VertexType);
 	defaultFragmentShaderObject = LoadDefaultShaderObject(ShaderObjectTypes::FragmentType);
 	defaultShaderProgram = LoadShaderProgram(defaultVertexShaderObject, defaultFragmentShaderObject);
-}
-
-void ShaderImporter::LoadCubemapShader()
-{
-	uint cubemapVertexShaderObject = ResourceShaderObject::Compile(cubemapvShader, ShaderObjectTypes::VertexType);
-	uint cubemapFragmentShaderObject = ResourceShaderObject::Compile(cubemapfShader, ShaderObjectTypes::FragmentType);
-	cubemapShaderProgram = LoadShaderProgram(cubemapVertexShaderObject, cubemapFragmentShaderObject);
-	ResourceShaderObject::DeleteShaderObject(cubemapVertexShaderObject);
-	ResourceShaderObject::DeleteShaderObject(cubemapFragmentShaderObject);
 }
 
 uint ShaderImporter::LoadDefaultShaderObject(ShaderObjectTypes shaderType) const

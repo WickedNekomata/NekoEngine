@@ -10,6 +10,8 @@
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 
+#include "Shaders.h"
+
 bool ModuleInternalResHandler::Start()
 {
 	CreatePlane();
@@ -183,11 +185,6 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	else if (type == ShaderProgramTypes::Particles)
 		defaultParticleShaderProgram = prog->GetUuid();
 
-}
-
-void ModuleInternalResHandler::CreateCubemapShaderProgram()
-{
-	// CUBEMAP_SHADER_PROGRAM_UUID
 }
 
 void ModuleInternalResHandler::CreateUIShaderProgram()

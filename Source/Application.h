@@ -1,8 +1,6 @@
 #ifndef __APPLICATION_H_
 #define __APPLICATION_H_
 
-
-
 #include <list>
 #include <vector>
 #include <queue>
@@ -13,8 +11,8 @@
 #include "PerfTimer.h"
 
 #include "PCG\pcg_variants.h"
-
 #include "MathGeoLib/include/Algorithm/Random/LCG.h"
+
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -28,35 +26,6 @@ enum engine_states
 	// Editor
 	ENGINE_EDITOR,
 };
-
-struct Module;
-struct ModuleResourceManager;
-struct ModuleInternalResHandler;
-struct MaterialImporter;
-struct SceneImporter;
-struct AnimationImporter;
-struct BoneImporter;
-struct ShaderImporter;
-struct ModuleCameraEditor;
-struct ModuleGui;
-struct Raycaster;
-struct ModuleWindow;
-struct ModuleInput;
-struct ModuleScene;
-struct ModuleRenderer3D;
-struct ModuleFileSystem;
-struct ModuleAnimation;
-struct ModuleGOs;
-struct ModuleTimeManager;
-struct ModuleParticle;
-struct DebugDrawer;
-struct ModuleNavigation;
-struct ScriptingModule;
-struct ModuleEvents;
-struct ModulePhysics;
-struct ModuleUI;
-struct ModuleLayers;
-struct ModuleAudio;
 
 class Application
 {
@@ -107,7 +76,7 @@ public:
 
 private:
 
-	void AddModule(Module* mod);
+	void AddModule(class Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
 
@@ -118,40 +87,40 @@ private:
 
 public:
 
-	ModuleResourceManager*	  res;
-	ModuleInternalResHandler* resHandler;
-	MaterialImporter*		  materialImporter;
-	SceneImporter*			  sceneImporter;
-	ShaderImporter*			  shaderImporter;
-	mutable BoneImporter*	  boneImporter;
-	mutable AnimationImporter*animImporter;
-	ModuleParticle*			  particle;
+	class ModuleResourceManager*		res;
+	class ModuleInternalResHandler*		resHandler;
+	class MaterialImporter*				materialImporter;
+	class SceneImporter*				sceneImporter;
+	class ShaderImporter*				shaderImporter;
+	mutable class BoneImporter*		boneImporter;
+	mutable class AnimationImporter*	animImporter;
+	class ModuleParticle*				particle;
 
 #ifndef GAMEMODE
-	ModuleCameraEditor*		  camera;
-	ModuleGui*				  gui;
-
-	Raycaster*				  raycaster;
+	class ModuleCameraEditor*			camera;
+	class ModuleGui*					gui;
+	class Raycaster*					raycaster;
 #endif // GAME
 
-	ModuleWindow*			  window;
-	ModuleInput*			  input;
-	ModuleScene*			  scene;
-	ModuleRenderer3D*		  renderer3D;
-	ModuleFileSystem*		  fs;
-	ModuleGOs*				  GOs;
-	ModuleTimeManager*		  timeManager;
-	ScriptingModule*		  scripting;
-	ModuleEvents*			  events;
-	ModulePhysics*			  physics;
-  ModuleUI*				ui;
-	ModuleAnimation*		  animation;
-	ModuleAudio*              audio;
-	DebugDrawer*			  debugDrawer;
-	ModuleNavigation*		  navigation;
-	ModuleLayers*			  layers;
+	class ModuleWindow*					window;
+	class ModuleInput*					input;
+	class ModuleScene*					scene;
+	class ModuleRenderer3D*				renderer3D;
+	class ModuleFBOManager*				fbo;
+	class ModuleFileSystem*				fs;
+	class ModuleGOs*					GOs;
+	class ModuleTimeManager*			timeManager;
+	class ScriptingModule*				scripting;
+	class ModuleEvents*					events;
+	class ModulePhysics*				physics;
+    class ModuleUI*						ui;
+	class ModuleAnimation*				animation;
+	class ModuleAudio*					audio;
+	class DebugDrawer*					debugDrawer;
+	class ModuleNavigation*				navigation;
+	class ModuleLayers*					layers;
 
-	pcg32_random_t			  rng;
+	pcg32_random_t						rng;
 
 	bool firstFrame = true;
 	math::LCG randomMathLCG; //Cant be private with const Get
@@ -168,7 +137,7 @@ private:
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 
-	std::list<Module*>	list_modules;
+	std::list<class Module*>	list_modules;
 	std::queue<System_Event> systemEvents;
 
 	const char*			appName = nullptr;

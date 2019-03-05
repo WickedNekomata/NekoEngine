@@ -65,6 +65,8 @@ public:
 	void OnSystemEvent(System_Event event);
 
 	void Debug();
+	void DrawColliders() const;
+	void DrawRigidActors() const;
 	void DestroyChest();
 
 	// ----------------------------------------------------------------------------------------------------

@@ -115,7 +115,7 @@ update_status ScriptingModule::Update()
 {
 #ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
-#endif // !GAMEMODE
+#endif
 	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
 	{
 		UpdateMethods();

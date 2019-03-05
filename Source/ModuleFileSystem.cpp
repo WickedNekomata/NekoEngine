@@ -119,7 +119,7 @@ bool ModuleFileSystem::Start()
 #endif
 	
 
-#ifdef GAMEMODE
+#ifndef GAMEMODE
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;
 	App->PushSystemEvent(event);

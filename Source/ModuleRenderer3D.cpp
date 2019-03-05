@@ -164,8 +164,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 	App->shaderImporter->LoadDefaultShader();
 	App->shaderImporter->LoadCubemapShader();
 
-	App->materialImporter->LoadCheckers();
-	App->materialImporter->LoadDefaultTexture();
 	//App->materialImporter->LoadSkyboxTexture();
 
 	skyboxTextures = App->materialImporter->GetSkyboxTextures();

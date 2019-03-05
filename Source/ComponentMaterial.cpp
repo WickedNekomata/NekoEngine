@@ -92,7 +92,12 @@ void ComponentMaterial::OnInternalLoad(char*& cursor)
 	size_t bytes = sizeof(uint);
 	uint resource = 0;
 	memcpy(&resource, cursor, bytes);
-	SetResource(resource);
+
+	if (App->res->GetResource(resource) != nullptr)
+		SetResource(resource);
+	else
+		SetResource(App->resHandler->defaultMaterial);
+
 	cursor += bytes;
 }
 

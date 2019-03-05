@@ -89,7 +89,10 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, Gam
 	if(include)
 		App->particle->emitters.push_back(this);
 
-	SetMaterialRes(componentEmitter.materialRes);
+	if (App->res->GetResource(componentEmitter.materialRes) != nullptr)
+		SetMaterialRes(componentEmitter.materialRes);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 
@@ -962,8 +965,13 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 
 	uint newMaterial = 0;
 	memcpy(&newMaterial, cursor, bytes);
+
+	if (App->res->GetResource(newMaterial) != nullptr)
+		SetMaterialRes(newMaterial);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
+
 	cursor += bytes;
-	SetMaterialRes(newMaterial);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(&particleAnim, cursor, bytes);

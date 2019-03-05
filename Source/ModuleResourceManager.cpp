@@ -491,6 +491,7 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 				data.exportedFile = outputFile.data();
 				App->fs->GetFileName(file, data.name);
 				textureData.textureImportSettings = textureImportSettings;
+				App->materialImporter->Load(outputFile.data(), data, textureData);
 
 				resource = CreateResource(ResourceTypes::TextureResource, data, &textureData, uuid);
 			}

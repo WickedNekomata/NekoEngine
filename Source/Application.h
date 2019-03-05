@@ -78,7 +78,7 @@ public:
 
 private:
 
-	void AddModule(Module* mod);
+	void AddModule(class Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
 
@@ -139,7 +139,7 @@ private:
 	std::vector<float>	fpsTrack;
 	std::vector<float>	msTrack;
 
-	std::list<Module*>	list_modules;
+	std::list<class Module*>	list_modules;
 	std::queue<System_Event> systemEvents;
 
 	const char*			appName = nullptr;

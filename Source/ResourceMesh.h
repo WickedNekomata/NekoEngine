@@ -97,6 +97,7 @@ public:
 	void GetIndices(uint* indices) const;
 	uint GetVerticesCount() const;
 	uint GetIndicesCount() const;
+	bool UseAdjacency() const;
 
 	static void CalculateAdjacentIndices(uint* indices, uint indicesSize, uint* adjacentIndices);
 

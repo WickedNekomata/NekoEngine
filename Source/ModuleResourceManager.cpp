@@ -1245,6 +1245,10 @@ void ModuleResourceManager::RecursiveDeleteUnusedEntries(const char* dir, std::s
 				continue;
 			ResourceTypes type = GetResourceTypeByExtension(extension.data());
 
+			//TODO: INSPECT WHY THIS ERROR HAPPENS
+			if (type == ResourceTypes::NoResourceType)
+				continue;
+
 			uint resourceUuid = 0;
 			if (!GetResourceUuidByExportedFile(path.data(), resourceUuid))
 				App->fs->DeleteFileOrDir(path.data());

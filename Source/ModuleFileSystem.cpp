@@ -264,7 +264,7 @@ bool ModuleFileSystem::DeleteFileOrDir(const char* path) const
 	if (PHYSFS_delete(path) != 0)
 		ret = true;
 	else
-		DEPRECATED_LOG("FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
+		CONSOLE_LOG(LogTypes::Error, "FILE SYSTEM: Error while deleting a file or directory '%s': %s", path, PHYSFS_getLastError());
 
 	return ret;
 }

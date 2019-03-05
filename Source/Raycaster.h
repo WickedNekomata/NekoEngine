@@ -1,8 +1,6 @@
 #ifndef __RAYCASTER_H__
 #define __RAYCASTER_H__
 
-
-
 #ifndef GAMEMODE
 
 #include "MathGeoLib\include\Math\float3.h"

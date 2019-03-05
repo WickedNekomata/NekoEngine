@@ -1848,6 +1848,9 @@
     <ClInclude Include="AK\AkWwiseSDKVersion.h">
       <Filter>Sources\3rd Party\Wwise\AK</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleFBOManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -2389,6 +2392,9 @@
     </ClCompile>
     <ClCompile Include="AK\Win32\stdafx.cpp">
       <Filter>Sources\3rd Party\Wwise\AK\WIN32</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFBOManager.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

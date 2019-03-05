@@ -228,14 +228,10 @@ update_status ModuleRenderer3D::PostUpdate()
 		}
 	}
 
-	//Draw All particles
-	//glDepthMask(GL_FALSE);
 	App->particle->Draw();
-	//glDepthMask(GL_TRUE);
 
 #ifndef GAMEMODE
 
-	// 2. Debug geometry
 	if (debugDraw)
 	{
 		App->navigation->Draw();

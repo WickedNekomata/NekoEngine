@@ -81,7 +81,7 @@ bool ShaderImporter::SaveShaderProgram(ResourceData& data, ResourceShaderProgram
 		outputFile = data.name;
 
 	uchar* buffer;
-	uint link = ResourceShaderProgram::Link(outputShaderProgramData.shaderObjects);
+	uint link = ResourceShaderProgram::Link(outputShaderProgramData.shaderObjectsUuids);
 	if (link > 0)
 	{
 		uint size = ResourceShaderProgram::GetBinary(link, &buffer, outputShaderProgramData.format);

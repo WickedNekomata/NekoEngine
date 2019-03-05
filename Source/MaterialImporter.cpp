@@ -45,8 +45,6 @@ MaterialImporter::MaterialImporter()
 
 MaterialImporter::~MaterialImporter() 
 {
-	glDeleteTextures(1, (GLuint*)&checkers);
-	glDeleteTextures(1, (GLuint*)&defaultTexture);
 	glDeleteTextures(1, (GLuint*)&skyboxTexture);
 
 	for (uint i = 0; i < skyboxTextures.size(); ++i)
@@ -129,6 +127,8 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 			// Save to the buffer
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
+
+
 				uint uuid = forcedUuid == 0 ? App->GenerateRandomNumber() : forcedUuid;
 				outputFile = std::to_string(uuid);
 				if (App->fs->SaveInGame((char*)data, size, FileTypes::TextureFile, outputFile) > 0)
@@ -151,7 +151,7 @@ bool MaterialImporter::Import(const void* buffer, uint size, std::string& output
 	return ret;
 }
 
-bool MaterialImporter::Load(const char* exportedFile, ResourceTextureData& outputTextureData, uint& textureId) const
+bool MaterialImporter::Load(const char* exportedFile, ResourceData& outputData, ResourceTextureData& outputTextureData) const
 {
 	assert(exportedFile != nullptr);
 
@@ -162,7 +162,7 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTextureData& outpu
 	if (size > 0)
 	{
 		CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: Successfully loaded Texture '%s' (own format)", exportedFile);
-		ret = Load(buffer, size, outputTextureData, textureId);
+		ret = Load(buffer, size, outputData, outputTextureData);
 		RELEASE_ARRAY(buffer);
 	}
 	else
@@ -171,7 +171,7 @@ bool MaterialImporter::Load(const char* exportedFile, ResourceTextureData& outpu
 	return ret;
 }
 
-bool MaterialImporter::Load(const void* buffer, uint size, ResourceTextureData& outputTextureData, uint& textureId) const
+bool MaterialImporter::Load(const void* buffer, uint size, ResourceData& outputData, ResourceTextureData& outputTextureData) const
 {
 	assert(buffer != nullptr && size > 0);
 
@@ -196,125 +196,16 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTextureData& 
 		// Convert the image into a suitable format to work with
 		if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			uint size = imageInfo.Width * imageInfo.Height * ilGetInteger(IL_IMAGE_BPP);
+			outputTextureData.data = new uchar[size];
+			memcpy(outputTextureData.data, ilGetData(), size);
 
-			// Generate the texture name
-			uint texName = 0;
-			glGenTextures(1, &texName);
-
-			// Bind the texture
-			glBindTexture(GL_TEXTURE_2D, texName);
-
-			// http://openil.sourceforge.net/tuts/tut_8/index.htm
-
-			// Set texture wrap mode
-			int wrap = 0;
-			switch (outputTextureData.textureImportSettings.wrapS)
-			{
-			case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
-				wrap = GL_REPEAT;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
-				wrap = GL_MIRRORED_REPEAT;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
-				wrap = GL_CLAMP_TO_EDGE;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
-				wrap = GL_CLAMP_TO_BORDER;
-				break;
-			}
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-
-			switch (outputTextureData.textureImportSettings.wrapT)
-			{
-			case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
-				wrap = GL_REPEAT;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
-				wrap = GL_MIRRORED_REPEAT;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
-				wrap = GL_CLAMP_TO_EDGE;
-				break;
-			case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
-				wrap = GL_CLAMP_TO_BORDER;
-				break;
-			}
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-
-			// Set texture filter mode (Mipmap for the highest visual quality)
-			int filter = 0;
-			bool mipmap = false;
-
-			switch (outputTextureData.textureImportSettings.minFilter)
-			{
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
-				filter = GL_NEAREST;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
-				filter = GL_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
-				filter = GL_NEAREST_MIPMAP_NEAREST;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
-				filter = GL_LINEAR_MIPMAP_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
-				filter = GL_NEAREST_MIPMAP_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
-				filter = GL_LINEAR_MIPMAP_LINEAR;
-				break;
-			}
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-
-			switch (outputTextureData.textureImportSettings.magFilter)
-			{
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
-				filter = GL_NEAREST;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
-				filter = GL_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
-				filter = GL_NEAREST_MIPMAP_NEAREST;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
-				filter = GL_LINEAR_MIPMAP_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
-				filter = GL_NEAREST_MIPMAP_LINEAR;
-				break;
-			case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
-				filter = GL_LINEAR_MIPMAP_LINEAR;
-				break;
-			}
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-
-			// Anisotropic filtering
-			if (isAnisotropySupported)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, outputTextureData.textureImportSettings.anisotropy);
-
-			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT),
-				0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
-
-			if (outputTextureData.textureImportSettings.UseMipmap())
-				glGenerateMipmap(GL_TEXTURE_2D);
-
-			textureId = texName;
-			outputTextureData.width= imageInfo.Width;
+			outputTextureData.width = imageInfo.Width;
 			outputTextureData.height = imageInfo.Height;
+			outputTextureData.bpp = ilGetInteger(IL_IMAGE_BPP);
 
-			CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: New texture loaded with: %i ID, %i x %i", texName, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+			CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: New texture loaded with: %i x %i", imageInfo.Width, imageInfo.Height);
 			ret = true;
-
-			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
 			CONSOLE_LOG(LogTypes::Error, "MATERIAL IMPORTER: Image conversion failed. ERROR: %s", iluErrorString(ilGetError()));
@@ -328,6 +219,126 @@ bool MaterialImporter::Load(const void* buffer, uint size, ResourceTextureData& 
 }
 
 // ----------------------------------------------------------------------------------------------------
+
+void MaterialImporter::LoadInMemory(uint& id, const ResourceTextureData& textureData)
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// Generate the texture name
+	uint texName = 0;
+	glGenTextures(1, &texName);
+
+	// Bind the texture
+	glBindTexture(GL_TEXTURE_2D, texName);
+
+	// http://openil.sourceforge.net/tuts/tut_8/index.htm
+
+	// Set texture wrap mode
+	int wrap = 0;
+	switch (textureData.textureImportSettings.wrapS)
+	{
+	case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
+		wrap = GL_REPEAT;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+		wrap = GL_MIRRORED_REPEAT;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+		wrap = GL_CLAMP_TO_EDGE;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+		wrap = GL_CLAMP_TO_BORDER;
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+
+	switch (textureData.textureImportSettings.wrapT)
+	{
+	case ResourceTextureImportSettings::TextureWrapMode::REPEAT:
+		wrap = GL_REPEAT;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::MIRRORED_REPEAT:
+		wrap = GL_MIRRORED_REPEAT;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_EDGE:
+		wrap = GL_CLAMP_TO_EDGE;
+		break;
+	case ResourceTextureImportSettings::TextureWrapMode::CLAMP_TO_BORDER:
+		wrap = GL_CLAMP_TO_BORDER;
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+
+	// Set texture filter mode (Mipmap for the highest visual quality)
+	int filter = 0;
+	bool mipmap = false;
+
+	switch (textureData.textureImportSettings.minFilter)
+	{
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
+		filter = GL_NEAREST;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
+		filter = GL_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+		filter = GL_NEAREST_MIPMAP_NEAREST;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+		filter = GL_LINEAR_MIPMAP_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+		filter = GL_NEAREST_MIPMAP_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+		filter = GL_LINEAR_MIPMAP_LINEAR;
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+
+	switch (textureData.textureImportSettings.magFilter)
+	{
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST:
+		filter = GL_NEAREST;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR:
+		filter = GL_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_NEAREST:
+		filter = GL_NEAREST_MIPMAP_NEAREST;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_NEAREST:
+		filter = GL_LINEAR_MIPMAP_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::NEAREST_MIPMAP_LINEAR:
+		filter = GL_NEAREST_MIPMAP_LINEAR;
+		break;
+	case ResourceTextureImportSettings::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+		filter = GL_LINEAR_MIPMAP_LINEAR;
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+
+	// Anisotropic filtering
+	if (isAnisotropySupported)
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, textureData.textureImportSettings.anisotropy);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, textureData.bpp, textureData.width, textureData.height,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, textureData.data);
+
+	if (textureData.textureImportSettings.UseMipmap())
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	id = texName;
+
+	CONSOLE_LOG(LogTypes::Normal, "MATERIAL IMPORTER: New texture loaded with: %i id", texName);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 void MaterialImporter::DeleteTexture(uint& name) const
 {
@@ -366,85 +377,6 @@ uint MaterialImporter::GetDevILVersion() const
 }
 
 // ----------------------------------------------------------------------------------------------------
-
-void MaterialImporter::LoadCheckers()
-{
-	GLubyte checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
-
-	for (uint i = 0; i < CHECKERS_HEIGHT; i++) {
-		for (uint j = 0; j < CHECKERS_WIDTH; j++) {
-			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
-			checkImage[i][j][0] = (GLubyte)c;
-			checkImage[i][j][1] = (GLubyte)c;
-			checkImage[i][j][2] = (GLubyte)c;
-			checkImage[i][j][3] = (GLubyte)255;
-		}
-	}
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	// Generate the texture name
-	glGenTextures(1, &checkers);
-
-	// Bind the texture
-	glBindTexture(GL_TEXTURE_2D, checkers);
-
-	// Set texture clamping method
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Set texture interpolation method
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, checkImage);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	DEPRECATED_LOG("MATERIAL IMPORTER: Success at loading Checkers: %i ID, %i x %i", checkers, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void MaterialImporter::LoadDefaultTexture()
-{
-	GLubyte replaceMeTexture[REPLACE_ME_WIDTH][REPLACE_ME_HEIGHT][4]; // REPLACE ME!
-
-	for (uint i = 0; i < 2; i++) {
-		for (uint j = 0; j < 2; j++) {
-			replaceMeTexture[i][j][0] = (GLubyte)190;
-			replaceMeTexture[i][j][1] = (GLubyte)178;
-			replaceMeTexture[i][j][2] = (GLubyte)137;
-			replaceMeTexture[i][j][3] = (GLubyte)255;
-		}
-	}
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	// Generate the texture name
-	glGenTextures(1, &defaultTexture);
-
-	// Bind the texture
-	glBindTexture(GL_TEXTURE_2D, defaultTexture);
-
-	// Set texture clamping method
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Set texture interpolation method
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, replaceMeTexture);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	DEPRECATED_LOG("MATERIAL IMPORTER: Success at loading Default Texture: %i ID, %i x %i", defaultTexture, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
 
 /*
 void MaterialImporter::LoadSkyboxTexture()
@@ -520,16 +452,6 @@ uint MaterialImporter::LoadCubemapTexture(std::vector<uint>& faces)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	return result;
-}
-
-uint MaterialImporter::GetCheckers() const
-{
-	return checkers;
-}
-
-uint MaterialImporter::GetDefaultTexture() const
-{
-	return defaultTexture;
 }
 
 uint MaterialImporter::GetSkyboxTexture() const

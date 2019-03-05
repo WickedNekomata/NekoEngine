@@ -138,21 +138,17 @@ bool PanelCodeEditor::Draw()
 	return true;
 }
 
-void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUUID)
-{
-	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUUID);
-	if (shaderObject != nullptr)
-	{
-		enabled = true;
-		this->shaderObjectUuid = shaderObjectUUID;
+// ----------------------------------------------------------------------------------------------------
 
-		editor.SetText(shaderObject->GetSource());
-	}
-}
-
-uint PanelCodeEditor::GetShaderObjectUuid() const
+void PanelCodeEditor::OpenShaderInCodeEditor(uint shaderObjectUuid)
 {
-	return shaderObjectUuid;
+	ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectUuid);
+	assert(shaderObject != nullptr);
+
+	enabled = true;
+	this->shaderObjectUuid = shaderObjectUuid;
+
+	editor.SetText(shaderObject->GetSource());
 }
 
 void PanelCodeEditor::SetError(int line, const char* error)
@@ -165,10 +161,10 @@ void PanelCodeEditor::SetError(int line, const char* error)
 	editor.SetErrorMarkers(markers);
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 bool PanelCodeEditor::TryCompile()
 {
-	bool ret = false;
-
 	TextEditor::ErrorMarkers markers;
 	editor.SetErrorMarkers(markers);
 
@@ -177,11 +173,11 @@ bool PanelCodeEditor::TryCompile()
 
 	if (tryCompile > 0)
 	{
-		ret = true;
 		ResourceShaderObject::DeleteShaderObject(tryCompile);
+		return true;
 	}
 
-	return ret;
+	return false;
 }
 
 #endif

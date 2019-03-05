@@ -731,16 +731,17 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	// Info
 	ImGui::Text("Shader Objects:");
-
-	char shaderObject[DEFAULT_BUF_SIZE];
-
-	std::list<ResourceShaderObject*> shaderObjects = shaderProgram->GetShaderObjects();
-	for (std::list<ResourceShaderObject*>::iterator it = shaderObjects.begin(); it != shaderObjects.end(); ++it)
+	char shaderObjectName[DEFAULT_BUF_SIZE];
+	std::vector<uint> shaderObjects;
+	shaderProgram->GetShaderObjects(shaderObjects);
+	for (uint i = 0; i < shaderObjects.size(); ++i)
 	{
-		ImGui::TextColored(BLUE, "%s", (*it)->GetName()); ImGui::SameLine();
-		sprintf_s(shaderObject, DEFAULT_BUF_SIZE, "EDIT##%i", std::distance(shaderObjects.begin(), it));
-		if (ImGui::Button(shaderObject))
-			App->gui->panelCodeEditor->OpenShaderInCodeEditor((*it)->GetUuid());
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjects[i]);
+		ImGui::TextColored(BLUE, "%s", shaderObject->GetName()); ImGui::SameLine();
+		sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##%i", i);
+
+		if (ImGui::Button(shaderObjectName))
+			App->gui->panelCodeEditor->OpenShaderInCodeEditor(shaderObjects[i]);
 	}
 
 	ImGui::Spacing();

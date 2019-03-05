@@ -49,8 +49,10 @@ struct ResourceTextureImportSettings
 
 struct ResourceTextureData
 {
+	uchar* data = nullptr;
 	uint width = 0;
 	uint height = 0;
+	uint bpp = 0;
 
 	ResourceTextureImportSettings textureImportSettings;
 };

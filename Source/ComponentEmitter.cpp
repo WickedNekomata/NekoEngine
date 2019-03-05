@@ -89,7 +89,10 @@ ComponentEmitter::ComponentEmitter(const ComponentEmitter& componentEmitter, Gam
 	if(include)
 		App->particle->emitters.push_back(this);
 
-	SetMaterialRes(componentEmitter.materialRes);
+	if (App->res->GetResource(componentEmitter.materialRes) != nullptr)
+		SetMaterialRes(componentEmitter.materialRes);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
 }
 
 
@@ -725,6 +728,11 @@ void ComponentEmitter::SetMaterialRes(uint materialUuid)
 	materialRes = materialUuid;
 }
 
+uint ComponentEmitter::GetMaterialRes() const
+{
+	return materialRes;
+}
+
 #ifndef GAMEMODE
 ImVec4 ComponentEmitter::EqualsFloat4(const math::float4 float4D)
 {
@@ -957,8 +965,13 @@ void ComponentEmitter::OnInternalLoad(char *& cursor)
 
 	uint newMaterial = 0;
 	memcpy(&newMaterial, cursor, bytes);
+
+	if (App->res->GetResource(newMaterial) != nullptr)
+		SetMaterialRes(newMaterial);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
+
 	cursor += bytes;
-	SetMaterialRes(newMaterial);
 
 	bytes = sizeof(ParticleAnimation);
 	memcpy(&particleAnim, cursor, bytes);

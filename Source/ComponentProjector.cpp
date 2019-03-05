@@ -39,7 +39,10 @@ ComponentProjector::ComponentProjector(GameObject* parent) : Component(parent, C
 
 ComponentProjector::ComponentProjector(const ComponentProjector& componentProjector, GameObject* parent) : Component(parent, ComponentTypes::ProjectorComponent)
 {
-	SetMaterialRes(componentProjector.materialRes);
+	if (App->res->GetResource(componentProjector.materialRes) != nullptr)
+		SetMaterialRes(componentProjector.materialRes);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
 
 	// Init frustum
 	frustum.type = componentProjector.frustum.type;
@@ -216,7 +219,12 @@ void ComponentProjector::OnInternalLoad(char*& cursor)
 	bytes = sizeof(uint);
 	uint resource = 0;
 	memcpy(&resource, cursor, bytes);
-	SetMaterialRes(resource);
+
+	if (App->res->GetResource(resource) != nullptr)
+		SetMaterialRes(resource);
+	else
+		SetMaterialRes(App->resHandler->defaultMaterial);
+
 	cursor += bytes;
 
 	bytes = sizeof(uint);

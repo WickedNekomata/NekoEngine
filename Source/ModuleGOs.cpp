@@ -3,19 +3,21 @@
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleNavigation.h"
-#include "GameObject.h"
-#include "ComponentMaterial.h"
-#include "ComponentMesh.h"
-
 #include "ModuleResourceManager.h"
-#include "ResourceShaderProgram.h"
-
+#include "ModuleInternalResHandler.h"
 #include "ModuleAnimation.h"
-#include "ResourceAnimation.h"
-#include "ComponentAnimation.h"
-
 #include "ModuleRenderer3D.h"
 #include "ModuleUI.h"
+
+#include "GameObject.h"
+#include "ComponentMaterial.h"
+#include "ComponentProjector.h"
+#include "ComponentEmitter.h"
+#include "ComponentMesh.h"
+#include "ComponentImage.h"
+#include "ComponentAnimation.h"
+#include "ResourceShaderProgram.h"
+#include "ResourceAnimation.h"
 
 #include <assert.h>
 
@@ -471,12 +473,35 @@ bool ModuleGOs::InvalidateResource(Resource* resource)
 		switch (resource->GetType())
 		{
 		case ResourceTypes::MeshResource:
+
+			// Mesh component uses Mesh resource
 			if (gameobjects[i]->cmp_mesh != nullptr && gameobjects[i]->cmp_mesh->res == resource->GetUuid())
 				gameobjects[i]->cmp_mesh->SetResource(0);
+
 			break;
+
 		case ResourceTypes::TextureResource:
+
+			// UI component uses Texture resource
+			if (gameobjects[i]->cmp_image != nullptr && gameobjects[i]->cmp_image->GetResImageUuid() == resource->GetUuid())
+				gameobjects[i]->cmp_image->SetResImageUuid(App->resHandler->defaultTexture);
+
+			break;
+
+		case ResourceTypes::MaterialResource:
+
+			// Material component uses Material resource
 			if (gameobjects[i]->cmp_material != nullptr && gameobjects[i]->cmp_material->res == resource->GetUuid())
-				gameobjects[i]->cmp_material->SetResource(0);
+				gameobjects[i]->cmp_material->SetResource(App->resHandler->defaultMaterial);
+
+			// Projector component uses Material resource
+			if (gameobjects[i]->cmp_projector != nullptr && gameobjects[i]->cmp_projector->GetMaterialRes() == resource->GetUuid())
+				gameobjects[i]->cmp_projector->SetMaterialRes(App->resHandler->defaultMaterial);
+
+			// Emitter component uses Material resource
+			if (gameobjects[i]->cmp_emitter != nullptr && gameobjects[i]->cmp_emitter->GetMaterialRes() == resource->GetUuid())
+				gameobjects[i]->cmp_emitter->SetMaterialRes(App->resHandler->defaultMaterial);
+
 			break;
 		}
 	}

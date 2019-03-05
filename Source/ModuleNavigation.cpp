@@ -21,6 +21,8 @@
 
 #include "Globals.h"
 
+#include "Brofiler/Brofiler.h"
+
 #include "MathGeoLib/include/Math/MathAll.h"
 #include <math.h>
 
@@ -47,6 +49,9 @@ bool ModuleNavigation::Init(JSON_Object* jObject)
 
 update_status ModuleNavigation::Update()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	if (m_navMesh && m_crowd)
 	{
 		m_crowd->update(App->timeManager->GetDt(), 0);

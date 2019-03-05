@@ -55,7 +55,7 @@ bool ModuleScene::Start()
 
 update_status ModuleScene::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
+	/*if (App->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
 		App->animation->SetCurrentAnimation("Idle");
 	}
 	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN) {
@@ -64,7 +64,7 @@ update_status ModuleScene::Update()
 	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
 		App->animation->SetCurrentAnimation("Kick");
 	}
-
+	*/
 #ifndef GAMEMODE
 	if (!App->IsEditor())
 		return UPDATE_CONTINUE;

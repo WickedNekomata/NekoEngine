@@ -14,6 +14,7 @@
 #include "EventSystem.h"
 #include "ModuleInput.h"
 
+#include "Brofiler/Brofiler.h"
 //#include ".h" //TODO: delete this
 
 #include "ComponentBone.h"
@@ -62,6 +63,9 @@ bool ModuleAnimation::CleanUp()
 
 update_status ModuleAnimation::Update()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // GAMEMODE
 
 	if (App->GetEngineState() != engine_states::ENGINE_PLAY)
 		return update_status::UPDATE_CONTINUE;

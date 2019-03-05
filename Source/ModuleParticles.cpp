@@ -15,7 +15,9 @@ ModuleParticle::~ModuleParticle()
 
 update_status ModuleParticle::Update()
 {
+#ifndef GAMEMODE
 	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 
 	for (std::list<ComponentEmitter*>::iterator emitter = emitters.begin(); emitter != emitters.end(); ++emitter)
 	{

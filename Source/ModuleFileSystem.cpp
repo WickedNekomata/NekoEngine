@@ -75,6 +75,7 @@ ModuleFileSystem::~ModuleFileSystem() {}
 update_status ModuleFileSystem::PreUpdate()
 {
 #ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 	static float updateAssetsCounter = 0.0f;
 	updateAssetsCounter += App->timeManager->GetRealDt();
 	if (updateAssetsCounter >= 1.0f / updateAssetsRate)
@@ -118,7 +119,7 @@ bool ModuleFileSystem::Start()
 #endif
 	
 
-#ifndef GAMEMODE
+#ifdef GAMEMODE
 	System_Event event;
 	event.type = System_Event_Type::DeleteUnusedFiles;
 	App->PushSystemEvent(event);

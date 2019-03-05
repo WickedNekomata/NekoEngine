@@ -116,6 +116,9 @@ bool ModuleGui::Start()
 
 update_status ModuleGui::PreUpdate() 
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	// Start the frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
@@ -132,7 +135,7 @@ update_status ModuleGui::PreUpdate()
 update_status ModuleGui::Update()
 {
 #ifndef GAMEMODE
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
 #endif
 
 #ifdef _DEBUG
@@ -234,6 +237,9 @@ update_status ModuleGui::Update()
 
 update_status ModuleGui::PostUpdate()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	// End dock space
 	ImGui::End();
 

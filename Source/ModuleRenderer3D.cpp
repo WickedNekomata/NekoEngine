@@ -188,6 +188,9 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 

@@ -33,6 +33,8 @@
 #include "ModuleUI.h"
 
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "Brofiler/Brofiler.h"
+
 
 #define NAVMESHAGENT_ASCII 1299603790
 
@@ -111,6 +113,9 @@ update_status ScriptingModule::PreUpdate()
 
 update_status ScriptingModule::Update()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	if (App->GetEngineState() == engine_states::ENGINE_PLAY)
 	{
 		UpdateMethods();
@@ -121,6 +126,9 @@ update_status ScriptingModule::Update()
 
 update_status ScriptingModule::PostUpdate()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	if (someScriptModified || engineOpened)
 	{
 #ifndef GAMEMODE

@@ -20,6 +20,7 @@
 #include "ComponentScript.h"
 
 #include "ResourceMaterial.h"
+#include "Brofiler/Brofiler.h"
 
 #include "MathGeoLib/include/Geometry/Frustum.h"
 
@@ -93,12 +94,18 @@ bool ModuleUI::Start()
 
 update_status ModuleUI::PreUpdate()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	anyItemIsHovered = MouseInScreen();
 	return update_status::UPDATE_CONTINUE;
 }
 
 update_status ModuleUI::Update()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	for (std::list<Component*>::iterator iteratorUI = componentsRendererUI.begin(); iteratorUI != componentsRendererUI.end(); ++iteratorUI)
 		(*iteratorUI)->Update();
 

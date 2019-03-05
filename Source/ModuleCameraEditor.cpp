@@ -54,7 +54,9 @@ bool ModuleCameraEditor::Start()
 
 update_status ModuleCameraEditor::Update()
 {
-	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::Orchid);
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 
 	if (!App->IsEditor() || App->gui->WantTextInput() || App->gui->IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;

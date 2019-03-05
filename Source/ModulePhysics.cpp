@@ -44,6 +44,8 @@
 #include <assert.h>
 
 #include "MathGeoLib\include\Math\float2.h"
+#include "Brofiler/Brofiler.h"
+
 
 #ifdef _DEBUG
 #pragma comment(lib, "physx\\libx86\\debugx86\\PhysX_32.lib")
@@ -197,6 +199,9 @@ update_status ModulePhysics::PreUpdate()
 
 update_status ModulePhysics::Update()
 {
+#ifndef GAMEMODE
+	BROFILER_CATEGORY(__FUNCTION__, Profiler::Color::PapayaWhip);
+#endif // !GAMEMODE
 	update_status updateStatus = update_status::UPDATE_CONTINUE;
 
 	if (App->GetEngineState() == engine_states::ENGINE_PLAY

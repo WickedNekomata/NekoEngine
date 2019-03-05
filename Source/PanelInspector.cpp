@@ -731,9 +731,7 @@ void PanelInspector::ShowShaderProgramInspector() const
 
 	// Info
 	ImGui::Text("Shader Objects:");
-
 	char shaderObjectName[DEFAULT_BUF_SIZE];
-
 	std::vector<uint> shaderObjects;
 	shaderProgram->GetShaderObjects(shaderObjects);
 	for (uint i = 0; i < shaderObjects.size(); ++i)

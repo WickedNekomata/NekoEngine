@@ -243,7 +243,7 @@ bool ResourceShaderProgram::ReadMeta(const char* metaFile, int64_t& lastModTime,
 		cursor += bytes;
 
 		// 7. Load shader objects uuids
-		bytes = sizeof(uint);
+		bytes = sizeof(uint) * shaderObjectsUuidsSize;
 		shaderObjectsUuids.resize(shaderObjectsUuidsSize);
 		memcpy(&shaderObjectsUuids[0], cursor, bytes);
 		cursor += bytes;
@@ -414,18 +414,18 @@ bool ResourceShaderProgram::Link()
 	DeleteShaderProgram(shaderProgram);
 	shaderProgram = glCreateProgram();
 
-	for (std::vector<uint>::const_iterator it = shaderProgramData.shaderObjectsUuids.begin(); it != shaderProgramData.shaderObjectsUuids.end(); ++it)
+	for (uint i = 0; i < shaderProgramData.shaderObjectsUuids.size(); ++i)
 	{
-		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderProgramData.shaderObjectsUuids[i]);
 		glAttachShader(shaderProgram, shaderObject->shaderObject);
 	}
 
 	// Link the Shader Program
 	glLinkProgram(shaderProgram);
 
-	for (std::vector<uint>::const_iterator it = shaderProgramData.shaderObjectsUuids.begin(); it != shaderProgramData.shaderObjectsUuids.end(); ++it)
+	for (uint i = 0; i < shaderProgramData.shaderObjectsUuids.size(); ++i)
 	{
-		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderProgramData.shaderObjectsUuids[i]);
 		glDetachShader(shaderProgram, shaderObject->shaderObject);
 	}
 
@@ -443,18 +443,18 @@ uint ResourceShaderProgram::Link(const std::vector<uint>& shaderObjectsUuids)
 	// Create a Shader Program
 	GLuint shaderProgram = glCreateProgram();
 
-	for (std::vector<uint>::const_iterator it = shaderObjectsUuids.begin(); it != shaderObjectsUuids.end(); ++it)
+	for (uint i = 0; i < shaderObjectsUuids.size(); ++i)
 	{
-		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectsUuids[i]);
 		glAttachShader(shaderProgram, shaderObject->shaderObject);
 	}
 
 	// Link the Shader Program
 	glLinkProgram(shaderProgram);
 
-	for (std::vector<uint>::const_iterator it = shaderObjectsUuids.begin(); it != shaderObjectsUuids.end(); ++it)
+	for (uint i = 0; i < shaderObjectsUuids.size(); ++i)
 	{
-		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderObjectsUuids[i]);
 		glDetachShader(shaderProgram, shaderObject->shaderObject);
 	}
 
@@ -543,12 +543,12 @@ void ResourceShaderProgram::SetShaderObjects(const std::vector<uint>& shaderObje
 
 void ResourceShaderProgram::GetShaderObjects(std::vector<uint>& shaderObjectsUuids, ShaderObjectTypes shaderType) const
 {
-	for (std::vector<uint>::const_iterator it = shaderProgramData.shaderObjectsUuids.begin(); it != shaderProgramData.shaderObjectsUuids.end(); ++it)
+	for (uint i = 0; i < shaderProgramData.shaderObjectsUuids.size(); ++i)
 	{
-		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(*it);
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(shaderProgramData.shaderObjectsUuids[i]);
 
-		if (shaderType == ShaderObjectTypes::NoShaderObjectType || shaderType == shaderObject->GetType())
-			shaderObjectsUuids.push_back(*it);
+		if (shaderType == ShaderObjectTypes::NoShaderObjectType || shaderType == shaderObject->GetShaderObjectType())
+			shaderObjectsUuids.push_back(shaderProgramData.shaderObjectsUuids[i]);
 	}
 }
 

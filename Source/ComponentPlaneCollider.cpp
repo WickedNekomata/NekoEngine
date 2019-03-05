@@ -35,6 +35,7 @@ ComponentPlaneCollider::ComponentPlaneCollider(const ComponentPlaneCollider& com
 	SetIsTrigger(componentPlaneCollider.isTrigger);
 	SetParticipateInContactTests(componentPlaneCollider.participateInContactTests);
 	SetParticipateInSceneQueries(componentPlaneCollider.participateInSceneQueries);
+	SetFiltering(componentPlaneCollider.filterGroup, componentPlaneCollider.filterMask);
 
 	// -----
 

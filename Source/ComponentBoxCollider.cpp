@@ -33,6 +33,7 @@ ComponentBoxCollider::ComponentBoxCollider(const ComponentBoxCollider& component
 	SetIsTrigger(componentBoxCollider.isTrigger);
 	SetParticipateInContactTests(componentBoxCollider.participateInContactTests);
 	SetParticipateInSceneQueries(componentBoxCollider.participateInSceneQueries);
+	SetFiltering(componentBoxCollider.filterGroup, componentBoxCollider.filterMask);
 
 	// -----
 

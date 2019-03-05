@@ -35,6 +35,7 @@ ComponentSphereCollider::ComponentSphereCollider(const ComponentSphereCollider& 
 	SetIsTrigger(componentSphereCollider.isTrigger);
 	SetParticipateInContactTests(componentSphereCollider.participateInContactTests);
 	SetParticipateInSceneQueries(componentSphereCollider.participateInSceneQueries);
+	SetFiltering(componentSphereCollider.filterGroup, componentSphereCollider.filterMask);
 
 	// -----
 

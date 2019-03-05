@@ -73,6 +73,9 @@ protected:
 	physx::PxMaterial* gMaterial = nullptr; // TODO
 	math::float3 center = math::float3::zero;
 
+	uint filterGroup = 0;
+	uint filterMask = 0;
+
 	// -----
 
 	physx::PxShape* gShape = nullptr;

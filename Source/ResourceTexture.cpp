@@ -520,7 +520,11 @@ bool ResourceTexture::ReadTextureImportSettingsFromMeta(const char* metaFile, Re
 
 bool ResourceTexture::LoadInMemory()
 {
-	return App->materialImporter->Load(data.exportedFile.data(), textureData, id);
+	assert(textureData.data != nullptr && textureData.width > 0 && textureData.height > 0);
+
+	App->materialImporter->LoadInMemory(id, textureData);
+
+	return true;
 }
 
 bool ResourceTexture::UnloadFromMemory()

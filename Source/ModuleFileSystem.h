@@ -317,7 +317,7 @@ public:
 	bool deleteFiles(const std::string& rootDirectory, const std::string& extension) const;
 	void SendEvents(const Directory& newAssetsDir);
 
-	void ImportFilesEvents(const Directory& newDir, std::vector<std::string>& lateEvents = std::vector<std::string>());
+	void ImportFilesEvents(const Directory& newDir, std::vector<std::string>& lateEvents = std::vector<std::string>(), std::vector<std::string>& lateLateEvents = std::vector<std::string>());
 	void ForceReImport(const Directory& assetsDir);
 
 	void BeginTempException(std::string directory);

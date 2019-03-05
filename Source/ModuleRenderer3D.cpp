@@ -155,14 +155,6 @@ bool ModuleRenderer3D::Init(JSON_Object* jObject)
 		App->shaderImporter->SetBinaryFormats(formats);
 	}
 
-	App->shaderImporter->LoadDefaultShader();
-
-	App->materialImporter->LoadCheckers();
-	App->materialImporter->LoadDefaultTexture();
-
-	// Load primitives
-	App->sceneImporter->LoadPrimitivePlane();
-
 #ifndef GAMEMODE
 	// Editor camera
 	currentCamera = App->camera->camera;

@@ -45,14 +45,6 @@ public:
 	uint GetAssimpMinorVersion() const;
 	uint GetAssimpRevisionVersion() const;
 
-	// ----------------------------------------------------------------------------------------------------
-
-	// *****TODO*****
-	void LoadCubemap(uint& VBO, uint& VAO) const;
-	void LoadPrimitivePlane();
-	void GetDefaultPlane(uint& defaultPlaneVAO, uint& defaultPlaneIBO, uint& defaultPlaneIndicesSize) const;
-	//_*****TODO*****
-
 private:
 
 	bool Import(const void* buffer, uint size, const char* prefabName, std::vector<std::string>& mesh_files, std::vector<std::string>& bone_files, std::vector<std::string>& anim_files, const ResourceMeshImportSettings& importSettings,
@@ -65,12 +57,6 @@ private:
 	bool Load(const void* buffer, uint size, ResourceData& outputData, ResourceMeshData& outputMeshData) const;
 
 private:
-
-	// *****TODO*****
-	uint defaultPlaneVAO = 0;
-	uint defaultPlaneIBO = 0;
-	uint defaultPlaneIndicesSize = 0;
-	//_*****TODO*****
 
 	/*Mutable stuff uwu*/
 	mutable GameObject* imported_root_go = nullptr;

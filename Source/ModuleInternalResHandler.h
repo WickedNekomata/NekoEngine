@@ -4,6 +4,8 @@
 #include "Module.h"
 #include "Globals.h"
 
+#include "ResourceShaderProgram.h"
+
 #define PLANE_UUID 1428675893
 #define CUBE_UUID 1451315056
 #define DEFAULT_SHADER_PROGRAM_UUID 1608702687
@@ -12,6 +14,7 @@
 #define CUBEMAP_SHADER_PROGRAM_UUID 1676961097
 #define DEFAULT_MATERIAL_UUID 2168314292
 #define REPLACE_ME_TEXTURE_UUID 3462814329
+#define CHECKERS_TEXTURE_UUID 1162820329
 
 enum ShaderProgramTypes;
 
@@ -25,8 +28,13 @@ public:
 	void CreatePlane();
 	void CreateCube();
 
+	// Texture resources
+	void CreateCheckers();
+	void CreateDefaultTexture();
+
 	// Shader resources
-	void CreateDefaultShaderProgram(const char * vShader, const char * fShader, ShaderProgramTypes type);
+	void CreateDefaultShaderProgram(const char* vShader, const char* fShader, ShaderProgramTypes type = ShaderProgramTypes::Standard);
+	//void CreateCubemapShaderProgram();
 	void CreateUIShaderProgram();
 
 	// Material resources
@@ -45,7 +53,7 @@ public:
 
 	// Shader resources
 	uint defaultShaderProgram;
-	uint defaultParticleShaderProgram;
+	uint particleShaderProgram;
 	uint cubemapShaderProgram;
 	uint UIVertexShaderObject;
 	uint UIFragmentShaderObject;

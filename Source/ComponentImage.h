@@ -21,6 +21,8 @@ public:
 	void Update();
 
 	const float* GetColor()const;
+	void SetResImageUuid(uint res_image_uuid);
+	uint GetResImageUuid() const;
 	uint GetResImage()const;
 
 	bool UseColor()const;

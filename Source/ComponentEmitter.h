@@ -128,6 +128,7 @@ public:
 	void SetAABB(const math::float3 size, const math::float3 extraPosition = math::float3::zero);
 
 	void SetMaterialRes(uint materialUuid);
+	uint GetMaterialRes() const;
 
 #ifndef GAMEMODE
 	ImVec4 EqualsFloat4(const math::float4 float4D);

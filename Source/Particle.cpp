@@ -4,9 +4,11 @@
 #include "ComponentEmitter.h"
 #include "ModuleParticles.h"
 #include "ModuleResourceManager.h"
+#include "ModuleInternalResHandler.h"
 #include "ModuleRenderer3D.h"
 #include "ShaderImporter.h"
 #include "SceneImporter.h"
+#include "ResourceMesh.h"
 #include "MaterialImporter.h"
 #include "ComponentMaterial.h"
 #include "ResourceShaderProgram.h"
@@ -277,15 +279,11 @@ void Particle::Draw()
 			}
 		}
 
-		uint defaultPlaneVAO = 0;
-		uint defaultPlaneIBO = 0;
-		uint defaultPlaneIndicesSize = 0;
-		App->sceneImporter->GetDefaultPlane(defaultPlaneVAO, defaultPlaneIBO, defaultPlaneIndicesSize);
+		ResourceMesh* plane = (ResourceMesh*)App->res->GetResource(App->resHandler->plane);
+		glBindVertexArray(plane->GetVAO());
 
-		glBindVertexArray(defaultPlaneVAO);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, defaultPlaneIBO);
-		glDrawElements(GL_TRIANGLES, defaultPlaneIndicesSize, GL_UNSIGNED_INT, NULL);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, plane->GetIBO());
+		glDrawElements(GL_TRIANGLES, plane->GetIndicesCount(), GL_UNSIGNED_INT, NULL);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);

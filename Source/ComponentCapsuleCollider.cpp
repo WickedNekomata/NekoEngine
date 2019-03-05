@@ -33,6 +33,7 @@ ComponentCapsuleCollider::ComponentCapsuleCollider(const ComponentCapsuleCollide
 	SetIsTrigger(componentCapsuleCollider.isTrigger);
 	SetParticipateInContactTests(componentCapsuleCollider.participateInContactTests);
 	SetParticipateInSceneQueries(componentCapsuleCollider.participateInSceneQueries);
+	SetFiltering(componentCapsuleCollider.filterGroup, componentCapsuleCollider.filterMask);
 
 	// -----
 

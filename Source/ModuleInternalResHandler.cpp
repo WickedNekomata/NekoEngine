@@ -14,11 +14,20 @@
 
 bool ModuleInternalResHandler::Start()
 {
+	// Mesh resources
 	CreatePlane();
 	CreateCube();
+
+	// Texture resources
+	CreateCheckers();
+	CreateDefaultTexture();
+
+	// Shader resources
 	CreateDefaultShaderProgram(vShaderTemplate, fShaderTemplate, ShaderProgramTypes::Standard);
 	CreateDefaultShaderProgram(Particle_vShaderTemplate, Particle_fShaderTemplate, ShaderProgramTypes::Particles);
 	CreateUIShaderProgram();
+
+	// Material resources
 	CreateDefaultMaterial();
 
 	return true;
@@ -143,6 +152,75 @@ void ModuleInternalResHandler::CreateCube()
 	cube = App->res->CreateResource(ResourceTypes::MeshResource, data, &specificData, CUBE_UUID)->GetUuid();
 }
 
+void ModuleInternalResHandler::CreateCheckers()
+{
+	ResourceData data;
+	ResourceTextureData textureData;
+
+	data.name = "Checkers";
+
+	uchar checkImage[CHECKERS_HEIGHT][CHECKERS_WIDTH][4];
+
+	for (uint i = 0; i < CHECKERS_HEIGHT; i++) {
+		for (uint j = 0; j < CHECKERS_WIDTH; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkImage[i][j][0] = (uchar)c;
+			checkImage[i][j][1] = (uchar)c;
+			checkImage[i][j][2] = (uchar)c;
+			checkImage[i][j][3] = (uchar)255;
+		}
+	}
+
+	uint size = CHECKERS_HEIGHT * CHECKERS_WIDTH * 4;
+	textureData.data = new uchar[size];
+	memcpy(textureData.data, checkImage, size);
+
+	textureData.width = CHECKERS_WIDTH;
+	textureData.height = CHECKERS_HEIGHT;
+	textureData.bpp = 4;
+
+	textureData.textureImportSettings.wrapS = ResourceTextureImportSettings::TextureWrapMode::REPEAT;
+	textureData.textureImportSettings.wrapT = ResourceTextureImportSettings::TextureWrapMode::REPEAT;
+	textureData.textureImportSettings.minFilter = ResourceTextureImportSettings::TextureFilterMode::NEAREST;
+	textureData.textureImportSettings.magFilter = ResourceTextureImportSettings::TextureFilterMode::NEAREST;
+
+	checkers = (App->res->CreateResource(ResourceTypes::TextureResource, data, &textureData, CHECKERS_TEXTURE_UUID))->GetUuid();
+}
+
+void ModuleInternalResHandler::CreateDefaultTexture()
+{
+	ResourceData data;
+	ResourceTextureData textureData;
+
+	data.name = "Replace me!";
+
+	uchar replaceMeTexture[REPLACE_ME_WIDTH][REPLACE_ME_HEIGHT][4]; // REPLACE ME!
+
+	for (uint i = 0; i < 2; i++) {
+		for (uint j = 0; j < 2; j++) {
+			replaceMeTexture[i][j][0] = (uchar)190;
+			replaceMeTexture[i][j][1] = (uchar)178;
+			replaceMeTexture[i][j][2] = (uchar)137;
+			replaceMeTexture[i][j][3] = (uchar)255;
+		}
+	}
+
+	uint size = REPLACE_ME_HEIGHT * REPLACE_ME_WIDTH * 4;
+	textureData.data = new uchar[size];
+	memcpy(textureData.data, replaceMeTexture, size);
+
+	textureData.width = REPLACE_ME_WIDTH;
+	textureData.height = REPLACE_ME_HEIGHT;
+	textureData.bpp = 4;
+
+	textureData.textureImportSettings.wrapS = ResourceTextureImportSettings::TextureWrapMode::REPEAT;
+	textureData.textureImportSettings.wrapT = ResourceTextureImportSettings::TextureWrapMode::REPEAT;
+	textureData.textureImportSettings.minFilter = ResourceTextureImportSettings::TextureFilterMode::NEAREST;
+	textureData.textureImportSettings.magFilter = ResourceTextureImportSettings::TextureFilterMode::NEAREST;
+
+	defaultTexture = (App->res->CreateResource(ResourceTypes::TextureResource, data, &textureData, REPLACE_ME_TEXTURE_UUID))->GetUuid();
+}
+
 void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, const char* fShader, ShaderProgramTypes type)
 {
 	ResourceData vertexData;
@@ -169,8 +247,8 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "Default shader program";
 	shaderData.internal = true;
-	programShaderData.shaderObjects.push_back(vObj);
-	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderObjectsUuids.push_back(vObj->GetUuid());
+	programShaderData.shaderObjectsUuids.push_back(fObj->GetUuid());
 	programShaderData.shaderProgramType = type;
 	ResourceShaderProgram* prog = nullptr;
 	if(type == ShaderProgramTypes::Standard)
@@ -183,7 +261,7 @@ void ModuleInternalResHandler::CreateDefaultShaderProgram(const char* vShader, c
 	if (type == ShaderProgramTypes::Standard)
 		defaultShaderProgram = prog->GetUuid();
 	else if (type == ShaderProgramTypes::Particles)
-		defaultParticleShaderProgram = prog->GetUuid();
+		particleShaderProgram = prog->GetUuid();
 
 }
 
@@ -215,8 +293,8 @@ void ModuleInternalResHandler::CreateUIShaderProgram()
 	ResourceShaderProgramData programShaderData;
 	shaderData.name = "UI shader program";
 	shaderData.internal = true;
-	programShaderData.shaderObjects.push_back(vObj);
-	programShaderData.shaderObjects.push_back(fObj);
+	programShaderData.shaderObjectsUuids.push_back(vObj->GetUuid());
+	programShaderData.shaderObjectsUuids.push_back(fObj->GetUuid());
 	programShaderData.shaderProgramType = ShaderProgramTypes::UI;
 	ResourceShaderProgram* pShader = (ResourceShaderProgram*)App->res->CreateResource(ResourceTypes::ShaderProgramResource, shaderData, &programShaderData, DEFAULT_SHADER_PROGRAM_UI_UUID);
 	if (pShader->Link())
@@ -240,7 +318,10 @@ void ModuleInternalResHandler::CreateDefaultMaterial()
 		case Uniforms_Values::Sampler2U_value:
 		{
 			if (strcmp(uniform.common.name, "material.albedo") == 0)
-				uniform.sampler2DU.value.id = App->materialImporter->GetDefaultTexture();
+			{
+				uniform.sampler2DU.value.uuid = defaultTexture;
+				uniform.sampler2DU.value.id = ((ResourceTexture*)App->res->GetResource(defaultTexture))->GetId();
+			}
 		}
 		break;
 		}

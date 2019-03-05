@@ -1,8 +1,6 @@
 #ifndef __APPLICATION_H_
 #define __APPLICATION_H_
 
-
-
 #include <list>
 #include <vector>
 #include <queue>
@@ -13,8 +11,8 @@
 #include "PerfTimer.h"
 
 #include "PCG\pcg_variants.h"
-
 #include "MathGeoLib/include/Algorithm/Random/LCG.h"
+
 #define FPS_TRACK_SIZE 60
 #define MS_TRACK_SIZE 60
 
@@ -94,8 +92,8 @@ public:
 	class MaterialImporter*				materialImporter;
 	class SceneImporter*				sceneImporter;
 	class ShaderImporter*				shaderImporter;
-	mutable class  BoneImporter*		boneImporter;
-	mutable class  AnimationImporter*	animImporter;
+	mutable class BoneImporter*		boneImporter;
+	mutable class AnimationImporter*	animImporter;
 	class ModuleParticle*				particle;
 
 #ifndef GAMEMODE

@@ -33,6 +33,7 @@ public:
 	char shaderProgramName[INPUT_BUF_SIZE];
 
 	std::vector<uint> vertexShadersUuids;
+	std::vector<uint> geometryShadersUuids;
 	std::vector<uint> fragmentShadersUuids;
 };
 

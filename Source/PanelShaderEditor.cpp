@@ -89,6 +89,52 @@ bool PanelShaderEditor::Draw()
 			if (ImGui::Button("+##vertex"))
 				vertexShadersUuids.push_back(0);
 
+			ImGui::Text("Geometry Shaders");
+			for (std::vector<uint>::iterator it = geometryShadersUuids.begin(); it != geometryShadersUuids.end();)
+			{
+				ResourceShaderObject* geometryShader = (ResourceShaderObject*)App->res->GetResource(*it);
+
+				if (geometryShader != nullptr)
+					sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "%s##g%i", geometryShader->GetName(), std::distance(geometryShadersUuids.begin(), it));
+				else
+					sprintf_s(shaderObjectName, INPUT_BUF_SIZE, "Empty Geometry##g%i", std::distance(geometryShadersUuids.begin(), it));
+				ImGui::Button(shaderObjectName, ImVec2(150.0f, 0.0f));
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SHADER_OBJECT"))
+					{
+						ResourceShaderObject* payload_n = *(ResourceShaderObject**)(payload->Data);
+						if (payload_n->GetShaderObjectType() == ShaderObjectTypes::GeometryType)
+							*it = payload_n->GetUuid();
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::SameLine();
+
+				if (geometryShader != nullptr)
+				{
+					sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "EDIT##g%i", std::distance(geometryShadersUuids.begin(), it));
+					if (ImGui::Button(shaderObjectName))
+						App->gui->panelCodeEditor->OpenShaderInCodeEditor(*it);
+
+					ImGui::SameLine();
+				}
+
+				sprintf_s(shaderObjectName, DEFAULT_BUF_SIZE, "-##g%i", std::distance(geometryShadersUuids.begin(), it));
+				if (ImGui::Button(shaderObjectName))
+				{
+					it = geometryShadersUuids.erase(it);
+					continue;
+				}
+
+				++it;
+			}
+
+			if (ImGui::Button("+##geometry"))
+				geometryShadersUuids.push_back(0);
+
 			ImGui::Text("Fragment Shaders");
 			for (std::vector<uint>::iterator it = fragmentShadersUuids.begin(); it != fragmentShadersUuids.end();)
 			{
@@ -132,7 +178,7 @@ bool PanelShaderEditor::Draw()
 				++it;
 			}
 
-			if (ImGui::Button("+##Fragment"))
+			if (ImGui::Button("+##fragment"))
 				fragmentShadersUuids.push_back(0);
 
 			// Link
@@ -187,6 +233,7 @@ bool PanelShaderEditor::Draw()
 				shaderProgramUuid = 0;
 				strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
 				vertexShadersUuids.clear();
+				geometryShadersUuids.clear();
 				fragmentShadersUuids.clear();
 			}
 		}
@@ -200,6 +247,7 @@ bool PanelShaderEditor::Draw()
 		shaderProgramUuid = 0;
 		strcpy_s(shaderProgramName, strlen("New Shader Program") + 1, "New Shader Program");
 		vertexShadersUuids.clear();
+		geometryShadersUuids.clear();
 		fragmentShadersUuids.clear();
 	}
 
@@ -220,7 +268,8 @@ void PanelShaderEditor::OpenShaderInShaderEditor(uint shaderProgramUuid)
 
 	vertexShadersUuids.clear();
 	shaderProgram->GetShaderObjects(vertexShadersUuids, ShaderObjectTypes::VertexType);
-
+	geometryShadersUuids.clear();
+	shaderProgram->GetShaderObjects(geometryShadersUuids, ShaderObjectTypes::GeometryType);
 	fragmentShadersUuids.clear();
 	shaderProgram->GetShaderObjects(fragmentShadersUuids, ShaderObjectTypes::FragmentType);
 }

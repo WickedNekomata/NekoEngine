@@ -1378,7 +1378,8 @@ ResourceTypes ModuleResourceManager::GetLibraryResourceTypeByExtension(const cha
 	else if (strcmp(extension, EXTENSION_TEXTURE) == 0)
 		return ResourceTypes::TextureResource;
 	else if (strcmp(extension, EXTENSION_VERTEX_SHADER_OBJECT) == 0
-		|| strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0)
+		|| strcmp(extension, EXTENSION_FRAGMENT_SHADER_OBJECT) == 0
+		|| strcmp(extension, EXTENSION_GEOMETRY_SHADER_OBJECT) == 0)
 		return ResourceTypes::ShaderObjectResource;
 	else if (strcmp(extension, EXTENSION_SHADER_PROGRAM) == 0)
 		return ResourceTypes::ShaderProgramResource;

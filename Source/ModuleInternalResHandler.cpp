@@ -10,6 +10,8 @@
 #include "ResourceShaderObject.h"
 #include "ResourceShaderProgram.h"
 
+#include "Shaders.h"
+
 bool ModuleInternalResHandler::Start()
 {
 	CreatePlane();

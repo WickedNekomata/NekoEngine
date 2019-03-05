@@ -7,7 +7,7 @@
 #include "ResourceShaderProgram.h"
 // TODO ERASE THIS
 #include "ModuleInternalResHandler.h"
-
+#include "Shaders.h"
 #include <assert.h>
 
 ShaderImporter::ShaderImporter() {}

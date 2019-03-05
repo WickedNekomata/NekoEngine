@@ -1,8 +1,6 @@
 #ifndef __MODULE_RENDERER_3D_H__
 #define __MODULE_RENDERER_3D_H__
 
-
-
 #include "Module.h"
 #include "Globals.h"
 

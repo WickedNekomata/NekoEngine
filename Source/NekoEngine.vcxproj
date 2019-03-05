@@ -310,6 +310,7 @@
     <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceMaterial.h" />
     <ClInclude Include="SceneQueries.h" />
+    <ClInclude Include="Shaders.h" />
     <ClInclude Include="SimulationEvents.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />

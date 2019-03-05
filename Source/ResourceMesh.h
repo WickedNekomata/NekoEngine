@@ -61,6 +61,9 @@ struct ResourceMeshData
 	uint* indices = nullptr;
 	uint indicesSize = 0;
 
+	bool adjacency = true;
+	uint* adjacentIndices = nullptr;
+
 	ResourceMeshImportSettings meshImportSettings;
 };
 
@@ -95,10 +98,12 @@ public:
 	uint GetVerticesCount() const;
 	uint GetIndicesCount() const;
 
+	static void CalculateAdjacentIndices(uint* indices, uint indicesSize, uint* adjacentIndices);
+
 	void GenerateAndBindDeformableMesh();
 	void UnloadDeformableMeshFromMemory();
 
-	void DuplicateMesh(ResourceMesh * mesh);
+	void DuplicateMesh(ResourceMesh* mesh);
 
 	uint GetVBO() const;
 	uint GetIBO() const;

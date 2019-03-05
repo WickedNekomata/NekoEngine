@@ -555,6 +555,41 @@ uint ResourceMesh::GetIndicesCount() const
 	return meshData.indicesSize;
 }
 
+void ResourceMesh::CalculateAdjacentIndices(uint* indices, uint indicesSize, uint* adjacentIndices)
+{
+	adjacentIndices = new uint[indicesSize * 2];
+
+	for (uint i = 0; i < indicesSize; ++i)
+	{
+		adjacentIndices[i * 2 + 0] = indices[i];
+		adjacentIndices[i * 2 + 1] = 0;
+		adjacentIndices[i * 2 + 2] = indices[i + 1];
+		adjacentIndices[i * 2 + 3] = 0;
+		adjacentIndices[i * 2 + 4] = indices[i + 2];
+		adjacentIndices[i * 2 + 5] = 0;
+	}
+
+	// Find matching edges
+	for (uint i = 0; i < indicesSize * 2; i+=6)
+	{
+		// Triangle A
+		uint a1 = adjacentIndices[i];
+		uint b1 = adjacentIndices[i + 2];
+		uint c1 = adjacentIndices[i + 4];
+
+		// Scan subsequent triangles
+		for (uint j = i + 6; j < indicesSize * 2; j += 6)
+		{
+			// Triangle B
+			uint a2 = adjacentIndices[j];
+			uint b2 = adjacentIndices[j + 2];
+			uint c2 = adjacentIndices[j + 4];
+
+
+		}
+	}
+}
+
 void ResourceMesh::GenerateAndBindDeformableMesh()
 {
 	assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0

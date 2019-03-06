@@ -327,17 +327,20 @@ void ModuleNavigation::SetDestination(const float* p, int indx) const
 
 bool ModuleNavigation::IsWalking(int index) const
 {
+	if (!m_navMesh || !m_crowd) return false;
 	const dtCrowdAgent* ag = m_crowd->getAgent(index);
 	return ag->state == DT_CROWDAGENT_STATE_WALKING;
 }
 
 void ModuleNavigation::RequestMoveVelocity(int index, const float* vel)
 {
+	if (!m_navMesh || !m_crowd) return;
 	m_crowd->requestMoveVelocity(index, vel);
 }
 
 void ModuleNavigation::ResetMoveTarget(int index)
 {
+	if (!m_navMesh || !m_crowd) return;
 	m_crowd->resetMoveTarget(index);
 }
 

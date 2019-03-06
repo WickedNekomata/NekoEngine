@@ -51,6 +51,10 @@ public class PlayerPrefsTest : JellyScript
         {
             NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
             agent.radius = 10f;
+
+            agent.isWalking();
+            agent.RequestMoveVelocity(Vector3.forward);
+            agent.ResetMoveTarget();
         }
     }
 }

@@ -1144,10 +1144,6 @@ void ModuleFileSystem::ImportFilesEvents(const Directory& directory, std::vector
 	{
 		ImportFilesEvents(directory.directories[i], lateEvents, lateLateEvents);
 	}
-	for (int i = 0; i < directory.directories.size(); ++i)
-	{
-		ImportFilesEvents(directory.directories[i], lateEvents, lateLateEvents);
-	}
 }
 
 void ModuleFileSystem::ForceReImport(const Directory& assetsDir)

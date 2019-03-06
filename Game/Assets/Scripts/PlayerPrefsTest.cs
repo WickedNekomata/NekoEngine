@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using JellyBitEngine;
+using JellyBitEngine.SceneManager;
 
 public class PlayerPrefsTest : JellyScript
 {
@@ -39,6 +40,11 @@ public class PlayerPrefsTest : JellyScript
         {
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
+        }
+
+        if(Input.GetKeyDown(KeyCode.KEY_0))
+        {
+            SceneManager.LoadScene("1");
         }
     }
 }

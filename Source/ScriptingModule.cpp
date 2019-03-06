@@ -2012,6 +2012,18 @@ void PlayerPrefsDeleteAll()
 	json_object_clear(App->scripting->playerPrefsOBJ);
 }
 
+void SMLoadScene(MonoString* sceneName)
+{
+	char* sceneNameCPP = mono_string_to_utf8(sceneName);
+
+	System_Event newEvent;
+	newEvent.sceneEvent.type = System_Event_Type::LoadScene;
+	memcpy(newEvent.sceneEvent.nameScene, sceneNameCPP, sizeof(char) * DEFAULT_BUF_SIZE);
+	App->PushSystemEvent(newEvent);
+
+	mono_free(sceneNameCPP);
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 void ScriptingModule::CreateDomain()
@@ -2107,6 +2119,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.PlayerPrefs::HasKey", (const void*)&PlayerPrefsHasKey);
 	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteKey", (const void*)&PlayerPrefsDeleteKey);
 	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteAll", (const void*)&PlayerPrefsDeleteAll);
+	mono_add_internal_call("JellyBitEngine.SceneManager.SceneManager::LoadScene", (const void*)&SMLoadScene);
 
 	ClearMap();
 

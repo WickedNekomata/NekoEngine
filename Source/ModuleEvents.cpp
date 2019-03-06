@@ -28,6 +28,8 @@
 #include "ComponentLabel.h"
 #include "ComponentAudioListener.h"
 
+#include "ResourceScene.h"
+
 #include "Application.h"
 #include "ModuleGOs.h"
 #include "ModuleResourceManager.h"
@@ -39,69 +41,89 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 {
 	switch (event.type)
 	{
-		case System_Event_Type::ComponentDestroyed:
-		{
-			delete event.compEvent.component;
-			break;
-		}
-		case System_Event_Type::GameObjectDestroyed:
-		{
-			delete event.goEvent.gameObject;
-			break;
-		}
-		case System_Event_Type::ResourceDestroyed:
-		{
-			App->res->EraseResource(event.resEvent.resource);
-			delete event.resEvent.resource;
-			break;
-		}
-		case System_Event_Type::Play:
-			assert(App->GOs->sceneStateBuffer == 0);
-			App->GOs->SerializeFromNode(App->scene->root, App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
-			break;
-		case System_Event_Type::SaveScene:
-		{
-			char* file; size_t size;
-			App->GOs->SerializeFromNode(App->scene->root, file, size, true);
-			App->fs->SaveInGame(file, size, FileTypes::SceneFile, std::string(event.sceneEvent.nameScene));
-			delete[] file;
-			break;
-		}
-		case System_Event_Type::Stop:
-			assert(App->GOs->sceneStateBuffer != 0);
+	case System_Event_Type::ComponentDestroyed:
+	{
+		delete event.compEvent.component;
+		break;
+	}
+	case System_Event_Type::GameObjectDestroyed:
+	{
+		delete event.goEvent.gameObject;
+		break;
+	}
+	case System_Event_Type::ResourceDestroyed:
+	{
+		App->res->EraseResource(event.resEvent.resource);
+		delete event.resEvent.resource;
+		break;
+	}
+	case System_Event_Type::Play:
+		assert(App->GOs->sceneStateBuffer == 0);
+		App->GOs->SerializeFromNode(App->scene->root, App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
+		break;
+	case System_Event_Type::SaveScene:
+	{
+		char* file; size_t size;
+		App->GOs->SerializeFromNode(App->scene->root, file, size, true);
+		App->fs->SaveInGame(file, size, FileTypes::SceneFile, std::string(event.sceneEvent.nameScene));
+		delete[] file;
+		break;
+	}
+	case System_Event_Type::Stop:
+		assert(App->GOs->sceneStateBuffer != 0);
 #ifndef GAMEMODE
-			App->scene->selectedObject = 0;
+		App->scene->selectedObject = 0;
 #endif
-			App->GOs->ClearScene();
-			App->GOs->LoadScene(App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
-			delete[] App->GOs->sceneStateBuffer;
-			App->GOs->sceneStateBuffer = 0;
-			System_Event newEvent;
-			newEvent.type = System_Event_Type::RecreateQuadtree;
-			App->PushSystemEvent(newEvent);
-			break;
-		case System_Event_Type::LoadScene:
+		App->GOs->ClearScene();
+		App->GOs->LoadScene(App->GOs->sceneStateBuffer, App->GOs->sceneStateSize);
+		delete[] App->GOs->sceneStateBuffer;
+		App->GOs->sceneStateBuffer = 0;
+		System_Event newEvent;
+		newEvent.type = System_Event_Type::RecreateQuadtree;
+		App->PushSystemEvent(newEvent);
+		break;
+	case System_Event_Type::LoadScene:
+	{
+		char metafile[DEFAULT_BUF_SIZE];
+		sprintf_s(metafile, "%s/%s%s%s", DIR_ASSETS_SCENES, event.sceneEvent.nameScene, EXTENSION_SCENE, EXTENSION_META);
+		if (App->fs->Exists(metafile))
 		{
-			char file[DEFAULT_BUF_SIZE];
-			sprintf_s(file, "%s/%s%s", DIR_ASSETS_SCENES, event.sceneEvent.nameScene, EXTENSION_SCENE);
-			char* buf;
-			size_t size = App->fs->Load(file, &buf);
+			char* metaBuffer;
+			size_t size = App->fs->Load(metafile, &metaBuffer);
 			if (size != 0)
 			{
-#ifndef GAMEMODE
-				App->scene->selectedObject = 0;
-#endif
-				App->GOs->ClearScene();
-				App->GOs->LoadScene(buf, size, true);
-				delete[] buf;
+				uint UID;
+				char* cursor = metaBuffer;
+				cursor += sizeof(int64_t) + sizeof(uint);
+				memcpy(&UID, cursor, sizeof(uint));
 
-				System_Event newEvent;
-				newEvent.type = System_Event_Type::RecreateQuadtree;
-				App->PushSystemEvent(newEvent);
+				delete[] metaBuffer;
+
+				ResourceScene* scene = (ResourceScene*)App->res->GetResource(UID);
+				if (scene)
+				{
+#ifndef GAMEMODE
+					App->scene->selectedObject = 0;
+#endif
+					char* sceneBuffer;
+					uint sceneSize = scene->GetSceneBuffer(sceneBuffer);
+
+					App->GOs->ClearScene();
+					App->GOs->LoadScene(sceneBuffer, sceneSize, true);
+					delete[] sceneBuffer;
+
+					System_Event newEvent;
+					newEvent.type = System_Event_Type::RecreateQuadtree;
+					App->PushSystemEvent(newEvent);
+				}
+				else
+					CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
 			}
 			else
 				CONSOLE_LOG(LogTypes::Error, "Unable to find the Scene...");
+
 			break;
 		}
+	}
 	}
 }

@@ -309,6 +309,7 @@
     <ClInclude Include="PhysicsConstants.h" />
     <ClInclude Include="ResourcePrefab.h" />
     <ClInclude Include="ResourceMaterial.h" />
+    <ClInclude Include="ResourceScene.h" />
     <ClInclude Include="SceneQueries.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="SimulationEvents.h" />
@@ -729,6 +730,7 @@
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
     <ClCompile Include="ResourceMaterial.cpp" />
+    <ClCompile Include="ResourceScene.cpp" />
     <ClCompile Include="SceneQueries.cpp" />
     <ClCompile Include="SimulationEvents.cpp" />
     <ClCompile Include="Color.cpp" />

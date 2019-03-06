@@ -23,6 +23,7 @@
 #include "ResourceScript.h"
 #include "ResourcePrefab.h"
 #include "ResourceMaterial.h"
+#include "ResourceScene.h"
 
 #include <assert.h>
 
@@ -688,6 +689,13 @@ Resource* ModuleResourceManager::ImportFile(const char* file)
 	case ResourceTypes::PrefabResource:
 	{
 		resource = ResourcePrefab::ImportFile(file);
+		resources[resource->GetUuid()] = resource;
+		break;
+	}
+
+	case ResourceTypes::SceneResource:
+	{
+		resource = ResourceScene::ImportFile(file);
 		resources[resource->GetUuid()] = resource;
 		break;
 	}
@@ -1372,8 +1380,10 @@ ResourceTypes ModuleResourceManager::GetResourceTypeByExtension(const char* exte
 	case ASCIIpfb: case ASCIIPFB:
 		return ResourceTypes::PrefabResource;
 		break;
+	case ASCIISCN: case ASCIIscn:
+		return ResourceTypes::SceneResource;
 	}
-
+	
 	return ResourceTypes::NoResourceType;
 }
 

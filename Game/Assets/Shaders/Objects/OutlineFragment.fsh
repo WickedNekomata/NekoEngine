@@ -15,55 +15,41 @@ out vec4 FragColor;
 struct Material
 {
 	sampler2D albedo;
-	sampler2D specular;
-	float shininess;
 };
 
 struct Light
 {
 	vec3 direction;
-
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	float intensity;
 };
 
 uniform vec3 viewPos;
-uniform Light light;
+//uniform Light light;
 uniform Material material;
 
 uniform vec3 lineColor; // the silhouette edge color
+uniform int levels;
 
-vec3 phong(vec3 ambient, vec3 diffuse, vec3 specular, float shininess, bool blinn)
+vec3 toonShade(vec3 ambient, vec3 diffuse, float scaleFactor)
 {
-	// Ambient
-	vec3 a = light.ambient * ambient;
+    vec3 lightDirection = vec3(-0.2, -1.0, -0.3);
+    float lightIntensity = 0.8;
+    
+    vec3 lightDir = normalize(lightDirection);
+    vec3 reflectDir = normalize(reflect(fs_in.fNormal, -lightDir));
+    vec3 viewDir = normalize(fs_in.fPosition - viewPos);
+      
+    float cosine = max(0.0, dot(fs_in.fNormal, -lightDir));
 
-	// Diffuse
-	vec3 lightDir = normalize(-light.direction);
-	float diff = max(dot(fs_in.fNormal, lightDir), 0.0);
-	vec3 d = light.diffuse * (diff * diffuse);
-
-	// Specular
-	vec3 viewDir = normalize(viewPos - fs_in.fPosition);
-	float spec = 0.0;
-	if (blinn)
-	{
-		vec3 halfwayDir = normalize(lightDir + viewDir);
-		spec = pow(max(dot(fs_in.fNormal, halfwayDir), 0.0), shininess);
-	}
-	else
-	{
-		vec3 reflectDir = reflect(-lightDir, fs_in.fNormal);
-		spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	}
-	vec3 s = light.specular * (spec * specular);
-
-	return a + d + s;
+    vec3 diffuseColor = diffuse * floor(cosine * levels) * scaleFactor;
+    
+    vec3 toonColor = lightIntensity * (ambient + diffuseColor); 
+    return toonColor;
 }
 
+
 void main()
-{
+{    
 	vec4 albedo = texture(material.albedo, fs_in.fTexCoord);
 	if (albedo.a < 0.1)
 		discard;
@@ -76,9 +62,11 @@ void main()
     // Otherwise, shade the poly
     else
     {
-	   vec3 a = vec3(albedo);
-	   vec3 s = vec3(texture(material.specular, fs_in.fTexCoord));
-	   vec3 phong = phong(a, a, s, 32.0, true);
-	   FragColor = vec4(a, albedo.a);
+       float scaleFactor = 1.0 / levels;
+       
+	   vec3 diffuse = vec3(albedo);
+	   vec3 ambient = diffuse;
+	   vec3 toon = toonShade(ambient, diffuse, scaleFactor);
+	   FragColor = vec4(toon, albedo.a);
 	}
 }

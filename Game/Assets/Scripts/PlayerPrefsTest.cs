@@ -46,6 +46,12 @@ public class PlayerPrefsTest : JellyScript
         {
             SceneManager.LoadScene("1");
         }
+
+        if(Input.GetKeyDown(KeyCode.KEY_3))
+        {
+            NavMeshAgent agent = gameObject.GetComponent<NavMeshAgent>();
+            agent.radius = 10f;
+        }
     }
 }
 

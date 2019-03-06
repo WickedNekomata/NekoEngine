@@ -27,7 +27,7 @@ public:
 	virtual void OnInternalSave(char*& cursor);
 	virtual void OnInternalLoad(char*& cursor);
 
-private:
+public:
 	float radius = 1.0f;
 	float height = 1.0f;
 	float maxAcceleration = 8.0f;

@@ -1779,6 +1779,111 @@ void SetDestination(MonoObject* navMeshAgent, MonoArray* newDestination)
 	agent->SetDestination(newDestinationcpp.ptr());
 }
 
+float NavAgentGetRadius(MonoObject* compAgent)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		return agent->radius;
+	}
+
+	return 0.0f;
+}
+
+void NavAgentSetRadius(MonoObject* compAgent, float newRadius)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		agent->radius = newRadius;
+		agent->UpdateParams();
+	}
+}
+
+float NavAgentGetHeight(MonoObject* compAgent)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		return agent->height;
+	}
+
+	return 0.0f;
+}
+
+void NavAgentSetHeight(MonoObject* compAgent, float newHeight)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		agent->height = newHeight;
+		agent->UpdateParams();
+	}
+}
+
+float NavAgentGetMaxAcceleration(MonoObject* compAgent)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		return agent->maxAcceleration;
+	}
+
+	return 0.0f;
+}
+
+void NavAgentSetMaxAcceleration(MonoObject* compAgent, float newMaxAcceleration)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		agent->maxAcceleration = newMaxAcceleration;
+		agent->UpdateParams();
+	}
+}
+
+float NavAgentGetMaxSpeed(MonoObject* compAgent)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		return agent->maxSpeed;
+	}
+
+	return 0.0f;
+}
+
+void NavAgentSetMaxSpeed(MonoObject* compAgent, float newMaxSpeed)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		agent->maxSpeed = newMaxSpeed;
+		agent->UpdateParams();
+	}
+}
+
+float NavAgentGetSeparationWeight(MonoObject* compAgent)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		return agent->separationWeight;
+	}
+
+	return 0.0f;
+}
+
+void NavAgentSetSeparationWeight(MonoObject* compAgent, float newSeparationWeight)
+{
+	ComponentNavAgent* agent = (ComponentNavAgent*)App->scripting->ComponentFrom(compAgent);
+	if (agent)
+	{
+		agent->separationWeight = newSeparationWeight;
+		agent->UpdateParams();
+	}
+}
+
 bool OverlapSphere(float radius, MonoArray* center, MonoArray** overlapHit, uint filterMask, SceneQueryFlags sceneQueryFlags)
 {
 	math::float3 centercpp(mono_array_get(center, float, 0), mono_array_get(center, float, 1), mono_array_get(center, float, 2));
@@ -2120,6 +2225,16 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteKey", (const void*)&PlayerPrefsDeleteKey);
 	mono_add_internal_call("JellyBitEngine.PlayerPrefs::DeleteAll", (const void*)&PlayerPrefsDeleteAll);
 	mono_add_internal_call("JellyBitEngine.SceneManager.SceneManager::LoadScene", (const void*)&SMLoadScene);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::GetRadius", (const void*)&NavAgentGetRadius);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::SetRadius", (const void*)&NavAgentSetRadius);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::GetHeight", (const void*)&NavAgentGetHeight);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::SetHeight", (const void*)&NavAgentSetHeight);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::GetMaxAcceleration", (const void*)&NavAgentGetMaxAcceleration);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::SetMaxAcceleration", (const void*)&NavAgentSetMaxAcceleration);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::GetMaxSpeed", (const void*)&NavAgentGetMaxSpeed);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::SetMaxSpeed", (const void*)&NavAgentSetMaxSpeed);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::GetSeparationWeight", (const void*)&NavAgentGetSeparationWeight);
+	mono_add_internal_call("JellyBitEngine.NavMeshAgent::SetSeparationWeight", (const void*)&NavAgentSetSeparationWeight);
 
 	ClearMap();
 

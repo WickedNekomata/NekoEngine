@@ -34,6 +34,18 @@ void ResourceScene::OnPanelAssets()
 	if (ImGui::TreeNodeEx(id, flags))
 		ImGui::TreePop();
 
+	if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered())
+	{
+		System_Event event;
+		event.sceneEvent.type = System_Event_Type::LoadScene;
+
+		std::string fileName;
+		App->fs->GetFileName(data.name.data(), fileName);
+
+		memcpy(event.sceneEvent.nameScene, fileName.data(), sizeof(char) * DEFAULT_BUF_SIZE);
+		App->PushSystemEvent(event);
+	}
+
 	if (ImGui::IsMouseReleased(0) && ImGui::IsItemHovered() /*&& (mouseDelta.x == 0 && mouseDelta.y == 0)*/)
 	{
 		SELECT(this);
@@ -46,6 +58,55 @@ void ResourceScene::OnPanelAssets()
 		ImGui::EndDragDropSource();
 	}
 #endif
+}
+
+bool ResourceScene::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		// Read the info of the meta
+		char* buffer;
+		uint size = App->fs->Load(metaFile, &buffer);
+		if (size > 0)
+		{
+			// Create a new name for the meta
+
+			char newMetaFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newMetaFile, "%s/%s%s", DIR_LIBRARY_SCENES, data.name.data(), EXTENSION_META);
+
+			// Save the new meta (info + new name)
+			size = App->fs->Save(newMetaFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+
+	//2 Copy scene file
+	// Read the info of the meta
+	if (App->fs->Exists(data.file.data()))
+	{
+		char* buffer;
+		uint size = App->fs->Load(data.file.data(), &buffer);
+		if (size > 0)
+		{
+			char newFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newFile, "%s/%s", DIR_LIBRARY_SCENES, data.name.data());
+
+			// Save the new file
+			size = App->fs->Save(newFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+	return true;
 }
 
 ResourceScene* ResourceScene::ImportFile(const char* file)
@@ -72,9 +133,6 @@ ResourceScene* ResourceScene::ImportFile(const char* file)
 
 ResourceScene* ResourceScene::ExportFile(const char* sceneName)
 {
-	char filePath[DEFAULT_BUF_SIZE];
-	sprintf(filePath, "%s/%s%s", DIR_ASSETS_PREFAB, sceneName, EXTENSION_PREFAB);
-
 	ResourceData data;
 	data.file = DIR_ASSETS_SCENES + std::string("/") + sceneName + EXTENSION_SCENE;
 	data.exportedFile = "";

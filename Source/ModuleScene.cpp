@@ -129,7 +129,10 @@ void ModuleScene::OnSystemEvent(System_Event event)
 	case System_Event_Type::LoadGMScene:
 	{
 		char* buf;
-		size_t size = App->fs->Load("Settings/GameReady.nekoScene", &buf);
+		if (!App->fs->Exists("Library/Scenes/Main Scene.scn"))
+			return;
+
+		size_t size = App->fs->Load("Library/Scenes/Main Scene.scn", &buf);
 		if (size > 0)
 		{
 			App->GOs->LoadScene(buf, size, true);

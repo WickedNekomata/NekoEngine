@@ -17,6 +17,7 @@ public:
 	~ResourcePrefab();
 
 	void OnPanelAssets();
+	bool GenerateLibraryFiles() const;
 
 	static ResourcePrefab* ImportFile(const char* file);
 	static ResourcePrefab* ExportFile(const char* prefabName, GameObject* templateRoot);

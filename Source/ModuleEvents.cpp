@@ -82,7 +82,11 @@ void ModuleEvents::OnSystemEvent(System_Event event)
 	case System_Event_Type::LoadScene:
 	{
 		char metafile[DEFAULT_BUF_SIZE];
+#ifndef GAMEMODE
 		sprintf_s(metafile, "%s/%s%s%s", DIR_ASSETS_SCENES, event.sceneEvent.nameScene, EXTENSION_SCENE, EXTENSION_META);
+#else
+		sprintf_s(metafile, "%s/%s%s%s", DIR_LIBRARY_SCENES, event.sceneEvent.nameScene, EXTENSION_SCENE, EXTENSION_META);
+#endif
 		if (App->fs->Exists(metafile))
 		{
 			char* metaBuffer;

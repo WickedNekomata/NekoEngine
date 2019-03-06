@@ -15,6 +15,7 @@ public:
 	~ResourceScene();
 
 	void OnPanelAssets();
+	bool GenerateLibraryFiles() const;
 
 	static ResourceScene* ImportFile(const char* file);
 	static ResourceScene* ExportFile(const char* sceneName);

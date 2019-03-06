@@ -974,6 +974,13 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 	}
 	break;
 
+	case ResourceTypes::SceneResource:
+	{
+		resource = ResourceScene::ImportFile(file);
+		resources[resource->GetUuid()] = resource;
+	}
+	break;
+
 	case ResourceTypes::BoneResource:
 	{
 		std::string fileName;
@@ -1411,6 +1418,8 @@ ResourceTypes ModuleResourceManager::GetLibraryResourceTypeByExtension(const cha
 		return ResourceTypes::ScriptResource;
 	else if (strcmp(extension, EXTENSION_PREFAB) == 0)
 		return ResourceTypes::PrefabResource;
+	else if (strcmp(extension, EXTENSION_SCENE) == 0)
+		return ResourceTypes::SceneResource;
 
 	return ResourceTypes::NoResourceType;
 }

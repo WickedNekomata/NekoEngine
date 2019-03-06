@@ -50,6 +50,56 @@ void ResourcePrefab::OnPanelAssets()
 #endif
 }
 
+bool ResourcePrefab::GenerateLibraryFiles() const
+{
+	assert(data.file.data() != nullptr);
+
+	// Search for the meta associated to the file
+	char metaFile[DEFAULT_BUF_SIZE];
+	strcpy_s(metaFile, strlen(data.file.data()) + 1, data.file.data()); // file
+	strcat_s(metaFile, strlen(metaFile) + strlen(EXTENSION_META) + 1, EXTENSION_META); // extension
+
+	// 1. Copy meta
+	if (App->fs->Exists(metaFile))
+	{
+		// Read the info of the meta
+		char* buffer;
+		uint size = App->fs->Load(metaFile, &buffer);
+		if (size > 0)
+		{
+			// Create a new name for the meta
+
+			char newMetaFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newMetaFile, "%s/%s%s", DIR_LIBRARY_PREFAB, data.name.data(), EXTENSION_META);
+
+			// Save the new meta (info + new name)
+			size = App->fs->Save(newMetaFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+
+	//2 Copy prefab file
+	// Read the info of the meta
+	if (App->fs->Exists(data.file.data()))
+	{
+		char* buffer;
+		uint size = App->fs->Load(data.file.data(), &buffer);
+		if (size > 0)
+		{
+			char newFile[DEFAULT_BUF_SIZE];
+			sprintf_s(newFile, "%s/%s", DIR_LIBRARY_PREFAB, data.name.data());
+
+			// Save the new file
+			size = App->fs->Save(newFile, buffer, size);
+			if (size > 0)
+				delete[] buffer;
+		}
+	}
+
+	return true;
+}
+
 ResourcePrefab* ResourcePrefab::ImportFile(const char* file)
 {
 	std::string ext;

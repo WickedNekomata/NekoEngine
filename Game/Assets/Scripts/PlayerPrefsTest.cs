@@ -19,7 +19,6 @@ public class PlayerPrefsTest : JellyScript
     //Called every frame
     public override void Update()
     {
-        Debug.ClearConsole();
         Debug.Log("Life: " + life.ToString());
         Debug.Log("Name: " + name);
         Debug.Log("Dead: " + dead.ToString());
@@ -56,6 +55,8 @@ public class PlayerPrefsTest : JellyScript
             agent.RequestMoveVelocity(Vector3.forward);
             agent.ResetMoveTarget();
         }
+
+        Debug.Log("FixedDeltaTime: " + Time.fixedDeltaTime.ToString());
     }
 }
 

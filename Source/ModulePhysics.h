@@ -69,6 +69,8 @@ public:
 	void DrawRigidActors() const;
 	void DestroyChest();
 
+	float GetFixedDT();
+
 	// ----------------------------------------------------------------------------------------------------
 
 	// Physic elements

@@ -275,6 +275,31 @@ void ComponentScript::OnStop()
 	}
 }
 
+void ComponentScript::FixedUpdate()
+{
+	ResourceScript* scriptRes = (ResourceScript*)App->res->GetResource(scriptResUUID);
+	if (scriptRes && scriptRes->fixedUpdateMethod)
+	{
+		MonoObject* exc = nullptr;
+		if (IsTreeActive())
+		{
+			mono_runtime_invoke(scriptRes->fixedUpdateMethod, classInstance, NULL, &exc);
+			if (exc)
+			{
+				System_Event event;
+				event.type = System_Event_Type::Pause;
+				App->PushSystemEvent(event);
+				App->Pause();
+
+				MonoString* exceptionMessage = mono_object_to_string(exc, NULL);
+				char* toLogMessage = mono_string_to_utf8(exceptionMessage);
+				CONSOLE_LOG(LogTypes::Error, toLogMessage);
+				mono_free(toLogMessage);
+			}
+		}
+	}
+}
+
 void ComponentScript::OnEnable()
 {
 	if (App->GetEngineState() == engine_states::ENGINE_PLAY)

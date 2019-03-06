@@ -24,6 +24,7 @@ public:
 	void OnEnableMethod();
 	void OnDisableMethod();
 	void OnStop();
+	void FixedUpdate();
 
 	void OnEnable() override;
 	void OnDisable() override;

@@ -207,6 +207,10 @@ bool ResourceScript::referenceMethods()
 	stopMethod = mono_method_desc_search_in_image(desc, App->scripting->scriptsImage);
 	mono_method_desc_free(desc);
 
+	desc = mono_method_desc_new((scriptName + ":FixedUpdate()").data(), false);
+	fixedUpdateMethod = mono_method_desc_search_in_image(desc, App->scripting->scriptsImage);
+	mono_method_desc_free(desc);
+
 	return true;
 }
 

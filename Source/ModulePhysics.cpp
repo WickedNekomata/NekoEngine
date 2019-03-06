@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleTimeManager.h"
 #include "ModuleRenderer3D.h"
+#include "ScriptingModule.h"
 #include "GameObject.h"
 
 // *****Debug*****
@@ -213,6 +214,9 @@ update_status ModulePhysics::Update()
 		if (gAccumulator >= PhysicsConstants::FIXED_DT)
 		{
 			gAccumulator = 0.0f;
+
+			//Call the FixedUpdate in all the active scripts
+			App->scripting->FixedUpdate();
 
 			updateStatus = FixedUpdate();
 
@@ -645,6 +649,11 @@ void ModulePhysics::DestroyChest()
 		}
 	}
 }
+float ModulePhysics::GetFixedDT()
+{
+	return PhysicsConstants::FIXED_DT;
+}
+
 //_*****Debug*****
 
 // ----------------------------------------------------------------------------------------------------

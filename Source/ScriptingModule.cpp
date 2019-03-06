@@ -891,6 +891,14 @@ void ScriptingModule::GameObjectKilled(GameObject* killed)
 	}
 }
 
+void ScriptingModule::FixedUpdate()
+{
+	for (int i = 0; i < scripts.size(); ++i)
+	{
+		scripts[i]->FixedUpdate();
+	}
+}
+
 void ScriptingModule::UpdateMethods()
 {
 	for (int i = 0; i < scripts.size(); ++i)
@@ -1262,6 +1270,11 @@ float GetDeltaTime()
 float GetRealDeltaTime()
 {
 	return App->timeManager->GetRealDt();
+}
+
+float GetFixedDeltaTime()
+{
+	return App->physics->GetFixedDT();
 }
 
 float GetTime()
@@ -2212,6 +2225,7 @@ void ScriptingModule::CreateDomain()
 	mono_add_internal_call("JellyBitEngine.Time::getRealDeltaTime", (const void*)&GetRealDeltaTime);
 	mono_add_internal_call("JellyBitEngine.Time::getTime", (const void*)&GetTime);
 	mono_add_internal_call("JellyBitEngine.Time::getRealTime", (const void*)&GetRealTime);
+	mono_add_internal_call("JellyBitEngine.Time::getFixedDT", (const void*)&GetFixedDeltaTime);
 	mono_add_internal_call("JellyBitEngine.Transform::getLocalPosition", (const void*)&GetLocalPosition);
 	mono_add_internal_call("JellyBitEngine.Transform::setLocalPosition", (const void*)&SetLocalPosition);
 	mono_add_internal_call("JellyBitEngine.Transform::getLocalRotation", (const void*)&GetLocalRotation);

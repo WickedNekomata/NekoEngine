@@ -76,6 +76,7 @@ public:
 	_MonoMethod* enableMethod = nullptr;
 	_MonoMethod* disableMethod = nullptr;
 	_MonoMethod* stopMethod = nullptr;
+	_MonoMethod* fixedUpdateMethod = nullptr;
 
 private:
 	static std::vector<std::string> scriptNames;

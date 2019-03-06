@@ -1132,6 +1132,8 @@ Resource* ModuleResourceManager::CreateResource(ResourceTypes type, ResourceData
 		case ResourceTypes::AnimationResource:
 			resource = new ResourceAnimation(ResourceTypes::AnimationResource, uuid, data, *(ResourceAnimationData*)specificData);
 			break;
+		case ResourceTypes::SceneResource:
+			resource = new ResourceScene(uuid, data, *(SceneData*)specificData);
 	}
 
 	assert(resource != nullptr);

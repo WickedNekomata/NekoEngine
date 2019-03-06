@@ -80,11 +80,11 @@ ResourceScene* ResourceScene::ExportFile(const char* sceneName)
 	data.exportedFile = "";
 	data.name = sceneName + std::string(EXTENSION_SCENE);
 
-	ResourceScene* retScene = new ResourceScene(App->GenerateRandomNumber(), data, SceneData());
+	ResourceScene* retScene = (ResourceScene*)App->res->CreateResource(ResourceTypes::SceneResource, data, &SceneData());
 
 	char* buffer;
 	uint size;
-	App->GOs->SerializeFromNode(App->scene->root, buffer, size);
+	App->GOs->SerializeFromNode(App->scene->root, buffer, size, true);
 
 	App->fs->Save(data.file, buffer, size);
 

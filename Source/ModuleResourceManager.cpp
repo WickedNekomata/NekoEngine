@@ -834,6 +834,8 @@ Resource* ModuleResourceManager::ImportLibraryFile(const char* file)
 		ResourceTextureData textureData;
 		data.exportedFile = file;
 
+		App->materialImporter->Load(file, data, textureData);
+
 		// Search for the meta associated to the file
 		char metaFile[DEFAULT_BUF_SIZE];
 		strcpy_s(metaFile, strlen(file) + 1, file); // file

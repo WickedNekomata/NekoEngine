@@ -196,22 +196,25 @@ bool PanelShaderEditor::Draw()
 							shaderProgram->SetName(shaderProgramName);
 							shaderProgram->SetShaderProgramType(ShaderProgramTypes::Custom);
 							shaderProgram->SetShaderObjects(shaderObjectsUuids);
-							shaderProgram->Link();
 
 							// Export the existing file
 							App->res->ExportFile(ResourceTypes::ShaderProgramResource, shaderProgram->GetData(), &shaderProgram->GetSpecificData(), outputFile, true, false);
+							
+							shaderProgram->Link();
 						}
 						else
 						{
 							// Basic shader program
 							ResourceData data;
 							ResourceShaderProgramData shaderProgramData;
+							
 							data.name = shaderProgramName;
 							shaderProgramData.shaderProgramType = ShaderProgramTypes::Custom;
 							shaderProgramData.shaderObjectsUuids = shaderObjectsUuids;
 
 							// Export the new file
 							shaderProgram = (ResourceShaderProgram*)App->res->ExportFile(ResourceTypes::ShaderProgramResource, data, &shaderProgramData, outputFile);
+							
 							shaderProgramUuid = shaderProgram->GetUuid();
 						}
 					}
@@ -302,6 +305,13 @@ uint PanelShaderEditor::GetShaderObjects(std::vector<uint>& shaderObjectsUuids) 
 		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(vertexShadersUuids[i]);
 		if (shaderObject != nullptr && shaderObject->isValid)
 			shaderObjectsUuids.push_back(vertexShadersUuids[i]);
+	}
+
+	for (uint i = 0; i < geometryShadersUuids.size(); ++i)
+	{
+		ResourceShaderObject* shaderObject = (ResourceShaderObject*)App->res->GetResource(geometryShadersUuids[i]);
+		if (shaderObject != nullptr && shaderObject->isValid)
+			shaderObjectsUuids.push_back(geometryShadersUuids[i]);
 	}
 
 	for (uint i = 0; i < fragmentShadersUuids.size(); ++i)

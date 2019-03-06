@@ -555,6 +555,110 @@ uint ResourceMesh::GetIndicesCount() const
 	return meshData.indicesSize;
 }
 
+bool ResourceMesh::UseAdjacency() const
+{
+	return meshData.adjacency;
+}
+
+void ResourceMesh::CalculateAdjacentIndices(uint* indices, uint indicesSize, uint*& adjacentIndices)
+{
+	adjacentIndices = new uint[indicesSize * 2];
+
+	for (uint i = 0; i < indicesSize; ++i)
+	{
+		adjacentIndices[i * 2 + 0] = indices[i];
+		adjacentIndices[i * 2 + 1] = 0;
+		adjacentIndices[i * 2 + 2] = indices[i + 1];
+		adjacentIndices[i * 2 + 3] = 0;
+		adjacentIndices[i * 2 + 4] = indices[i + 2];
+		adjacentIndices[i * 2 + 5] = 0;
+	}
+
+	// Find matching edges
+	for (uint i = 0; i < indicesSize * 2; i+=6)
+	{
+		// Triangle A
+		uint a1 = adjacentIndices[i];
+		uint b1 = adjacentIndices[i + 2];
+		uint c1 = adjacentIndices[i + 4];
+
+		// Scan subsequent triangles
+		for (uint j = i + 6; j < indicesSize * 2; j += 6)
+		{
+			// Triangle B
+			uint a2 = adjacentIndices[j];
+			uint b2 = adjacentIndices[j + 2];
+			uint c2 = adjacentIndices[j + 4];
+
+			// Edge 1 == Edge 1
+			if ((a1 == a2 && b1 == b2) || (a1 == b2 && b1 == a2))
+			{
+				adjacentIndices[i + 1] = c2;
+				adjacentIndices[j + 1] = c1;
+			}
+			// Edge 1 == Edge 2
+			if ((a1 == b2 && b1 == c2) || (a1 == c2 && b1 == b2))
+			{
+				adjacentIndices[i + 1] = a2;
+				adjacentIndices[j + 3] = c1;
+			}
+			// Edge 1 == Edge 3
+			if ((a1 == c2 && b1 == a2) || (a1 == a2 && b1 == c2))
+			{
+				adjacentIndices[i + 1] = b2;
+				adjacentIndices[j + 5] = c1;
+			}
+			// Edge 2 == Edge 1
+			if ((b1 == a2 && c1 == b2) || (b1 == b2 && c1 == a2))
+			{
+				adjacentIndices[i + 3] = c2;
+				adjacentIndices[j + 1] = a1;
+			}
+			// Edge 2 == Edge 2
+			if ((b1 == b2 && c1 == c2) || (b1 == c2 && c1 == b2))
+			{
+				adjacentIndices[i + 3] = a2;
+				adjacentIndices[j + 3] = a1;
+			}
+			// Edge 2 == Edge 3
+			if ((b1 == c2 && c1 == a2) || (b1 == a2 && c1 == c2))
+			{
+				adjacentIndices[i + 3] = b2;
+				adjacentIndices[j + 5] = a1;
+			}
+			// Edge 3 == Edge 1
+			if ((c1 == a2 && a1 == b2) || (c1 == b2 && a1 == a2))
+			{
+				adjacentIndices[i + 5] = c2;
+				adjacentIndices[j + 1] = b1;
+			}
+			// Edge 3 == Edge 2
+			if ((c1 == b2 && a1 == c2) || (c1 == c2 && a1 == b2))
+			{
+				adjacentIndices[i + 5] = a2;
+				adjacentIndices[j + 3] = b1;
+			}
+			// Edge 3 == Edge 3
+			if ((c1 == c2 && a1 == a2) || (c1 == a2 && a1 == c2))
+			{
+				adjacentIndices[i + 5] = b2;
+				adjacentIndices[j + 5] = b1;
+			}
+		}
+	}
+
+	// Look for any outside edges
+	for (uint i = 0; i < indicesSize * 2; i += 6)
+	{
+		if (adjacentIndices[i + 1] == 0)
+			adjacentIndices[i + 1] = adjacentIndices[i + 4];
+		if (adjacentIndices[i + 3] == 0)
+			adjacentIndices[i + 3] = adjacentIndices[i];
+		if (adjacentIndices[i + 5] == 0)
+			adjacentIndices[i + 5] = adjacentIndices[i + 2];
+	}
+}
+
 void ResourceMesh::GenerateAndBindDeformableMesh()
 {
 	assert(deformableMeshData.vertices != nullptr && deformableMeshData.verticesSize > 0
@@ -694,7 +798,7 @@ bool ResourceMesh::LoadInMemory()
 		&& meshData.indices != nullptr && meshData.indicesSize > 0);
 
 	App->sceneImporter->GenerateVBO(VBO, meshData.vertices, meshData.verticesSize);
-	App->sceneImporter->GenerateIBO(IBO, meshData.indices, meshData.indicesSize);
+	App->sceneImporter->GenerateIBO(IBO, meshData.adjacency ? meshData.adjacentIndices : meshData.indices, meshData.adjacency ? 2 * meshData.indicesSize : meshData.indicesSize);
 	App->sceneImporter->GenerateVAO(VAO, VBO);
 
 	return true;

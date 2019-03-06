@@ -663,8 +663,16 @@ void ModuleRenderer3D::DrawMesh(ComponentMesh* toDraw) const
 
 	glBindVertexArray((mesh->deformableMeshData.indicesSize == 0) ? mesh->GetVAO() : mesh->DVAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (mesh->deformableMeshData.indicesSize == 0) ? mesh->GetIBO() : mesh->DIBO);
-	glDrawElements(GL_TRIANGLES, (mesh->deformableMeshData.indicesSize == 0) ? 
-		mesh->GetIndicesCount() : mesh->deformableMeshData.indicesSize, GL_UNSIGNED_INT, NULL);
+
+	uint indicesSize = 0;
+	if (mesh->UseAdjacency())
+		indicesSize = mesh->GetIndicesCount() * 2;
+	else if (mesh->deformableMeshData.indicesSize > 0)
+		indicesSize = mesh->deformableMeshData.indicesSize;
+	else
+		indicesSize = mesh->GetIndicesCount();
+
+	glDrawElements(mesh->UseAdjacency() ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 

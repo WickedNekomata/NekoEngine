@@ -99,7 +99,7 @@ public:
 	uint GetIndicesCount() const;
 	bool UseAdjacency() const;
 
-	static void CalculateAdjacentIndices(uint* indices, uint indicesSize, uint* adjacentIndices);
+	static void CalculateAdjacentIndices(uint* indices, uint indicesSize, uint*& adjacentIndices);
 
 	void GenerateAndBindDeformableMesh();
 	void UnloadDeformableMeshFromMemory();

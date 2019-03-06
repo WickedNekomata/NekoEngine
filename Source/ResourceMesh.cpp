@@ -560,7 +560,7 @@ bool ResourceMesh::UseAdjacency() const
 	return meshData.adjacency;
 }
 
-void ResourceMesh::CalculateAdjacentIndices(uint* indices, uint indicesSize, uint* adjacentIndices)
+void ResourceMesh::CalculateAdjacentIndices(uint* indices, uint indicesSize, uint*& adjacentIndices)
 {
 	adjacentIndices = new uint[indicesSize * 2];
 
@@ -797,8 +797,11 @@ bool ResourceMesh::LoadInMemory()
 	assert(meshData.vertices != nullptr && meshData.verticesSize > 0
 		&& meshData.indices != nullptr && meshData.indicesSize > 0);
 
+	if (meshData.adjacency)
+		ResourceMesh::CalculateAdjacentIndices(meshData.indices, meshData.indicesSize, meshData.adjacentIndices);
+
 	App->sceneImporter->GenerateVBO(VBO, meshData.vertices, meshData.verticesSize);
-	App->sceneImporter->GenerateIBO(IBO, meshData.indices, meshData.indicesSize);
+	App->sceneImporter->GenerateIBO(IBO, meshData.adjacency ? meshData.adjacentIndices : meshData.indices, meshData.adjacency ? 2 * meshData.indicesSize : meshData.indicesSize);
 	App->sceneImporter->GenerateVAO(VAO, VBO);
 
 	return true;

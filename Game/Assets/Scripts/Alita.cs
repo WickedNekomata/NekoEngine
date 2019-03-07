@@ -54,6 +54,7 @@ public class Alita : JellyScript
     //Called every frame
     public override void Update()
     {
+
         CheckState();
 
         if(state != Alita_State.DASHING)
@@ -75,7 +76,7 @@ public class Alita : JellyScript
         switch (state)
         {
             case Alita_State.IDLE:
-
+                
                 break;
             case Alita_State.RUNNING:
 
@@ -110,6 +111,13 @@ public class Alita : JellyScript
                 }
                 break;
             case Alita_State.DASHING:
+                float distDash = (float)(placeToGo - transform.position).magnitude;
+                if (distDash <= 3.0f || distDash <= -3.0f)
+                {
+                    agent.maxSpeed = 0;
+                    state = Alita_State.IDLE;
+                }
+
                 break;
             case Alita_State.AREA_ATTK:
                 agent.SetDestination(transform.position);
@@ -152,17 +160,19 @@ public class Alita : JellyScript
         }
 
         //Move
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT) && !Input.GetKey(KeyCode.KEY_SPACE))
         {
             Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 state = Alita_State.RUNNING;
-
+                
                 if (agent == null)
                     agent = gameObject.GetComponent<NavMeshAgent>();
 
+                agent.maxSpeed = 10;
+                agent.maxAcceleration = 30;
                 if (agent != null)
                 {
                     Debug.Log("GOING TO SPOT");
@@ -178,10 +188,47 @@ public class Alita : JellyScript
 
     private void CheckForDash()
     {
+        if (agent == null)
+            agent = gameObject.GetComponent<NavMeshAgent>();
+
+        //Way 1
+        //if (Input.GetKeyDown(KeyCode.KEY_SPACE))
+        //{
+        //    Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+        //    RaycastHit hit;
+        //
+        //    if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        //    {
+        //        Vector3 direction = (hit.point - transform.position).normalized();
+        //        Vector3 mov_dash = new Vector3(direction.x * 3.0f, transform.position.y, direction.z * 3.0f);
+        //
+        //        agent.RequestMoveVelocity(mov_dash);
+        //    }
+        //
+        //    //state = Alita_State.DASHING;
+        //}
+
+
+        //Way 2
         if (Input.GetKeyDown(KeyCode.KEY_SPACE))
-        {
+       {
+
+            agent.maxSpeed = 200;
+            agent.maxAcceleration = 200;
+
+            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            {
+                Vector3 direction = (hit.point - transform.position).normalized();
+                Vector3 dash_pos = transform.position + direction * 7.0f;
+                agent.SetDestination(dash_pos);
+                placeToGo = dash_pos;
+            }
+
             state = Alita_State.DASHING;
-        }
+       }
     }
 
     private void CheckForSPAttack()

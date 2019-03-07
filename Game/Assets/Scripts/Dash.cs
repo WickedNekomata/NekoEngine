@@ -8,6 +8,10 @@ public class Dash : JellyScript
     public float stopRadius = 3.0f;
     public float maxDashSpeed = 200.0f;
     public float maxDashAcc = 200.0f;
+    public float coolDownTime = 0.2f;
+
+    private bool coolDown = false;
+    private float coolDwnTimr = 0.0f;
 
     //Place to go
     private Vector3 placeToGo = new Vector3(0, 0, 0);
@@ -20,6 +24,7 @@ public class Dash : JellyScript
     {
 
     }
+
 
     public bool ExecuteDash(NavMeshAgent agent)
     {
@@ -57,11 +62,28 @@ public class Dash : JellyScript
         if (distDash <= stopRadius)
         {
             agent.maxSpeed = 0.0f;
-            dashing = false;
+            coolDown = true;
         }
+
+        if (coolDown)
+            dashing = CoolingDown();
 
         return dashing;
     }
 
+    private bool CoolingDown()
+    {
+        coolDwnTimr += Time.deltaTime;
+
+        if (coolDwnTimr >= coolDownTime)
+        {
+            Debug.Log("COOLED");
+            coolDwnTimr = 0.0f;
+            coolDown = false;
+            return false;
+        }
+
+        return true;
+    }
 
 }

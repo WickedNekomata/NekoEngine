@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using JellyBitEngine;
 
 public class Alita : JellyScript
@@ -6,6 +7,8 @@ public class Alita : JellyScript
     //Alita propeties
     int life = 50;
     int damage = 20;
+    float speed = 10.0f;
+    float acceleration = 30.0f;
 
     //Habilities
     Dash dash = null;
@@ -134,54 +137,14 @@ public class Alita : JellyScript
     {
         //Attack
         if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
-        {
-            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-            {
-                //Go to attack
-                enemy = hit.gameObject;
-                if (enemy != null)
-                {
-                    state = Alita_State.GOING_TO_ATTK;
-                    //Determine a place a little further than enemy position
-                    Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
-                    Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
-
-                    agent.SetDestination(enemy_pos);
-
-                    enemy_unit = enemy.GetComponent<Unit>();
-
-                    Debug.Log("GOING TO ENEMY");
-                }
-                else
-                    Debug.Log("ENEMY IS NULL");
-            }
-        }
+            DecideIfGoToAttack();
 
         //Move
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT) && !Input.GetKey(KeyCode.KEY_SPACE))
-        {
-            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-            {
-                state = Alita_State.RUNNING;
-
-                agent.maxSpeed = 10;
-                agent.maxAcceleration = 30;
-                if (agent != null)
-                {
-                    Debug.Log("GOING TO SPOT");
-                    agent.SetDestination(hit.point);
-                    placeToGo = hit.point;
-                }
-                else
-                    Debug.Log("AGENT IS NULL");
-
-            }
-        }
+        if (Input.GetMouseButton(MouseKeyCode.MOUSE_RIGHT))
+            Move();
+           
     }
+
 
     private void CheckForDash()
     {
@@ -224,6 +187,60 @@ public class Alita : JellyScript
             isAreaActive = false;
             areaCircle.active = false;
 
+        }
+    }
+
+    //Basic Actions
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    private void Move()
+    {
+        Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        {
+            state = Alita_State.RUNNING;
+            agent.maxSpeed = speed;
+            agent.maxAcceleration = acceleration;
+
+            if (agent != null)
+            {
+                Debug.Log("GOING TO SPOT");
+                agent.SetDestination(hit.point);
+                placeToGo = hit.point;
+            }
+            else
+                Debug.Log("AGENT IS NULL");
+
+        }
+    }
+
+    private void DecideIfGoToAttack()
+    {
+        Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        {
+            //Go to attack
+            enemy = hit.gameObject;
+            if (enemy != null)
+            {
+                state = Alita_State.GOING_TO_ATTK;
+                agent.maxSpeed = speed;
+                agent.maxAcceleration = acceleration;
+
+                //Determine a place a little further than enemy position
+                Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
+                Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
+
+                agent.SetDestination(enemy_pos);
+
+                enemy_unit = enemy.GetComponent<Unit>();
+
+                Debug.Log("GOING TO ENEMY");
+            }
+            else
+                Debug.Log("ENEMY IS NULL");
         }
     }
 

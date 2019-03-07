@@ -3,258 +3,65 @@ using JellyBitEngine;
 
 public class Dash : JellyScript
 {
-    //Alita propeties
-    int life = 50;
-    int damage = 20;
+    //Dash propeties
+    public float dashLength = 7.0f;
+    public float stopRadius = 3.0f;
+    public float maxDashSpeed = 200.0f;
+    public float maxDashAcc = 200.0f;
+
+    //Place to go
+    private Vector3 placeToGo = new Vector3(0, 0, 0);
 
     // Raycast
     public LayerMask terrainMask = new LayerMask();
-    public LayerMask enemyMask = new LayerMask();
-
-    //Place to go
-    Vector3 placeToGo = new Vector3(0, 0, 0);
-
-    //Agent
-    private NavMeshAgent agent = null;
-
-    //Alita states
-    private enum Alita_State
-    {
-        IDLE,
-        RUNNING,
-        GOING_TO_ATTK,
-        ATTK,
-        AREA_ATTK
-    }
-    Alita_State state = Alita_State.IDLE;
     
-    //SP attack types
-    private enum SP_Attack_Type
+
+    public override void Awake()
     {
-        NONE,
-        AREA,
-        DASH
-    }
-    SP_Attack_Type SP_type = SP_Attack_Type.NONE;
-
-    //Enemy
-    GameObject enemy = null;
-    Unit enemy_unit = null;
-
-    //Variables about attack distance and time
-    public float attack_dist = 2.0f;
-    public float attk_period = 1.0f;
-    private float attk_cool_down = 0.0f;
-
-    //Variables for SP attacks
-    private bool isAreaActive = false;
-    //public GameObject areaCircle;
-
-    public override void Start()
-    {
-        agent = gameObject.GetComponent<NavMeshAgent>();
-    }
-
-    //Called every frame
-    public override void Update()
-    {
-        CheckState();
-        CheckForMouseClick();
-
-        if (state != Alita_State.ATTK && state != Alita_State.AREA_ATTK)
-            CheckForSPAttack(); //Only special attacks when no normal attacking
-    }
-
-
-    //Check for... functions
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    private void CheckState()
-    {
-        switch (state)
-        {
-            case Alita_State.IDLE:
-
-                break;
-            case Alita_State.RUNNING:
-
-                if (placeToGo == transform.position)
-                {
-                    agent.SetDestination(transform.position);
-                    state = Alita_State.IDLE;
-                }
-
-                break;
-            case Alita_State.GOING_TO_ATTK:
-
-                float diff = (float)(enemy.transform.position - transform.position).magnitude;
-                if (diff <= attack_dist + 1.0f)
-                {
-                    Debug.Log("ARRIVE TO ENEMY");
-                    agent.SetDestination(transform.position);
-                    state = Alita_State.ATTK;
-                }
-
-                break;
-            case Alita_State.ATTK:
-
-                if (enemy != null)
-                    NormalAttack();
-                else
-                {
-                    enemy = null;
-                    enemy_unit = null;
-                    state = Alita_State.IDLE;
-                }
-                break;
-
-            case Alita_State.AREA_ATTK:
-
-                switch (SP_type)
-                {
-                    case SP_Attack_Type.AREA:
-                        agent.SetDestination(transform.position);
-                        AreaAttack();
-                        state = Alita_State.IDLE;
-                        break;
-                    case SP_Attack_Type.DASH:
-                        //Check if arrives to place
-                        break;
-                }
-   
-                break;
-        }
-    }
-
-    private void CheckForMouseClick()
-    {
-        //Attack
-        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_LEFT))
-        {
-            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-            {
-                //Go to attack
-                enemy = hit.gameObject;
-                if (enemy != null)
-                {
-                    state = Alita_State.GOING_TO_ATTK;
-                    //Determine a place a little further than enemy position
-                    Vector3 enemy_fwrd_vec = (transform.position - enemy.transform.position).normalized();
-                    Vector3 enemy_pos = enemy.transform.position + enemy_fwrd_vec * attack_dist;
-
-                    agent.SetDestination(enemy_pos);
-
-                    enemy_unit = enemy.GetComponent<Unit>();
-
-                    Debug.Log("GOING TO ENEMY");
-                }
-                else
-                    Debug.Log("ENEMY IS NULL");
-            }
-
-        }
-
-        //Move
-        if (Input.GetMouseButtonDown(MouseKeyCode.MOUSE_RIGHT))
-        {
-            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-            {
-                state = Alita_State.RUNNING;
-
-                if (agent == null)
-                    agent = gameObject.GetComponent<NavMeshAgent>();
-
-                if (agent != null)
-                {
-                    Debug.Log("GOING TO SPOT");
-                    agent.SetDestination(hit.point);
-                    placeToGo = hit.point;
-                }
-                else
-                    Debug.Log("AGENT IS NULL");
-
-            }
-        }
-    }
-
-    private void CheckForSPAttack()
-    {
-        if (Input.GetKeyDown(KeyCode.KEY_Q))
-        {
-            if (!isAreaActive)
-            {
-                isAreaActive = true;
-                Debug.Log("ACIVATE AREA");
-            }
-
-            else if (isAreaActive)
-            {
-                //Destroy circle
-                isAreaActive = false;
-                Debug.Log("DESACTIVATE AREA");
-            }
-        }
-
-        if (Input.GetMouseButton(MouseKeyCode.MOUSE_LEFT) && isAreaActive)
-        {
-            SP_type = SP_Attack_Type.AREA;
-            state = Alita_State.AREA_ATTK;
-            isAreaActive = false;
-            //Destroy circle
-        }
-
-        if (Input.GetKeyDown(KeyCode.KEY_SPACE))
-        {
-            if (!isAreaActive)
-            {
-                SP_type = SP_Attack_Type.AREA;
-                state = Alita_State.AREA_ATTK;
-                //FUNCTION FOR THE DASH
-
-            }
-        }
 
     }
 
-    //Attacks
-    //---------------------------------------------------------------------------------------------------------------------------------
-
-    private void NormalAttack()
+    public bool ExecuteDash(NavMeshAgent agent)
     {
-        attk_cool_down += Time.deltaTime;
+        bool dashing = false;
 
-        //Attack every second
-        if (attk_cool_down >= attk_period)
+        Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
         {
-            if (enemy != null && enemy_unit != null)
-            {
-                enemy_unit.Hit(damage);
-                Debug.Log("ENEMY HIT");
-            }
+            agent.maxSpeed = maxDashSpeed;
+            agent.maxAcceleration = maxDashAcc;
 
-            attk_cool_down = 0.0f;
+            Vector3 mouse_pos = hit.point;
+
+            if ((mouse_pos - transform.position).magnitude < stopRadius)
+                mouse_pos = new Vector3(mouse_pos.x * stopRadius, mouse_pos.y, mouse_pos.z * stopRadius);
+
+            Vector3 direction = (mouse_pos - transform.position).normalized();
+            Vector3 dash_pos = transform.position + direction * dashLength;
+
+            agent.SetDestination(dash_pos);
+            placeToGo = dash_pos;
+
+            dashing = true;
         }
+        return dashing;
     }
 
-
-    private void AreaAttack()
+    public bool CheckForDashEnd(NavMeshAgent agent)
     {
-        Debug.Log("AREA ATTACK!!!!!");
-        float circleRadius = 10.0f;
+        bool dashing = true;
 
-        OverlapHit[] hitInfo;
-        if (Physics.OverlapSphere(circleRadius, transform.position, out hitInfo, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+        float distDash = (float)(placeToGo - transform.position).magnitude;
+        if (distDash <= stopRadius)
         {
-            foreach (OverlapHit hit in hitInfo)
-            {
-                hit.gameObject.GetComponent<Unit>().Hit(damage); //Not change this
-                Debug.Log("HIT ENEMY: " + hit.gameObject.name);
-            }
+            agent.maxSpeed = 0.0f;
+            dashing = false;
         }
+
+        return dashing;
     }
+
 
 }

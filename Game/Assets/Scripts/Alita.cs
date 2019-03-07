@@ -7,6 +7,9 @@ public class Alita : JellyScript
     int life = 50;
     int damage = 20;
 
+    //Habilities
+    Dash dash = null;
+
     // Raycast
     public LayerMask terrainMask = new LayerMask();
     public LayerMask enemyMask = new LayerMask();
@@ -46,9 +49,11 @@ public class Alita : JellyScript
     public GameObject areaCircle;
     public float circleRadius = 5.0f;
 
-    public override void Start()
+    public override void Awake()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
+        dash = gameObject.GetComponent<Dash>();
+
     }
 
     //Called every frame
@@ -111,13 +116,11 @@ public class Alita : JellyScript
                 }
                 break;
             case Alita_State.DASHING:
-                float distDash = (float)(placeToGo - transform.position).magnitude;
-                if (distDash <= 3.0f)
-                {
-                    agent.maxSpeed = 0;
-                    state = Alita_State.IDLE;
-                }
+                bool dashing = true;
+                dashing = dash.CheckForDashEnd(agent);
 
+                if(!dashing)
+                    state = Alita_State.IDLE;
                 break;
             case Alita_State.AREA_ATTK:
                 agent.SetDestination(transform.position);
@@ -136,9 +139,6 @@ public class Alita : JellyScript
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, enemyMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
-                if (agent == null)
-                    agent = gameObject.GetComponent<NavMeshAgent>();
-
                 //Go to attack
                 enemy = hit.gameObject;
                 if (enemy != null)
@@ -167,9 +167,6 @@ public class Alita : JellyScript
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
                 state = Alita_State.RUNNING;
-                
-                if (agent == null)
-                    agent = gameObject.GetComponent<NavMeshAgent>();
 
                 agent.maxSpeed = 10;
                 agent.maxAcceleration = 30;
@@ -188,54 +185,18 @@ public class Alita : JellyScript
 
     private void CheckForDash()
     {
-        if (agent == null)
-            agent = gameObject.GetComponent<NavMeshAgent>();
-
-        //Way 1
-        //if (Input.GetKeyDown(KeyCode.KEY_SPACE))
-        //{
-        //    Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-        //    RaycastHit hit;
-        //
-        //    if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
-        //    {
-        //        Vector3 direction = (hit.point - transform.position).normalized();
-        //        Vector3 mov_dash = new Vector3(direction.x * 3.0f, transform.position.y, direction.z * 3.0f);
-        //
-        //        agent.RequestMoveVelocity(mov_dash);
-        //    }
-        //
-        //    //state = Alita_State.DASHING;
-        //}
-
-
-        //Way 2
         if (Input.GetKeyDown(KeyCode.KEY_SPACE))
-       {
+        {
+            bool dashing = false;
+            dashing = dash.ExecuteDash(agent);
 
-            agent.maxSpeed = 200;
-            agent.maxAcceleration = 200;
-
-            Ray ray = Physics.ScreenToRay(Input.GetMousePosition(), Camera.main);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
+            if (dashing)
             {
-                Vector3 mouse_pos = hit.point;
-
-                if ((mouse_pos - transform.position).magnitude < 3.0f)
-                    mouse_pos = new Vector3(mouse_pos.x * 3.0f, mouse_pos.y, mouse_pos.z * 3);
-
-                Vector3 direction = (mouse_pos - transform.position).normalized();
-                Vector3 dash_pos = transform.position + direction * 7.0f;
-
-                
-                agent.SetDestination(dash_pos);
-                placeToGo = dash_pos;
+                state = Alita_State.DASHING;
+                areaCircle.active = false;
+                isAreaActive = false;
             }
-
-            state = Alita_State.DASHING;
-       }
+        }
     }
 
     private void CheckForSPAttack()
@@ -263,8 +224,6 @@ public class Alita : JellyScript
             isAreaActive = false;
             areaCircle.active = false;
 
-            if (agent == null)
-                agent = gameObject.GetComponent<NavMeshAgent>();
         }
     }
 

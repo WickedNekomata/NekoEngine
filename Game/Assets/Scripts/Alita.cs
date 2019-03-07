@@ -112,7 +112,7 @@ public class Alita : JellyScript
                 break;
             case Alita_State.DASHING:
                 float distDash = (float)(placeToGo - transform.position).magnitude;
-                if (distDash <= 3.0f || distDash <= -3.0f)
+                if (distDash <= 3.0f)
                 {
                     agent.maxSpeed = 0;
                     state = Alita_State.IDLE;
@@ -221,8 +221,15 @@ public class Alita : JellyScript
 
             if (Physics.Raycast(ray, out hit, float.MaxValue, terrainMask, SceneQueryFlags.Dynamic | SceneQueryFlags.Static))
             {
-                Vector3 direction = (hit.point - transform.position).normalized();
+                Vector3 mouse_pos = hit.point;
+
+                if ((mouse_pos - transform.position).magnitude < 3.0f)
+                    mouse_pos = new Vector3(mouse_pos.x * 3.0f, mouse_pos.y, mouse_pos.z * 3);
+
+                Vector3 direction = (mouse_pos - transform.position).normalized();
                 Vector3 dash_pos = transform.position + direction * 7.0f;
+
+                
                 agent.SetDestination(dash_pos);
                 placeToGo = dash_pos;
             }
